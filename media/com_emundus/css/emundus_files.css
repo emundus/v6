@@ -582,13 +582,18 @@ div#em-modal-form {
     margin-left: 0;
 }
 
+
+.modal-header button.close {
+    color: #565656;
+}
+
 div#em-modal-actions div.modal-header table,
 div.modal-header table td {
     border-style: none;
 }
 
 div#em-modal-actions h4#em-modal-actions-title {
-    color: #ffffff !important;
+    color: #858585 !important;
     font-weight: 700;
     font-size: 2rem;
 }
@@ -1425,6 +1430,20 @@ thead th:hover {
     background-color: #fff !important;
 }
 
+.em-container-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.em-container-pagination-select {
+    display: flex;
+    align-items: center;
+}
+
+.em-container-pagination-label {
+    margin-right: 15px;
+}
+
 .well blockquote {
     border-color: #ddd !important;
     border-color: rgba(0, 0, 0, 0.15) !important;
@@ -1959,11 +1978,8 @@ label[for="em-file_to_upload"]:hover {
 .container-result{
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
-}
-.countCheckedCheckbox{
-    margin-left: 30%;
 }
 
 .tooltipSelectAttachments{
@@ -2227,9 +2243,9 @@ div#em-assoc-files .panel > .panel-heading {
     margin-top: 10px;
 }
 
-.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading .btn-group.pull-right {
+.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.admissions-page .main-panel .panel-heading .btn-group.pull-right {
     position: relative;
-    top: -26px;
+    top: -29px;
 }
 
 .g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right {
@@ -2247,7 +2263,7 @@ div#em-assoc-files .panel > .panel-heading {
     top: 0px;
 }
 .g-back-office-emundus-tableau.evaluations-page .em-container-share-table .em-container-share-table-left, .g-back-office-emundus-tableau.decision-page .em-container-share-table .em-container-share-table-left {
-    margin-top: 5px;
+    margin-top: 13px;
 }
 
 button#em-close-file {

@@ -248,9 +248,7 @@ class EmundusHelperEmails {
 
 		if (in_array('expert', $params)) {
 
-			$editor = JFactory::getEditor('tinymce');
-			$params = array('mode' => 'simple');
-			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params);
+            $mail_body = '<textarea name="mail_body" id="mail_body">[NAME], </textarea>';
 
 			$email .= '<div>';
 
@@ -261,7 +259,7 @@ class EmundusHelperEmails {
 				$email .= '<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
 			}
 			$email .= '</select>
-						<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
+						<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" multiple="multiple" />
 						<select name="mail_to[]" type="text" class="inputbox" id="mail_to" size="100" style="width: 100% !important;">
 							<option value="">'.JText::_('EMAIL_TO').'</option>';
 			foreach ($users as $expert) {
@@ -280,13 +278,15 @@ class EmundusHelperEmails {
 						
 					<script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/tinymce.min.js"></script>
 					<script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/js/tinymce.min.js"></script>
-					<script data-cfasync="false" type="text/javascript">tinyMCE.init({menubar:false,statusbar: false})</script>
+					<script data-cfasync="false" type="text/javascript">tinyMCE.init({
+								selector: "#mail_body",
+                                document_base_url: "'.JURI::Base().'",
+                                relative_urls: false,
+                                remove_script_host: false,
+                                convert_urls: false,
+                                height : "480"
+                              });</script>
 					<script>
-					
-						// Editor loads disabled by default, we apply must toggle it active on page load.
-					    $(document).ready(function() {
-					        tinyMCE.execCommand(\'mceToggleEditor\', true, \'mail_body\');
-					    });
 					
 						var REGEX_EMAIL = "([a-z0-9!#$%&\\\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\\\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)";
 						$("#mail_to").selectize({
@@ -297,7 +297,13 @@ class EmundusHelperEmails {
 					        render: {
 					            item: function(data, escape) {
 					                return "<div>" + escape(data.value.trim()) + "</div>";
-					            }
+					            },
+								option: function(item, escape) {
+									const label = item.text.trim();
+									return \'<div>\' +
+										((label !== \'\')?\'<strong>\'+escape(label)+\' </strong>\'+escape(item.value):escape(item.value)) +
+									\'</div>\';
+								}
 					        },
 					        onDelete: function() {
 					            return true;

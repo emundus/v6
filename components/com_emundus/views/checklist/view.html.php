@@ -60,42 +60,33 @@ class EmundusViewChecklist extends JViewLegacy {
                 // 1. if application form not sent yet, send it // 2. trigger emails // 3. display reminder list
                 $m_application 	= new EmundusModelApplication;
                 $m_files = new EmundusModelFiles;
-                $attachments = $m_application->getAttachmentsProgress($this->_user->fnum);
-                $forms = $m_application->getFormsProgress($this->_user->fnum);
-                if ((int)($attachments)>=100 && (int)($forms)>=100) {
-                    $accept_created_payments = $eMConfig->get('accept_created_payments', 0);
-                    $fnumInfos = $m_files->getFnumInfos($this->_user->fnum);
+                
+                $accept_other_payments = $eMConfig->get('accept_other_payments', 0);
+                $fnumInfos = $m_files->getFnumInfos($this->_user->fnum);
 
-                    $paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
+                if ($accept_other_payments == 2 || !empty($m_application->getHikashopOrder($fnumInfos))) {
 
-                    // If created payments aren't accepted then we don't need to check.
-                    if ($accept_created_payments) {
-                        $payment_created_offline = count($m_application->getHikashopOrder($fnumInfos, true)) > 0 ? 1 : 0;
-                    } else {
-                        $payment_created_offline = false;
-                    }
+                    switch ($eMConfig->get('redirect_after_payment')) {
 
-                    if ($accept_created_payments == 2 || $paid || $payment_created_offline) {
-
-                        if ($eMConfig->get('redirect_after_payment')) {
-
-                            if (!empty($eMConfig->get('status_after_payment'))) {
-                                require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-                                $m_files = new EmundusModelFiles();
-                                $m_files->updateState($this->_user->fnum,$eMConfig->get('status_after_payment'));
-                            }
-
-                            // If redirect after payment is active then the file is not sent and instead we redirect to the submitting form.
+                        // If redirect after payment is active then the file is not sent and instead we redirect to the submitting form.
+                        default:
+                        case 1:
                             $app->redirect($m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$this->_user->fnum);
+                        break;
 
-                        } else {
-                            // Don't send the application if the payment has not been fully sent.
-                            $m_application->sendApplication($this->_user->fnum, $this->_user, [], $eMConfig->get('status_after_payment', 1));
-                        }
+                        // Send the user to the homepage
+                        case 2:
+                            $app->redirect('index.php', JText::_('EM_PAYMENT_CONFIRMATION_MESSAGE'), 'message');
+                        break;
+
+                        // Send the user to the profiles first page
+                        case 3:
+                            $app->redirect('index.php?option=com_emundus&task=openfile&fnum=' . $this->_user->fnum, JText::_('EM_PAYMENT_CONFIRMATION_MESSAGE_CONTINUE_CANDIDATURE'), 'message');
+                        break;
                     }
-                    $app->redirect($m_checklist->getConfirmUrl($this->_user->profile).'&usekey=fnum&rowid='.$this->_user->fnum);
                 }
 
+                $app->redirect($m_checklist->getConfirmUrl($this->_user->profile).'&usekey=fnum&rowid='.$this->_user->fnum);
                 break;
 
             default :

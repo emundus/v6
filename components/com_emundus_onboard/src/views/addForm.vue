@@ -100,8 +100,6 @@
   export default {
     name: "addForm",
 
-    quit: 1,
-
     props: {
       profileId: Number,
       campaignId: Number
@@ -136,7 +134,8 @@
 
       submitted: false,
       errors: '',
-      formTouched: ''
+      formTouched: '',
+      quit: 1,
     }),
 
     validations: {
@@ -202,7 +201,7 @@
       },
 
       quitFunnelOrContinue(quit) {
-        if(this.campaignId != null){
+        if(this.campaignId != ''){
           let campaigns = [];
           campaigns.push(this.campaignId);
           axios({

@@ -77,10 +77,10 @@ class EmundusHelperFiles
         $Itemid         = JFactory::getApplication()->input->getInt('Itemid', @$current_menu->id);
         $menu_params    = $menu->getParams($Itemid);
         $m_files        = new EmundusModelFiles();
-        
+
         $session = JFactory::getSession();
         $params = $session->get('filt_params');
-        
+
         //Filters
         $tables         = explode(',', $menu_params->get('em_tables_id'));
         $filts_names    = explode(',', $menu_params->get('em_filters_names'));
@@ -134,7 +134,7 @@ class EmundusHelperFiles
         ];
 
         $filter_multi_list = array('schoolyear', 'campaign', 'programme', 'status', 'profile_users', 'group', 'institution', 'tag');
-        
+
         foreach ($filts_names as $key => $filt_name) {
 
             if (isset($filts_values[$key]) && !is_null($filts_values[$key]) && empty($params[$filt_name])) {
@@ -146,7 +146,7 @@ class EmundusHelperFiles
                 	$params[$filt_name] = $filts_values[$key];
                 }
             }
-            
+
             if (array_key_exists($key, $filts_values)) {
                 if (in_array($filt_name, $filter_multi_list)) {
 	                $filts_details[$filt_name] = explode('|', $filts_values[$key]);
@@ -190,7 +190,7 @@ class EmundusHelperFiles
             $params['institution'] = $filts_details['institution'];
             $filts_details['institution'] = $fd_with_param;
 	    }
-        
+
         // Else statement is present due to the fact that programmes are group limited
         if ((is_array($filts_details['programme']) && count($filts_details['programme']) > 0) && isset($filts_details['programme'][0]) && !empty($filts_details['programme'][0])) {
             $fd_with_param = $params['programme'] + $filts_details['programme'];
@@ -204,7 +204,7 @@ class EmundusHelperFiles
             if ((is_array($filts_details['programme']) && count($filts_details['programme']) > 0) || $filts_details['programme'] !== NULL) {
 	            $programme = !empty($m_files->code) ? $m_files->code : '';
             }
-           
+
             //////////////////////////////////////////
             if ((is_array($filts_details['programme']) && count(@$params['programme']) == 0) || @$params['programme'][0] == '%') {
                 $params['programme'] = $programme;
@@ -223,13 +223,13 @@ class EmundusHelperFiles
         if (empty($params['programme'])) {
 	        $params['programme'] = ["%"];
         }
-        
-        
+
+
         $session->set('filt_params', $params);
         $session->set('filt_menu', $filts_details);
         $filters['filts_details'] = $filts_details;
         $filters['filts_options'] = $filts_options;
-       
+
         $filters['tables'] = $tables;
         return $filters;
     }
@@ -320,7 +320,7 @@ class EmundusHelperFiles
         $session    = JFactory::getSession();
         $params     = $session->get('filt_params');
         $filt_menu  = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
-       
+
         if (isset($filt_menu['programme'][0]) && ($filt_menu['programme'][0] == "%" || $filt_menu['programme'][0] == "")) {
             $where = '1=1';
         } elseif ((is_array($filt_menu['programme']) && count($filt_menu['programme']) > 0) && isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
@@ -480,7 +480,7 @@ class EmundusHelperFiles
         $db->setQuery( $query );
         return $db->loadObjectList();
     }
-	
+
 	public function getEvaluation_doc($status) {
         $db = JFactory::getDBO();
         $query = 'SELECT *
@@ -516,7 +516,7 @@ class EmundusHelperFiles
 	 *
 	 * @return array
 	 */
-    public static function getElements($code = array(), $camps = array(), $fabrik_elements = array()) {
+    public static function getElements($code = array(), $camps = array(), $fabrik_elements = array()) : array {
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
@@ -537,15 +537,14 @@ class EmundusHelperFiles
             if (empty($programme) && empty($campaigns)) {
 	            $programme = $m_campaign->getLatestCampaign();
             }
-            
+
             // get profiles for selected programmes or campaigns
-            $plist = $m_profile->getProfileIDByCourse((array)$programme);
-            $plist = count($plist) == 0 ? $m_profile->getProfileIDByCampaign($campaigns) : $plist;
-            
+            $plist = $m_profile->getProfileIDByCampaign((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
+
         } else {
             $plist = $m_profile->getProfileIDByCourse($code, $camps);
         }
-		
+
         if ($plist) {
             // get Fabrik list ID for profile_id
             $fl = array();
@@ -564,7 +563,7 @@ class EmundusHelperFiles
                 }
             }
 
-            if (count($fl) == 0) {
+            if (empty($fl)) {
 	            return array();
             }
 
@@ -597,7 +596,8 @@ class EmundusHelperFiles
                         AND element.hidden=0
                         AND element.label!=" "
                         AND element.label!=""
-                        AND menu.menutype IN ( "' . implode('","', $menutype) . '" )';
+                        AND menu.menutype IN ( "' . implode('","', $menutype) . '" ) 
+                        AND element.plugin!="display"';
                 $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
             }
 
@@ -607,7 +607,7 @@ class EmundusHelperFiles
 
                 $db->setQuery($query);
                 $elements = $db->loadObjectList('id');
-                
+
                 $elts = array();
                 $allowed_groups = EmundusHelperAccess::getUserFabrikGroups(JFactory::getUser()->id);
                 if (count($elements) > 0) {
@@ -765,7 +765,7 @@ class EmundusHelperFiles
                     INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
                     LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
                     WHERE element.id IN ('.ltrim($elements_id, ',').')
-                    ORDER BY formgroup.ordering, element.ordering ';
+                    ORDER BY find_in_set(element.id, "' . ltrim($elements_id, ',') . '") ';
             try {
                 $db->setQuery($query);
                 $res = $db->loadObjectList('id');
@@ -938,7 +938,7 @@ class EmundusHelperFiles
 	                        $current_filter .= ' selected';
                         }
 
-                        $current_filter .= '>'.$value->elt_val.'</option>';
+                        $current_filter .= '>'.JText::_($value->elt_val).'</option>';
                     }
                 }
                 $current_filter .= '</select>';
@@ -957,7 +957,7 @@ class EmundusHelperFiles
 	                        $current_filter .= ' selected';
                         }
 
-                        $current_filter .= '>'.$value->elt_val.'</option>';
+                        $current_filter .= '>'.JText::_($value->elt_val).'</option>';
                     }
                 }
                 $current_filter .= '</select>';
@@ -1017,7 +1017,7 @@ class EmundusHelperFiles
         $current_group_assoc    = @$filt_params['group_assoc'];
 
         $filters = '';
-        
+
         $cs = '';
         if (!empty($current_s)) {
             foreach ($current_s as $c) {
@@ -1025,18 +1025,16 @@ class EmundusHelperFiles
             }
             $cs = rtrim($cs, ',');
         }
-        
-        
+
+
         // Quick filter
-        $quick = '<div id="filters">
+       $filters = '<div id="filters">
                  <p>'.JText::_('RAPID_SEARCH').'</p>
                     <div id="quick" class="form-group">
                         <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'" placeholder="'.JText::_('SEARCH').' ...">
-                       <input value="&#xf002" type="button" class="btn btn-sm btn-info" id="search" style="font-family: \'FontAwesome\';" title="<?php echo JText::_(\'SEARCH_BTN\');?>"/>'.
-                    '</div>
-                </div>';
-       
-        $filters .= $quick;
+                       <input value="&#xf002" type="button" class="btn btn-sm btn-info" id="search" style="font-family: \'FontAwesome\';" title="'.JText::_('SEARCH_BTN').'"/>'.
+		        '</div>
+	        </div>';
         $filters .= '<script type="text/javascript">
                         $("#input-tags").selectize({
                             plugins: ["remove_button"],
@@ -1148,7 +1146,7 @@ class EmundusHelperFiles
                                     	<label class="control-label em-filter-label">'.JText::_('OTHER_PROFILES').'&ensp; <a href="javascript:clearchosen(\'#select_oprofiles\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a></label> 
                                     </div>';
             }
-                                    
+
             $profile .= ' <select class="testSelAll em-filt-select" id="select_oprofiles" multiple="multiple" name="o_profiles" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
 
             foreach ($profiles as $prof) {
@@ -1453,7 +1451,7 @@ class EmundusHelperFiles
                 $schoolyear .= '</div></div>';
             }
             $filters .= $schoolyear;
-            
+
         }
 
         if (@$params['programme'] !== NULL) {
@@ -1635,7 +1633,7 @@ class EmundusHelperFiles
 
 		    $filters .= $group_assoc;
 	    }
-	    
+
         //Other filters builtin
         if (@$params['other'] !== NULL && !empty($tables) && $tables[0] != "") {
 
@@ -1903,7 +1901,7 @@ class EmundusHelperFiles
 
             $filters .= $adv_filter;
         }
-       
+
         // Buttons
         $filters .=' </fieldset>';
 
@@ -1938,6 +1936,44 @@ class EmundusHelperFiles
             }
         }
         return $tagsList;
+    }
+
+    public function createFormProgressList($formsprogress) {
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+        $m_application = new EmundusModelApplication();
+
+        $formsprogressList = array();
+        foreach ($formsprogress as $form_progress) {
+            $fnum = $form_progress['fnum'];
+            if (!isset($formsprogressList[$fnum])) {
+                if($form_progress['form_progress'] != null) {
+                    $formsprogressList[$fnum] = $form_progress['form_progress'].' %';
+                } else {
+                    $result = $m_application->getFormsProgress($form_progress['fnum']);
+                    $formsprogressList[$fnum] = $result.' %';
+                }
+            }
+        }
+        return $formsprogressList;
+    }
+
+    public function createAttachmentProgressList($attachmentsprogress) {
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+        $m_application = new EmundusModelApplication();
+
+        $attachmentsprogressList = array();
+        foreach ($attachmentsprogress as $attachmentprogress) {
+            $fnum = $attachmentprogress['fnum'];
+            if (!isset($attachmentsprogressList[$fnum])) {
+                if($attachmentprogress['attachment_progress'] != null) {
+                    $attachmentsprogressList[$fnum] = $attachmentprogress['attachment_progress'] . ' %';
+                } else {
+                    $result = $m_application->getAttachmentsProgress($attachmentprogress['fnum']);
+                    $attachmentsprogressList[$fnum] = $result.' %';
+                }
+            }
+        }
+        return $attachmentsprogressList;
     }
 
 	/** Create a list of HTML text using the tag system.
@@ -2170,7 +2206,7 @@ class EmundusHelperFiles
         $data = array();
         foreach ($evaluations as $eval) {
 
-            if ($eval['jos_emundus_evaluations___user_raw'] > 0) {
+            if ($eval['jos_emundus_evaluations___user_raw'] > 0 && ($eval['jos_emundus_evaluations___user_raw'] == JFactory::getUser()->id || EmundusHelperAccess::asAccessAction(5,'r'))) {
 
                 $str = '<br><hr>';
                 $str .= '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';
@@ -2207,7 +2243,7 @@ class EmundusHelperFiles
                         }
                         $str .= '</tr>';
                     }
-                } 
+                }
 
                 $str .= '</table>';
                 $str .= '<p></p><hr>';
@@ -2326,27 +2362,91 @@ class EmundusHelperFiles
 
         // Get information from the applicant form filled out by the coordinator
         if (EmundusHelperAccess::asAccessAction(8, 'c', $user->id, $fnumInfo['fnum'])) {
+
             $element_id     = $m_admission->getAllAdmissionElements(1, $fnumInfo['training']);
+
+            if (!empty($element_id)) {
+                $elements       = $h_files->getElementsName(implode(',',$element_id));
+
+                $admissions     = $m_files->getFnumArray($fnums, $elements);
+
+                $data = array();
+
+                foreach ($admissions as $adm) {
+                    $str = '<br><hr>';
+                    $str .= '<h1>' . JText::_('INSTITUTIONAL_ADMISSION') . '</h1>';
+                    foreach ($elements as $element) {
+
+                        if ($element->element_name == 'time_date') {
+                            $str .= '<em>'.JHtml::_('date', $adm[$element->tab_name.'___'.$element->element_name], JText::_('DATE_FORMAT_LC')).'</em>';
+                        }
+
+                        if ($element->element_name == 'user') {
+                            $str .= '<h2>'.JFactory::getUser($adm[$element->tab_name.'___'.$element->element_name])->name.'</h2>';
+                        }
+                    }
+
+                    $str .= '<br><hr>';
+                    $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+
+                    foreach ($elements as $element) {
+                        $k = $element->tab_name.'___'.$element->element_name;
+
+                        if ($element->element_name != 'id' &&
+                            $element->element_name != 'time_date' &&
+                            $element->element_name != 'date_time' &&
+                            $element->element_name != 'campaign_id' &&
+                            $element->element_name != 'student_id'&&
+                            $element->element_name != 'user' &&
+                            $element->element_name != 'fnum' &&
+                            $element->element_name != 'email' &&
+                            $element->element_name != 'label' &&
+                            $element->element_name != 'code' &&
+                            array_key_exists($k, $adm))
+                        {
+                            $str .= '<tr>';
+                            if (strpos($element->element_plugin, 'textarea') !== false) {
+                                $str .= '<td colspan="2"><b>'.$element->element_label.'</b> <br>'.JText::_($adm[$k]).'</td>';
+                            } else {
+                                $str .= '<td width="70%"><b>'.$element->element_label.'</b> </td><td width="30%">'.JText::_($adm[$k]).'</td>';
+                            }
+                            $str .= '</tr>';
+                        }
+                    }
+
+                    $str .= '</table>';
+                    $str .= '<p></p><hr>';
+
+                    if ($format != 'html') {
+                        $str = str_replace('<br>', chr(10), $str);
+                        $str = str_replace('<br />', chr(10), $str);
+                        $str = str_replace('<h1>', '* ', $str);
+                        $str = str_replace('</h1>', ' : ', $str);
+                        $str = str_replace('<b>', chr(10), $str);
+                        $str = str_replace('</b>', ' : ', $str);
+                        $str = str_replace('&nbsp;', ' ', $str);
+                        $str = strip_tags($str, '<h1>');
+                    }
+
+                    $data[$adm['fnum']][0] = $str;
+                }
+            }
+        }
+
+        // Get information from application form filled out by the student
+        $element_id     = $m_admission->getAllApplicantAdmissionElements(1, $fnumInfo['training']);
+        if(!empty($element_id)) {
             $elements       = $h_files->getElementsName(implode(',',$element_id));
             $admissions     = $m_files->getFnumArray($fnums, $elements);
 
-            $data = array();
-
             foreach ($admissions as $adm) {
+
                 $str = '<br><hr>';
-                $str .= '<h1>Institutional Admission</h1>';
-                foreach ($elements as $element) {
-
-                    if ($element->element_name == 'time_date') {
-                        $str .= '<em>'.JHtml::_('date', $adm[$element->tab_name.'___'.$element->element_name], JText::_('DATE_FORMAT_LC')).'</em>';
-                    }
-
-                    if ($element->element_name == 'user') {
-                        $str .= '<h2>'.JFactory::getUser($adm[$element->tab_name.'___'.$element->element_name])->name.'</h2>';
-                    }
+                $str .= '<h1>' . JText::_('STUDENT_ADMISSION') . '</h1>';
+                if (isset($name)) {
+                    $str .= '<h2>'.$name.'</h2>';
                 }
 
-                $str .= '<br><hr>';
                 $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
                 foreach ($elements as $element) {
@@ -2366,9 +2466,9 @@ class EmundusHelperFiles
                     {
                         $str .= '<tr>';
                         if (strpos($element->element_plugin, 'textarea') !== false) {
-                            $str .= '<td colspan="2"><b>'.$element->element_label.'</b> <br>'.JText::_($adm[$k]).'</td>';
+                            $str .= '<td colspan="2"><b>'.JText::_($element->element_label).'</b> <br>'.JText::_($adm[$k]).'</td>';
                         } else {
-                            $str .= '<td width="70%"><b>'.$element->element_label.'</b> </td><td width="30%">'.JText::_($adm[$k]).'</td>';
+                            $str .= '<td width="70%"><b>'.JText::_($element->element_label).'</b> </td><td width="30%">'.JText::_($adm[$k]).'</td>';
                         }
                         $str .= '</tr>';
                     }
@@ -2388,66 +2488,10 @@ class EmundusHelperFiles
                     $str = strip_tags($str, '<h1>');
                 }
 
-                $data[$adm['fnum']][0] = $str;
+                $data[$adm['fnum']][1] = $str;
             }
         }
 
-        // Get information from application form filled out by the student
-        $element_id     = $m_admission->getAllApplicantAdmissionElements(1, $fnumInfo['training']);
-        $elements       = $h_files->getElementsName(implode(',',$element_id));
-        $admissions     = $m_files->getFnumArray($fnums, $elements);
-
-        foreach ($admissions as $adm) {
-           
-            $str = '<br><hr>';
-            $str .= '<h1>Student Admission</h1>';
-            if (isset($name)) {
-	            $str .= '<h2>'.$name.'</h2>';
-            }
-
-            $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
-           
-            foreach ($elements as $element) {
-                $k = $element->tab_name.'___'.$element->element_name;
-
-                if ($element->element_name != 'id' &&
-                    $element->element_name != 'time_date' &&
-                    $element->element_name != 'date_time' &&
-                    $element->element_name != 'campaign_id' &&
-                    $element->element_name != 'student_id'&&
-                    $element->element_name != 'user' &&
-                    $element->element_name != 'fnum' &&
-                    $element->element_name != 'email' &&
-                    $element->element_name != 'label' &&
-                    $element->element_name != 'code' &&
-                    array_key_exists($k, $adm))
-                {
-                    $str .= '<tr>';
-                    if (strpos($element->element_plugin, 'textarea') !== false) {
-	                    $str .= '<td colspan="2"><b>'.JText::_($element->element_label).'</b> <br>'.JText::_($adm[$k]).'</td>';
-                    } else {
-	                    $str .= '<td width="70%"><b>'.JText::_($element->element_label).'</b> </td><td width="30%">'.JText::_($adm[$k]).'</td>';
-                    }
-                    $str .= '</tr>';
-                }
-            }
-
-            $str .= '</table>';
-            $str .= '<p></p><hr>';
-
-            if ($format != 'html') {
-                $str = str_replace('<br>', chr(10), $str);
-                $str = str_replace('<br />', chr(10), $str);
-                $str = str_replace('<h1>', '* ', $str);
-                $str = str_replace('</h1>', ' : ', $str);
-                $str = str_replace('<b>', chr(10), $str);
-                $str = str_replace('</b>', ' : ', $str);
-                $str = str_replace('&nbsp;', ' ', $str);
-                $str = strip_tags($str, '<h1>');
-            }
-            
-            $data[$adm['fnum']][1] = $str;
-        }
 
         return $data;
     }
@@ -2621,5 +2665,5 @@ class EmundusHelperFiles
            return false;
         }
     }
-    
+
 }

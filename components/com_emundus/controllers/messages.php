@@ -535,6 +535,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $template_id = $jinput->post->getInt('template', null);
         $mail_message = $jinput->post->get('message', null, 'RAW');
         $attachments = $jinput->post->get('attachments', null, null);
+        $tags_str = $jinput->post->getString('tags', null, null);
 
 
         // Here we filter out any CC or BCC emails that have been entered that do not match the regex.
@@ -573,6 +574,28 @@ class EmundusControllerMessages extends JControllerLegacy {
         $template = $m_messages->getEmail($template_id);
 
         foreach ($fnums as $fnum) {
+            if($tags_str != null){
+                $db = JFactory::getDBO();
+                $query = $db->getQuery(true);
+
+                $tags = explode(',',$tags_str);
+
+
+                foreach($tags as $tag){
+                    try{
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_tag_assoc'));
+                        $query->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum->fnum))
+                            ->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
+                            ->set($db->quoteName('user_id') . ' = ' . $db->quote($fnum->applicant_id));
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }  catch (Exception $e) {
+                        JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :'.$query->__toString(). " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
 
             $programme = $m_campaign->getProgrammeByTraining($fnum->training);
 
@@ -589,16 +612,27 @@ class EmundusControllerMessages extends JControllerLegacy {
                 'USER_EMAIL' => $fnum->email
             ];
 
-            $tags = $m_emails->setTags($fnum->applicant_id, $post);
+            $tags = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum);
             $body = $m_emails->setTagsFabrik($mail_message, [$fnum->fnum]);
             $subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
 
             // Tags are replaced with their corresponding values using the PHP preg_replace function.
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
-            if ($template) {
-	            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+
+            if (empty($template) || empty($template->Template)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select($db->quoteName('Template'))
+                    ->from($db->quoteName('#__emundus_email_templates'))
+                    ->where($db->quoteName('id').' = 1');
+                $db->setQuery($query);
+
+                $template->Template = $db->loadResult();
             }
-	        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+
+            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+            $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
 	        $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 	        $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
@@ -980,7 +1014,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 			    'USER_EMAIL'     => $fnum['email']
 		    ];
 	    }
-	    $tags = $m_emails->setTags($fnum['applicant_id'], $post);
+	    $tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum']);
 
 	    // Get default mail sender info
 	    $mail_from_sys = $config->get('mailfrom');

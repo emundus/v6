@@ -328,6 +328,8 @@ class EmundusViewAdmission extends JViewLegacy
 		   /* $this->assignRef('actions', $actions);*/
 		    $pagination = $this->get('Pagination');
 		    $this->assignRef('pagination', $pagination);
+		    $pageNavigation = $this->get('PageNavigation');
+		    $this->assignRef('pageNavigation', $pageNavigation);
 			$this->assignRef('accessObj', $objAccess);
 			$this->assignRef('colsSup', $colsSup);
 			$this->assignRef('users', $users);

@@ -1215,19 +1215,19 @@ class EmundusModelEvaluation extends JModelList {
 
 					//possibly fnum ou uid
 					if (!empty($queryGroups['all'])) {
-						$queryGroups['all'] .= ' or (u.id = ' . $val[1] . ' or jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+						$queryGroups['all'] .= ' or (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
 					} else {
 						if ($first) {
-							$queryGroups['all'] .= ' and (((u.id = ' . $val[1] . ' or jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+							$queryGroups['all'] .= ' and (((u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
 							$first = false;
 						} else {
-							$queryGroups['all'] .= ' and ((u.id = ' . $val[1] . ' or jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+							$queryGroups['all'] .= ' and ((u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
 						}
 
 					}
 
 					if (!in_array('jos_users', $tableAlias)) {
-						$q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+						$q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
 					}
 
 					$q['users'] = true;
@@ -1249,7 +1249,7 @@ class EmundusModelEvaluation extends JModelList {
 						}
 
 						if (!in_array('jos_users', $tableAlias)) {
-							$q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+							$q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
 						}
 
 						$q['users'] = true;
@@ -1269,12 +1269,12 @@ class EmundusModelEvaluation extends JModelList {
 						}
 
 						if (!in_array('jos_users', $tableAlias)) {
-							$q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id';
+							$q['join'][] .= ' left join #__users as u on u.id = c.applicant_id';
 							$q['users'] = true;
 						}
 
 						if (!in_array('jos_emundus_users', $tableAlias)){
-							$q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
+							$q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
 							$q['em_user'] = true;
 						}
 					}
@@ -1285,18 +1285,18 @@ class EmundusModelEvaluation extends JModelList {
 			if ($val[0] == "FNUM" && is_numeric($val[1])) {
 				//possibly fnum ou uid
 				if (!empty($queryGroups['fnum'])) {
-					$queryGroups['fnum'] .= ' or (jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+					$queryGroups['fnum'] .= ' or (c.fnum like "'.$val[1].'%") ';
 				} else {
 					if ($first) {
-						$queryGroups['fnum'] .= ' and (((jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+						$queryGroups['fnum'] .= ' and (((c.fnum like "'.$val[1].'%") ';
 						$first = false;
 					} else {
-						$queryGroups['fnum'] .= ' and ((jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+						$queryGroups['fnum'] .= ' and ((c.fnum like "'.$val[1].'%") ';
 					}
 				}
 
 				if (!in_array('jos_users', $tableAlias)) {
-					$q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+					$q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
 				}
 				$q['users'] = true;
 			}
@@ -1316,7 +1316,7 @@ class EmundusModelEvaluation extends JModelList {
 				}
 
 				if (!in_array('jos_users', $tableAlias)) {
-					$q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+					$q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
 				}
 				$q['users'] = true;
 			}
@@ -1336,7 +1336,7 @@ class EmundusModelEvaluation extends JModelList {
 				}
 
 				if (!in_array('jos_users', $tableAlias)) {
-					$q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+					$q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
 				}
 
 				$q['users'] = true;
@@ -1357,7 +1357,7 @@ class EmundusModelEvaluation extends JModelList {
 				}
 
 				if (!in_array('jos_users', $tableAlias)) {
-					$q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+					$q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
 				}
 				$q['users'] = true;
 			}
@@ -1376,7 +1376,7 @@ class EmundusModelEvaluation extends JModelList {
 				}
 
 				if (!in_array('jos_emundus_users', $tableAlias)){
-					$q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
+					$q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
 					$q['em_user'] = true;
 				}
 			}
@@ -1395,7 +1395,7 @@ class EmundusModelEvaluation extends JModelList {
 				}
 
 				if (!in_array('jos_emundus_users', $tableAlias)) {
-					$q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
+					$q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
 					$q['em_user'] = true;
 				}
 			}
@@ -1610,6 +1610,60 @@ if (JFactory::getUser()->id == 63)
 		return $this->_pagination;
 	}
 
+    public function getPageNavigation() : string {
+        $pageNavigation = "<div class='em-container-pagination-selectPage'>";
+        $pageNavigation .= "<ul class='pagination pagination-sm'>";
+        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'> << </a></li>";
+        if ($this->getPagination()->pagesTotal > 15) {
+            for ($i = 1; $i <= 5; $i++ ) {
+                $pageNavigation .= "<li ";
+                if ($this->getPagination()->pagesCurrent == $i) {
+                    $pageNavigation .= "class='active'";
+                }
+                $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+            }
+            $pageNavigation .= "<li class='disabled'><span>...</span></li>";
+            if ($this->getPagination()->pagesCurrent <= 5) {
+                for ($i = 6; $i <= 10; $i++ ) {
+                    $pageNavigation .= "<li ";
+                    if ($this->getPagination()->pagesCurrent == $i) {
+                        $pageNavigation .= "class='active'";
+                    }
+                    $pageNavigation .= "><a id=" . $i . " href='#em-data'>" . $i . "</a></li>";
+                }
+            } else {
+                for ( $i = $this->getPagination()->pagesCurrent - 2 ; $i <= $this->getPagination()->pagesCurrent + 2 ; $i++) {
+                    if ( $i <= $this->getPagination()->pagesTotal ) {
+                        $pageNavigation .= "<li ";
+                        if ( $this->getPagination()->pagesCurrent == $i ) {
+                            $pageNavigation .= "class='active'";
+                        }
+                        $pageNavigation .= "><a id=" . $i . " href='#em-data'>" . $i . "</a></li>";
+                    }
+                }
+            }
+            $pageNavigation .= "<li class='disabled'><span>...</span></li>";
+            for ( $i = $this->getPagination()->pagesTotal - 4 ; $i <= $this->getPagination()->pagesTotal ; $i++ ) {
+                $pageNavigation .= "<li ";
+                if ( $this->getPagination()->pagesCurrent == $i ) {
+                    $pageNavigation .= "class='active'";
+                }
+                $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+            }
+        } else {
+            for ( $i = 1 ; $i <= $this->getPagination()->pagesStop ; $i++) {
+                $pageNavigation .= "<li ";
+                if ( $this->getPagination()->pagesCurrent == $i ) {
+                    $pageNavigation .= "class='active'";
+                }
+                $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+            }
+        }
+        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'> >> </a></li></ul></div>";
+
+        return $pageNavigation;
+    }
+
 	// get applicant columns
 	public function getApplicantColumns() {
 		$cols = array();
@@ -1760,23 +1814,31 @@ if (JFactory::getUser()->id == 63)
 		return $this->_db->loadAssocList();
 	}
 
-	/*
-	* 	Get list of documents generated for email attachment
-	*	@param fnum 		Application File number
-	*	@param campaign_id 	Campaign ID
-	* 	@return array
-	*/
-	function getEvaluationDocuments($fnum, $campaign_id) {
+	/**
+	 * Get list of documents generated for email attachment
+	 *
+	 * @param          $fnum
+	 * @param          $campaign_id
+	 * @param int|null $doc_to_attach
+	 *
+	 * @return array|mixed
+	 */
+	function getEvaluationDocuments($fnum, $campaign_id, $doc_to_attach = null) {
 		$query = 'SELECT *, eu.id as id, esa.id as attachment_id
 					FROM #__emundus_uploads eu
 					LEFT JOIN #__emundus_setup_attachments esa ON esa.id=eu.attachment_id
 					WHERE eu.fnum like '.$this->_db->Quote($fnum).' AND campaign_id='.$campaign_id.'
 					AND eu.attachment_id IN (
 						SELECT DISTINCT(esl.attachment_id) FROM #__emundus_setup_letters esl
-						)
-					AND eu.filename NOT LIKE "%lock%"
+					)';
+
+		if (!empty($doc_to_attach)) {
+			$query .= ' AND eu.attachment_id = '.(int)$doc_to_attach;
+		}
+
+		$query .= ' AND eu.filename NOT LIKE "%lock%"
 					ORDER BY eu.timedate';
-//die(str_replace('#_', 'jos', $query));
+
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObjectList();
 	}

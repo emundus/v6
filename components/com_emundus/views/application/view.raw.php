@@ -83,7 +83,7 @@ class EmundusViewApplication extends JViewLegacy {
                         'APPLICATION_PROGRESS' => $fnum
                     );
 
-                    $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag);
+                    $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum);
                     $synthesis = new stdClass();
                     $synthesis->program = $program;
                     $synthesis->camp = $campaignInfo;
@@ -414,7 +414,9 @@ class EmundusViewApplication extends JViewLegacy {
                         // get admission form ID
                         $admission_form = $m_admission->getAdmissionFormByProgramme($fnumInfos['training']);
 
-                        $admission_row_id = $m_admission->getAdmissionId($admission_form->db_table_name,$fnum);
+                        if (!empty($admission_form)) {
+                            $admission_row_id = $m_admission->getAdmissionId($admission_form->db_table_name,$fnum);
+                        }
 
                         if (empty($myAdmission_form_id)) {
                             $html_form = '<p>'.JText::_('COM_EMUNDUS_NO_USER_ADMISSION_FORM').'</p>';

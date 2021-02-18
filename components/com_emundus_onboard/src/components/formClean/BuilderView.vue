@@ -87,7 +87,7 @@
                     <a @click="updateLabelGroup(group)" :title="Validate">
                       <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
                     </a>
-                    <a @click="enableRepatedGroup(group)" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon" :title="RepeatGroup">
+                    <a @click="enableRepatedGroup(group)" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon" :title="RepeatGroup" v-if="files == 0">
                       <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
                     </a>
                     <a @click="deleteAGroup(group,index_group)" style="margin-left: 1em;color: black" v-if="files == 0" :title="Delete">
@@ -117,7 +117,7 @@
                        :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id}">
                     <modalEditElement
                             :ID="element.id"
-                            :element="element"
+                            :gid="element.group_id"
                             :files="files"
                             :manyLanguages="manyLanguages"
                             :actualLanguage="actualLanguage"
@@ -155,9 +155,9 @@
                           </div>
                         </div>
                         <translation :label="element.label" :actualLanguage="actualLanguage"v-if="translate.label && clickUpdatingLabel && indexHighlight == element.id"></translation>
-                        <div v-if="element.params.date_table_format">
-                          <date-picker v-model="date" :config="options"></date-picker>
-                        </div>
+<!--                        <div v-if="element.params.date_table_format">-->
+<!--                          <date-picker v-model="date" :config="options"></date-picker>-->
+<!--                        </div>-->
                         <div v-else-if="element.labelsAbove == 0" class="controls">
                           <div v-if="element.error" class="fabrikElement" v-html="element.error"></div>
                           <div v-if="element.element" :class="element.errorClass" v-html="element.element"></div>
@@ -517,11 +517,12 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
+          element: element.id,
           labelTofind: element.label_tag,
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateelementlabelwithouttranslation",
@@ -606,13 +607,18 @@ export default {
           if(response.data.plugin === 'databasejoin' && this.repeat === false){
             // Check variables
             this.repeat = true;
-            this.reloadElement(element)
-          } else{
+            this.reloadElement(element);
+          }
+          // //
+          // else if(response.data.plugin === 'date' && this.repeat === false) {
+          //   this.repeat = true;
+          //   this.reloadElement(element);
+          // }
+
+          else{
             this.$set(element,'element',response.data.element);
-            //element.element = response.data.element;
             element = response.data;
             this.$set(this.keyElements,'element' + element.id,this.keyElements['element' + element.id] + 1)
-            //this.keyElements['element' + element.id] = 1;
           }
         }).catch(e => {
           this.$emit(
@@ -641,11 +647,12 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
+          group: group.group_id,
           labelTofind: group.group_tag,
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updategrouplabelwithouttranslation",
@@ -855,11 +862,12 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
+          page: page.id,
           labelTofind: page.show_title.titleraw,
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepagelabelwithouttranslation",
@@ -923,7 +931,7 @@ export default {
           NewSubLabel: intros
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepageintrowithouttranslation",

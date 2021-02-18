@@ -145,7 +145,7 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 									$mailer = JFactory::getMailer();
 
 									$post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => $file['end_date']);
-									$tags = $m_email->setTags($file['applicant_id'], $post);
+									$tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum']);
 
 									$from = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
 									$from_id = 62;
@@ -261,7 +261,7 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 			$current_user = $session->get('emundusUser');
 			if (!empty($current_user->fnum) && $current_user->fnum === $fnum) {
 				$current_user->status = $status;
-				$session->set($current_user, 'emundusUser');
+				$session->set('emundusUser',$current_user);
 			}
 		}
 

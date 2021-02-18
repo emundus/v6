@@ -126,12 +126,23 @@ class PlgFabrik_FormEmundusisevaluationconfirmed extends plgFabrik_Form {
 					return false;
 				}
 
-				if (!empty($confirm)) {
+				$profiles_list = $this->getParam('profile');
+				
+				if (!empty($confirm) && (empty($profiles_list) || in_array($user->profile, explode(',', $profiles_list)))) {
 					$app->enqueueMessage(JText::_('COM_EMUNDUS_EVALUATION_ALREADY_CONFIRMED'), 'info');
 					if (!empty($rowid)) {
-						$app->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&rowid=".$rowid);
+						$app->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&tmpl=component&iframe=1&rowid=".$rowid);
 					} else {
-						$app->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum[0]);
+						$app->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&tmpl=component&iframe=1&usekey=fnum&rowid=".$fnum[0]);
+					}
+				} else {
+					$query = "SELECT id FROM jos_emundus_evaluations WHERE user=".$user->id." AND fnum like '{jos_emundus_evaluations___fnum}'";
+					$db->setQuery($query);
+					$id = $db->loadResult();
+					$r = $app->input->get('r', 0);
+
+					if ($id > 0 && $r != 1) {
+						$app->redirect('index.php?option=com_fabrik&c=form&view=form&formid='.$jinput->get('formid').'&student_id='.$app->input->get('student_id').'&tmpl=component&iframe=1&rowid='.$id.'&r=1');
 					}
 				}
 			}

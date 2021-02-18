@@ -144,7 +144,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 
             $query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter->attachment_id.' AND campaign_id='.$campaign['id']. ' AND fnum like '.$db->Quote($fnum).' AND filename NOT LIKE "%lock%"';
             $db->setQuery($query);
-            $db->query();
+            $db->execute();
 
         } catch (Exception $e) {
             JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -216,7 +216,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 
             $query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter->attachment_id.', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign['id'].', '.$db->Quote($fnum).')';
             $db->setQuery($query);
-            $db->query();
+            $db->execute();
 
         } catch (Exception $e) {
             JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -418,7 +418,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
                 $query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id. ' AND fnum like '.$db->Quote($fnum).' AND filename NOT LIKE "%lock%"';
                 $db->setQuery($query);
-                $db->query();
+                $db->execute();
 
             } catch (Exception $e) {
                 JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -444,7 +444,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
         } elseif ($letter['template_type'] == 3) { // Template file .docx
 
-            require_once JPATH_LIBRARIES . DS . 'vendor' . DS . 'autoload.php';
+	        require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'vendor'.DS.'autoload.php');
             $tags = $m_emails->setTagsWord($user_id, $post, $fnum);
 
             $file_path = explode(DS, $letter['file']);
@@ -544,7 +544,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
                     $query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign_id.', '.$db->Quote($fnum).')';
                     $db->setQuery($query);
-                    $db->query();
+                    $db->execute();
                     $id = $db->insertid();
 
                 } catch (Exception $e) {
@@ -673,7 +673,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
             $file_type = explode('.', $file_path[count($file_path)-1]);
             $name = date('Y-m-d_H-i-s').$attachment['lbl'].'.'.$file_type[1];
 
-            $file = JPATH_BASE.$letter['file']; 
+            $file = JPATH_BASE.$letter['file'];
             if (file_exists($file)) {
                 $mime_type = get_mime_type($file);
                 header('Content-type: application/'.$mime_type);
@@ -710,7 +710,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 
             $document->save(JPATH_BASE.DS.'tmp'.DS.$name);
 
-            $file = JPATH_BASE.DS.'tmp'.DS.$name; 
+            $file = JPATH_BASE.DS.'tmp'.DS.$name;
             if (file_exists($file)) {
                 $mime_type = get_mime_type($file);
                 header('Content-type: application/'.$mime_type);
@@ -862,21 +862,31 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $params = $template->params;
 
     if (!empty($params->get('logo')->custom->image)) {
-	    $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-	    $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+
+        $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+        $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+
     } else {
-    	$logo_module = JModuleHelper::getModuleById('90');
-	    preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
 
-	    $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-	    if ((bool) preg_match($pattern, $tab[1])) {
-	    	$tab[1] = parse_url($tab[1], PHP_URL_PATH);
-	    }
+        if(file_exists(JPATH_ROOT.DS.'images'.DS.'custom'.DS.$item->training.'.png')) {
+            $logo = JPATH_ROOT.DS.'images'.DS.'custom'.DS.$item->training.'.png';
+        } else {
 
-	    $logo = JPATH_BASE.DS.$tab[1];
+            $logo_module = JModuleHelper::getModuleById('90');
+            preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+
+            $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+            (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+            (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+            (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+            if ((bool) preg_match($pattern, $tab[1])) {
+                $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+            }
+
+            $logo = JPATH_BASE.DS.$tab[1];
+
+        }
     }
 
     // manage logo by programme
@@ -903,7 +913,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
     $pdf->setCellPaddings('L');//Set Padding
- 
+
     //$pdf->SetLineWidth();
 
 	// set default monospaced font
@@ -918,7 +928,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	/*** Applicant   ***/
 	$htmldata .= "<style>
 
-    @import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
+    @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
     
     .en-tete { width :100%;  }
     .candidat { width :80%;  }
@@ -926,15 +936,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     .dossier { width :100%;  }
     
           
-	.card  { border: none; display:block; font-family: 'Poppins', sans-serif; }
-	.name  { display: block;  display:block; font-family: 'Poppins', sans-serif; }
-	.maidename  {display: block; font-family: 'Poppins', sans-serif; }
-    .nationality { display: block; font-weight:normal!important; font-family: 'Poppins', sans-serif; }
-    .idcandidat{ display: block; font-weight:normal!important;  color: ".$cTitle."; font-family: 'Poppins', sans-serif;  }
-    .sent { display: block; font-family: 'Poppins', sans-serif; text-align:left;  }
-    .statut { display: block; font-family: 'Poppins', sans-serif; text-align:left; color: ".$cTitle."  }
-	.birthday { display: block; font-family: 'Poppins', sans-serif; }
-
+	.card  { border: none; display:block; font-family: 'Roboto', sans-serif; }
+	.name  { display: block;  display:block; font-family: 'Roboto', sans-serif; }
+	.maidename  {display: block; font-family: 'Roboto', sans-serif; }
+    .nationality { display: block; font-weight:normal!important; font-family: 'Roboto', sans-serif; }
+    .idcandidat{ display: block; font-weight:normal!important;  color: ".$cTitle."; font-family: 'Roboto', sans-serif;  }
+    .sent { display: block; font-family: 'Roboto', sans-serif; text-align:left;  }
+    .statut { display: block; font-family: 'Roboto', sans-serif; text-align:left; color: ".$cTitle."  }
+	.birthday { display: block; font-family: 'Roboto', sans-serif; }
 	.label		   {color:black;  }
 	.label-default {background-color:#999999;}
 	.label-primary {background-color:#337ab7;}
@@ -963,75 +972,47 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	.label-lightpink { background-color: #e08283; }
 	.label-pink { background-color: #d2527f; }
     .label-darkpink { background-color: #db0a5b; }
-    h3 {  font-family: 'Poppins', sans-serif; font-size:35px;  color: #000000; text-align:left!important; font-weight:bold;}
+    h3 {  font-family: 'Roboto', sans-serif; font-size:35px;  color: #000000; text-align:left!important; font-weight:bold;}
             
 
-            table {
-                font-family: 'Poppins', sans-serif;  
-            }
-
             h2 {
-                font-family: 'Poppins', sans-serif;
-                font-size:40px;
-                 color: ".$cTitle.";
+               font-size:40px;
+               color: ".$cTitle.";
                font-weight:500;
     
             }
   
            h3 {
-                font-family: 'Poppins', sans-serif;
                 font-size:35px;
-                 color: #000000;
+                color: #000000;
                 text-align:left!important;
              
             }
 
             h5 {
-                font-family: 'Poppins', sans-serif;
                 color: #000000;
                 font-size: 18px;
                 text-align: left;
             }
 
-            tr  {
-                font-family: 'Poppins', sans-serif;
-
-            }
-
-     
             th {
                 color: #000000;
                 font-size: 33px!important;
-
-                font-family: 'Poppins', sans-serif;
-             
             }
 
             td {
                 color: #000000;
-                font-size: 33px!important;
-                font-family: 'Poppins', sans-serif;
-           
-            }
-
-            p {
-                font-family: 'Poppins', sans-serif;
+                font-size: 33px!important;           
             }
 
            .background {
+	            background-color: #F7F7F7;
+           }
 
-            background-color: #F7F7F7;
-       
-            
-             }
-
-             .background-light {
-
+           .background-light {
               border-top: 0.5px solid #D3D3D3;
               border-bottom: 0.5px solid #D3D3D3;
-                
-    
-            }
+           }
 
             
             @media print {

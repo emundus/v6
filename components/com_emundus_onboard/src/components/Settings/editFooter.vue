@@ -48,7 +48,6 @@
                 columns: [
                   Joomla.JText._("COM_EMUNDUS_ONBOARD_COLUMN") + ' 1',
                   Joomla.JText._("COM_EMUNDUS_ONBOARD_COLUMN") + ' 2',
-                  Joomla.JText._("COM_EMUNDUS_ONBOARD_PREVIEW"),
                 ],
                 TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
             };

@@ -87,7 +87,6 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                         <th><?= JText::_('ATTACHMENT_FILENAME'); ?></th>
                                         <th><?= JText::_('ATTACHMENT_DATE'); ?></th>
                                         <th><?= JText::_('ATTACHMENT_DESCRIPTION'); ?></th>
-                                        <th><?= JText::_('CAMPAIGN'); ?></th>
                                         <th><?= JText::_('ACADEMIC_YEAR'); ?></th>
                                         <th><?= JText::_('VALIDATION_STATE'); ?></th>
                                     </tr>
@@ -140,7 +139,6 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                                         <th>' . JText::_('ATTACHMENT_FILENAME') . '</th>
                                                         <th>' . JText::_('ATTACHMENT_DATE') . '</th>
                                                         <th>' . JText::_('ATTACHMENT_DESCRIPTION') . '</th>
-                                                        <th>' . JText::_('CAMPAIGN') . '</th>
                                                         <th>' . JText::_('ACADEMIC_YEAR') . '</th>
                                                         <th>' . JText::_('VALIDATION_STATE') . '</th>
                                                     </tr>
@@ -190,7 +188,6 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                       <td>'.$label.'</td>
                                       <td>' . date('l, d F Y H:i', strtotime($attachment->timedate)) . '</td>
                                       <td>' . $attachment->description . '</td>
-                                      <td>' . $attachment->campaign_label . '</td>
                                       <td>' . $attachment->year . '</td>
                                       <td>' . $validation . '</td>
                                   </tr>';
@@ -364,15 +361,19 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
 
         var url = "index.php?option=com_emundus&controller=application&task=exportpdf&fnum=<?php echo $this->fnum; ?>&student_id=<?php echo $this->student_id; ?>&ids="+checked;
         //url = url.fmt({ids: checkedInput});
-        var link = window.open('', '_blank');
         $.ajax({
             type:'get',
             url: url,
             dataType:'json',
-
             success: function(result) {
-                if(result.link){
+                if (result.status) {
+                    var link = window.open('', '_blank');
                     link.location.href = result.link;
+                } else {
+                    Swal.fire({
+                        title: result.msg,
+                        type: 'error'
+                    })
                 }
             },
             error: function (jqXHR) {

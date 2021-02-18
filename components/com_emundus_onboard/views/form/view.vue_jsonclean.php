@@ -226,8 +226,13 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                             ${"element" . $o_element->id}->tipAbove = $content_element->tipAbove;
                         endif;
                         if ($content_element->element) :
-                            ${"element" . $o_element->id}->element = $content_element->element;
-                        endif;
+                            if($o_element->plugin == 'date') {
+                                ${"element" . $o_element->id}->element = '<input data-v-8d3bb2fa="" class="form-control" type="date">';
+                            }
+                            else {
+                                ${"element" . $o_element->id}->element = $content_element->element;
+                            }
+                            endif;
                         if ($content_element->error) :
                             ${"element" . $o_element->id}->error = $content_element->error;
                             ${"element" . $o_element->id}->errorClass = $el_parmas->class;
@@ -245,7 +250,12 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                             ${"element" . $o_element->id}->tipAbove = $content_element->tipAbove;
                         endif;
                         if ($content_element->element) :
-                            ${"element" . $o_element->id}->element = $content_element->element;
+                            if($o_element->plugin == 'date') {
+                                ${"element" . $o_element->id}->element = '<input data-v-8d3bb2fa="" class="form-control" type="date">';
+                            }
+                            else {
+                                ${"element" . $o_element->id}->element = $content_element->element;
+                            }
                         endif;
                         if ($content_element->error) :
                             ${"element" . $o_element->id}->error = $content_element->error;

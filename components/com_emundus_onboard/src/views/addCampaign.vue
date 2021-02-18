@@ -69,6 +69,7 @@
                     @searched="onSearchYear"
                     :items="this.session"
                     :year="form.year"
+                    :name="'2020 - 2021'"
             />
           </div>
           <div class="form-group d-flex">
@@ -191,6 +192,7 @@
               id="select_prog"
               v-model="form.training"
               v-on:change="setCategory"
+              :disabled="this.programs.length <= 0"
             >
               <option value="">{{ ChooseProg }}</option>
               <option
@@ -484,8 +486,8 @@ export default {
           this.form.year = response.data.data.campaign.year;
           this.form.is_limited = response.data.data.campaign.is_limited;
           this.form.limit = response.data.data.campaign.limit;
-          this.form.start_date = this.changeDate(this.form.start_date);
-          this.form.end_date = this.changeDate(this.form.end_date);
+          this.form.start_date = LuxonDateTime.fromSQL(this.form.start_date);
+          this.form.end_date = LuxonDateTime.fromSQL(this.form.end_date);
           if(typeof response.data.data.campaign.status != 'undefined') {
             Object.values(response.data.data.campaign.status).forEach((statu) => {
               this.form.limit_status[parseInt(statu.limit_status)] = true;
@@ -678,7 +680,15 @@ export default {
         },
         data: qs.stringify({ body: this.programForm })
       }).then(() => {
+          let newsession = true;
+
           if (this.campaign !== "") {
+            if(typeof this.form.start_date == 'object'){
+              this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+            }
+            if(typeof this.form.end_date == 'object'){
+              this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+            }
             axios({
               method: "post",
               url: "index.php?option=com_emundus_onboard&controller=campaign&task=updatecampaign",
@@ -692,6 +702,12 @@ export default {
                 console.log(error);
               });
           } else {
+            if(typeof this.form.start_date == 'object'){
+              this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+            }
+            if(typeof this.form.end_date == 'object'){
+              this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+            }
             axios({
               method: "post",
               url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
@@ -706,17 +722,24 @@ export default {
                 console.log(error);
               });
           }
-          axios({
-            method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=campaign&task=createyear",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({ body: this.year })
-          }).then(response => {})
-            .catch(error => {
-              console.log(error);
-            });
+        this.years.forEach((elt) => {
+          if(elt.schoolyear == this.year.schoolyear){
+            newsession = false;
+          }
+        });
+          if(newsession) {
+            axios({
+              method: "post",
+              url: "index.php?option=com_emundus_onboard&controller=campaign&task=createyear",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({body: this.year})
+            }).then(response => {})
+                .catch(error => {
+                  console.log(error);
+                });
+          }
         }).catch(error => {
           console.log(error);
         });
@@ -743,39 +766,6 @@ export default {
       }).then(response => {
         window.location.href = window.location.pathname + response.data.data;
       });
-    },
-
-    changeDate(dbDate) {
-      const regexDate = /\d{4}-\d{2}-\d{2}/gm;
-      const regexHour = /\d{2}:\d{2}:\d{2}/gm;
-      const str = dbDate;
-      let m;
-      var formatDate = "";
-
-      while ((m = regexDate.exec(str)) !== null) {
-        // This is necessary to avoid infinite loops with zero-width matches
-        if (m.index === regexHour.lastIndex) {
-          regexHour.lastIndex++;
-        }
-
-        // The result can be accessed through the `m`-variable.
-        m.forEach((yy_MM_dd, groupIndex) => {
-          formatDate = `${yy_MM_dd}T`;
-        });
-      }
-
-      while ((m = regexHour.exec(str)) !== null) {
-        // This is necessary to avoid infinite loops with zero-width matches
-        if (m.index === regexHour.lastIndex) {
-          regexHour.lastIndex++;
-        }
-
-        // The result can be accessed through the `m`-variable.
-        m.forEach((HH_mm, groupIndex) => {
-          formatDate = formatDate + `${HH_mm}.000Z`;
-        });
-      }
-      return formatDate;
     },
 
     onSearchYear(value) {
@@ -848,6 +838,9 @@ export default {
   watch: {
     'form.start_date': function (val, oldVal) {
       this.minDate = LuxonDateTime.fromISO(val).plus({ days: 1 });
+      if(this.form.end_date == "") {
+        this.form.end_date = LuxonDateTime.fromISO(val).plus({days: 1});
+      }
     }
   }
 };

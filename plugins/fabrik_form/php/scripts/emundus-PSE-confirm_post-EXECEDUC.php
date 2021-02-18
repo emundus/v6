@@ -63,7 +63,7 @@ if ($application_fee) {
 
     $fnumInfos = $filesModel->getFnumInfos($student->fnum);
     if (count($fnumInfos) > 0) {
-        $paid = count($application->getHikashopOrder($fnumInfos))>0?1:0;
+        $paid = !empty($application->getHikashopOrder($fnumInfos));
 
         if (!$paid) {
             $checkout_url = $application->getHikashopCheckoutUrl($student->profile);

@@ -244,6 +244,8 @@ class EmundusModelJob extends JModelItem {
      * @since   1.6
      */
     public function apply($user_id, $job_id) {
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $program_code = $eMConfig->get('program_code', 'utc-dfp-dri');
         include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
         $modelProfile = new EmundusModelProfile;
         $user = $modelProfile->getEmundusUser($user_id);
@@ -260,7 +262,7 @@ class EmundusModelJob extends JModelItem {
             $query = "SELECT ecc.fnum 
                         FROM #__emundus_campaign_candidature as ecc
                         LEFT JOIN #__emundus_emploi_etudiant_candidat as eeec on eeec.fnum = ecc.fnum
-                        WHERE ecc.applicant_id=".$user_id." AND eeec.id is null AND ecc.campaign_id IN (select id from #__emundus_setup_campaigns where training like 'utc-dfp-dri')
+                        WHERE ecc.applicant_id=".$user_id." AND eeec.id is null AND ecc.campaign_id IN (select id from #__emundus_setup_campaigns where training like '".$program_code."')
                         order by ecc.date_time DESC";
             $db->setQuery($query);
             $fnum = $db->loadResult();

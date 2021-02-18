@@ -716,28 +716,28 @@ class EmundusControllerFiles extends JControllerLegacy
             'select_publish' => JText::_('PLEASE_SELECT_PUBLISH'))));
         exit;
     }
-	
+
 	/**
      *
      */
 	public function getExistEmailTrigger() {
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
-		
+
 		$app    = JFactory::getApplication();
         $jinput = $app->input;
         $state  = $jinput->getInt('state', null);
         $fnums  = $jinput->getString('fnums', null);
-		
-		
+
+
 		$m_email = new EmundusModelEmails();
         $m_messages = new EmundusModelMessages();
         $m_files = $this->getModel('Files');
-		
+
 		if($fnums == "all") {
             $fnums = $m_files->getAllFnums();
         }
-        
+
         if (!is_array($fnums)) {
             $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         }
@@ -757,9 +757,9 @@ class EmundusControllerFiles extends JControllerLegacy
 	            $validFnums[] = $fnum;
             }
         }
-		
+
 		$fnumsInfos = $m_files->getFnumsInfos($validFnums);
-		
+
 		$code = array();
 		foreach ($fnumsInfos as $fnum) {
 			$code[] = $fnum['training'];
@@ -924,7 +924,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $mailer = JFactory::getMailer();
 
                                 $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => $file['end_date']);
-                                $tags = $m_email->setTags($file['applicant_id'], $post);
+                                $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum']);
 
                                 $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
                                 $from_id    = 62;
@@ -1194,7 +1194,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
- 
+
     /**
      *
      */
@@ -1558,7 +1558,7 @@ class EmundusControllerFiles extends JControllerLegacy
         // Here we filter elements which are already present but under a different name or ID, by looking at tablename___element_name.
         $elts_present = [];
         foreach ($ordered_elements as $elt_id => $o_elt) {
-        	$element = $o_elt->tab_name.'___'.$o_elt->element_name;
+            $element = !empty($o_elt->table_join) ? $o_elt->table_join.'___'.$o_elt->element_name : $o_elt->tab_name.'___'.$o_elt->element_name;
         	if (in_array($element, $elts_present)) {
         		unset($ordered_elements[$elt_id]);
 	        } else {
@@ -1782,9 +1782,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_campaign = new EmundusModelCampaign();
         $h_menu = new EmundusHelperMenu();
 
-        $jinput     = JFactory::getApplication()->input;
-        $code    = $jinput->getVar('code', null);
-        $camp    = $jinput->getVar('camp', null);
+        $jinput = JFactory::getApplication()->input;
+        $code = $jinput->getVar('code', null);
+        $camp = $jinput->getVar('camp', null);
 
 
         $code = explode(',', $code);
@@ -1793,22 +1793,26 @@ class EmundusControllerFiles extends JControllerLegacy
         $profile = $m_profile->getProfileIDByCourse($code, $camp);
         $pages = $h_menu->buildMenuQuery((int)$profile[0]);
 
-        if($camp[0] != 0)
-            $campaign = $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]);
-        else
-            $campaign = $m_campaign->getCampaignsByCourse($code[0]);
+        if ($camp[0] != 0) {
+        	$campaign = $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]);
+        } else {
+        	$campaign = $m_campaign->getCampaignsByCourse($code[0]);
+        }
 
 
         $html1 = '';
         $html2 = '';
 
         for ($i = 0; $i < count($pages); $i++) {
+            $title = explode('-', $pages[$i]->label);
+            $title = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
+
             if ($i < count($pages)/2)
-                $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($pages[$i]->label).'</label><br/>';
+                $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($title).'</label><br/>';
             else
-                $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($pages[$i]->label).'</label><br/>';
+                $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($title).'</label><br/>';
         }
-        //var_dump($camp[0]);
+
         $html = '<div class="panel panel-default pdform">
                     <div class="panel-heading">
                         <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'felts-".$code[0].$camp[0]."'".')">
@@ -1952,7 +1956,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         'FNUM' => $fnum,
                         'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
                     );
-                $tags = $m_emails->setTags($fnumsInfo[$fnum]['applicant_id'], $post);
+                $tags = $m_emails->setTags($fnumsInfo[$fnum]['applicant_id'], $post, $fnum);
 
                 // Format filename
                 $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
@@ -2543,7 +2547,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         'FNUM' => $fnum,
                         'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
                     );
-                $tags = $m_emails->setTags($users[$fnum]->id, $post);
+                $tags = $m_emails->setTags($users[$fnum]->id, $post, $fnum);
                 $application_form_name = $eMConfig->get('application_form_name', "application_form_pdf");
                 $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
                 $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
@@ -3039,7 +3043,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 if (count($val) > 0) {
                                     foreach ($val as $k => $v) {
                                         $index = array_search(trim($v), $params->sub_options->sub_values);
-                                        $val[$k] = $params->sub_options->sub_labels[$index];
+                                        $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
                                     }
                                     $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
                                 } else {
@@ -3624,10 +3628,10 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         $query = $this->_db->getQuery(true);
         $query
-            ->select([
-                $this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager_firstname','manager_firstname'), $this->_db->quoteName('p.manager_lastname','manager_lastname'), $this->_db->quoteName('p.pedagogie', 'pedagogie'), $this->_db->quoteName('p.partner', 'partner'), $this->_db->quoteName('p.evaluation', 'evaluation'), $this->_db->quoteName('p.temoignagesclients', 'temoignagesclients'), $this->_db->quoteName('p.accrochecom', 'accrochecom'),
+            ->select(['DISTINCT(tu.session_code) AS session_code',
+                $this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager_firstname','manager_firstname'), $this->_db->quoteName('p.manager_lastname','manager_lastname'), $this->_db->quoteName('p.pedagogie', 'pedagogie'), $this->_db->quoteName('p.partner', 'partner'), $this->_db->quoteName('p.evaluation', 'evaluation'), $this->_db->quoteName('p.temoignagesclients', 'temoignagesclients'),$this->_db->quoteName('p.accrochecom', 'accrochecom'),
                 $this->_db->quoteName('t.label','theme'), $this->_db->quoteName('t.color','class'),
-                $this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.session_code','session_code'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours','hours'), $this->_db->quoteName('tu.time_in_company', 'time_in_company'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant'), $this->_db->quoteName('tu.label', 'session_label')
+                $this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours','hours'), $this->_db->quoteName('tu.time_in_company', 'time_in_company'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.location_title'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant'), $this->_db->quoteName('tu.label', 'session_label')
             ])
             ->from($this->_db->quoteName('#__emundus_setup_programmes','p'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_thematiques','t').' ON '.$this->_db->quoteName('t.id').' = '.$this->_db->quoteName('p.programmes'))
@@ -3638,6 +3642,24 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         try {
             $product = $this->_db->loadAssocList();
+
+            //GET Taux de satisfaction from GESCOF
+            $http = new JHttp();
+
+            try {
+                $result = $http->get('https://ccirochefort.evaluations.ovh/Facett3?Societe=1&Mode=Evaluations&ExtractionDonnees=TauxSatisfaction&CodeProduit='.$product_code);
+
+                $res = json_decode($result->body);
+
+
+                $taux = number_format((float)$res->Taux*100, 2, '.', '');
+                $nbAvis = $res->NbAvis;
+
+                $indicateursFormation = "<p><b>Taux de satisfaction : </b>$taux%</p><p><b>Nombre d'avis : </b>$nbAvis</p>";
+            }
+            catch (Exception $e) {
+                $indicateursFormation = "";
+            }
         } catch (Exception $e) {
             echo json_encode((object)['status' => false, 'msg' => 'Error getting product information.']);
             exit;
@@ -3668,8 +3690,8 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                     }
                 }
 
-                $sessions .= ' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))).' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';
-            }
+                $sessionCity = !empty($session['city']) ?' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))) : ' '.$session['location_title'];
+                $sessions .= $sessionCity.' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';            }
         }
         $sessions .= '</ul>';
 
@@ -3708,7 +3730,8 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
             '/{CPF}/' => (!empty($product[0]['cpf']))?'<h2 style="padding-left: 30px;">'.JText::_('CODE').'</h2><p style="padding-left: 30px;">'.$product[0]['cpf'].' </p>':'',
             '/{EVALUATION}/' => $product[0]['evaluation'],
             '/{TEMOINAGE}/' => $product[0]['temoignagesclients'],
-            '/{ACCROCHECOM}/' => ucfirst(mb_strtolower(strip_tags($product[0]['accrochecom'])))
+            '/{ACCROCHECOM}/' => ucfirst(mb_strtolower(strip_tags($product[0]['accrochecom']))),
+            '/{INDICATEURS}/' => $indicateursFormation
         ];
 
         $export_date = strftime('%e')." ".strftime('%B')." ".date('Y');

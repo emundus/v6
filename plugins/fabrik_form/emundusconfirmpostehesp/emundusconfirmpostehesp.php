@@ -195,7 +195,7 @@ class PlgFabrik_FormEmundusconfirmpostehesp extends plgFabrik_Form
 		$student->candidature_posted = 1;
 
 		// Send emails defined in trigger
-		$step = $this->getParam('emundusconfirmpost_status', '1');
+		$step = $status_after_sent;
 		$code = array($student->code);
 		$to_applicant = '0,1';
 		$m_emails->sendEmailTrigger($step, $code, $to_applicant, $student);
@@ -249,7 +249,7 @@ class PlgFabrik_FormEmundusconfirmpostehesp extends plgFabrik_Form
 
 				// Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
 				$post = array('FNUM' => $fnum, 'CAMPAIGN_YEAR' => $fnumInfo['year'], 'PROGRAMME_CODE' => $fnumInfo['training']);
-				$tags = $m_emails->setTags($student->id, $post);
+				$tags = $m_emails->setTags($student->id, $post, $fnum);
 				$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
 				$application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
 

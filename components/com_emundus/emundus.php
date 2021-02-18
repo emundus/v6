@@ -5,7 +5,7 @@
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
 */
- 
+
 // No direct access
 defined('_JEXEC') or die('ACCESS_DENIED');
 
@@ -324,6 +324,8 @@ JText::script('EMAILS_SENT');
 JText::script('EMAILS_FAILED');
 JText::script('SEND_FAILED');
 JText::script('SEND_TO');
+JText::script('EMAIL_SENDING');
+JText::script('CANCEL_EMAIL');
 
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
@@ -400,9 +402,9 @@ if ($task == 'getproductpdf') {
 
 if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis')) {
     $controller->execute($task);
-} elseif($user->guest && ($name == 'webhook' && $format='raw') && $secret == $token) { 
+} elseif($user->guest && (($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && $secret === $token) {
     $controller->execute($task);
-}elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest') {
+} elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest') {
     $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
 } else {
     if ($name != 'search_engine') {

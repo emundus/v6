@@ -44,6 +44,10 @@ try {
     JLog::add('Error in script/CCIRS-create-assign-company getting company by siret at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 }
 
+if (is_array($fabrikFormData['opco'])) {
+	$fabrikFormData['opco'] = $fabrikFormData['opco'][0];
+}
+
 // If the company wasn't found, make a new one.
 if (empty($company_id)) {
 

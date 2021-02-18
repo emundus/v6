@@ -117,7 +117,7 @@
 						type="URL"
 						label="MOD_EMUNDUS_CC_LIST_URL"
 						description=""
-						default="index.php" />
+						default="index.php?option=com_fabrik&amp;view=form&amp;formid=102" />
 				<field
 						name="admission_status"
 						type="text"

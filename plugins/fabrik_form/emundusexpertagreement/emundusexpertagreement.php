@@ -51,12 +51,12 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 	/**
 	 * Get the fields value regardless of whether its in joined data or no
 	 *
-	 * @param   string $pname   Params property name to get the value for
-	 * @param   mixed  $default Default value
+	 * @param string $pname   Params property name to get the value for
+	 * @param mixed  $default Default value
 	 *
 	 * @return  mixed  value
 	 */
-	public function getParam($pname, $default = '') {
+	public function getParam(string $pname, $default = '') {
 		$params = $this->getParams();
 
 		if ($params->get($pname) == '') {
@@ -66,19 +66,83 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 		return $params->get($pname);
 	}
 
+
+	/**
+	 * This is taken from the script emundus-expert_check.
+	 * A plugin always run in tandem with the plugin below.
+	 *
+	 * @throws Exception
+	 */
+	public function onBeforeLoad() : bool {
+
+		$app = JFactory::getApplication();
+		$jinput = $app->input;
+		$key_id = $jinput->get->get('keyid');
+		$campaign_id = $jinput->get->getInt('cid');
+		$formid = $jinput->get->getInt('formid');
+
+		$baseurl = JURI::base();
+		$db = JFactory::getDBO();
+
+		$query = $db->getQuery(true);
+		$query->select('*')
+			->from($db->quoteName('#__emundus_files_request'))
+			->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id).' AND ('.$db->quoteName('uploaded').' = 0 OR '.$db->quoteName('uploaded').' IS NULL)');
+		$db->setQuery($query);
+
+		try {
+			$obj = $db->loadObject();
+		} catch (Exception $e) {
+			return false;
+		}
+
+
+		if (!empty($obj)) {
+
+			$user = JFactory::getUser();
+			if ($user->id !== 0 && $user->email !== $obj->email) {
+				$app->enqueueMessage(JText::_('INCORRECT_USER'), 'message');
+				$app->redirect($baseurl);
+			}
+
+			$s = $jinput->get->getInt('s');
+			if ($s !== 1) {
+
+				$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$formid.'&jos_emundus_files_request___attachment_id='.$obj->attachment_id.'&jos_emundus_files_request___campaign_id='.$obj->campaign_id.'&keyid='.$key_id.'&cid='.$campaign_id.'&rowid='.$obj->id.'&s=1';
+				$app->redirect($link_upload);
+
+			} else {
+
+				$up_attachment = $jinput->get('jos_emundus_files_request___attachment_id');
+				$attachment_id = !empty($up_attachment)?$jinput->get('jos_emundus_files_request___attachment_id'):$jinput->get->get('jos_emundus_files_request___attachment_id');
+
+				if (empty($key_id) || empty($attachment_id) || $attachment_id != $obj->attachment_id) {
+					$app->redirect($baseurl);
+					throw new Exception(JText::_('ERROR: please try again'), 500);
+				}
+			}
+
+		} else {
+			$app->enqueueMessage(JText::_('PLEASE_LOGIN'), 'message');
+			$app->redirect($baseurl.'index.php?option=com_users&view=login');
+		}
+
+		return true;
+	}
+
+
 	/**
 	 * Main script.
 	 *
 	 * @return void
 	 * @throws Exception
 	 */
-	public function onAfterProcess() {
+	public function onAfterProcess() : void {
 
 		JLog::addLogger(['text_file' => 'com_emundus.expertAcceptation.error.php'], JLog::ERROR, 'com_emundus');
 
 		$app = JFactory::getApplication();
 		$mailer = JFactory::getMailer();
-		$baseurl = JURI::base();
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
 
@@ -90,6 +154,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 		$group = $this->getParam('group');
 		$profile_id = $this->getParam('profile_id');
 		$pick_fnums = $this->getParam('pick_fnums', 0);
+		$redirect = $this->getParam('redirect', 1);
 
 		if ($pick_fnums) {
 			$files_picked = $jinput->get('jos_emundus_files_request___your_files');
@@ -191,7 +256,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 
 				$usertype = $m_users->found_usertype($acl_aro_groups[0]);
 				$user->usertype = $usertype;
-				$user->name = ucfirst($firstname).' '.strtoupper($lastname);
+				$user->name = $firstname.' '.$lastname;
 
 				if (!$user->save()) {
 					$app->enqueueMessage(JText::_('CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
@@ -212,7 +277,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 
 			// 2.0.1 Si Expert déjà déclaré comme expert
 			if (!$this->assocFiles($fnums, $user, $group)) {
-				throw new Exception('ERROR_CANNOT_ASSOC_USER', 500);
+				$app->redirect('index.php', JText::_('ERROR_CANNOT_ASSOC_USER'));
+				return;
 			}
 
 			// 2.1.2. Envoie des identifiants à l'expert + Envoie d'un message d'invitation à se connecter pour evaluer le dossier
@@ -258,7 +324,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 				];
 				$m_application->addComment($row);
 			}
-			$m_users->encryptLogin(['username' => $user->username, 'password' => $user->password]);
+			$m_users->encryptLogin(['username' => $user->username, 'password' => $user->password], (int)$redirect);
 
 		} else {
 
@@ -273,10 +339,9 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			if (!empty($expert)) {
 				$firstname = ucfirst($expert['first_name']);
 				$lastname = strtoupper($expert['last_name']);
-				$name = $firstname.' '.$lastname;
-			} else {
-				$name = $email;
 			}
+			
+			$name = $firstname.' '.$lastname;
 
 			$password = JUserHelper::genRandomPassword();
 			$user = clone(JFactory::getUser(0));
@@ -306,11 +371,12 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			$user->id = $uid;
 
 			if (empty($uid) || (!mkdir(EMUNDUS_PATH_ABS.$user->id.DS, 0777, true) && !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html'))) {
-				throw new Exception('ERROR_CANNOT_CREATE_USER_FILE', 500);
+				throw new Exception(JText::_('ERROR_CANNOT_CREATE_USER_FILE'), 500);
 			}
 
 			if (!$this->assocFiles($fnums, $user, $group)) {
-				throw new Exception('ERROR_CANNOT_ASSOC_USER', 500);
+				$app->redirect('index.php', JText::_('ERROR_CANNOT_ASSOC_USER'));
+				return;
 			}
 
 			// 2.1.2. Envoie des identifiants à l'expert + Envoie d'un message d'invitation à se connecter pour evaluer le dossier
@@ -356,27 +422,22 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 				$m_application->addComment($row);
 			}
 
-			$m_users->plainLogin(['username' => $user->username, 'password' => $password]);
+			$m_users->plainLogin(['username' => $user->username, 'password' => $password], (int)$redirect);
 			$app->enqueueMessage(JText::_('USER_LOGGED'), 'message');
-			return;
 		}
-
-		$app->enqueueMessage(JText::_('PLEASE_LOGIN'), 'message');
-		$app->redirect($baseurl.'index.php?option=com_users&view=login');
-
 	}
 
 	/**
 	 * Raise an error - depends on whether you are in admin or not as to what to do
 	 *
-	 * @param   array   &$err   Form models error array
-	 * @param   string   $field Name
-	 * @param   string   $msg   Message
+	 * @param array   &$err   Form models error array
+	 * @param string   $field Name
+	 * @param string   $msg   Message
 	 *
 	 * @return  void
 	 * @throws Exception
 	 */
-	protected function raiseError(&$err, $field, $msg) {
+	protected function raiseError(array &$err, string $field, string $msg) {
 		$app = JFactory::getApplication();
 
 		if ($app->isAdmin()) {
@@ -387,14 +448,14 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 	}
 
 	/**
-	 * @param $fnums
-	 * @param $user
+	 * @param array    $fnums
+	 * @param          $user
+	 *
+	 * @param int|null $group
 	 *
 	 * @return bool
-	 *
-	 * @since version
 	 */
-	private function assocFiles($fnums, $user, $group = null) {
+	private function assocFiles(array $fnums, $user, $group = null) : bool {
 
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);

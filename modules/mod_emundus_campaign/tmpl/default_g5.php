@@ -98,6 +98,7 @@ $site_offset = $config->get('offset');
 	</div>
 
 	<div class="tab-content">
+        <?php if (in_array('current', $mod_em_campaign_list_tab)) : ?>
 		<div id="current" class="tab-pane fade in active">
 			<div class="campaigns-list">
 				<p class="campaigns-list-result"><?php echo $paginationCurrent->getResultsCounter(); ?></p>
@@ -152,7 +153,7 @@ $site_offset = $config->get('offset');
 				<div class="campaign-content">
 					<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
 						<h4>
-                            <a href="<?php echo !empty($result->link) ? $result->link : JURI::base()."index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>">
+                            <a href="<?php echo !empty($result->link) ? $result->link : JURI::base()."index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>">
                                 <?php echo $result->label; ?>
                             </a>
                         </h4>
@@ -215,9 +216,9 @@ $site_offset = $config->get('offset');
 
 						<?php if ($result->apply_online == 1 && $m_campaign->isLimitObtained($result->id) !== true) :?>
                             <?php if ($mod_em_campaign_get_link) :?>
-                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php else :?>
-							    <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+							    <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php endif; ?>
 							<?php
                                 // The register URL does not work  with SEF, this workaround helps counter this.
@@ -233,9 +234,9 @@ $site_offset = $config->get('offset');
 							<a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
 						<?php else :?>
                             <?php if ($mod_em_campaign_get_link) :?>
-                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php else :?>
-                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php endif; ?>
 						<?php endif; ?>
 					</div>
@@ -249,7 +250,9 @@ $site_offset = $config->get('offset');
 	</div><!-- Close campaigns-list -->
 	<div class="pagination"></div>
 	</div><!-- Close current tab -->
+<?php endif; ?>
 
+    <?php if (in_array('futur', $mod_em_campaign_list_tab)) : ?>
 	<div id="futur" class="tab-pane fade in active">
 		<div class="campaigns-list">
             <p class="campaigns-list-result"><?php echo $paginationFutur->getResultsCounter(); ?></p>
@@ -283,7 +286,11 @@ $site_offset = $config->get('offset');
 				<?php } ?>
 				<div class="campaign-content">
 					<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
-						<h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $result->id ?><?php if ($result->apply_online == 1) { echo "&Itemid=".$mod_em_campaign_itemid; } else { echo "&Itemid=".$mod_em_campaign_itemid2; } ?>"><?php echo $result->label; ?></a></h4>
+                        <h4>
+                            <a href="<?php echo !empty($result->link) ? $result->link : JURI::base()."index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>">
+                                <?php echo $result->label; ?>
+                            </a>
+                        </h4>
 						<p>
 							<?php
 								$text = '';
@@ -345,9 +352,9 @@ $site_offset = $config->get('offset');
 						    $btn_class = "btn btn-primary btn-plein btn-blue";
                         } ?>
                         <?php if ($mod_em_campaign_get_link) :?>
-                            <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                            <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                         <?php else :?>
-                            <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                            <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                         <?php endif; ?>
 					</div>
 				</div><!-- Close campaign-content -->
@@ -359,7 +366,9 @@ $site_offset = $config->get('offset');
 	<?php } ?>
 </div><!-- Close campaigns-list -->
 </div><!-- Close futur tab -->
+    <?php endif; ?>
 
+    <?php if (in_array('past', $mod_em_campaign_list_tab)) : ?>
 	<div id="past" class="tab-pane fade in active">
 		<div class="campaigns-list">
             <p class="campaigns-list-result"><?php echo $paginationPast->getResultsCounter(); ?></p>
@@ -393,8 +402,12 @@ $site_offset = $config->get('offset');
 				<?php } ?>
 			<div class="campaign-content">
 				<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
-					<h4><a href="index.php?option=com_emundus&view=programme&id=<?php echo $result->id ?><?php if($result->apply_online==1) {echo "&Itemid=".$mod_em_campaign_itemid;} else {echo "&Itemid=".$mod_em_campaign_itemid2;} ?>"><?php echo $result->label; ?></a></h4>
-					<p>
+                    <h4>
+                        <a href="<?php echo !empty($result->link) ? $result->link : JURI::base()."index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>">
+                            <?php echo $result->label; ?>
+                        </a>
+                    </h4>
+                    <p>
 						<?php
 							$text = '';
 							$textprog = '';
@@ -453,9 +466,9 @@ $site_offset = $config->get('offset');
 						    $btn_class = "btn btn-primary btn-plein btn-blue";
                         } ?>
                         <?php if ($mod_em_campaign_get_link) :?>
-                            <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                            <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                         <?php else :?>
-                            <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                            <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                         <?php endif; ?>
 				</div>
 			</div><!-- Close campaign-content -->
@@ -467,6 +480,7 @@ $site_offset = $config->get('offset');
 		<?php } ?>
 	</div><!-- Close campaigns-list -->
 </div><!-- Close past tab -->
+    <?php endif; ?>
 		</div><!-- Close tab-content -->
 	</form>
 <script type="text/javascript">

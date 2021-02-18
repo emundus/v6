@@ -22,8 +22,8 @@
 
                 <p class="heading">{{chooseForm}}</p>
                 <div class="heading-block">
-                    <select class="dropdown-toggle" id="select_profile" v-model="profileId">
-                        <option v-for="(profile, index) in profiles" :key="index" :value="profile.id" @click="updateProfileCampaign(profile.id)">
+                    <select class="dropdown-toggle" id="select_profile" v-model="profileId" @change="updateProfileCampaign">
+                        <option v-for="(profile, index) in profiles" :key="index" :value="profile.id">
                             {{profile.form_label}}
                         </option>
                     </select>
@@ -86,6 +86,16 @@
                       :manyLanguages="manyLanguages"
                     />
 
+                  <add-documents-form
+                      v-if="menuHighlight == 3"
+                      :funnelCategorie="formCategories[langue][menuHighlight]"
+                      :profileId="profileId"
+                      :campaignId="campaignId"
+                      :menuHighlight="menuHighlight"
+                      :langue="actualLanguage"
+                      :manyLanguages="manyLanguages"
+                    ></add-documents-form>
+
                     <!--          <addEvalEval
                                       v-if="menuHighlight == 6"
                                       :funnelCategorie="formCategories[langue][menuHighlight]"
@@ -123,6 +133,7 @@
     import ModalWarningFormBuilder from "./advancedModals/ModalWarningFormBuilder";
     import Tasks from "@/views/tasks";
     import AddDocumentsDropfiles from "@/views/funnelFormulaire/addDocumentsDropfiles";
+    import AddDocumentsForm from "@/views/funnelFormulaire/addDocumentsForm";
 
     const qs = require("qs");
 
@@ -130,6 +141,7 @@
         name: "addFormNextCampaign",
 
         components: {
+          AddDocumentsForm,
           Tasks,
           AddDocumentsDropfiles,
             ModalWarningFormBuilder,
@@ -182,11 +194,13 @@
                   "Aperçu du formulaire",
                   "Documents",
                   "Documents d'informations",
+                  "Documents a télécharger",
                 ],
                 [
                   "Form Preview",
                   "Documents",
                   "Informations documents",
+                  "Documents to download",
                 ]
             ],
 
@@ -297,7 +311,7 @@
                 this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=add&cid=' + this.campaignId)
             },
 
-            updateProfileCampaign(profileId){
+            updateProfileCampaign(){
                 axios({
                     method: "post",
                     url: "index.php?option=com_emundus_onboard&controller=campaign&task=updateprofile",
@@ -305,7 +319,7 @@
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
                     data: qs.stringify({
-                        profile: profileId,
+                        profile: this.profileId,
                         campaign: this.campaignId
                     })
                 }).then(response => {

@@ -416,7 +416,7 @@ button#back:hover, button#back:active, button#back:focus,
 .radio input[type="radio"], .checkbox input[type="checkbox"] {
     margin-left: 0px !important;
     margin-right: 10px;
-
+    margin-top: 5px;
 }
 /*.fabrikLabel[opts*="Validation"]::after,
 body.view-login label#password-lbl::after,
@@ -444,6 +444,15 @@ body.view-reset label#jform_username-lbl::after,
 @media screen and (max-width: 767px){
     .view-checklist  .fabrikActions.form-actions .span4:not(.offset1){
         justify-content: flex-end;
+    }
+    /* save button */
+    .gantry.view-form .form-actions .row-fluid {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+    .gantry.view-form .form-actions .row-fluid .btn.goback-btn.button {
+        margin-right: 0px !important;
+        margin-top: 5px;
     }
 }
 @media screen and (max-width: 550px){
