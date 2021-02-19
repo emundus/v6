@@ -503,7 +503,7 @@ button.btn.btn-default.sch {
 }
 
 .campaign-month-campaigns{
-    background: white;
+    background: transparent;
 }
 
 .campaign-month-campaigns .campaign-content:last-child {
@@ -512,12 +512,10 @@ button.btn.btn-default.sch {
 
 .campaign-content {
     overflow: visible;
-    border-right: 1px solid #d5d5d5;
-    border-left: 1px solid #d5d5d5;
-    box-shadow: 1px 0 10px 0 #d5d5d5;
-    border-bottom: 1px solid #d5d5d5;
     margin: 0 0 10px 0 !important;
     background: #fff;
+    border-radius: 8px;
+    border: solid 1px #dedede;
 }
 
 .campaigns-list .campaignbymonth .campaign-month-label .position-me {

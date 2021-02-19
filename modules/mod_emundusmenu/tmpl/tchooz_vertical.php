@@ -172,8 +172,8 @@ defined('_JEXEC') or die;
     .g-sublevel{
         margin-top: 10px !important;
     }
-    .g-sublevel::before {
-        height: 40%;
+    .g-sublevel .tchooz-vertical-item::before {
+        height: 110%;
         position: absolute;
         display: block;
         border: solid 2px #16AFE1;
