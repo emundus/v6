@@ -628,8 +628,14 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		}
 
 		if ($table_name === 'jos_emundus_users') {
+            if(array_key_exists('id_ehesp',$element)){
+                $select = array('email','id_ehesp');
+            }
+            else{
+                $select = array('email');
+            }
             $query->clear()
-                ->select($db->quoteName(array('email','id_ehesp')))
+                ->select($db->quoteName($select))
                 ->from($db->quoteName('#__emundus_users'))
                 ->where($db->quoteName('user_id').' = '.$user->id);
 
