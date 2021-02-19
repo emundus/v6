@@ -1102,7 +1102,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background: $base-primary-color;
     opacity: 1;
     color: white;
-    border-color: #da3832;
+    border-color: $base-primary-color;
     &:hover{
       background: $base-primary-color;
       color: white;
