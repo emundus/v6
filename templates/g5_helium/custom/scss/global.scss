@@ -101,11 +101,7 @@ div,
 legend {
   font-weight: 300;
   font-style: normal;
-  line-height: normal;
-}
-
-a:focus {
-  outline: none;
+  line-height: 1.8;
 }
 
 a {
@@ -811,7 +807,6 @@ body>.g-container {
 /* BOUTON RADIO SELECTIONNE- COULEUR */
 .view-form input[type='radio']:checked {
   background: $base-secondary-color;
-  outline: none;
 }
 
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
@@ -1507,6 +1502,10 @@ body.error-page p {
 
 
 /* BOUTONS */
+.btn-success:active:hover, .btn-warning:active:hover, .btn-danger:active:hover {
+  color: $base-primary-color !important;
+  border-color: $base-primary-color !important;
+}
 
 .view-form p.select-program a {
   border: 1px solid $base-secondary-color !important;
@@ -1592,7 +1591,6 @@ button.btn-primary {
   &:hover {
     background-color: transparent;
     color: $base-secondary-color;
-    outline: none;
   }
 }
 
@@ -1609,7 +1607,6 @@ span.btn {
   &:active {
     background-color: transparent;
     color: $base-primary-color;
-    outline: none;
     border: 1px solid $base-primary-color;
   }
 }
@@ -1861,7 +1858,6 @@ a#em-doc-zip:focus,
 .choice-statut-btn:focus {
   background-color: transparent;
   color: $base-primary-color;
-  outline: none;
   border: 1px solid $base-primary-color;
 }
 
@@ -1875,7 +1871,6 @@ a#em-doc-zip:focus,
   &:active {
     background-color: transparent;
     color: $base-primary-color;
-    outline: none;
   }
 }
 
@@ -1893,7 +1888,6 @@ a#em-doc-zip:focus,
     background-color: transparent;
     color: $base-primary-color;
     border: 1px solid $base-primary-color;
-    outline: none;
   }
 }
 
@@ -1905,7 +1899,6 @@ a#em-doc-zip:focus,
   &:hover {
     background-color: transparent !important;
     color: $base-secondary-color !important;
-    outline: none;
   }
 }
 
@@ -1935,7 +1928,6 @@ button#back,
   &:focus {
     background-color: $base-secondary-color;
     color: #fff;
-    outline: none;
   }
 }
 
@@ -1980,7 +1972,6 @@ button#back,
   &:focus &:active {
     background-color: darken($base-primary-color, 10%);
     color: #fff;
-    outline: none;
   }
 }
 
