@@ -305,7 +305,7 @@ defined('_JEXEC') or die;
                 }
                 // The next item is on the same level.
                 else {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'">'.$item->title.'</div>';
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><a'.$class.' href="'. $item->flink . '"'. $item->title .'>'.$item->title.'</a></div>';
                     echo '</li>';
                 }
             endforeach;
