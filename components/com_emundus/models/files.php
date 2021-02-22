@@ -2296,7 +2296,7 @@ if (JFactory::getUser()->id == 63)
     *   @param elements     array of element to get value
     *   @return array
     */
-    public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=1, $defaultElement='') {
+    public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=0, $defaultElement='') {
 
     	$db = $this->getDbo();
         $locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
