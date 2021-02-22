@@ -17,6 +17,6 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  com_emundus_workflow
  * @since       0.0.7
  */
-class EmundusWorkflowController {
-    
+class EmundusWorkflowController extends JControllerLegacy {
+
 }

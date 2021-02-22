@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="Workflow">
+        <message>
+            <![CDATA[WORKFLOW]]>
+        </message>
+    </layout>
+    <fields name="params">
+    </fields>
+</metadata>

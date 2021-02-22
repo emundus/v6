@@ -1,9 +1,32 @@
 <?php
-    class EmundusWorkflowConditionController {
-        var $model= null;
+/**
+ * @package     Joomla
+ * @subpackage  eMundus
+ * @link        http://www.emundus.fr
+ * @copyright   Copyright (C) 2016 eMundus. All rights reserved.
+ * @license     GNU/GPL
+ * @author      James Dean
+ */
 
+// No direct access
+
+defined( '_JEXEC' ) or die( 'Restricted access' );
+
+jimport('joomla.application.component.controller');
+
+/**
+ * Campaign Controller
+ *
+ * @package    Joomla
+ * @subpackage eMundus
+ * @since      5.0.0
+ */
+class EmundusworkflowControllercondition extends JControllerLegacy {
+
+        var $model= null;
         public function __construct($config=array()) {
-            $this->model = $this->getModel("workflowcondition");
+            parent::__construct($config);
+            $this->model = $this->getModel("condition");
             //Do Stuff
         }
 
