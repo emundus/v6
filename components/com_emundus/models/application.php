@@ -410,42 +410,38 @@ class EmundusModelApplication extends JModelList {
         return $this->_db->loadAssoc();
     }
 
-	/**
-	 * @param   string  $fnum
-	 *
-	 * @return array|bool|false|float
-	 *
-	 * @since version
-	 */
+    /**
+     * @param   string  $fnum
+     *
+     * @return array|bool|false|float
+     *
+     * @since version
+     */
     public function getFormsProgress($fnum = "0") {
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        $m_profile = new EmundusModelProfile;
 
         if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
             return false;
         }
 
         $session = JFactory::getSession();
-        $current_user = $session->get('emundusUser');
-
 
         if (!is_array($fnum)) {
+            $profile_by_status = $m_profile->getProfileByStatus($fnum);
 
-            $query = 'SELECT ess.profile
-                    FROM #__emundus_setup_status AS ess
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
-                    WHERE ecc.fnum like '.$this->_db->Quote($fnum);
-            $this->_db->setQuery($query);
-
-            $profile_id = $this->_db->loadResult();
-
-            if (empty($profile_id)) {
-                $query = 'SELECT esc.profile_id
+            if (empty($profile_by_status['profile'])) {
+                $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
                     FROM #__emundus_setup_campaigns AS esc
                     LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
                     WHERE ecc.fnum like '.$this->_db->Quote($fnum);
                 $this->_db->setQuery($query);
 
-                $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $this->_db->loadResult() && $current_user->applicant === 1) ? $current_user->profile : $this->_db->loadResult();
+                $profile_by_status = $this->_db->loadAssoc();
             }
+
+            $profile_id = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+            //$profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $profile_by_status['profile_id'] && $current_user->applicant === 1) ? $current_user->profile : $profile_by_status['profile_id'];
 
             $forms = @EmundusHelperMenu::buildMenuQuery($profile_id);
             $nb = 0;
@@ -473,22 +469,21 @@ class EmundusModelApplication extends JModelList {
 
             $result = array();
             foreach ($fnum as $f) {
+                $profile_by_status = $m_profile->getProfileByStatus($f);
 
-                $query = 'SELECT ess.profile
-                    FROM #__emundus_setup_status AS ess
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
-                    WHERE ecc.fnum like '.$this->_db->Quote($f);
-                $this->_db->setQuery($query);
-
-                if (empty($this->_db->loadResult())) {
-                    $query = 'SELECT esc.profile_id
-                        FROM #__emundus_setup_campaigns AS esc
-                        LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
-                        WHERE ecc.fnum like '.$this->_db->Quote($f);
+                if(empty($profile_by_status["profile"])){
+                    $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
+                FROM #__emundus_setup_campaigns AS esc
+                LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+                WHERE ecc.fnum like '.$this->_db->Quote($f);
                     $this->_db->setQuery($query);
+
+                    $profile_by_status = $this->_db->loadAssoc();
                 }
 
-                $forms = @EmundusHelperMenu::buildMenuQuery($this->_db->loadResult());
+                $profile_id = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+
+                $forms = @EmundusHelperMenu::buildMenuQuery($profile_id);
                 $nb = 0;
                 $formLst = array();
 
@@ -522,72 +517,53 @@ class EmundusModelApplication extends JModelList {
         return $this->_db->execute();
     }
 
-	/**
-	 * @param   null  $fnum
-	 *
-	 * @return array|bool|false|float
-	 *
-	 * @since version
-	 */
+    /**
+     * @param   null  $fnum
+     *
+     * @return array|bool|false|float
+     *
+     * @since version
+     */
     public function getAttachmentsProgress($fnum = null) {
         $session = JFactory::getSession();
         $current_user = $session->get('emundusUser');
+
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        $m_profile = new EmundusModelProfile;
+
 
         if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
             return false;
         }
 
-        // Check if column campaign_id exist in emundus_setup_attachment_profiles
-        /*$config = new JConfig();
-        $db_name = $config->db;
-
-        $query = $this->_db->getQuery(true);
-        $query->select('COUNT(*)')
-            ->from($this->_db->quoteName('information_schema.columns'))
-            ->where($this->_db->quoteName('table_schema') . ' = ' . $this->_db->quote($db_name))
-            ->andWhere($this->_db->quoteName('table_name') . ' = ' . $this->_db->quote('jos_emundus_setup_attachment_profiles'))
-            ->andWhere($this->_db->quoteName('column_name') . ' = ' . $this->_db->quote('campaign_id'));
-        $this->_db->setQuery($query);
-        $exist = $this->_db->loadResult();*/
-
         if (!is_array($fnum)) {
+            $profile_by_status = $m_profile->getProfileByStatus($fnum);
 
-            $query = 'SELECT ess.profile AS profile_id, ecc.campaign_id AS campaign_id
-                    FROM #__emundus_setup_status AS ess
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
-                    WHERE ecc.fnum like '.$this->_db->Quote($fnum);
-            $this->_db->setQuery($query);
-
-            if (empty($this->_db->loadObject()->profile_id)) {
+            if(empty($profile_by_status["profile"])){
                 $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
                 FROM #__emundus_setup_campaigns AS esc
                 LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
                 WHERE ecc.fnum like '.$this->_db->Quote($fnum);
                 $this->_db->setQuery($query);
+
+                $profile_by_status = $this->_db->loadAssoc();
             }
 
-            $procamp = $this->_db->loadObject();
+            $profile_id = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
 
-            //$profile_id = $procamp->profile_id;
-            $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $procamp->profile_id && $current_user->applicant === 1) ? $current_user->profile : $procamp->profile_id;
-            $campaign_id = $procamp->campaign_id;
+            $query = 'SELECT COUNT(profiles.id)
+                FROM #__emundus_setup_attachment_profiles AS profiles
+                WHERE profiles.campaign_id = ' . intval($profile_by_status["campaign_id"]) . ' AND profiles.displayed = 1';
 
-            try{
-                $query = 'SELECT COUNT(profiles.id)
-                    FROM #__emundus_setup_attachment_profiles AS profiles
-                    WHERE profiles.campaign_id = ' . intval($campaign_id) . ' AND profiles.displayed = 1';
-
-                if (!empty($profile_id)) {
-                    $query .= ' AND profile_id = ' . $profile_id;
-                }
-
-                $this->_db->setQuery($query);
-                $attachments = $this->_db->loadResult();
-            } catch (Exception $e){
-                JLog::add("Problem when try to get attachment progress by campaign: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+            if (!empty($profile_id)) {
+                $query .= ' AND profile_id = ' . $profile_id;
             }
 
-            if (intval($attachments) == 0) {
+            $this->_db->setQuery($query);
+            $attachments = $this->_db->loadResult();
+
+            if (intval($attachments) != 0) {
+
                 $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($fnum).'
@@ -596,7 +572,7 @@ class EmundusModelApplication extends JModelList {
                 $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($fnum).'
-                WHERE profiles.campaign_id = ' .$campaign_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
+                WHERE profiles.campaign_id = ' .$profile_by_status["campaign_id"]. ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
             }
 
             $this->_db->setQuery($query);
@@ -605,38 +581,34 @@ class EmundusModelApplication extends JModelList {
             return floor($doc_result);
 
         } else {
-
             $result = array();
             foreach ($fnum as $f) {
-                $query = 'SELECT ess.profile AS profile_id, ecc.campaign_id AS campaign_id
-                    FROM #__emundus_setup_status AS ess
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
-                    WHERE ecc.fnum like '.$this->_db->Quote($f);
-                $this->_db->setQuery($query);
+                $profile_by_status = $m_profile->getProfileByStatus($f);
 
-                if (empty($this->_db->loadObject()->profile_id)) {
+                if(empty($profile_by_status["profile"])){
                     $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
-                        FROM #__emundus_setup_campaigns AS esc
-                        LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
-                        WHERE ecc.fnum like '.$this->_db->Quote($f);
+                FROM #__emundus_setup_campaigns AS esc
+                LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+                WHERE ecc.fnum like '.$this->_db->Quote($f);
                     $this->_db->setQuery($query);
+
+                    $profile_by_status = $this->_db->loadAssoc();
                 }
 
-	            $procamp = $this->_db->loadObject();
-                $profile_id = $procamp->profile_id;
-                $campaign_id = $procamp->campaign_id;
+                $profile_id = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
 
-                try{
-                    $query = 'SELECT COUNT(profiles.id)
-                    FROM #__emundus_setup_attachment_profiles AS profiles
-                    WHERE profiles.campaign_id = ' . intval($campaign_id) . ' AND profiles.displayed = 1';
-                    $this->_db->setQuery($query);
-                    $attachments = $this->_db->loadResult();
-                } catch (Exception $e){
-                    JLog::add("Problem when try to get attachment progress by campaign: ".$e->getMessage(), JLog::ERROR, "com_emundus");
+                $query = 'SELECT COUNT(profiles.id)
+                FROM #__emundus_setup_attachment_profiles AS profiles
+                WHERE profiles.campaign_id = ' . intval($profile_by_status["campaign_id"]) . ' AND profiles.displayed = 1';
+
+                if (!empty($profile_id)) {
+                    $query .= ' AND profile_id = ' . $profile_id;
                 }
 
-                if (intval($attachments) == 0) {
+                $this->_db->setQuery($query);
+                $attachments = $this->_db->loadResult();
+
+                if (intval($attachments) != 0) {
                     $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($f) . '
@@ -645,7 +617,7 @@ class EmundusModelApplication extends JModelList {
                     $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($f).'
-                    WHERE profiles.campaign_id = ' .$campaign_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
+                    WHERE profiles.campaign_id = ' .$profile_by_status["campaign_id"]. ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
                 }
 
                 $this->_db->setQuery($query);
@@ -1228,7 +1200,7 @@ class EmundusModelApplication extends JModelList {
 	                // liste des groupes pour le formulaire d'une table
 	                $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
 	                            FROM #__fabrik_formgroup ff, #__fabrik_groups fg
-	                            WHERE ff.group_id = fg.id AND fg.published = 1 AND 
+	                            WHERE ff.group_id = fg.id AND fg.published = 1 AND
 	                                  ff.form_id = "'.$itemt->form_id.'"
 	                            ORDER BY ff.ordering';
 	                $this->_db->setQuery($query);
@@ -1429,7 +1401,7 @@ class EmundusModelApplication extends JModelList {
 
                                                             $where = $r1[1].' IN (
 	                                                    SELECT '.$this->_db->quoteName($f_join->table_join.'.'.$f_join->table_key).'
-	                                                    FROM '.$this->_db->quoteName($f_join->table_join).' 
+	                                                    FROM '.$this->_db->quoteName($f_join->table_join).'
 	                                                    WHERE '.$this->_db->quoteName($f_join->table_join.'.'.$f_join->table_join_key).' = '.$r_element->id.')';
                                                         } else {
                                                             $where = $r1[1].'='.$this->_db->Quote($r_elt);
@@ -1462,7 +1434,7 @@ class EmundusModelApplication extends JModelList {
                                                         }
                                                     } elseif ($elements[$j]->plugin == 'internalid') {
                                                         $elt = '';
-                                                    } elseif ($elements[$j]->plugin == 'field') {  
+                                                    } elseif ($elements[$j]->plugin == 'field') {
                                                         if ($params->password == 1) {
                                                             $elt = '******';
                                                         } elseif ($params->password == 3) {
@@ -1617,7 +1589,7 @@ class EmundusModelApplication extends JModelList {
                                             }
 	                                    } elseif ($element->plugin == 'internalid') {
 		                                    $elt = '';
-	                                    } 
+	                                    }
                                         elseif ($element->plugin == 'field') {
                                             $params = json_decode($element->params);
 
@@ -1666,7 +1638,7 @@ class EmundusModelApplication extends JModelList {
     // @param   int applicant user id
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
-    function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) { 
+    function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) {
            /* COULEURS*/
 	    $eMConfig = JComponentHelper::getParams('com_emundus');
 	    $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
@@ -1924,7 +1896,7 @@ class EmundusModelApplication extends JModelList {
 
                                                         $where = $r1[1].' IN (
                                                     SELECT '.$this->_db->quoteName($f_join->table_join.'.'.$f_join->table_key).'
-                                                    FROM '.$this->_db->quoteName($f_join->table_join).' 
+                                                    FROM '.$this->_db->quoteName($f_join->table_join).'
                                                     WHERE '.$this->_db->quoteName($f_join->table_join.'.'.$f_join->table_join_key).' = '.$r_element->id.')';
                                                     } else {
                                                         $where = $r1[1].'='.$this->_db->Quote($r_elt);
@@ -1953,7 +1925,7 @@ class EmundusModelApplication extends JModelList {
                                                     }
                                                 } elseif ($elements[$j]->plugin == 'internalid') {
                                                     $elt = '';
-                                                } elseif ($elements[$j]->plugin == 'field') {  
+                                                } elseif ($elements[$j]->plugin == 'field') {
                                                     if ($params->password == 1) {
                                                         $elt = '******';
                                                     } elseif ($params->password == 3) {
@@ -2127,7 +2099,7 @@ class EmundusModelApplication extends JModelList {
                                                     }
                                                 } elseif ($elements[$j]->plugin == 'internalid') {
                                                     $elt = '';
-                                                } elseif ($elements[$j]->plugin == 'field') {  
+                                                } elseif ($elements[$j]->plugin == 'field') {
                                                     if ($params->password == 1) {
                                                         $elt = '******';
                                                     } elseif ($params->password == 3) {
@@ -2353,7 +2325,7 @@ class EmundusModelApplication extends JModelList {
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
-                            WHERE ff.group_id = fg.id AND fg.published = 1 AND  
+                            WHERE ff.group_id = fg.id AND fg.published = 1 AND
                                   ff.form_id = "'.$itemt->form_id.'"
                             ORDER BY ff.ordering';
 
