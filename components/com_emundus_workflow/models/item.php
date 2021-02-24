@@ -30,7 +30,8 @@ class EmundusworkflowModelitem extends JModelList
 
         try {
             //query string
-            $query->select('*')
+            $query->clear()
+                ->select('*')
                 ->from($db->quoteName('#__emundus_workflow_item_type'));
 
             //execute query string
@@ -43,6 +44,6 @@ class EmundusworkflowModelitem extends JModelList
         }
 
 //        var_dump($query->__toString()); die;
-        //var_dump($db->loadObjectList()); die;
+        var_dump($db->loadObjectList()); die;
     }
 }
