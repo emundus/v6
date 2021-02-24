@@ -48,6 +48,7 @@ class PlgFabrik_Cronemundusexportpdf extends PlgFabrik_Cron {
 		jimport('joomla.mail.helper');
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
 
 		// LOGGER
@@ -57,6 +58,7 @@ class PlgFabrik_Cronemundusexportpdf extends PlgFabrik_Cron {
 
 		$m_files = new EmundusModelFiles;
 		$m_application  = new EmundusModelApplication;
+		$m_emails  = new EmundusModelEmails;
 
 		$params = $this->getParams();
 
