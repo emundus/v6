@@ -3413,7 +3413,7 @@ class EmundusModelApplication extends JModelList {
      * @return bool
      */
     public function sendApplication($fnum, $applicant, $param = array(), $status = 1) {
-        include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
 
         if ($status == '-1') {
             $status = $applicant->status;
