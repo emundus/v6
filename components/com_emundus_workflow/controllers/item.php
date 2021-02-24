@@ -31,7 +31,30 @@ jimport('joomla.application.component.controller');
             $this->model = $this->getModel('item'); //get item model
         }
 
-        public function createItem() {}
+        public function createitem() {
+            $user = JFactory::getUser();
+
+            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            }
+            else {
+                $jinput = JFactory::getApplication()->input;
+                $data = $jinput->getRaw('data');
+                $_cit = $this->model;
+
+                $_items = $_cit->createItem($data);
+
+                if($_items) {
+                    $tab = array('status' => 1, 'msg' => JText::_("ITEM_CREATED"), 'data' => $_items);
+                }
+                else {
+                    $tab = array('status' => 0, 'msg' => JText::_("CANNOT_CREATE_ITEM"), 'data' => $_items);
+                }
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
 
         public function deleteItem($id) {}
 
@@ -46,7 +69,6 @@ jimport('joomla.application.component.controller');
             }
             else {
                 $_wit = $this->model;
-                //$jinput = JFactory::getApplication()->input;
 
                 //do stuff
                 $items= $_wit->getAllItems();

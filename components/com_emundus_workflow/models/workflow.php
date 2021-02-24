@@ -22,4 +22,30 @@ class EmundusworkflowModelworkflow extends JModelList
     public function __construct($config = array()) {
         parent::__construct($config);
     }
+
+    //create workflow -> campaign_id, user_id, created_at, updated_at
+    public function createWorkflow($data) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($data)) {
+            try {
+                $query->clear()
+                    ->insert($db->quoteName('#__emundus_workflow'))
+                    ->columns($db->quoteName(array_keys($data)))
+                    ->values(implode(',', $db->quote(array_values($data))));
+
+                $db->setQuery($query);
+                $db->execute();
+                return $db->insertid();
+
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/item | Cannot create new workflow : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
 }

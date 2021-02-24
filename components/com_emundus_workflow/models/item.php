@@ -44,6 +44,39 @@ class EmundusworkflowModelitem extends JModelList
         }
 
 //        var_dump($query->__toString()); die;
-        var_dump($db->loadObjectList()); die;
+        //var_dump($db->loadObjectList()); die;
+    }
+
+    //create new item --> params = type, name
+    public function createItem($data) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        //falang
+        //$falang = JModelLegacy::getInstance('falang', 'EmundusworkflowModel');
+
+        if(!empty($data)) {
+
+
+            $query->clear()
+                ->insert($db->quoteName('#__emundus_workflow_item'))
+                ->columns($db->quoteName(array_keys($data)))
+                ->values(implode(',', $db->quote(array_values($data))));
+
+            try {
+                $db->setQuery($query);
+                $db->execute();
+                var_dump($data);
+                return $db->insertid();
+            }
+            catch(Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/item | Cannot create new item : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                return $e->getMessage();
+            }
+        }
+
+        else {
+            return false;
+        }
     }
 }

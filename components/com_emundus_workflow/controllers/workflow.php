@@ -25,14 +25,35 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
 
     var $model= null;
     public function __construct($config=array()) {
+        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         parent::__construct($config);
         $this->model = $this->getModel("workflow");
-        //Do Stuff
     }
 
-    public function createConditionByItem($item_id,$data) {}
+    public function createworkflow() {
+        $user = JFactory::getUser();
 
-    public function updateConditionByItem($item_id,$old_condition,$new_condition) {}
 
-    public function getConditionByItem($item_id) {}
+        if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status'=> $result, 'msg' => JText::_('ACCESS_DENIED'));
+        }
+        else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('data');
+
+            $_wid = $this->model;
+
+            $_workflow = $_wid->createWorkflow($data);
+
+            if($_workflow) {
+                $tab = array('status' => 1, 'msg' => JText::_('WORKFLOW_CREATED'), 'data' => $_workflow);
+            }
+            else {
+                $tab = array('status' => 0, 'msg' => JText::_('CANNOT_CREATE_WORKFLOW'), 'data' => $_workflow);
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+    }
 }
