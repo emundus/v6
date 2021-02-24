@@ -198,7 +198,7 @@ class EmundusModelEmails extends JModelList {
 
         if (count($trigger_emails) > 0) {
             // get current applicant course
-            include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
+            include_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
             $m_campaign = new EmundusModelCampaign;
             $campaign = $m_campaign->getCampaignByID($student->campaign_id);
             $post = array(
@@ -738,7 +738,7 @@ class EmundusModelEmails extends JModelList {
         } elseif ($type == "expert") {
 
             require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-            include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+            include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
             $eMConfig   = JComponentHelper::getParams('com_emundus');
             $formid     = json_decode($eMConfig->get('expert_fabrikformid', '{"accepted":169, "refused":328}'));
@@ -937,8 +937,8 @@ class EmundusModelEmails extends JModelList {
 	 */
 	public function sendExpertMail(array $fnums) : array {
 
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
 		$h_filters = new EmundusHelperFilters();
 		$m_files = new EmundusModelFiles();
