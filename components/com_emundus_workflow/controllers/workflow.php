@@ -13,7 +13,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
-
+jimport('joomla.application.component.model');
 /**
  * Campaign Controller
  *
@@ -24,15 +24,41 @@ jimport('joomla.application.component.controller');
 class EmundusworkflowControllerworkflow extends JControllerLegacy {
 
     var $model= null;
+    var $model_campaign = null;
+    var $_campaigns = null;
+
     public function __construct($config=array()) {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         parent::__construct($config);
         $this->model = $this->getModel("workflow");
+
+        JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_onboard/models');
+        $this->model_campaign = JModelLegacy::getInstance('campaign', 'EmundusonboardModel');
+        $this->_campaigns = $this->model_campaign->getAssociatedCampaigns(null,null,null,null,null);
+    }
+
+    //get associated campaigns
+    public function getassociatedcampaigns() {
+        $user = JFactory::getUser();
+
+        if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status'=> $result, 'msg' => JText::_('ACCESS_DENIED'));
+        }
+        else {
+            if(count($this->_campaigns) > 0) {
+                $tab = array('status' => 0, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $this->_campaigns);
+            }
+            else {
+                $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_RETRIEVED'), 'data' => $this->_campaigns);
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
     }
 
     public function createworkflow() {
         $user = JFactory::getUser();
-
 
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
