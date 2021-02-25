@@ -78,3 +78,9 @@ WHERE menutype = 'usermenu' AND alias = 'rapport-d-erreurs';
 UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '\/images\/emundus\/menus\/help.png')
 WHERE menutype = 'usermenu' AND alias = 'besoin-d-aide';
 # END #
+
+# UPDATE Tchooz Layout on menu #
+UPDATE jos_modules
+SET params = JSON_REPLACE(params, '$.menu_style', 'tchooz_vertical')
+WHERE module = 'mod_emundusmenu' AND position = 'header-b';
+# END #
