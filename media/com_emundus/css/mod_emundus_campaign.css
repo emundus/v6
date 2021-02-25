@@ -614,13 +614,13 @@ button.btn.btn-default.sch {
 }
 
 .left-side {
-    width: 70%;
+    width: 60%;
 }
 
 .right-side {
     overflow: hidden;
     float: left;
-    width: 30%;
+    width: 40%;
     background-color: transparent !important;
     border-radius: 0 !important;
     border-left: 1px solid #d5d5d5 !important;

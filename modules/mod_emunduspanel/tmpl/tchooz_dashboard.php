@@ -33,7 +33,7 @@ if (!empty($tab)) :?>
                             <h1 class='tchooz-section-titles'>".JText::_('DASHBOARD')."</h1>
                         </div>
                         <div class='actions-add-block'>
-                            <p class='tchooz-section-description'>".JText::_('SELECT_PROGRAMME')."</p>
+                            <p class='tchooz-section-description'>".JText::_('STATISTICS')."</p>
                         </div>
                     </div>
                     </div>";
