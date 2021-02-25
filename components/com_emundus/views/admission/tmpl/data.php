@@ -103,7 +103,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
                                             <?php if ($value->type == 'text' ) :?>
                                                 <?php echo strip_tags($value->val); ?>
-                                            <?php elseif ($value->type == 'textarea') :?>
+                                            <?php elseif ($value->type == 'textarea' && EmundusHelperAccess::asAccessAction(34,'u',$value->user->id)) :?>
                                                 <textarea class="input-medium em-cell-textarea" id="<?php echo $cfnum.'-'.$value->id; ?>"><?php echo $value->val; ?></textarea>
                                                 <span class="glyphicon glyphicon-share-alt em-textarea" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
                                             <?php elseif ($value->type == 'date') :?>
