@@ -4,11 +4,29 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 require_once (JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
 {
+    /**
+     * Check if the user can use the active element
+     *
+     * @param   string  $location  To trigger plugin on
+     * @param   string  $event     To trigger plugin on
+     *
+     * @return  bool can use or not
+     */
+
+    public function canUse($location = null, $event = null)
+    {
+        return true;
+    }
 
     public function process(&$data, &$listModel)
     {
 
-        $date = date('Y-m-d');
+        // LOGGER
+        jimport('joomla.log.log');
+        JLog::addLogger(['text_file' => 'com_emundus.emundusehespsiscole.info.php'], JLog::INFO, 'com_emundus.emundusehespsiscole');
+        JLog::addLogger(['text_file' => 'com_emundus.emundusehespsiscole.error.php'], JLog::ERROR, 'com_emundus.emundusehespsiscole');
+
+        $date = date('Y-m-d H:i:s');
 
         $params = $this->getParams();
         $eMConfig 	= JComponentHelper::getParams('com_emundus');
@@ -28,17 +46,32 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
         $element = $this->getElementsName($id_element);
 
         $db = JFactory::getDbo();
+        //Requête qui  récupère la date de dernière exécution du plugin
+        $query = $db->getQuery(true);
 
+        $query->select($db->quoteName('lastrun'));
+        $query->from($db->quoteName('#__fabrik_cron'));
+        $query->where($db->quoteName('plugin') . ' LIKE '.$db->quote('emundusehespsiscole'));
+
+        $db->setQuery($query);
+        $lastrun = $db->loadResult();
         // Requête qui recherche les dossiers créés ou modifié à la date du lancement du cron
         $query = $db->getQuery(true);
 
         $query->select($db->quoteName('fnum_to','fnum'));
         $query->from($db->quoteName('#__emundus_logs'));
-        $query->where($db->quoteName('message') . ' IN ('.$status.') AND '.$db->quoteName('timestamp').' BETWEEN '.$db->quote($date.' 00:00:00').' AND '.$db->quote($date.' 23:59:59') );
+        $query->where($db->quoteName('message') . ' IN ('.$status.') AND '.$db->quoteName('timestamp').' BETWEEN '.$db->quote($lastrun).' AND '.$db->quote($date) );
 
         $db->setQuery($query);
 
-        $resultlogs = $db->loadAssocList();
+
+        try {
+            $resultlogs = $db->loadAssocList();
+            JLog::add("Nb files to export: ".count($resultlogs), JLog::INFO, 'com_emundus.emundusehespsiscole');
+        }
+        catch (Exception $e){
+            JLog::add("Cannot get modified file ", JLog::ERROR, 'com_emundus.emundusehespsiscole');
+        }
 
         if(!empty($resultlogs)){
             $query = $db->getQuery(true);
@@ -46,32 +79,32 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
 
             foreach ($resultlogs as $fnums) {
 
-                    $query = "SELECT ";
+                $query = "SELECT ";
 
-                    //id_ehesp
-                    if ($id_ehesp) {
-                        $query .= "eu.id_ehesp ";
-                    }
-                    if($id_emundus) {
-                        $query .= ", eu.user_id ";
-                    }
-                    $query .= ", jos_emundus_campaign_candidature.fnum";
-                    if($modif) { //5275
-                        $query .= ", CAST(ed.time_date AS DATE) ";
-                    }
-                    //status
-                    if ($status) { //6337
-                        $query .= ", ess.value ";
-                    }
-                    if ($tag) { //5846
-                        $query .= ", GROUP_CONCAT(esat.label) ";
-                    }
-                    //année campagne
-                    if ($annee) { //1891
-                        $query .= ", esc.year ";
-                    }
+                //id_ehesp
+                if ($id_ehesp) {
+                    $query .= "eu.id_ehesp ";
+                }
+                if($id_emundus) {
+                    $query .= ", eu.user_id ";
+                }
+                $query .= ", jos_emundus_campaign_candidature.fnum";
+                if($modif) { //5275
+                    $query .= ", CAST(ed.time_date AS DATE) ";
+                }
+                //status
+                if ($status) { //6337
+                    $query .= ", ess.value ";
+                }
+                if ($tag) { //5846
+                    $query .= ", GROUP_CONCAT(esat.label) ";
+                }
+                //année campagne
+                if ($annee) { //1891
+                    $query .= ", esc.year ";
+                }
 
-                    $results[] = $m_files->getFnumArray($fnums,$element,0,0,0,1,$query);
+                $results[] = $m_files->getFnumArray($fnums,$element,0,0,0,1,$query);
 
             }
 
@@ -84,21 +117,50 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
                 }
             }
 
-            $path = JPATH_BASE.DS.'images'.DS.'emundus'.DS.'files'.DS.'archives'.DS.$link.'.csv'; // chemin du lien
+            $path = JPATH_SITE.DS.'images'.DS.'emundus'.DS.'files'.DS.'archives'.DS.$link.'.csv'; // chemin du lien
+            $yesterday_date = date('Y-m-d',strtotime('- 1 day'));
+            $csv_file = $link.$yesterday_date.'.csv';
 
             if(file_exists($path)){ // archive le fichier tout les jours
-                rename($path, JPATH_BASE.DS.'images'.DS.'emundus'.DS.'files'.DS.'archives'.DS.$link.$date.'.csv');
+                rename($path, JPATH_SITE.DS.'images'.DS.'emundus'.DS.'files'.DS.'archives'.DS.$csv_file);
+
+                $query = $db->getQuery(true);
+
+                $columns = array('time_date','fnum','keyid', 'attachment_id', 'filename');
+
+                $time_date = date('Y-m-d H:i:s');
+                $fnum = $resultlogs[0]['fnum'];
+                $bytes = random_bytes(32);
+                $new_token = bin2hex($bytes);
+                $attachment_id = $eMConfig->get('attachment_id');
+
+                $values = array($db->quote($time_date), $db->quote($fnum), $db->quote($new_token), $attachment_id, $db->quote($csv_file));
+
+                $query
+                    ->insert($db->quoteName('#__emundus_files_request'))
+                    ->columns($db->quoteName($columns))
+                    ->values(implode(',', $values));
+
+                $db->setQuery($query);
+                try{
+                    $db->execute();
+                }
+                catch (Exception $e){
+                    JLog::add('An error occurring in sql request: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.emundusehespsiscole');
+                }
+                JLog::add($path. " rename to ".JPATH_SITE.DS.'images'.DS.'emundus'.DS.'files'.DS.'archives'.DS.$link.$yesterday_date.'.csv', JLog::INFO, 'com_emundus.emundusehespsiscole');
             }
             try {
                 $fp = fopen($path, 'a');
                 fputs($fp, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) )); // permet l'encodage UTF8
                 foreach ($post as $line) {
-                    fputcsv($fp, $line, ';',chr(0));
+                    fwrite($fp, implode(';', $line) . "\r\n");
                 }
                 fclose($fp);
+                JLog::add($path. " saved", JLog::INFO, 'com_emundus.emundusehespsiscole');
             }
             catch (Exception $e){
-                JLog::add("The export doesn't work", JLog::ERROR, 'com_emundus');
+                JLog::add("The export doesn't work", JLog::ERROR, 'com_emundus.emundusehespsiscole');
             }
         }
     }
@@ -119,7 +181,7 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
                 $db->setQuery($query);
                 $res = $db->loadObjectList('id');
             } catch (Exception $e) {
-                JLog::add('Could not get Evaluation elements name in query -> '.$query, JLog::ERROR, 'com_emundus');
+                JLog::add('Could not get elements in query -> '.$query, JLog::ERROR, 'com_emundus.emundusehespsiscole');
                 return false;
             }
 

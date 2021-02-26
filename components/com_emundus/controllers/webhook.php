@@ -404,7 +404,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		}
 		return true;
 	}
-	public function export_siscole(){
+    public function export_siscole(){
 
         $eMConfig 	= JComponentHelper::getParams('com_emundus');
         $filtre_ip  = $eMConfig->get('filtre_ip');
@@ -417,7 +417,6 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $file       = JPATH_BASE.DS.$url.DS.$filename.'.csv';
 
         $file_name = basename($file);
-
         if(isset($_SERVER['HTTP_X_REAL_IP'])){
             $ip = $_SERVER['HTTP_X_REAL_IP'];
         }
@@ -426,7 +425,6 @@ class EmundusControllerWebhook extends JControllerLegacy {
         }
 
         if ($token != $secret) {
-
             JLog::add('Bad token sent.', JLog::ERROR, 'com_emundus.webhook');
             return false;
         }
@@ -453,26 +451,6 @@ class EmundusControllerWebhook extends JControllerLegacy {
                 $attachment_id = $eMConfig->get('attachment_id');
                 $bytes = random_bytes(32);
                 $new_token = bin2hex($bytes);
-                $db = JFactory::getDbo();
-
-                $query = $db->getQuery(true);
-
-                $columns = array('time_date','fnum','keyid', 'attachment_id', 'filename');
-
-                $values = array($db->quote($time_date), $db->quote($fnum), $db->quote($new_token), $attachment_id, $db->quote($filename.$date.'.csv'));
-
-                $query
-                    ->insert($db->quoteName('#__emundus_files_request'))
-                    ->columns($db->quoteName($columns))
-                    ->values(implode(',', $values));
-
-                $db->setQuery($query);
-                try{
-                    $db->execute();
-                }
-                catch (Exception $e){
-                    JLog::add('An error occurring in sql request: '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
-                }
 
                 JLog::add('File download with the ip address'.$ip, JLog::NOTICE, 'com_emundus.webhook');
                 exit;
