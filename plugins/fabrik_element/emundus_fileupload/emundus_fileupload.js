@@ -65,6 +65,7 @@ function watch(elementId, attachId) {
                             var link = document.createElement('a');
                             var linkText = document.createTextNode(result.files[i].filename);
                             link.setAttribute("href", result.files[i].target);
+                            link.setAttribute("target", "_blank");
 
                             divLink.appendChild(link);
                             link.appendChild(linkText);

@@ -48,7 +48,10 @@ class EmundusViewEmail extends JViewLegacy
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 		    die(JText::_('RESTRICTED_ACCESS'));
 	    }
-
+/******
+ * DEPRECATED
+ * You should use raw view
+ * 
 	    $document = JFactory::getDocument();
 		$document->addStyleSheet("media/com_emundus/css/emundus.css" );
 		$document->addStyleSheet("media/com_emundus/lib/chosen/chosen.min.css" );
@@ -131,7 +134,7 @@ class EmundusViewEmail extends JViewLegacy
 		    $this->fnum_array = $fnum_array;
 			$this->default_email_tmpl = $default_email_tmpl;
 	    }
-
+*/
 		parent::display($tpl);
     }
 }

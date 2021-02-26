@@ -136,7 +136,7 @@ class EmundusController extends JControllerLegacy {
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $rowid[0], true);
-        } else { 
+        } else {
             die(JText::_('ACCESS_DENIED'));
         }
 
@@ -163,7 +163,7 @@ class EmundusController extends JControllerLegacy {
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id) || EmundusHelperAccess::isApplicant($user->id)) {
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $rowid[0], true);
-        } else { 
+        } else {
             die(JText::_('ACCESS_DENIED'));
         }
 
@@ -196,7 +196,7 @@ class EmundusController extends JControllerLegacy {
 
         $current_user  = JFactory::getSession()->get('emundusUser');
         $m_files = $this->getModel('files');
-        
+
         if (in_array($fnum, array_keys($current_user->fnums))){
             $user = $current_user;
             $m_files->deleteFile($fnum);
@@ -861,7 +861,7 @@ class EmundusController extends JControllerLegacy {
                     //$file_array = explode(".", $file['name']);
                     //$paths .= $labels.'-'.rand().'.'.end($file_array);
                     $paths = $m_checklist->setAttachmentName($file['name'], $labels, $fnumInfos);
-                    
+
                     if (copy( $file['tmp_name'], $chemin.$user->id.DS.$paths)) {
                         $can_be_deleted = @$post['can_be_deleted_'.$attachments]!=''?$post['can_be_deleted_'.$attachments]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
                         $can_be_viewed = @$post['can_be_viewed_'.$attachments]!=''?$post['can_be_viewed_'.$attachments]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
@@ -1192,7 +1192,7 @@ class EmundusController extends JControllerLegacy {
 	    if (strpos($url, $applicant_files_path) !== 0 && strpos($url, 'tmp/') !== 0) {
 		    die (JText::_('ACCESS_DENIED'));
 	    }
-        
+
         $urltab = explode('/', $url);
 
         // Split the URL into different parts.
@@ -1242,7 +1242,7 @@ class EmundusController extends JControllerLegacy {
 	            $pdf->concat();
 	            $pdf->Output();
 	            exit;
-	            
+
             } else {
 	            header('Content-type: '.$mime_type);
 	            header('Content-Disposition: inline; filename='.basename($file));
@@ -1353,12 +1353,12 @@ class EmundusController extends JControllerLegacy {
 
         if(count($data)>3)  {
             $and = ' AND `campaign_id`='.$data[3];
-        } else { 
+        } else {
             $and = '';
         }
         if($data[0] == "jos_emundus_final_grade") {
             $column = "student_id";
-        } else { 
+        } else {
             $column = 'user';
         }
 
