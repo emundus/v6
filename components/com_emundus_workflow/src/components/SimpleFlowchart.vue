@@ -263,11 +263,15 @@ export default {
 <style scoped>
 .flowchart-container {
   margin: 0;
-  background: #ddd;
+  background-color: #ddd;
   position: relative;
   overflow: hidden;
+  background-image: linear-gradient(#b1b9c6 .1em, transparent .1em), linear-gradient(90deg, #B1B9C6 .1em, transparent .1em);
+  background-size: 2em 2em;
 }
+
 .flowchart-container svg {
   cursor: grab;
 }
+
 </style>

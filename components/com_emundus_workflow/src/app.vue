@@ -2,9 +2,11 @@
   <div id="app">
     <h1> simple flowchart</h1>
     <div class="tool-wrapper">
+<!--      {{ this.$data.nodeCategory }}-->
       <select v-model="newNodeType">
-        <option v-for="(item, index) in nodeCategory" :key="index" :value="index">{{item}}</option>
+        <option v-for="(item, index) in this.$props.items" :key="index" :value="index">{{ item.item_name }}</option>
       </select>
+
       <input type="text" v-model="newNodeLabel" placeholder="Input node label">
       <button @click="addNode">ADD</button>
     </div>
@@ -20,12 +22,20 @@
 </template>
 
 <script>
-import SimpleFlowchart from './components/SimpleFlowchart.vue'
+import SimpleFlowchart from './components/SimpleFlowchart.vue';
+import axios from 'axios';
+const qs = require('qs');
+
 export default {
   name: 'app',
   components: {
     SimpleFlowchart
   },
+
+  props: {
+    items: Array,
+  },
+
   data() {
     return {
       scene: {
@@ -37,72 +47,98 @@ export default {
             id: 2,
             x: -700,
             y: -69,
-            type: 'Action',
-            label: 'test1',
+            type: 'Initialisation',
+            label: 'init',
           },
           {
-            id: 4,
+            id: 3,
             x: -357,
             y: 80,
             type: 'Script',
             label: 'test2',
           },
-          {
-            id: 6,
-            x: -557,
-            y: 80,
-            type: 'Rule',
-            label: 'test3',
-          }
         ],
         links: [
           {
-            id: 3,
+            id: 2,
             from: 2, // node id the link start
-            to: 4,  // node id the link end
+            to: 3,  // node id the link end
           }
         ]
       },
       newNodeType: 0,
       newNodeLabel: '',
-      nodeCategory:[
-        'rule',
-        'action',
-        'script',
-        'decision',
-        'fork',
-        'join',
-      ],
+      nodeCategory: this.getItemSimpleName(),
     }
   },
+
+  created() {
+    this.getAllItems();
+    this.getItemSimpleName();
+  },
+
   methods: {
-    canvasClick(e) {
-      console.log('canvas Click, event:', e)
+
+    getWorkflowIdFromURL: function() {
+      return window.location.href.split('id=')[1];
     },
-    addNode() {
-      let maxID = Math.max(0, ...this.scene.nodes.map((link) => {
-        return link.id
-      }))
+
+    getAllItems: function() {
+      axios.get("index.php?option=com_emundus_workflow&controller=item&task=getallitems").
+        then(response => {
+          this.items = response.data.data;
+        })
+    },
+
+    getItemSimpleName: async function() {
+      var json = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getallitems');
+      var rawData = (JSON.parse(JSON.stringify(json))).data.data;
+
+      var itemCategory = [];
+      rawData.forEach(element => itemCategory.push(element.item_name));
+      return itemCategory;
+    },
+
+    addNode: async function() {
+      let nodeCategory = await this.getItemSimpleName();
+
+      let maxID = Math.max(0, ...this.scene.nodes.map((link) => {return link.id}))
+
       this.scene.nodes.push({
         id: maxID + 1,
         x: -400,
         y: 50,
-        type: this.nodeCategory[this.newNodeType],
+        type: nodeCategory[this.newNodeType],
         label: this.newNodeLabel ? this.newNodeLabel: `test${maxID + 1}`,
       })
+
+
+
+      console.log(nodeCategory[this.newNodeType]);
+
+      // //bugs here
+      // var items = {
+      //   item_name: nodeCategory[this.newNodeType])
+      //   item_id: items.id,
+      //   workflow_id: this.getWorkflowIdFromURL(),
+      // }
+      //
+      // axios({
+      //   method: 'post',
+      //   url: "index.php?option=com_emundus_workflow&controller=item&task=createitem&workflowid=" + items.workflow_id + "&itemid=" + items.item_id,
+      //   headers: {
+      //     "Content-Type": "application/x-www-form-urlencoded"
+      //   },
+      //   data: qs.stringify({
+      //     data: items
+      //   })
+      // }).then(response =>{
+      //   this.item = response.data.data;
+      // }).catch(error => {
+      //   console.log(error);
+      // })
     },
-    nodeClick(id) {
-      console.log('node click', id);
-    },
-    nodeDelete(id) {
-      console.log('node delete', id);
-    },
-    linkBreak(id) {
-      console.log('link break', id);
-    },
-    linkAdded(link) {
-      console.log('new link added:', link);
-    }
+
   }
 }
 </script>
