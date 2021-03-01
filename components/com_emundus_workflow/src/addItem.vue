@@ -31,7 +31,7 @@ export default {
       var items = {
         item_name: items.item_name,
         item_id: items.id,
-        workflow_id: ((window.location.href.split('/')[6]).split('&')[2]).split('=')[1],
+        workflow_id: this.getWorkflowIdFromURL(),
       }
       axios({
         method: 'post',
@@ -47,14 +47,12 @@ export default {
       }).catch(error => {
         console.log(error);
       })
+    },
+
+    getWorkflowIdFromURL: function() {
+      return window.location.href.split('id=')[1];
     }
   },
-
-  getWorkflowId: function() {
-    console.log(window.location.href);
-    //
-  }
-
 }
 </script>
 
