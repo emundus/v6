@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import App from './App.vue'
+import app from './app.vue'
 import addWorkflow from "@/addWorkflow";
 import addItem from "@/addItem";
 
@@ -23,6 +23,8 @@ Vue.use(IconsPlugin);
 Vue.config.productionTip = false;
 Vue.config.devtools = true;
 
+
+
 if (document.getElementById('add-workflow')) {
   new Vue({
     el: '#add-workflow',
@@ -38,7 +40,7 @@ if(document.getElementById('add-item')) {
   new Vue({
     el: '#add-item',
     render(h) {
-      return h(addItem, {
+      return h(app, {
         props:{}
       });
     }
