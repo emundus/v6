@@ -31,11 +31,11 @@ export default {
       var items = {
         item_name: items.item_name,
         item_id: items.id,
-        workflow_id: 135,
+        workflow_id: ((window.location.href.split('/')[6]).split('&')[2]).split('=')[1],
       }
       axios({
         method: 'post',
-        url: "index.php?option=com_emundus_workflow&controller=item&task=createitem" + "&itemid=" + items.item_id,
+        url: "index.php?option=com_emundus_workflow&controller=item&task=createitem&workflowid=" + items.workflow_id + "&itemid=" + items.item_id,
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -49,6 +49,11 @@ export default {
       })
     }
   },
+
+  getWorkflowId: function() {
+    console.log(window.location.href);
+    //
+  }
 
 }
 </script>

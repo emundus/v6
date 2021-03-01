@@ -40,6 +40,7 @@ export default {
       },
       name: '',
       selectedCampaign: '',
+      workflow_id: 0,
     }
   },
 
@@ -67,7 +68,6 @@ export default {
     createworkflow: function() {
       let now = new Date();
       var workflow = {
-        id: 135,
         campaign_id :this.$data.selectedCampaign,
         workflow_name: this.$data.name,
         user_id: 95,
@@ -85,8 +85,8 @@ export default {
         }),
       }).then(response => {
         this.workflow = response.data.data;
-        console.log(this.workflow.id);
-        this.changeToWorkflowSpace(this.workflow.id);   //redirect to workflow space
+        console.log(this.workflow);
+        this.changeToWorkflowSpace(this.workflow);   //redirect to workflow space
       }).catch(error => {
         console.log(error);
       })
