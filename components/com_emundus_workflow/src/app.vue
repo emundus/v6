@@ -4,7 +4,7 @@
     <div class="tool-wrapper">
 <!--      {{ this.$data.nodeCategory }}-->
       <select v-model="newNodeType">
-        <option v-for="(item, index) in this.$props.items" :key="index" :value="index">{{ item.item_name }}</option>
+        <option v-for="(item, index) in this.$props.items" :key="index" :value="item.id">{{ item.item_name }}</option>
       </select>
 
       <input type="text" v-model="newNodeLabel" placeholder="Input node label">
@@ -66,7 +66,7 @@ export default {
           }
         ]
       },
-      newNodeType: 0,
+      newNodeType: 1,
       newNodeLabel: '',
       nodeCategory: this.getItemSimpleName(),
     }
@@ -112,33 +112,27 @@ export default {
         label: this.newNodeLabel ? this.newNodeLabel: `test${maxID + 1}`,
       })
 
+      var items = {
+        item_name: nodeCategory[this.newNodeType],
+        item_id: this.newNodeType,
+        workflow_id: this.getWorkflowIdFromURL(),
+      }
 
-
-      console.log(nodeCategory[this.newNodeType]);
-
-      // //bugs here
-      // var items = {
-      //   item_name: nodeCategory[this.newNodeType])
-      //   item_id: items.id,
-      //   workflow_id: this.getWorkflowIdFromURL(),
-      // }
-      //
-      // axios({
-      //   method: 'post',
-      //   url: "index.php?option=com_emundus_workflow&controller=item&task=createitem&workflowid=" + items.workflow_id + "&itemid=" + items.item_id,
-      //   headers: {
-      //     "Content-Type": "application/x-www-form-urlencoded"
-      //   },
-      //   data: qs.stringify({
-      //     data: items
-      //   })
-      // }).then(response =>{
-      //   this.item = response.data.data;
-      // }).catch(error => {
-      //   console.log(error);
-      // })
+      axios({
+        method: 'post',
+        url: "index.php?option=com_emundus_workflow&controller=item&task=createitem&workflowid=" + items.workflow_id + "&itemid=" + items.item_id,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          data: items
+        })
+      }).then(response =>{
+        this.item = response.data.data;
+      }).catch(error => {
+        console.log(error);
+      })
     },
-
   }
 }
 </script>
