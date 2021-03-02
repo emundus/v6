@@ -55,7 +55,9 @@
 <script>
 import axios from 'axios';
 import { DateTime } from 'vue-datetime';
-import { DateTime as LuxonDateTime } from 'luxon';
+import { DateTime as LuxonDateTime, Settings } from 'luxon';
+
+let now = new Date();
 
 const qs = require('qs');
 
@@ -108,8 +110,8 @@ export default {
         campaign_id :this.$data.selectedCampaign,
         workflow_name: this.$data.name,
         user_id: 95,
-        created_at: Date.now(),
-        updated_at: Date.now(),
+        created_at: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
+        updated_at: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
       }
       axios({
         method: "post",
