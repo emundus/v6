@@ -46,7 +46,7 @@ export default {
     },
     type: {
       type: String,
-      default: 'Default'
+      default: 'Element'
     },
     label: {
       type: String,

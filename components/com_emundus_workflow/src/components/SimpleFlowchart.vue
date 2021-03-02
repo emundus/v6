@@ -263,11 +263,15 @@ export default {
 <style scoped>
 .flowchart-container {
   margin: 0;
-  background-color: #ddd;
+  background-color: #eee;
   position: relative;
   overflow: hidden;
-  background-image: linear-gradient(#b1b9c6 .1em, transparent .1em), linear-gradient(90deg, #B1B9C6 .1em, transparent .1em);
+  box-shadow: 5px 5px #eee;
+  /*background-image: linear-gradient(#b1b9c6 .1em, transparent .1em), linear-gradient(90deg, #B1B9C6 .1em, transparent .1em);*/
+  background-image: radial-gradient(circle, black 1px, rgba(0, 0, 0, 0) 1px);
   background-size: 2em 2em;
+  border-style: none;
+  width: 1850px;
 }
 
 .flowchart-container svg {

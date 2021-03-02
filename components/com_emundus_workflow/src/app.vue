@@ -1,14 +1,13 @@
 <template>
   <div id="app">
-    <h1> simple flowchart</h1>
-    <div class="tool-wrapper">
-<!--      {{ this.$data.nodeCategory }}-->
-      <select v-model="newNodeType">
-        <option v-for="(item, index) in this.$props.items" :key="index" :value="item.id">{{ item.item_name }}</option>
-      </select>
-
-      <input type="text" v-model="newNodeLabel" placeholder="Input node label">
-      <button @click="addNode">ADD</button>
+    <h1> workflow_label </h1>
+    <div class="element-menu">
+      <h2 style="align-items: center"> {{ this.$data.menu_message }} </h2>
+        <li v-for="(item,index) in items">
+          <i :class="item.icon" style="margin-right: 0px"/>
+          <span style="margin-left: 20px !important"> {{ item.item_name }} </span>
+          <button @click="addNode(index)" class="add-button">ADD</button>
+        </li>
     </div>
 
     <simple-flowchart :scene.sync="scene"
@@ -24,6 +23,8 @@
 <script>
 import SimpleFlowchart from './components/SimpleFlowchart.vue';
 import axios from 'axios';
+
+
 const qs = require('qs');
 
 export default {
@@ -38,6 +39,7 @@ export default {
 
   data() {
     return {
+      menu_message: "Menu",
       scene: {
         centerX: 1024,
         centerY: 140,
@@ -54,8 +56,8 @@ export default {
             id: 3,
             x: -357,
             y: 80,
-            type: 'Script',
-            label: 'test2',
+            type: 'Item',
+            label: 'item',
           },
         ],
         links: [
@@ -66,8 +68,7 @@ export default {
           }
         ]
       },
-      newNodeType: 1,
-      newNodeLabel: '',
+      //newNodeType: 1,
       nodeCategory: this.getItemSimpleName(),
     }
   },
@@ -82,6 +83,8 @@ export default {
     getWorkflowIdFromURL: function() {
       return window.location.href.split('id=')[1];
     },
+
+    //defaut create init bloc when init a new workflow --> ???
 
     getAllItems: function() {
       axios.get("index.php?option=com_emundus_workflow&controller=item&task=getallitems").
@@ -99,7 +102,7 @@ export default {
       return itemCategory;
     },
 
-    addNode: async function() {
+    addNode: async function(index) {
       let nodeCategory = await this.getItemSimpleName();
 
       let maxID = Math.max(0, ...this.scene.nodes.map((link) => {return link.id}))
@@ -108,14 +111,16 @@ export default {
         id: maxID + 1,
         x: -400,
         y: 50,
-        type: nodeCategory[this.newNodeType],
+        type: nodeCategory[index],
         label: this.newNodeLabel ? this.newNodeLabel: `test${maxID + 1}`,
       })
 
       var items = {
-        item_name: nodeCategory[this.newNodeType],
-        item_id: this.newNodeType,
+        item_name: nodeCategory[index],
+        item_id: index+1,
         workflow_id: this.getWorkflowIdFromURL(),
+        item_label: this.newNodeLabel,
+        //add element_label column in jos_emundus_workflow_item
       }
 
       axios({
@@ -137,8 +142,8 @@ export default {
 }
 </script>
 
-<style scoped>
-#app {
+<style>
+.app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -146,9 +151,46 @@ export default {
   color: #2c3e50;
   margin: 0;
   overflow: hidden;
-  height: 800px;
+  height: 1020px;
 }
-#app .tool-wrapper {
+.app > tool-wrapper {
   position: relative;
 }
+
+#g-container-main .element-menu {
+  padding-bottom: 2px;
+  width: 250px;
+  position: fixed;
+  display: block;
+  top: 0;
+  background: #fff;
+  left: 75px;
+  padding-top: 5%;
+  height: 100%;
+  border-left: 1px solid #F4F4F6;
+}
+
+.add-button {
+  position: absolute;
+  right: 25px;
+  top: auto;
+  background-color: #28a745;
+  border-color: #28a745;
+  color: #fff;
+  display: inline-block;
+  text-align: center;
+  vertical-align: center;
+  user-select: none;
+  border-radius: .25rem;
+  margin: 6px;
+}
+
+.add-button:hover {
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+#g-container-main .g-container {
+  width: 100rem !important;
+}
+
 </style>
