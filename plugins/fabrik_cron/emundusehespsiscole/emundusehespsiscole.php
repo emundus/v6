@@ -58,10 +58,10 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
         // Requête qui recherche les dossiers créés ou modifié à la date du lancement du cron
         $query = $db->getQuery(true);
 
-        $query->select($db->quoteName('fnum_to','fnum'));
+        $query->select('DISTINCT (fnum_to) as fnum');
         $query->from($db->quoteName('#__emundus_logs'));
-        $query->where($db->quoteName('message') . ' IN ('.$status.') AND '.$db->quoteName('timestamp').' BETWEEN '.$db->quote($lastrun).' AND '.$db->quote($date) );
-
+        $query->where($db->quoteName('message') . ' IN ('.$status.') AND '.$db->quoteName('timestamp').' BETWEEN '.$db->quote($lastrun).' AND '.$db->quote($date).' ORDER BY timestamp DESC');
+        
         $db->setQuery($query);
 
 
