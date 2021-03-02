@@ -37,6 +37,32 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
         $this->_campaigns = $this->model_campaign->getAssociatedCampaigns(null,null,null,null,null);
     }
 
+    //get all workflowS
+    public function getallworkflows() {
+        $user = JFactory::getUser();
+
+        if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        }
+        else {
+            $_wid = $this->model;
+
+            //do stuff
+            $workflows = $_wid->getAllWorkflows();
+
+            if (count($workflows) > 0) {
+                $tab = array('status' => 1, 'msg' => JText::_("WORKFLOW_RETRIEVED"), 'data' => $workflows);
+            }
+            else {
+                $tab = array('status' => 0, 'msg' => JText::_("NO_WORKFLOW"), 'data' => $workflows);
+            }
+
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     //get associated campaigns
     public function getassociatedcampaigns() {
         $user = JFactory::getUser();
@@ -47,10 +73,10 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
         }
         else {
             if(count($this->_campaigns) > 0) {
-                $tab = array('status' => 0, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $this->_campaigns);
+                $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_RETRIEVED'), 'data' => $this->_campaigns);
             }
             else {
-                $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_RETRIEVED'), 'data' => $this->_campaigns);
+                $tab = array('status' => 0, 'msg' => JText::_('CAMPAIGN_RETRIEVED'), 'data' => $this->_campaigns);
             }
             echo json_encode((object)$tab);
             exit;

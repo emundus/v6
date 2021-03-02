@@ -23,6 +23,26 @@ class EmundusworkflowModelworkflow extends JModelList
         parent::__construct($config);
     }
 
+    public function getAllWorkflows() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            //query string
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__emundus_workflow'));
+
+            //execute query string
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/workflow | Cannot get all workflow' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
+    }
+
     //create workflow -> campaign_id, user_id, created_at, updated_at
     public function createWorkflow($data) {
         $db = JFactory::getDbo();
@@ -46,6 +66,35 @@ class EmundusworkflowModelworkflow extends JModelList
         }
         else {
             return false;
+        }
+    }
+
+    //get workflow -> params: campaign id
+    public function getWorkflowByCampaign($campaign_id) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(empty($campaign_id) || !isset($campaign_id)) {
+            return false;
+        }
+
+        $query->clear()
+            ->select("#__emundus_workflow.workflow_id")
+            ->from($db->quoteName('#__emundus_workflow'))
+            ->join('INNER',
+                    $db->quoteName('#__emundus_campaign_candidature') .
+                    ' ON ' .
+                    $db->quoteName('#__emundus_workflow.campaign_id') . ' = ' .
+                    $db->quoteName($db->quoteName('#__emundus_campaign_candidature.id')))
+            ->where($db->quoteName('#__emundus_workflow.campaign_id') . ' = ' .$campaign_id);
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/workflow | Cannot find workflow for campaign ' . $campaign_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return $e->getMessage();
         }
     }
 }
