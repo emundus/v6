@@ -130,6 +130,7 @@ export default {
       })
     },
 
+    //delete workflow
     deleteWorkflow: function(wid) {
       axios({
         method: 'post',

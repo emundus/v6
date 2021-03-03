@@ -23,6 +23,7 @@ class EmundusworkflowModelworkflow extends JModelList
         parent::__construct($config);
     }
 
+    // fix left join
     public function getAllWorkflows() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -44,7 +45,7 @@ class EmundusworkflowModelworkflow extends JModelList
         }
     }
 
-    //delete workflow --> params:workflow_id
+    //delete workflow --> params:workflow_id [fix]
     public function deleteWorkflow($wid) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);

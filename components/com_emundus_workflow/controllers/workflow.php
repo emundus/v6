@@ -38,7 +38,7 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
         $this->_campaigns = $this->model_campaign->getAssociatedCampaigns(null,null,null,null,null);
     }
 
-    //delete workflow
+    //delete workflow --> data from Vue
     public function deleteworkflow() {
         $user = JFactory::getUser();
 
