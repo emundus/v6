@@ -65,6 +65,11 @@ class EmundusHelperAccess {
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 1);
 	}
 
+
+    static function checkAllowedAccess($user_id, $group) {
+        return EmundusHelperAccess::isAllowedAccessLevel($user_id, $group);
+    }
+
 	static function check_group($user_id, $group, $inherited) {
 		// 1:Public / 2:Registered / 3:Author / 4:Editor / 5:Publisher / 6:Manager / 7:Administrator / 8:Super Users / 9:Guest / 10:Nobody
 		if ($inherited) {

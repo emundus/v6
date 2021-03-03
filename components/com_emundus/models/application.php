@@ -1664,7 +1664,7 @@ class EmundusModelApplication extends JModelList {
 
             	$breaker = ($em_breaker) ? ($key === 0) ? '' : 'class="breaker"' : '';
                 // liste des groupes pour le formulaire d'une table
-                $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
+                $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1, fg.params as params
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
                             WHERE ff.group_id = fg.id AND fg.published = 1';
 
@@ -1698,6 +1698,12 @@ class EmundusModelApplication extends JModelList {
                 $forms .= '</h2>';
                 /*-- Liste des groupes -- */
                 foreach ($groupes as $itemg) {
+
+                    $g_params = json_decode($itemg->params);
+
+                    if(!EmundusHelperAccess::checkAllowedAcces($this->_user->id, (int)$g_params->access)) {
+                        continue;
+                    }
 
 	                if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
 		                $forms .= '<h2>'.JText::_($itemg->label).'</h2>';
