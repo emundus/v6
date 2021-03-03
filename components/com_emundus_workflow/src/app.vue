@@ -137,6 +137,7 @@ export default {
       axios.get("index.php?option=com_emundus_workflow&controller=item&task=getallitems").
         then(response => {
           this.items = response.data.data;
+          this.items.splice(0,1);
         }).catch(error => {
         console.log(error);
       })
