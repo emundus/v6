@@ -709,16 +709,17 @@ body>.g-container {
 
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
 
-view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
-.view-form .em-formRegistrationCenter .row-fluid .span4 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
+.view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.register,
+.view-form .em-formRegistrationCenter .row-fluid .span4 .button.btn.btn-primary.register {
   background-color: $base-secondary-color;
   color: #ffffff;
   border-color: $base-secondary-color;
   text-transform: initial;
   margin-left: 0px !important;
+  height: 50px !important;
 
   &:hover,
-  &active,
+  &:active,
   &:focus {
     background-color: transparent;
     color: $base-secondary-color;
