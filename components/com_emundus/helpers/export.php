@@ -191,14 +191,14 @@ class EmundusHelperExport
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums)))
             die(JText::_('ACCESS_DENIED'));
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
 
         $name = $fnum.'-evaluation.pdf';
-        $tmpName = JPATH_BASE.DS.'tmp'.DS.$name;
+        $tmpName = JPATH_SITE.DS.'tmp'.DS.$name;
         //$exports[] = $tmpName;
 
         if (!empty($fnum)) {
@@ -223,14 +223,14 @@ class EmundusHelperExport
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums)))
             die(JText::_('ACCESS_DENIED'));
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
 
         $name = $fnum.'-decision.pdf';
-        $tmpName = JPATH_BASE.DS.'tmp'.DS.$name;
+        $tmpName = JPATH_SITE.DS.'tmp'.DS.$name;
         //$exports[] = $tmpName;
 
         if (!empty($fnum)) {
@@ -256,14 +256,14 @@ class EmundusHelperExport
         	die(JText::_('ACCESS_DENIED'));
         }
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
 
         $name = $fnum.'-admission.pdf';
-        $tmpName = JPATH_BASE.DS.'tmp'.DS.$name;
+        $tmpName = JPATH_SITE.DS.'tmp'.DS.$name;
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
@@ -302,7 +302,6 @@ class EmundusHelperExport
 		$pdf->SetFont('helvetica', '', 8);
         $pdf->AddPage();
         
-        
 		/*if (in_array(strtolower($ext), $imgExt)) {
            
 			$pdf->setJPEGQuality(75);
@@ -334,13 +333,13 @@ class EmundusHelperExport
 				$pdf->Image(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
 		} else {
 			$htmlData = JText::_('ENCRYPTED_FILE').' : ';
-			$htmlData .= '<a href="'.JURI::base(true).EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base(true).EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
+			$htmlData .= '<a href="'.JURI::base(true).DS.EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base(true).DS.EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
 			$pdf->startTransaction();
 			$start_y = $pdf->GetY();
 			$start_page = $pdf->getPage();
 			$pdf->writeHTMLCell(0,'','',$start_y,$htmlData,'B', 1);
 		}
-		$tmpName = JPATH_BASE.DS.'tmp'.DS."$aid-$fileName.pdf";
+		$tmpName = JPATH_SITE.DS.'tmp'.DS."$aid-$fileName.pdf";
 		$pdf->Output($tmpName, 'F');
 		return $tmpName;
 	}
