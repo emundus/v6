@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1> {{ this.$props.workflowname.workflow_name }} </h1>
+    <h1> {{ this.$data.workflowname.workflow_name }} </h1>
     <button class="vertical-menu" @click="seen=!seen">
       NEW BLOCK
     </button>
@@ -40,11 +40,11 @@ export default {
 
   props: {
     items: Array,
-    workflowname: Array,
   },
 
   data() {
     return {
+      workflowname: [],
       seen: false,
       menu_message: "Menu",
       scene: {
@@ -99,7 +99,7 @@ export default {
           wid: this.getWorkflowIdFromURL()
         })
       }).then(response => {
-        this.$props.workflowname = (response.data.data)[0];
+        this.$data.workflowname = (response.data.data)[0];
       }).catch(error => {
         console.log(error);
       })
