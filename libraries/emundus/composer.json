@@ -10,6 +10,7 @@
         "php-http/guzzle6-adapter": "^2.0",
         "thecodingmachine/gotenberg-php-client": "^6.2",
         "phpoffice/phpspreadsheet": "^1.12",
-        "phpoffice/phpword": "^0.17.0"
+        "phpoffice/phpword": "^0.17.0",
+        "setasign/fpdi": "^2.3"
     }
 }

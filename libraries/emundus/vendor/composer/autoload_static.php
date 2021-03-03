@@ -164,6 +164,10 @@ class ComposerStaticInit70d9a794ba21c17b8bb7c6099f665765
     );
 
     public static $prefixLengthsPsr4 = array (
+        's' => 
+        array (
+            'setasign\\Fpdi\\' => 14,
+        ),
         'Z' => 
         array (
             'Zend\\Escaper\\' => 13,
@@ -214,6 +218,10 @@ class ComposerStaticInit70d9a794ba21c17b8bb7c6099f665765
     );
 
     public static $prefixDirsPsr4 = array (
+        'setasign\\Fpdi\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/setasign/fpdi/src',
+        ),
         'Zend\\Escaper\\' => 
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-escaper/src',
@@ -311,6 +319,7 @@ class ComposerStaticInit70d9a794ba21c17b8bb7c6099f665765
     );
 
     public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'PclZip' => __DIR__ . '/..' . '/pclzip/pclzip/pclzip.lib.php',
     );
 
