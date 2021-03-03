@@ -23,7 +23,7 @@ jimport('joomla.application.component.helper');
  * @subpackage	Content
  * @since 1.5
  */
-class EmundusWorkflowHelperAccess {
+class EmundusworkflowHelperAccess {
 
     static function isAllowed($usertype, $allowed) {
         return in_array($usertype, $allowed);
