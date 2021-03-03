@@ -31,8 +31,8 @@ class EmundusworkflowModelworkflow extends JModelList
             //query string
             $query->clear()
                 ->select('#__emundus_workflow.*,#__emundus_setup_campaigns.label')
-                ->from($db->quoteName('#__emundus_setup_campaigns'))
-                ->leftJoin('#__emundus_workflow ON #__emundus_setup_campaigns.id = #__emundus_workflow.campaign_id');
+                ->from($db->quoteName('#__emundus_workflow'))
+                ->leftJoin('#__emundus_setup_campaigns ON #__emundus_setup_campaigns.id = #__emundus_workflow.campaign_id');
 
             //execute query string
             $db->setQuery($query);
@@ -45,12 +45,22 @@ class EmundusworkflowModelworkflow extends JModelList
     }
 
     //delete workflow --> params:workflow_id
-    public function deleteWorkflow($id) {
+    public function deleteWorkflow($wid) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        //delete workflow --> delete all items of this workflow --> CASCADE UPDATE
-        return null;
+        try{
+            $query->clear()
+                ->delete($db->quoteName('#__emundus_workflow'))
+                ->where(('#__emundus_workflow.id') . ' = ' . (int)$wid);
+
+            $db->setQuery($query);
+            return $db->execute();
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/workflow | Cannot delete workflow' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
     }
 
     //create workflow -> campaign_id, user_id, created_at, updated_at

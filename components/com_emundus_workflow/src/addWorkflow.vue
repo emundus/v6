@@ -39,7 +39,7 @@
           <th>{{ workflow.workflow_name }}</th>
           <th>
             <button @click="changeToWorkflowSpace(workflow.id)" class="edit-button">EDIT</button>
-            <button class="delete-button">DELETE</button>
+            <button @click="deleteWorkflow(workflow.id)" class="delete-button">DELETE</button>
           </th>
           <th> {{ workflow.label }} </th>
           <th>{{ workflow.user_id }}</th>
@@ -127,6 +127,19 @@ export default {
         this.getAllWorkflow();
       }).catch(error => {
         console.log(error);
+      })
+    },
+
+    deleteWorkflow: function(wid) {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=workflow&task=deleteworkflow',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({wid})
+      }).then(response => {
+        this.getAllWorkflow();
       })
     },
 

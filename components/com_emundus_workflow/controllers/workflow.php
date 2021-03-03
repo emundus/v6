@@ -26,6 +26,7 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
     var $model= null;
     var $model_campaign = null;
     var $_campaigns = null;
+    var $_campaigns_name = null;
 
     public function __construct($config=array()) {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
@@ -35,6 +36,34 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
         JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_onboard/models');
         $this->model_campaign = JModelLegacy::getInstance('campaign', 'EmundusonboardModel');
         $this->_campaigns = $this->model_campaign->getAssociatedCampaigns(null,null,null,null,null);
+    }
+
+    //delete workflow
+    public function deleteworkflow() {
+        $user = JFactory::getUser();
+
+        if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        }
+        else {
+            $_wid = $this->model;
+
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('wid');        //get data from Vue template
+
+            //do stuff
+            $workflows = $_wid->deleteWorkflow($data);
+
+            if ($workflows) {
+                $tab = array('status' => 1, 'msg' => JText::_("WORKFLOW_DELETED"), 'data' => $workflows);
+            }
+            else {
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_DELETE_WORKFLOW"), 'data' => $workflows);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
     }
 
     //get all workflowS
@@ -55,9 +84,8 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
                 $tab = array('status' => 1, 'msg' => JText::_("WORKFLOW_RETRIEVED"), 'data' => $workflows);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_("NO_WORKFLOW"), 'data' => $workflows);
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_RETRIEVE_WORKFLOW"), 'data' => $workflows);
             }
-
         }
         echo json_encode((object)$tab);
         exit;
@@ -76,7 +104,7 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
                 $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_RETRIEVED'), 'data' => $this->_campaigns);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_('CAMPAIGN_RETRIEVED'), 'data' => $this->_campaigns);
+                $tab = array('status' => 0, 'msg' => JText::_('CANNOT_RETRIEVE_CAMPAIGN'), 'data' => $this->_campaigns);
             }
             echo json_encode((object)$tab);
             exit;
