@@ -1,7 +1,12 @@
 <template>
   <div id="app">
     <h1> {{ this.$props.workflowname.workflow_name }} </h1>
-    <div class="element-menu">
+    <button class="vertical-menu" @click="seen=!seen">
+      NEW BLOCK
+    </button>
+
+    <transition name="bounce">
+    <div class="element-menu" v-if="seen">
       <h2 style="align-items: center"> {{ this.$data.menu_message }} </h2>
         <li v-for="(item,index) in items">
           <i :class="item.icon" style="margin-right: 0px"/>
@@ -9,6 +14,7 @@
           <button @click="addNode(index)" class="add-button">ADD</button>
         </li>
     </div>
+    </transition>
 
     <simple-flowchart :scene.sync="scene"
                       @nodeClick="nodeClick"
@@ -39,6 +45,7 @@ export default {
 
   data() {
     return {
+      seen: false,
       menu_message: "Menu",
       scene: {
         centerX: 1024,
@@ -69,6 +76,7 @@ export default {
         ]
       },
     }
+
   },
 
   created() {
@@ -184,6 +192,7 @@ export default {
 </script>
 
 <style>
+
 .app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -211,6 +220,21 @@ export default {
   border-left: 1px solid #F4F4F6;
 }
 
+.vertical-menu {
+  transform: rotate(270deg);
+  position: absolute !important;
+  top: 560px !important;
+  left: 400px !important;
+  background: #28a745;
+  color: #fff;
+  border-radius: .25rem !important;
+  padding: 15px 32px;
+}
+
+.vertical-menu:hover {
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
 .add-button {
   position: absolute;
   right: 25px;
@@ -232,6 +256,24 @@ export default {
 
 #g-container-main .g-container {
   width: 100rem !important;
+}
+
+.bounce-enter-active {
+  animation: bounce-in .5s;
+}
+.bounce-leave-active {
+  animation: bounce-in .5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 </style>
