@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1> workflow_label </h1>
+    <h1> {{ this.$props.workflowname.workflow_name }} </h1>
     <div class="element-menu">
       <h2 style="align-items: center"> {{ this.$data.menu_message }} </h2>
         <li v-for="(item,index) in items">
@@ -24,17 +24,17 @@
 import SimpleFlowchart from './components/SimpleFlowchart.vue';
 import axios from 'axios';
 
-
 const qs = require('qs');
 
 export default {
   name: 'app',
   components: {
-    SimpleFlowchart
+    SimpleFlowchart,
   },
 
   props: {
     items: Array,
+    workflowname: Array,
   },
 
   data() {
@@ -68,29 +68,70 @@ export default {
           }
         ]
       },
-      //newNodeType: 1,
-      nodeCategory: this.getItemSimpleName(),
     }
   },
 
   created() {
     this.getAllItems();
     this.getItemSimpleName();
+    this.insertInitBloc();
+    this.getworkflowname();
   },
 
   methods: {
+
+    getworkflowname: function() {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=workflow&task=getworkflowbyid',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          wid: this.getWorkflowIdFromURL()
+        })
+      }).then(response => {
+        this.$props.workflowname = (response.data.data)[0];
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
+    insertInitBloc: async function() {
+      var init = {
+        item_id: 1,
+        item_name: "Initialisation",
+        workflow_id: this.getWorkflowIdFromURL(),
+        item_label: 'init',
+      }
+
+      axios({
+        method: 'post',
+        url: "index.php?option=com_emundus_workflow&controller=item&task=createitem&workflowid=" + init.workflow_id + "&itemid=1",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          data: init,
+        })
+      }).then(response =>{
+        this.init = response.data.data;
+      }).catch(error => {
+        console.log(error);
+      })
+    },
 
     getWorkflowIdFromURL: function() {
       return window.location.href.split('id=')[1];
     },
 
-    //defaut create init bloc when init a new workflow --> ???
-
     getAllItems: function() {
       axios.get("index.php?option=com_emundus_workflow&controller=item&task=getallitems").
         then(response => {
           this.items = response.data.data;
-        })
+        }).catch(error => {
+        console.log(error);
+      })
     },
 
     getItemSimpleName: async function() {
@@ -133,7 +174,7 @@ export default {
           data: items
         })
       }).then(response =>{
-        this.item = response.data.data;
+        console.log(response.data.data);
       }).catch(error => {
         console.log(error);
       })

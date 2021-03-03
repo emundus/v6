@@ -91,6 +91,33 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
         exit;
     }
 
+    //get workflow by id --> call to model "getWorkflowByID"
+    public function getworkflowbyid() {
+        $user = JFactory::getUser();
+
+        if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status'=> $result, 'msg' => JText::_('ACCESS_DENIED'));
+        }
+        else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('wid');
+
+            $_wid = $this->model;
+
+            $_workflow = $_wid->getWorkflowByID($data);
+
+            if($_workflow) {
+                $tab = array('status' => 1, 'msg' => JText::_('RETRIEVED_WORKFLOW_BY_ID'), 'data' => $_workflow);
+            }
+            else {
+                $tab = array('status' => 0, 'msg' => JText::_('CANNOT_RETRIEVED_WORKFLOW_BY_ID'), 'data' => $_workflow);
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+    }
+
     //get associated campaigns
     public function getassociatedcampaigns() {
         $user = JFactory::getUser();

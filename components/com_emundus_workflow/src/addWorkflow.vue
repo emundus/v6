@@ -93,14 +93,18 @@ export default {
       axios.get("index.php?option=com_emundus_workflow&controller=workflow&task=getassociatedcampaigns")
           .then(response=>{
             this.campaigns = response.data.data;
-          })
+          }).catch(error => {
+            console.log(error);
+      })
     },
 
     getAllWorkflow: function() {
       axios.get("index.php?option=com_emundus_workflow&controller=workflow&task=getallworkflows")
           .then(response=>{
             this.workflows = response.data.data;
-          })
+          }).catch(error => {
+            console.log(error);
+      })
     },
 
     // create workflow with campaign
@@ -141,6 +145,8 @@ export default {
         data: qs.stringify({wid})
       }).then(response => {
         this.getAllWorkflow();
+      }).catch(error => {
+        console.log(error);
       })
     },
 
@@ -156,7 +162,6 @@ export default {
         }
       }).then(response => {
         window.location.href = window.location.pathname + response.data.data;
-
       });
     },
 

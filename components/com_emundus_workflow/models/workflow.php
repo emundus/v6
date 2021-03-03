@@ -90,31 +90,21 @@ class EmundusworkflowModelworkflow extends JModelList
         }
     }
 
-    //get workflow -> params: campaign id
-    public function getWorkflowByCampaign($campaign_id) {
+    //get workflow by id
+    public function getWorkflowByID($wid) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        if(empty($campaign_id) || !isset($campaign_id)) {
-            return false;
-        }
-
-        $query->clear()
-            ->select("#__emundus_workflow.workflow_id")
-            ->from($db->quoteName('#__emundus_workflow'))
-            ->join('INNER',
-                    $db->quoteName('#__emundus_campaign_candidature') .
-                    ' ON ' .
-                    $db->quoteName('#__emundus_workflow.campaign_id') . ' = ' .
-                    $db->quoteName($db->quoteName('#__emundus_campaign_candidature.id')))
-            ->where($db->quoteName('#__emundus_workflow.campaign_id') . ' = ' .$campaign_id);
-
-        try {
+        try{
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__emundus_workflow'))
+                ->where($db->quoteName('#__emundus_workflow.id') . ' = ' . (int)$wid);
             $db->setQuery($query);
             return $db->loadObjectList();
         }
         catch(Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/workflow | Cannot find workflow for campaign ' . $campaign_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_workflow/models/item | Cannot get workflow by id : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
             return $e->getMessage();
         }
     }
