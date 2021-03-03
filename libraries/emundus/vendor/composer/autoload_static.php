@@ -167,6 +167,7 @@ class ComposerStaticInit70d9a794ba21c17b8bb7c6099f665765
         's' => 
         array (
             'setasign\\Fpdi\\' => 14,
+            'setasign\\FpdiPdfParser\\' => 23,
         ),
         'Z' => 
         array (
@@ -221,6 +222,10 @@ class ComposerStaticInit70d9a794ba21c17b8bb7c6099f665765
         'setasign\\Fpdi\\' => 
         array (
             0 => __DIR__ . '/..' . '/setasign/fpdi/src',
+        ),
+        'setasign\\FpdiPdfParser\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/setasign/fpdi_pdf-parser/src',
         ),
         'Zend\\Escaper\\' => 
         array (

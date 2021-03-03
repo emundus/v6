@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "215216039ac14772b7ffe0971bf20a38",
+    "content-hash": "39c8a96f6d327de2017ce07899594a11",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -1320,6 +1320,30 @@
                 }
             ],
             "time": "2021-02-11T11:37:01+00:00"
+        },
+        {
+            "name": "setasign/fpdi_pdf-parser",
+            "version": "2.0.6",
+            "dist": {
+                "type": "zip",
+                "url": "https://www.setasign.com/downloads/2828331/FPDI_PDF-Parser-2.0.6.zip"
+            },
+            "require": {
+                "setasign/fpdi": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "setasign\\FpdiPdfParser\\": "src/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "support": {
+                "email": "support@setasign.com"
+            },
+            "time": "2020-12-04T00:00:00+00:00"
         },
         {
             "name": "symfony/polyfill-intl-idn",

@@ -1379,6 +1379,33 @@
             "install-path": "../setasign/fpdi"
         },
         {
+            "name": "setasign/fpdi_pdf-parser",
+            "version": "2.0.6",
+            "version_normalized": "2.0.6.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://www.setasign.com/downloads/2828331/FPDI_PDF-Parser-2.0.6.zip"
+            },
+            "require": {
+                "setasign/fpdi": "^2.0"
+            },
+            "time": "2020-12-04T00:00:00+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "setasign\\FpdiPdfParser\\": "src/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "support": {
+                "email": "support@setasign.com"
+            },
+            "install-path": "../setasign/fpdi_pdf-parser"
+        },
+        {
             "name": "symfony/polyfill-intl-idn",
             "version": "v1.15.0",
             "version_normalized": "1.15.0.0",

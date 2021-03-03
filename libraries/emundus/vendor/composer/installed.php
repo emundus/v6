@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '3124af74b6fd5e6ee7eba781e43cadecb05bd1f0',
+    'reference' => '9b3201441516ee8d9b9a35651459310c62f567db',
     'name' => 'benj/emundus',
   ),
   'versions' => 
@@ -18,7 +18,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '3124af74b6fd5e6ee7eba781e43cadecb05bd1f0',
+      'reference' => '9b3201441516ee8d9b9a35651459310c62f567db',
     ),
     'clue/stream-filter' => 
     array (
@@ -243,6 +243,15 @@
       array (
       ),
       'reference' => '6231e315f73e4f62d72b73f3d6d78ff0eed93c31',
+    ),
+    'setasign/fpdi_pdf-parser' => 
+    array (
+      'pretty_version' => '2.0.6',
+      'version' => '2.0.6.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => NULL,
     ),
     'symfony/polyfill-intl-idn' => 
     array (
