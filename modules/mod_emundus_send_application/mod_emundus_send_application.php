@@ -26,6 +26,7 @@ if (!empty($user->fnum)) {
 	$status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
 	$id_applicants = $eMConfig->get('id_applicants', '0');
 	$applicants = explode(',',$id_applicants);
+    $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
 
 	$application = modemundusSendApplicationHelper::getApplication($user->fnum);
 
