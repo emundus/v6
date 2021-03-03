@@ -30,8 +30,9 @@ class EmundusworkflowModelworkflow extends JModelList
         try {
             //query string
             $query->clear()
-                ->select('*')
-                ->from($db->quoteName('#__emundus_workflow'));
+                ->select('#__emundus_workflow.*,#__emundus_setup_campaigns.label')
+                ->from($db->quoteName('#__emundus_setup_campaigns'))
+                ->leftJoin('#__emundus_workflow ON #__emundus_setup_campaigns.id = #__emundus_workflow.campaign_id');
 
             //execute query string
             $db->setQuery($query);
@@ -41,6 +42,15 @@ class EmundusworkflowModelworkflow extends JModelList
             JLog::add('component/com_emundus_workflow/models/workflow | Cannot get all workflow' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
             return $e->getMessage();
         }
+    }
+
+    //delete workflow --> params:workflow_id
+    public function deleteWorkflow($id) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        //delete workflow --> delete all items of this workflow --> CASCADE UPDATE
+        return null;
     }
 
     //create workflow -> campaign_id, user_id, created_at, updated_at

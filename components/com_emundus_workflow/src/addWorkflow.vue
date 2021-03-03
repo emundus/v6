@@ -41,7 +41,7 @@
             <button @click="changeToWorkflowSpace(workflow.id)" class="edit-button">EDIT</button>
             <button class="delete-button">DELETE</button>
           </th>
-          <th>{{ workflow.campaign_id }}</th>
+          <th> {{ workflow.label }} </th>
           <th>{{ workflow.user_id }}</th>
           <th>{{ workflow.created_at }}</th>
           <th>{{ workflow.updated_at }}</th>
@@ -125,7 +125,6 @@ export default {
       }).then(response => {
         this.workflow = response.data.data;
         this.getAllWorkflow();
-        //this.changeToWorkflowSpace(this.workflow);   //redirect to workflow space
       }).catch(error => {
         console.log(error);
       })
