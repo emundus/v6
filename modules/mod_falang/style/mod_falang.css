@@ -17,7 +17,7 @@ div.mod-languages.advanced-dropdown ul{
     margin-top: -3px;
     background: #eeebeb;
     padding-bottom: 10px;
-    max-height: 40px;
+    max-height: unset;
 }
 
 div.mod-languages ul.lang-inline li{

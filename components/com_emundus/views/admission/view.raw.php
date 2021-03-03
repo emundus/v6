@@ -156,8 +156,8 @@ class EmundusViewAdmission extends JViewLegacy
 			    // get admisson form ID
 			    $formid = $m_admission->getAdmissionFormByProgramme();
 			    $this->assignRef('formid', $formid);
-			    $form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
-			    $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
+			    $form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid->formid.'&tmpl=component&iframe=1&rowid=';
+			    $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->formid.'&tmpl=component&iframe=1&rowid=';
 			    $this->assignRef('form_url_edit', $form_url_edit);
 
 				if (!empty($users)) {

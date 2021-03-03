@@ -139,18 +139,9 @@ class EmundusModelProfile extends JModelList {
 	function getFullProfileByFnum($fnum) : array {
 
 		$query = $this->_db->getQuery(true);
-		// This is the part in common between the two queries.
-		$query->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published')
-			->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
-			->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
-			->leftJoin($this->_db->quoteName('jos_emundus_setup_status', 'ss').' ON '.$this->_db->quoteName('ss.step').' = '.$this->_db->quoteName('cc.status'))
-			->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ss.profile'))
-			->where($this->_db->quoteName('cc.fnum').' LIKE '.$this->_db->quote($fnum));
 
 		try {
-
-			$this->_db->setQuery($query);
-			$res = $this->_db->loadAssoc();
+            $res = $this->getProfileByStatus($fnum);
 
 			if (!empty($res['profile'])) {
 				return $res;
@@ -384,15 +375,36 @@ class EmundusModelProfile extends JModelList {
      * @param   int $step application file status
      * @return  array
      **/
-    function getProfileByStatus($step) {
-        $query = 'SELECT esp.id as profile_id, esp.label, esp.menutype 
-                    FROM  #__emundus_setup_profiles AS esp
-                    LEFT JOIN #__emundus_setup_status AS ess ON ess.profile = esp.id
-                    WHERE ess.step='.$step;
+    function getProfileByStatus($fnum) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $res = array();
 
         try {
+            $query->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id')
+                ->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
+                ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
+                ->leftJoin($this->_db->quoteName('jos_emundus_campaign_workflow', 'ecw').' ON '.$this->_db->quoteName('ecw.campaign').' = '.$this->_db->quoteName('cc.campaign_id').' AND '.$this->_db->quoteName('ecw.status').' = '.$this->_db->quoteName('cc.status'))
+                ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ecw.profile'))
+                ->where($this->_db->quoteName('cc.fnum').' LIKE '.$fnum);
+
             $this->_db->setQuery($query);
-            return $this->_db->loadAssoc();
+            $res = $this->_db->loadAssoc();
+
+            if(empty($res['profile'])){
+                $query->clear()
+                    ->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id')
+                    ->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
+                    ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
+                    ->leftJoin($this->_db->quoteName('jos_emundus_setup_status', 'ss').' ON '.$this->_db->quoteName('ss.step').' = '.$this->_db->quoteName('cc.status'))
+                    ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ss.profile'))
+                    ->where($this->_db->quoteName('cc.fnum').' LIKE '.$fnum);
+
+                $this->_db->setQuery( $query );
+                $res = $this->_db->loadAssoc();
+            }
+            return $res;
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
             JError::raiseError(500, $e->getMessage());
