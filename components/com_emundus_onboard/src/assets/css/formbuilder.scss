@@ -107,7 +107,7 @@
   margin: 0 0 0 5px;
 }
 fieldset {
-  padding: 0 2.5% 2.5% 2.5% !important;
+  padding: 2.5% !important;
 }
 .formulairedepresentation {
   width: auto;
@@ -201,7 +201,7 @@ fieldset {
 }
 .actions-item-bar {
   position: absolute;
-  right: -50px;
+  right: -10px;
   //margin-top: -95px;
   a {
     cursor: pointer;
@@ -221,10 +221,11 @@ fieldset {
   background: #f8f8f8 !important;
 }
 .builder-item-element__properties {
-  align-items: center;
+  align-items: baseline;
   padding: 10px 3em 1em 1em;
   transition: all 0.2s linear;
   border: 2px solid transparent;
+  flex-direction: column;
 }
 .unpublished {
   filter: grayscale(1);
