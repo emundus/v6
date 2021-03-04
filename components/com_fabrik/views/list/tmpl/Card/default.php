@@ -75,9 +75,9 @@ $form_id = $form->id;
         <div class="em-navbar w-container">
             <div class="em-wrappermenu"><a href="../index.html" class="em-logonavbar w-inline-block w--current"><img src="../projet/images/custom/Groupe_VYV_Q.png" alt="Logo Groupe VYV"></a>
                 <div class="em-miniwrappermenu">
-                    <div class="em-wrapperitemmenu"><a href="/index.html" class="em-itemmenu w--current">LE challenge</a><a href="../projet/index.php?option=com_fabrik&view=list&listid=349" class="em-itemmenu">Projets</a><a href="/reglement.html" class="em-itemmenu">règlement</a><a href="/a-propos.html" class="em-itemmenu">à propos</a></div>
+                    <div class="em-wrapperitemmenu"><a href="/index.html" class="em-itemmenu w--current">LE challenge</a><a href="../projet/index.php?option=com_fabrik&view=list&listid=359" class="em-itemmenu">Projets</a><a href="/reglement.html" class="em-itemmenu">règlement</a><a href="/a-propos.html" class="em-itemmenu">à propos</a></div>
                 </div>
-                <a href="../projet/index.php?option=com_fabrik&view=list&listid=349" class="em-button-nav w-inline-block" data-ix="arrowcta-menu">
+                <a href="../projet/index.php?option=com_fabrik&view=list&listid=359" class="em-button-nav w-inline-block" data-ix="arrowcta-menu">
                     <div class="em-containerarrow"><img src="/projet/images/custom/5e049464ed2a2711565ccae1_arrow.svg" alt="" class="em-arrowcta-purple"><img src="/projet/images/custom/arrow.svg" alt="" class="em-arrowcta-white"></div>
                     <div class="em-textcta2">VOTER</div>
                     <div class="em-overlay"></div>
@@ -88,7 +88,7 @@ $form_id = $form->id;
     <div class="em-project-section">
         <div class="navbar">
             <div class="navbar-content">
-                <div class="wrapper-menu-item" data-ix="menu-item-wrapper"><a href="/index.html" class="nav-link w--current" data-ix="ia-navlink">LE CHALLENGE</a><a href="../projet/index.php?option=com_fabrik&view=list&listid=349" class="em-itemmenu">Projets</a><a href="/reglement.html" class="nav-link" data-ix="ia-navlink">RÈGLEMENT</a><a href="/a-propos.html" class="nav-link margin" data-ix="ia-navlink">À PROPOS</a></div>
+                <div class="wrapper-menu-item" data-ix="menu-item-wrapper"><a href="/index.html" class="nav-link w--current" data-ix="ia-navlink">LE CHALLENGE</a><a href="../projet/index.php?option=com_fabrik&view=list&listid=359" class="em-itemmenu">Projets</a><a href="/reglement.html" class="nav-link" data-ix="ia-navlink">RÈGLEMENT</a><a href="/a-propos.html" class="nav-link margin" data-ix="ia-navlink">À PROPOS</a></div>
                 <a href="#" class="burger w-inline-block" data-ix="burger">
                     <div data-ix="center" class="line1 orange"></div>
                     <div data-ix="center" class="line2 orange"></div>
@@ -331,7 +331,7 @@ $form_id = $form->id;
             <div class="em-divcontainerfooter">
                 <div class="em-rowfooter"><a href="/protections-des-donnees.html" class="em-protections-des-donnees">Protection des données</a><a href="/mentions-legales.html" class="em-mentionslegales">Mentions légales</a>
                     <div class="div-block-2">
-                        <div class="em-wrappermenufooter"><a href="/index.html" class="em-menufooter">Le challenge</a><a href="/projet/index.php?option=com_fabrik&view=list&listid=349" class="em-menufooter">PROJETS</a><a href="/reglement.html" class="em-menufooter">règlement</a><a href="/a-propos.html" class="em-menufooter">à propos</a></div>
+                        <div class="em-wrappermenufooter"><a href="/index.html" class="em-menufooter">Le challenge</a><a href="/projet/index.php?option=com_fabrik&view=list&listid=359" class="em-menufooter">PROJETS</a><a href="/reglement.html" class="em-menufooter">règlement</a><a href="/a-propos.html" class="em-menufooter">à propos</a></div>
                     </div>
                     <div><img src="/projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg" alt="VYV groupe logo" srcset="/projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF-p-500.jpeg 500w, /projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF-p-800.jpeg 800w, /projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg 1000w" sizes="(max-width: 479px) 94vw, (max-width: 767px) 81vw, (max-width: 991px) 58vw, 63vw" class="em-logofooter"></div>
                 </div>
