@@ -490,8 +490,12 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
         unset($fnums);
-        $m_files->tagFile($validFnums, $tag);
+
         $tagged = $m_files->getTaggedFile($tag);
+        $tagged_fnums = array_map(function($n) {return $n["fnum"];}, $tagged);
+
+        $validFnums = array_diff($validFnums, $tagged_fnums);
+        $m_files->tagFile($validFnums, $tag);
 
         echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $tagged)));
         exit;
