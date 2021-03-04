@@ -129,7 +129,7 @@
 
     .campaingapply {
         float: right !important;
-        background-color: #e1edfa;
+        background-color: transparent;
         color: #000;
         border: 1px #5476a4;
     }
@@ -141,7 +141,6 @@
     }
 
     .campaingapply.blue {
-        background-color: #e1edfa;
         color: #000;
         border: #5476a4;
     }
@@ -677,8 +676,8 @@ button.btn.btn-default.sch {
 
     .campaigns-list .campaignbymonth .campaign-month-label .position-me .rotate-me.blue,   .campaigns-list .campaignbymonth .campaign-month-label .position-me .rotate-me.orange {
         transform: rotate(180deg) !important;
-        padding-left: 60px !important;
         margin: 0 auto;
+        float: right;
     }
 
     .campaign-content .left-side,

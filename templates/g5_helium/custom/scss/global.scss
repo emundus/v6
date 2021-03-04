@@ -9,7 +9,31 @@
 // Here you can add Anything you want to be present on the entire site AND with variables
 // - Laura.scss
 
+/** VARIABLES **/
+$light-blue: #26CAEA;
+$dark-blue: #16AFE1;
+$light-green: #32EE5F;
+$dark-green: #12DB42;
+$light-yellow: #F0EE6D;
+
+$night-blue: #353544;
+$dark-grey: #5A5A72;
+$grey: #B0B0BF;
+$light-grey: #F4F4F6;
+$white: #FFFFFF;
+
+$red: #e5283B;
+
+$complete-gradient: linear-gradient(rgba(240,238,109,10), rgba(50,238,95,50), rgba(240,238,109,96));
+$simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
+
+
 /* GENERAL */
+
+*:focus {
+  outline: none;
+}
+
 body {
   //font-family: "Lato", sans-serif;
   //border-top: 5px solid $base-secondary-color;
@@ -34,7 +58,7 @@ h6 {
   margin-top: 50px;
   margin-bottom: 50px;
   font-weight: 700;
-  font-family: "Lato", sans-serif;
+  //font-family: "Lato", sans-serif;
 }
 
 h1 {
@@ -49,22 +73,17 @@ h1 {
   display: none !important;
 }
 
-h1::after,
-.swal2-title::after {
-  content: '';
-  position: absolute;
-  margin-top: 45px !important;
-  width: 2.7rem !important;
-  height: 0.2rem;
-  background: $base-secondary-color !important;
-  left: 0;
-  display: block !important;
-  top: 4px;
-}
-
 .swal2-title {
   color: #000;
   margin: 10px 0 20px 0;
+}
+
+button.swal2-styled{
+  padding: 5px 20px;
+  border-radius: 25px !important;
+}
+button.swal2-confirm{
+  background: #12DB42 !important;
 }
 
 h2 {
@@ -97,6 +116,7 @@ label {
   color: #000;
   margin-bottom: 5px;
   font-weight: bold;
+  display: inline-block;
 }
 
 .view-form label.fabrikLabel.fabrikTip {
@@ -254,6 +274,71 @@ ul {
   min-height: 90px;
 }
 
+.modal-body {
+  a {
+    color: $dark-blue !important;
+  }
+}
+
+.contentpane.modal {
+  h1, h2, h3, h4, h5, h6 {
+    color: $dark-blue !important;
+  }
+  form legend {
+    color: $dark-blue !important;
+  }
+}
+
+.modal-dialog .modal-body {
+  h1, h2, h3, h4, h5, h6 {
+    color: $dark-blue !important;
+  }
+}
+
+
+.contentpane.modal form .fabrikActions.form-actions button.btn {
+  background: $dark-blue !important;
+  background-color: $dark-blue !important;
+  border: 2px solid $dark-blue !important;
+  border-radius: 25px !important;
+  color: #fff;
+  &:active, &:focus, &:hover {
+    background: transparent!important;
+    background-color: transparent!important;
+    border: 2px solid $dark-blue !important;
+    border-radius: 25px !important;
+    color: $dark-blue !important;
+  }
+}
+
+.files-board form.em-form-message .toggle-editor .btn-group a.btn, .modal-body form .em_email_block input.btn.btn-success[name="expert"]  {
+  background: $dark-blue !important;
+  background-color: $dark-blue !important;
+  border: 2px solid $dark-blue !important;
+  border-radius: 25px !important;
+  color: #fff !important;
+  &:active, &:focus, &:hover {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 2px solid $dark-blue !important;
+    border-radius: 25px !important;
+    color: $dark-blue !important;
+  }
+}
+
+.modal-body .xclsform-filters button#delfilter , .modal-body .xclsform-filters button#savefilter , .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs  {
+  background: $dark-blue !important;
+  background-color: $dark-blue !important;
+  border: 1px solid $dark-blue !important;
+  color: #fff !important;
+  &:active, &:focus, &:hover {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 1px solid $dark-blue !important;
+    color: $dark-blue !important;
+  }
+}
+
 .alert-heading {
   display: none;
 }
@@ -264,6 +349,13 @@ ul {
   &::after {
     display: none;
   }
+}
+
+#system-message{
+  position: relative;
+  width: 80%;
+  left: 10%;
+  z-index: 999;
 }
 
 legend {
@@ -286,8 +378,17 @@ legend {
   margin: 0 !important;
 }
 
+#g-utility{
+  background: transparent;
+}
+
+#g-sidebar{
+  border-radius: 5px;
+}
+
 #g-page-surround {
   min-height: auto;
+  overflow: visible;
 }
 
 p,
@@ -298,7 +399,7 @@ textarea,
 label,
 input[type="text"],
 .ui.warning.message {
-  font-family: "Lato", sans-serif;
+  //font-family: "Lato", sans-serif;
 }
 
 p,
@@ -310,9 +411,25 @@ input[type="text"],
 .ui.warning.message {
   color: #000;
 }
+#g-container-main{
+  height: auto;
+  margin: 0 auto auto;
+  width: 100%;
+  transition: all ease-in-out 0.3s;
+}
 
 #g-container-main .g-container {
-  padding: 0 10px;
+  padding: 0 20px;
+}
+
+.g-back-office-emundus-tableau #g-container-main .g-container {
+  position: relative;
+  left: 75px;
+}
+
+.g-container.g-flushed{
+  width: calc(100% - 75px) !important;
+  margin: unset;
 }
 
 .row-fluid .span3 {
@@ -336,6 +453,7 @@ input[type="text"],
 .view-details #g-container-main {
   .page-header {
     padding-bottom: 15px;
+    background: transparent;
   }
 }
 
@@ -346,10 +464,16 @@ input[type="text"],
 }
 
 #g-navigation #header-a .logo {
-  width: 180px;
+  width: auto;
+  max-height: 65px;
+  max-width: 180px;
 }
 
-/* HEADER AVEC TCHOOZ ET LANG SWITCHER*/
+#g-navigation .g-main-nav{
+  margin-top: 20px;
+}
+
+/* HEADER */
 
 #g-navigation {
   .g-grid {
@@ -361,11 +485,14 @@ input[type="text"],
   #header-c {
     max-width: 30rem;
     min-height: 67px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 
     .g-content {
       display: flex;
       flex-direction: row;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: flex-start;
 
       .platform-content {
@@ -373,7 +500,6 @@ input[type="text"],
         padding: 0px;
 
       }
-
       .platform-content:nth-child(2) {
         order: 3;
       }
@@ -381,63 +507,28 @@ input[type="text"],
   }
 }
 
-/* HEADER SANS LANG SWITCHER ET AVEC TCHOOZ */
-
 #g-navigation {
-  #header-c.without-lang-switcher {
-    max-width: 15rem;
-    min-height: 67px;
-    .g-content {
-      justify-content: flex-end;
-      .platform-content:nth-child(2) {
-        order: 1;
-      }
-      .platform-content:nth-child(1) {
-        order: 2;
-      }
-    }
-  }
-}
-
-/*HEADER SANS TCHOOZ ET AVEC LANG SWITCHER  */
-
-#g-navigation {
-  #header-c.without-tchooz {
-    max-width: 30rem;
-    min-height: 67px;
-    .g-content {
-      justify-content: space-between;
-    }
-  }
-}
-
-/*HEADER SANS TCHOOZ ET SANS LANG SWITCHER  */
-
-#g-navigation {
-  #header-c.without-tchooz-and-lang-switcher {
-    max-width: 30rem;
-    min-height: 67px;
-    .g-content {
-      justify-content: flex-end;
-    }
-  }
-}
-
-
-
-#g-navigation {
-  border-bottom: 1px solid #eeeeee;
+  //border-bottom: 1px solid #eeeeee;
   width: 100vw;
+  position: sticky;
+  max-height: 100px;
+  height: 100px;
+  background: transparent;
+  margin-bottom: 30px;
 
   .g-container {
     padding: 10px;
-    width: 95%;
+    width: 100%;
     margin: auto !important;
+    position: fixed;
+    background: #fff;
   }
 
   #header-a {
+    z-index: 20;
     display: flex;
     align-items: center;
+    transition: all 0.3s ease-in-out;
   }
 }
 
@@ -466,9 +557,9 @@ input[type="text"],
 
       li {
         list-style: none;
-          a {
-            text-decoration: none;
-          }
+        a {
+          text-decoration: none;
+        }
       }
 
       li:nth-child(1) a {
@@ -487,13 +578,17 @@ input[type="text"],
 }
 
 footer#g-footer {
-  background-color: #fafafa;
-  border-top: none;
+  background-color: #fff;
+  border-top: unset;
   bottom: 0;
   width: 100vw;
   position: relative;
-  height: 250px;
-  margin-top: auto !important;
+  z-index: 1;
+  padding-left: 75px;
+  padding-right: 75px;
+  //margin-top: auto !important;
+  margin-top: 75px !important;
+  transition: all 0.3s ease-in-out;
 }
 
 footer#g-footer img {
@@ -505,6 +600,7 @@ footer#g-footer img {
   flex-direction: column;
   min-height: 100vh !important;
   width: 100%;
+  background: #f8f8f8;
 }
 
 .view-registration.login.em-formRegistrationCenter #g-page-surround,
@@ -515,7 +611,7 @@ footer#g-footer img {
 #g-page-surround>.g-container:not(.g-flushed) {
   width: 100vw;
   margin-top: auto;
-  height: 250px;
+  height: 180px;
 }
 
 .g-container>#g-footer {
@@ -524,7 +620,7 @@ footer#g-footer img {
 }
 
 footer#g-footer>.g-container {
-  width: 95%;
+  width: 100%;
 }
 
 body>.g-container {
@@ -532,50 +628,49 @@ body>.g-container {
 }
 
 #g-footer .g-grid {
-  height: 140px;
   flex-direction: row;
   align-items: center;
-    justify-content: center;
-  }
+  justify-content: center;
+}
 
-  .bas-footer {
+.bas-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  .em-containerAdresseLogo {
+    width: 55%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
-
-    .em-containerAdresseLogo {
-      width: 55%;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center
-    }
-
-    .adresse {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      align-self: baseline;
-
-      p {
-        color: $base-primary-color;
-      }
-
-      .street {
-        text-align: left;
-      }
-    }
+    align-items: center
   }
 
-  .credits-emundus {
+  .adresse {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: baseline;
+
     p {
       color: $base-primary-color;
-      float: right;
+    }
+
+    .street {
+      text-align: left;
     }
   }
+}
 
-  .customfooter-legal p {
+.credits-emundus {
+  p {
+    color: $base-primary-color;
+    float: right;
+  }
+}
+
+.customfooter-legal p {
   text-align: center;
 }
 
@@ -607,8 +702,6 @@ body>.g-container {
   }
 
   .moduletable .header-right {
-    margin-top: 12px;
-
     a.btn.btn-danger {
 
       &.btn-creer-compte,
@@ -619,10 +712,10 @@ body>.g-container {
 
         &:hover,
         &:active,
-      &:focus {
-        background: transparent;
-        color: $base-secondary-color;
-        border-color: $base-secondary-color;
+        &:focus {
+          background: transparent;
+          color: $base-secondary-color;
+          border-color: $base-secondary-color;
         }
       }
 
@@ -631,29 +724,37 @@ body>.g-container {
         border: 1px solid $base-primary-color;
         color: $base-primary-color;
 
-      &:hover,
-      &:active,
-      &:focus {
-        background: $base-primary-color;
-        color: #fff;
-        border-color: $base-primary-color;
+        &:hover,
+        &:active,
+        &:focus {
+          background: $base-primary-color;
+          color: #fff;
+          border-color: $base-primary-color;
         }
       }
     }
   }
 
   #userDropdownIcon {
-    background-color: $base-primary-color;
-    border: 2px solid $base-primary-color;
-    color: #ffffff;
-    box-shadow: none;
+    background-color: white;
+    //border: 2px solid $base-primary-color;
+    //color: $base-primary-color;
+    //box-shadow: none;
+    font-size: 1.5em;
+    width: 30px !important;
+    height: 30px !important;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    border: unset !important;
+    margin: 0 10px 10px 10px;
 
-    &:hover,
-    &.active,
-    &:hover:active {
-      background-color: transparent;
-      color: $base-primary-color;
-    }
+    // &:hover,
+    // &:active,
+    //&:hover:active {
+    //  background-color: transparent;
+    //  color: $base-primary-color;
+    //  }
   }
 
   #userDropdownMenu {
@@ -751,7 +852,13 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 .view-programme {
 
-  h1.title.em-program-title::after {
+  #g-sidebar{
+    margin-top: 50px;
+    width: max-content !important;
+    padding: 0 !important;
+  }
+
+  h1::after {
     display: none !important;
   }
 
@@ -772,6 +879,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       background-color: $base-secondary-color;
       border-color: $base-secondary-color;
       color: #fff;
+      font-size: 14px !important;
 
       &:hover,
       &:active,
@@ -786,6 +894,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       background-color: transparent;
       border-color: $base-primary-color;
       color: $base-primary-color;
+      font-size: 14px !important;
 
       &:hover,
       &:active,
@@ -832,6 +941,36 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 }
 
+.homepage-background-relative {
+  margin-bottom: 5% !important;
+  .homepage-background {
+    position: absolute;
+    top: 80px;
+    left: 0;
+    filter: grayscale(100%) brightness(90%);
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-position: 0 20% !important;
+    width: 100%;
+    height: 220px;
+  }
+  .welcome-message{
+    z-index: 10;
+    display: inline-block;
+    position: relative;
+    text-align: center;
+    width: 100%;
+    filter: grayscale(1) invert(1) brightness(100);
+  }
+}
+
+
+
+.view-checklist #attachment_list #attachment_list_mand .em-titleDocMand {
+  margin-top: 50px;
+}
+
+
 /* PAGE CHECKLIST - COULEURS BTNS AJOUT DOCUMENTS */
 
 .view-checklist {
@@ -853,6 +992,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 }
 
+
 /* PAGE ACCUEIL */
 .homepage {
   h1:first-child {
@@ -872,7 +1012,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       background-color: $base-secondary-color;
       border-color: $base-secondary-color;
       color: #fff;
-      font-family: "Lato", sans-serif;
+      //font-family: "Lato", sans-serif;
 
       &:hover,
       &:active,
@@ -887,7 +1027,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       background-color: transparent;
       border-color: $base-primary-color;
       color: $base-primary-color;
-      font-family: "Lato", sans-serif;
+      //font-family: "Lato", sans-serif;
 
       &:hover,
       &:active,
@@ -920,7 +1060,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .campaign-title {
     color: $base-primary-color;
-    font-family: "Lato", sans-serif;
+    //font-family: "Lato", sans-serif;
   }
 
   h3.g-title {
@@ -931,6 +1071,73 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     color: $base-secondary-color;
   }
 }
+
+/** MODULE SINGLE CAMPAIGN **/
+.single-campaign-tabs {
+  .btn:first-child {
+    border-top-left-radius: 4px !important;
+    border-bottom-left-radius: 4px !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    left: 0;
+  }
+  .btn:last-child {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-top-right-radius: 4px !important;
+    border-bottom-right-radius: 4px !important;
+  }
+
+  .btn {
+    background: #cecece;
+    color: black;
+    border-color: #cecece;
+    opacity: 0.8;
+    margin-left: -3px;
+    border-radius: 0 !important;
+  }
+
+  .current-tab {
+    background: $base-primary-color;
+    opacity: 1;
+    color: white;
+    border-color: $base-primary-color;
+    &:hover{
+      background: $base-primary-color;
+      color: white;
+    }
+  }
+}
+.tchooz-single-campaign {
+  margin-top: 3%;
+  .single-campaign{
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  #faq,#documents {
+    flex-direction: column;
+  }
+  #faq h2{
+    margin-bottom: 20px;
+  }
+  .right-side-tchooz {
+    display: flex;
+    flex-direction: column;
+  }
+  .right-side{
+    width: 100%;
+  }
+  .below-content{
+    width: 100%;
+  }
+  .campaingapply{
+    padding-right: 50px;
+  }
+  .campaign-documents{
+    display: none;
+  }
+}
+/** END **/
 
 #navfilter {
 
@@ -962,7 +1169,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     margin-right: 0;
     border-radius: 4px;
     padding: 8px 12px;
-    font-family: "Lato", sans-serif;
+    font-family: "Maven Pro", sans-serif;
     line-height: normal;
     font-weight: 300;
     font-size: 14px;
@@ -972,7 +1179,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background-color: $base-secondary-color;
     border-color: $base-secondary-color;
     color: #fff;
-    font-family: "Lato", sans-serif;
+    //font-family: "Lato", sans-serif;
 
     &:hover,
     &:active,
@@ -1002,44 +1209,32 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 /*BOUTONS + ET _ */
 
 .view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success,
-.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger,
-.view-form .fabrikGroup td.fabrikGroupRepeater{
+.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger {
   border: none !important;
-  background-color: transparent !important;
 }
 
 .view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success,
-.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger,
-.view-form .fabrikGroup td.fabrikGroupRepeater
-{
+.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger {
   &:hover, &:focus, &active {
     border: none !important;
     background-color: transparent !important;
   }
 }
 
-.view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i:hover,
-.view-form .fabrikGroup td.fabrikGroupRepeater .pull-right a i
-{
+.view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i:hover {
   color: darken(#3e8ac5, 10%);
 
 }
 
-.view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i,
-.view-form .fabrikGroup td.fabrikGroupRepeater .pull-right a i
-{
+.view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i {
   color: #3e8ac5;
 }
 
-.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-danger i,
-.view-form .fabrikGroup td.fabrikGroupRepeater .pull-right a i
-{
+.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-danger i {
   color: #E03C35;
 }
 
-.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-danger i:hover,
-.view-form .fabrikGroup td.fabrikGroupRepeater .pull-right a i
-{
+.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-danger i:hover {
   color: darken(#E03C35, 10%);
 }
 
@@ -1051,11 +1246,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 }
 
 /* FORMULAIRE  */
-
-/*EVAL*/
-.contentpane.modal form .fabrikGroup .row-fluid .control-group.fabrikElementContainer  .fabrikLabel.control-label {
-  width: 100%;
-}
 
 .controls .fabrikElement .radio.btn-radio.btn-group label.btn.active, .plg-radiobutton label.btn.active {
   background-color: $base-secondary-color;
@@ -1075,8 +1265,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   background-position-x: 98%;
   background-position-y: 54%;
   -webkit-appearance: none;
-  background-image: url(/images/emundus/arrow-down.png);
-  background-size: 12px;
+  background-image: url(/images/emundus/arrow-2.png);
+  background-size: 25px;
   background-repeat: no-repeat;
   padding: 0 30px 0 10px;
 }
@@ -1093,16 +1283,16 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 }
 
 .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active, .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.active.btn-success {
-  background-color: $base-secondary-color;
+  background-color: $dark-blue;
   color: #fff;
-  border-color: $base-secondary-color;
+  border-color: $dark-blue;
 
   &:hover,
   &:active,
   :focus {
     background-color: transparent;
-    color: $base-secondary-color;
-    border-color: $base-secondary-color;
+    color: $dark-blue;
+    border-color: $dark-blue;
   }
 }
 
@@ -1126,8 +1316,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 }
 
 .fabrikFilterContainer .fabrik_actions .fabrik_filter_submit {
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
+  background: $dark-green;
+  border: 1px solid $dark-green;
+  border-radius: 25px;
+  padding: 7px 20px;
 }
 
 .fabrikForm legend {
@@ -1305,7 +1497,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   #g-container-main {
-    padding: 0 20px;
+    padding: 0 10px;
   }
 }
 
@@ -1430,21 +1622,12 @@ button.close {
 }
 
 .modal-body .panel-heading button.btn.btn-info.btn-xs {
-  background: $base-secondary-color;
+  background: $dark-blue;
   color: #fff;
 }
 
-.modal-body #data  {
-  #forms.panel{
-    background: transparent;
-  }
-  #methode{
-    padding-top:30px;
-  }
-}
-
 .modal-body .panel-heading .btn-xs.btn.btn-elements-success {
-  background-color: $base-primary-color !important;
+  background-color: $dark-green !important;
   color: #fff;
 }
 
@@ -1542,34 +1725,36 @@ p.readmore .btn,
 .modal-header #can-val {
   button.btn.btn-danger {
     background: transparent;
-    border: 1px solid $base-secondary-color;
-    border-radius: 4px;
-    color: $base-secondary-color;
+    border: 2px solid grey;
+    border-radius: 25px !important;
+    color: grey;
     margin-right: 10px;
     font-weight: normal;
+    padding: 7px 30px !important;
 
     &:hover,
     &:active,
     :focus {
-      background: $base-secondary-color;
-      border: 1px solid $base-secondary-color;
+      background: grey;
+      border: 2px solid grey;
       color: #fff;
     }
   }
 
   button.btn.btn-success,
   a.btn-success {
-    background: $base-primary-color;
-    border: 1px solid $base-primary-color;
-    border-radius: 4px;
+    background: $dark-blue;
+    border: 2px solid $dark-blue;
+    border-radius: 25px !important;
     color: #fff;
+    padding: 7px 30px;
 
     &:hover,
     &:active,
     :focus {
       background: transparent;
-      border: 1px solid $base-primary-color;
-      color: $base-primary-color;
+      border: 2px solid $dark-blue;
+      color: $dark-blue;
     }
   }
 }
@@ -1755,16 +1940,33 @@ button#back,
 }
 
 #member-profile .controls button.btn.btn-primary.validate {
-  background: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  background: $dark-blue;
+  border: 2px solid $dark-blue;
   text-shadow: none;
   text-transform: initial;
+  border-radius: 25px !important;
   &:hover,
   &:focus,
   &:active {
     background-color: transparent;
-    color: $base-primary-color;
-    border: 1px solid $base-primary-color;
+    color: $dark-blue;
+    border: 2px solid $dark-blue;
+  }
+}
+
+#member-profile .controls a.btn[title="Annuler"] {
+  background: transparent;
+  border: 2px solid grey;
+  color: grey;
+  text-shadow: none;
+  text-transform: initial;
+  border-radius: 25px;
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: grey;
+    color: #fff;
+    border: 2px solid grey;
   }
 }
 
@@ -1782,56 +1984,75 @@ button#back,
   }
 }
 
-#em_select_filter #del-filter,
-#em-delete-files.btn.btn-danger.btn-xs.pull-right {
-  background-color: $base-secondary-color;
-  color: #fff;
-  border-color: $base-secondary-color;
+#em_select_filter #del-filter{
+  background-color: transparent;
+  color: $red;
+  border: none;
 
   &:hover,
   &:active,
   &:focus {
-    background: #fff;
-    border-color: $base-secondary-color;
-    color: $base-secondary-color;
-    background: #fff;
-    color: $base-secondary-color;
+    background: transparent;
+    color: $red;
   }
 }
 
-#filters #quick.form-group input#search.btn.btn-sm.btn-info {
-  background-color: $base-primary-color;
-  color: #fff;
-  border: 1px solid $base-primary-color !important;
+
+#em-delete-files.btn.btn-danger.btn-xs.pull-right {
+  background-color: transparent;
+  color: $red;
+  border-color: transparent;
 
   &:hover,
   &:active,
   &:focus {
-    background: #fff;
-    border: 1px solid $base-primary-color !important;
-    color: $base-primary-color !important;
+    background-color: transparent;
+    color: $red;
+    border-color: transparent;
+  }
+}
+
+#em-files-filters .em-filter .em_label label a, #em-user-filters .em-filter .em_label label a, #em-user-filters .em_label label a  {
+  color: $dark-green;
+}
+
+.files-board .panel.panel-default.em-data span.em_list_text {
+  color: $dark-blue;
+}
+
+#filters #quick.form-group input#search.btn.btn-sm.btn-info {
+  background-color: transparent;
+  color: $dark-blue;
+  border: none;
+  font-size: 19px !important;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background: transparent;
+    color: $dark-blue;
   }
 }
 
 .files-board .em-container-tags .em-container-tags-heading #add-tags {
   color: #fff;
-    &:hover, &:active, &:focus {
-      color: darken($base-secondary-color, 10%);
-    }
+  &:hover, &:active, &:focus {
+    color: darken($base-secondary-color, 10%);
+  }
 }
 
 
 #em-see-files.btn.btn-info.btn-xs.pull-right {
-  background-color: $base-primary-color;
-  color: #fff;
-  border-color: $base-primary-color;
+  background-color: transparent;
+  color: $dark-blue;
+  border-color: transparent;
 
   &:hover,
   &:active,
   &:focus {
-    background: #fff;
-    border: 1px solid $base-primary-color;
-    color: $base-primary-color;
+    background-color: transparent;
+    color: $dark-blue;
+    border-color: transparent;
   }
 }
 
@@ -1840,17 +2061,17 @@ button#back,
 
   #em-prev-file.btn.btn-info.btn-xxl,
   #em-next-file.btn.btn-info.btn-xxl {
-    background-color: $base-primary-color;
+    background-color: $dark-blue;
     color: #fff;
-    border-color: $base-primary-color;
+    border-color: $dark-blue;
     margin-top: -5px;
 
     &:hover,
     &:active,
     &:focus {
       background: #fff;
-      border: 1px solid $base-primary-color;
-      color: $base-primary-color;
+      border: 1px solid $dark-blue;
+      color: $dark-blue;
     }
   }
 }
@@ -1898,15 +2119,28 @@ textarea:hover {
 }
 
 
-.candidacy-files-list h2,
-#em-panel h2 {
-  color: $base-primary-color;
+.candidacy-files-list h1,
+#em-panel h1 {
+  color: #000;
+  font-weight: 700;
 }
 
 #em-appli-menu .panel-body .list-group-item:hover,
 #em-appli-menu .panel-body .list-group-item:active,
 #em-appli-menu .panel-body .list-group-item:focus {
   color: $base-primary-color;
+}
+
+.em-actions {
+  padding: 5px;
+  a{
+    padding: 5px !important;
+    color: #fff;
+    &:hover{
+      border-radius: 4px;
+      background: $dark-blue !important;
+    }
+  }
 }
 
 .glyphicon-ban-circle {
@@ -1919,11 +2153,11 @@ textarea:hover {
   transform: scale(2, 1.5);
   font-size: 2em;
   font-weight: 700;
-  color: $base-primary-color;
+  color: $dark-green;
 }
 
 #gototop:hover div::after {
-  color: $base-secondary-color;
+  color: $dark-green;
 }
 
 /* ALERT */
@@ -1935,12 +2169,6 @@ textarea:hover {
 
 #system-message-container #system-message {
   margin: 20px;
-}
-
-.modal .itemContent #csvmsg .alert.alert-success {
-  margin-bottom: 3px;
-  display: flex;
-  flex-direction: column;
 }
 
 .alert {
@@ -2133,7 +2361,7 @@ ul.nav.nav-tabs.nav-stacked li a {
   background-color: $base-secondary-color;
   border-color: $base-secondary-color;
   color: #fff;
-  font-family: "Lato", sans-serif;
+  //font-family: "Lato", sans-serif;
   text-transform: capitalize;
 
   &:hover,
@@ -2192,6 +2420,30 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
+.import-csv-page  .fabrikActions.form-actions  button.importation {
+  padding: 5px 30px;
+  border: 2px solid $dark-blue;
+  background: $dark-blue;
+  border-radius: 25px !important;
+  &:hover, &:active, &:focus {
+    border: 2px solid $dark-blue;
+    background: transparent;
+    color: $dark-blue;
+  }
+}
+
+.form.em-decision-form .btn.btn-success {
+  padding: 5px 30px;
+  border: 2px solid $dark-blue;
+  background: $dark-blue;
+  border-radius: 25px !important;
+  &:hover, &:active, &:focus {
+    border: 2px solid $dark-blue;
+    background: transparent;
+    color: $dark-blue;
+  }
+}
+
 .edit-comment-container button.delete-comment {
   color: white;
   background: $base-secondary-color;
@@ -2219,16 +2471,16 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .g-back-office-emundus-tableau.experts-page .panel-info>.panel-heading h3.panel-title {
-  color: $base-secondary-color !important;
+  color: $dark-blue !important;
 }
 
 .g-back-office-emundus-tableau.files-board .panel-info>.panel-heading {
-  background: $base-secondary-color;
+  background: $dark-green;
 }
 
 #em_filters fieldset.em_filters_filedset>p,
 #em-user-filters fieldset.em_filters_filedset>p {
-  color: $base-secondary-color;
+  color: #12DB42;
 }
 
 .chosen-container .chosen-results li.highlighted {
@@ -2236,14 +2488,14 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .navbar.navbar-inverse {
-  border: $base-primary-color;
-  background: $base-primary-color;
+  border: $dark-blue;
+  background: $dark-blue;
 }
 
 #em-files-filters #em_filters fieldset input#save-filter {
   margin-top: 10px;
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color !important;
+  background:  $dark-blue;
+  border: 1px solid $dark-blue !important;
   width: 100%;
   width: -moz-available;
   width: -webkit-fill-available;
@@ -2253,8 +2505,8 @@ ul.unstyled.em-linkForgot li a {
   &:hover,
   &:active {
     background: #fff;
-    border-color: $base-secondary-color !important;
-    color: $base-secondary-color !important;
+    border-color: $dark-blue !important;
+    color: $dark-blue !important;
   }
 }
 
@@ -2266,20 +2518,20 @@ ul.unstyled.em-linkForgot li a {
     &#search,
     &#clear-search,
     &#add-filter {
-      background: $base-primary-color none;
+      background: $dark-green none;
 
       &:hover,
       &:focus,
       &:active {
-        background: darken($base-primary-color, 10%) none;
+        background: darken($dark-green, 10%) none;
       }
     }
 
     &#showhide {
-      background-color: $base-primary-color;
+      background-color: $dark-green;
 
       &:hover {
-        background-color: darken($base-primary-color, 10%);
+        background-color: darken($dark-green, 10%);
       }
     }
   }
@@ -2290,12 +2542,13 @@ ul.unstyled.em-linkForgot li a {
   background: transparent;
   color: #fff !important;
   border-color: transparent;
+  font-size: 19px !important;
 
   &:hover,
   &:active,
   &:focus {
     color: #fff;
-    background: darken($base-secondary-color, 10%) !important;
+    background: darken($dark-green, 10%) !important;
   }
 }
 
@@ -2319,30 +2572,42 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .g-back-office-emundus-tableau #em-hide-filters {
-  border: 0 solid $base-primary-color;
-  background-color: $base-primary-color;
+  border: 0 solid $dark-blue;
+  background-color: $dark-blue;
 
   &:hover,
   &:focus,
   &:active {
-    border: darken($base-primary-color, 10%);
-    background-color: darken($base-primary-color, 10%);
+    border: darken($dark-blue, 10%);
+    background-color: darken($dark-blue, 10%);
   }
 }
 
 
+.em-container-attachment .em-collapse-container .borderContentCollapse {
+  .btn.btn-danger.btn-attach {
+    border: none;
+    &:hover, &:focus, &:active {
+      background: transparent;
+    }
+    span {
+      color: $red;
+    }
+  }
+}
 
 
 /* SUPPRIMER EVAL */
 .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
-  background: $base-secondary-color !important;
-  color: #fff !important;
+  background: transparent !important;
+  color: $red !important;
+  border: none;
 
   &:hover,
   &:active,
   &:focus {
-    background: #fff !important;
-    color: $base-secondary-color !important;
+    background: transparent !important;
+    color: $red !important;
   }
 }
 
@@ -2356,16 +2621,22 @@ ul.unstyled.em-linkForgot li a {
 
 .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
 .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
-  height: 40px;
-  background-color: $base-secondary-color;
-  border: 1px solid $base-secondary-color !important;
+  height: 36px;
+  background-color: $dark-blue;
+  border: 2px solid $dark-blue !important;
+  border-radius: 25px !important;
+  padding: 5px 30px !important;
 
   &:hover,
   &:active,
   &:focus {
-    background-color: darken($base-secondary-color, 10%) !important;
-    color: #fff;
-    border: 1px solid darken($base-secondary-color, 10%);
+    background-color: transparent !important;
+    color: $dark-blue;
+    border: 2px solid darken($dark-blue, 10%);
+  }
+
+  i {
+    font-style: initial;
   }
 }
 
@@ -2385,20 +2656,28 @@ ul.unstyled.em-linkForgot li a {
 
 div#em-appli-block {
   .panel-heading {
-    background: $base-primary-color;
+    background: $dark-blue;
     border-radius: 0;
     margin-top: 2px;
   }
 
   button.btn.btn-default {
-    background-color: $base-secondary-color;
+    background-color: $dark-blue;
     border: none;
 
     &:hover {
-      background-color: darken($base-secondary-color, 10%);
+      background-color: darken($dark-blue, 10%);
     }
   }
 
+  #add-tags {
+    background: $dark-blue;
+    color: #fff;
+    &:hover, &:active, &:focus {
+      color: $dark-blue;
+      background: #fff;
+    }
+  }
 
   span.label.label-info {
     background: #ffffff !important;
@@ -2440,46 +2719,67 @@ div#em-appli-block {
 .view-list form.form-search table {
   thead th.fabrik_actions .btn-group {
     a.delete {
-      background: $base-secondary-color;
-      border-color: $base-secondary-color;
+      background: $red;
+      border-color: $red;
 
       &:hover,
       &:active,
       &:focus {
         background: #fff;
-        border-color: $base-secondary-color;
-        color: $base-secondary-color;
+        border-color: $red;
+        color: $red;
       }
     }
   }
 
   tbody td.fabrik_actions .btn-group {
     a.delete {
-      background: $base-secondary-color;
-      border-color: $base-secondary-color;
+      background: $red;
+      border-color: $red;
 
       &:hover,
       &:active,
       &:focus {
         background: #fff;
-        border-color: $base-secondary-color;
-        color: $base-secondary-color;
+        border-color: $red;
+        color: $red;
       }
     }
 
     a.fabrik_edit,
     a.fabrik_view,
     a.listplugin {
-      background: $base-primary-color;
-      border-color: $base-primary-color;
+      background: $dark-blue;
+      border-color: $dark-blue;
 
       &:hover,
       &:active,
       &:focus {
         background: #fff;
-        border-color: $base-primary-color;
-        color: $base-primary-color;
+        border-color: $dark-blue;
+        color: $dark-blue;
       }
+    }
+  }
+}
+
+.com_fabrik.view-list.task-list\.view {
+  .page-header h1 {
+    color: #000;
+  }
+  form .filtertable input.fabrik_filter_submit {
+    border-radius: 25px;
+    padding: 5px 30px;
+    border: 2px solid #16afe1;
+    background: #16afe1;
+    color: #fff;
+
+    &:active, &:focus, &:hover {
+      border-radius: 25px;
+      padding: 5px 30px;
+      border: 2px solid $dark-blue;
+      background: transparent;
+      color: $dark-blue;
     }
   }
 }
@@ -2492,12 +2792,12 @@ div#em-appli-block {
       th,
       i,
       a {
-        color: $base-secondary-color;
+        color: $dark-blue;
       }
     }
 
     tbody tr>td {
-      color: $base-secondary-color;
+      color: $dark-blue;
     }
   }
 
@@ -2505,32 +2805,32 @@ div#em-appli-block {
 
     a,
     i {
-      color: $base-secondary-color;
+      color: $dark-blue;
     }
 
     b.caret {
-      color: $base-secondary-color;
+      color: $dark-blue;
     }
 
     b.caret {
-      color: $base-secondary-color;
+      color: $dark-blue;
     }
     a:hover b.caret,
     a:hover b.caret,
     a:hover b.caret {
-      color: $base-secondary-color;
-      border-top-color: $base-secondary-color;
-      border-bottom-color: $base-secondary-color;
+      color: $dark-blue;
+      border-top-color: $dark-blue;
+      border-bottom-color: $dark-blue;
     }
-      ul.dropdown-menu li a {
-        color: $base-secondary-color;
-          &:hover, &:focus, &:active {
-            color: #fff;
-            i {
-              color: #fff;
-            }
+    ul.dropdown-menu li a {
+      color: $dark-blue;
+      &:hover, &:focus, &:active {
+        color: #fff;
+        i {
+          color: #fff;
         }
-     }
+      }
+    }
   }
 
   .nav-tabs .open .dropdown-toggle, .nav-pills .open .dropdown-toggle, .nav > li.dropdown.open.active > a:hover, .nav > li.dropdown.open.active > a:focus {
@@ -2542,14 +2842,14 @@ div#em-appli-block {
 
     .fabrik_groupdata,
     thead {
-      border-color: $base-secondary-color;
+      border-color: $dark-blue;
     }
 
     thead tr.fabrik___heading {
 
       th span a,
       th span a i {
-        color: $base-secondary-color;
+        color: $dark-blue;
       }
     }
   }
@@ -2583,84 +2883,103 @@ div#em-appli-block {
 
 .indicateurs-page {
   .informationStatistique {
-    background-color: $base-secondary-color;
+    background-color: #fff;
+    color: #000 !important;
+    box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);
+    border-radius: 4px;
+  }
+
+  .item-pageindicateurs-page {
+    h1 {
+      color: #000;
+    }
   }
 
   .etiquette label {
-    color: $base-secondary-color;
+    color: $dark-blue;
   }
 
   .etiquette p {
-    color: $base-secondary-color;
+    color: $dark-blue;
+  }
+
+  #validation {
+    background: $dark-green;
+    border: 2px solid $dark-green;
+    &:hover, &:active, &:focus {
+      background: transparent;
+      border: 2px solid $dark-green;
+      color: $dark-green;
+    }
   }
 
   .btnQueryBuilder,
   .swal2-confirm {
-    background: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    background: $dark-blue;
+    border: 2px solid $dark-blue;
   }
 
   .btnConsulter {
-    background: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    background: $dark-blue;
+    border: 2px solid $dark-blue;
   }
 
   .btnConsulter:hover {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-blue;
+    border: 2px solid $dark-blue;
     background: transparent;
 
   }
 
   .btnQueryBuilder:hover,
   .swal2-confirm:hover {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-blue;
+    border: 2px solid $dark-blue;
     background: transparent;
   }
 
   .btnExport,
   .swal2-cancel {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-blue;
+    border: 2px solid $dark-blue;
     background: transparent;
   }
 
   .btnExport:hover,
   .swal2-cancel:hover {
     color: #fff;
-    border: 1px solid $base-secondary-color;
-    background: $base-secondary-color;
+    border: 2px solid $dark-blue;
+    background: $dark-blue;
   }
 
   .g-content h1::after,
   .swal2-title::after {
-    background: $base-secondary-color !important;
+    background: $dark-blue !important;
   }
 
   .swal2-progress-step,
   .swal2-progress-steps .swal2-progress-step-line,
   .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
-    background: $base-secondary-color;
+    background: $dark-blue;
   }
 
   .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line {
-    border-top: 1px solid $base-secondary-color;
-    border-bottom: 1px solid $base-secondary-color;
+    border-top: 1px solid $dark-blue;
+    border-bottom: 1px solid $dark-blue;
   }
 
   .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-blue;
+    border: 1px solid $dark-blue;
   }
 
   .input .modif,
   .input .delete {
-    color: $base-secondary-color;
+    color: $dark-blue;
   }
 
   .btnConsulter:hover a {
-    color: $base-secondary-color;
+    color: $dark-blue;
   }
 }
 
@@ -2681,82 +3000,91 @@ div#em-appli-block {
 /* EXPERTS */
 
 .experts-page a.btn.btn-primary.btn-xs.pull-right[ng-click="showForm()"] {
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
+  background: $dark-green;
+  border: 1px solid $dark-green;
   color: #fff;
   margin-left: 10px;
 
   &:hover,
   &:active,
   &:focus {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-green;
+    border: 1px solid $dark-green;
     background: #fff;
   }
 }
 
 .experts-page div.btn.btn-primary.btn-xs.pull-right[ng-click="addGroup()"] {
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
+  background: $dark-green;
+  border: 1px solid $dark-green;
   color: #fff;
   margin-left: 10px;
 
   &:hover,
   &:active,
   &:focus {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-green;
+    border: 1px solid $dark-green;
     background-color: #fff;
   }
 }
 
 .experts-page .ct-view.contact .panel-heading div.btn.btn-default.btn.xs.pull-right:nth-child(3) {
-  background: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  background: $dark-blue;
+  border: 1px solid $dark-blue;
   color: #fff;
   margin-left: 10px;
 
   &:hover,
   &:active,
   &:focus {
-    color: $base-primary-color;
-    border: 1px solid $base-primary-color;
+    color: $dark-blue;
+    border: 1px solid $dark-blue;
     background: #fff;
   }
 }
 
 .experts-page .panel-heading div.btn.btn-default.btn.xs.pull-right:first-of-type {
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
+  background: $dark-green;
+  border: 1px solid $dark-green;
   color: #fff;
   margin-left: 10px;
 
   &:hover,
   &:active,
   &:focus {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-green;
+    border: 1px solid $dark-green;
     background: #fff;
   }
 }
 
 .experts-page a.btn.btn-primary.btn-xs.pull-right[ng-click="switchSearch()"] {
-  background: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  background: $dark-blue;
+  border: 1px solid $dark-blue;
   color: #fff;
   margin-left: 10px;
 
   &:hover,
   &:active,
   &:focus {
-    color: $base-primary-color;
-    border: 1px solid $base-primary-color;
+    color: $dark-blue;
+    border: 1px solid $dark-blue;
     background: #fff;
   }
 }
 
 .experts-page .panel-heading input[type="text"] {
   height: 30px;
+}
+
+.experts-page ul.contact-group li.contact-group-item.bg-warning  a.row {
+  color: $dark-blue !important;
+  &:hover,
+  &:active,
+  &:focus {
+    color: $dark-blue !important;
+  }
 }
 
 /* ERREUR 404 */
@@ -2816,6 +3144,35 @@ div#em-appli-block {
 
 @media all and (max-width: 479px) {
 
+  #g-navigation .g-container #header-c{
+    justify-content: center;
+    .platform-content{
+      text-align: center;
+    }
+    a.forgotten_password_header{
+      float: unset;
+    }
+  }
+
+  #g-container-main .g-container{
+    padding: 0 0 0 40px;
+  }
+
+  .gantry #g-feature{
+    margin-top: 50px;
+  }
+
+
+  .blog-featuredhomepage {
+    h1:first-child {
+      margin-bottom: 30px;
+      margin-top: 30px;
+    }
+    p {
+      text-align: justify;
+    }
+  }
+
   .gantry.view-registration, .gantry.view-form.em-formRegistrationCenter {
     main#g-main-mainbody {
       padding: 0;
@@ -2857,7 +3214,7 @@ div#em-appli-block {
 
   /* GENERAL */
   #g-container-main.g-wrapper {
-    padding: 10px;
+    padding: 20px;
   }
 
   h1::after {
@@ -2865,54 +3222,54 @@ div#em-appli-block {
   }
 
   /* FAQ */
-.view-category.faq, .view-article.faq, .view-form.faq, .view-form.layout-edit.faq {
-  .blogfaq, .item-pagefaq {
-    h1 {
-      margin-top: 50px;
-      margin-bottom: 50px;
-    }
-  }
-
-  .items-leading > div {
-    margin-bottom: 30px;
-  }
-
-  .g-block.size-75 {
-    padding-right: 20px;
-    border-right: 1px solid #eee;
-  }
-
-  .edit.item-page {
-    .btn-toolbar .btn.btn-primary {
-      border-radius: 4px;
-      text-transform: initial;
-      padding: 8px 12px;
-    }
-    .btn[title="Basculer l'éditeur"] {
-      border-radius: 4px;
-      text-transform: initial;
-      padding: 8px 12px;
-    }
-  }
-
-  .g-block.size-25 {
-    padding-left: 20px;
-    #g-sidebar {
-      padding: 0px;
-      margin-top: 50px;
-      background: transparent;
-
-      ul.nav.menu.mod-list {
-        border: none;
-        padding: 0;
-      }
-
-      h3 {
-        margin-bottom: 30px;
+  .view-category.faq, .view-article.faq, .view-form.faq, .view-form.layout-edit.faq {
+    .blogfaq, .item-pagefaq {
+      h1 {
+        margin-top: 50px;
+        margin-bottom: 50px;
       }
     }
+
+    .items-leading > div {
+      margin-bottom: 30px;
+    }
+
+    .g-block.size-75 {
+      padding-right: 20px;
+      border-right: 1px solid #eee;
+    }
+
+    .edit.item-page {
+      .btn-toolbar .btn.btn-primary {
+        border-radius: 4px;
+        text-transform: initial;
+        padding: 8px 12px;
+      }
+      .btn[title="Basculer l'éditeur"] {
+        border-radius: 4px;
+        text-transform: initial;
+        padding: 8px 12px;
+      }
+    }
+
+    .g-block.size-25 {
+      padding-left: 20px;
+      #g-sidebar {
+        padding: 0px;
+        margin-top: 50px;
+        background: transparent;
+
+        ul.nav.menu.mod-list {
+          border: none;
+          padding: 0;
+        }
+
+        h3 {
+          margin-bottom: 30px;
+        }
+      }
+    }
   }
-}
 
 
   /* HEADER */
@@ -2930,13 +3287,13 @@ div#em-appli-block {
     flex-direction: column;
 
     .mod-languages.advanced-dropdown {
-      margin-left: -25px;
+      margin:  15px 15px 15px 0px;
     }
   }
   #g-navigation #header-c.without-lang-switcher {
     max-width: 30rem !important;
     min-height: 67px;
-     .g-content {
+    .g-content {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2944,84 +3301,86 @@ div#em-appli-block {
     }
   }
 
-    /* BURGER */
+  /* BURGER */
   #g-page-surround .g-offcanvas-toggle {
     top: 20px !important;
+    position: fixed !important;
+    display: none;
   }
 
   /* BURGER OUVERT */
-#g-offcanvas {
-  background: #F2F2F2;
-  .g-grid {
-    margin: 50px 0px;
-
-  .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
+  #g-offcanvas {
     background: #F2F2F2;
-    margin: 0;
-    padding: 0;
+    .g-grid {
+      margin: 50px 0px;
 
-    li {
-      border-bottom: 1px solid #F2F2F2;
-      display: flex;
-      flex-direction: row;
-      align-items: baseline;
-      justify-content: space-between;
-      background: #F2F2F2;
-      width: 100% !important;
-      span {
-        width: 10%;
-        margin-top: 15px;
-        &::after {
-          color: #000;
-          opacity: initial;
+      .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
+        background: #F2F2F2;
+        margin: 0;
+        padding: 0;
+
+        li {
+          border-bottom: 1px solid #F2F2F2;
+          display: flex;
+          flex-direction: row;
+          align-items: baseline;
+          justify-content: space-between;
+          background: #F2F2F2;
+          width: 100% !important;
+          span {
+            width: 10%;
+            margin-top: 15px;
+            &::after {
+              color: #000;
+              opacity: initial;
+            }
+          }
+          a {
+            color: $base-primary-color;
+            padding: 15px 30px;
+            width: auto;
+            display: block;
+          }
+        }
+
+        li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module).active {
+          background: #FAFAFA;
+          border-left: 6px solid $base-secondary-color;
+          a {
+            color: $base-primary-color;
+          }
+        }
+
+        li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module):hover {
+          background: #ccc;
+          a {
+            color:#fff;
+          }
         }
       }
-      a {
-        color: $base-primary-color;
-        padding: 15px 30px;
-        width: auto;
-        display: block;
-      }
-    }
-
-    li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module).active {
-      background: #FAFAFA;
-      border-left: 6px solid $base-secondary-color;
-      a {
-        color: $base-primary-color;
-      }
-    }
-
-    li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module):hover {
-      background: #ccc;
-     a {
-       color:#fff;
-     }
     }
   }
-  }
-}
 
 
 
 
   /* FOOTER */
 
-footer#g-footer .g-grid {
-  .bas-footer {
+  footer#g-footer .g-grid {
+    .bas-footer {
       justify-content: center;
-        .em-containerAdresseLogo {
-          justify-content: center;
-          width: 100% !important;
-          .adresse {
-            align-items: center;
+      .em-containerAdresseLogo {
+        justify-content: center;
+        width: 100% !important;
+        .adresse {
+          align-items: center;
 
-            p.street {
-              text-align: center;
-            }
+          p.street {
+            text-align: center;
           }
         }
       }
+    }
 
     .g-block {
       width: 60%;
@@ -3042,6 +3401,9 @@ footer#g-footer .g-grid {
 }
 
 @media all and (min-width: 480px) and (max-width: 767px)  {
+  .gantry #g-feature{
+    margin-top: 100px;
+  }
 
   /* BURGER */
   #g-page-surround .g-offcanvas-toggle {
@@ -3350,8 +3712,18 @@ footer#g-footer .g-grid {
     }
   }
 
-  .error-report-page .fabrikForm {
-    padding: 1rem 3rem 1rem 3rem;
+  /* RAPPORT D'ERREUR */
+  .error-report-page button.submit {
+    background: $dark-blue;
+    border: 2px solid $dark-blue;
+    padding: 5px 30px !important;
+    font-weight: 500 !important;
+    border-radius: 25px !important;
+    &:active, &:focus, &:hover {
+      background: transparent;
+      border: 2px solid $dark-blue;
+      color: $dark-blue;
+    }
   }
 
   .mod-languages {
@@ -3369,9 +3741,9 @@ footer#g-footer .g-grid {
   }
 
 
-  #g-container-main .g-container {
+  /*#g-container-main .g-container {
     width: 100% !important;
-  }
+  }*/
 
   #g-mobilemenu-container {
     margin: 0;
@@ -3424,137 +3796,140 @@ footer#g-footer .g-grid {
   }
 }
 
+@media all and (min-width: 768px) and (max-width: 959px) {
+  button.save {
+    margin-left: 20px !important;
+  }
+}
 
-  @media screen and (min-width: 768px) and (max-width: 959px) {
-    button.save {
-      margin-left: 20px !important;
-    }
 
-    .header-right a.btn:first-child {
-      margin-bottom: 10px;
-    }
-
-    #g-navigation {
-      border-bottom: 1px solid #eeeeee;
-      width: 100vw;
-
-      .g-container {
-        padding: 10px;
-        width: 95%;
-        margin: auto !important;
-      }
-
-      #header-a {
-        justify-content: center;
-        margin-bottom: 18px;
-      }
-    }
-
-    .g-branding {
-      text-align: inherit;
-    }
-
-    #g-main-mainbody {
-      padding-top: 0;
-    }
-
-    h1 {
-      font-size: 28px;
-    }
-
-    h2 {
-      font-size: 25px;
-    }
-
-    h3 {
-      font-size: 22px;
-    }
-
-    h4 {
-      font-size: 18px;
-    }
-
-    .col-xs-12.col-md-6,
-    .col-xs-12.col-md-6 {
-
-      &.main-page-file-progress,
-      &.main-page-file-info {
-        width: 50%;
-      }
-    }
+@media screen and (min-width: 768px) and (max-width: 959px) {
+  .header-right a.btn:first-child {
+    margin-bottom: 10px;
   }
 
-  @media all and (max-width: 959px) {
-    section#g-navigation {
-      width: auto !important;
-    }
+  #g-navigation {
+    border-bottom: 1px solid #eeeeee;
+    width: 100vw;
 
-    .row {
-      margin-left: 0px;
-    }
-
-    .container {
-      padding-right: 0;
-      padding-left: 0;
-    }
-
-    .bas-footer {
-      width: 90%;
-    }
-
-    #g-navigation .g-container {
-      padding: 10px 30px !important;
-    }
-  }
-
-  @media screen and (min-width: 960px) and (max-width: 1199px) {
-    #g-main-mainbody {
-      padding-top: 0;
-    }
-
-    .bas-footer {
-      width: 95%;
-    }
-  }
-
-  @media screen and (max-width: 991px) {
-    section.container {
-      float: none !important;
-    }
-  }
-
-  @media all and (max-width: 1239px) {
-
-    /* FOOTER */
-    #g-footer .em-containerAdresseLogo {
-      width: 60%;
-    }
-
-    /* STRUCUTURE */
     .g-container {
-      width: 100% !important;
+      padding: 10px;
+      width: 100%;
+      margin: auto !important;
     }
 
-    section#g-navigation {
-      width: auto !important;
+    #header-a {
+      justify-content: center;
+      //margin-bottom: 18px;
+      left: 0;
     }
-
-    #g-navigation .g-main-nav .g-toplevel > li {
-      margin: 0 8px;
-    }
-
-    #g-utility #drawer .moduletable {
-      width: 100% !important;
-      margin-left: 0 !important;
-    }
-
-    #g-container-main {
-      padding: 20px;
-    }
-
-    /* GENERAL */
-    #gototop div {
-      display: none !important;
-    }
-
   }
+
+  .g-branding {
+    text-align: inherit;
+  }
+
+  #g-main-mainbody {
+    padding-top: 0;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  h2 {
+    font-size: 25px;
+  }
+
+  h3 {
+    font-size: 22px;
+  }
+
+  h4 {
+    font-size: 18px;
+  }
+
+  .col-xs-12.col-md-6,
+  .col-xs-12.col-md-6 {
+
+    &.main-page-file-progress,
+    &.main-page-file-info {
+      width: 50%;
+    }
+  }
+}
+
+@media all and (max-width: 959px) {
+  section#g-navigation {
+    width: auto !important;
+  }
+
+  .row {
+    margin-left: 0px;
+  }
+
+  .container {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .bas-footer {
+    width: 90%;
+  }
+
+  #g-navigation .g-container {
+    padding: 10px 30px !important;
+  }
+}
+
+@media screen and (min-width: 960px) and (max-width: 1199px) {
+  #g-main-mainbody {
+    padding-top: 0;
+  }
+
+  .bas-footer {
+    width: 95%;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  section.container {
+    float: none !important;
+  }
+}
+
+@media all and (max-width: 1239px) {
+
+  /* FOOTER */
+  #g-footer .em-containerAdresseLogo {
+    width: 60%;
+  }
+
+  /* STRUCUTURE */
+  /*.g-container {
+    width: 100% !important;
+  }*/
+
+  section#g-navigation {
+    width: auto !important;
+  }
+
+  #g-navigation .g-main-nav .g-toplevel > li {
+    margin: 0 8px;
+  }
+
+  #g-utility #drawer .moduletable {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  #g-container-main {
+    padding: 20px;
+  }
+
+  /* GENERAL */
+  #gototop div {
+    display: none !important;
+  }
+
+}

@@ -29,6 +29,13 @@ defined('_JEXEC') or die;
     #header-a{
         position: relative;
         left: 5%;
+        opacity: 0;
+    }
+
+    @media all and (max-width: 479px) {
+        #header-a{
+            opacity: 1;
+        }
     }
 
     #header-b{
@@ -476,7 +483,6 @@ defined('_JEXEC') or die;
 
     function enableTooltip(menu){
         if(jQuery(".image-title").css("display") != 'none') {
-            console.log(jQuery("#sublevel_list_" + menu)[0])
             if(typeof jQuery("#sublevel_list_" + menu)[0] != 'undefined'){
                 jQuery("#tooltip-" + menu).css('margin-left', '250px');
                 jQuery("#tooltip-" + menu).css('display', 'block');
@@ -492,13 +498,17 @@ defined('_JEXEC') or die;
     }
 
     function enableTitles(state = null){
+        console.log(window.innerWidth);
         if(jQuery(".image-title").css("display") == 'none' && state == null){
             localStorage.setItem('menu', 'true');
-            jQuery(".tchooz-vertical-toplevel").css("width","250px")
-            jQuery(".tchooz-vertical-item").css("width","auto")
-            jQuery("#g-footer").css("padding-left","300px");
-            jQuery("#g-container-main").css("padding-left","180px");
-            jQuery(".grey-navbar-icons").css("opacity","1")
+            jQuery(".tchooz-vertical-toplevel").css("width","250px");
+            jQuery(".tchooz-vertical-item").css("width","auto");
+            jQuery(".grey-navbar-icons").css("opacity","1");
+            if(window.innerWidth >= 1280) {
+                jQuery("#g-footer").css("padding-left", "300px");
+                jQuery("#g-container-main").css("padding-left", "180px");
+                jQuery("#header-a").css("opacity", "1");
+            }
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
                 jQuery(".image-title").css("opacity","1");
@@ -507,11 +517,14 @@ defined('_JEXEC') or die;
                 },50);
             },250)
         } else if(state == 'true'){
-            jQuery(".tchooz-vertical-toplevel").css("width","250px")
-            jQuery(".tchooz-vertical-item").css("width","auto")
-            jQuery("#g-footer").css("padding-left","300px");
-            jQuery("#g-container-main").css("padding-left","180px");
-            jQuery(".grey-navbar-icons").css("opacity","1")
+            jQuery(".tchooz-vertical-toplevel").css("width","250px");
+            jQuery(".tchooz-vertical-item").css("width","auto");
+            jQuery(".grey-navbar-icons").css("opacity","1");
+            if(window.innerWidth >= 1280) {
+                jQuery("#g-footer").css("padding-left", "300px");
+                jQuery("#g-container-main").css("padding-left", "180px");
+                jQuery("#header-a").css("opacity", "1");
+            }
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
                 jQuery(".image-title").css("opacity","1");
@@ -521,23 +534,26 @@ defined('_JEXEC') or die;
             },250)
         } else {
             localStorage.setItem('menu', 'false');
-            jQuery(".tchooz-vertical-toplevel").css("width","55px")
+            jQuery(".tchooz-vertical-toplevel").css("width","55px");
             jQuery(".image-title").css("opacity","0");
             jQuery(".g-menu-parent-indicator").css("display","none");
-            jQuery("#g-container-main").css("padding-left","0");
-            jQuery("#g-footer").css("padding-left","80px");
+            if(window.innerWidth >= 1280) {
+                jQuery("#g-container-main").css("padding-left", "0");
+                jQuery("#g-footer").css("padding-left", "80px");
+                jQuery("#header-a").css("opacity", "0");
+            }
             setTimeout(() =>{
                 jQuery(".image-title").css("display","none");
-                jQuery(".grey-navbar-icons").css("opacity","0")
+                jQuery(".grey-navbar-icons").css("opacity","0");
             },50)
         }
     }
 
     function backToParentMenu(id){
-        jQuery(".tchooz-vertical-toplevel").css("width","250px")
-        jQuery(".tchooz-vertical-item").css("width","auto")
+        jQuery(".tchooz-vertical-toplevel").css("width","250px");
+        jQuery(".tchooz-vertical-item").css("width","auto");
         jQuery("#menu_separator").css('width','auto');
-        jQuery(".g-menu-item-" + id).removeClass('parent-active')
+        jQuery(".g-menu-item-" + id).removeClass('parent-active');
         jQuery("#sublevel_list_" + id).css("display", "none");
         jQuery(".g-menu-parent-indicator").css("display","block");
         jQuery(".image-title").css("display","block");

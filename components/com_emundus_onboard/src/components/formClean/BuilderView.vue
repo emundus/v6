@@ -1112,8 +1112,10 @@ export default {
     },
   },
   created() {
-    this.getDataObject();
-    this.getAccess();
+    if(!_.isEmpty(this.object.object)) {
+      this.getDataObject();
+      this.getAccess();
+    }
   },
   watch: {
     object: function() {

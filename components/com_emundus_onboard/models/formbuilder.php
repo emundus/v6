@@ -18,12 +18,15 @@ use Joomla\CMS\Date\Date;
 class EmundusonboardModelformbuilder extends JModelList {
     var $model_language = null;
     var $model_language_overrides = null;
+    var $model_menus = null;
 
     public function __construct($config = array()) {
         parent::__construct($config);
         JModelLegacy::addIncludePath(JPATH_SITE . '/administrator/components/com_languages/models');
+        JModelLegacy::addIncludePath(JPATH_SITE . '/administrator/components/com_menus/models');
         $this->model_language = JModelLegacy::getInstance('Override', 'LanguagesModel');
         $this->model_language_overrides = JModelLegacy::getInstance('Overrides', 'LanguagesModel');
+        $this->model_menus = JModelLegacy::getInstance('Item', 'MenusModel');
     }
 
     /** TRANSLATION SYSTEM */
@@ -203,6 +206,10 @@ class EmundusonboardModelformbuilder extends JModelList {
         // TODO Use Joomla API to create menus
         $db = $this->getDbo();
         $query = $db->getQuery(true);
+
+        $app = JFactory::getApplication();
+
+        $model = new MenusModelItem();
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
         $modules = [93,102,103,104,168,170];
@@ -861,6 +868,11 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        $app = JFactory::getApplication();
+
+        $lang = JFactory::getLanguage();
+        $actualLanguage = substr($lang->getTag(), 0 , 2);
+
         $query->select('*')
             ->from($db->quoteName('#__emundus_setup_profiles'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($prid));
@@ -1007,7 +1019,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->select('*')
                 ->from($db->quoteName('#__menu'))
                 ->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
-                ->andWhere($db->quoteName('path') . ' LIKE ' . $db->quote($menutype . '%'))
+                ->andWhere($db->quoteName('parent_id') . ' = ' . $db->quote($menu_parent->id))
                 ->order('rgt');
             $db->setQuery($query);
             $results = $db->loadObjectList();
@@ -1079,6 +1091,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             return array(
                 'id' => $formid,
+                'label' => $label[$actualLanguage],
                 'link' => 'index.php?option=com_fabrik&view=form&formid=' . $formid,
                 'rgt' => array_values($rgts)[strval(sizeof($rgts) - 1)] + 2,
             );
@@ -1824,6 +1837,30 @@ class EmundusonboardModelformbuilder extends JModelList {
             if($db_element->plugin != $element['plugin']){
                 $element['params'] = $this->updateElementParams($element['plugin'],$db_element->plugin,$element['params']);
             }
+
+            $key = array_search("notempty", $element['params']['validations']['plugin']);
+            if($element['FRequire'] != "true") {
+                if($key !== false && $key !== null) {
+                    unset($element['params']['validations']['plugin'][$key]);
+                    unset($element['params']['validations']['plugin_published'][$key]);
+                    unset($element['params']['validations']['validate_in'][$key]);
+                    unset($element['params']['validations']['validation_on'][$key]);
+                    unset($element['params']['validations']['validate_hidden'][$key]);
+                    unset($element['params']['validations']['must_validate'][$key]);
+                    unset($element['params']['validations']['show_icon'][$key]);
+                }
+            } else {
+                if($key === false || $key === null) {
+                    $element['params']['validations']['plugin'][] = "notempty";
+                    $element['params']['validations']['plugin_published'][] = "1";
+                    $element['params']['validations']['validate_in'][] = "both";
+                    $element['params']['validations']['validation_on'][] = "both";
+                    $element['params']['validations']['validate_hidden'][] = "0";
+                    $element['params']['validations']['must_validate'][] = "0";
+                    $element['params']['validations']['show_icon'][] = "1";
+                }
+            }
+
 
             // Filter by plugin
             if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown') {

@@ -366,6 +366,12 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     margin-bottom: 20px;
 }
 
+@media all and (max-width: 479px) {
+    .view-login .login.em-formRegistrationCenter .page-header div.icon-title.loginicon {
+        display: none;
+    }
+}
+
 .view-login .login.em-formRegistrationCenter .page-header div.icon-title {
     margin-right: 10px;
     width: 35px;
