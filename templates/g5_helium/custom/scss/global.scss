@@ -592,7 +592,7 @@ body>.g-container {
 }
 
 /* MODULE USER DROPDOWN */
-#g-navigation .g-container #header-c {
+.gantry #g-navigation .g-container #header-c {
   a.forgotten_password_header {
     font-size: 14px;
     color: $base-secondary-color;
@@ -612,10 +612,11 @@ body>.g-container {
 
         &:hover,
         &:active,
-      &:focus {
+        &:active:hover,
+        &:focus {
         background: transparent;
-        color: $base-secondary-color;
-        border-color: $base-secondary-color;
+        color: $base-secondary-color !important;
+        border-color: $base-secondary-color !important;
         }
       }
 
@@ -626,10 +627,11 @@ body>.g-container {
 
       &:hover,
       &:active,
+      &:active:hover,
       &:focus {
         background: $base-primary-color;
-        color: #fff;
-        border-color: $base-primary-color;
+        color: #fff !important;
+        border-color: $base-primary-color !important;
         }
       }
     }
@@ -707,16 +709,17 @@ body>.g-container {
 
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
 
-view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
-.view-form .em-formRegistrationCenter .row-fluid .span4 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
+.view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.register,
+.view-form .em-formRegistrationCenter .row-fluid .span4 .button.btn.btn-primary.register {
   background-color: $base-secondary-color;
   color: #ffffff;
   border-color: $base-secondary-color;
   text-transform: initial;
   margin-left: 0px !important;
+  height: 50px !important;
 
   &:hover,
-  &active,
+  &:active,
   &:focus {
     background-color: transparent;
     color: $base-secondary-color;
@@ -791,13 +794,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 }
 
 /* MODULE APPLICATIONS  - COULEUR BTN IMPRIMER*/
-.homepage #g-main-mainbody #content-bottom-a {
+.gantry.homepage #g-main-mainbody #content-bottom-a {
   .platform-content .btn.btn-info {
     background: darken($base-secondary-color, 8%);
     border-color: darken($base-secondary-color, 8%);
 
     &:hover,
     &:active,
+    &:active:hover,
     &:focus {
       background-color: transparent;
       color: darken($base-secondary-color, 8%);
@@ -805,13 +809,13 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
-  .platform-content a.btn[title="Envoyer le dossier"] {
+  .platform-content .main-page-file-info  a.btn.btn-success {
     background: $base-secondary-color;
     border: 1px solid $base-secondary-color;
     color: #fff;
-
     &:hover,
     &:active,
+    &:active:hover,
     &:focus {
       background: transparent;
       border: 1px solid $base-secondary-color;
