@@ -25,7 +25,7 @@ if [[ -z $mysql_host ]]; then
 	mysql_port="3306"
 fi
 
-for i in `find $root_dir -type d -name "tmp"`
+for i in `find $root_path -type d -name "tmp"`
     do
         echo "-----------------------------------------------------------------------------" >> $tmp_log_path
         echo "Begin clean up for : $i" >> $tmp_log_path
