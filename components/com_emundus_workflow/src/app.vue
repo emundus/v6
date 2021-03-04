@@ -8,9 +8,9 @@
     <transition name="bounce">
       <div class="element-menu" v-if="seen">
         <h2 style="align-items: center"> {{ this.$data.menu_message }} </h2>
-        <li v-for="(item,index) in items">
-          <i :class="item.icon" style="margin-right: 0px"/>
-          <span style="margin-left: 20px !important"> {{ item.item_name }} </span>
+        <li v-for="(item,index) in items" style="line-height: 2.8">
+          <i :class="item.icon"/>
+          <span style="margin: 0 35px"> {{ item.item_name }} </span>
           <button @click="addNode(index+1)" class="add-button">ADD</button>
         </li>
       </div>
@@ -210,7 +210,7 @@ export default {
 
 #g-container-main .element-menu {
   padding-bottom: 2px;
-  width: 250px;
+  width: 300px;
   position: fixed;
   display: block;
   top: 0;
@@ -218,14 +218,14 @@ export default {
   left: 75px;
   padding-top: 5%;
   height: 100%;
-  border-left: 1px solid #F4F4F6;
+  border-left: 0px solid #F4F4F6;
 }
 
 .vertical-menu {
   transform: rotate(270deg);
-  position: absolute !important;
-  top: 560px !important;
-  left: 400px !important;
+  position: relative !important;
+  top: 370px !important;
+  left: -100px !important;
   background: #28a745;
   color: #fff;
   border-radius: .25rem !important;
@@ -239,7 +239,7 @@ export default {
 .add-button {
   position: absolute;
   right: 25px;
-  top: auto;
+  top: initial;
   background-color: #28a745;
   border-color: #28a745;
   color: #fff;
@@ -248,7 +248,7 @@ export default {
   vertical-align: center;
   user-select: none;
   border-radius: .25rem;
-  margin: 6px;
+  margin: 12px;
 }
 
 .add-button:hover {
