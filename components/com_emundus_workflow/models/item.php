@@ -60,7 +60,7 @@ class EmundusworkflowModelitem extends JModelList
             return $db->loadResult();
         }
         catch(Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/workflow | Cannot count items' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            JLog::add('component/com_emundus_workflow/models/item | Cannot count items' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
             return $e->getMessage();
         }
     }
@@ -90,6 +90,26 @@ class EmundusworkflowModelitem extends JModelList
         }
         else {
             return false;
+        }
+    }
+
+    //delete selected item --> params = data
+    public function deleteItem($data) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try{
+            $query->clear()
+                ->delete($db->quoteName("#__emundus_workflow_item"))
+                ->where($db->quoteName('#__emundus_workflow_item.id') . ' = ' . (int)$data);
+
+            $db->setQuery($query);
+
+            return $db->execute();
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/item | Cannot delete item : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
         }
     }
 }

@@ -6,14 +6,14 @@
     </button>
 
     <transition name="bounce">
-    <div class="element-menu" v-if="seen">
-      <h2 style="align-items: center"> {{ this.$data.menu_message }} </h2>
+      <div class="element-menu" v-if="seen">
+        <h2 style="align-items: center"> {{ this.$data.menu_message }} </h2>
         <li v-for="(item,index) in items">
           <i :class="item.icon" style="margin-right: 0px"/>
           <span style="margin-left: 20px !important"> {{ item.item_name }} </span>
           <button @click="addNode(index+1)" class="add-button">ADD</button>
         </li>
-    </div>
+      </div>
     </transition>
 
     <simple-flowchart :scene.sync="scene"
@@ -59,21 +59,8 @@ export default {
             type: 'Initialisation',
             label: 'init',
           },
-          {
-            id: 3,
-            x: -357,
-            y: 80,
-            type: 'Item',
-            label: 'item',
-          },
         ],
-        links: [
-          {
-            id: 2,
-            from: 2, // node id the link start
-            to: 3,  // node id the link end
-          }
-        ]
+        links: [],
       },
     }
   },
@@ -172,22 +159,11 @@ export default {
     addNode: async function (index) {
       let nodeCategory = await this.getItemSimpleName();
 
-      let maxID = Math.max(0, ...this.scene.nodes.map((link) => {return link.id}))
-
-      this.scene.nodes.push({
-        id: maxID + 1,
-        x: -400,
-        y: 50,
-        type: nodeCategory[index],
-        label: this.newNodeLabel ? this.newNodeLabel : `test${maxID + 1}`,
-      })
-
       var items = {
         item_name: nodeCategory[index],
         item_id: index,
         workflow_id: this.getWorkflowIdFromURL(),
         item_label: this.newNodeLabel,
-        //add element_label column in jos_emundus_workflow_item
       }
 
       axios({
@@ -200,7 +176,13 @@ export default {
           data: items
         })
       }).then(response => {
-        console.log(response.data.data);
+        this.scene.nodes.push({
+          id: response.data.data,
+          x: -400+response.data.data,
+          y: 50,
+          type: nodeCategory[index],
+          label: this.newNodeLabel ? this.newNodeLabel : `node${response.data.data}`,
+        })
       }).catch(error => {
         console.log(error);
       })

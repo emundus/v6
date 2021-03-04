@@ -25,6 +25,8 @@
 import FlowchartLink from './FlowchartLink.vue';
 import FlowchartNode from './FlowchartNode.vue';
 import { getMousePosition } from '../assets/position';
+import axios from 'axios';
+const qs = require('qs');
 
 export default {
   name: 'VueFlowchart',
@@ -254,6 +256,23 @@ export default {
         return link.from !== id && link.to !== id
       })
       this.$emit('nodeDelete', id)
+      this.deleteItem(id)
+    },
+
+    // delete item by id
+    deleteItem: function(id) {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=item&task=deleteitem',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({id})
+      }).then(response => {
+        console.log(response.data)
+      }).catch(error => {
+        console.log(error);
+      })
     }
   },
 }

@@ -56,7 +56,30 @@ jimport('joomla.application.component.controller');
             exit;
         }
 
-        public function deleteItem() {}
+        public function deleteitem() {
+            $user = JFactory::getUser();
+
+            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            }
+            else {
+                $jinput = JFactory::getApplication()->input;
+                $data = $jinput->getRaw('id');
+                $_cit = $this->model;
+
+                $_items = $_cit->deleteItem($data);
+
+                if($_items) {
+                    $tab = array('status' => 1, 'msg' => JText::_("ITEM_DELETED"), 'data' => $_items);
+                }
+                else {
+                    $tab = array('status' => 0, 'msg' => JText::_("CANNOT_DELETE_ITEM"), 'data' => $_items);
+                }
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
 
         public function updateItemOrder() {}
 
@@ -72,9 +95,7 @@ jimport('joomla.application.component.controller');
                 $data = $jinput->getRaw('data');
                 $_cit = $this->model;
 
-//                var_dump($data['item_id']);die;
                 $_items = $_cit->getCountItemByID($data);
-
 
                 if($_items) {
                     $tab = array('status' => 1, 'msg' => JText::_("ITEM_FOUND"), 'data' => $_items);
