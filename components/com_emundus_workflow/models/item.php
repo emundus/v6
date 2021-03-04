@@ -42,18 +42,33 @@ class EmundusworkflowModelitem extends JModelList
             JLog::add('component/com_emundus_workflow/models/workflow | Cannot get all item types' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
             return $e->getMessage();
         }
+    }
 
-//        var_dump($query->__toString()); die;
-        //var_dump($db->loadObjectList()); die;
+    public function getCountItemByID($data) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('count(*)')
+                ->from($db->quoteName('#__emundus_workflow_item'))
+                ->where($db->quoteName('#__emundus_workflow_item.item_id') . ' = ' . (int)$data['item_id'])
+                ->andWhere($db->quoteName('#__emundus_workflow_item.workflow_id') . ' = ' . (int)$data['workflow_id']);
+
+
+            $db->setQuery($query);
+            return $db->loadResult();
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/workflow | Cannot count items' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
     }
 
     //create new item --> params = type, name
     public function createItem($data) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-
-        //falang
-        //$falang = JModelLegacy::getInstance('falang', 'EmundusworkflowModel');
 
         if(!empty($data)) {
 
@@ -66,7 +81,6 @@ class EmundusworkflowModelitem extends JModelList
             try {
                 $db->setQuery($query);
                 $db->execute();
-                var_dump($data);
                 return $db->insertid();
             }
             catch(Exception $e) {
@@ -74,7 +88,6 @@ class EmundusworkflowModelitem extends JModelList
                 return $e->getMessage();
             }
         }
-
         else {
             return false;
         }

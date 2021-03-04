@@ -11,7 +11,7 @@
         <li v-for="(item,index) in items">
           <i :class="item.icon" style="margin-right: 0px"/>
           <span style="margin-left: 20px !important"> {{ item.item_name }} </span>
-          <button @click="addNode(index)" class="add-button">ADD</button>
+          <button @click="addNode(index+1)" class="add-button">ADD</button>
         </li>
     </div>
     </transition>
@@ -76,8 +76,8 @@ export default {
         ]
       },
     }
-
   },
+
 
   created() {
     this.getAllItems();
@@ -88,7 +88,7 @@ export default {
 
   methods: {
 
-    getworkflowname: function() {
+    getworkflowname: function () {
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus_workflow&controller=workflow&task=getworkflowbyid',
@@ -105,7 +105,7 @@ export default {
       })
     },
 
-    insertInitBloc: async function() {
+    insertInitBloc: async function () {
       var init = {
         item_id: 1,
         item_name: "Initialisation",
@@ -115,21 +115,38 @@ export default {
 
       axios({
         method: 'post',
-        url: "index.php?option=com_emundus_workflow&controller=item&task=createitem&workflowid=" + init.workflow_id + "&itemid=1",
+        url: "index.php?option=com_emundus_workflow&controller=item&task=getcounditembyid",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
           data: init,
         })
-      }).then(response =>{
-        this.init = response.data.data;
+      }).
+      then(response => {
+        if(response.data.status == 0) {
+          //create new init bloc
+          axios({
+            method: 'post',
+            url: "index.php?option=com_emundus_workflow&controller=item&task=createitem&workflowid=" + init.workflow_id + "&itemid=1",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              data: init,
+            })
+          }).then(response =>{
+            this.init = response.data.data;
+          }).catch(error => {
+            console.log(error);
+          })
+        }
       }).catch(error => {
         console.log(error);
       })
     },
 
-    getWorkflowIdFromURL: function() {
+    getWorkflowIdFromURL: function () {
       return window.location.href.split('id=')[1];
     },
 
@@ -137,13 +154,13 @@ export default {
       axios.get("index.php?option=com_emundus_workflow&controller=item&task=getallitems").
         then(response => {
           this.items = response.data.data;
-          this.items.splice(0,1);
+          this.items.splice(0, 1);
         }).catch(error => {
         console.log(error);
       })
     },
 
-    getItemSimpleName: async function() {
+    getItemSimpleName: async function () {
       var json = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getallitems');
       var rawData = (JSON.parse(JSON.stringify(json))).data.data;
 
@@ -152,7 +169,7 @@ export default {
       return itemCategory;
     },
 
-    addNode: async function(index) {
+    addNode: async function (index) {
       let nodeCategory = await this.getItemSimpleName();
 
       let maxID = Math.max(0, ...this.scene.nodes.map((link) => {return link.id}))
@@ -162,12 +179,12 @@ export default {
         x: -400,
         y: 50,
         type: nodeCategory[index],
-        label: this.newNodeLabel ? this.newNodeLabel: `test${maxID + 1}`,
+        label: this.newNodeLabel ? this.newNodeLabel : `test${maxID + 1}`,
       })
 
       var items = {
         item_name: nodeCategory[index],
-        item_id: index+1,
+        item_id: index,
         workflow_id: this.getWorkflowIdFromURL(),
         item_label: this.newNodeLabel,
         //add element_label column in jos_emundus_workflow_item
@@ -182,7 +199,7 @@ export default {
         data: qs.stringify({
           data: items
         })
-      }).then(response =>{
+      }).then(response => {
         console.log(response.data.data);
       }).catch(error => {
         console.log(error);
@@ -190,6 +207,7 @@ export default {
     },
   }
 }
+
 </script>
 
 <style>
