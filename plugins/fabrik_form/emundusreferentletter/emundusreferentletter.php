@@ -132,7 +132,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		$query = 'SELECT esp.reference_letter
                 FROM #__emundus_setup_profiles as esp
                 LEFT JOIN #__emundus_setup_campaigns as esc on esc.profile_id = esp.id 
-                LEFT JOIN #__emundus_campaign_candidature as ecc on esc.id = ecc.campaign_id 
+                LEFT JOIN #__emundus_campaign_candidature as ecc on ecc.campaign_id = esc.id 
                 WHERE ecc.fnum LIKE '. $db->quote($fnum);
 		$db->setQuery($query);
 		$obj_letter = $db->loadRowList();
