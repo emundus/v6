@@ -51,15 +51,7 @@ export default {
         centerX: 1024,
         centerY: 140,
         scale: 1,
-        nodes: [
-          {
-            id: 2,
-            x: -700,
-            y: -69,
-            type: 'Initialisation',
-            label: 'init',
-          },
-        ],
+        nodes: [],
         links: [],
       },
     }
@@ -123,7 +115,13 @@ export default {
               data: init,
             })
           }).then(response =>{
-            this.init = response.data.data;
+            this.scene.nodes.push({
+              id: response.data.data,
+              x: -700,
+              y: -69,
+              type: 'Initialisation',
+              label: 'init',
+            })
           }).catch(error => {
             console.log(error);
           })
@@ -139,10 +137,10 @@ export default {
 
     getAllItems: function() {
       axios.get("index.php?option=com_emundus_workflow&controller=item&task=getallitems").
-        then(response => {
-          this.items = response.data.data;
-          this.items.splice(0, 1);
-        }).catch(error => {
+      then(response => {
+        this.items = response.data.data;
+        this.items.splice(0, 1);
+      }).catch(error => {
         console.log(error);
       })
     },
@@ -178,7 +176,7 @@ export default {
       }).then(response => {
         this.scene.nodes.push({
           id: response.data.data,
-          x: -400+response.data.data,
+          x: -400+1.5*response.data.data,
           y: 50,
           type: nodeCategory[index],
           label: this.newNodeLabel ? this.newNodeLabel : `node${response.data.data}`,
