@@ -24,7 +24,7 @@
           <th>Index</th>
           <th>Workflow ID</th>
           <th>Nom du workflow</th>
-          <th>Action</th>
+          <th style="text-align: center">Action</th>
           <th>Campagne associee</th>
           <th>Dernier mis a jour</th>
           <th>Creee a</th>
@@ -38,8 +38,9 @@
           <th>{{ workflow.id }}</th>
           <th>{{ workflow.workflow_name }}</th>
           <th>
-            <button @click="changeToWorkflowSpace(workflow.id)" class="edit-button">EDIT</button>
-            <button @click="deleteWorkflow(workflow.id)" class="delete-button">DELETE</button>
+            <button @click="changeToWorkflowSpace(workflow.id)" class="edit-button">OUVRIR</button>
+            <button @click="deleteWorkflow(workflow.id)" class="delete-button">SUPPRIMER</button>
+            <button @click="duplicateWorkflow(workflow.id)" class="duplicate-button">DUPLIQUER</button>
           </th>
           <th> {{ workflow.label }} </th>
           <th>{{ workflow.user_id }}</th>
@@ -150,6 +151,36 @@ export default {
       })
     },
 
+    //duplicate workflow from id
+    duplicateWorkflow: async function(id) {
+      let _response = await axios.get('index.php?option=com_emundus_workflow&controller=workflow&task=getworkflowbyid', { params: {wid:id} });
+      var oldworkflow = ((_response.data.data)[0]);
+      let now = new Date();
+
+      var newworkflow = {
+        campaign_id :oldworkflow.campaign_id,
+        workflow_name: oldworkflow.workflow_name + "copy",
+        user_id: 95,
+        created_at: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
+        updated_at: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
+      }
+
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=workflow&task=createworkflow&suboption=clone&oldworkflow=' + oldworkflow.id,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          data:newworkflow
+        })
+      }).then(response => {
+        this.getAllWorkflow();
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
     redirectJRoute(link) {
       axios({
         method: "get",
@@ -226,6 +257,20 @@ export default {
     top: auto;
     background-color: #dc3545;
     border-color: #dc3545;
+    color: #fff;
+    display: inline-block;
+    text-align: center;
+    vertical-align: center;
+    user-select: none;
+    border-radius: .25rem;
+    margin: 5px;
+    padding: 4px 20px;
+  }
+
+  .duplicate-button {
+    top: auto;
+    background-color: #ffc107;
+    border-color: #ffc107;
     color: #fff;
     display: inline-block;
     text-align: center;
