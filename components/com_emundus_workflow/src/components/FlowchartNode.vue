@@ -15,6 +15,12 @@
     <div class="node-port node-output" 
       @mousedown="outputMouseDown">
     </div>
+    <div class="duplicate-option">
+      <em :class = '["far fa-clone fa-7x"]'/>
+    </div>
+    <div class="remove-option">
+      <em :class = '["fas fa-trash fa-7x"]' style="box-shadow: "/>
+    </div>
     <div v-show="show.delete" class="node-delete">&times;</div>
   </div>
 </template>
@@ -176,6 +182,23 @@ export default {
   background: #f85;
   color: white;
 }
+
+.duplicate-option {
+  font-size: small;
+  text-align: center;
+  margin: 0 10px;
+  width: 20px;
+  height: fit-content;
+}
+
+.remove-option {
+  font-size: small;
+  text-align: center;
+  margin: -92px 50px;
+  width: 20px;
+  height: fit-content;
+}
+
 .selected {
   box-shadow: 0 0 0 2px #f85;
 }
