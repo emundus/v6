@@ -40,6 +40,7 @@ export default {
 
   props: {
     items: Array,
+    nodeCategory: Array,
   },
 
   data() {
@@ -151,12 +152,12 @@ export default {
 
       var itemCategory = [];
       rawData.forEach(element => itemCategory.push(element.item_name));
-      return itemCategory;
+      this.$props.nodeCategory = itemCategory;
+      return this.$props.nodeCategory;
     },
 
     addNode: async function (index) {
-      let nodeCategory = await this.getItemSimpleName();
-
+      let nodeCategory = this.$props.nodeCategory;
       var items = {
         item_name: nodeCategory[index],
         item_id: index,
