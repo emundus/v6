@@ -21,14 +21,9 @@
     <table class="styled-table">
       <thead>
         <tr>
-          <th>Index</th>
-          <th>Workflow ID</th>
-          <th>Nom du workflow</th>
-          <th style="text-align: center">Action</th>
-          <th>Campagne associee</th>
-          <th>Dernier mis a jour</th>
-          <th>Creee a</th>
-          <th>Mis a jour a</th>
+          <th v-for="(theader,index) in this.$data.table_header" :key="index">
+            {{ theader }}
+          </th>
         </tr>
       </thead>
 
@@ -73,6 +68,7 @@ export default {
       name: '',
       selectedCampaign: '',
       workflow_id: 0,
+      table_header: ['Index', 'Workflow ID', 'Nom du workflow', 'Action', 'Campagne Associee', 'Dernier Mis-a-jour', 'Cree a', 'Mis-a-jour a'],
     }
   },
 
