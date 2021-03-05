@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.9" type="plugin" group="user">
+	<name>Emundus - Nantes Link employeur</name>
+	<creationDate>04 March 2021</creationDate>
+	<version>1.0.0</version>
+	<author>James Dean</author>
+	<authorEmail>james.dean@emundus.fr</authorEmail>
+	<authorUrl>https://www.emundus.fr</authorUrl>
+	<copyright>(C) 2010-2021 EMUNDUS SOFTWARE. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>This plugin will create or upadate a Nantes employeur and link them to their category</description>
+	<files>
+		<filename plugin="nantes_link_employeur">nantes_link_employeur.php</filename>
+	</files>
+</extension>
