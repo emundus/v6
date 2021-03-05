@@ -180,7 +180,7 @@ export default {
           x: -400+1.5*response.data.data,
           y: 50,
           type: nodeCategory[index],
-          label: this.newNodeLabel ? this.newNodeLabel : `node${response.data.data}`,
+          label: `node${response.data.data}`,
         })
       }).catch(error => {
         console.log(error);

@@ -23,12 +23,12 @@
         <tr>
           <th>Index</th>
           <th>Workflow ID</th>
-          <th>Workflow name</th>
+          <th>Nom du workflow</th>
           <th>Action</th>
-          <th>Associated campaign</th>
-          <th>Last accessed by</th>
-          <th>Created at</th>
-          <th>Updated at</th>
+          <th>Campagne associee</th>
+          <th>Dernier mis a jour</th>
+          <th>Creee a</th>
+          <th>Mis a jour a</th>
         </tr>
       </thead>
 

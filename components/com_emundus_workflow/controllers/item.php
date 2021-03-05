@@ -130,12 +130,32 @@ jimport('joomla.application.component.controller');
             }
             echo json_encode((object)$tab);
             exit;
-            //return json_encode((object)$tab);
         }
 
-        public function getOrder($id) {}
+        // get item by id
+        public function getitem() {
+            $user = JFactory::getUser();
 
-        public function getParent($id) {}
+            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            }
+            else {
+                $jinput = JFactory::getApplication()->input;
+                $data = $jinput->getRaw('id');
+                $_cit = $this->model;
 
-        public function getChild($id) {}
+                $_items = $_cit->getItemByID($data);
+
+                if($_items) {
+                    $tab = array('status' => 1, 'msg' => JText::_("ITEM_GET"), 'data' => $_items);
+                }
+                else {
+                    $tab = array('status' => 0, 'msg' => JText::_("ITEM_NOT_GET"), 'data' => $_items);
+                }
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+
     }
