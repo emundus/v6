@@ -112,7 +112,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$other_param['lastname'] 		= $lastname;
 		$other_param['profile'] 		= $profile;
 		$other_param['em_oprofiles'] 	= !empty($oprofiles) ? explode(',', $oprofiles): $oprofiles;
-		$other_param['univ_id'] 		= $univ_id;
+		$other_param['university_id'] 		= $univ_id;
 		$other_param['em_groups'] 		= !empty($groups) ? explode(',', $groups): $groups;
 		$other_param['em_campaigns'] 	= !empty($campaigns) ? explode(',', $campaigns): $campaigns;
 		$other_param['news'] 			= $news;

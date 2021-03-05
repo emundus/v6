@@ -51,7 +51,7 @@ if ($campaign_id > 0)
 		$other_param['firstname'] 	= 'user';
 		$other_param['lastname'] 	= $date;
 		$other_param['profile'] 	= $campaign[0]['profile_id'];
-		$other_param['univ_id'] 	= '';
+		$other_param['university_id'] 	= '';
 		$other_param['groups'] 		= '';
 
 		$acl_aro_groups = $model->getDefaultGroup($campaign[0]['profile_id']);

@@ -208,7 +208,7 @@ if ($uid > 0) {
 	$other_param['firstname']=ucfirst($firstname);
 	$other_param['lastname']=strtoupper($lastname);
 	$other_param['profile']=$profile;
-	$other_param['univ_id']="";
+	$other_param['university_id']="";
 	$other_param['groups']="";
 
 	$user->groups=$acl_aro_groups;

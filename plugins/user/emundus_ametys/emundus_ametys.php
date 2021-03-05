@@ -365,7 +365,7 @@ class  plgSystemEmundus_ametys extends JPlugin
                             $other_param['firstname']   = $firstname;
                             $other_param['lastname']    = $lastname;
                             $other_param['profile']     = $profile;
-                            $other_param['univ_id']     = "";
+                            $other_param['university_id']     = "";
                             $other_param['groups']      = "";
                             
                             $user->groups       = $acl_aro_groups;

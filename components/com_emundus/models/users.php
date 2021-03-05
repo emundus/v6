@@ -766,7 +766,7 @@ class EmundusModelUsers extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
 
-                $this->addEmundusUser($user->id, $other_params);
+                $this->addEmundusUser($user, $other_params);
                 return $user->id;
             }
 
@@ -776,7 +776,7 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
-    public function addEmundusUser($user_id, $params) {
+    public function addEmundusUser($user, $params) {
 
         $db = JFactory::getDBO();
         $config     = JFactory::getConfig();
@@ -794,76 +794,79 @@ class EmundusModelUsers extends JModelList {
         $groups = $params['em_groups'];
         $campaigns = $params['em_campaigns'];
         $news = $params['news'];
-        $univ_id = $params['univ_id'];
+        $univ_id = $params['university_id'];
+        $params['id'] = $user->id;
+        $params['name'] = $user->name;
+        $params['email'] = $user->email;
 
-        $dispatcher->trigger('onBeforeSaveEmundusUser', [$user_id, $params]);
+        $dispatcher->trigger('onBeforeSaveEmundusUser', [$user, $params]);
         if (empty($univ_id)) {
-            $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','',0)";
+            $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user->id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','',0)";
             $db->setQuery($query);
             $db->execute();
         } else {
-            $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','','".$univ_id."')";
+            $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user->id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','','".$univ_id."')";
             $db->setQuery($query);
             $db->execute();
         }
-	    $dispatcher->trigger('onAfterSaveEmundusUser', [$user_id, $params]);
+	    $dispatcher->trigger('onAfterSaveEmundusUser', [$user, $params]);
 
         if (!empty($groups)) {
             foreach ($groups as $group) {
-	            $dispatcher->trigger('onBeforeAddUserToGroup', [$user_id, $group]);
-                $query = "INSERT INTO `#__emundus_groups` VALUES ('',".$user_id.",".$group.")";
+	            $dispatcher->trigger('onBeforeAddUserToGroup', [$user, $group]);
+                $query = "INSERT INTO `#__emundus_groups` VALUES ('',".$user->id.",".$group.")";
                 $db->setQuery($query);
                 $db->execute();
-	            $dispatcher->trigger('onAfterAddUserToGroup', [$user_id, $group]);
+	            $dispatcher->trigger('onAfterAddUserToGroup', [$user, $group]);
             }
         }
 
         if (!empty($campaigns)) {
             $connected = JFactory::getUser()->id;
             foreach ($campaigns as $campaign) {
-	            $dispatcher->trigger('onBeforeCampaignCandidature', [$user_id, $connected, $campaign]);
+	            $dispatcher->trigger('onBeforeCampaignCandidature', [$user, $connected, $campaign]);
                 $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`)
-                                    VALUES ('.$user_id.', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'), LPAD(`applicant_id`, 7, \'0\')))';
+                                    VALUES ('.$user->id.', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'), LPAD(`applicant_id`, 7, \'0\')))';
                 $db->setQuery($query);
                 $db->execute();
-	            $dispatcher->trigger('onAfterCampaignCandidature', [$user_id, $connected, $campaign]);
+	            $dispatcher->trigger('onAfterCampaignCandidature', [$user, $connected, $campaign]);
             }
         }
 
-	    $dispatcher->trigger('onBeforeAddUserProfile', [$user_id, $profile]);
+	    $dispatcher->trigger('onBeforeAddUserProfile', [$user, $profile]);
         $query="INSERT INTO `#__emundus_users_profiles`
-                        VALUES ('','".$now."',".$user_id.",".$profile.",'','')";
+                        VALUES ('','".$now."',".$user->id.",".$profile.",'','')";
         $db->setQuery($query);
         $db->execute() or die($db->getErrorMsg());
-	    $dispatcher->trigger('onAfterAddUserProfile', [$user_id, $profile]);
+	    $dispatcher->trigger('onAfterAddUserProfile', [$user, $profile]);
 
         if (!empty($oprofiles)) {
             foreach ($oprofiles as $profile) {
-	            $dispatcher->trigger('onBeforeAddUserProfile', [$user_id, $profile]);
+	            $dispatcher->trigger('onBeforeAddUserProfile', [$user, $profile]);
                 $query = "INSERT INTO `#__emundus_users_profiles`
-                                VALUES ('','".$now."',".$user_id.",".$profile.",'','')";
+                                VALUES ('','".$now."',".$user->id.",".$profile.",'','')";
                 $db->setQuery($query);
                 $db->execute();
-	            $dispatcher->trigger('onAfterAddUserProfile', [$user_id, $profile]);
+	            $dispatcher->trigger('onAfterAddUserProfile', [$user, $profile]);
 
                 $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.(int)$profile;
                 $db->setQuery($query);
                 $group = $db->loadColumn();
 
-                JUserHelper::addUserToGroup($user_id, $group[0]);
+                JUserHelper::addUserToGroup($user->id, $group[0]);
             }
         }
 
         if ($news == 1) {
             $query = "INSERT INTO `#__user_profiles` (`user_id`, `profile_key`, `profile_value`, `ordering`)
-                            VALUES (".$user_id.", 'emundus_profile.newsletter', '1', 4)";
+                            VALUES (".$user->id.", 'emundus_profile.newsletter', '1', 4)";
             $db->setQuery($query);
             $db->execute() or die($db->getErrorMsg());
         }
 
         $query = "INSERT INTO `#__user_profiles`
-                        VALUES (".$user_id.",'emundus_profile.firstname', ".$db->Quote('"'.$firstname.'"').", '2'),
-                               (".$user_id.",'emundus_profile.lastname', ".$db->Quote('"'.$lastname.'"').", '1')";
+                        VALUES (".$user->id.",'emundus_profile.firstname', ".$db->Quote('"'.$firstname.'"').", '2'),
+                               (".$user->id.",'emundus_profile.lastname', ".$db->Quote('"'.$lastname.'"').", '1')";
         $db->setQuery($query);
         $db->execute() or die($db->getErrorMsg());
     }
@@ -1636,6 +1639,9 @@ class EmundusModelUsers extends JModelList {
 
     public function editUser($user) {
 
+        JPluginHelper::importPlugin('emundus');
+	    $dispatcher = JEventDispatcher::getInstance();
+
         $u = JFactory::getUser($user['id']);
 
         if (!$u->bind($user)) {
@@ -1767,6 +1773,8 @@ class EmundusModelUsers extends JModelList {
 		        return false;
 	        }
         }
+
+        $dispatcher->trigger('onAfterSaveEmundusUser', [$user]);
 
         return true;
     }
