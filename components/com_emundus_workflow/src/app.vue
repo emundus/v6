@@ -5,7 +5,7 @@
       NEW BLOCK
     </button>
 
-    <button @click="getCurrentNode()">GET</button>
+    <button class='save-button' @click="saveWorkflow()">SAUVEGARDER</button>
 
     <transition name="bounce">
       <div class="element-menu" v-if="seen">
@@ -220,7 +220,7 @@ export default {
       })
     },
 
-    getCurrentNode: function() {
+    saveWorkflow: function() {
       let now = new Date();
 
       this.$data.scene.nodes.forEach(element => {
@@ -290,7 +290,7 @@ export default {
 .vertical-menu {
   transform: rotate(270deg);
   position: relative !important;
-  top: 370px !important;
+  top: 305px !important;
   left: -100px !important;
   background: #28a745;
   color: #fff;
@@ -299,6 +299,21 @@ export default {
 }
 
 .vertical-menu:hover {
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.save-button {
+  transform: rotate(270deg);
+  position: relative !important;
+  top: 500px !important;
+  left: -265px !important;
+  background: #8a8a8a;
+  color: #fff;
+  border-radius: .25rem !important;
+  padding: 15px 32px;
+}
+
+.save-button:hover {
   box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 
