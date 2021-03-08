@@ -44,6 +44,25 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
+    public function getInitIDByWorkflow($wid) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('#__emundus_workflow_item.*')
+                ->from($db->quoteName('#__emundus_workflow_item'))
+                ->where($db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$wid)
+                ->andWhere($db->quoteName('#__emundus_workflow_item.item_id') . '=' . 1);
+
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        }
+        catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
     public function getCountItemByID($data) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -129,6 +148,29 @@ class EmundusworkflowModelitem extends JModelList
         }
         catch(Exception $e) {
             JLog::add('component/com_emundus_workflow/models/item | Cannot get item : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
+    }
+
+    //save all items
+    public function saveItems($data) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query
+                ->update($db->quoteName('#__emundus_workflow_item'))
+                ->set($db->quoteName('#__emundus_workflow_item.axisX') . '=' . $data['axisX'] .
+                    ',' . $db->quoteName('#__emundus_workflow_item.axisY') . '=' . $data['axisY']
+                )
+                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
+
+            $db->setQuery($query);
+//            var_dump($db->execute()); die;
+            return $db->execute();
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/item | Cannot save item : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
             return $e->getMessage();
         }
     }

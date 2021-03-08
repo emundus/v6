@@ -5,6 +5,8 @@
       NEW BLOCK
     </button>
 
+    <button @click="getCurrentNode()">GET</button>
+
     <transition name="bounce">
       <div class="element-menu" v-if="seen">
         <h2 style="align-items: center"> {{ this.$data.menu_message }} </h2>
@@ -29,8 +31,11 @@
 <script>
 import SimpleFlowchart from './components/SimpleFlowchart.vue';
 import axios from 'axios';
-
+import {DateTime as LuxonDateTime} from "luxon";
+let now = new Date();
 const qs = require('qs');
+
+const _lst = [];
 
 export default {
   name: 'app',
@@ -43,7 +48,7 @@ export default {
     nodeCategory: Array,
   },
 
-  data() {
+  data: function() {
     return {
       workflowname: [],
       seen: false,
@@ -85,12 +90,16 @@ export default {
       })
     },
 
-    insertInitBloc: async function () {
+    insertInitBloc: function () {
       var init = {
         item_id: 1,
         item_name: "Initialisation",
         workflow_id: this.getWorkflowIdFromURL(),
         item_label: 'init',
+        axisX: -700,
+        axisY: -50,
+        last_created: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes()).toISO(),
+        last_saved: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes()).toISO(),
       }
 
       axios({
@@ -102,9 +111,9 @@ export default {
         data: qs.stringify({
           data: init,
         })
-      }).
-      then(response => {
-        if(response.data.status == 0) {
+      }).then(response => {
+        //insert new init bloc
+        if (response.data.status == 0) {
           //create new init bloc
           axios({
             method: 'post',
@@ -115,7 +124,7 @@ export default {
             data: qs.stringify({
               data: init,
             })
-          }).then(response =>{
+          }).then(response => {
             this.scene.nodes.push({
               id: response.data.data,
               x: -700,
@@ -127,8 +136,30 @@ export default {
             console.log(error);
           })
         }
-      }).catch(error => {
-        console.log(error);
+        //restore current init bloc
+        else {
+          axios({
+            method: 'post',
+            url: 'index.php?option=com_emundus_workflow&controller=item&task=getinitid',
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              data: init.workflow_id
+            })
+          }).then(response => {
+            console.log(response.data.data);
+            this.scene.nodes.push({
+              id: (response.data.data)[0].id,
+              x: (response.data.data)[0].axisX,
+              y: (response.data.data)[0].axisY,
+              type: (response.data.data)[0].item_name,
+              label: (response.data.data)[0].item_label,
+            })
+          }).catch(error => {
+            console.log(error)
+          })
+        }
       })
     },
 
@@ -156,13 +187,15 @@ export default {
       return this.$props.nodeCategory;
     },
 
-    addNode: async function (index) {
+    addNode: function (index) {
       let nodeCategory = this.$props.nodeCategory;
       var items = {
         item_name: nodeCategory[index],
         item_id: index,
         workflow_id: this.getWorkflowIdFromURL(),
         item_label: this.newNodeLabel,
+        last_created: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes()).toISO(),
+        last_saved: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes()).toISO(),
       }
 
       axios({
@@ -175,17 +208,51 @@ export default {
           data: items
         })
       }).then(response => {
-        this.scene.nodes.push({
+        this.$data.scene.nodes.push({
           id: response.data.data,
-          x: -400+1.5*response.data.data,
-          y: 50,
+          x: -400 + Math.floor((Math.random() * 100) + 1),
+          y: 50 + Math.floor((Math.random() * 100) + 1),
           type: nodeCategory[index],
           label: `node${response.data.data}`,
-        })
+        });
       }).catch(error => {
         console.log(error);
       })
     },
+
+    getCurrentNode: function() {
+      let now = new Date();
+
+      this.$data.scene.nodes.forEach(element => {
+
+        var current_nodes = {
+          id: element.id,
+          label: element.label,
+          type: element.type,
+          axisX: element.x,
+          axisY: element.y,
+          last_saved: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes()).toISO(),
+        };
+
+        axios({
+          method: 'post',
+          url: 'index.php?option=com_emundus_workflow&controller=item&task=saveitems',
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            data: current_nodes
+          })
+        }).then(response => {
+          console.log('save successfully');
+        }).catch(error => {
+          console.log(error);
+        })
+
+        //console.log(current_nodes);
+
+      });
+    }
   }
 }
 
