@@ -149,7 +149,7 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
             $data['user_id'] = $user->id;
-
+            $data['created_at'] = date('Y-m-d H:i:s');
 
             $_wid = $this->model;
 

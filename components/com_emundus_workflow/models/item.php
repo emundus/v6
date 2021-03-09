@@ -178,13 +178,15 @@ class EmundusworkflowModelitem extends JModelList
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
+        $data['last_saved'] = date('Y-m-d H:i:s');
+
         try {
             $query
                 ->update($db->quoteName('#__emundus_workflow_item'))
                 ->set($db->quoteName('#__emundus_workflow_item.axisX') . '=' . $data['axisX'] .
                     ',' . $db->quoteName('#__emundus_workflow_item.axisY') . '=' . $data['axisY'] .
-                    ',' . $db->quoteName('#__emundus_workflow_item.item_label') . '=' . $data['item_label']
-               )
+                    ',' . $db->quoteName('#__emundus_workflow_item.item_label') . '=' . $db->quote($data['item_label']) .
+                    ',' . $db->quoteName('#__emundus_workflow_item.last_saved') . '=' . $db->quote($data['last_saved']))
                 ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
 
             $db->setQuery($query);

@@ -42,6 +42,7 @@ jimport('joomla.application.component.controller');
                 $jinput = JFactory::getApplication()->input;
                 $data = $jinput->getRaw('data');
                 $_cit = $this->model;
+                $data['last_created'] = date('Y-m-d H:i:s');
 
                 $_items = $_cit->createItem($data);
 

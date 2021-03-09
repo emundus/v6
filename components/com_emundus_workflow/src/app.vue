@@ -107,7 +107,8 @@ export default {
         item_label: '',
         axisX: -700,
         axisY: -50,
-        last_created: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
+        //last_created: new Date().toISOString().slice(0,19).replace('T', ' '),
+        //last_saved: new Date().toISOString().slice(0,19).replace('T', ' '),
       }
 
       axios({
@@ -201,7 +202,8 @@ export default {
         item_name: nodeCategory[index],
         item_id: index,
         workflow_id: this.getWorkflowIdFromURL(),
-        last_created: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
+        //last_created: new Date().toISOString().slice(0,19).replace('T', ' '),
+        //last_saved: new Date().toISOString().slice(0,19).replace('T', ' '),
       }
 
       axios({
@@ -236,8 +238,8 @@ export default {
           type: element.type,
           axisX: element.x,
           axisY: element.y,
-          last_saved: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
-          item_label: ' " ' + document.getElementById('label_' + element.id).innerText + ' " ',
+          last_saved: new Date().toISOString().slice(0,19).replace('T', ' '),
+          //item_label: ' " ' + document.getElementById('label_' + element.id).innerText + ' " ',
         };
 
         axios({

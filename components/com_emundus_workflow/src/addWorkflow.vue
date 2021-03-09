@@ -109,8 +109,6 @@ export default {
       var workflow = {
         campaign_id :this.$data.selectedCampaign,
         workflow_name: this.$data.name,
-        created_at: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
-        updated_at: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
       }
       axios({
         method: "post",
@@ -156,8 +154,6 @@ export default {
         campaign_id :oldworkflow.campaign_id,
         workflow_name: oldworkflow.workflow_name + "copy",
         user_id: 95,
-        created_at: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
-        updated_at: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
       }
 
       axios({
