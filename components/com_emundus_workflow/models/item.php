@@ -39,7 +39,27 @@ class EmundusworkflowModelitem extends JModelList
             return $db->loadObjectList();
         }
         catch(Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/workflow | Cannot get all item types' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            JLog::add('component/com_emundus_workflow/models/item | Cannot get all item types' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
+    }
+
+    //get all items by workflow id --> restore workflow
+    // select * from jos_emundus_workflow_item where jos_emundus_workflow_item.workflow_id = 28;
+    public function getAllItemsByWorkflowId($id) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        try {
+            $query->clear()
+                ->select('#__emundus_workflow_item.*')
+                ->from($db->quoteName('#__emundus_workflow_item'))
+                ->where($db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$id);
+
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/item | Cannot get all item by workflow' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
             return $e->getMessage();
         }
     }
@@ -59,6 +79,7 @@ class EmundusworkflowModelitem extends JModelList
             return $db->loadObjectList();
         }
         catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/item | Cannot get init item by workflow' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
             return $e->getMessage();
         }
     }

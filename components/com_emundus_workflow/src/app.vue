@@ -75,6 +75,7 @@ export default {
   created() {
     this.getAllItems();
     this.getItemSimpleName();
+    this.loadWorkflow();
     this.insertInitBloc();
     this.getworkflowname();
   },
@@ -155,7 +156,6 @@ export default {
               data: init.workflow_id
             })
           }).then(response => {
-            console.log(response.data.data);
             this.scene.nodes.push({
               id: (response.data.data)[0].id,
               x: (response.data.data)[0].axisX,
@@ -278,8 +278,25 @@ export default {
     },
 
     changeToDashboard() {
-      this.redirectJRoute('index.php?option=com_emundus_workflow&view=workflow&layout=workspace');
+      this.redirectJRoute('index.php?option=com_emundus_workflow&view=workflow');
+    },
+
+    loadWorkflow: async function() {
+      let rawJSON = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getallitemsbyworkflow', { params: { data : this.getWorkflowIdFromURL() } });
+      var rawData = rawJSON.data.data;    //rawData : Array
+
+      rawData.forEach(element => {
+        this.$data.scene.nodes.push({
+          id: element.id,
+          label: element.item_label,
+          type: element.item_name,
+          x: element.axisX,
+          y: element.axisY,
+        })
+      });
     }
+
+    //next step --> clone workflow = clone all items
   }
 }
 

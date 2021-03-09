@@ -106,7 +106,6 @@ export default {
 
     // create workflow with campaign
     createworkflow: function() {
-      let now = new Date();
       var workflow = {
         campaign_id :this.$data.selectedCampaign,
         workflow_name: this.$data.name,
@@ -125,7 +124,8 @@ export default {
         }),
       }).then(response => {
         this.workflow = response.data.data;
-        this.getAllWorkflow();
+        //redirect to workflow space
+        this.changeToWorkflowSpace(response.data.data);
       }).catch(error => {
         console.log(error);
       })
