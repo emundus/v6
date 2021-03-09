@@ -31,9 +31,10 @@ class EmundusworkflowModelworkflow extends JModelList
         try {
             //query string
             $query->clear()
-                ->select('#__emundus_workflow.*,#__emundus_setup_campaigns.label')
+                ->select('#__emundus_workflow.*, #__emundus_setup_campaigns.label, #__users.name')
                 ->from($db->quoteName('#__emundus_workflow'))
-                ->leftJoin('#__emundus_setup_campaigns ON #__emundus_setup_campaigns.id = #__emundus_workflow.campaign_id');
+                ->leftJoin('#__emundus_setup_campaigns ON #__emundus_setup_campaigns.id = #__emundus_workflow.campaign_id')
+                ->leftJoin('#__users ON #__users.id = #__emundus_workflow.user_id');
 
             //execute query string
             $db->setQuery($query);

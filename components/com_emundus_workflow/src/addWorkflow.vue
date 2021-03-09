@@ -32,15 +32,15 @@
           <th>{{ index }}</th>
           <th>{{ workflow.id }}</th>
           <th>{{ workflow.workflow_name }}</th>
+          <th> {{ workflow.label }} </th>
+          <th>{{ workflow.name }}</th>
+          <th>{{ workflow.created_at }}</th>
+          <th>{{ workflow.updated_at }}</th>
           <th>
             <button @click="changeToWorkflowSpace(workflow.id)" class="edit-button">OUVRIR</button>
             <button @click="deleteWorkflow(workflow.id)" class="delete-button">SUPPRIMER</button>
             <button @click="duplicateWorkflow(workflow.id)" class="duplicate-button">DUPLIQUER</button>
           </th>
-          <th> {{ workflow.label }} </th>
-          <th>{{ workflow.user_id }}</th>
-          <th>{{ workflow.created_at }}</th>
-          <th>{{ workflow.updated_at }}</th>
         </tr>
       </tbody>
     </table>
@@ -68,7 +68,7 @@ export default {
       name: '',
       selectedCampaign: '',
       workflow_id: 0,
-      table_header: ['Index', 'Workflow ID', 'Nom du workflow', 'Action', 'Campagne Associee', 'Dernier Mis-a-jour', 'Cree a', 'Mis-a-jour a'],
+      table_header: ['Index', 'Workflow ID', 'Nom du workflow', 'Campagne Associee', 'Dernier Mis-a-jour par', 'Cree a', 'Mis-a-jour a', 'Action'],
     }
   },
 
@@ -109,7 +109,6 @@ export default {
       var workflow = {
         campaign_id :this.$data.selectedCampaign,
         workflow_name: this.$data.name,
-        user_id: 95,
         created_at: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
         updated_at: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
       }
