@@ -146,26 +146,26 @@ export default {
         }
         //restore current init bloc
         else {
-          axios({
-            method: 'post',
-            url: 'index.php?option=com_emundus_workflow&controller=item&task=getinitid',
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              data: init.workflow_id
-            })
-          }).then(response => {
-            this.scene.nodes.push({
-              id: (response.data.data)[0].id,
-              x: (response.data.data)[0].axisX,
-              y: (response.data.data)[0].axisY,
-              type: (response.data.data)[0].item_name,
-              label: (response.data.data)[0].item_label,
-            })
-          }).catch(error => {
-            console.log(error)
-          })
+          // axios({
+          //   method: 'post',
+          //   url: 'index.php?option=com_emundus_workflow&controller=item&task=getinitid',
+          //   headers: {
+          //     "Content-Type": "application/x-www-form-urlencoded"
+          //   },
+          //   data: qs.stringify({
+          //     data: init.workflow_id
+          //   })
+          // }).then(response => {
+          //   this.scene.nodes.push({
+          //     id: (response.data.data)[0].id,
+          //     x: (response.data.data)[0].axisX,
+          //     y: (response.data.data)[0].axisY,
+          //     type: (response.data.data)[0].item_name,
+          //     label: (response.data.data)[0].item_label,
+          //   })
+          // }).catch(error => {
+          //   console.log(error)
+          // })
         }
       })
     },
@@ -200,7 +200,7 @@ export default {
         item_name: nodeCategory[index],
         item_id: index,
         workflow_id: this.getWorkflowIdFromURL(),
-        item_label: this.newNodeLabel,
+        item_label: this.newNodeLabel,              // fix item label --> null
         last_created: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
       }
 
@@ -259,7 +259,7 @@ export default {
 
     quitWorkflow: function() {
       this.saveWorkflow();
-      setTimeout(this.changeToDashboard(),3000);
+      setTimeout(this.changeToDashboard(),4500);    //set timeout = 4.5 seconds
     },
 
     redirectJRoute(link) {
@@ -290,8 +290,8 @@ export default {
           id: element.id,
           label: element.item_label,
           type: element.item_name,
-          x: element.axisX,
-          y: element.axisY,
+          x: Number(element.axisX),
+          y: Number(element.axisY),
         })
       });
     }
