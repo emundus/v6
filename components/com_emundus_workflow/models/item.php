@@ -182,7 +182,8 @@ class EmundusworkflowModelitem extends JModelList
             $query
                 ->update($db->quoteName('#__emundus_workflow_item'))
                 ->set($db->quoteName('#__emundus_workflow_item.axisX') . '=' . $data['axisX'] .
-                    ',' . $db->quoteName('#__emundus_workflow_item.axisY') . '=' . $data['axisY']
+                    ',' . $db->quoteName('#__emundus_workflow_item.axisY') . '=' . $data['axisY'] .
+                    ',' . $db->quoteName('#__emundus_workflow_item.item_label') . '=' . $data['item_label']
                )
                 ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
 

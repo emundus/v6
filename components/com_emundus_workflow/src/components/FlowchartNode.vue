@@ -10,7 +10,7 @@
     </div>
     <div class="node-main">
       <div v-text="type" class="node-type"></div>
-      <div v-text="label" class="node-label"></div>
+      <p contenteditable="true" class="node-label" :id="'label_'+id" v-text="label">Label</p>
     </div>
     <div class="node-port node-output" 
       @mousedown="outputMouseDown">
@@ -139,6 +139,8 @@ export default {
 }
 .flowchart-node .node-main .node-label {
   font-size: 13px;
+  text-decoration: underline;
+  cursor: auto;
 }
 .flowchart-node .node-port {
   position: absolute;

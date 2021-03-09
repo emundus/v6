@@ -104,7 +104,7 @@ export default {
         item_id: 1,
         item_name: "Initialisation",
         workflow_id: this.getWorkflowIdFromURL(),
-        item_label: 'init',
+        item_label: '',
         axisX: -700,
         axisY: -50,
         last_created: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
@@ -138,7 +138,7 @@ export default {
               x: -700,
               y: -69,
               type: 'Initialisation',
-              label: 'init',
+              label: '',
             })
           }).catch(error => {
             console.log(error);
@@ -177,6 +177,7 @@ export default {
     getAllItems: function() {
       axios.get("index.php?option=com_emundus_workflow&controller=item&task=getallitems").
       then(response => {
+        console.log(response.data.data);
         this.items = response.data.data;
         this.items.splice(0, 1);
       }).catch(error => {
@@ -200,7 +201,6 @@ export default {
         item_name: nodeCategory[index],
         item_id: index,
         workflow_id: this.getWorkflowIdFromURL(),
-        item_label: this.newNodeLabel,              // fix item label --> null
         last_created: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
       }
 
@@ -219,7 +219,7 @@ export default {
           x: -400 + Math.floor((Math.random() * 100) + 1),
           y: 50 + Math.floor((Math.random() * 100) + 1),
           type: nodeCategory[index],
-          label: `node${response.data.data}`,
+          label: '',
         });
       }).catch(error => {
         console.log(error);
@@ -233,11 +233,11 @@ export default {
 
         var current_nodes = {
           id: element.id,
-          label: element.label,
           type: element.type,
           axisX: element.x,
           axisY: element.y,
           last_saved: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
+          item_label: (document.getElementById('label_' + element.id).innerHTML).toString(),
         };
 
         axios({
