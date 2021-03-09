@@ -188,7 +188,7 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        window.location.href = window.location.pathname + response.data.data;
+        window.location.href =  window.location.pathname + response.data.data;
       });
     },
 

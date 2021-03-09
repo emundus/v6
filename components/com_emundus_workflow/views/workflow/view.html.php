@@ -29,6 +29,10 @@ class EmundusworkflowViewWorkflow extends JViewLegacy {
 
             // Display the template
             $layout = $jinput->getString('layout', null);
+
+            if($layout == 'workspace') {
+                //do stuff
+            }
             // Display the template
             parent::display($tpl);
         }

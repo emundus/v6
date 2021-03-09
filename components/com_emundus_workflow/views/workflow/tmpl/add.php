@@ -12,8 +12,9 @@ defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
 $document->addScript('media/com_emundus_workflow/chunk-vendors.js');
 $document->addStyleSheet('media/com_emundus_workflow/app.css');
+
 ?>
 
-<div id="add-worflow"></div>
+<div id="add-workflow"></div>
 
 <script src="media/com_emundus_workflow/app.js"></script>

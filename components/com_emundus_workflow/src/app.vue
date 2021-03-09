@@ -5,7 +5,13 @@
       NEW BLOCK
     </button>
 
-    <button class='save-button' @click="saveWorkflow()">SAUVEGARDER</button>
+    <button class='save-button' @click="saveWorkflow()">
+      SAUVEGARDER
+    </button>
+
+    <button class='exit-button' @click="quitWorkflow()">
+      QUITTER
+    </button>
 
     <transition name="bounce">
       <div class="element-menu" v-if="seen">
@@ -30,6 +36,7 @@
 
 <script>
 import SimpleFlowchart from './components/SimpleFlowchart.vue';
+import addWorkflow from "./addWorkflow";
 import axios from 'axios';
 import {DateTime as LuxonDateTime} from "luxon";
 let now = new Date();
@@ -41,6 +48,7 @@ export default {
   name: 'app',
   components: {
     SimpleFlowchart,
+    addWorkflow,
   },
 
   props: {
@@ -98,8 +106,7 @@ export default {
         item_label: 'init',
         axisX: -700,
         axisY: -50,
-        last_created: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes()).toISO(),
-        last_saved: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes()).toISO(),
+        last_created: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
       }
 
       axios({
@@ -194,8 +201,7 @@ export default {
         item_id: index,
         workflow_id: this.getWorkflowIdFromURL(),
         item_label: this.newNodeLabel,
-        last_created: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes()).toISO(),
-        last_saved: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes()).toISO(),
+        last_created: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
       }
 
       axios({
@@ -231,7 +237,7 @@ export default {
           type: element.type,
           axisX: element.x,
           axisY: element.y,
-          last_saved: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(),now.getHours(), now.getMinutes()).toISO(),
+          last_saved: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
         };
 
         axios({
@@ -244,14 +250,35 @@ export default {
             data: current_nodes
           })
         }).then(response => {
-          console.log('save successfully');
+          window.alert("Workflow est sauvegarde");
         }).catch(error => {
           console.log(error);
         })
-
-        //console.log(current_nodes);
-
       });
+    },
+
+    quitWorkflow: function() {
+      this.saveWorkflow();
+      setTimeout(this.changeToDashboard(),3000);
+    },
+
+    redirectJRoute(link) {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_workflow&controller=settings&task=redirectjroute",
+        params: {
+          link: link,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        window.location.href =  response.data.data;
+      });
+    },
+
+    changeToDashboard() {
+      this.redirectJRoute('index.php?option=com_emundus_workflow&view=workflow&layout=workspace');
     }
   }
 }
@@ -290,7 +317,7 @@ export default {
 .vertical-menu {
   transform: rotate(270deg);
   position: relative !important;
-  top: 305px !important;
+  top: 215px !important;
   left: -100px !important;
   background: #28a745;
   color: #fff;
@@ -305,7 +332,7 @@ export default {
 .save-button {
   transform: rotate(270deg);
   position: relative !important;
-  top: 500px !important;
+  top: 415px !important;
   left: -265px !important;
   background: #8a8a8a;
   color: #fff;
@@ -314,6 +341,21 @@ export default {
 }
 
 .save-button:hover {
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.exit-button {
+  transform: rotate(270deg);
+  position: relative !important;
+  top: 610px !important;
+  left: -415px !important;
+  background: #de2f2f;
+  color: #fff;
+  border-radius: .25rem !important;
+  padding: 15px 32px;
+}
+
+.exit-button:hover {
   box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 

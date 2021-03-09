@@ -6,9 +6,15 @@
             $jinput = JFactory::getApplication()->input;
 
             $layout = $jinput->getString('layout',null);
+
             if($layout == 'add') {
+                $this->id = $jinput->getInt('id', null);
+            }
+
+            if($layout == 'update') {
                 //do stuff
             }
+
             parent::display($tpl);
         }
     }

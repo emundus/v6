@@ -91,6 +91,8 @@ class EmundusworkflowModelworkflow extends JModelList
     }
 
     //get workflow by id
+
+    //restore workflow
     public function getWorkflowByID($wid) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -108,4 +110,6 @@ class EmundusworkflowModelworkflow extends JModelList
             return $e->getMessage();
         }
     }
+
+
 }

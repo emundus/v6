@@ -15,17 +15,14 @@
     <div class="node-port node-output" 
       @mousedown="outputMouseDown">
     </div>
-    <div class="duplicate-option">
-      <em :class = '["far fa-clone fa-7x"]'/>
-    </div>
-    <div class="remove-option">
-      <em :class = '["fas fa-trash fa-7x"]' style="box-shadow: "/>
-    </div>
+    <div class="duplicate-option">Cloner</div>
     <div v-show="show.delete" class="node-delete">&times;</div>
   </div>
 </template>
 
 <script>
+import {DateTime as LuxonDateTime} from "luxon";
+
 export default {
   name: 'FlowchartNode',
   props: {
@@ -94,7 +91,6 @@ export default {
       if (target.className.indexOf('node-input') < 0 && target.className.indexOf('node-output') < 0) {
         this.$emit('nodeSelected', e);
       }
-      e.preventDefault();
     },
     handleMouseOver() {
       this.show.delete = true;
@@ -183,20 +179,32 @@ export default {
   color: white;
 }
 
-.duplicate-option {
+.flowchart-node .duplicate-option {
   font-size: small;
   text-align: center;
-  margin: 0 10px;
-  width: 20px;
+  width: -moz-fit-content !important;
   height: fit-content;
+  display: inline-block;
+  background: #28a745;
+  position: relative;
+  margin: 35px 22px !important;
+  cursor: pointer;
+  color: white;
+  border-radius: 0.25rem !important;
 }
 
-.remove-option {
+.flowchart-node .remove-option {
   font-size: small;
   text-align: center;
-  margin: -92px 50px;
-  width: 20px;
+  width: -moz-fit-content !important;
   height: fit-content;
+  display: inline-block;
+  background: #d94c4c;
+  position: absolute;
+  margin: -5px 85px !important;
+  cursor: pointer;
+  color: white;
+  border-radius: 0.25rem !important;
 }
 
 .selected {
