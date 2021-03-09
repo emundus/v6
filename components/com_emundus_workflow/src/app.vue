@@ -237,7 +237,7 @@ export default {
           axisX: element.x,
           axisY: element.y,
           last_saved: LuxonDateTime.local(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds()).toISO(),
-          item_label: (document.getElementById('label_' + element.id).innerHTML).toString(),
+          item_label: ' " ' + document.getElementById('label_' + element.id).innerText + ' " ',
         };
 
         axios({
