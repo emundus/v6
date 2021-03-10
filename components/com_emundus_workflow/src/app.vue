@@ -226,7 +226,6 @@ export default {
       let now = new Date();
 
       this.$data.scene.nodes.forEach(element => {
-
         var current_nodes = {
           id: element.id,
           type: element.type,
@@ -245,11 +244,24 @@ export default {
             data: current_nodes
           })
         }).then(response => {
-          window.alert("Workflow est sauvegarde");
+          window.alert("Workflow est sauvegarde");      //change to modal
         }).catch(error => {
           console.log(error);
         })
       });
+
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=workflow&task=updatelastsavedworkflow',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          data: this.getWorkflowIdFromURL(),
+        })
+      }).then(response => {
+        console.log(response);
+      })
     },
 
     quitWorkflow: function() {
