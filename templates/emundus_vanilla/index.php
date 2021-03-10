@@ -104,6 +104,10 @@ $showcolumn= $this->countModules('header-b');
       </div>
     </div>
   </section>
+<?php
+$showcolumn= $this->countModules('footer-a');
+?>
+ <?php if($showcolumn): ?>
   <div id="g-container" class="g-container">
     <footer id="g-footer" class="g-footer not-co">
       <div id="g-grid" class="g-grid">
@@ -111,13 +115,7 @@ $showcolumn= $this->countModules('header-b');
           <div id="g-content" class="g-content">
             <div id="platform-content" class="platform-content">
               <div id="moduletable-footer-legal" class="moduletable-footer-legal">
-<?php
-$showcolumn= $this->countModules('footer-a');
-?>
-<?php if($showcolumn): ?>
 <jdoc:include type="modules" name="footer-a" style="<?php if(($this->params->get('footer-a') == 'block') || ($this->params->get('footer-a') == Null)): echo "block"; else: echo "xhtml"; endif;?>"/>
-<?php endif; ?>
-                        
               </div>
             </div>
           </div>
@@ -125,6 +123,7 @@ $showcolumn= $this->countModules('footer-a');
       </div>
     </footer>
   </div>
+<?php endif; ?>
 </div>
 <div id="debug" class="debug">
   <?php if ($this->countModules('debug')){ ?>

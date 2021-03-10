@@ -490,8 +490,12 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
         unset($fnums);
-        $m_files->tagFile($validFnums, $tag);
+
         $tagged = $m_files->getTaggedFile($tag);
+        $tagged_fnums = array_map(function($n) {return $n["fnum"];}, $tagged);
+
+        $validFnums = array_diff($validFnums, $tagged_fnums);
+        $m_files->tagFile($validFnums, $tag);
 
         echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $tagged)));
         exit;
@@ -765,7 +769,7 @@ class EmundusControllerFiles extends JControllerLegacy
 			$code[] = $fnum['training'];
 		}
 
-		$trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
+		$trigger_emails = $m_email->getEmailTrigger($state, $code, '0,1');
 
 		echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => JText::_('MAIL_CHANGE_STATUT_INFO'))));
         exit;
@@ -841,7 +845,7 @@ class EmundusControllerFiles extends JControllerLegacy
             // Get triggered email
             include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
             $m_email = new EmundusModelEmails;
-            $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
+            $trigger_emails = $m_email->getEmailTrigger($state, $code, '0,1');
             $toAttach = [];
 
             if (count($trigger_emails) > 0) {
