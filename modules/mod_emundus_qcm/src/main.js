@@ -1,0 +1,24 @@
+import Vue from 'vue'
+import Qcm from '@/Qcm'
+
+Vue.config.productionTip = false;
+Vue.config.devtools = true;
+
+if (document.getElementById('em-qcm-vue')) {
+  new Vue({
+    el: '#em-qcm-vue',
+    render(h) {
+      return h(Qcm, {
+        props: {
+          questions: this.$el.attributes.questions.value,
+          formid: this.$el.attributes.formid.value,
+          step: this.$el.attributes.step.value,
+          intro: this.$el.attributes.intro.value,
+          pending: this.$el.attributes.pending.value,
+          module: this.$el.attributes.module.value,
+        }
+      });
+    }
+  });
+}
+
