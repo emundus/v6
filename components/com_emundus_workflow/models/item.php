@@ -242,4 +242,24 @@ class EmundusworkflowModelitem extends JModelList
             return $e->getMessage();
         }
     }
+
+    //retrieve all links by workflow id
+    public function getAllLinksByWorkflowID($data) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('#__emundus_workflow_links.*')
+                ->from($db->quoteName('#__emundus_workflow_links'))
+                ->where($db->quoteName('#__emundus_workflow_links.workflow_id') . '=' . (int)$data);
+
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/item | Cannot get links : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
+    }
 }

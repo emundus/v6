@@ -276,11 +276,15 @@ export default {
       this.redirectJRoute('index.php?option=com_emundus_workflow&view=workflow');
     },
 
+    //load workflow = load items + load links
     loadWorkflow: async function() {
-      let rawJSON = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getallitemsbyworkflow', { params: { data : this.getWorkflowIdFromURL() } });
-      var rawData = rawJSON.data.data;    //rawData : Array
+      let rawItems = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getallitemsbyworkflow', {params: {data: this.getWorkflowIdFromURL()}}); //get all items
+      let rawLinks = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getalllinks', {params: {data: this.getWorkflowIdFromURL()}}); //get all links
 
-      rawData.forEach(element => {
+      var items = rawItems.data.data;    //items : Array
+      var links = rawLinks.data.data;    //links: Array
+
+      items.forEach(element => {
         this.$data.scene.nodes.push({
           id: element.id,
           label: element.item_label,
@@ -289,8 +293,15 @@ export default {
           y: Number(element.axisY),
         })
       });
-    }
 
+      links.forEach(element => {
+        this.$data.scene.links.push({
+          id: element.id,
+          from: element.from,
+          to: element.to,
+        })
+      });
+      },
     //next step --> clone workflow = clone all items
   }
 }
