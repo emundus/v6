@@ -196,7 +196,9 @@ jimport('joomla.application.component.controller');
                 $jinput = JFactory::getApplication()->input;
                 $data = $jinput->getRaw('data');
                 $_cit = $this->model;
+                $data['saved_by'] = $user->id;
                 $_items = $_cit->saveItems($data);
+
 
                 if($_items) {
                     $tab = array('status' => 1, 'msg' => JText::_("ITEM_SAVED"), 'data' => $_items);
@@ -229,6 +231,58 @@ jimport('joomla.application.component.controller');
                 }
                 else {
                     $tab = array('status' => 0, 'msg' => JText::_("INIT_CANNOT_GET"), 'data' => $_items);
+                }
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+
+        //create new link
+        public function createlink() {
+            $user = JFactory::getUser();
+
+            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            }
+            else {
+                $jinput = JFactory::getApplication()->input;
+                $data = $jinput->getRaw('data');
+
+                $_cit = $this->model;
+                $_items = $_cit->createLink($data);
+
+                if($_items) {
+                    $tab = array('status' => 1, 'msg' => JText::_("LINK_CREATED"), 'data' => $_items);
+                }
+                else {
+                    $tab = array('status' => 0, 'msg' => JText::_("LINK_CANNOT_CREATED"), 'data' => $_items);
+                }
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+
+        //delete link
+        public function deletelink() {
+            $user = JFactory::getUser();
+
+            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            }
+            else {
+                $jinput = JFactory::getApplication()->input;
+                $data = $jinput->getRaw('id');
+
+                $_cit = $this->model;
+                $_items = $_cit->deleteLink($data);
+
+                if($_items) {
+                    $tab = array('status' => 1, 'msg' => JText::_("LINK_DELETED"), 'data' => $_items);
+                }
+                else {
+                    $tab = array('status' => 0, 'msg' => JText::_("LINK_CANNOT_DELETED"), 'data' => $_items);
                 }
             }
             echo json_encode((object)$tab);

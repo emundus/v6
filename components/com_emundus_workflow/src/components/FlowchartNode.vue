@@ -10,7 +10,7 @@
     </div>
     <div class="node-main">
       <div v-text="type" class="node-type"></div>
-      <p contenteditable="true" class="node-label" :id="'label_'+id" v-text="label">Label</p>
+      <p contenteditable="true" class="node-label" :id="'label_'+id" v-text="label"/>
     </div>
     <div class="node-port node-output" 
       @mousedown="outputMouseDown">

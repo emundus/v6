@@ -143,6 +143,7 @@ export default {
         my: 0,
       };
     },
+
     linkingStop(index) {
       // add new Link
       if (this.draggingLink && this.draggingLink.from !== index) {
@@ -155,16 +156,45 @@ export default {
             return link.id
           }))
           const newLink = {
-            id: maxID + 1,
             from: this.draggingLink.from,
             to: index,
           };
+
+          //axios --> call to the api of create new link --> with params = {from,to,workflow_id}
+          //workflow_id --> rewrite the function of get id
+          var _links = {
+            from: newLink.from,
+            to: index,
+            workflow_id: this.getWorkflowIdFromURL(),
+            link_label: '',
+          }
+
+          axios({
+            method: 'post',
+            url: 'index.php?option=com_emundus_workflow&controller=item&task=createlink',
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              data: _links
+            })
+          }).then(response => {
+            newLink['id'] = response.data.data;
+          }).catch(error => {
+            console.log(error);
+          })
           this.scene.links.push(newLink)
           this.$emit('linkAdded', newLink)
         }
       }
       this.draggingLink = null
     },
+
+    // get workflow id from url
+    getWorkflowIdFromURL: function () {
+      return window.location.href.split('id=')[1];
+    },
+
     linkDelete(id) {
       const deletedLink = this.scene.links.find((item) => {
           return item.id === id;
@@ -174,6 +204,7 @@ export default {
             return item.id !== id;
         });
         this.$emit('linkBreak', deletedLink);
+        this.deleteLink(id);
       }
     },
     nodeSelected(id, e) {
@@ -221,9 +252,9 @@ export default {
         if (typeof target.className === 'string' && target.className.indexOf('node-delete') > -1) {
           this.nodeDelete(this.action.dragging);
         }
-        if(target.className.indexOf('duplicate-option') > -1) {
-          this.cloneItem(this.action.dragging);
-        }
+        // if(target.className.indexOf('duplicate-option') > -1) {
+        //   this.cloneItem(this.action.dragging);
+        // }
       }
       this.action.linking = false;
       this.action.dragging = null;
@@ -308,7 +339,22 @@ export default {
       }).catch(error => {
         console.log(error);
       })
-    }
+    },
+
+    //delete link by id
+    deleteLink: function(id) {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=item&task=deletelink',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({id})
+      }).then(response => {
+      }).catch(error => {
+        console.log(error);
+      })
+    },
   },
 }
 </script>

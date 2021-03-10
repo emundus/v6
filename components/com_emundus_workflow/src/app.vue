@@ -104,11 +104,8 @@ export default {
         item_id: 1,
         item_name: "Initialisation",
         workflow_id: this.getWorkflowIdFromURL(),
-        item_label: '',
         axisX: -700,
         axisY: -50,
-        //last_created: new Date().toISOString().slice(0,19).replace('T', ' '),
-        //last_saved: new Date().toISOString().slice(0,19).replace('T', ' '),
       }
 
       axios({
@@ -178,7 +175,6 @@ export default {
     getAllItems: function() {
       axios.get("index.php?option=com_emundus_workflow&controller=item&task=getallitems").
       then(response => {
-        console.log(response.data.data);
         this.items = response.data.data;
         this.items.splice(0, 1);
       }).catch(error => {
@@ -202,8 +198,6 @@ export default {
         item_name: nodeCategory[index],
         item_id: index,
         workflow_id: this.getWorkflowIdFromURL(),
-        //last_created: new Date().toISOString().slice(0,19).replace('T', ' '),
-        //last_saved: new Date().toISOString().slice(0,19).replace('T', ' '),
       }
 
       axios({
@@ -238,8 +232,7 @@ export default {
           type: element.type,
           axisX: element.x,
           axisY: element.y,
-          last_saved: new Date().toISOString().slice(0,19).replace('T', ' '),
-          //item_label: ' " ' + document.getElementById('label_' + element.id).innerText + ' " ',
+          item_label: document.getElementById('label_' + element.id).innerText,
         };
 
         axios({

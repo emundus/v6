@@ -6,7 +6,7 @@
       <text 
         text-anchor="middle" 
         :transform="arrowTransform"
-        font-size="22">&times;</text>
+        font-size="22" class="link-delete">&times;</text>
     </a>
     <path v-else d="M -1 -1 L 0 1 L 1 -1 z"
       :style="arrowStyle"
@@ -21,6 +21,7 @@ export default {
     // start point position [x, y]
     start: {
       type: Array,
+      from: Number,       // from node
       default() {
         return [0, 0]
       }
@@ -28,6 +29,7 @@ export default {
     // end point position [x, y]
     end: {
       type: Array,
+      end: Number,      // to node
       default() {
         return [0, 0]
       }

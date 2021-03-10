@@ -228,8 +228,8 @@ export default {
 
   .edit-button {
     top: auto;
-    background-color: #008cba;
-    border-color: #008cba;
+    background-color: #80ba00;
+    border-color: #80ba00;
     color: #fff;
     display: inline-block;
     text-align: center;
@@ -246,8 +246,8 @@ export default {
 
   .delete-button {
     top: auto;
-    background-color: #dc3545;
-    border-color: #dc3545;
+    background-color: red;
+    border-color: red;
     color: #fff;
     display: inline-block;
     text-align: center;
@@ -260,8 +260,8 @@ export default {
 
   .duplicate-button {
     top: auto;
-    background-color: #ffc107;
-    border-color: #ffc107;
+    background-color: orange;
+    border-color: orange;
     color: #fff;
     display: inline-block;
     text-align: center;

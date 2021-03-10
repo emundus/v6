@@ -45,7 +45,6 @@ class EmundusworkflowModelitem extends JModelList
     }
 
     //get all items by workflow id --> restore workflow
-    // select * from jos_emundus_workflow_item where jos_emundus_workflow_item.workflow_id = 28;
     public function getAllItemsByWorkflowId($id) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -186,7 +185,9 @@ class EmundusworkflowModelitem extends JModelList
                 ->set($db->quoteName('#__emundus_workflow_item.axisX') . '=' . $data['axisX'] .
                     ',' . $db->quoteName('#__emundus_workflow_item.axisY') . '=' . $data['axisY'] .
                     ',' . $db->quoteName('#__emundus_workflow_item.item_label') . '=' . $db->quote($data['item_label']) .
-                    ',' . $db->quoteName('#__emundus_workflow_item.last_saved') . '=' . $db->quote($data['last_saved']))
+                    ',' . $db->quoteName('#__emundus_workflow_item.last_saved') . '=' . $db->quote($data['last_saved']) .
+                    ',' . $db->quoteName('#__emundus_workflow_item.saved_by') .   '=' . (int)$data['saved_by']
+                )
                 ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
 
             $db->setQuery($query);
@@ -194,6 +195,50 @@ class EmundusworkflowModelitem extends JModelList
         }
         catch(Exception $e) {
             JLog::add('component/com_emundus_workflow/models/item | Cannot save item : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
+    }
+
+    //create new link --> params: from,to,workflow_id
+    public function createLink($data) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($data)) {
+            try {
+                $query->clear()
+                    ->insert($db->quoteName('#__emundus_workflow_links'))
+                    ->columns($db->quoteName(array_keys($data)))
+                    ->values(implode(',', $db->quote(array_values($data))));
+                $db->setQuery($query);
+                $db->execute();
+                return $db->insertid();
+            }
+            catch(Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/item | Cannot create link : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    //delete a link --> params: id
+    public function deleteLink($data) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->delete($db->quoteName('#__emundus_workflow_links'))
+                ->where($db->quoteName('#__emundus_workflow_links.id') . '=' . (int)$data);
+
+            $db->setQuery($query);
+            return $db->execute();
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/item | Cannot delete link : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
             return $e->getMessage();
         }
     }
