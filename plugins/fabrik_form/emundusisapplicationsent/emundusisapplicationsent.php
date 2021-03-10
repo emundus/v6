@@ -261,7 +261,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
                     // check if data stored for current user
                     try {
-                        $query = 'SELECT '.implode(',', $elements).' FROM '.$table->db_table_name.' WHERE user='.$user->id;
+                        $query = 'SELECT '.implode(',', $elements).' FROM '.$table->db_table_name.' WHERE user='.$user->id.' ORDER BY id DESC';
                         $db->setQuery($query);
                         $stored = $db->loadAssoc();
                         if (count($stored) > 0) {
@@ -283,12 +283,63 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
                             // get data and update current form
                             $groups = $formModel->getFormGroups(true);
+                            
+                            //search for joined elements like checkbox (Fabrik databasejoin displayed as checkbox)
+	                        $query = 'SELECT join_from_table, table_join, table_key, table_join_key 
+	                        		FROM #__fabrik_joins 
+	                        		WHERE group_id = 0 AND join_from_table like '.$db->Quote($table->db_table_name);
+	                        $db->setQuery($query);
+	                        try {
+	                            $repeat_elements = $db->loadObjectList();
+	                        } catch (Exception $e) {
+	                            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+	                            JLog::add($error, JLog::ERROR, 'com_emundus');
+	                            $repeat_element_table = $table->db_table_name.'_repeat'.'_'.$group->name;
+	                        }
+	                        
+	                        foreach($repeat_elements as $repeat_element) {
+	                        	$repeat_element_table = $repeat_element->join_from_table.'_repeat'.'_'.$repeat_element->table_key;
+		                        try {
+		                            //get all data from previous application file
+		                            $query = 'SELECT '.$repeat_element->table_key.' FROM '.$repeat_element_table.' WHERE '.$repeat_element->table_join_key.'='.$parent_id;
+                                            $db->setQuery( $query );
+                                            $stored = $db->loadColumn();
+ 
+                                            if (count($stored) > 0) {
+                                                // update form data
+                                                unset($stored['id']);
+                                                unset($stored['parent_id']);
+                                                
+                                                $values = array();
+                                                foreach($stored as $s) { 
+                                                	$values[] = '('.$id.', '.$db->Quote($s).')';
+                                                }
+
+                                                try {
+                                                    $query = 'INSERT INTO '.$repeat_element_table.' (`parent_id`, `'.$repeat_element->table_key.'`) VALUES '.implode(',', $values);
+                                                    $db->setQuery( $query );
+                                                    $db->execute();
+                                                } catch (Exception $e) {
+                                                    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                                                    JLog::add($error, JLog::ERROR, 'com_emundus');
+                                                }
+                                            }
+
+		                        } catch (Exception $e) {
+		                            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+		                            JLog::add($error, JLog::ERROR, 'com_emundus');
+		                        }
+	                        }
+	                        
                             $data = array();
+                            
                             if (count($groups) > 0) {
+                            
                                 foreach ($groups as $key => $group) {
                                     $group_params = json_decode($group->gparams);
+                                    
                                     if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
-
+					                    $repeat_table = '';
                                         $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id = '.$group->group_id.' AND table_key LIKE "id" AND table_join_key LIKE "parent_id"';
                                         $db->setQuery($query);
                                         try {
@@ -298,9 +349,10 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                                             JLog::add($error, JLog::ERROR, 'com_emundus');
                                             $repeat_table = $table->db_table_name.'_'.$group->group_id.'_repeat';
                                         }
-
+                                  
                                         $data[$group->group_id]['repeat_group'] = $group_params->repeat_group_button;
                                         $data[$group->group_id]['group_id'] = $group->group_id;
+                                        $data[$group->group_id]['element_id'][] = $group->element_id;
                                         $data[$group->group_id]['element_name'][] = $group->name;
                                         $data[$group->group_id]['table'] = $repeat_table;
                                     }
@@ -319,6 +371,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                                                 unset($stored['parent_id']);
 
                                                 try {
+                                                //@todo manage multi ligne data storage in joined table. Actualy only the first row is copied
                                                     $query = 'INSERT INTO '.$d['table'].' (`parent_id`, `'.implode('`,`', array_keys($stored)).'`) VALUES('.$id.', '.implode(',', $db->Quote($stored)).')';
                                                     $db->setQuery( $query );
                                                     $db->execute();
@@ -339,55 +392,68 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                             // 1. get list of uploaded documents for previous file defined as duplicated
                             $fnums = $user->fnums;
                             unset($fnums[$user->fnum]);
+                            
+                            //check if files was previously copied
+                            $query = 'SELECT count(id)
+                            FROM #__emundus_uploads as eu
+                            WHERE eu.fnum like '.$db->Quote($user->fnum);
+	                        $db->setQuery( $query );
+	                        $copied = $db->loadResult();
+                    
+                            if($copied == 0) {
+                                if (count($fnums) > 0) {
+                                    $previous_fnum = array_keys($fnums);
+                                    $query = 'SELECT eu.*, esa.nbmax
+                                    FROM #__emundus_uploads as eu
+                                    LEFT JOIN #__emundus_setup_attachments as esa on esa.id=eu.attachment_id
+                                    LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id='.$user->profile.'
+                                    WHERE eu.user_id='.$user->id.'
+                                    AND eu.fnum like '.$db->Quote($previous_fnum[0]).'
+                                    AND esap.duplicate=1';
+                                    $db->setQuery( $query );
+                                    $stored = $db->loadAssocList();                  
 
-                            if (count($fnums) > 0) {
-                                $previous_fnum = array_keys($fnums);
-                                $query = 'SELECT eu.*, esa.nbmax
-											FROM #__emundus_uploads as eu
-											LEFT JOIN #__emundus_setup_attachments as esa on esa.id=eu.attachment_id
-											LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id='.$user->profile.'
-											WHERE eu.user_id='.$user->id.'
-											AND eu.fnum like '.$db->Quote($previous_fnum[0]).'
-											AND esap.duplicate=1';
-                                $db->setQuery( $query );
-                                $stored = $db->loadAssocList();
+                                    if (count($stored) > 0) {
+                                        // 2. copy DB définition and duplicate files in applicant directory
+                                        foreach ($stored as $key => $row) {
+                                            $src = $row['filename'];
+                                            $ext = explode('.', $src);
+                                            $ext = $ext[count($ext)-1];;
+                                            $cpt = 0-(int)(strlen($ext)+1);
+                                            $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
+                                            $nbmax = $row['nbmax'];
+                                            $row['filename'] = $dest;
+                                            $row['campaign_id'] = $user->fnums[$fnum]->campaign_id;
+                                            $row['can_be_deleted'] = 1;
+                                            $row['timedate'] = $now;
+                                            unset($row['is_validated']);
+                                            unset($row['id']);
+                                            unset($row['fnum']);
+                                            unset($row['nbmax']);
 
-                                if (count($stored) > 0) {
-                                    // 2. copy DB définition and duplicate files in applicant directory
-                                    foreach ($stored as $key => $row) {
-                                        $src = $row['filename'];
-                                        $ext = explode('.', $src);
-                                        $ext = $ext[count($ext)-1];;
-                                        $cpt = 0-(int)(strlen($ext)+1);
-                                        $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
-                                        $nbmax = $row['nbmax'];
-                                        $row['filename'] = $dest;
-                                        unset($row['id']);
-                                        unset($row['fnum']);
-                                        unset($row['nbmax']);
-
-                                        try {
-                                            $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$user->id.' AND attachment_id='.$row['attachment_id'].' AND fnum like '.$db->Quote($user->fnum);
-                                            $db->setQuery($query);
-                                            $cpt = $db->loadResult();
-
-                                            if ($cpt < $nbmax) {
-                                                $query = 'INSERT INTO #__emundus_uploads (`fnum`, `'.implode('`,`', array_keys($row)).'`) VALUES('.$db->Quote($user->fnum).', '.implode(',', $db->Quote($row)).')';
+                                            try {
+                                                $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$user->id.' AND attachment_id='.$row['attachment_id'].' AND fnum like '.$db->Quote($user->fnum);
                                                 $db->setQuery($query);
-                                                $db->execute();
-                                                $id = $db->insertid();
-                                                $path = EMUNDUS_PATH_ABS.$user->id.DS;
+                                                $cpt = $db->loadResult();
 
-                                                if (!copy($path.$src, $path.$dest)) {
-                                                    $query = 'UPDATE #__emundus_uploads SET filename='.$src.' WHERE id='.$id;
+                                                if ($cpt < $nbmax) {
+                                                    $query = 'INSERT INTO #__emundus_uploads (`fnum`, `'.implode('`,`', array_keys($row)).'`) VALUES('.$db->Quote($user->fnum).', '.implode(',', $db->Quote($row)).')';
                                                     $db->setQuery($query);
                                                     $db->execute();
+                                                    $id = $db->insertid();
+                                                    $path = EMUNDUS_PATH_ABS.$user->id.DS;
+                            
+                                                    if (!copy($path.$src, $path.$dest)) {
+                                                        $query = 'UPDATE #__emundus_uploads SET filename='.$src.' WHERE id='.$id;
+                                                        $db->setQuery($query);
+                                                        $db->execute();
+                                                    }
                                                 }
-                                            }
 
-                                        } catch (Exception $e) {
-                                            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-                                            JLog::add($error, JLog::ERROR, 'com_emundus');
+                                            } catch (Exception $e) {
+                                                $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                                                JLog::add($error, JLog::ERROR, 'com_emundus');
+                                            }
                                         }
                                     }
                                 }
