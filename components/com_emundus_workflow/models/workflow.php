@@ -15,6 +15,8 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
 
+//Objectif de ce modele --> CRUD
+
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_workflow/models');
 
 class EmundusworkflowModelworkflow extends JModelList
@@ -23,7 +25,7 @@ class EmundusworkflowModelworkflow extends JModelList
         parent::__construct($config);
     }
 
-    // fix left join
+    // GET ALL
     public function getAllWorkflows() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -46,7 +48,7 @@ class EmundusworkflowModelworkflow extends JModelList
         }
     }
 
-    //delete workflow --> params:workflow_id [fix]
+    //DELETE WORKFLOW BY ID
     public function deleteWorkflow($wid) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -65,7 +67,7 @@ class EmundusworkflowModelworkflow extends JModelList
         }
     }
 
-    //create workflow -> campaign_id, user_id, created_at, updated_at
+    //CREATE WORKFLOW
     public function createWorkflow($data) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -82,7 +84,7 @@ class EmundusworkflowModelworkflow extends JModelList
                 return $db->insertid();
 
             } catch (Exception $e) {
-                JLog::add('component/com_emundus_workflow/models/item | Cannot create new workflow : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                JLog::add('component/com_emundus_workflow/models/workflow | Cannot create new workflow : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
                 return $e->getMessage();
             }
         }
@@ -91,9 +93,7 @@ class EmundusworkflowModelworkflow extends JModelList
         }
     }
 
-    //get workflow by id
-
-    //restore workflow
+    //GET A WORKFLOW BY ID
     public function getWorkflowByID($wid) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -107,10 +107,29 @@ class EmundusworkflowModelworkflow extends JModelList
             return $db->loadObjectList();
         }
         catch(Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/item | Cannot get workflow by id : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            JLog::add('component/com_emundus_workflow/models/workflow | Cannot get workflow by id : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
             return $e->getMessage();
         }
     }
 
+    //UPDATE LAST SAVING TIME OF WORKFLOW BY ID
+    public function updateLastSavingWorkflow($data) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
+        try {
+            $query->clear()
+                ->update($db->quoteName('#__emundus_workflow'))
+                ->set($db->quoteName('#__emundus_workflow.updated_at') . '=' . $db->quote(date('Y-m-d H:i:s')) .
+                    ',' . $db->quoteName('#__emundus_workflow.user_id') . '=' . (JFactory::getUser())->id
+                )
+                ->where($db->quoteName('#__emundus_workflow.id') . '=' . (int)$data);
+            $db->setQuery($query);
+            return $db->execute();
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/workflow | Cannot track workflow last saved : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
+    }
 }

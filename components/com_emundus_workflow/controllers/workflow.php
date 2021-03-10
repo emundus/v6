@@ -165,4 +165,31 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
             exit;
         }
     }
+
+    //tracking last saved time of workflow
+    public function updatelastsavedworkflow() {
+        $user = JFactory::getUser();
+
+        if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status'=> $result, 'msg' => JText::_('ACCESS_DENIED'));
+        }
+        else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('data');
+
+            $_wid = $this->model;
+
+            $_workflow = $_wid->updateLastSavingWorkflow($data);
+
+            if($_workflow) {
+                $tab = array('status' => 1, 'msg' => JText::_('UPDATE_LAST_SAVING'), 'data' => $_workflow);
+            }
+            else {
+                $tab = array('status' => 0, 'msg' => JText::_('CANNOT_UPDATE_LAST_SAVING'), 'data' => $_workflow);
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+    }
 }

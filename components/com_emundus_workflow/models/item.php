@@ -23,7 +23,7 @@ class EmundusworkflowModelitem extends JModelList
         parent::__construct($config);
     }
 
-    //get all items from database
+    //GET ALL TYPES OF ELEMENT
     public function getAllItems() {
         $db = JFactory::getDbo();
         $query =$db->getQuery(true);
@@ -44,7 +44,7 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
-    //get all items by workflow id --> restore workflow
+    //GET ALL ITEMS BY WORKFLOW ID
     public function getAllItemsByWorkflowId($id) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -63,6 +63,7 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
+    //GET INIT BLOC BY WORKFLOW ID
     public function getInitIDByWorkflow($wid) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -83,6 +84,7 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
+    //GET COUNT HOW MANY ITEM BY WORKFLOW ID
     public function getCountItemByID($data) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -104,14 +106,12 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
-    //create new item --> params = type, name
+    //CREATE NEW ITEM
     public function createItem($data) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         if(!empty($data)) {
-
-
             $query->clear()
                 ->insert($db->quoteName('#__emundus_workflow_item'))
                 ->columns($db->quoteName(array_keys($data)))
@@ -132,7 +132,7 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
-    //delete selected item --> params = data
+    //DELETE ITEM
     public function deleteItem($data) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -152,7 +152,7 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
-    //get element by id
+    //GET ITEM BY ID
     public function getItemByID($id) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -172,7 +172,7 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
-    //save all items
+    //SAVE ALL ITEMS
     public function saveItems($data) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -199,7 +199,7 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
-    //create new link --> params: from,to,workflow_id
+    //CREATE NEW LINK BETWEEN TWO ITEMS
     public function createLink($data) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -224,7 +224,7 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
-    //delete a link --> params: id
+    //DELETE LINK BETWEEN TWO ITEMS
     public function deleteLink($data) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -243,7 +243,7 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
-    //retrieve all links by workflow id
+    //GET ALL LINKS FROM WORKFLOW ID
     public function getAllLinksByWorkflowID($data) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
