@@ -252,46 +252,13 @@ export default {
         if (typeof target.className === 'string' && target.className.indexOf('node-delete') > -1) {
           this.nodeDelete(this.action.dragging);
         }
-        // if(target.className.indexOf('duplicate-option') > -1) {
-        //   this.cloneItem(this.action.dragging);
-        // }
+        if (typeof target.className === 'string' && target.className.indexOf('duplicate-option') > -1) {
+          this.nodeCloned(this.action.dragging);
+        }
       }
       this.action.linking = false;
       this.action.dragging = null;
       this.action.scrolling = false;
-    },
-
-    cloneItem: async function(id) {
-      let _response = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getitem', { params: {id: id}});
-      var olditem = (_response.data.data)[0];
-
-      var newitem = {
-        item_name: olditem.item_name,
-        item_id: olditem.item_id,
-        workflow_id: olditem.workflow_id,
-        item_label: olditem.item_label + "copy",
-      }
-
-      axios({
-        method: 'post',
-        url: "index.php?option=com_emundus_workflow&controller=item&task=createitem&sub_option=clone&workflowid=" + newitem.workflow_id + "&olditemid=" + newitem.item_id,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          data: newitem
-        })
-      }).then(response => {
-        this.scene.nodes.push({
-          id: response.data.data,
-          x: -700,
-          y: 50,
-          type: newitem.item_name,
-          label: newitem.item_label,
-        }).catch(error => {
-          console.log(error);
-        })
-      })
     },
 
     handleDown(e) {
@@ -326,6 +293,11 @@ export default {
       this.deleteItem(id)
     },
 
+    nodeCloned(id) {
+      this.$emit('nodeClone', id)
+      this.cloneItem(id)
+    },
+
     // delete item by id
     deleteItem: function(id) {
       axios({
@@ -355,6 +327,38 @@ export default {
         console.log(error);
       })
     },
+
+    cloneItem: async function(id) {
+      let _response = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getitem', { params: {id: id}});
+      var olditem = (_response.data.data)[0];
+
+      var newitem = {
+        item_name: olditem.item_name,
+        item_id: olditem.item_id,
+        workflow_id: olditem.workflow_id,
+        item_label: document.getElementById('label_' + id).innerText || 'anonyme',
+      }
+
+      axios({
+        method: 'post',
+        url: "index.php?option=com_emundus_workflow&controller=item&task=createitem&sub_option=clone&workflowid=" + newitem.workflow_id + "&olditemid=" + newitem.item_id,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          data: newitem
+        })
+      }).then(response => {
+        this.scene.nodes.push({
+          id: response.data.data,
+          x: -500 + Math.floor((Math.random() * 100) + 1),
+          y: 70 + Math.floor((Math.random() * 100) + 1),
+          type: newitem.item_name,
+          label: newitem.item_label,
+        })
+      })
+    },
+
   },
 }
 </script>

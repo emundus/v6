@@ -15,13 +15,15 @@
     <div class="node-port node-output" 
       @mousedown="outputMouseDown">
     </div>
-    <div class="duplicate-option">Cloner</div>
     <div v-show="show.delete" class="node-delete">&times;</div>
+    <div v-show="show.clone" class="duplicate-option" :id="id" ref="duplicate">Dupliquer</div>
   </div>
 </template>
 
 <script>
 import {DateTime as LuxonDateTime} from "luxon";
+import axios from "axios";
+const qs = require('qs');
 
 export default {
   name: 'FlowchartNode',
@@ -70,6 +72,7 @@ export default {
     return {
       show: {
         delete: false,
+        clone: false,
       }
     }
   },
@@ -94,9 +97,11 @@ export default {
     },
     handleMouseOver() {
       this.show.delete = true;
+      this.show.clone = true;
     },
     handleMouseLeave() {
       this.show.delete = false;
+      this.show.clone = false;
     },
     outputMouseDown(e) {
       this.$emit('linkingStart')
@@ -109,6 +114,11 @@ export default {
       this.$emit('linkingStop')
       e.preventDefault();
     },
+
+    handleDuplicatIten(e) {
+      this.emit('duplicateStart');
+      e.preventDefault();
+    }
   }
 }
 </script>
@@ -182,17 +192,15 @@ export default {
 }
 
 .flowchart-node .duplicate-option {
-  font-size: small;
-  text-align: center;
-  width: -moz-fit-content !important;
-  height: fit-content;
-  display: inline-block;
-  background: #28a745;
-  position: relative;
-  margin: 35px 22px !important;
+  position: absolute;
+  right: 19px;
+  top: 60px;
+  width: 12px;
+  height: 12px;
+  color: #0f17ba;
   cursor: pointer;
-  color: white;
-  border-radius: 0.25rem !important;
+  text-align: center;
+  font-size: small;
 }
 
 .flowchart-node .remove-option {
