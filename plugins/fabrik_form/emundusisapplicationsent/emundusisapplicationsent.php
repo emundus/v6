@@ -362,6 +362,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                                         $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
                                         $nbmax = $row['nbmax'];
                                         $row['filename'] = $dest;
+                                        $row['campaign_id'] = $user->fnums[$fnum]->campaign_id;
                                         unset($row['id']);
                                         unset($row['fnum']);
                                         unset($row['nbmax']);
