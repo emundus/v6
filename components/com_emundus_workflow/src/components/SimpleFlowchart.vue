@@ -352,16 +352,28 @@ export default {
           data: newitem
         })
       }).then(response => {
-        this.scene.nodes.push({
-          id: response.data.data,
-          x: -500 + Math.floor((Math.random() * 100) + 1),
-          y: 70 + Math.floor((Math.random() * 100) + 1),
-          type: newitem.item_name,
-          label: newitem.item_label,
+        axios({
+          method: 'post',
+          url: "index.php?option=com_emundus_workflow&controller=item&task=getstyle",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            data: response.data.data,
+          })
+        }).then(answer => {
+          var _style = (answer.data.data)[0];
+          this.scene.nodes.push({
+            id: response.data.data,
+            x: -500 + Math.floor((Math.random() * 100) + 1),
+            y: 70 + Math.floor((Math.random() * 100) + 1),
+            type: newitem.item_name,
+            label: newitem.item_label,
+            background: _style.style,
+          })
         })
       })
     },
-
   },
 }
 </script>
