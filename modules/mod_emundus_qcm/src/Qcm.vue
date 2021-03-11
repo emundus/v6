@@ -17,7 +17,7 @@
         </div>
       </div>
       <div v-if="quizTesting && !testPassed">
-        <question :question="testing_question" :updateProposal="updateProposal" :tierstemps="tierstemps" @nextQuestion="testPassed = true;"></question>
+        <question :question="testing_question" :updateProposal="updateProposal" :tierstemps="tierstemps" :pending="pending" @nextQuestion="testPassed = true;"></question>
       </div>
       <div v-if="quizStarting">
         <p style="text-align: center;">{{parseInt(step)+1}} / {{count}}</p>
