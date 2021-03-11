@@ -51,6 +51,10 @@ try {
 
     $formModel->updateFormData('jos_emundus_setup_qcm___group_id', $group_id);
 
+    $query = "ALTER TABLE " . $list->db_table_name . " ADD COLUMN qcm_total varchar(255) NULL";
+    $db->setQuery($query);
+    $db->execute();
+
     $query = "CREATE TABLE IF NOT EXISTS " . $list->db_table_name . "_" . $group_id . "_repeat (
             id int(11) NOT NULL AUTO_INCREMENT,
             parent_id int(11) NULL,
@@ -58,6 +62,7 @@ try {
             answers varchar(255) NULL,
             note varchar(255) NULL,
             answers_text varchar(255) NULL,
+            good_answers_text varchar(255) NULL,
             PRIMARY KEY (id)
             ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
     $db->setQuery($query);
@@ -191,7 +196,7 @@ try {
     $db->execute();
 
     $columns = array('list_id', 'element_id', 'join_from_table', 'table_join', 'table_key', 'table_join_key', 'join_type', 'group_id', 'params');
-    $values = array($list->id, 0, 'jos_emundus_personal_detail', 'jos_emundus_personal_detail_776_repeat', 'id', 'parent_id', 'left', $group_id, '{"type":"group","pk":"`jos_emundus_personal_detail_776_repeat`.`id`"}');
+    $values = array($list->id, 0, 'jos_emundus_personal_detail', 'jos_emundus_personal_detail_'.$group_id.'_repeat', 'id', 'parent_id', 'left', $group_id, '{"type":"group","pk":"`jos_emundus_personal_detail_'.$group_id.'_repeat`.`id`"}');
     foreach ($columns as $key => $column) {
         $columns[$key] = $db->quoteName($column);
     }
@@ -229,7 +234,7 @@ try {
 //
 
 // Create module
-    $params = array(
+    /*$params = array(
         "mod_em_qcm_layout" => "default",
         "mod_em_qcm_intro" => "<p>Bienvenue sur le QCM du concours d'EJCAM. Voici quelques consignes avant de commencer l'épreuve :<\/p>\r\n<ul>\r\n<li>Les questions peuvent avoir plusieurs réponses justes<\/li>\r\n<li>Vous ne perdez pas de points par réponses fausse<\/li>\r\n<li>Cependant, pour avoir le point de la question vous devez trouvez toutes les bonnes réponses<\/li>\r\n<\/ul>\r\n<p>Une première question de test va vous être posé afin de vérifier le bon fonctionnement. Lorsque vous êtes prêts cliquez sur Démarrer le QCM<\/p>",
         "mod_em_qcm_points_right" => "1",
@@ -258,7 +263,7 @@ try {
         ->columns($columns)
         ->values(implode(',', $values));
     $db->setQuery($query);
-    $db->execute();
+    $db->execute();*/
 //
 } catch(Exception $e) {
     JLog::add('plugins/fabrik_form/php/scripts/emundus-qcm-setup.php | Error at init qcm module : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');

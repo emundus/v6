@@ -72,7 +72,7 @@ class EmundusControllerQcm extends JControllerLegacy {
         $m_qcm = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $pending = $jinput->getRaw('pending');
+        $pending = $jinput->getInt('pending');
 
         $results = $m_qcm->updatePending($pending,$current_user);
 

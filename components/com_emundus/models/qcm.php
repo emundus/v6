@@ -42,15 +42,16 @@ class EmundusModelQcm extends JModelList {
         try {
             $db->setQuery($query);
             $applicant = $db->loadObject();
-
-            $query->clear()
-                ->select('COUNT(ta.id)')
-                ->from($db->quoteName('#__emundus_tag_assoc','ta'))
-                ->leftJoin($db->quoteName('#__emundus_setup_action_tag','st').' ON '.$db->quoteName('st.id').' = '.$db->quoteName('ta.id_tag'))
-                ->where($db->quoteName('ta.fnum') . ' = ' . $db->quote($fnum))
-                ->andWhere($db->quoteName('st.label') . ' LIKE ' . $db->quote('tiers_temps'));
-            $db->setQuery($query);
-            $applicant->tiers_temps = $db->loadResult();
+            if(!empty($applicant)) {
+                $query->clear()
+                    ->select('COUNT(ta.id)')
+                    ->from($db->quoteName('#__emundus_tag_assoc', 'ta'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_action_tag', 'st') . ' ON ' . $db->quoteName('st.id') . ' = ' . $db->quoteName('ta.id_tag'))
+                    ->where($db->quoteName('ta.fnum') . ' = ' . $db->quote($fnum))
+                    ->andWhere($db->quoteName('st.label') . ' LIKE ' . $db->quote('tiers_temps'));
+                $db->setQuery($query);
+                $applicant->tiers_temps = $db->loadResult();
+            }
             return $applicant;
         } catch (Exception $e){
             JLog::add('component/com_emundus_onboard/models/qcm | Error when try to get qcm associated to applicant : ' . $fnum . ' with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
@@ -120,7 +121,7 @@ class EmundusModelQcm extends JModelList {
         $query = $db->getQuery(true);
 
         $query
-            ->select('qq.*,GROUP_CONCAT(qqr.id) as proposals_id,GROUP_CONCAT(qqr.proposals) as proposals_text')
+            ->select('qq.*,GROUP_CONCAT(qqr.id) as proposals_id,GROUP_CONCAT(qqr.proposals SEPARATOR "|") as proposals_text')
             ->from($db->quoteName('#__emundus_qcm_questions','qq'))
             ->leftJoin($db->quoteName('jos_emundus_qcm_questions_765_repeat','qqr').' ON '.$db->quoteName('qq.id').' = '.$db->quoteName('qqr.parent_id'))
             ->where($db->quoteName('qq.id') . ' IN (' . $questions . ')')
@@ -143,6 +144,8 @@ class EmundusModelQcm extends JModelList {
 
 
         try {
+            $qcm = $this->getQcm($formid);
+            $count = $qcm->count;
             // Get table and group_repeat table
             $query->clear()
                 ->select('db_table_name')
@@ -155,28 +158,79 @@ class EmundusModelQcm extends JModelList {
             $group_table = $table . '_' . $qcm->group_id . '_repeat';
             //
 
-            $points = $this->checkPoints($answers,$question,$module);
+            // Get answers
+            $good_answers= [];
+
+            $query->clear()
+                ->select('answers')
+                ->from($db->quoteName('#__emundus_qcm_questions'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($question));
+            $db->setQuery($query);
+            $question_answers = explode(',',$db->loadResult());
+
+            $query->clear()
+                ->select('id')
+                ->from($db->quoteName('#__emundus_qcm_questions_765_repeat'))
+                ->where($db->quoteName('parent_id') . ' = ' . $db->quote($question));
+            $db->setQuery($query);
+            $proposals = $db->loadColumn();
+            $proposals_key = array_keys($proposals);
+            foreach ($proposals_key as $proposal_key){
+                if(in_array($proposal_key+1,$question_answers)){
+                    $good_answers[] = $proposals[$proposal_key];
+                }
+            }
+
+            $query->clear()
+                ->select('proposals')
+                ->from($db->quoteName('#__emundus_qcm_questions_765_repeat'))
+                ->where($db->quoteName('id') . ' IN (' . implode(',',$good_answers) . ')');
+            $db->setQuery($query);
+            $good_answers_text = implode(',', $db->loadColumn());
+            //
+
+            $points = $this->checkPoints($answers,$module,$good_answers);
 
             // Check if an existing answer exist else insert the answers
             $query->clear()
-                ->select('id')
+                ->select('id,qcm_total')
                 ->from($db->quoteName($table))
                 ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
             $db->setQuery($query);
-            $parent_id = $db->loadResult();
+            $parent = $db->loadObject();
 
-            if(empty($parent_id)){
+            if(empty($parent)){
                 $query->clear()
                     ->insert($db->quoteName($table));
                 $query->set($db->quoteName('time_date') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
                     ->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
-                    ->set($db->quoteName('user') . ' = ' . $db->quote($current_user->id));
+                    ->set($db->quoteName('user') . ' = ' . $db->quote($current_user->id))
+                    ->set($db->quoteName('qcm_total') . ' = ' . $db->quote('0/' . $count));
                 $db->setQuery($query);
                 $db->execute();
-                $parent_id = $db->insertid();
+
+                $query->clear()
+                    ->select('id,qcm_total')
+                    ->from($db->quoteName($table))
+                    ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+                $db->setQuery($query);
+                $parent = $db->loadObject();
             }
 
+            $parent_id = $parent->id;
+            $old_overall = explode('/',$parent->qcm_total)[0];
+            $new_overall = (int)$old_overall + (int)$points;
+            $new_overall = $new_overall . '/' . $count;
+
+            $query->clear()
+                ->update($db->quoteName($table))
+                ->set($db->quoteName('qcm_total') . ' = ' . $db->quote($new_overall))
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+            $db->setQuery($query);
+            $db->execute();
+
             $answers = implode(',',$answers);
+            $answers_text = '';
             if(!empty($answers)) {
                 $query->clear()
                     ->select('proposals')
@@ -186,8 +240,8 @@ class EmundusModelQcm extends JModelList {
                 $answers_text = implode(',', $db->loadColumn());
             }
 
-            $columns = array('parent_id','question','answers','note','answers_text');
-            $values = $parent_id .  ',' . $question . ',' . $db->quote($answers) . ',' . $points . ',' . $db->quote($answers_text);
+            $columns = array('parent_id','question','answers','note','answers_text','good_answers_text');
+            $values = $parent_id .  ',' . $question . ',' . $db->quote($answers) . ',' . $points . ',' . $db->quote($answers_text) . ',' . $db->quote($good_answers_text);
 
             $query->clear()
                 ->select('count(id)')
@@ -233,12 +287,11 @@ class EmundusModelQcm extends JModelList {
         }
     }
 
-    public function checkPoints($answers,$question,$module){
+    public function checkPoints($answers,$module,$good_answers){
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         $points = 0;
-        $good_answers = [];
 
         try {
             // Get right and wrong points
@@ -255,28 +308,6 @@ class EmundusModelQcm extends JModelList {
             $minimal_points = (float)$qcm_module['mod_em_qcm_points_minimal'];
             //
 
-            // Get answers
-            $query->clear()
-                ->select('answers')
-                ->from($db->quoteName('#__emundus_qcm_questions'))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($question));
-            $db->setQuery($query);
-            $question_answers = explode(',',$db->loadResult());
-
-            $query->clear()
-                ->select('id')
-                ->from($db->quoteName('#__emundus_qcm_questions_765_repeat'))
-                ->where($db->quoteName('parent_id') . ' = ' . $db->quote($question));
-            $db->setQuery($query);
-            $proposals = $db->loadColumn();
-            $proposals_key = array_keys($proposals);
-            foreach ($proposals_key as $proposal_key){
-                if(in_array($proposal_key+1,$question_answers)){
-                    $good_answers[] = $proposals[$proposal_key];
-                }
-            }
-            //
-
             foreach ($answers as $answer){
                 if(in_array($answer,$good_answers)){
                     $points += $right_answers;
@@ -289,7 +320,9 @@ class EmundusModelQcm extends JModelList {
 
             foreach ($good_answers as $good_answer){
                 if(!in_array($good_answer,$answers) && $points > $minimal_points){
-                    $points -= $missing_penalities;
+                    if(($points -= $missing_penalities) < $minimal_points) {
+                        $points = $minimal_points;
+                    }
                 }
             }
 
@@ -312,7 +345,7 @@ class EmundusModelQcm extends JModelList {
                 ->set($db->quoteName('pending') . ' = ' . $db->quote($pending))
                 ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
             $db->setQuery($query);
-            $db->execute();
+            return $db->execute();
         } catch (Exception $e){
             JLog::add('component/com_emundus_onboard/models/qcm | Error when try to update qcm pending with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();

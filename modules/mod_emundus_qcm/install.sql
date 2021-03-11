@@ -1,3 +1,7 @@
+SET autocommit = 0;
+
+START TRANSACTION;
+
 /* CREATE TABLES */
 create table jos_emundus_setup_qcm
 (
@@ -134,10 +138,8 @@ create index jos_emundus_qcm_applicants_jos_emundus_setup_qcm_id_fk
 create index jos_emundus_qcm_applicants_jos_emundus_users_id_fk
     on jos_emundus_qcm_applicants (user);
 
-ALTER TABLE `jos_emundus_qcm_applicants`
-    ADD CONSTRAINT jos_emundus_qcm_applicants_ibfk_1 FOREIGN KEY (`fnum`) REFERENCES `jos_emundus_campaign_candidature` (`fnum`) ON DELETE CASCADE ON UPDATE CASCADE,
-    ADD CONSTRAINT jos_emundus_qcm_applicants_ibfk_2 FOREIGN KEY (`user`) REFERENCES `jos_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    ADD CONSTRAINT jos_emundus_qcm_applicants_ibfk_3 FOREIGN KEY (`qcmid`) REFERENCES `jos_emundus_setup_qcm` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+create index jos_emundus_qcm_applicants_jos_emundus_cc_id_fk
+    on jos_emundus_qcm_applicants (fnum);
 /**** ****/
 
 /**** CREATE FABRIK LISTS ****/
@@ -312,16 +314,11 @@ INSERT INTO jos_emundus_setup_action_tag (label, class, `system`)
 VALUES ('tiers_temps', 'green', 1);
 
 INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
-VALUES (2, 1, 'emundus_setup_action_tag', 'label', 'Tiers Temps', null, ' ', null, 0, 1);
+VALUES (2, 1, 'emundus_setup_action_tag', 'label', 'Tiers Temps', null, ' ', '2021-03-10 10:27:45', 0, 1);
 INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
-VALUES (1, 1, 'emundus_setup_action_tag', 'label', 'Third time', null, ' ', null, 0, 1);
+VALUES (1, 1, 'emundus_setup_action_tag', 'label', 'Third time', null, ' ', '2021-03-10 10:27:45', 0, 1);
 /**** ****/
 
+COMMIT;
 
-
-
-
-
-
-
-
+SET autocommit = 1;

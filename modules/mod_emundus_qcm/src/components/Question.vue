@@ -1,11 +1,11 @@
 <template>
   <div>
     <div :class="finish ? 'finished' : ''" style="padding: 10px">
-      <label>{{ question.question }}</label>
+      <label v-html="question.question"></label>
       <div>
         <div v-for="(proposal,index) in proposals" :class="'proposals'">
           <input type="checkbox" style="margin-right: 10px" :id="'proposal'+index" :name="question.code" v-model="answer" :value="proposal" :disabled="finish">
-          <label :for="'proposal'+index">{{ proposals_text[index] }}</label><br/>
+          <label :for="'proposal'+index" v-html="">{{ proposals_text[index] }}</label><br/>
         </div>
       </div>
       <k-progress
@@ -27,6 +27,9 @@
 
 <script>
 import KProgress from 'k-progress';
+import axios from "axios";
+
+const qs = require("qs");
 
 export default {
   name: "Question",
@@ -58,26 +61,38 @@ export default {
     check_timer_completed(){
       if(this.timer <= 0) {
         clearInterval(this.interval);
+        this.timer = 0;
         if(!this.finish) {
           this.$emit('saveAnswer', this.answer);
         }
         this.finish = true;
       }
+      this.updatePending();
     },
 
     initTimerProposals(){
       this.finish = false;
       this.proposals = this.question.proposals_id.split(',');
-      this.proposals_text = this.question.proposals_text.split(',');
+      this.proposals_text = this.question.proposals_text.split('|');
       this.answer = [];
       let total_time = this.question.time;
+      if(this.pending != 0) {
+        total_time = this.pending;
+      }
       if(this.tierstemps == 1){
-        total_time = parseInt(this.question.time)+(parseInt(this.question.time)*(1/3));
+        if(this.pending == 0) {
+          total_time = parseInt(this.question.time) + (parseInt(this.question.time) * (1 / 3));
+        }
       }
       this.timer = total_time;
       this.interval = setInterval(() => {
         this.timer--;
-        this.percent = (this.timer / total_time)*100;
+        if(this.tierstemps == 1) {
+          let time_tiers = parseInt(this.question.time) + (parseInt(this.question.time) * (1 / 3));
+          this.percent = (this.timer / time_tiers) * 100;
+        } else {
+          this.percent = (this.timer / this.question.time) * 100;
+        }
         this.check_timer_completed();
       },1000);
     },
@@ -87,6 +102,20 @@ export default {
         this.$emit('saveAnswer');
       }
       this.$emit('nextQuestion');
+    },
+
+    updatePending(){
+      axios({
+        method: "post",
+        url:
+            "index.php?option=com_emundus&controller=qcm&task=updatepending",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          pending: this.timer,
+        })
+      });
     }
   },
   created() {

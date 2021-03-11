@@ -20,6 +20,7 @@
         <question :question="testing_question" :updateProposal="updateProposal" :tierstemps="tierstemps" @nextQuestion="testPassed = true;"></question>
       </div>
       <div v-if="quizStarting">
+        <p style="text-align: center;">{{parseInt(step)+1}} / {{count}}</p>
         <question :question="applicant_questions[step]" :updateProposal="updateProposal" :pending="pending" :tierstemps="tierstemps" @nextQuestion="nextQuestion" @saveAnswer="saveAnswer"></question>
       </div>
     </div>
@@ -51,11 +52,12 @@ export default {
   data() {
     return {
       applicant_questions: [],
+      count: 0,
       testing_question: {
         code: "TEST",
-        proposals: "Noir,Blanc,Rouge,Vert",
+        proposals: "Noir|Blanc|Rouge|Vert",
         proposals_id: "1,2,3,4",
-        proposals_text: "Noir,Blanc,Rouge,Vert",
+        proposals_text: "Noir|Blanc|Rouge|Vert",
         question: "De quelle couleur est le cheval blanc d'Henri IV ?",
         time: "10",
         type: "radiobutton"
@@ -96,7 +98,8 @@ export default {
         }
       }).then(response => {
         this.applicant_questions = response.data;
-        if(this.step >= Object.keys(this.applicant_questions).length){
+        this.count = Object.keys(this.applicant_questions).length;
+        if(this.step >= this.count){
           this.finishedQcm = true;
         }
         this.loading = false;
