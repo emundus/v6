@@ -17,10 +17,10 @@
         </div>
       </div>
       <div v-if="quizTesting && !testPassed">
-        <question :question="testing_question" :updateProposal="updateProposal" @nextQuestion="testPassed = true;"></question>
+        <question :question="testing_question" :updateProposal="updateProposal" :tierstemps="tierstemps" @nextQuestion="testPassed = true;"></question>
       </div>
       <div v-if="quizStarting">
-        <question :question="applicant_questions[step]" :updateProposal="updateProposal" :pending="pending" @nextQuestion="nextQuestion" @saveAnswer="saveAnswer"></question>
+        <question :question="applicant_questions[step]" :updateProposal="updateProposal" :pending="pending" :tierstemps="tierstemps" @nextQuestion="nextQuestion" @saveAnswer="saveAnswer"></question>
       </div>
     </div>
     <div v-else>
@@ -45,6 +45,7 @@ export default {
     intro: String,
     pending: Number,
     module: Number,
+    tierstemps: Number,
   },
   components: {Question},
   data() {

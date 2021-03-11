@@ -30,6 +30,7 @@ JText::script('MOD_EM_QCM_SUCCESSFULL');
      intro="<?= $intro ?>"
      pending="<?= $qcm_applicant->pending ?>"
      module="<?= $module->id ?>"
+     tierstemps="<?= $qcm_applicant->tiers_temps ?>"
 </div>
 
 <script src="media/mod_emundus_qcm/app.js"></script>

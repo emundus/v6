@@ -4,7 +4,7 @@
       <label>{{ question.question }}</label>
       <div>
         <div v-for="(proposal,index) in proposals" :class="'proposals'">
-          <input type="checkbox" style="margin-right: 10px" :id="'proposal'+index" :name="question.code" v-model="answer" :value="proposal">
+          <input type="checkbox" style="margin-right: 10px" :id="'proposal'+index" :name="question.code" v-model="answer" :value="proposal" :disabled="finish">
           <label :for="'proposal'+index">{{ proposals_text[index] }}</label><br/>
         </div>
       </div>
@@ -33,7 +33,8 @@ export default {
   props: {
     question: Object,
     updateProposal: Number,
-    pending: Number
+    pending: Number,
+    tierstemps: Number,
   },
   components: {
     KProgress
@@ -69,10 +70,14 @@ export default {
       this.proposals = this.question.proposals_id.split(',');
       this.proposals_text = this.question.proposals_text.split(',');
       this.answer = [];
-      this.timer = this.question.time;
+      let total_time = this.question.time;
+      if(this.tierstemps == 1){
+        total_time = parseInt(this.question.time)+(parseInt(this.question.time)*(1/3));
+      }
+      this.timer = total_time;
       this.interval = setInterval(() => {
         this.timer--;
-        this.percent = (this.timer / this.question.time)*100;
+        this.percent = (this.timer / total_time)*100;
         this.check_timer_completed();
       },1000);
     },

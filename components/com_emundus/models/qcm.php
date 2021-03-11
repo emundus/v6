@@ -41,7 +41,17 @@ class EmundusModelQcm extends JModelList {
 
         try {
             $db->setQuery($query);
-            return $db->loadObject();
+            $applicant = $db->loadObject();
+
+            $query->clear()
+                ->select('COUNT(ta.id)')
+                ->from($db->quoteName('#__emundus_tag_assoc','ta'))
+                ->leftJoin($db->quoteName('#__emundus_setup_action_tag','st').' ON '.$db->quoteName('st.id').' = '.$db->quoteName('ta.id_tag'))
+                ->where($db->quoteName('ta.fnum') . ' = ' . $db->quote($fnum))
+                ->andWhere($db->quoteName('st.label') . ' LIKE ' . $db->quote('tiers_temps'));
+            $db->setQuery($query);
+            $applicant->tiers_temps = $db->loadResult();
+            return $applicant;
         } catch (Exception $e){
             JLog::add('component/com_emundus_onboard/models/qcm | Error when try to get qcm associated to applicant : ' . $fnum . ' with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();

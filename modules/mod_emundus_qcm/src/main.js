@@ -16,6 +16,7 @@ if (document.getElementById('em-qcm-vue')) {
           intro: this.$el.attributes.intro.value,
           pending: this.$el.attributes.pending.value,
           module: this.$el.attributes.module.value,
+          tierstemps: this.$el.attributes.tierstemps.value,
         }
       });
     }
