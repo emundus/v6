@@ -72,6 +72,7 @@ class EmundusworkflowModelworkflow extends JModelList
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
+        $data['updated_at'] = date('Y-m-d H:i:s');
         if(!empty($data)) {
             try {
                 $query->clear()
