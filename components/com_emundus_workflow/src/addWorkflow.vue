@@ -106,25 +106,37 @@ export default {
 
     // create workflow with campaign
     createworkflow: function() {
-      var workflow = {
-        campaign_id :this.$data.selectedCampaign,
-        workflow_name: this.$data.name,
-      }
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_workflow&controller=workflow&task=createworkflow",
+        url: "index.php?option=com_emundus_workflow&controller=workflow&task=getcampaignbyid",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
-          data: workflow
+          data: this.$data.selectedCampaign,
         }),
-      }).then(response => {
-        this.workflow = response.data.data;
-        //redirect to workflow space
-        this.changeToWorkflowSpace(response.data.data);
-      }).catch(error => {
-        console.log(error);
+      }).then(answer => {
+        // console.log((answer.data.data)[0]);
+        var workflow = {
+          campaign_id :this.$data.selectedCampaign,
+          workflow_name: this.$data.name || "Workflow de " + ((answer.data.data)[0]).label,
+        }
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus_workflow&controller=workflow&task=createworkflow",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              data: workflow
+            }),
+          }).then(response => {
+            this.workflow = response.data.data;
+            //redirect to workflow space
+            this.changeToWorkflowSpace(response.data.data);
+          }).catch(error => {
+            console.log(error);
+          })
       })
     },
 

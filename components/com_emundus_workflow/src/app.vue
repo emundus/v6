@@ -106,6 +106,7 @@ export default {
         workflow_id: this.getWorkflowIdFromURL(),
         axisX: -700,
         axisY: -50,
+        style: '#9bde74',
       }
 
       axios({

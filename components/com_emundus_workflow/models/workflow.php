@@ -133,4 +133,23 @@ class EmundusworkflowModelworkflow extends JModelList
             return $e->getMessage();
         }
     }
+
+    //GET CAMPAIGN BY ID
+    public function getCampaignByID($data) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__emundus_setup_campaigns'))
+                ->where($db->quoteName('#__emundus_setup_campaigns.id') . '=' . (int)$data);
+
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        }
+        catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }
