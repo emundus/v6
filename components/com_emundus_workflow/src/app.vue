@@ -137,6 +137,7 @@ export default {
               y: -69,
               type: 'Initialisation',
               label: '',
+              background: '#9bde74',
             })
           }).catch(error => {
             console.log(error);
@@ -196,7 +197,7 @@ export default {
       let nodeCategory = this.$props.nodeCategory;
       var items = {
         item_name: nodeCategory[index],
-        item_id: index,
+        item_id: index+1,
         workflow_id: this.getWorkflowIdFromURL(),
       }
 
@@ -210,13 +211,27 @@ export default {
           data: items
         })
       }).then(response => {
-        this.$data.scene.nodes.push({
-          id: response.data.data,
-          x: -400 + Math.floor((Math.random() * 100) + 1),
-          y: 50 + Math.floor((Math.random() * 100) + 1),
-          type: nodeCategory[index],
-          label: '',
-        });
+        axios({
+          method: 'post',
+          url: "index.php?option=com_emundus_workflow&controller=item&task=getstyle",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            data: response.data.data,
+          })
+        }).then(answer => {
+          var _style = (answer.data.data)[0];
+          this.$data.scene.nodes.push({
+            id: response.data.data,
+            x: -400 + Math.floor((Math.random() * 100) + 1),
+            y: 50 + Math.floor((Math.random() * 100) + 1),
+            type: nodeCategory[index],
+            label: '',
+            background: _style.style,
+          });
+        })
+
       }).catch(error => {
         console.log(error);
       })
@@ -232,6 +247,7 @@ export default {
           axisX: element.x,
           axisY: element.y,
           item_label: document.getElementById('label_' + element.id).innerText,
+          style: element.background,
         };
 
         axios({
@@ -303,6 +319,7 @@ export default {
           type: element.item_name,
           x: Number(element.axisX),
           y: Number(element.axisY),
+          background: element.style,
         })
       });
 

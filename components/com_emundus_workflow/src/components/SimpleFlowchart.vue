@@ -16,7 +16,9 @@
       :options="nodeOptions"
       @linkingStart="linkingStart(node.id)"
       @linkingStop="linkingStop(node.id)"
-      @nodeSelected="nodeSelected(node.id, $event)">
+      @nodeSelected="nodeSelected(node.id, $event)"
+      v-bind:style="{ background: node.background }"
+    >
     </flowchart-node>
   </div>
 </template>
@@ -40,6 +42,7 @@ export default {
           centerY: 140,
           nodes: [],
           links: [],
+          background: '',
         }
       }
     },

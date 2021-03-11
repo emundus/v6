@@ -314,4 +314,30 @@ jimport('joomla.application.component.controller');
             echo json_encode((object)$tab);
             exit;
         }
+
+        //get style of bloc
+        public function getstyle() {
+            $user = JFactory::getUser();
+
+            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            }
+            else {
+                $jinput = JFactory::getApplication()->input;
+                $data = $jinput->getRaw('data');
+
+                $_cit = $this->model;
+                $_items = $_cit->getStyleFromItemID($data);
+
+                if($_items) {
+                    $tab = array('status' => 1, 'msg' => JText::_("GET_STYLE"), 'data' => $_items);
+                }
+                else {
+                    $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_STYLE"), 'data' => $_items);
+                }
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
     }

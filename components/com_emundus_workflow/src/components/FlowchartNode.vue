@@ -28,6 +28,10 @@ const qs = require('qs');
 export default {
   name: 'FlowchartNode',
   props: {
+    background: {
+      type: String,
+      default: '',
+    },
     id: {
       type: Number,
       default: 1000,
@@ -137,6 +141,7 @@ export default {
   opacity: 0.9;
   cursor: move;
   transform-origin: top left;
+  border-radius: 0.75rem;
 }
 .flowchart-node .node-main {
   text-align: center;
@@ -146,6 +151,7 @@ export default {
   color: white;
   font-size: 13px;
   padding: 6px;
+  border-radius: 0.75rem;
 }
 .flowchart-node .node-main .node-label {
   font-size: 13px;

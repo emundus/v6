@@ -172,6 +172,33 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
+    //GET STYLE FROM ITEM ID
+    public function getStyleFromItemID($data) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            //left join
+            $query->clear()
+                ->select('#__emundus_workflow_item_type.style')
+                ->from($db->quoteName('#__emundus_workflow_item_type'))
+                ->leftJoin($db->quoteName('#__emundus_workflow_item') .
+                    ' ON '
+                    . $db->quoteName('#__emundus_workflow_item.item_id') .
+                    '='
+                    . $db->quoteName('#__emundus_workflow_item_type.id')
+                )
+                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data);
+
+            $db->setQuery($query);
+
+            return $db->loadObjectList();
+        }
+        catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
     //SAVE ALL ITEMS
     public function saveItems($data) {
         $db = JFactory::getDbo();
@@ -186,6 +213,7 @@ class EmundusworkflowModelitem extends JModelList
                     ',' . $db->quoteName('#__emundus_workflow_item.axisY') . '=' . $data['axisY'] .
                     ',' . $db->quoteName('#__emundus_workflow_item.item_label') . '=' . $db->quote($data['item_label']) .
                     ',' . $db->quoteName('#__emundus_workflow_item.last_saved') . '=' . $db->quote($data['last_saved']) .
+                    ',' . $db->quoteName('#__emundus_workflow_item.style') . '=' . $db->quote($data['style']) .
                     ',' . $db->quoteName('#__emundus_workflow_item.saved_by') .   '=' . (int)$data['saved_by']
                 )
                 ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
