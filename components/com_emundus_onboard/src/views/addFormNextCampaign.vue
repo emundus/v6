@@ -240,11 +240,11 @@ export default {
         "Ajoutez des types de documents que le candidat doit déposer à la suite du formulaire. Glissez simplement les documents entre les 2 colonnes ou ajouter un nouveau type de document",
       ],
       [
-        "Vous pouvez modifier vos dates limites de campagne, vos descriptifs et définir une limite de dossiers",
-        "Proposez à vos visiteurs des documents d'informations avant même qu'il se connecte. Ces documents seront disponibles dans la section <em>Plus d'informations</em> de votre campagne",
-        "Choississez le formulaire de votre campagne. Nous vous proposons des modèles que vous pouvez modifier à tout moment.",
-        "Proposez des documents des documents à vos candidats qui remplissent le formulaire. Cela peut être des modèles que les candidats doivent compléter puis déposer ou simplement des documents complémentaires à certains informations demandées",
-        "Ajoutez des types de documents que le candidat doit déposer à la suite du formulaire. Glissez simplement les documents entre les 2 colonnes ou ajouter un nouveau type de document",
+        "You can change your campaign deadlines, your descriptions and set a file limit",
+        "Offer your visitors information documents before they even log in. These documents will be available in the <em>More information</em> section of your campaign",
+        "Choose the form for your campaign. We offer templates that you can modify at any time.",
+        "Offer documents to your applicants when they fill in the form. These can be templates that applicants need to complete and then submit, or simply documents to supplement some of the information requested",
+        "Add document types that the applicant should file after the form. Simply drag and drop documents between the 2 columns or add a new document type",
       ]
     ],
 
@@ -364,7 +364,7 @@ export default {
         this.loading = false;
       });
       setTimeout(() => {
-        this.menuHighlight = this.getCookie('campaign_'+this.campaignId+'_menu')
+        //this.menuHighlight = this.getCookie('campaign_'+this.campaignId+'_menu')
         if(typeof this.menuHighlight == 'undefined'){
           this.menuHighlight = 0;
         }

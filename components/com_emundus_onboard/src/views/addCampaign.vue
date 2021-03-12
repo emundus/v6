@@ -545,7 +545,7 @@ export default {
         limit_files_number: false,
         limit_status: false
       }
-      if(this.form.label.fr == ""){
+      if(this.form.label.fr == "" && this.form.label.en == ""){
          window.scrollTo({ top: 0, behavior: 'smooth' });
          this.errors.label = true;
          return 0;

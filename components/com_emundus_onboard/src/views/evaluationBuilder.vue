@@ -65,6 +65,10 @@
       <div :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
         <div class="heading-block" :class="addingElement ? 'col-md-offset-2 col-lg-offset-1 col-md-10' : 'col-md-12'">
           <h2 class="form-title" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1">Evaluation</h2>
+          <div class="d-flex">
+            <button class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green mt-1" @click="sendForm" style="margin-left: 10px" :title="Validate">{{Validate}}</button>
+            <button class="bouton-sauvergarder-et-continuer mt-1" @click="sendForm" style="margin-left: 10px" :title="Validate">{{ExitFormbuilder}}</button>
+          </div>
         </div>
         <div class="form-viewer-builder" :class="[addingElement ? 'col-sm-offset-5 col-md-offset-2 col-lg-offset-1 col-sm-9 col-md-10' : 'col-md-12',optionsModal ? 'col-sm-7 col-md-9' : 'col-md-12']">
           <Builder
@@ -225,6 +229,8 @@
         groupCreated: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_CREATEDGROUPSUCCES"),
         update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
         Back: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+        Validate: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+        ExitFormbuilder: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EXIT_FORMBUILDER"),
       };
     },
 

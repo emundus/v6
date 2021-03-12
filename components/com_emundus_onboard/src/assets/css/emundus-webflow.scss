@@ -751,6 +751,9 @@ input[type="reset"] {
     color: $grey;
   }
 }
+.unpublishedBlock .cta-block {
+  color: white !important;
+}
 .nom-campagne-block {
   margin-top: 0;
   margin-bottom: 0;
