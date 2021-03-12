@@ -478,6 +478,12 @@ class EmundusController extends JControllerLegacy {
                 $redirect = $m_application->getConfirmUrl();
             }
         }
+
+	    //register the plugin
+        JPluginHelper::importPlugin('emundus', 'setup_workflow');
+        $dispatcher = JEventDispatcher::getInstance();
+        $workflow = $dispatcher->trigger('onOpenFile', [$fnum]);
+        var_dump($workflow);die;
         $app->redirect($redirect);
     }
 

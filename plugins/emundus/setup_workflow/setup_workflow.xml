@@ -14,7 +14,7 @@
     </files>
     <config>
         <fields name="params">
-<!--            <fieldset name="basic">-->
+            <fieldset name="basic">
 <!--                <field name="au_ids_camps" type="text" description="Enter a single Aurion Id corresponding to the table to be used for campaigns or a comma separated list (in case of multiple tables being the source of your campaigns)." label="Campaign Aurion ID(s)" size="30" />-->
 <!--                <field name="camp_programme_id" type="text" label="Programme ID" size="30" />-->
 <!--                <field name="camp_year" type="text" label="Schoolyear" size="30" />-->
