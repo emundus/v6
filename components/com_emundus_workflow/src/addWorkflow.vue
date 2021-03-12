@@ -161,8 +161,14 @@ export default {
       })
     },
 
-    //duplicate workflow from id
+    //duplicate workflow from id --> duplicate all existing items of the last workflow
+    ///api 1 --> get workflow_name / campaign_id of last workflow
+    ///api 2 --> get all items of last workflow
+    ///api 3 --> create new workflow with api 1 + api 2
+
+
     duplicateWorkflow: async function(id) {
+      //api 1 -- get workflow_name, campaign_id of last workflow
       let _response = await axios.get('index.php?option=com_emundus_workflow&controller=workflow&task=getworkflowbyid', { params: {wid:id} });
       var oldworkflow = ((_response.data.data)[0]);
       let now = new Date();
@@ -170,9 +176,16 @@ export default {
       var newworkflow = {
         campaign_id :oldworkflow.campaign_id,
         workflow_name: oldworkflow.workflow_name + "copy",
-        user_id: 95,
       }
 
+      //get all elements (items + links) of the last workflow
+      let rawItems = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getallitemsbyworkflow', {params: {data: id}}); //get all items
+      let rawLinks = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getalllinks', {params: {data: id}}); //get all links
+
+      var items = rawItems.data.data;    //items : Array
+      var links = rawLinks.data.data;    //links: Array
+
+      //api 2 -- create cloned workflow :: empty items
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus_workflow&controller=workflow&task=createworkflow&suboption=clone&oldworkflow=' + oldworkflow.id,
@@ -183,10 +196,37 @@ export default {
           data:newworkflow
         })
       }).then(response => {
-        this.getAllWorkflow();
-      }).catch(error => {
-        console.log(error);
-      })
+        //create new item
+        items.forEach(its => {
+          var _newitems = {
+            item_id: its.item_id,
+            item_label: its.item_label,
+            item_name: its.item_name,
+            style: its.style,
+            workflow_id: response.data.data,
+            axisX: its.axisX,
+            axisY: its.axisY,
+          }
+          axios({
+            method: 'post',
+            url: "index.php?option=com_emundus_workflow&controller=item&task=createitem&workflowid=" + response.data.data + "&itemid=" + _newitems.item_id,
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              data: _newitems
+            })
+          }).then(answer => {})
+          this.getAllWorkflow();
+        })
+
+        links.forEach(lks => {
+          var _newlinks = {
+            workflow_id: response.data.data,
+            from:
+          }
+        })
+      }).catch(error => {console.log(error);})
     },
 
     alertDeleteDisplay: function(wid) {
