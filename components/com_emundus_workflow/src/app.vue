@@ -484,4 +484,20 @@ export default {
   }
 }
 
+.swal2-styled.swal2-confirm {
+  border-radius: 5px !important;
+}
+
+.swal2-styled.swal2-confirm:hover {
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.swal2-styled.swal2-cancel {
+  border-radius: 5px !important;
+}
+
+.swal2-styled.swal2-cancel:hover {
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
 </style>
