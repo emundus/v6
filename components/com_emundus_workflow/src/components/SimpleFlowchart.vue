@@ -28,6 +28,7 @@ import FlowchartLink from './FlowchartLink.vue';
 import FlowchartNode from './FlowchartNode.vue';
 import { getMousePosition } from '../assets/position';
 import axios from 'axios';
+import Swal from "sweetalert2";
 const qs = require('qs');
 
 export default {
@@ -207,6 +208,7 @@ export default {
             return item.id !== id;
         });
         this.$emit('linkBreak', deletedLink);
+        this.$swal('Merci', 'Cette liaison est supprimée', 'success');
         this.deleteLink(id);
       }
     },
@@ -253,9 +255,11 @@ export default {
           this.draggingLink = null;
         }
         if (typeof target.className === 'string' && target.className.indexOf('node-delete') > -1) {
+          this.$swal('Merci', 'Ce bloc est supprimé', 'success');
           this.nodeDelete(this.action.dragging);
         }
         if (typeof target.className === 'string' && target.className.indexOf('duplicate-option') > -1) {
+          this.$swal('Merci', 'Ce bloc est dupliqué', 'success');
           this.nodeCloned(this.action.dragging);
         }
       }
@@ -298,7 +302,8 @@ export default {
 
     nodeCloned(id) {
       this.$emit('nodeClone', id)
-      this.cloneItem(id)
+      this.alertClone(id);
+      // alertClone
     },
 
     // delete item by id
@@ -329,6 +334,17 @@ export default {
       }).catch(error => {
         console.log(error);
       })
+    },
+
+    alertClone: function(id) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Congrat',
+        text: 'Le bloc est dupliqué!',
+        footer: '<a href>EMundus SAS</a>',
+        timer: 2000
+      })
+      this.cloneItem(id);
     },
 
     cloneItem: async function(id) {

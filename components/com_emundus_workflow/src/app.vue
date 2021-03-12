@@ -5,11 +5,11 @@
       NEW BLOCK
     </button>
 
-    <button class='save-button' @click="saveWorkflow()">
+    <button class='save-button' @click="alertSaveDisplay()">
       SAUVEGARDER
     </button>
 
-    <button class='exit-button' @click="quitWorkflow()">
+    <button class='exit-button' @click="alertExitDisplay()">
       QUITTER
     </button>
 
@@ -39,6 +39,7 @@ import SimpleFlowchart from './components/SimpleFlowchart.vue';
 import addWorkflow from "./addWorkflow";
 import axios from 'axios';
 import {DateTime as LuxonDateTime} from "luxon";
+import Swal from "sweetalert2";
 let now = new Date();
 const qs = require('qs');
 
@@ -261,7 +262,6 @@ export default {
             data: current_nodes
           })
         }).then(response => {
-          window.alert("Workflow est sauvegarde");      //change to modal
         }).catch(error => {
           console.log(error);
         })
@@ -333,7 +333,38 @@ export default {
       });
       },
     //next step --> clone workflow = clone all items
-  }
+
+    alertExitDisplay: function() {
+      Swal.fire({
+        title: 'Quitter l\'espace de travail',
+        text: "Le workflow sera sauvegardé automatiquement",
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#dc3545',
+        confirmButtonText: 'Oui, c\'est sûr',
+        cancelButtonText: 'Non, garder ce workflow',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire('Merci', 'Le workflow est sauvegardé', 'success');
+          this.quitWorkflow();
+        } else if (result.isDismissed) {
+          Swal.fire('Merci', 'Rester ici', 'success');
+        }
+      })
+    },
+
+    alertSaveDisplay: function() {
+      Swal.fire({
+        icon: 'success',
+        title: 'Congrat',
+        text: 'Le workflow est sauvegardé!',
+        footer: '<a href>EMundus SAS</a>',
+        timer: 2000,
+      })
+      this.saveWorkflow();
+    }
+  },
 }
 
 </script>

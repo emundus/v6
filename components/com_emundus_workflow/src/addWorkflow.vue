@@ -38,8 +38,8 @@
           <th>{{ workflow.updated_at }}</th>
           <th>
             <button @click="changeToWorkflowSpace(workflow.id)" class="edit-button">OUVRIR</button>
-            <button @click="deleteWorkflow(workflow.id)" class="delete-button">SUPPRIMER</button>
-            <button @click="duplicateWorkflow(workflow.id)" class="duplicate-button">DUPLIQUER</button>
+            <button @click="alertDeleteDisplay(workflow.id)" class="delete-button">SUPPRIMER</button>
+            <button @click="alertDuplicateDisplay(workflow.id)" class="duplicate-button">DUPLIQUER</button>
           </th>
         </tr>
       </tbody>
@@ -52,6 +52,11 @@
 import axios from 'axios';
 import { DateTime } from 'vue-datetime';
 import { DateTime as LuxonDateTime, Settings } from 'luxon';
+import swal from 'sweetalert';
+
+import Swal from 'sweetalert2'
+
+// CommonJS
 
 let now = new Date();
 
@@ -68,7 +73,7 @@ export default {
       name: '',
       selectedCampaign: '',
       workflow_id: 0,
-      table_header: ['Index', 'Workflow ID', 'Nom du workflow', 'Campagne Associee', 'Dernier Mis-a-jour par', 'Cree a', 'Mis-a-jour a', 'Action'],
+      table_header: ['No.ligne', 'Workflow ID', 'Nom du workflow', 'Campagne Associeé', 'Dernier Mis-a-jour par', 'Créé à', 'Mis-a-jour ', 'Action'],
     }
   },
 
@@ -184,6 +189,38 @@ export default {
       })
     },
 
+    alertDeleteDisplay: function(wid) {
+      Swal.fire({
+        title: 'Supprime le workflow',
+        text: "Action irréversible",
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#dc3545',
+        confirmButtonText: 'Oui, c\'est sûr',
+        cancelButtonText: 'Non, garder ce workflow',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire('Merci', 'Le workflow est supprimé', 'success');
+          this.deleteWorkflow(wid);
+        } else if (result.isDismissed) {
+          Swal.fire('Merci', 'Le workflow est gardé', 'success');
+        }
+      })
+    },
+
+
+    alertDuplicateDisplay: function(id) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Congrat',
+        text: 'Le workflow est dupliqué!',
+        footer: '<a href>EMundus SAS</a>',
+        timer: 2000,
+      })
+      this.duplicateWorkflow(id);
+    },
+
     redirectJRoute(link) {
       axios({
         method: "get",
@@ -240,8 +277,8 @@ export default {
 
   .edit-button {
     top: auto;
-    background-color: #80ba00;
-    border-color: #80ba00;
+    background-color: #06ba00;
+    border-color: #06ba00;
     color: #fff;
     display: inline-block;
     text-align: center;
@@ -265,7 +302,7 @@ export default {
     text-align: center;
     vertical-align: center;
     user-select: none;
-    border-radius: .25rem;
+    border-radius: 7px !important;
     margin: 5px;
     padding: 4px 20px;
   }
@@ -286,5 +323,9 @@ export default {
 
   .delete-button:hover {
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+  }
+
+  .swal2-actions {
+    border-radius: 7px !important;
   }
 </style>
