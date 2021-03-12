@@ -219,13 +219,6 @@ export default {
           }).then(answer => {})
           this.getAllWorkflow();
         })
-
-        links.forEach(lks => {
-          var _newlinks = {
-            workflow_id: response.data.data,
-            from:
-          }
-        })
       }).catch(error => {console.log(error);})
     },
 
@@ -237,7 +230,7 @@ export default {
         showCancelButton: true,
         confirmButtonColor: '#28a745',
         cancelButtonColor: '#dc3545',
-        confirmButtonText: 'Oui, c\'est sûr',
+        confirmButtonText: '<i class="far fa-thumbs-up"></i> Oui, c\'est sûr',
         cancelButtonText: 'Non, garder ce workflow',
       }).then((result) => {
         if (result.isConfirmed) {
@@ -254,7 +247,7 @@ export default {
       Swal.fire({
         icon: 'success',
         title: 'Congrat',
-        text: 'Le workflow est dupliqué!',
+        html: 'Le workflow est dupliqué <h2 style="color:red">SAUF LES LIAISONS!',
         footer: '<a href>EMundus SAS</a>',
         timer: 2000,
         showConfirmButton:false,

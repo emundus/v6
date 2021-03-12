@@ -354,7 +354,7 @@ export default {
         showCancelButton: true,
         confirmButtonColor: '#28a745',
         cancelButtonColor: '#dc3545',
-        confirmButtonText: 'Oui, c\'est sûr',
+        confirmButtonText: '<i class="far fa-thumbs-up"></i> Oui, c\'est sûr',
         cancelButtonText: 'Non, garder ce workflow',
       }).then((result) => {
         if (result.isConfirmed) {
