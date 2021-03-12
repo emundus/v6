@@ -74,6 +74,7 @@ export default {
 
 
   created() {
+    this.alertWelcomeDisplay();
     this.getAllItems();
     this.getItemSimpleName();
     this.loadWorkflow();
@@ -82,6 +83,17 @@ export default {
   },
 
   methods: {
+
+    alertWelcomeDisplay: function() {
+      Swal.fire({
+        icon: 'success',
+        title: 'Bienvenue',
+        text: 'C\'est vos espace de travail!',
+        footer: '<a href>Tutorials</a>',
+        timer: 3000,
+        showConfirmButton:false,
+      })
+    },
 
     getworkflowname: function () {
       axios({
@@ -361,6 +373,7 @@ export default {
         text: 'Le workflow est sauvegardé!',
         footer: '<a href>EMundus SAS</a>',
         timer: 2000,
+        showConfirmButton:false,
       })
       this.saveWorkflow();
     }

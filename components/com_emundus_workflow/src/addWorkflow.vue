@@ -217,6 +217,7 @@ export default {
         text: 'Le workflow est dupliqué!',
         footer: '<a href>EMundus SAS</a>',
         timer: 2000,
+        showConfirmButton:false,
       })
       this.duplicateWorkflow(id);
     },
