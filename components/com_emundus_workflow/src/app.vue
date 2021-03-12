@@ -72,8 +72,8 @@ export default {
     }
   },
 
-
   created() {
+    this.cronSave();
     this.alertWelcomeDisplay();
     this.getAllItems();
     this.getItemSimpleName();
@@ -249,6 +249,10 @@ export default {
       }).catch(error => {
         console.log(error);
       })
+    },
+
+    cronSave: function() {
+      setInterval(this.saveWorkflow,500);
     },
 
     saveWorkflow: function() {
