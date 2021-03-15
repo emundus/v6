@@ -48,6 +48,24 @@ class EmundusworkflowModelworkflow extends JModelList
         }
     }
 
+//    // GET COUNT ALL WORKFLOWS
+//    public function getCountAllWorkflows() {
+//        $db = JFactory::getDbo();
+//        $query = $db->getQuery(true);
+//
+//        try {
+//            $query->clear()
+//                ->select('count(*)')
+//                ->from($db->quoteName('#__emundus_workflow'));
+//            $db->setQuery($query);
+//            return $db->loadResult();
+//        }
+//        catch(Exception $e) {
+//            JLog::add('component/com_emundus_workflow/models/workflow | Cannot get count all workflows' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+//            return $e->getMessage();
+//        }
+//    }
+
     //DELETE WORKFLOW BY ID
     public function deleteWorkflow($wid) {
         $db = JFactory::getDbo();

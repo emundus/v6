@@ -15,6 +15,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 import VueSweetalert2 from 'vue-sweetalert2';
+import VModal from 'vue-js-modal';
 
 import axios from 'axios';
 const qs = require('qs');
@@ -22,12 +23,13 @@ const qs = require('qs');
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 
+Vue.use(VModal);
+
 Vue.config.productionTip = false;
 Vue.config.devtools = true;
 
 //using Sweet alert
 Vue.use(VueSweetalert2);
-
 
 if (document.getElementById('add-workflow')) {
   new Vue({

@@ -44,6 +44,9 @@
         </tr>
       </tbody>
     </table>
+    <div class="alert-count">
+      <p> {{ this.workflow_message }} </p>
+    </div>
   </div>
 
 </template>
@@ -67,6 +70,7 @@ export default {
 
   data: function() {
     return {
+      workflow_message: '',
       form: {
         workflow_name: '',   //name of workflow
       },
@@ -104,6 +108,12 @@ export default {
       axios.get("index.php?option=com_emundus_workflow&controller=workflow&task=getallworkflows")
           .then(response=>{
             this.workflows = response.data.data;
+            if(response.data.count == 0) {
+              this.workflow_message = "Aucun workflow trouvé";
+            }
+            else {
+              this.workflow_message = "Il y a " + response.data.count + " workflows";
+            }
           }).catch(error => {
             console.log(error);
       })
@@ -373,6 +383,15 @@ export default {
 
   .swal2-styled.swal2-cancel:hover {
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+  }
+
+  .alert-count {
+    border-radius: 4px;
+    border: 1px solid #c80101;
+    text-align: center;
+    width: 100%;
+    font-size: large;
+    color: #0A246A;
   }
 
 </style>

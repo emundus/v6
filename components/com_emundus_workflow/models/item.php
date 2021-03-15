@@ -159,11 +159,18 @@ class EmundusworkflowModelitem extends JModelList
 
         try {
             $query->clear()
-                ->select('*')
+                ->select('#__emundus_workflow_item.*, #__emundus_workflow_item_type.CSS_style')
                 ->from($db->quoteName('#__emundus_workflow_item'))
-                ->where($db->quoteName('#__emundus_workflow_item.id') . ' = ' . (int)$id);
+                ->leftJoin($db->quoteName('#__emundus_workflow_item_type') .
+                    ' ON '
+                    . $db->quoteName('#__emundus_workflow_item.item_id') .
+                    '='
+                    . $db->quoteName('#__emundus_workflow_item_type.id')
+                )
+                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int) $id);
 
             $db->setQuery($query);
+
             return $db->loadObjectList();
         }
         catch(Exception $e) {
@@ -172,32 +179,32 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
-    //GET STYLE FROM ITEM ID
-    public function getStyleFromItemID($data) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            //left join
-            $query->clear()
-                ->select('#__emundus_workflow_item_type.style')
-                ->from($db->quoteName('#__emundus_workflow_item_type'))
-                ->leftJoin($db->quoteName('#__emundus_workflow_item') .
-                    ' ON '
-                    . $db->quoteName('#__emundus_workflow_item.item_id') .
-                    '='
-                    . $db->quoteName('#__emundus_workflow_item_type.id')
-                )
-                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data);
-
-            $db->setQuery($query);
-
-            return $db->loadObjectList();
-        }
-        catch(Exception $e) {
-            return $e->getMessage();
-        }
-    }
+//    //GET STYLE FROM ITEM ID
+//    public function getStyleFromItemID($data) {
+//        $db = JFactory::getDbo();
+//        $query = $db->getQuery(true);
+//
+//        try {
+//            //left join
+//            $query->clear()
+//                ->select('#__emundus_workflow_item_type.style')
+//                ->from($db->quoteName('#__emundus_workflow_item_type'))
+//                ->leftJoin($db->quoteName('#__emundus_workflow_item') .
+//                    ' ON '
+//                    . $db->quoteName('#__emundus_workflow_item.item_id') .
+//                    '='
+//                    . $db->quoteName('#__emundus_workflow_item_type.id')
+//                )
+//                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data);
+//
+//            $db->setQuery($query);
+//
+//            return $db->loadObjectList();
+//        }
+//        catch(Exception $e) {
+//            return $e->getMessage();
+//        }
+//    }
 
     //SAVE ALL ITEMS
     public function saveItems($data) {

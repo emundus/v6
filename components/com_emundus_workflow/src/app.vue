@@ -227,14 +227,16 @@ export default {
       }).then(response => {
         axios({
           method: 'post',
-          url: "index.php?option=com_emundus_workflow&controller=item&task=getstyle",
+          url: "index.php?option=com_emundus_workflow&controller=item&task=getitem",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
           data: qs.stringify({
-            data: response.data.data,
+            id: response.data.data,
           })
         }).then(answer => {
+          console.log(answer);
+
           var _style = (answer.data.data)[0];
           this.$data.scene.nodes.push({
             id: response.data.data,
@@ -242,7 +244,7 @@ export default {
             y: 50 + Math.floor((Math.random() * 100) + 1),
             type: nodeCategory[index],
             label: '',
-            background: _style.style,
+            background: _style.CSS_style,
           });
         })
 

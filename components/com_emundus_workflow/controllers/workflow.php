@@ -81,10 +81,10 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
             $workflows = $_wid->getAllWorkflows();
 
             if (count($workflows) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_("WORKFLOW_RETRIEVED"), 'data' => $workflows);
+                $tab = array('status' => 1, 'msg' => JText::_("WORKFLOW_RETRIEVED"), 'data' => $workflows, 'count' => count($workflows));
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_RETRIEVE_WORKFLOW"), 'data' => $workflows);
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_RETRIEVE_WORKFLOW"), 'data' => $workflows, 'count' => count($workflows));
             }
         }
         echo json_encode((object)$tab);

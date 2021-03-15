@@ -371,12 +371,12 @@ export default {
       }).then(response => {
         axios({
           method: 'post',
-          url: "index.php?option=com_emundus_workflow&controller=item&task=getstyle",
+          url: "index.php?option=com_emundus_workflow&controller=item&task=getitem",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
           data: qs.stringify({
-            data: response.data.data,
+            id: response.data.data,
           })
         }).then(answer => {
           var _style = (answer.data.data)[0];
@@ -386,7 +386,7 @@ export default {
             y: 70 + Math.floor((Math.random() * 100) + 1),
             type: newitem.item_name,
             label: newitem.item_label,
-            background: _style.style,
+            background: _style.CSS_style,
           })
         })
       })
