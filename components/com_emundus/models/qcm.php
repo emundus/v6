@@ -306,24 +306,27 @@ class EmundusModelQcm extends JModelList {
             $wrong_answers = (float)$qcm_module['mod_em_qcm_points_wrong'];
             $missing_penalities = (float)$qcm_module['mod_em_qcm_points_missing_penalities'];
             $minimal_points = (float)$qcm_module['mod_em_qcm_points_minimal'];
+            $maximal_points = (float)$qcm_module['mod_em_qcm_points_maximal'];
             //
+
+            foreach ($good_answers as $good_answer){
+                if(!in_array($good_answer,$answers)){
+                    $points -= $missing_penalities;
+                }
+            }
 
             foreach ($answers as $answer){
                 if(in_array($answer,$good_answers)){
                     $points += $right_answers;
                 } else {
-                    if(($points -= $wrong_answers) < $minimal_points) {
-                        $points = $minimal_points;
-                    }
+                    $points -= $wrong_answers;
                 }
             }
 
-            foreach ($good_answers as $good_answer){
-                if(!in_array($good_answer,$answers) && $points > $minimal_points){
-                    if(($points -= $missing_penalities) < $minimal_points) {
-                        $points = $minimal_points;
-                    }
-                }
+            if($points < $minimal_points){
+                $points = $minimal_points;
+            } elseif($points > $maximal_points){
+                $points = $maximal_points;
             }
 
             return $points;

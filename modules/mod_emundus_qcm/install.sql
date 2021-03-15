@@ -312,11 +312,12 @@ ALTER TABLE jos_emundus_setup_action_tag ADD COLUMN `system` tinyint(1) default 
 
 INSERT INTO jos_emundus_setup_action_tag (label, class, `system`)
 VALUES ('tiers_temps', 'green', 1);
+SET @tag:= LAST_INSERT_ID();
 
 INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
-VALUES (2, 1, 'emundus_setup_action_tag', 'label', 'Tiers Temps', null, ' ', '2021-03-10 10:27:45', 0, 1);
+VALUES (2, @tag, 'emundus_setup_action_tag', 'label', 'Tiers Temps', null, ' ', '2021-03-10 10:27:45', 0, 1);
 INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
-VALUES (1, 1, 'emundus_setup_action_tag', 'label', 'Third time', null, ' ', '2021-03-10 10:27:45', 0, 1);
+VALUES (1, @tag, 'emundus_setup_action_tag', 'label', 'Third time', null, ' ', '2021-03-10 10:27:45', 0, 1);
 /**** ****/
 
 COMMIT;

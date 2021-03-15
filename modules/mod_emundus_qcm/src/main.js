@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Qcm from '@/Qcm'
 
-Vue.config.productionTip = false;
-Vue.config.devtools = true;
+Vue.config.productionTip = true;
+Vue.config.devtools = false;
 
 if (document.getElementById('em-qcm-vue')) {
   new Vue({

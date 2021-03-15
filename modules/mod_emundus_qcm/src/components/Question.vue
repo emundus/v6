@@ -15,6 +15,7 @@
           :showText="false"
           :percent="percent" >
       </k-progress>
+      <p v-if="!finish && timer" style="text-align: center">{{ timer }}</p>
     </div>
     <div class="awnswer-sended" v-if="finish">
       <label>{{ translations.answerSended }}</label>
@@ -66,6 +67,8 @@ export default {
           this.$emit('saveAnswer', this.answer);
         }
         this.finish = true;
+        this.$emit('resetPending');
+        this.pending = 0;
       }
       this.updatePending();
     },
@@ -76,7 +79,7 @@ export default {
       this.proposals_text = this.question.proposals_text.split('|');
       this.answer = [];
       let total_time = this.question.time;
-      if(this.pending != 0) {
+      if(parseInt(this.pending) != 0) {
         total_time = this.pending;
       }
       if(this.tierstemps == 1){
@@ -85,16 +88,21 @@ export default {
         }
       }
       this.timer = total_time;
+      this.updatePercent();
       this.interval = setInterval(() => {
         this.timer--;
-        if(this.tierstemps == 1) {
-          let time_tiers = parseInt(this.question.time) + (parseInt(this.question.time) * (1 / 3));
-          this.percent = (this.timer / time_tiers) * 100;
-        } else {
-          this.percent = (this.timer / this.question.time) * 100;
-        }
+        this.updatePercent();
         this.check_timer_completed();
       },1000);
+    },
+
+    updatePercent(){
+      if(this.tierstemps == 1) {
+        let time_tiers = parseInt(this.question.time) + (parseInt(this.question.time) * (1 / 3));
+        this.percent = (this.timer / time_tiers) * 100;
+      } else {
+        this.percent = (this.timer / this.question.time) * 100;
+      }
     },
 
     nextQuestion(){

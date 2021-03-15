@@ -176,6 +176,26 @@ try {
     $db->setQuery($query);
     $db->execute();
 
+
+// GOOD_ANSWERS_TEXT
+    $columns = array('name', 'group_id', 'plugin', 'label', 'checked_out', 'checked_out_time', 'created', 'created_by', 'created_by_alias', 'modified', 'modified_by', 'width', 'height', 'default', 'hidden', 'eval', 'ordering', 'show_in_list_summary', 'filter_type', 'filter_exact_match', 'published', 'link_to_detail', 'primary_key', 'auto_increment', 'access', 'use_in_page_title', 'parent_id', 'params');
+    $values = array('good_answers_text', $group_id, 'calc', 'QCM_GOOD_ANSWER', $user->id, date('Y-m-d H:i:s'), date('Y-m-d H:i:s'), $user->id, 'coordinator', date('Y-m-d H:i:s'), $user->id, 0, 0, '', 0, 0, 10, 0, '', 1, 1, 0, 0, 0, 1, 0, 0, '{"calc_calculation":"","calc_format_string":"","calc_on_save_only":"0","calc_ajax":"0","calc_ajax_observe_all":"0","calc_ajax_observe":"","calc_on_load":"1","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}');
+    foreach ($columns as $key => $column) {
+        $columns[$key] = $db->quoteName($column);
+    }
+    foreach ($values as $key => $value) {
+        if (!is_numeric($value)) {
+            $values[$key] = $db->quote($value);
+        }
+    }
+
+    $query->clear()
+        ->insert($db->quoteName('#__fabrik_elements'))
+        ->columns($columns)
+        ->values(implode(',', $values));
+    $db->setQuery($query);
+    $db->execute();
+
 // Joins
     $columns = array('list_id', 'element_id', 'join_from_table', 'table_join', 'table_key', 'table_join_key', 'join_type', 'group_id', 'params');
     $values = array(0, $question_id, '', 'jos_emundus_qcm_questions', 'question', 'id', 'left', $group_id, '{"join-label":"question","type":"element","pk":"`jos_emundus_qcm_questions`.`id`"}');
@@ -196,7 +216,7 @@ try {
     $db->execute();
 
     $columns = array('list_id', 'element_id', 'join_from_table', 'table_join', 'table_key', 'table_join_key', 'join_type', 'group_id', 'params');
-    $values = array($list->id, 0, 'jos_emundus_personal_detail', 'jos_emundus_personal_detail_'.$group_id.'_repeat', 'id', 'parent_id', 'left', $group_id, '{"type":"group","pk":"`jos_emundus_personal_detail_'.$group_id.'_repeat`.`id`"}');
+    $values = array($list->id, 0, $list->db_table_name, $list->db_table_name . '_'.$group_id.'_repeat', 'id', 'parent_id', 'left', $group_id, '{"type":"group","pk":"`'.$list->db_table_name.'_'.$group_id.'_repeat`.`id`"}');
     foreach ($columns as $key => $column) {
         $columns[$key] = $db->quoteName($column);
     }

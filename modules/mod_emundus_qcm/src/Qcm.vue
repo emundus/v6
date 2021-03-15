@@ -21,7 +21,7 @@
       </div>
       <div v-if="quizStarting">
         <p style="text-align: center;">{{parseInt(step)+1}} / {{count}}</p>
-        <question :question="applicant_questions[step]" :updateProposal="updateProposal" :pending="pending" :tierstemps="tierstemps" @nextQuestion="nextQuestion" @saveAnswer="saveAnswer"></question>
+        <question :question="applicant_questions[step]" :updateProposal="updateProposal" :pending="pending" :tierstemps="tierstemps" @nextQuestion="nextQuestion" @resetPending="pending = 0" @saveAnswer="saveAnswer"></question>
       </div>
     </div>
     <div v-else>
