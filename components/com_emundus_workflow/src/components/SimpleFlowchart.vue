@@ -222,7 +222,27 @@ export default {
       this.mouse.lastX = e.pageX || e.clientX + document.documentElement.scrollLeft
       this.mouse.lastY = e.pageY || e.clientY + document.documentElement.scrollTop
 
-      this.$modal.show('elementModal' + id);
+      //if type is init or cloture --> skipp
+      axios({
+        method: 'post',
+        url: "index.php?option=com_emundus_workflow&controller=item&task=getitem",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          id: id,
+        })
+      }).then(response => {
+        var _type = (response.data.data)[0];
+        if(_type.item_name == 'Initialisation' || _type.item_name == 'Cloture') {
+          //skip
+        }
+        else {
+          this.$modal.show('elementModal' + id);
+        }
+      }).catch(error => {
+        console.log(error);
+      })
     },
     handleMove(e) {
       if (this.action.linking) {
