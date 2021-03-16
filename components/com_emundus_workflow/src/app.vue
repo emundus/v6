@@ -3,7 +3,9 @@
     <div contenteditable="true" class="editable-workflow-name" id="editable-workflow-name-div" v-on:keyup.enter="updateWorkflowname()">
       {{ this.$data.workflowname.workflow_name }}
     </div>
-
+    <p class="tooltip"> Dernier mis a jour: {{ this.$data.lastSave }}</p>
+    <br/>
+    <p class="tooltip"> Astuce: Cliquer sur le nom du workflow pour le mettre a jour</p>
     <button class="vertical-menu" @click="seen=!seen">
       NEW BLOCK
     </button>
@@ -64,7 +66,7 @@ export default {
 
   data: function() {
     return {
-      msg: 'TEST',
+      lastSave: '',
       workflowname: [],
       seen: false,
       menu_message: "Menu",
@@ -79,6 +81,7 @@ export default {
   },
 
   created() {
+    this.updateLastSaving();
     this.cronSave();
     this.alertWelcomeDisplay();
     this.getAllItems();
@@ -86,10 +89,10 @@ export default {
     this.loadWorkflow();
     this.insertInitBloc();
     this.getworkflowname();
+    this.cronUpdate();
   },
 
   methods: {
-
     alertWelcomeDisplay: function() {
       Swal.fire({
         icon: 'success',
@@ -301,7 +304,7 @@ export default {
           data: this.getWorkflowIdFromURL(),
         })
       }).then(response => {
-        console.log(response);
+        // console.log(response);
       })
     },
 
@@ -410,8 +413,30 @@ export default {
       }).catch(error => {
         console.log(error);
       })
+    },
+
+    updateLastSaving: function() {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=workflow&task=getworkflowbyid',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          wid: this.getWorkflowIdFromURL(),
+        })
+      }).then(response => {
+        var _saved = (response.data.data)[0];
+        this.$data.lastSave = _saved.updated_at;
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
+    cronUpdate: function() {
+      setInterval(this.updateLastSaving, 5000);
     }
-  },
+  }
 }
 
 </script>
@@ -569,4 +594,9 @@ export default {
   white-space:nowrap;
 }
 
+.tooltip {
+  opacity: 1 !important;
+  font-size: small !important;
+  color: #8a8a8a;
+}
 </style>

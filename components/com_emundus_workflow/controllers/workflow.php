@@ -237,10 +237,10 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
             $_workflow = $_wid->updateWorkflow($data);
 
             if($_workflow) {
-                $tab = array('status' => 1, 'msg' => JText::_('UPDATE_LAST_SAVING'), 'data' => $_workflow);
+                $tab = array('status' => 1, 'msg' => JText::_('UPDATE_WORKFLOW'), 'data' => $_workflow);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_('CANNOT_UPDATE_LAST_SAVING'), 'data' => $_workflow);
+                $tab = array('status' => 0, 'msg' => JText::_('CANNOT_UPDATE_WORKFLOW'), 'data' => $_workflow);
             }
             echo json_encode((object)$tab);
             exit;
