@@ -4,7 +4,7 @@
       {{ this.$data.workflowname.workflow_name }}
     </div>
     <p class="tooltip"> Dernier mis a jour: {{ this.$data.lastSave }}</p>
-    <br/>
+    <p></p>
     <p class="tooltip"> Astuce: Cliquer sur le nom du workflow pour le mettre a jour</p>
     <button class="vertical-menu" @click="seen=!seen">
       NEW BLOCK

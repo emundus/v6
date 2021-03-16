@@ -220,7 +220,7 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
         }
     }
 
-    //update workflow
+    //update workflow -->
     public function updateworkflow() {
         $user = JFactory::getUser();
 
