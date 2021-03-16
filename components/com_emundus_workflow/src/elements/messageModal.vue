@@ -1,12 +1,30 @@
 <template>
   <div>
     <div class="form-group">
-
       <label> {{ this.$data.elementTitle.email_model_title }}</label>
 
       <select v-model="this.$data.email_selected">
-        <option v-for = "model in this.$data.email_model" :value="model.id"> {{ model.lbl }}</option>
+        <option v-for = "model in this.$data.emails" :value="model.id"> {{ model.lbl }}</option>
       </select>
+    </div>
+
+    <div class="form-group">
+      <label> {{ this.$data.elementTitle.input_status_title }}</label>
+      <select v-model="this.$data.status_selected">
+        <option v-for="statu in this.$data.status" :value="statu.id"> {{ statu.value }}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label> {{ this.$data.elementTitle.destination_title }}</label>
+      <select v-model="this.$data.destination_selected">
+        <option v-for="destination in this.$data.destination" :value="destination.id"> {{ destination.label }}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label> {{ this.$data.elementTitle.notes_title }}</label>
+      <textarea v-model="this.$data.notes_provided" placeholder="Supplementaires informations"/>
     </div>
 
   </div>
@@ -33,24 +51,27 @@ const qs = require('qs');
         },
 
         email_selected: '',
+        status_selected: '',
+        destination_selected: '',
+        notes_provided: '',
 
-        email_model: [],
-        input_status: [],
+        emails: [],
+        status: [],
         destination: [],
-        notes: '',
       }
     },
 
     created() {
       this.getAllMessages();
+      this.getAllStatus();
+      this.getAllDestinations();
     },
 
     methods: {
       getAllMessages: function() {
         axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallmessages')
           .then(response => {
-            this.$data.email_model = response.data.data;
-            console.log(response);
+            this.$data.emails = response.data.data;
           })
           .catch(error => {
             console.log(error);
@@ -60,7 +81,7 @@ const qs = require('qs');
       getAllStatus: function() {
         axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus')
             .then(response => {
-              this.$props.status = response.data.data;
+              this.$data.status = response.data.data;
             })
             .catch(error => {
               console.log(error);
@@ -68,9 +89,10 @@ const qs = require('qs');
       },
 
       getAllDestinations: function() {
-        axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallassociatedgroup')
+        axios.get('index.php?option=com_emundus_workflow&controller=common&task=getalldestinations')
             .then(response => {
-              this.$props.groups = response.data.data;
+              this.$data.destination = response.data.data;
+              console.log(response);
             })
             .catch(error => {
               console.log(error);
