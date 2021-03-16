@@ -170,4 +170,25 @@ class EmundusworkflowModelworkflow extends JModelList
             return $e->getMessage();
         }
     }
+
+    //CHANGE WORKFLOW NAME --> UPDATE ALL LOGS
+    public function updateWorkflow($data) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->update($db->quoteName('#__emundus_workflow'))
+                ->set($db->quoteName('#__emundus_workflow.workflow_name') . '=' . $db->quote($data['workflow_name']) .
+                    ',' . $db->quoteName('#__emundus_workflow.updated_at') . '=' . $db->quote(date('Y-m-d H:i:s')) .
+                    ',' . $db->quoteName('#__emundus_workflow.user_id') . '=' . (JFactory::getUser())->id)
+                ->where($db->quoteName('#__emundus_workflow.id') . '=' . (int)$data['id']);
+
+//            var_dump($query->__toString());die;
+            $db->setQuery($query);
+            return $db->execute();
+        }
+        catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

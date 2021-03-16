@@ -10,6 +10,7 @@
         @deleteLink="linkDelete(link.id)">
       </flowchart-link>
     </svg>
+    <modal-config-element v-for="(node, index) in scene.nodes" :ID="node.id" :item="node"> {{ node.id }}</modal-config-element>
     <flowchart-node v-bind.sync="node" 
       v-for="(node, index) in scene.nodes" 
       :key="`node${index}`"
@@ -29,6 +30,7 @@ import FlowchartNode from './FlowchartNode.vue';
 import { getMousePosition } from '../assets/position';
 import axios from 'axios';
 import Swal from "sweetalert2";
+import ModalConfigElement from "../ModalConfigElement";
 const qs = require('qs');
 
 export default {
@@ -74,6 +76,7 @@ export default {
     };
   },
   components: {
+    ModalConfigElement,
     FlowchartLink,
     FlowchartNode,
   },
@@ -218,6 +221,8 @@ export default {
       this.$emit('nodeClick', id);
       this.mouse.lastX = e.pageX || e.clientX + document.documentElement.scrollLeft
       this.mouse.lastY = e.pageY || e.clientY + document.documentElement.scrollTop
+
+      this.$modal.show('elementModal' + id);
     },
     handleMove(e) {
       if (this.action.linking) {
@@ -255,11 +260,11 @@ export default {
           this.draggingLink = null;
         }
         if (typeof target.className === 'string' && target.className.indexOf('node-delete') > -1) {
-          this.$swal('Merci', 'Ce bloc est supprimé', 'success');
+          // this.$swal('Merci', 'Ce bloc est supprimé', 'success');
           this.nodeDelete(this.action.dragging);
         }
         if (typeof target.className === 'string' && target.className.indexOf('duplicate-option') > -1) {
-          this.$swal('Merci', 'Ce bloc est dupliqué', 'success');
+          // this.$swal('Merci', 'Ce bloc est dupliqué', 'success');
           this.nodeCloned(this.action.dragging);
         }
       }
@@ -290,20 +295,71 @@ export default {
       }));
     },
     nodeDelete(id) {
-      this.scene.nodes = this.scene.nodes.filter((node) => {
-        return node.id !== id;
-      })
-      this.scene.links = this.scene.links.filter((link) => {
-        return link.from !== id && link.to !== id
-      })
       this.$emit('nodeDelete', id)
-      this.deleteItem(id)
+      axios({
+        method: 'post',
+        url: "index.php?option=com_emundus_workflow&controller=item&task=getitem",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          id: id,
+        })
+      }).then(response => {
+        var _type = (response.data.data)[0];
+
+        if(_type.item_name == 'Initialisation') {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            html: 'Vous pouvez pas supprimer le bloc <h2 style="color:red">INITIALISATION!',
+            timer: 1500,
+            showConfirmButton:false,
+          })
+          console.log('cannot delete');
+        }
+        else {
+          this.scene.nodes = this.scene.nodes.filter((node) => {
+            return node.id !== id;
+          })
+          this.scene.links = this.scene.links.filter((link) => {
+            return link.from !== id && link.to !== id
+          })
+
+          this.alertDelete(id)
+        }
+      })
     },
 
     nodeCloned(id) {
       this.$emit('nodeClone', id)
-      this.alertClone(id);
-      // alertClone
+
+      //check if the node_id is init or not
+      axios({
+        method: 'post',
+        url: "index.php?option=com_emundus_workflow&controller=item&task=getitem",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          id: id,
+        })
+      }).then(response => {
+        var _type = (response.data.data)[0];
+
+        if(_type.item_name == 'Initialisation') {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            html: 'Vous pouvez pas cloner le bloc <h2 style="color:red">INITIALISATION!',
+            timer: 1500,
+            showConfirmButton:false,
+          })
+        }
+        else {
+          this.alertClone(id);
+        }
+      })
     },
 
     // delete item by id
@@ -336,12 +392,22 @@ export default {
       })
     },
 
+    alertDelete: function(id) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Congrat',
+        text: 'Le bloc est supprimé!',
+        timer: 2000,
+        showConfirmButton:false,
+      })
+      this.deleteItem(id);
+    },
+
     alertClone: function(id) {
       Swal.fire({
         icon: 'success',
         title: 'Congrat',
         text: 'Le bloc est dupliqué!',
-        footer: '<a href>EMundus SAS</a>',
         timer: 2000,
         showConfirmButton:false,
       })
@@ -391,6 +457,8 @@ export default {
         })
       })
     },
+
+
   },
 }
 </script>

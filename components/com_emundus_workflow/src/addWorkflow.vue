@@ -1,10 +1,9 @@
 <template>
   <div>
     <h1>Emundus Workflow</h1>
+
       <div class="workflow-info">
-
         <b-form @submit="createworkflow">
-
           <label> Workflow name</label>
             <input v-model="name" placeholder="workflow name">
 

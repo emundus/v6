@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <h1> {{ this.$data.workflowname.workflow_name }} </h1>
+    <div contenteditable="true" class="editable-workflow-name" id="editable-workflow-name-div" v-on:keyup.enter="updateWorkflowname()">
+      {{ this.$data.workflowname.workflow_name }}
+    </div>
+
     <button class="vertical-menu" @click="seen=!seen">
       NEW BLOCK
     </button>
@@ -40,6 +43,7 @@ import addWorkflow from "./addWorkflow";
 import axios from 'axios';
 import {DateTime as LuxonDateTime} from "luxon";
 import Swal from "sweetalert2";
+import ModalConfigElement from "./ModalConfigElement";
 let now = new Date();
 const qs = require('qs');
 
@@ -48,6 +52,7 @@ const _lst = [];
 export default {
   name: 'app',
   components: {
+    ModalConfigElement,
     SimpleFlowchart,
     addWorkflow,
   },
@@ -59,6 +64,7 @@ export default {
 
   data: function() {
     return {
+      msg: 'TEST',
       workflowname: [],
       seen: false,
       menu_message: "Menu",
@@ -254,7 +260,7 @@ export default {
     },
 
     cronSave: function() {
-      setInterval(this.saveWorkflow,500);
+      setInterval(this.saveWorkflow,30000);
     },
 
     saveWorkflow: function() {
@@ -382,6 +388,28 @@ export default {
         showConfirmButton:false,
       })
       this.saveWorkflow();
+    },
+
+    updateWorkflowname: function() {
+      var info = {
+        workflow_name: document.getElementById('editable-workflow-name-div').innerText,
+        id: this.getWorkflowIdFromURL(),
+      }
+
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=workflow&task=updateworkflow',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          data: info,
+        })
+      }).then(response => {
+        console.log(response);
+      }).catch(error => {
+        console.log(error);
+      })
     }
   },
 }
@@ -517,6 +545,28 @@ export default {
 
 .swal2-styled.swal2-cancel:hover {
   box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.editable-workflow-name {
+  color: #8a1f11 !important;
+  font-size: xx-large !important;
+  font-weight: bold !important;
+  width: max-content;
+  border-bottom: 1px dotted black;
+}
+
+[contenteditable="true"].editable-workflow-name {
+  white-space: nowrap;
+  width:max-content;
+  overflow: hidden;
+}
+[contenteditable="true"].editable-workflow-name br {
+  display:none;
+
+}
+[contenteditable="true"].editable-workflow-name * {
+  display:inline;
+  white-space:nowrap;
 }
 
 </style>

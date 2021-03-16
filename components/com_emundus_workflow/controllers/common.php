@@ -5,7 +5,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 jimport('joomla.application.component.model');
 
-class EmundusworkflowControllercommon extends JModelLegacy {
+class EmundusworkflowControllercommon extends JControllerLegacy {
     var $_common_model = null;
 
     var $_published_form_model = null;
