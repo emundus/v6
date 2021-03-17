@@ -351,7 +351,7 @@ class plgUserEmundus extends JPlugin
 				        'lastname' => $user['lastname'],
 				        'profile' => $user['profile']
 			        ];
-			        $m_users->addEmundusUser(JFactory::getUser()->id, $user_params);
+			        $m_users->addEmundusUser(JFactory::getUser(), $user_params);
 
 			        $o_user = new JUser(JUserHelper::getUserId($user['username']));
 			        $pass = bin2hex(openssl_random_pseudo_bytes(4));
