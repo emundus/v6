@@ -301,26 +301,22 @@ class EmundusworkflowModelitem extends JModelList
 
     //UPDATE PARAMS --> table [ jos_emundus_workflow_item ] // column [ params ]
     public function updateParamsByItemID($data) {
+        $id = (int)$data['id'];
 
-        $string = "";
-
-        foreach ($data as $key => $value) {
-            if($key == 'id' or $key == 'type' or $key == 'label' or $key == 'x' or $key == 'y' or $key == 'background') {}
-            else {
-                $string .= $key . ":" . $value . ", ";
-            }
-        }
-        $string = substr($string, 0, -1);
-        $finalString =  substr($string, 0, -1);
+        unset($data['id']);
+        unset($data['type']);
+        unset($data['label']);
+        unset($data['x']);
+        unset($data['y']);
+        unset($data['background']);
 
         $db = JFactory::getDbo();
         $query= $db->getQuery(true);
-
         try {
             $query->clear()
                 ->update($db->quoteName('#__emundus_workflow_item'))
-                ->set($db->quoteName('#__emundus_workflow_item.params') . '=' . '"' . $finalString . '"')
-                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
+                ->set($db->quoteName('#__emundus_workflow_item.params') . '=' . $db->quote(json_encode($data)))
+                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . $id);
             $db->setQuery($query);
 
             return $db->execute();

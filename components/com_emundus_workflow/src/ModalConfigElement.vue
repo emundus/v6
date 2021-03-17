@@ -1,7 +1,10 @@
 <template>
   <div id="ModalConfigElement">
     <modal :name="'elementModal' + ID" :width="500" :height="500" :adaptive="true" :draggable="true" @before-open="beforeOpen">
-      <p style="border-bottom: dashed"> Configurations </p>
+      <b-nav tabs>
+        <b-nav-item active>Configurations</b-nav-item>
+        <b-nav-item>Lorem Ipsum</b-nav-item>
+      </b-nav>
       <br/>
       <br/>
       <form-modal v-if="this.type == 'Formulaire'" ref="forms" :element="element"/>

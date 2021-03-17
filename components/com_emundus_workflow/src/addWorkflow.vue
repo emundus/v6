@@ -3,7 +3,13 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
-    <b-jumbotron header="Emundus Workflow" lead="Emundus Workflow"/>
+    <div style="text-align: center">
+      <b-alert show variant="success" style="background-color: #d4edda; border-color: #c3e6cb; padding: 3.75rem; align-items: center" show dismissible>
+
+          <h1>EMundus Workflow Demo</h1>
+
+      </b-alert>
+    </div>
 
     <b-form-group label-cols="4" label-cols-lg="2" label-size="lg" label="Nom du workflow" label-for="input-lg">
       <b-form-input v-model="name" placeholder="Nom du workflow" size="sm"></b-form-input>
