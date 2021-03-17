@@ -316,6 +316,36 @@ jimport('joomla.application.component.controller');
             exit;
         }
 
+        //update params
+        public function updateparams() {
+            $user = JFactory::getUser();
+
+            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            }
+            else {
+                $jinput = JFactory::getApplication()->input;
+                $data = $jinput->getRaw('params');
+
+                $_cit = $this->model;
+
+//                var_dump($data);die;
+
+                $_items = $_cit->updateParamsByItemID($data);
+
+
+                if($_items) {
+                    $tab = array('status' => 1, 'msg' => JText::_("UPDATE_PARAMS"), 'data' => $_items);
+                }
+                else {
+                    $tab = array('status' => 0, 'msg' => JText::_("CANNOT_UPDATE_PARAMS"), 'data' => $_items);
+                }
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+
 //        //get style of bloc
 //        public function getstyle() {
 //            $user = JFactory::getUser();

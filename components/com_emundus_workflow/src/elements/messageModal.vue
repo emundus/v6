@@ -3,28 +3,28 @@
     <div class="form-group">
       <label> {{ this.$data.elementTitle.email_model_title }}</label>
 
-      <select v-model="this.$data.email_selected">
+      <select v-model="form.email_selected">
         <option v-for = "model in this.$data.emails" :value="model.id"> {{ model.lbl }}</option>
       </select>
     </div>
 
     <div class="form-group">
       <label> {{ this.$data.elementTitle.input_status_title }}</label>
-      <select v-model="this.$data.status_selected">
+      <select v-model="form.status_selected">
         <option v-for="statu in this.$data.status" :value="statu.id"> {{ statu.value }}</option>
       </select>
     </div>
 
     <div class="form-group">
       <label> {{ this.$data.elementTitle.destination_title }}</label>
-      <select v-model="this.$data.destination_selected">
+      <select v-model="form.destination_selected">
         <option v-for="destination in this.$data.destination" :value="destination.id"> {{ destination.label }}</option>
       </select>
     </div>
 
     <div class="form-group">
       <label> {{ this.$data.elementTitle.notes_title }}</label>
-      <textarea v-model="this.$data.notes_provided" placeholder="Supplementaires informations"/>
+      <textarea v-model="form.notes_provided" placeholder="Supplementaires informations"/>
     </div>
 
   </div>
@@ -38,7 +38,7 @@ const qs = require('qs');
     name: "messageModal",
 
     props: {
-
+      element: Object,
     },
 
     data: function() {
@@ -50,10 +50,12 @@ const qs = require('qs');
           notes_title: "Notes",
         },
 
-        email_selected: '',
-        status_selected: '',
-        destination_selected: '',
-        notes_provided: '',
+        form: {
+          email_selected: '',
+          status_selected: '',
+          destination_selected: '',
+          notes_provided: '',
+        },
 
         emails: [],
         status: [],
@@ -65,6 +67,7 @@ const qs = require('qs');
       this.getAllMessages();
       this.getAllStatus();
       this.getAllDestinations();
+      this.form = this.element;
     },
 
     methods: {

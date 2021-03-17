@@ -1,10 +1,10 @@
 <template>
-  <div :id="ModalConfigElement">
+  <div id="ModalConfigElement">
     <modal :name="'elementModal' + ID" :width="500" :height="500" :adaptive="true" :draggable="true" @before-open="beforeOpen">
-      <form-modal v-if="this.type == 'Formulaire'"/>
-      <message-modal v-if="this.type == 'Message'"/>
+      <form-modal v-if="this.type == 'Formulaire'" ref="forms" :element="element"/>
+      <message-modal v-if="this.type == 'Message'" ref="emails" :element="element"/>
+      <button @click="updateParams()">Sauvegarder</button>
     </modal>
-
   </div>
 </template>
 
@@ -31,12 +31,11 @@ export default {
 
   props: {
     ID: Number,
-    item: Object,
+    element: Object,
   },
 
   methods: {
     getElementByItem: function () {
-      //call to the table [ jos_emundus_workflow_items :: id ] --> detect the item_id in the table [ jos_emundus_workflow_item_type ]
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus_workflow&controller=item&task=getitem',
@@ -50,8 +49,24 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        var rawData = (response.data.data)[0];
-        this.$data.type = rawData.item_name;
+        this.$data.type = (response.data.data)[0].item_name;
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
+    updateParams: function() {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=item&task=updateparams',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          params: this.element,
+        })
+      }).then(response => {
+        console.log(response);
       }).catch(error => {
         console.log(error);
       })
