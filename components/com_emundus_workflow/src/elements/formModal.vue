@@ -3,27 +3,27 @@
     <div class="form-group">
       <label> {{ this.$data.elementTitle.form_name_title }}</label>
 
-      <select v-model="this.$data.formNameSelected" @change="getValue($event)">
+      <select v-model="form.formNameSelected">
         <option v-for="form in this.$data.forms" :value="form.id"> {{ form.label }}</option>
       </select>
 
       <div class="form-group">
         <label> {{ this.$data.elementTitle.edited_status_title }}</label>
-        <select v-model="this.$data.editedStatusSelected">
+        <select v-model="form.editedStatusSelected">
           <option v-for="instatus in this.$data.status" :value="instatus.id"> {{ instatus.value }}</option>
         </select>
       </div>
 
       <div class="form-group">
         <label> {{ this.$data.elementTitle.output_status_title }}</label>
-        <select v-model="this.$data.outputStatusSelected">
+        <select v-model="form.outputStatusSelected">
           <option v-for="outstatus in this.$data.status" :value="outstatus.id"> {{ outstatus.value }}</option>
         </select>
       </div>
 
       <div class="form-group">
         <label> {{ this.$data.elementTitle.notes_title }}</label>
-        <textarea v-model="notes" placeholder="Supplémentaire informations"></textarea>
+        <textarea v-model="form.notes" placeholder="Supplémentaire informations"></textarea>
       </div>
 
     </div>
@@ -38,7 +38,7 @@ export default {
   name: "formModal",
 
   props: {
-
+    element: Object,
   },
 
   data: function() {
@@ -49,13 +49,15 @@ export default {
         output_status_title: "Statut de sortie",
         notes_title: "Notes",
       },
-      formNameSelected: '',
-      editedStatusSelected: '',
-      outputStatusSelected: '',
+      form: {
+        formNameSelected: '',
+        editedStatusSelected: '',
+        outputStatusSelected: '',
+        notes: '',
+      },
 
       forms: [],
       status: [],
-      notes: '',
     }
   },
 
@@ -86,6 +88,7 @@ export default {
   created() {
     this.getAllFormType();
     this.getAllStatus();
+    this.form = this.element;
   },
 
   watch() {
