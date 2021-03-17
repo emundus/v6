@@ -23,7 +23,7 @@ class plgEmundusNantes_link_employeur extends JPlugin {
 
         $res = true;
 
-        $employeur = $params ?? $user;
+        $employeur = $params ?: $user;
 
         if (!empty($employeur['university_id'])) {
 
@@ -67,6 +67,7 @@ class plgEmundusNantes_link_employeur extends JPlugin {
                 return;
             }
 
+
             if (!empty($cat)) {
 
                 $organization = new stdClass();
@@ -83,7 +84,6 @@ class plgEmundusNantes_link_employeur extends JPlugin {
                 if (empty($existing_user)) {
                     $organization->alias = $cat->siret . '_' . $employeur['id'];
                     $organization->published = 1;
-
                     $organization->language = '*';
                     $organization->metakey = '';
                     $organization->metadesc = '';
@@ -92,7 +92,12 @@ class plgEmundusNantes_link_employeur extends JPlugin {
                     $res = $db->insertObject('#__contact_details', $organization, 'id');
 
                 } else {
-                    $res = JFactory::getDbo()->updateObject('#__contact_details', $organization, $existing_user->id);
+                    $organization->id = $existing_user->id;
+                    try {
+                        $res = JFactory::getDbo()->updateObject('#__contact_details', $organization, 'id', true);
+                    } catch (Exception $e) {
+                        JLog::add('Errror  :'.$e, JLog::INFO, 'com_emundus_nantes_link_employeur');
+                    }
                 }
 
                 JLog::add('result on user  :'.$res, JLog::INFO, 'com_emundus_nantes_link_employeur');
