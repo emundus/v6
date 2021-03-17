@@ -111,7 +111,7 @@ $m_email = new EmundusModelEmails;
 // show application files if applicant profile like current profile and nothing if not
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
-if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
+if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || in_array($user->profile, $id_profiles)) {
 
 	$fnums = array_keys($applications);
 	$attachments = $m_application->getAttachmentsProgress($fnums);
