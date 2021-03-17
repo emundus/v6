@@ -1,33 +1,40 @@
 <template>
   <div>
-    <div class="form-group">
-      <label> {{ this.$data.elementTitle.email_model_title }}</label>
-
-      <select v-model="form.email_selected">
-        <option v-for = "model in this.$data.emails" :value="model.id"> {{ model.lbl }}</option>
-      </select>
+    <div class="row mb-3">
+      <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.email_model_title }}</label>
+      <div class="col-xs-8">
+        <select v-model="form.email_selected" class="form-control">
+          <option v-for = "model in this.$data.emails" :value="model.id"> {{ model.lbl }}</option>
+        </select>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label> {{ this.$data.elementTitle.input_status_title }}</label>
-      <select v-model="form.status_selected">
-        <option v-for="statu in this.$data.status" :value="statu.id"> {{ statu.value }}</option>
-      </select>
+    <div class="row mb-3">
+      <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.input_status_title }}</label>
+      <div class="col-xs-8">
+        <select v-model="form.status_selected" class="form-control-select">
+          <option v-for="destination in this.$data.destination" :value="destination.id"> {{ destination.label }}</option>
+        </select>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label> {{ this.$data.elementTitle.destination_title }}</label>
-      <select v-model="form.destination_selected">
-        <option v-for="destination in this.$data.destination" :value="destination.id"> {{ destination.label }}</option>
-      </select>
+    <div class="row mb-3">
+      <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.destination_title }}</label>
+      <div class="col-xs-8">
+        <select v-model="form.destination_selected" class="form-control-select">
+          <option v-for="destination in this.$data.destination" :value="destination.id"> {{ destination.label }}</option>
+        </select>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label> {{ this.$data.elementTitle.notes_title }}</label>
-      <textarea v-model="form.notes_provided" placeholder="Supplementaires informations"/>
+    <div class="row mb-3">
+      <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.notes_title }}</label>
+      <div class="col-xs-8">
+        <textarea v-model="form.notes_provided" placeholder="Supplementaires informations"/>
+      </div>
     </div>
-
   </div>
+
 </template>
 
 <script>
@@ -44,7 +51,7 @@ const qs = require('qs');
     data: function() {
       return {
         elementTitle: {
-          email_model_title: "Modèle du message",
+          email_model_title: "Message",
           input_status_title: "Statut d'entrée",
           destination_title: "Destinataire",
           notes_title: "Notes",

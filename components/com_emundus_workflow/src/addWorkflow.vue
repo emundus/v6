@@ -1,21 +1,21 @@
 <template>
   <div>
-    <h1>Emundus Workflow</h1>
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
-      <div class="workflow-info">
-        <b-form @submit="createworkflow">
-          <label> Workflow name</label>
-            <input v-model="name" placeholder="workflow name">
+    <b-jumbotron header="Emundus Workflow" lead="Emundus Workflow"/>
 
-          <label> Associated campaign </label>
-          <p>
-            <select v-model="selectedCampaign">
-              <option v-for="campaign in this.$props.campaigns" :value="campaign.id"> {{ campaign.label }} </option>
-            </select>
-          </p>
-        </b-form>
-        <b-button type="submit" variant="success" @click="createworkflow">Create new workflow</b-button>
-      </div>
+    <b-form-group label-cols="4" label-cols-lg="2" label-size="lg" label="Nom du workflow" label-for="input-lg">
+      <b-form-input v-model="name" placeholder="Nom du workflow" size="sm"></b-form-input>
+    </b-form-group>
+
+    <b-form-group label-cols="4" label-cols-lg="2" label-size="lg" label="Campagne associee" label-for="input-lg">
+      <b-form-select v-model="selectedCampaign">
+        <option v-for="campaign in this.$props.campaigns" :value="campaign.id"> {{ campaign.label }} </option>
+      </b-form-select>
+    </b-form-group>
+
+    <b-button type="submit" variant="success" @click="createworkflow">Créer nouveau workflow</b-button>
 
     <table class="styled-table">
       <thead>
@@ -69,6 +69,19 @@ export default {
 
   data: function() {
     return {
+      types: [
+        'text',
+        'number',
+        'email',
+        'password',
+        'search',
+        'url',
+        'tel',
+        'date',
+        'time',
+        'range',
+        'color'
+      ],
       workflow_message: '',
       form: {
         workflow_name: '',   //name of workflow
@@ -392,5 +405,4 @@ export default {
     font-size: large;
     color: #0A246A;
   }
-
 </style>

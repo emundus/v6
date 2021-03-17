@@ -1,11 +1,14 @@
 <template>
   <div id="app">
-    <div contenteditable="true" class="editable-workflow-name" id="editable-workflow-name-div" v-on:keyup.enter="updateWorkflowname()">
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+
+    <div contenteditable="true" class="editable-workflow-name" id="editable-workflow-name-div" v-on:keyup.enter="updateWorkflowname()" v-b-tooltip.top.hover title="Cliquer sur le nom du workflow pour le changer">
       {{ this.$data.workflowname.workflow_name }}
     </div>
+
     <p class="tooltip"> Dernier mis a jour: {{ this.$data.lastSave }}</p>
-    <br/>
-    <p class="tooltip"> Astuce: Cliquer sur le nom du workflow pour le mettre a jour</p>
+
     <button class="vertical-menu" @click="seen=!seen">
       NEW BLOCK
     </button>
@@ -516,22 +519,23 @@ export default {
 }
 
 .add-button {
-  position: absolute;
-  right: 25px;
-  top: initial;
-  background-color: #28a745;
-  border-color: #28a745;
-  color: #fff;
-  display: inline-block;
-  text-align: center;
-  vertical-align: center;
-  user-select: none;
-  border-radius: .25rem;
-  margin: 12px;
+  position: absolute !important;
+  right: 25px !important;
+  top: initial !important;
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
+  color: #fff !important;
+  display: inline-block !important;
+  text-align: center !important;
+  vertical-align: center !important;
+  user-select: none !important;
+  border-radius: .25rem !important;
+  line-height: 35px;
+  margin: 5px;
 }
 
 .add-button:hover {
-  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19) !important;
 }
 
 #g-container-main .g-container {

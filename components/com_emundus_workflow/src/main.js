@@ -1,30 +1,29 @@
 import Vue from 'vue'
 import app from './app.vue'
 import addWorkflow from "@/addWorkflow";
-import addItem from "@/addItem";
 
 //import VueSidebarMenu from 'vue-sidebar-menu'
 import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
-
-//import Bootstrap and BootstrapVue CSS (order is important)
-import { BootstrapVue, IconsPlugin} from "bootstrap-vue";
-
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
-
 import VueSweetalert2 from 'vue-sweetalert2';
 import VModal from 'vue-js-modal';
 
 import axios from 'axios';
 const qs = require('qs');
 
-Vue.use(BootstrapVue);
-Vue.use(IconsPlugin);
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+
+// Import Bootstrap an BootstrapVue CSS files (order is important)
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+// Make BootstrapVue available throughout your project
+Vue.use(BootstrapVue)
+// Optionally install the BootstrapVue icon components plugin
+Vue.use(IconsPlugin)
 
 Vue.use(VModal);
-
 Vue.config.productionTip = false;
 Vue.config.devtools = true;
 

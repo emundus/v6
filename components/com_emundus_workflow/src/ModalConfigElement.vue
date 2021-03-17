@@ -1,9 +1,12 @@
 <template>
   <div id="ModalConfigElement">
     <modal :name="'elementModal' + ID" :width="500" :height="500" :adaptive="true" :draggable="true" @before-open="beforeOpen">
+      <p style="border-bottom: dashed"> Configurations </p>
+      <br/>
+      <br/>
       <form-modal v-if="this.type == 'Formulaire'" ref="forms" :element="element"/>
       <message-modal v-if="this.type == 'Message'" ref="emails" :element="element"/>
-      <button @click="updateParams()">Sauvegarder</button>
+      <button class="update-button" @click="updateParams()">Sauvegarder</button>
     </modal>
   </div>
 </template>
@@ -79,6 +82,24 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 
+  .button-area {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .update-button {
+    top: auto;
+    background-color: #06ba00;
+    border-color: #06ba00;
+    color: #fff;
+    display: inline-block;
+    text-align: center;
+    vertical-align: center;
+    user-select: none;
+    border-radius: .25rem;
+    margin: 5px;
+    padding: 4px 20px;
+  }
 </style>
