@@ -1,6 +1,12 @@
 <template>
   <div id="ModalConfigElement">
-    <modal :name="'elementModal' + ID" :width="500" :height="500" :adaptive="true" :draggable="true" @before-open="beforeOpen">
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+
+    <modal :name="'elementModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" @before-open="beforeOpen">
+      <b-badge variant="warning"><h3>{{ this.$data.type }} Configuration</h3></b-badge>
+      <br/>
+      <br/>
       <b-nav tabs>
         <b-nav-item active>Configurations</b-nav-item>
         <b-nav-item>Lorem Ipsum</b-nav-item>
@@ -9,7 +15,7 @@
       <br/>
       <form-modal v-if="this.type == 'Formulaire'" ref="forms" :element="element"/>
       <message-modal v-if="this.type == 'Message'" ref="emails" :element="element"/>
-      <button class="update-button" @click="updateParams()">Sauvegarder</button>
+      <b-button variant="success" @click="updateParams()">Sauvegarder</b-button>
     </modal>
   </div>
 </template>
@@ -87,22 +93,15 @@ export default {
 
 <style>
 
-  .button-area {
-    align-items: center;
-    justify-content: center;
+  .vm--modal {
+    padding: 10px 25px !important;
   }
 
-  .update-button {
-    top: auto;
-    background-color: #06ba00;
-    border-color: #06ba00;
-    color: #fff;
-    display: inline-block;
-    text-align: center;
-    vertical-align: center;
-    user-select: none;
-    border-radius: .25rem;
-    margin: 5px;
-    padding: 4px 20px;
+  .row {
+    margin-right:100px !important;
+  }
+
+  .select {
+    max-width: 300px !important;
   }
 </style>

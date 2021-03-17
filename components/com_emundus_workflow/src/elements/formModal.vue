@@ -1,36 +1,41 @@
 <template>
   <div>
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
       <div class="row mb-3">
-        <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.form_name_title }}</label>
+        <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.form_name_title }}</label>
         <div class="col-xs-8">
           <select v-model="form.formNameSelected" class="form-control">
+            <b-form-select-option selected disabled>--Formulaire--</b-form-select-option>
             <option v-for="form in this.$data.forms" :value="form.id"> {{ form.label }}</option>
           </select>
         </div>
       </div>
 
       <div class="row mb-3">
-        <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.edited_status_title }}</label>
+        <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.edited_status_title }}</label>
         <div class="col-xs-8">
           <select v-model="form.editedStatusSelected" class="form-control-select">
+            <b-form-select-option selected disabled>--Statut--</b-form-select-option>
             <option v-for="instatus in this.$data.status" :value="instatus.id"> {{ instatus.value }}</option>
           </select>
         </div>
       </div>
 
     <div class="row mb-3">
-      <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.output_status_title }}</label>
+      <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.output_status_title }}</label>
       <div class="col-xs-8">
         <select v-model="form.outputStatusSelected" class="form-control-select">
+          <b-form-select-option selected disabled>--Statut--</b-form-select-option>
           <option v-for="outstatus in this.$data.status" :value="outstatus.id"> {{ outstatus.value }}</option>
         </select>
       </div>
     </div>
 
     <div class="row mb-3">
-      <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.notes_title }}</label>
+      <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.notes_title }}</label>
       <div class="col-xs-8">
-        <textarea id="exampleFormControlTextarea1" rows="3" v-model="form.notes" placeholder="Supplémentaire informations"></textarea>
+        <textarea id="exampleFormControlTextarea1" rows="3" v-model="form.notes" placeholder="Informations Supplémentaires" style="margin: -5px; width: 105%"></textarea>
       </div>
     </div>
   </div>
@@ -49,6 +54,9 @@ export default {
 
   data: function() {
     return {
+        types: [
+          'color'
+        ],
       elementTitle: {
         form_name_title: "Nom du formulaire",
         edited_status_title: "Statut d'édition",
