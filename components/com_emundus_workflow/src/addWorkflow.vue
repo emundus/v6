@@ -16,8 +16,9 @@
     </b-form-group>
 
     <b-form-group label-cols="4" label-cols-lg="2" label-size="lg" label="Campagne associee" label-for="input-lg">
-      <b-form-select v-model="selectedCampaign">
-        <option v-for="campaign in this.$props.campaigns" :value="campaign.id"> {{ campaign.label }} </option>
+      <b-form-select v-model="selectedCampaign" class="form-control-select">
+        <b-form-select-option disabled selected>-- Campagnes disponibles --</b-form-select-option>
+        <option v-for="campaign in this.availableCampaigns" :value="campaign.id"> {{ campaign.label }} </option>
       </b-form-select>
     </b-form-group>
 
@@ -75,6 +76,7 @@ export default {
 
   data: function() {
     return {
+      availableCampaigns: 0,
       types: [
         'text',
         'number',
@@ -93,7 +95,7 @@ export default {
         workflow_name: '',   //name of workflow
       },
       name: '',
-      selectedCampaign: '',
+      selectedCampaign: 0,
       workflow_id: 0,
       table_header: ['No.ligne', 'Workflow ID', 'Nom du workflow', 'Campagne Associeé', 'Dernier Mis-a-jour par', 'Créé à', 'Mis-a-jour ', 'Action'],
     }
@@ -108,8 +110,10 @@ export default {
   },
 
   created() {
-    this.getAllCampaigns();
+    // this.getAllCampaigns();
     this.getAllWorkflow();
+    this.getAllAvailableCampaigns();
+
   },
 
   methods: {
@@ -119,6 +123,16 @@ export default {
             this.campaigns = response.data.data;
           }).catch(error => {
             console.log(error);
+      })
+    },
+
+    getAllAvailableCampaigns: function() {
+      axios.get("index.php?option=com_emundus_workflow&controller=workflow&task=getallavailablecampaigns")
+          .then(response=>{
+            console.log(response.data.data);
+            this.$data.availableCampaigns = response.data.data;
+          }).catch(error => {
+        console.log(error);
       })
     },
 

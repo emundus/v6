@@ -246,4 +246,29 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
             exit;
         }
     }
+
+    //get all available campaigns
+    public function getallavailablecampaigns() {
+        $user = JFactory::getUser();
+
+        if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        }
+        else {
+            $_wid = $this->model;
+
+            //do stuff
+            $workflows = $_wid->getAllAvailableCampaigns();
+
+            if (count($workflows) > 0) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_AVAILABLES_CAMPAIGNS"), 'data' => $workflows, 'count' => count($workflows));
+            }
+            else {
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_ALL_AVAILABLE_CAMPAIGNS"), 'data' => $workflows, 'count' => count($workflows));
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 }

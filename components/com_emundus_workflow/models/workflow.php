@@ -100,6 +100,7 @@ class EmundusworkflowModelworkflow extends JModelList
 
                 $db->setQuery($query);
                 $db->execute();
+//                var_dump($query->__toString());die;
                 return $db->insertid();
 
             } catch (Exception $e) {
@@ -188,6 +189,26 @@ class EmundusworkflowModelworkflow extends JModelList
             return $db->execute();
         }
         catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    //RETRIEVE AVAILABLE CAMPAIGNS
+    public function getAllAvailableCampaigns() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query
+                ->select('#__emundus_setup_campaigns.id, #__emundus_setup_campaigns.label')
+                ->from($db->quoteName('#__emundus_setup_campaigns'))
+                ->leftJoin($db->quoteName('#__emundus_workflow') . ' ON ' . $db->quoteName('#__emundus_setup_campaigns.id') . '=' . $db->quoteName('#__emundus_workflow.campaign_id'))
+                ->where($db->quoteName('#__emundus_setup_campaigns.id') . ' NOT IN (SELECT #__emundus_workflow.campaign_id FROM #__emundus_workflow) ');
+            $db->setQuery($query);
+
+            return $db->loadObjectList();
+        }
+        catch(Exception $e) {
             return $e->getMessage();
         }
     }
