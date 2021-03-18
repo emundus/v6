@@ -3,7 +3,7 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
-    <modal :name="'elementModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" @before-open="beforeOpen">
+    <modal :name="'elementModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen">
       <b-badge variant="warning"><h3>{{ this.$data.type }} Configuration</h3></b-badge>
       <br/>
       <br/>

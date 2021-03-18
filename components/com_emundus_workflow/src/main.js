@@ -30,6 +30,10 @@ Vue.config.devtools = true;
 //using Sweet alert
 Vue.use(VueSweetalert2);
 
+//using color picker
+import InputColorPicker from "vue-native-color-picker";
+Vue.use(InputColorPicker);
+
 if (document.getElementById('add-workflow')) {
   new Vue({
     el: '#add-workflow',

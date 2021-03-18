@@ -36,8 +36,21 @@
         <textarea v-model="form.notes_provided" placeholder="Supplementaires informations" style="margin: -3px; width: 95%"/>
       </div>
     </div>
-  </div>
 
+    <div class="row">
+      <div class="col-sm-6">
+        <label>Choisir couleur</label>
+      </div>
+
+      <div class="col-sm-4" style="padding-left: 0">
+        <v-input-colorpicker  v-model="form.color" style="width:140px"/>
+      </div>
+
+      <div class="col-sm-2" id="hex_color">
+        <p style="padding: 3px; margin:0px -15px" v-bind:style="{ color: this.form.color }">{{ this.form.color }}</p>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -65,6 +78,7 @@ const qs = require('qs');
           status_selected: '',
           destination_selected: '',
           notes_provided: '',
+          color: "#0f4c81",
         },
 
         emails: [],
