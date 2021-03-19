@@ -91,7 +91,7 @@
         //code improving --> from fnum, get campaign_id // workflow_id // status_id --> profile_id from workflow_id
         public function getWorkflowProfileByFnum($fnum, $cid=null) {
             $query = $this->db->getQuery(true);
-            $query->select('#__emundus_workflow_item.params')
+            $query->select('#__emundus_workflow.id, #__emundus_workflow_item.params')
                 ->from($this->db->quoteName('#__emundus_workflow_item'))
                 ->leftJoin($this->db->quoteName('#__emundus_workflow') . 'ON' . $this->db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . $this->db->quoteName('#__emundus_workflow.id'))
                 ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') . 'ON' . $this->db->quoteName('#__emundus_workflow.campaign_id') . '=' . $this->db->quoteName('#__emundus_campaign_candidature.campaign_id'))
@@ -100,15 +100,20 @@
             $this->db->setQuery($query);
             $_rawData =  $this->db->loadObjectList();
 
-//            print_r(json_decode($_rawData[2]->params));die;
+            $session = JFactory::getSession();
+            $aid = $session->get('emundusUser');
 
             try {
-                for ($i = 1; $i <= count($_rawData); $i++) {
+                for ($i = 0; $i <= count($_rawData); $i++) {
                     if (((json_decode($_rawData[$i]->params))->editedStatusSelected) !== $cid) {
                         unset($_rawData[$i]);
                     }
+                    else {
+                        $aid->profile_id_workflow = json_decode($_rawData[$i]->params)->formNameSelected;
+                        $aid->workflow_id = $_rawData[$i]->id;
+                    }
                 }
-//                print_r($_rawData);die;
+
                 return $_rawData;
             }
             catch(Exception $e) {
