@@ -316,6 +316,7 @@ class EmundusworkflowModelitem extends JModelList
             $query->clear()
                 ->update($db->quoteName('#__emundus_workflow_item'))
                 ->set($db->quoteName('#__emundus_workflow_item.params') . '=' . $db->quote(json_encode($data)))
+                ->set($db->quoteName('#__emundus_workflow_item.style') . '=' . $db->quote($data['color']))
                 ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . $id);
             $db->setQuery($query);
 

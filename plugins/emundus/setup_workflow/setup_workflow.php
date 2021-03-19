@@ -47,6 +47,73 @@
                     return false;
                 }
             }
+        }
 
+        public function getWorkflowByCampaignID($cid) {
+            try {
+                $query = $this->db->getQuery(true);
+                $query->select('*')
+                    ->from($this->db->quoteName('#__emundus_workflow'))
+                    ->where($this->db->quoteName('#__emundus_workflow.campaign_id') . '=' . (int)$cid);
+                $this->db->setQuery($query);
+                return $this->db->loadObject();
+            }
+            catch(Exception $e) {
+                JLog::add('Could not get associated workflow -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
+                return $e->getMessage();
+            }
+        }
+
+        //get profile_id from workflow_id // status_id
+        public function getProfileByWorkflowIDStatusID($wid, $cid) {
+            $query = $this->db->getQuery(true);
+            $query->select('#__emundus_workflow_item.id, #__emundus_workflow_item.params')
+                ->from($this->db->quoteName('#__emundus_workflow_item'))
+                ->where($this->db->quoteName('#__emundus_workflow_item.item_id') . '=' . 2)
+                ->andWhere($this->db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$wid);
+            $this->db->setQuery($query);
+            $_params = $this->db->loadObjectList();
+
+            try {
+                for ($i = 0; $i <= count($_params); $i++) {
+                    if (((json_decode($_params[$i]->params))->editedStatusSelected) !== $cid) {
+                        unset($_params[$i]);
+                    }
+                }
+                return $_params;
+            }
+            catch(Exception $e) {
+                JLog::add('Could not get profile id by workflow and status -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
+                return $e->getMessage();
+            }
+        }
+
+        //code improving --> from fnum, get campaign_id // workflow_id // status_id --> profile_id from workflow_id
+        public function getWorkflowProfileByFnum($fnum, $cid=null) {
+            $query = $this->db->getQuery(true);
+            $query->select('#__emundus_workflow_item.params')
+                ->from($this->db->quoteName('#__emundus_workflow_item'))
+                ->leftJoin($this->db->quoteName('#__emundus_workflow') . 'ON' . $this->db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . $this->db->quoteName('#__emundus_workflow.id'))
+                ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') . 'ON' . $this->db->quoteName('#__emundus_workflow.campaign_id') . '=' . $this->db->quoteName('#__emundus_campaign_candidature.campaign_id'))
+                ->where($this->db->quoteName('#__emundus_campaign_candidature.fnum') . '=' . $fnum);
+
+            $this->db->setQuery($query);
+            $_rawData =  $this->db->loadObjectList();
+
+//            print_r(json_decode($_rawData[2]->params));die;
+
+            try {
+                for ($i = 1; $i <= count($_rawData); $i++) {
+                    if (((json_decode($_rawData[$i]->params))->editedStatusSelected) !== $cid) {
+                        unset($_rawData[$i]);
+                    }
+                }
+//                print_r($_rawData);die;
+                return $_rawData;
+            }
+            catch(Exception $e) {
+                JLog::add('Could not get profile id by workflow and status -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
+                return $e->getMessage();
+            }
         }
     }

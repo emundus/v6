@@ -13,7 +13,7 @@
       </b-nav>
       <br/>
       <br/>
-      <form-modal v-if="this.type == 'Formulaire'" ref="forms" :element="element"/>
+      <espace-modal v-if="this.type == 'Espace'" ref="forms" :element="element"/>
       <message-modal v-if="this.type == 'Message'" ref="emails" :element="element"/>
       <b-button variant="success" @click="updateParams()">Sauvegarder</b-button>
     </modal>
@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import formModal from './elements/formModal';
-import messageModal from './elements/messageModal';
+import espaceModal from './elements/espaceModal.vue';
+import messageModal from './elements/messageModal.vue';
 
 import axios from 'axios';
 const qs = require('qs');
@@ -31,7 +31,7 @@ export default {
   name: "ModalConfigElement",
 
   components: {
-    formModal,
+    espaceModal,
     messageModal,
   },
 

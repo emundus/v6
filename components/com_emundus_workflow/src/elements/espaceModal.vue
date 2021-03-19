@@ -17,7 +17,7 @@
         <div class="col-xs-8">
           <select v-model="form.editedStatusSelected" class="form-control-select">
             <b-form-select-option selected disabled>--Statut--</b-form-select-option>
-            <option v-for="instatus in this.$data.status" :value="instatus.id"> {{ instatus.value }}</option>
+            <option v-for="instatus in this.$data.status" :value="instatus.step"> {{ instatus.value }}</option>
           </select>
         </div>
       </div>
@@ -27,7 +27,7 @@
       <div class="col-xs-8">
         <select v-model="form.outputStatusSelected" class="form-control-select">
           <b-form-select-option selected disabled>--Statut--</b-form-select-option>
-          <option v-for="outstatus in this.$data.status" :value="outstatus.id"> {{ outstatus.value }}</option>
+          <option v-for="outstatus in this.$data.status" :value="outstatus.step"> {{ outstatus.value }}</option>
         </select>
       </div>
     </div>
@@ -62,7 +62,7 @@ import axios from 'axios';
 const qs = require('qs');
 
 export default {
-  name: "formModal",
+  name: "espaceModal",
 
   props: {
     element: Object,
