@@ -109,8 +109,8 @@
                         unset($_rawData[$i]);
                     }
                     else {
-                        $aid->profile_id_workflow = json_decode($_rawData[$i]->params)->formNameSelected;
-                        $aid->workflow_id = $_rawData[$i]->id;
+                        $aid->profile = json_decode($_rawData[$i]->params)->formNameSelected;
+                        $aid->workflow = $_rawData[$i]->id;
                     }
                 }
 
