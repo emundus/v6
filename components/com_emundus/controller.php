@@ -482,8 +482,23 @@ class EmundusController extends JControllerLegacy {
 	    //register the plugin
         JPluginHelper::importPlugin('emundus', 'setup_workflow');
         $dispatcher = JEventDispatcher::getInstance();
-        $workflow = $dispatcher->trigger('onOpenFile', [$fnum]);
-        var_dump($workflow);die;
+        $workflowByFnum = $dispatcher->trigger('onOpenFile', [$fnum]);
+
+        //get campaign by fnum --> profile.php :: getCampaignByFnum
+        $_cid = $this->getModel('profile');
+        $campaign_id = ($_cid->getCampaignInfoByFnum($fnum))['id'];
+
+        //get status by fnum --> profile.php :: getFnumDetails
+        $status_id = ($_cid->getFnumDetails($fnum))['step'];
+
+        $workflowIDByCampaign = ($dispatcher->trigger('getWorkflowByCampaignID', [$campaign_id]))[0]->id;
+
+        $_paramsStatus = $dispatcher->trigger('getProfileByWorkflowIDStatusID', [$workflowIDByCampaign,$status_id]);
+
+        $_params = $dispatcher->trigger('getWorkflowProfileByFnum', [$fnum,$status_id]);
+
+        var_dump((json_decode($_params[0][2]->params))->formNameSelected);die;      //uncomment
+
         $app->redirect($redirect);
     }
 
