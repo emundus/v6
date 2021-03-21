@@ -42,7 +42,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
      * @param   string  $pname  Params property name to look up
      * @param   bool    $short  Short (true) or full (false) element name, default false/full
      *
-     * @return	string	element full name
+     * @return  string  element full name
      */
     public function getFieldName($pname, $short = false) {
         $params = $this->getParams();
@@ -104,9 +104,11 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             $copy_application_form = $eMConfig->get('copy_application_form', 0);
             $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
             $id_applicants = $eMConfig->get('id_applicants', '0');
+            $applicationsent_elements = explode(',',$this->getParam('applicationsent_elements', ''));
             $applicants = explode(',',$id_applicants);
 
             $offset = $mainframe->get('offset', 'UTC');
+            
 
             try {
                 $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
@@ -256,9 +258,12 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
                     $elements = array();
                     foreach ($table_elements as $key => $element) {
-                        $elements[] = $element->value;
+                        $element_name = explode('.', $element->value)[1];
+                        if(!in_array($element_name, $applicationsent_elements)) {
+                            $elements[] = $element->value;
+                        }
                     }
-
+                    
                     // check if data stored for current user
                     try {
                         $query = 'SELECT '.implode(',', $elements).' FROM '.$table->db_table_name.' WHERE user='.$user->id.' ORDER BY id DESC';
@@ -278,30 +283,30 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
                             } catch (Exception $e) {
                                 $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-                                JLog::add($error, JLog::ERROR, 'com_emundus');
+                                JLog::add($error, JLog::ERROR, 'com_emundus.isApplicationSent');
                             }
 
                             // get data and update current form
                             $groups = $formModel->getFormGroups(true);
                             
                             //search for joined elements like checkbox (Fabrik databasejoin displayed as checkbox)
-	                        $query = 'SELECT join_from_table, table_join, table_key, table_join_key 
-	                        		FROM #__fabrik_joins 
-	                        		WHERE group_id = 0 AND join_from_table like '.$db->Quote($table->db_table_name);
-	                        $db->setQuery($query);
-	                        try {
-	                            $repeat_elements = $db->loadObjectList();
-	                        } catch (Exception $e) {
-	                            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-	                            JLog::add($error, JLog::ERROR, 'com_emundus');
-	                            $repeat_element_table = $table->db_table_name.'_repeat'.'_'.$group->name;
-	                        }
-	                        
-	                        foreach($repeat_elements as $repeat_element) {
-	                        	$repeat_element_table = $repeat_element->join_from_table.'_repeat'.'_'.$repeat_element->table_key;
-		                        try {
-		                            //get all data from previous application file
-		                            $query = 'SELECT '.$repeat_element->table_key.' FROM '.$repeat_element_table.' WHERE '.$repeat_element->table_join_key.'='.$parent_id;
+                            $query = 'SELECT join_from_table, table_join, table_key, table_join_key 
+                                    FROM #__fabrik_joins 
+                                    WHERE group_id = 0 AND join_from_table like '.$db->Quote($table->db_table_name);
+                            $db->setQuery($query);
+                            try {
+                                $repeat_elements = $db->loadObjectList();
+                            } catch (Exception $e) {
+                                $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                                JLog::add($error, JLog::ERROR, 'com_emundus.isApplicationSent');
+                                $repeat_element_table = $table->db_table_name.'_repeat'.'_'.$group->name;
+                            }
+                            
+                            foreach($repeat_elements as $repeat_element) {
+                                $repeat_element_table = $repeat_element->join_from_table.'_repeat'.'_'.$repeat_element->table_key;
+                                try {
+                                    //get all data from previous application file
+                                    $query = 'SELECT '.$repeat_element->table_key.' FROM '.$repeat_element_table.' WHERE '.$repeat_element->table_join_key.'='.$parent_id;
                                             $db->setQuery( $query );
                                             $stored = $db->loadColumn();
  
@@ -312,7 +317,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                                                 
                                                 $values = array();
                                                 foreach($stored as $s) { 
-                                                	$values[] = '('.$id.', '.$db->Quote($s).')';
+                                                    $values[] = '('.$id.', '.$db->Quote($s).')';
                                                 }
 
                                                 try {
@@ -321,16 +326,16 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                                                     $db->execute();
                                                 } catch (Exception $e) {
                                                     $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-                                                    JLog::add($error, JLog::ERROR, 'com_emundus');
+                                                    JLog::add($error, JLog::ERROR, 'com_emundus.isApplicationSent');
                                                 }
                                             }
 
-		                        } catch (Exception $e) {
-		                            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-		                            JLog::add($error, JLog::ERROR, 'com_emundus');
-		                        }
-	                        }
-	                        
+                                } catch (Exception $e) {
+                                    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                                    JLog::add($error, JLog::ERROR, 'com_emundus.isApplicationSent');
+                                }
+                            }
+                            
                             $data = array();
                             
                             if (count($groups) > 0) {
@@ -339,14 +344,14 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                                     $group_params = json_decode($group->gparams);
                                     
                                     if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
-					                    $repeat_table = '';
+                                        $repeat_table = '';
                                         $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id = '.$group->group_id.' AND table_key LIKE "id" AND table_join_key LIKE "parent_id"';
                                         $db->setQuery($query);
                                         try {
                                             $repeat_table = $db->loadResult();
                                         } catch (Exception $e) {
                                             $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-                                            JLog::add($error, JLog::ERROR, 'com_emundus');
+                                            JLog::add($error, JLog::ERROR, 'com_emundus.isApplicationSent');
                                             $repeat_table = $table->db_table_name.'_'.$group->group_id.'_repeat';
                                         }
                                   
@@ -377,13 +382,13 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                                                     $db->execute();
                                                 } catch (Exception $e) {
                                                     $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-                                                    JLog::add($error, JLog::ERROR, 'com_emundus');
+                                                    JLog::add($error, JLog::ERROR, 'com_emundus.isApplicationSent');
                                                 }
                                             }
 
                                         } catch (Exception $e) {
                                             $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-                                            JLog::add($error, JLog::ERROR, 'com_emundus');
+                                            JLog::add($error, JLog::ERROR, 'com_emundus.isApplicationSent');
                                         }
                                     }
                                 }
@@ -397,73 +402,73 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                             $query = 'SELECT count(id)
                             FROM #__emundus_uploads as eu
                             WHERE eu.fnum like '.$db->Quote($user->fnum);
-	                        $db->setQuery( $query );
-	                        $copied = $db->loadResult();
+                            $db->setQuery( $query );
+                            $copied = $db->loadResult();
                     
-                            if($copied == 0) {
-                                if (count($fnums) > 0) {
-                                    $previous_fnum = array_keys($fnums);
-                                    $query = 'SELECT eu.*, esa.nbmax
-                                    FROM #__emundus_uploads as eu
-                                    LEFT JOIN #__emundus_setup_attachments as esa on esa.id=eu.attachment_id
-                                    LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id='.$user->profile.'
-                                    WHERE eu.user_id='.$user->id.'
-                                    AND eu.fnum like '.$db->Quote($previous_fnum[0]).'
-                                    AND esap.duplicate=1';
-                                    $db->setQuery( $query );
-                                    $stored = $db->loadAssocList();                  
+                        if($copied == 0) {
+                            if (count($fnums) > 0) {
+                                $previous_fnum = array_keys($fnums);
+                                $query = 'SELECT eu.*, esa.nbmax
+                                FROM #__emundus_uploads as eu
+                                LEFT JOIN #__emundus_setup_attachments as esa on esa.id=eu.attachment_id
+                                LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id='.$user->profile.'
+                                WHERE eu.user_id='.$user->id.'
+                                AND eu.fnum like '.$db->Quote($previous_fnum[0]).'
+                                AND esap.duplicate=1';
+                                $db->setQuery( $query );
+                                $stored = $db->loadAssocList();                  
 
-                                    if (count($stored) > 0) {
-                                        // 2. copy DB définition and duplicate files in applicant directory
-                                        foreach ($stored as $key => $row) {
-                                            $src = $row['filename'];
-                                            $ext = explode('.', $src);
-                                            $ext = $ext[count($ext)-1];;
-                                            $cpt = 0-(int)(strlen($ext)+1);
-                                            $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
-                                            $nbmax = $row['nbmax'];
-                                            $row['filename'] = $dest;
-                                            $row['campaign_id'] = $user->fnums[$fnum]->campaign_id;
-                                            $row['can_be_deleted'] = 1;
-                                            $row['timedate'] = $now;
-                                            unset($row['is_validated']);
-                                            unset($row['id']);
-                                            unset($row['fnum']);
-                                            unset($row['nbmax']);
+                                if (count($stored) > 0) {
+                                    // 2. copy DB définition and duplicate files in applicant directory
+                                    foreach ($stored as $key => $row) {
+                                        $src = $row['filename'];
+                                        $ext = explode('.', $src);
+                                        $ext = $ext[count($ext)-1];;
+                                        $cpt = 0-(int)(strlen($ext)+1);
+                                        $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
+                                        $nbmax = $row['nbmax'];
+                                        $row['filename'] = $dest;
+                                        $row['campaign_id'] = $user->fnums[$fnum]->campaign_id;
+                                        $row['can_be_deleted'] = 1;
+                                        $row['timedate'] = $now;
+                                        unset($row['is_validated']);
+                                        unset($row['id']);
+                                        unset($row['fnum']);
+                                        unset($row['nbmax']);
 
-                                            try {
-                                                $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$user->id.' AND attachment_id='.$row['attachment_id'].' AND fnum like '.$db->Quote($user->fnum);
+                                        try {
+                                            $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$user->id.' AND attachment_id='.$row['attachment_id'].' AND fnum like '.$db->Quote($user->fnum);
+                                            $db->setQuery($query);
+                                            $cpt = $db->loadResult();
+
+                                            if ($cpt < $nbmax) {
+                                                $query = 'INSERT INTO #__emundus_uploads (`fnum`, `'.implode('`,`', array_keys($row)).'`) VALUES('.$db->Quote($user->fnum).', '.implode(',', $db->Quote($row)).')';
                                                 $db->setQuery($query);
-                                                $cpt = $db->loadResult();
-
-                                                if ($cpt < $nbmax) {
-                                                    $query = 'INSERT INTO #__emundus_uploads (`fnum`, `'.implode('`,`', array_keys($row)).'`) VALUES('.$db->Quote($user->fnum).', '.implode(',', $db->Quote($row)).')';
+                                                $db->execute();
+                                                $id = $db->insertid();
+                                                $path = EMUNDUS_PATH_ABS.$user->id.DS;
+                        
+                                                if (!copy($path.$src, $path.$dest)) {
+                                                    $query = 'UPDATE #__emundus_uploads SET filename='.$src.' WHERE id='.$id;
                                                     $db->setQuery($query);
                                                     $db->execute();
-                                                    $id = $db->insertid();
-                                                    $path = EMUNDUS_PATH_ABS.$user->id.DS;
-                            
-                                                    if (!copy($path.$src, $path.$dest)) {
-                                                        $query = 'UPDATE #__emundus_uploads SET filename='.$src.' WHERE id='.$id;
-                                                        $db->setQuery($query);
-                                                        $db->execute();
-                                                    }
                                                 }
-
-                                            } catch (Exception $e) {
-                                                $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-                                                JLog::add($error, JLog::ERROR, 'com_emundus');
                                             }
+
+                                        } catch (Exception $e) {
+                                            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                                            JLog::add($error, JLog::ERROR, 'com_emundus.isApplicationSent');
                                         }
                                     }
                                 }
                             }
-                            $reload++;
-                            $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+                           }
+                           $reload++;
+                           $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                         }
                     } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                        JLog::add($error, JLog::ERROR, 'com_emundus.isApplicationSent');
                     }
                 }
             }
