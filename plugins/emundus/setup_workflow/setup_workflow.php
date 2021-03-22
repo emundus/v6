@@ -146,20 +146,14 @@
                     ->where($this->db->quoteName('#__emundus_campaign_candidature.fnum') . '=' . $fnum);
                 $this->db->setQuery($query_get_userid);
                 $_uid = $this->db->loadObject()->id;
-            }
 
-            catch(Exception $e) {
-                return $e->getMessage();
-            }
-
-            //update jos_emundus_users.profile <-- pid
-            try {
                 $query_update_profile_by_userid->update($this->db->quoteName('#__emundus_users'))
                     ->set($this->db->quoteName('#__emundus_users.profile') . '=' . (int) $pid)
                     ->where($this->db->quoteName('#__emundus_users.id') . '=' . (int) $_uid);
                 $this->db->setQuery($query_update_profile_by_userid);
                 return $this->db->execute();
             }
+
             catch(Exception $e) {
                 return $e->getMessage();
             }
