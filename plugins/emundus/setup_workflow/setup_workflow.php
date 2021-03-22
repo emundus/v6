@@ -88,7 +88,6 @@
             }
         }
 
-        //code improving --> from fnum, get campaign_id // workflow_id // status_id --> profile_id from workflow_id
         public function getWorkflowProfileByFnum($fnum, $cid=null) {
             $query = $this->db->getQuery(true);
             $query->select('#__emundus_workflow.id, #__emundus_workflow_item.params')
@@ -100,6 +99,8 @@
             $this->db->setQuery($query);
             $_rawData =  $this->db->loadObjectList();
 
+            $_len = count($_rawData) - 1;
+
             $session = JFactory::getSession();
             $aid = $session->get('emundusUser');
 
@@ -108,16 +109,58 @@
                     if (((json_decode($_rawData[$i]->params))->editedStatusSelected) !== $cid) {
                         unset($_rawData[$i]);
                     }
-                    else {
-                        $aid->profile = json_decode($_rawData[$i]->params)->formNameSelected;
-                        $aid->workflow = $_rawData[$i]->id;
-                    }
+                    else {}
                 }
 
-                return $_rawData;
+                return array('data' => $_rawData, 'len' => $_len);
             }
             catch(Exception $e) {
                 JLog::add('Could not get profile id by workflow and status -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
+                return $e->getMessage();
+            }
+        }
+
+        public function getMenuTypeByProfile($pid) {
+            $query = $this->db->getQuery(true);
+
+            try {
+                $query->select('#__emundus_setup_profiles.*')
+                    ->from($this->db->quoteName('#__emundus_setup_profiles'))
+                    ->where($this->db->quoteName('#__emundus_setup_profiles.id') . '=' . (int)$pid);
+                $this->db->setQuery($query);
+                return $this->db->loadObjectList()[0]->menutype;
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+        }
+
+        public function updateEmundusUserProfile($fnum, $pid) {
+            $query_get_userid = $this->db->getQuery(true);
+            $query_update_profile_by_userid = $this->db->getQuery(true);
+
+            try {
+                $query_get_userid->select('#__emundus_users.id')
+                    ->from($this->db->quoteName('#__emundus_users'))
+                    ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') . 'ON' . $this->db->quoteName('#__emundus_campaign_candidature.applicant_id') . '=' . $this->db->quoteName('#__emundus_users.user_id'))
+                    ->where($this->db->quoteName('#__emundus_campaign_candidature.fnum') . '=' . $fnum);
+                $this->db->setQuery($query_get_userid);
+                $_uid = $this->db->loadObject()->id;
+            }
+
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+
+            //update jos_emundus_users.profile <-- pid
+            try {
+                $query_update_profile_by_userid->update($this->db->quoteName('#__emundus_users'))
+                    ->set($this->db->quoteName('#__emundus_users.profile') . '=' . (int) $pid)
+                    ->where($this->db->quoteName('#__emundus_users.id') . '=' . (int) $_uid);
+                $this->db->setQuery($query_update_profile_by_userid);
+                return $this->db->execute();
+            }
+            catch(Exception $e) {
                 return $e->getMessage();
             }
         }

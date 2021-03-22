@@ -470,6 +470,28 @@ class EmundusController extends JControllerLegacy {
 
 	    $m_profile->initEmundusSession($fnum);
 
+        //register the plugin
+        JPluginHelper::importPlugin('emundus', 'setup_workflow');
+        $dispatcher = JEventDispatcher::getInstance();
+
+        $_cid = $this->getModel('profile');
+        $status_id = ($_cid->getFnumDetails($fnum))['step'];
+
+        $profileIDTrigger = $dispatcher->trigger('getWorkflowProfileByFnum', [$fnum,$status_id]);
+
+        $_keys = (array_keys($profileIDTrigger[0]['data']))[0];
+        $_pid = (json_decode($profileIDTrigger[0]['data'][$_keys]->params))->formNameSelected;
+
+        $session = JFactory::getSession();
+        $aid = $session->get('emundusUser');
+
+        $aid->profile = $_pid;
+
+        $menuTypeTrigger = $dispatcher->trigger('getMenuTypeByProfile', [$_pid]);
+        $aid->menutype = $menuTypeTrigger[0];
+
+        $_updatedPIDTrigger = $dispatcher->trigger('updateEmundusUserProfile', [$fnum,$_pid]);
+
 	    if (empty($redirect)) {
             $m_application 	= new EmundusModelApplication;
             if (empty($confirm)) {
@@ -479,26 +501,7 @@ class EmundusController extends JControllerLegacy {
             }
         }
 
-	    //register the plugin
-        JPluginHelper::importPlugin('emundus', 'setup_workflow');
-        $dispatcher = JEventDispatcher::getInstance();
-
-//        $workflowByFnum = $dispatcher->trigger('onOpenFile', [$fnum]);
-
-        //get campaign by fnum --> profile.php :: getCampaignByFnum
-//
-//        $campaign_id = ($_cid->getCampaignInfoByFnum($fnum))['id'];
-
-//        $workflowIDByCampaign = ($dispatcher->trigger('getWorkflowByCampaignID', [$campaign_id]))[0]->id;
-
-//        $_paramsStatus = $dispatcher->trigger('getProfileByWorkflowIDStatusID', [$workflowIDByCampaign,$status_id]);
-
-        $_cid = $this->getModel('profile');
-        $status_id = ($_cid->getFnumDetails($fnum))['step'];
-
-        $profileIDTrigger = $dispatcher->trigger('getWorkflowProfileByFnum', [$fnum,$status_id]);
-
-        print_r($aid);die;
+        echo '<pre>'; var_dump($aid); echo '</pre>';
 
         $app->redirect($redirect);
     }
