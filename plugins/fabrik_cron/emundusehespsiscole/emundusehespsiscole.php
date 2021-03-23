@@ -61,7 +61,7 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
         $query->select('DISTINCT (fnum_to) as fnum');
         $query->from($db->quoteName('#__emundus_logs'));
         $query->where($db->quoteName('message') . ' IN ('.$status.') AND '.$db->quoteName('timestamp').' BETWEEN '.$db->quote($lastrun).' AND '.$db->quote($date).' ORDER BY timestamp DESC');
-        
+
         $db->setQuery($query);
 
 
