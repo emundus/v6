@@ -25,8 +25,8 @@ jimport('joomla.application.component.controller');
     class EmundusworkflowControlleritem extends JControllerLegacy {
         var $model = null;
 
-        public function __construct($config=array()) {
-            require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+        public function __construct($config = array()) {
+            require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
             parent::__construct($config);
             $this->model = $this->getModel('item'); //get item model
         }
@@ -34,11 +34,10 @@ jimport('joomla.application.component.controller');
         public function createitem() {
             $user = JFactory::getUser();
 
-            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-            }
-            else {
+            } else {
                 $jinput = JFactory::getApplication()->input;
                 $data = $jinput->getRaw('data');
                 $_cit = $this->model;
@@ -46,10 +45,9 @@ jimport('joomla.application.component.controller');
 
                 $_items = $_cit->createItem($data);
 
-                if($_items) {
+                if ($_items) {
                     $tab = array('status' => 1, 'msg' => JText::_("ITEM_CREATED"), 'data' => $_items);
-                }
-                else {
+                } else {
                     $tab = array('status' => 0, 'msg' => JText::_("CANNOT_CREATE_ITEM"), 'data' => $_items);
                 }
             }
@@ -60,21 +58,19 @@ jimport('joomla.application.component.controller');
         public function deleteitem() {
             $user = JFactory::getUser();
 
-            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-            }
-            else {
+            } else {
                 $jinput = JFactory::getApplication()->input;
                 $data = $jinput->getRaw('id');
                 $_cit = $this->model;
 
                 $_items = $_cit->deleteItem($data);
 
-                if($_items) {
+                if ($_items) {
                     $tab = array('status' => 1, 'msg' => JText::_("ITEM_DELETED"), 'data' => $_items);
-                }
-                else {
+                } else {
                     $tab = array('status' => 0, 'msg' => JText::_("CANNOT_DELETE_ITEM"), 'data' => $_items);
                 }
             }
@@ -82,26 +78,25 @@ jimport('joomla.application.component.controller');
             exit;
         }
 
-        public function updateItemOrder() {}
+        public function updateItemOrder() {
+        }
 
         public function getcounditembyid() {
             $user = JFactory::getUser();
 
-            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-            }
-            else {
+            } else {
                 $jinput = JFactory::getApplication()->input;
                 $data = $jinput->getRaw('data');
                 $_cit = $this->model;
 
                 $_items = $_cit->getCountItemByID($data);
 
-                if($_items) {
+                if ($_items) {
                     $tab = array('status' => 1, 'msg' => JText::_("ITEM_FOUND"), 'data' => $_items);
-                }
-                else {
+                } else {
                     $tab = array('status' => 0, 'msg' => JText::_("ITEM_NOT_FOUND"), 'data' => $_items);
                 }
             }
@@ -112,19 +107,17 @@ jimport('joomla.application.component.controller');
         public function getallitems() {
             $user = JFactory::getUser();
 
-            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-            }
-            else {
+            } else {
                 $_wit = $this->model;
 
                 //do stuff
-                $items= $_wit->getAllItems();
+                $items = $_wit->getAllItems();
                 if (count($items) > 0) {
                     $tab = array('status' => 1, 'msg' => JText::_("ITEMS_RETRIEVED"), 'data' => $items);
-                }
-                else {
+                } else {
                     $tab = array('status' => 0, 'msg' => JText::_("NO_ITEMS"), 'data' => $items);
                 }
 
@@ -137,20 +130,18 @@ jimport('joomla.application.component.controller');
         public function getallitemsbyworkflow() {
             $user = JFactory::getUser();
 
-            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-            }
-            else {
+            } else {
                 $jinput = JFactory::getApplication()->input;
                 $data = $jinput->getRaw('data');
                 $_cit = $this->model;
                 $_items = $_cit->getAllItemsByWorkflowId($data);
 
-                if($_items) {
+                if ($_items) {
                     $tab = array('status' => 1, 'msg' => JText::_("GET_ITEM_FROM_WORKFLOW"), 'data' => $_items);
-                }
-                else {
+                } else {
                     $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_ITEM_FROM_WORKFLOW"), 'data' => $_items);
                 }
             }
@@ -162,11 +153,10 @@ jimport('joomla.application.component.controller');
         public function getitem() {
             $user = JFactory::getUser();
 
-            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-            }
-            else {
+            } else {
                 $jinput = JFactory::getApplication()->input;
                 $data = $jinput->getRaw('id');
                 $_cit = $this->model;
@@ -174,10 +164,9 @@ jimport('joomla.application.component.controller');
 
                 $_items = $_cit->getItemByID($data);
 
-                if($_items) {
+                if ($_items) {
                     $tab = array('status' => 1, 'msg' => JText::_("ITEM_GET"), 'data' => $_items);
-                }
-                else {
+                } else {
                     $tab = array('status' => 0, 'msg' => JText::_("ITEM_NOT_GET"), 'data' => $_items);
                 }
             }
@@ -189,11 +178,10 @@ jimport('joomla.application.component.controller');
         public function saveitems() {
             $user = JFactory::getUser();
 
-            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-            }
-            else {
+            } else {
                 $jinput = JFactory::getApplication()->input;
                 $data = $jinput->getRaw('data');
                 $_cit = $this->model;
@@ -201,10 +189,9 @@ jimport('joomla.application.component.controller');
                 $_items = $_cit->saveItems($data);
 
 
-                if($_items) {
+                if ($_items) {
                     $tab = array('status' => 1, 'msg' => JText::_("ITEM_SAVED"), 'data' => $_items);
-                }
-                else {
+                } else {
                     $tab = array('status' => 0, 'msg' => JText::_("ITEM_CANNOT_SAVED"), 'data' => $_items);
                 }
             }
@@ -216,21 +203,19 @@ jimport('joomla.application.component.controller');
         public function getinitid() {
             $user = JFactory::getUser();
 
-            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-            }
-            else {
+            } else {
                 $jinput = JFactory::getApplication()->input;
                 $data = $jinput->getRaw('data');
 
                 $_cit = $this->model;
                 $_items = $_cit->getInitIDByWorkflow($data);
 
-                if($_items) {
+                if ($_items) {
                     $tab = array('status' => 1, 'msg' => JText::_("INIT_GET"), 'data' => $_items);
-                }
-                else {
+                } else {
                     $tab = array('status' => 0, 'msg' => JText::_("INIT_CANNOT_GET"), 'data' => $_items);
                 }
             }
@@ -242,21 +227,19 @@ jimport('joomla.application.component.controller');
         public function createlink() {
             $user = JFactory::getUser();
 
-            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-            }
-            else {
+            } else {
                 $jinput = JFactory::getApplication()->input;
                 $data = $jinput->getRaw('data');
 
                 $_cit = $this->model;
                 $_items = $_cit->createLink($data);
 
-                if($_items) {
+                if ($_items) {
                     $tab = array('status' => 1, 'msg' => JText::_("LINK_CREATED"), 'data' => $_items);
-                }
-                else {
+                } else {
                     $tab = array('status' => 0, 'msg' => JText::_("LINK_CANNOT_CREATED"), 'data' => $_items);
                 }
             }
@@ -268,21 +251,19 @@ jimport('joomla.application.component.controller');
         public function deletelink() {
             $user = JFactory::getUser();
 
-            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-            }
-            else {
+            } else {
                 $jinput = JFactory::getApplication()->input;
                 $data = $jinput->getRaw('id');
 
                 $_cit = $this->model;
                 $_items = $_cit->deleteLink($data);
 
-                if($_items) {
+                if ($_items) {
                     $tab = array('status' => 1, 'msg' => JText::_("LINK_DELETED"), 'data' => $_items);
-                }
-                else {
+                } else {
                     $tab = array('status' => 0, 'msg' => JText::_("LINK_CANNOT_DELETED"), 'data' => $_items);
                 }
             }
@@ -294,21 +275,19 @@ jimport('joomla.application.component.controller');
         public function getalllinks() {
             $user = JFactory::getUser();
 
-            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-            }
-            else {
+            } else {
                 $jinput = JFactory::getApplication()->input;
                 $data = $jinput->getRaw('data');
 
                 $_cit = $this->model;
                 $_items = $_cit->getAllLinksByWorkflowID($data);
 
-                if($_items) {
+                if ($_items) {
                     $tab = array('status' => 1, 'msg' => JText::_("GET_LINK"), 'data' => $_items);
-                }
-                else {
+                } else {
                     $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_LINK"), 'data' => $_items);
                 }
             }
@@ -320,31 +299,76 @@ jimport('joomla.application.component.controller');
         public function updateparams() {
             $user = JFactory::getUser();
 
-            if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-            }
-            else {
+            } else {
                 $jinput = JFactory::getApplication()->input;
                 $data = $jinput->getRaw('params');
 
                 $_cit = $this->model;
 
-//                var_dump($data);die;
-
                 $_items = $_cit->updateParamsByItemID($data);
 
 
-                if($_items) {
+                if ($_items) {
                     $tab = array('status' => 1, 'msg' => JText::_("UPDATE_PARAMS"), 'data' => $_items);
-                }
-                else {
+                } else {
                     $tab = array('status' => 0, 'msg' => JText::_("CANNOT_UPDATE_PARAMS"), 'data' => $_items);
                 }
             }
             echo json_encode((object)$tab);
             exit;
         }
+
+        public function getallavailablestatusnonmessage() {
+            $user = JFactory::getUser();
+
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            } else {
+                $jinput = JFactory::getApplication()->input;
+                $data = $jinput->getRaw('wid');
+
+                $_cit = $this->model;
+
+                $_status = $_cit->getAllAvailableStatusNonMessage($data);
+
+                if ($_status) {
+                    $tab = array('status' => 1, 'msg' => JText::_("OK"), 'data' => $_status);
+                } else {
+                    $tab = array('status' => 0, 'msg' => JText::_("FAILED"), 'data' => $_status);
+                }
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+
+//        public function getallavailableoutstatus() {
+//            $user = JFactory::getUser();
+//
+//            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+//                $result = 0;
+//                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+//            } else {
+//                $jinput = JFactory::getApplication()->input;
+//                $data = $jinput->getRaw('wid');
+//
+//                $_cit = $this->model;
+//
+//                $_status = $_cit->getAvailableOutStatus($data);
+//
+//                if ($_status) {
+//                    $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_AVAILABLE_OUTPUT_STATUS"), 'data' => $_status);
+//                } else {
+//                    $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_ALL_AVAILABLE_OUTPUT_STATUS"), 'data' => $_status);
+//                }
+//            }
+//            echo json_encode((object)$tab);
+//            exit;
+//        }
+    }
 
 //        //get style of bloc
 //        public function getstyle() {
@@ -371,4 +395,4 @@ jimport('joomla.application.component.controller');
 //            echo json_encode((object)$tab);
 //            exit;
 //        }
-    }
+

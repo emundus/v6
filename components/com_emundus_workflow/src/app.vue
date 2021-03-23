@@ -85,14 +85,17 @@ export default {
 
   created() {
     this.updateLastSaving();
-    this.cronSave();
+    //this.cronSave();
     this.alertWelcomeDisplay();
-    this.getAllItems();
-    this.getItemSimpleName();
+
     this.loadWorkflow();
     this.insertInitBloc();
+
+    //this.cronUpdate();
+
     this.getworkflowname();
-    this.cronUpdate();
+    this.getAllItems();
+    this.getItemSimpleName();
   },
 
   methods: {
@@ -225,6 +228,7 @@ export default {
         item_name: nodeCategory[index],
         item_id: index+1,
         workflow_id: this.getWorkflowIdFromURL(),
+        params: "{}",
       }
 
       axios({
@@ -247,7 +251,7 @@ export default {
             id: response.data.data,
           })
         }).then(answer => {
-          console.log(answer);
+          // console.log(answer);
 
           var _style = (answer.data.data)[0];
           this.$data.scene.nodes.push({
@@ -412,7 +416,7 @@ export default {
           data: info,
         })
       }).then(response => {
-        console.log(response);
+        // console.log(response);
       }).catch(error => {
         console.log(error);
       })
@@ -438,7 +442,7 @@ export default {
 
     cronUpdate: function() {
       setInterval(this.updateLastSaving, 5000);
-    }
+    },
   }
 }
 

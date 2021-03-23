@@ -326,4 +326,49 @@ class EmundusworkflowModelitem extends JModelList
             return $e->getMessage();
         }
     }
+
+    //GET ALL AVAILABLE STATUS FOR NON-MESSAGE BLOC
+    public function getAllAvailableStatusNonMessage($wid) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('#__emundus_workflow_item.item_id, #__emundus_workflow_item.params')
+                ->from($db->quoteName('#__emundus_workflow_item'))
+                ->where($db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$wid)
+                ->andWhere($db->quoteName('#__emundus_workflow_item.item_id') . '!=' . 4);    // item_type.id = 4 --> message
+
+            $db->setQuery($query);
+            $_results = $db->loadAssocList();
+
+//            var_dump($_results);die;
+
+            $_statusList = array();     //empty array
+
+            foreach($_results as $k=>$v) {
+                if($v['item_id'] == 2) { ////2 --> espace candidat
+                    array_push($_statusList,json_decode($v['params'])->editedStatusSelected,json_decode($v['params'])->outputStatusSelected);
+                }
+
+                if($v['item_id'] == 3) { ////3 --> condition
+                    /// pass
+                }
+            }
+
+            $query1 = $db->getQuery(true);
+            $query1->clear()
+                ->select('#__emundus_setup_status.*')
+                ->from($db->quoteName('#__emundus_setup_status'))
+                ->where($db->quoteName('#__emundus_setup_status.id') . 'NOT IN (' . implode(",", $db->quote($_statusList)) . ')');
+            $db->setQuery($query1);
+
+
+            return $db->loadObjectList();
+        }
+        catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
 }
