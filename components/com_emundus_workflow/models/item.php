@@ -353,7 +353,6 @@ class EmundusworkflowModelitem extends JModelList
             foreach($_results as $k=>$v) {
                 if($v['item_id'] == 2) { ////2 --> espace candidat
                     array_push($_statusList,json_decode($v['params'])->editedStatusSelected);
-                    ////,json_decode($v['params'])->outputStatusSelected
                 }
 
                 if($v['item_id'] == 3) { ////3 --> condition
@@ -392,7 +391,7 @@ class EmundusworkflowModelitem extends JModelList
                 $db2->setQuery($query3);
                 $array3 = $db2->loadObjectList();
 
-                return array_merge($array1,$array3);
+                return array_merge($array3,$array1);
 
             }
         }
@@ -464,7 +463,7 @@ class EmundusworkflowModelitem extends JModelList
                 $db2->setQuery($query3);
                 $array3 = $db2->loadObjectList();
 
-                return array_merge($array1,$array3);
+                return array_merge($array3,$array1);
 
             }
         }

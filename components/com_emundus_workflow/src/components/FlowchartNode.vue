@@ -141,7 +141,7 @@ export default {
   opacity: 0.9;
   cursor: move;
   transform-origin: top left;
-  border-radius: 0.75rem;
+  /*border-radius: 0.75rem;*/
 }
 .flowchart-node .node-main {
   text-align: center;
@@ -151,7 +151,7 @@ export default {
   color: white;
   font-size: 13px;
   padding: 6px;
-  border-radius: 0.75rem;
+  /*border-radius: 0.75rem;*/
 }
 .flowchart-node .node-main .node-label {
   font-size: 13px;

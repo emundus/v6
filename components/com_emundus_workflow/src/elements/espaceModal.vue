@@ -12,10 +12,11 @@
         </select>
       </div>
     </div>
+
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.edited_status_title }}</label>
       <div class="col-xs-8">
-        <select v-model="form.editedStatusSelected" class="form-control-select">
+        <select v-model="form.editedStatusSelected" class="form-control-select" @change="checkStatus()">
           <b-form-select-option selected disabled>--Statut d'édition--</b-form-select-option>
           <option v-for="(item, index) in this.$data.inStatus" :value="item.step"> {{ item.value }}</option>
         </select>
@@ -25,7 +26,7 @@
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.output_status_title }}</label>
       <div class="col-xs-8">
-        <select v-model="form.outputStatusSelected" class="form-control-select">
+        <select v-model="form.outputStatusSelected" class="form-control-select" @change="checkStatus()">
           <b-form-select-option selected disabled>--Statut de sortie--</b-form-select-option>
           <option v-for="(item, index) in this.$data.outStatus" :value="item.step"> {{ item.value }}</option>
         </select>
@@ -54,6 +55,7 @@
 </template>
 <script>
 import axios from 'axios';
+import Swal from "sweetalert2";
 const qs = require('qs');
 export default {
   name: "espaceModal",
@@ -156,9 +158,27 @@ export default {
         console.log(error);
       })
     },
-    onChange: function(event) {
-      console.log(event);
-    }
+
+    checkStatus: function() {
+        if(this.form.editedStatusSelected !== null && this.form.outputStatusSelected !== null && this.form.editedStatusSelected == this.form.outputStatusSelected) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            html: 'Configuration du status n\'est pas correcte',
+            timer: 1200,
+            showConfirmButton:false,
+          })
+        }
+
+        else if(this.form.editedStatusSelected == null && this.form.outputStatusSelected !== null) {}
+
+        else if(this.form.editedStatusSelected !== null && this.form.outputStatusSelected == null) {}
+
+        else {
+          this.updateParams();
+        }
+    },
+
   },
   created() {
     this.getAllFormType();
