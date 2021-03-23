@@ -328,27 +328,32 @@ class EmundusworkflowModelitem extends JModelList
     }
 
     //GET ALL AVAILABLE STATUS FOR NON-MESSAGE BLOC
-    public function getAllAvailableStatusNonMessage($wid) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+    public function getIn($wid) {
+        $db1 = JFactory::getDbo();
+        $db2 = JFactory::getDbo();
+
+        $query = $db1->getQuery(true);
+        $query1 = $db2->getQuery(true);
 
         try {
             $query->clear()
                 ->select('#__emundus_workflow_item.item_id, #__emundus_workflow_item.params')
-                ->from($db->quoteName('#__emundus_workflow_item'))
-                ->where($db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$wid)
-                ->andWhere($db->quoteName('#__emundus_workflow_item.item_id') . '!=' . 4);    // item_type.id = 4 --> message
+                ->from($db1->quoteName('#__emundus_workflow_item'))
+                ->where($db1->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$wid)
+                ->andWhere($db1->quoteName('#__emundus_workflow_item.item_id') . '!=' . '1')
+                ->andWhere($db1->quoteName('#__emundus_workflow_item.item_id') . '!=' . '4')
+                ->andWhere($db1->quoteName('#__emundus_workflow_item.item_id') . '!=' . '5');
 
-            $db->setQuery($query);
-            $_results = $db->loadAssocList();
+            $db1->setQuery($query);
+            $_results = $db1->loadAssocList();
 
-//            var_dump($_results);die;
 
             $_statusList = array();     //empty array
 
             foreach($_results as $k=>$v) {
                 if($v['item_id'] == 2) { ////2 --> espace candidat
-                    array_push($_statusList,json_decode($v['params'])->editedStatusSelected,json_decode($v['params'])->outputStatusSelected);
+                    array_push($_statusList,json_decode($v['params'])->editedStatusSelected);
+                    ////,json_decode($v['params'])->outputStatusSelected
                 }
 
                 if($v['item_id'] == 3) { ////3 --> condition
@@ -356,19 +361,117 @@ class EmundusworkflowModelitem extends JModelList
                 }
             }
 
-            $query1 = $db->getQuery(true);
-            $query1->clear()
-                ->select('#__emundus_setup_status.*')
-                ->from($db->quoteName('#__emundus_setup_status'))
-                ->where($db->quoteName('#__emundus_setup_status.id') . 'NOT IN (' . implode(",", $db->quote($_statusList)) . ')');
-            $db->setQuery($query1);
+            $query1 = $db2->getQuery(true);
 
+            if(in_array('0',$_statusList)) {
+                $query1->clear()
+                    ->select('#__emundus_setup_status.*')
+                    ->from($db2->quoteName('#__emundus_setup_status'))
+                    ->where($db2->quoteName('#__emundus_setup_status.step') . 'NOT IN (' . implode(",", $db2->quote($_statusList)) . ')');
 
-            return $db->loadObjectList();
+                $db2->setQuery($query1);
+                $array1 = $db2->loadObjectList();
+                return $array1;
+            }
+
+            else {
+                $query1->clear()
+                    ->select('#__emundus_setup_status.*')
+                    ->from($db2->quoteName('#__emundus_setup_status'))
+                    ->where($db2->quoteName('#__emundus_setup_status.step') . 'NOT IN (' . implode(",", $db2->quote($_statusList)) . ')');
+                $db2->setQuery($query1);
+
+                $array1 = $db2->loadObjectList();
+
+                $query3 = $db2->getQuery(true);
+                $query3->clear()
+                    ->select('#__emundus_setup_status.*')
+                    ->from($db2->quoteName('#__emundus_setup_status'))
+                    ->where($db2->quoteName('#__emundus_setup_status.id') . '=' . 1);
+
+                $db2->setQuery($query3);
+                $array3 = $db2->loadObjectList();
+
+                return array_merge($array1,$array3);
+
+            }
         }
         catch(Exception $e) {
             return $e->getMessage();
         }
     }
+
+    public function getOut($wid) {
+        $db1 = JFactory::getDbo();
+        $db2 = JFactory::getDbo();
+
+        $query = $db1->getQuery(true);
+        $query1 = $db2->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('#__emundus_workflow_item.item_id, #__emundus_workflow_item.params')
+                ->from($db1->quoteName('#__emundus_workflow_item'))
+                ->where($db1->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$wid)
+                ->andWhere($db1->quoteName('#__emundus_workflow_item.item_id') . '!=' . '1')
+                ->andWhere($db1->quoteName('#__emundus_workflow_item.item_id') . '!=' . '4')
+                ->andWhere($db1->quoteName('#__emundus_workflow_item.item_id') . '!=' . '5');
+
+            $db1->setQuery($query);
+            $_results = $db1->loadAssocList();
+
+
+            $_statusList = array();     //empty array
+
+            foreach($_results as $k=>$v) {
+                if($v['item_id'] == 2) { ////2 --> espace candidat
+                    array_push($_statusList,json_decode($v['params'])->outputStatusSelected);
+                }
+
+                if($v['item_id'] == 3) { ////3 --> condition
+                    /// pass
+                }
+            }
+
+            $query1 = $db2->getQuery(true);
+
+            if(in_array('0',$_statusList)) {
+                $query1->clear()
+                    ->select('#__emundus_setup_status.*')
+                    ->from($db2->quoteName('#__emundus_setup_status'))
+                    ->where($db2->quoteName('#__emundus_setup_status.step') . 'NOT IN (' . implode(",", $db2->quote($_statusList)) . ')');
+
+                $db2->setQuery($query1);
+                $array1 = $db2->loadObjectList();
+                return $array1;
+            }
+
+            else {
+                $query1->clear()
+                    ->select('#__emundus_setup_status.*')
+                    ->from($db2->quoteName('#__emundus_setup_status'))
+                    ->where($db2->quoteName('#__emundus_setup_status.step') . 'NOT IN (' . implode(",", $db2->quote($_statusList)) . ')');
+                $db2->setQuery($query1);
+
+                $array1 = $db2->loadObjectList();
+
+                $query3 = $db2->getQuery(true);
+                $query3->clear()
+                    ->select('#__emundus_setup_status.*')
+                    ->from($db2->quoteName('#__emundus_setup_status'))
+                    ->where($db2->quoteName('#__emundus_setup_status.id') . '=' . 1);
+
+                $db2->setQuery($query3);
+                $array3 = $db2->loadObjectList();
+
+                return array_merge($array1,$array3);
+
+            }
+        }
+        catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
 
 }

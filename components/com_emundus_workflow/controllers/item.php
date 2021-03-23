@@ -321,7 +321,7 @@ jimport('joomla.application.component.controller');
             exit;
         }
 
-        public function getallavailablestatusnonmessage() {
+        public function getin() {
             $user = JFactory::getUser();
 
             if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -333,7 +333,32 @@ jimport('joomla.application.component.controller');
 
                 $_cit = $this->model;
 
-                $_status = $_cit->getAllAvailableStatusNonMessage($data);
+                $_status = $_cit->getIn($data);
+
+                if ($_status) {
+                    $tab = array('status' => 1, 'msg' => JText::_("OK"), 'data' => $_status);
+                } else {
+                    $tab = array('status' => 0, 'msg' => JText::_("FAILED"), 'data' => $_status);
+                }
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+
+
+        public function getout() {
+            $user = JFactory::getUser();
+
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            } else {
+                $jinput = JFactory::getApplication()->input;
+                $data = $jinput->getRaw('wid');
+
+                $_cit = $this->model;
+
+                $_status = $_cit->getOut($data);
 
                 if ($_status) {
                     $tab = array('status' => 1, 'msg' => JText::_("OK"), 'data' => $_status);

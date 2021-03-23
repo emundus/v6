@@ -2,7 +2,7 @@
   <div>
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
-    <!--    {{ this.$data.availableStatus }}-->
+
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.form_name_title }}</label>
       <div class="col-xs-8">
@@ -15,31 +15,30 @@
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.edited_status_title }}</label>
       <div class="col-xs-8">
-        <!--          <select v-model="form.editedStatusSelected" class="form-control-select" @change="onChange(form.editedStatusSelected)">-->
-        <select v-model="form.editedStatusSelected" class="form-control-select" @change="updateParams()">
+        <select v-model="form.editedStatusSelected" class="form-control-select">
           <b-form-select-option selected disabled>--Statut d'édition--</b-form-select-option>
-          <!--            <option v-for="instatus in this.$data.availableStatus" :value="instatus.step"> {{ instatus.value }}</option>-->
-          <option v-for="(item, index) in this.$data.availableStatus" :value="item.step"> {{ item.value }}</option>
+          <option v-for="(item, index) in this.$data.inStatus" :value="item.step"> {{ item.value }}</option>
         </select>
       </div>
     </div>
+
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.output_status_title }}</label>
       <div class="col-xs-8">
-        <!--        <select v-model="form.outputStatusSelected" class="form-control-select" @change="onChange(form.outputStatusSelected)">-->
-        <select v-model="form.outputStatusSelected" class="form-control-select" @change="updateParams()">
+        <select v-model="form.outputStatusSelected" class="form-control-select">
           <b-form-select-option selected disabled>--Statut de sortie--</b-form-select-option>
-          <option v-for="(item, index) in this.$data.availableStatus" :value="item.step"> {{ item.value }}</option>
-          <!--          <option v-for="outstatus in this.$data.status" :value="outstatus.step"> {{ outstatus.value }}</option>-->
+          <option v-for="(item, index) in this.$data.outStatus" :value="item.step"> {{ item.value }}</option>
         </select>
       </div>
     </div>
+
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.notes_title }}</label>
       <div class="col-xs-8">
         <textarea id="notes_form" rows="3" v-model="form.notes" placeholder="Notes" style="margin: -5px; width: 102%"></textarea>
       </div>
     </div>
+
     <div class="row">
       <div class="col-sm-6">
         <label>Choisir couleur</label>
@@ -78,7 +77,8 @@ export default {
       },
       forms: [],
       status: [],
-      availableStatus: [],
+      inStatus: [],
+      outStatus: [],
       disabled: false,
     }
   },
@@ -105,10 +105,12 @@ export default {
     getWorkflowIdFromURL: function () {
       return window.location.href.split('id=')[1];
     },
-    getAllAvailableStatusNonMessage: function() {
+
+
+    getIn: function() {
       axios({
         method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=item&task=getallavailablestatusnonmessage',
+        url: 'index.php?option=com_emundus_workflow&controller=item&task=getin',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -116,13 +118,29 @@ export default {
           wid: this.getWorkflowIdFromURL(),
         })
       }).then(response => {
-        // console.log(response);
-        this.$data.availableStatus = response.data.data;
-        this.$data.status = this.$data.availableStatus;
+        this.$data.inStatus = response.data.data;
       }).catch(error => {
         console.log(error);
       })
     },
+
+    getOut: function() {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=item&task=getout',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          wid: this.getWorkflowIdFromURL(),
+        })
+      }).then(response => {
+        this.$data.outStatus = response.data.data;
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
     updateParams: function() {
       axios({
         method: 'post',
@@ -134,8 +152,6 @@ export default {
           params: this.form,
         })
       }).then(response => {
-        console.log(response);
-        this.disabled = true;
       }).catch(error => {
         console.log(error);
       })
@@ -147,7 +163,8 @@ export default {
   created() {
     this.getAllFormType();
     this.getAllStatus();
-    this.getAllAvailableStatusNonMessage();
+    this.getIn();
+    this.getOut();
     this.form = this.element;
   },
   watch() {

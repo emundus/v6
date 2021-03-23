@@ -228,7 +228,7 @@ export default {
         item_name: nodeCategory[index],
         item_id: index+1,
         workflow_id: this.getWorkflowIdFromURL(),
-        params: "{}",
+        params: '',
       }
 
       axios({
