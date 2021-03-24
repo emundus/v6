@@ -58,8 +58,8 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
         exit;
     }
 
-    // get all status
-    public function getallstatus() {
+    // get all status [BRICE]
+    public function getallstatusBrice() {
         $user = JFactory::getUser();
 
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -124,6 +124,30 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
             }
         }
 
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    //get all status [DUY]
+    public function getallstatus() {
+        $user = JFactory::getUser();
+
+        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $_wit = $this->_common_model;
+
+            //do stuff
+            $_status = $_wit->getAllStatus();
+
+            if (count($_status) > 0) {
+                $tab = array('status' => 1, 'msg' => JText::_("OK_GET_STATUS"), 'data' => $_status);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_("KO_NO_STATUS"), 'data' => $_status);
+            }
+
+        }
         echo json_encode((object)$tab);
         exit;
     }

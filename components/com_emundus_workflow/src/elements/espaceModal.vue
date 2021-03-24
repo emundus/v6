@@ -18,7 +18,7 @@
       <div class="col-xs-8">
         <select v-model="form.editedStatusSelected" class="form-control-select" @change="checkStatus()">
           <b-form-select-option selected disabled>--Statut d'édition--</b-form-select-option>
-          <option v-for="(item, index) in this.$data.inStatus" :value="item.step"> {{ item.value }}</option>
+          <option v-for="(item, index) in this.$data.inStatus" :value="item.step" :disabled="item.disabled"> {{ item.value }}</option>
         </select>
       </div>
     </div>
@@ -28,7 +28,7 @@
       <div class="col-xs-8">
         <select v-model="form.outputStatusSelected" class="form-control-select" @change="checkStatus()">
           <b-form-select-option selected disabled>--Statut de sortie--</b-form-select-option>
-          <option v-for="(item, index) in this.$data.outStatus" :value="item.step"> {{ item.value }}</option>
+          <option v-for="(item, index) in this.$data.outStatus" :value="item.step" :disabled="item.disabled"> {{ item.value }}</option>
         </select>
       </div>
     </div>
@@ -57,6 +57,7 @@
 import axios from 'axios';
 import Swal from "sweetalert2";
 const qs = require('qs');
+let _all = [];
 export default {
   name: "espaceModal",
   props: {
@@ -108,7 +109,6 @@ export default {
       return window.location.href.split('id=')[1];
     },
 
-
     getIn: function() {
       axios({
         method: 'post',
@@ -120,7 +120,7 @@ export default {
           wid: this.getWorkflowIdFromURL(),
         })
       }).then(response => {
-        this.$data.inStatus = response.data.data;
+        // this.$data.inStatus = response.data.data;
       }).catch(error => {
         console.log(error);
       })
@@ -138,6 +138,7 @@ export default {
         })
       }).then(response => {
         this.$data.outStatus = response.data.data;
+
       }).catch(error => {
         console.log(error);
       })
@@ -157,6 +158,39 @@ export default {
       }).catch(error => {
         console.log(error);
       })
+    },
+
+    test: async function() {
+      var _rawAll = await axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus');
+      var _rawIn = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getin', { params: {wid:this.getWorkflowIdFromURL()} });
+      var _rawOut = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getout', { params: {wid:this.getWorkflowIdFromURL()} });
+
+      var as =_rawAll.data.data;
+      var bs = _rawIn.data.data;
+      var cs = _rawOut.data.data;
+
+      //in intersections + differences
+      const _iintersection = as.filter(item1 => bs.some(item2 => item1.step === item2.step));
+      const _idifference = as.filter(({ step: id1 }) => !bs.some(({ step: id2 }) => id2 === id1));
+
+      //out intersections + differences
+      //in intersections + differences
+      const _ointersection = as.filter(item1 => cs.some(item2 => item1.step === item2.step));
+      const _odifference = as.filter(({ step: id1 }) => !cs.some(({ step: id2 }) => id2 === id1));
+
+      //set _difference --> disabled = true
+      //set _intersection --> disabled = false
+
+      _idifference.forEach(elt => elt['disabled']=true);
+      _iintersection.forEach(elt => elt['disabled']=false);
+
+      _odifference.forEach(elt => elt['disabled']=true);
+      _ointersection.forEach(elt => elt['disabled']=false);
+
+      // console.log(_idifference.concat(_iintersection));
+
+      this.$data.inStatus = _idifference.concat(_iintersection);
+      this.$data.outStatus = _odifference.concat(_ointersection);
     },
 
     checkStatus: function() {
@@ -182,9 +216,11 @@ export default {
   },
   created() {
     this.getAllFormType();
-    this.getAllStatus();
-    this.getIn();
+    // this.getAllStatus();
+    // this.getIn();
     this.getOut();
+
+    this.test();
     this.form = this.element;
   },
   watch() {
