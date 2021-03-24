@@ -301,6 +301,18 @@ class EmundusworkflowModelitem extends JModelList
 
     //UPDATE PARAMS --> table [ jos_emundus_workflow_item ] // column [ params ]
     public function updateParamsByItemID($data) {
+
+        $_string = "";
+        if(isset($data['editedStatusSelected'])) {
+            foreach($data['editedStatusSelected'] as $key=>$value) {
+                $_string .= (string) $key . ",";
+            }
+        }
+        else {}
+
+        $_lastString = substr_replace($_string ,"",-1);
+        $data['editedStatusSelected'] = $_lastString;
+
         $id = (int)$data['id'];
 
         unset($data['id']);
@@ -320,6 +332,7 @@ class EmundusworkflowModelitem extends JModelList
                 ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . $id);
             $db->setQuery($query);
 
+//            var_dump($query->__toString());
             return $db->execute();
         }
         catch(Exception $e) {

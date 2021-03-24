@@ -15,12 +15,18 @@
 
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.edited_status_title }}</label>
-      <div class="col-xs-8">
-        <select v-model="form.editedStatusSelected" class="form-control-select" @change="updateOutStatus(form.editedStatusSelected)">
-          <b-form-select-option selected disabled>--Statut d'édition--</b-form-select-option>
-          <option v-for="(item, index) in this.$data.inStatus" :value="item.step" :disabled="item.disabled"> {{ item.value }}</option>
-        </select>
+<!--      <div class="col-xs-8">-->
+<!--        <select v-model="form.editedStatusSelected" class="form-control-select" @change="updateOutStatus(form.editedStatusSelected)">-->
+<!--          <b-form-select-option selected disabled>&#45;&#45;Statut d'édition&#45;&#45;</b-form-select-option>-->
+<!--          <option v-for="(item, index) in this.$data.inStatus" :value="item.step" :disabled="item.disabled"> {{ item.value }}</option>-->
+<!--        </select>-->
+
+      <div v-for="item in this.$data.inStatus">
+        <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]" @click="updateOutStatus(item.step)"/>
+        <label class="form-check-label" :for="item.step">{{item.value}}</label>
       </div>
+<!--      </div>-->
+
     </div>
 
     <div class="row mb-3">
@@ -62,6 +68,7 @@ export default {
   name: "espaceModal",
   props: {
     element: Object,
+    isChecked: Array,
   },
   data: function() {
     return {
@@ -73,7 +80,7 @@ export default {
       },
       form: {
         formNameSelected: '',
-        editedStatusSelected: '',
+        editedStatusSelected: [],
         outputStatusSelected: '',
         notes: '',
         color: "#0f4c81",
@@ -83,6 +90,7 @@ export default {
       inStatus: [],
       outStatus: [],
       disabled: false,
+      checked: [],
     }
   },
   methods: {
@@ -144,21 +152,21 @@ export default {
       })
     },
 
-    updateParams: function() {
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=item&task=updateparams',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          params: this.form,
-        })
-      }).then(response => {
-      }).catch(error => {
-        console.log(error);
-      })
-    },
+    // updateParams: function() {
+    //   axios({
+    //     method: 'post',
+    //     url: 'index.php?option=com_emundus_workflow&controller=item&task=updateparams',
+    //     headers: {
+    //       "Content-Type": "application/x-www-form-urlencoded"
+    //     },
+    //     data: qs.stringify({
+    //       params: this.form,
+    //     })
+    //   }).then(response => {
+    //   }).catch(error => {
+    //     console.log(error);
+    //   })
+    // },
 
     updateInStatus: async function(outStatus) {
       var _rawAll = await axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus');
@@ -195,14 +203,16 @@ export default {
       _odifference.forEach(elt => elt['disabled']=true);
       _ointersection.forEach(elt => elt['disabled']=false);
 
-      (_odifference.concat(_ointersection)).forEach(elt => { if(elt.step == inStatus) {elt['disabled'] = true;}});
+      console.log(this.checked);
 
-      console.log(_odifference.concat(_ointersection));
+      // (_odifference.concat(_ointersection)).forEach(elt => { if(elt.step == inStatus) {elt['disabled'] = true;}});
+
+      // console.log(_odifference.concat(_ointersection));
 
       this.$data.outStatus = _odifference.concat(_ointersection);
     },
 
-    checkStatus: function() {
+    /*checkStatus: function() {
         if(this.form.editedStatusSelected !== null && this.form.outputStatusSelected !== null && this.form.editedStatusSelected == this.form.outputStatusSelected) {
           Swal.fire({
             icon: 'error',
@@ -220,11 +230,11 @@ export default {
         else {
           this.updateParams();
         }
-    },
+    },*/
 
-    getCurrentIn(e) {
-      console.log(e);
-    }
+    // getTable(e) {
+    //   console.log(e);
+    // }
 
   },
   created() {
@@ -232,6 +242,8 @@ export default {
     this.updateInStatus();
     this.updateOutStatus();
     this.form = this.element;
+
+    this.form.editedStatusSelected = this.checked;
   },
   watch() {
   }
