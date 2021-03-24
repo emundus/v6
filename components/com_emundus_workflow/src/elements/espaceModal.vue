@@ -16,7 +16,7 @@
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.edited_status_title }}</label>
       <div class="col-xs-8">
-        <select v-model="form.editedStatusSelected" class="form-control-select" @change="checkStatus()">
+        <select v-model="form.editedStatusSelected" class="form-control-select" @change="updateOutStatus(form.editedStatusSelected)">
           <b-form-select-option selected disabled>--Statut d'édition--</b-form-select-option>
           <option v-for="(item, index) in this.$data.inStatus" :value="item.step" :disabled="item.disabled"> {{ item.value }}</option>
         </select>
@@ -26,7 +26,7 @@
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.output_status_title }}</label>
       <div class="col-xs-8">
-        <select v-model="form.outputStatusSelected" class="form-control-select" @change="checkStatus()">
+        <select v-model="form.outputStatusSelected" class="form-control-select" @change="updateInStatus(form.outputStatusSelected)">
           <b-form-select-option selected disabled>--Statut de sortie--</b-form-select-option>
           <option v-for="(item, index) in this.$data.outStatus" :value="item.step" :disabled="item.disabled"> {{ item.value }}</option>
         </select>
@@ -160,23 +160,16 @@ export default {
       })
     },
 
-    test: async function() {
+    updateInStatus: async function(outStatus) {
       var _rawAll = await axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus');
       var _rawIn = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getin', { params: {wid:this.getWorkflowIdFromURL()} });
-      var _rawOut = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getout', { params: {wid:this.getWorkflowIdFromURL()} });
 
       var as =_rawAll.data.data;
       var bs = _rawIn.data.data;
-      var cs = _rawOut.data.data;
 
       //in intersections + differences
       const _iintersection = as.filter(item1 => bs.some(item2 => item1.step === item2.step));
       const _idifference = as.filter(({ step: id1 }) => !bs.some(({ step: id2 }) => id2 === id1));
-
-      //out intersections + differences
-      //in intersections + differences
-      const _ointersection = as.filter(item1 => cs.some(item2 => item1.step === item2.step));
-      const _odifference = as.filter(({ step: id1 }) => !cs.some(({ step: id2 }) => id2 === id1));
 
       //set _difference --> disabled = true
       //set _intersection --> disabled = false
@@ -184,12 +177,28 @@ export default {
       _idifference.forEach(elt => elt['disabled']=true);
       _iintersection.forEach(elt => elt['disabled']=false);
 
+      (_idifference.concat(_iintersection)).forEach(elt => { if(elt.step == outStatus) {elt['disabled'] = true;}});
+
+      this.$data.inStatus = _idifference.concat(_iintersection);
+    },
+
+    updateOutStatus: async function(inStatus) {
+      var _rawAll = await axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus');
+      var _rawOut = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getout', { params: {wid:this.getWorkflowIdFromURL()} });
+
+      var as =_rawAll.data.data;
+      var cs = _rawOut.data.data;
+
+      const _ointersection = as.filter(item1 => cs.some(item2 => item1.step === item2.step));
+      const _odifference = as.filter(({ step: id1 }) => !cs.some(({ step: id2 }) => id2 === id1));
+
       _odifference.forEach(elt => elt['disabled']=true);
       _ointersection.forEach(elt => elt['disabled']=false);
 
-      // console.log(_idifference.concat(_iintersection));
+      (_odifference.concat(_ointersection)).forEach(elt => { if(elt.step == inStatus) {elt['disabled'] = true;}});
 
-      this.$data.inStatus = _idifference.concat(_iintersection);
+      console.log(_odifference.concat(_ointersection));
+
       this.$data.outStatus = _odifference.concat(_ointersection);
     },
 
@@ -213,14 +222,15 @@ export default {
         }
     },
 
+    getCurrentIn(e) {
+      console.log(e);
+    }
+
   },
   created() {
     this.getAllFormType();
-    // this.getAllStatus();
-    // this.getIn();
-    this.getOut();
-
-    this.test();
+    this.updateInStatus();
+    this.updateOutStatus();
     this.form = this.element;
   },
   watch() {
