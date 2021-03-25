@@ -154,22 +154,6 @@ export default {
       })
     },
 
-    // updateParams: function() {
-    //   axios({
-    //     method: 'post',
-    //     url: 'index.php?option=com_emundus_workflow&controller=item&task=updateparams',
-    //     headers: {
-    //       "Content-Type": "application/x-www-form-urlencoded"
-    //     },
-    //     data: qs.stringify({
-    //       params: this.form,
-    //     })
-    //   }).then(response => {
-    //   }).catch(error => {
-    //     console.log(error);
-    //   })
-    // },
-
     updateInStatus: async function(outStatus=undefined) {
       var _rawAll = await axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus');
       var _rawIn = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getin', { params: {wid:this.getWorkflowIdFromURL()} });
@@ -187,7 +171,19 @@ export default {
       _idifference.forEach(elt => elt['disabled']=true);
       _iintersection.forEach(elt => elt['disabled']=false);
 
-      (_idifference.concat(_iintersection)).forEach(elt => { if(elt.step == outStatus) {elt['disabled'] = true;}});
+      var _merge = _idifference.concat(_iintersection);
+
+      if(outStatus !== undefined && typeof outStatus !== null) {
+        var _mergeKeys = Object.keys(_merge);
+
+        _merge.forEach(elt => {
+          if(elt.step == outStatus) {
+            elt['disabled'] = true;
+          }
+        })
+      }
+
+      // (_idifference.concat(_iintersection)).forEach(elt => { if(elt.step == outStatus) {elt['disabled'] = true;}});
 
       this.$data.inStatus = _idifference.concat(_iintersection);
     },
