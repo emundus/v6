@@ -23,8 +23,7 @@
 <!--        </select>-->
 
       <div v-for="item in this.$data.inStatus">
-<!--        <input type="checkbox" v-if="item.disabled" :id="item.step" :value="item.step" v-model="checked[item.step]" :disabled="item.disabled" @click="updateOutStatus(checked)"/>-->
-        <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]" :disabled="item.disabled" @click="updateOutStatus(checked)"/>
+        <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]" @click="updateOutStatus(checked)" :disabled="item.disabled"/>
         <label class="form-check-label" :for="item.step">{{item.value}}</label>
       </div>
 <!--      </div>-->
@@ -91,8 +90,11 @@ export default {
       status: [],
       inStatus: [],
       outStatus: [],
-      isDisabled: false,
+      isDisabled: true,
       checked: [],
+
+      in: [],
+      out: [],
     }
   },
   methods: {
@@ -203,47 +205,59 @@ export default {
 
       var _merge = _odifference.concat(_ointersection);
 
-      if(inStatus !== undefined) {
-        var _inStatusKeys = Object.keys(inStatus);
-
-        _merge.forEach(elt => {
-          _inStatusKeys.forEach(keys => {
-            if (elt.step == keys && inStatus[keys] == true) {
-              elt['disabled'] = true;
-              this.isDisabled = true;
-            } else {}
-          })
-        })
-      }
+      // if(inStatus !== undefined) {
+      //   var _inStatusKeys = Object.keys(inStatus);
+      //
+      //   _merge.forEach(elt => {
+      //     _inStatusKeys.forEach(keys => {
+      //       if (elt.step == keys && inStatus[keys] == true) {
+      //         elt['disabled'] = true;
+      //         this.isDisabled = true;
+      //       } else {}
+      //     })
+      //   })
+      // }
 
       this.$data.outStatus = _merge;
     },
 
-
-    /*checkStatus: function() {
-        if(this.form.editedStatusSelected !== null && this.form.outputStatusSelected !== null && this.form.editedStatusSelected == this.form.outputStatusSelected) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Erreur',
-            html: 'Configuration du status n\'est pas correcte',
-            timer: 1200,
-            showConfirmButton:false,
-          })
+    //when loading --> input params ==> this.form.id
+    loadSavedProfileModeIn: function(id) {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=item&task=getinstatusbyitemid',
+        params: { id },
+        paramsSerializer: params => {
+          return qs.stringify(params);
         }
+      }).then(response => {
+          console.log('>>> IN <<<');
+          console.log(response);
+          response.data.data.forEach(elt => {
+            this.checked[elt.step] = true;
+        })
+          // this.$data.inStatus = response.data.data;
+      })
+    },
 
-        else if(this.form.editedStatusSelected == null && this.form.outputStatusSelected !== null) {}
-
-        else if(this.form.editedStatusSelected !== null && this.form.outputStatusSelected == null) {}
-
-        else {
-          this.updateParams();
+    loadSavedProfileModeOut: function(id) {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=item&task=getoutstatusbyitemid',
+        params: { id },
+        paramsSerializer: params => {
+          return qs.stringify(params);
         }
-    },*/
-
-    // getTable(e) {
-    //   console.log(e);
-    // }
-
+      }).then(response => {
+        console.log('>>> OUT <<<');
+        console.log(response);
+        this.form.outputStatusSelected = (response.data.data)[0].step;
+        // response.forEach(elt => {
+        //   this.checked[elt.step] = true;
+        // })
+        // this.$data.outStatus = response.data.data;
+      })
+    }
   },
   created() {
     this.getAllFormType();
@@ -255,6 +269,10 @@ export default {
     // console.log(this.form.id);
 
     this.form.editedStatusSelected = this.checked;
+
+
+    // this.loadSavedProfileModeIn(this.form.id);
+    // this.loadSavedProfileModeOut(this.form.id);
 
       // var data = {
       //   wid:this.getWorkflowIdFromURL(),
