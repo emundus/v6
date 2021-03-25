@@ -370,6 +370,32 @@ jimport('joomla.application.component.controller');
             exit;
         }
 
+        public function getinitstatus() {
+            $user = JFactory::getUser();
+
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            } else {
+                $jinput = JFactory::getApplication()->input;
+                $data = $jinput->getRaw('data');
+
+//                print_r($data);die;
+
+                $_cit = $this->model;
+
+                $_status = $_cit->getInitStatus($data);
+
+                if ($_status) {
+                    $tab = array('status' => 1, 'msg' => JText::_("OK"), 'data' => $_status);
+                } else {
+                    $tab = array('status' => 0, 'msg' => JText::_("FAILED"), 'data' => $_status);
+                }
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+
 //        public function getallavailableoutstatus() {
 //            $user = JFactory::getUser();
 //

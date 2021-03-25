@@ -23,7 +23,7 @@
 <!--        </select>-->
 
       <div v-for="item in this.$data.inStatus">
-<!--        <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]" @click="updateOutStatus(item.step)"/>-->
+<!--        <input type="checkbox" v-if="item.disabled" :id="item.step" :value="item.step" v-model="checked[item.step]" :disabled="item.disabled" @click="updateOutStatus(checked)"/>-->
         <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]" :disabled="item.disabled" @click="updateOutStatus(checked)"/>
         <label class="form-check-label" :for="item.step">{{item.value}}</label>
       </div>
@@ -91,7 +91,7 @@ export default {
       status: [],
       inStatus: [],
       outStatus: [],
-      // disabled: false,
+      isDisabled: false,
       checked: [],
     }
   },
@@ -179,11 +179,11 @@ export default {
         _merge.forEach(elt => {
           if(elt.step == outStatus) {
             elt['disabled'] = true;
+            //this.isDisabled = true;
           }
+          else {}
         })
       }
-
-      // (_idifference.concat(_iintersection)).forEach(elt => { if(elt.step == outStatus) {elt['disabled'] = true;}});
 
       this.$data.inStatus = _idifference.concat(_iintersection);
     },
@@ -210,63 +210,15 @@ export default {
           _inStatusKeys.forEach(keys => {
             if (elt.step == keys && inStatus[keys] == true) {
               elt['disabled'] = true;
-            } else {
-              //elt['disabled']=false;
-            }
+              this.isDisabled = true;
+            } else {}
           })
         })
       }
 
-
-      // for(i = 0; i <= Object.keys(_merge).length; i++) {
-      //   for(k = 0; k <= Object.keys(inStatus).length; k++) {
-      //     if((Object.keys(inStatus[k]) == _merge[i].step) && (Object.values(inStatus[k]) == true)) {
-      //       _merge[i]['disabled'] = true;
-      //     }
-      //     else {
-      //       _merge[i]['disabled'] = false;
-      //     }
-      //   }
-      // }
-
-      // console.log(inStatus);
-
-      //handled [checked]
-
-      // (Object.keys(inStatus)).forEach(elt1 => {
-      //   _merge.forEach(elt2 => {
-      //     if (elt1 == elt2.step && Object.values(elt1 == true)) {
-      //       elt2['disabled'] = true;
-      //     }
-      //     // else {
-      //     //   elt2['disabled'] = false;
-      //     // }
-      //     else if(elt1 !== elt2.step || Object.values(elt1 == false)) {
-      //       elt2['disabled'] = false;
-      //     }
-      //   })
-      // })
-      //
-      // // inStatus.forEach(elt1 => {
-      // //   _merge.forEach(elt2 => {
-      // //     if(Object.keys(elt1) == elt2.step && Object.values(elt1 == true)) {
-      // //       elt2['disabled'] = true;
-      // //     }
-      // //     else {
-      // //       elt2['disabled'] = false;
-      // //     }
-      // //   })
-      // // })
-
-
-      // (_odifference.concat(_ointersection)).forEach(elt => { if(elt.step == inStatus) {elt['disabled'] = true;}});
-
-      // console.log(_odifference.concat(_ointersection));
-
-      // console.log(_merge);
-
       this.$data.outStatus = _merge;
     },
+
 
     /*checkStatus: function() {
         if(this.form.editedStatusSelected !== null && this.form.outputStatusSelected !== null && this.form.editedStatusSelected == this.form.outputStatusSelected) {
@@ -295,11 +247,40 @@ export default {
   },
   created() {
     this.getAllFormType();
-    this.updateInStatus();
-    this.updateOutStatus();
+    // this.updateInStatus();
+    // this.updateOutStatus();
+
     this.form = this.element;
 
+    // console.log(this.form.id);
+
     this.form.editedStatusSelected = this.checked;
+
+      var data = {
+        wid:this.getWorkflowIdFromURL(),
+        id: this.form.id,
+      }
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=item&task=getinitstatus',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({ data: data })
+      }).then(response => {
+
+        this.$data.inStatus = response.data.data;
+        this.$data.outStatus = response.data.data;
+
+        // console.log(this.$data.inStatus);
+        // console.log(this.$data.outStatus);
+      }).catch(error => {
+        console.log(error);
+      })
+
+    // console.log(this.form.id);
+
+
   },
   watch() {
   }
