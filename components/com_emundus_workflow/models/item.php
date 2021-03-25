@@ -303,15 +303,23 @@ class EmundusworkflowModelitem extends JModelList
     public function updateParamsByItemID($data) {
 
         $_string = "";
+
+//        var_dump($data);die;
+
         if(isset($data['editedStatusSelected'])) {
             foreach($data['editedStatusSelected'] as $key=>$value) {
-                $_string .= (string) $key . ",";
+                if($value == "true") {
+                    $_string .= (string)$key . ",";
+                }
+                else {}
             }
         }
         else {}
 
         $_lastString = substr_replace($_string ,"",-1);
         $data['editedStatusSelected'] = $_lastString;
+
+//        var_dump($_lastString);die;
 
         $id = (int)$data['id'];
 
@@ -470,8 +478,6 @@ class EmundusworkflowModelitem extends JModelList
 
             $_lastString = substr_replace($_lst ,"",-1);
 
-
-
             $query1 = $db2->getQuery(true);
 
             if(in_array(0,$_t)) {
@@ -505,8 +511,6 @@ class EmundusworkflowModelitem extends JModelList
     }
 
     public function getInitStatus($data) {
-
-//        print_r($data);die;
         $db1 = JFactory::getDbo();
         $db2 = JFactory::getDbo();
 
@@ -554,8 +558,6 @@ class EmundusworkflowModelitem extends JModelList
 
             $_lastString = substr_replace($_lst ,"",-1);
 
-
-
             $query1 = $db2->getQuery(true);
 
             if(in_array(0,$_t)) {
@@ -568,8 +570,6 @@ class EmundusworkflowModelitem extends JModelList
 
                 $array1 = $db2->loadObjectList();
 
-//                print_r($array1);die;
-
                 return $array1;
 
             }
@@ -581,10 +581,61 @@ class EmundusworkflowModelitem extends JModelList
                 $db2->setQuery($query1);
 
                 $array1 = $db2->loadObjectList();
-
-//                print_r($array1);die;
                 return $array1;
+            }
+        }
+        catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
 
+    public function getStatusByItemID($id, $mode=null) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('#__emundus_workflow_item.*')
+                ->from($db->quoteName('#__emundus_workflow_item'))
+                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$id);
+
+            $db->setQuery($query);
+
+            $_results = $db->loadObject();
+
+            $_exportStatus = array('in'=>[],'out'=>[]);
+
+            if(($_results->item_id) == 2) {
+                $_exportStatus['in'] = json_decode(($_results->params))->editedStatusSelected;
+                $_exportStatus['out'] = json_decode(($_results->params))->outputStatusSelected;
+            }
+            if(($_results->item_id) == 3) {
+                ////do stuff
+            }
+
+            $db2 = JFactory::getDbo();
+            $query2 = $db2->getQuery(true);
+
+            if($mode=='in') {
+                $query2->clear()
+                    ->select('#__emundus_setup_status.*')
+                    ->from($db2->quoteName('#__emundus_setup_status'))
+                    ->where($db2->quoteName('#__emundus_setup_status.step') . 'IN (' . $_exportStatus['in'] . ')');
+                $db2->setQuery($query2);
+
+//                var_dump($query2->__toString());
+                return $db2->loadObjectList();
+            }
+
+            else if($mode=='out') {
+                $query2->clear()
+                    ->select('#__emundus_setup_status.*')
+                    ->from($db2->quoteName('#__emundus_setup_status'))
+                    ->where($db2->quoteName('#__emundus_setup_status.step') . 'IN (' . $_exportStatus['out'] . ')');
+                $db2->setQuery($query2);
+
+//                var_dump($query2->__toString());
+                return $db2->loadObjectList();
             }
         }
         catch(Exception $e) {

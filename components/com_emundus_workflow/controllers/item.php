@@ -396,6 +396,56 @@ jimport('joomla.application.component.controller');
             exit;
         }
 
+        public function getinstatusbyitemid() {
+            $user = JFactory::getUser();
+
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            } else {
+                $jinput = JFactory::getApplication()->input;
+                $data = $jinput->getRaw('id');
+
+//                var_dump($data);die;
+                $_cit = $this->model;
+
+                $_status = $_cit->getStatusByItemID($data, 'in');
+
+                if ($_status) {
+                    $tab = array('status' => 1, 'msg' => JText::_("STATUS_BY_ITEM_ID"), 'data' => $_status);
+                } else {
+                    $tab = array('status' => 0, 'msg' => JText::_("FAILED_STATUS_BY_ITEM_ID"), 'data' => $_status);
+                }
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+
+        public function getoutstatusbyitemid() {
+            $user = JFactory::getUser();
+
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            } else {
+                $jinput = JFactory::getApplication()->input;
+                $data = $jinput->getRaw('id');
+
+//                var_dump($data);die;
+                $_cit = $this->model;
+
+                $_status = $_cit->getStatusByItemID($data, 'out');
+
+                if ($_status) {
+                    $tab = array('status' => 1, 'msg' => JText::_("STATUS_BY_ITEM_ID"), 'data' => $_status);
+                } else {
+                    $tab = array('status' => 0, 'msg' => JText::_("FAILED_STATUS_BY_ITEM_ID"), 'data' => $_status);
+                }
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+
 //        public function getallavailableoutstatus() {
 //            $user = JFactory::getUser();
 //

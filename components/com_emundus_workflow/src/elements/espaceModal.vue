@@ -23,7 +23,7 @@
 <!--        </select>-->
 
       <div v-for="item in this.$data.inStatus">
-        <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]" @click="updateOutStatus(checked)" :disabled="item.disabled"/>
+        <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]" @click="updateOutStatus(checked)"/>
         <label class="form-check-label" :for="item.step">{{item.value}}</label>
       </div>
 <!--      </div>-->
@@ -175,17 +175,19 @@ export default {
 
       var _merge = _idifference.concat(_iintersection);
 
-      if(outStatus !== undefined && typeof outStatus !== null) {
-        var _mergeKeys = Object.keys(_merge);
+      console.log(this.checked);
 
-        _merge.forEach(elt => {
-          if(elt.step == outStatus) {
-            elt['disabled'] = true;
-            //this.isDisabled = true;
-          }
-          else {}
-        })
-      }
+      // if(outStatus !== undefined && typeof outStatus !== null) {
+      //   var _mergeKeys = Object.keys(_merge);
+      //
+      //   _merge.forEach(elt => {
+      //     if(elt.step == outStatus) {
+      //       elt['disabled'] = true;
+      //       //this.isDisabled = true;
+      //     }
+      //     else {}
+      //   })
+      // }
 
       this.$data.inStatus = _idifference.concat(_iintersection);
     },
@@ -234,8 +236,9 @@ export default {
           console.log('>>> IN <<<');
           console.log(response);
           response.data.data.forEach(elt => {
+            // elt['disabled'] = false;
             this.checked[elt.step] = true;
-        })
+          })
           // this.$data.inStatus = response.data.data;
       })
     },
@@ -271,8 +274,8 @@ export default {
     this.form.editedStatusSelected = this.checked;
 
 
-    // this.loadSavedProfileModeIn(this.form.id);
-    // this.loadSavedProfileModeOut(this.form.id);
+    this.loadSavedProfileModeIn(this.form.id);
+    this.loadSavedProfileModeOut(this.form.id);
 
       // var data = {
       //   wid:this.getWorkflowIdFromURL(),
