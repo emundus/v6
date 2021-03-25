@@ -22,7 +22,8 @@
 <!--        </select>-->
 
       <div v-for="item in this.$data.inStatus">
-        <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]" @click="updateOutStatus(item.step)"/>
+<!--        <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]" @click="updateOutStatus(item.step)"/>-->
+        <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]" :disabled="item.disabled" @click="updateOutStatus(checked)"/>
         <label class="form-check-label" :for="item.step">{{item.value}}</label>
       </div>
 <!--      </div>-->
@@ -68,7 +69,7 @@ export default {
   name: "espaceModal",
   props: {
     element: Object,
-    isChecked: Array,
+    // isChecked: Array,
   },
   data: function() {
     return {
@@ -89,7 +90,7 @@ export default {
       status: [],
       inStatus: [],
       outStatus: [],
-      disabled: false,
+      // disabled: false,
       checked: [],
     }
   },
@@ -128,7 +129,7 @@ export default {
           wid: this.getWorkflowIdFromURL(),
         })
       }).then(response => {
-        // this.$data.inStatus = response.data.data;
+        //this.$data.inStatus = response.data.data;
       }).catch(error => {
         console.log(error);
       })
@@ -185,7 +186,15 @@ export default {
       _idifference.forEach(elt => elt['disabled']=true);
       _iintersection.forEach(elt => elt['disabled']=false);
 
+      // console.log(as);
+      // console.log(bs);
+      //
+      // console.log(_iintersection);
+      // console.log(_idifference);
+
       (_idifference.concat(_iintersection)).forEach(elt => { if(elt.step == outStatus) {elt['disabled'] = true;}});
+
+      // console.log(_idifference.concat(_iintersection));
 
       this.$data.inStatus = _idifference.concat(_iintersection);
     },
@@ -203,9 +212,12 @@ export default {
       _odifference.forEach(elt => elt['disabled']=true);
       _ointersection.forEach(elt => elt['disabled']=false);
 
-      console.log(this.checked);
+      // console.log(inStatus);
 
-      // (_odifference.concat(_ointersection)).forEach(elt => { if(elt.step == inStatus) {elt['disabled'] = true;}});
+      //handled [checked]
+
+
+      (_odifference.concat(_ointersection)).forEach(elt => { if(elt.step == inStatus) {elt['disabled'] = true;}});
 
       // console.log(_odifference.concat(_ointersection));
 

@@ -379,18 +379,12 @@ class EmundusworkflowModelitem extends JModelList
                 }
             }
 
-
-            /// check if 'params' is empty // editedStatus --> " "
-
-//            var_dump($_statusList);die;
             $_t = array_filter(array_values($_statusList), 'strlen' );      //remove all empty values
-
-            $_test = explode(',', $_t[0]);
 
             $_lst = "";
 
-            foreach($_test as $k=>$v) {
-                $_lst .= $v . ",";
+            foreach($_t as $key=>$value) {
+                $_lst .= $value . ",";
             }
 
             $_lastString = substr_replace($_lst ,"",-1);
@@ -404,6 +398,7 @@ class EmundusworkflowModelitem extends JModelList
                     ->where($db2->quoteName('#__emundus_setup_status.step') . 'NOT IN (' . $_lastString . ')');
 
                 $db2->setQuery($query1);
+
                 $array1 = $db2->loadObjectList();
 
                 return $array1;
@@ -425,6 +420,7 @@ class EmundusworkflowModelitem extends JModelList
             return $e->getMessage();
         }
     }
+
 
     public function getOut($wid) {
         $db1 = JFactory::getDbo();
@@ -450,7 +446,13 @@ class EmundusworkflowModelitem extends JModelList
 
             foreach($_results as $k=>$v) {
                 if($v['item_id'] == 2) { ////2 --> espace candidat
-                    array_push($_statusList,json_decode($v['params'])->outputStatusSelected);
+                    ///
+                    if(json_decode($v['params'])->outputStatusSelected == "") {
+                        $_statusList[0] = "-1000";
+                    }
+                    else {
+                        array_push($_statusList, json_decode($v['params'])->outputStatusSelected);
+                    }
                 }
 
                 if($v['item_id'] == 3) { ////3 --> condition
@@ -458,38 +460,46 @@ class EmundusworkflowModelitem extends JModelList
                 }
             }
 
+//            var_dump($_statusList);die;
+
+            $_t = array_filter(array_values($_statusList), 'strlen' );      //remove all empty values
+
+            $_lst = "";
+
+            foreach($_t as $key=>$value) {
+                $_lst .= $value . ",";
+            }
+
+            $_lastString = substr_replace($_lst ,"",-1);
+
+
+
             $query1 = $db2->getQuery(true);
 
-            if(in_array('0',$_statusList)) {
+            if(in_array(0,$_t)) {
                 $query1->clear()
                     ->select('#__emundus_setup_status.*')
                     ->from($db2->quoteName('#__emundus_setup_status'))
-                    ->where($db2->quoteName('#__emundus_setup_status.step') . 'NOT IN (' . implode(",", $db2->quote($_statusList)) . ')');
+                    ->where($db2->quoteName('#__emundus_setup_status.step') . 'NOT IN (' . $_lastString . ')');
 
                 $db2->setQuery($query1);
-                $array1 = $db2->loadObjectList();
-                return $array1;
-            }
 
+//                var_dump($db2->loadObjectList());die;
+                $array1 = $db2->loadObjectList();
+
+                return $array1;
+
+            }
             else {
                 $query1->clear()
                     ->select('#__emundus_setup_status.*')
                     ->from($db2->quoteName('#__emundus_setup_status'))
-                    ->where($db2->quoteName('#__emundus_setup_status.step') . 'NOT IN (' . implode(",", $db2->quote($_statusList)) . ')');
+                    ->where($db2->quoteName('#__emundus_setup_status.step') . 'NOT IN (' . $_lastString . ')');
                 $db2->setQuery($query1);
+//                var_dump($db2->loadObjectList());die;
 
                 $array1 = $db2->loadObjectList();
-
-                $query3 = $db2->getQuery(true);
-                $query3->clear()
-                    ->select('#__emundus_setup_status.*')
-                    ->from($db2->quoteName('#__emundus_setup_status'))
-                    ->where($db2->quoteName('#__emundus_setup_status.id') . '=' . 1);
-
-                $db2->setQuery($query3);
-                $array3 = $db2->loadObjectList();
-
-                return array_merge($array3,$array1);
+                return $array1;
 
             }
         }
