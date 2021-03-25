@@ -3,6 +3,7 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
+<!--    {{ this.$data.outStatus }}-->
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.form_name_title }}</label>
       <div class="col-xs-8">
@@ -169,7 +170,7 @@ export default {
     //   })
     // },
 
-    updateInStatus: async function(outStatus) {
+    updateInStatus: async function(outStatus=undefined) {
       var _rawAll = await axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus');
       var _rawIn = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getin', { params: {wid:this.getWorkflowIdFromURL()} });
 
@@ -186,20 +187,12 @@ export default {
       _idifference.forEach(elt => elt['disabled']=true);
       _iintersection.forEach(elt => elt['disabled']=false);
 
-      // console.log(as);
-      // console.log(bs);
-      //
-      // console.log(_iintersection);
-      // console.log(_idifference);
-
       (_idifference.concat(_iintersection)).forEach(elt => { if(elt.step == outStatus) {elt['disabled'] = true;}});
-
-      // console.log(_idifference.concat(_iintersection));
 
       this.$data.inStatus = _idifference.concat(_iintersection);
     },
 
-    updateOutStatus: async function(inStatus) {
+    updateOutStatus: async function(inStatus=undefined) {
       var _rawAll = await axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus');
       var _rawOut = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getout', { params: {wid:this.getWorkflowIdFromURL()} });
 
@@ -212,16 +205,71 @@ export default {
       _odifference.forEach(elt => elt['disabled']=true);
       _ointersection.forEach(elt => elt['disabled']=false);
 
+      var _merge = _odifference.concat(_ointersection);
+
+      if(inStatus !== undefined) {
+        var _inStatusKeys = Object.keys(inStatus);
+
+        _merge.forEach(elt => {
+          _inStatusKeys.forEach(keys => {
+            if (elt.step == keys && inStatus[keys] == true) {
+              elt['disabled'] = true;
+            } else {
+              //elt['disabled']=false;
+            }
+          })
+        })
+      }
+
+
+      // for(i = 0; i <= Object.keys(_merge).length; i++) {
+      //   for(k = 0; k <= Object.keys(inStatus).length; k++) {
+      //     if((Object.keys(inStatus[k]) == _merge[i].step) && (Object.values(inStatus[k]) == true)) {
+      //       _merge[i]['disabled'] = true;
+      //     }
+      //     else {
+      //       _merge[i]['disabled'] = false;
+      //     }
+      //   }
+      // }
+
       // console.log(inStatus);
 
       //handled [checked]
 
+      // (Object.keys(inStatus)).forEach(elt1 => {
+      //   _merge.forEach(elt2 => {
+      //     if (elt1 == elt2.step && Object.values(elt1 == true)) {
+      //       elt2['disabled'] = true;
+      //     }
+      //     // else {
+      //     //   elt2['disabled'] = false;
+      //     // }
+      //     else if(elt1 !== elt2.step || Object.values(elt1 == false)) {
+      //       elt2['disabled'] = false;
+      //     }
+      //   })
+      // })
+      //
+      // // inStatus.forEach(elt1 => {
+      // //   _merge.forEach(elt2 => {
+      // //     if(Object.keys(elt1) == elt2.step && Object.values(elt1 == true)) {
+      // //       elt2['disabled'] = true;
+      // //     }
+      // //     else {
+      // //       elt2['disabled'] = false;
+      // //     }
+      // //   })
+      // // })
 
-      (_odifference.concat(_ointersection)).forEach(elt => { if(elt.step == inStatus) {elt['disabled'] = true;}});
+
+      // (_odifference.concat(_ointersection)).forEach(elt => { if(elt.step == inStatus) {elt['disabled'] = true;}});
 
       // console.log(_odifference.concat(_ointersection));
 
-      this.$data.outStatus = _odifference.concat(_ointersection);
+      // console.log(_merge);
+
+      this.$data.outStatus = _merge;
     },
 
     /*checkStatus: function() {
