@@ -349,7 +349,7 @@ class EmundusworkflowModelitem extends JModelList
         $query1 = $db2->getQuery(true);
 
         try {
-            $query->clear()
+            $query
                 ->select('#__emundus_workflow_item.item_id, #__emundus_workflow_item.params')
                 ->from($db1->quoteName('#__emundus_workflow_item'))
                 ->where($db1->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$wid)
@@ -360,14 +360,13 @@ class EmundusworkflowModelitem extends JModelList
             $db1->setQuery($query);
             $_results = $db1->loadAssocList();
 
-
             $_statusList = array();     //empty array
 
             foreach($_results as $k=>$v) {
                 if($v['item_id'] == 2) { ////2 --> espace candidat
-                    ///
+
                     if(json_decode($v['params'])->editedStatusSelected == "") {
-                        $_statusList[0] = "-1000";
+                        array_push($_statusList, -1);
                     }
                     else {
                         array_push($_statusList, json_decode($v['params'])->editedStatusSelected);
@@ -412,6 +411,7 @@ class EmundusworkflowModelitem extends JModelList
                 $db2->setQuery($query1);
 
                 $array1 = $db2->loadObjectList();
+
                 return $array1;
 
             }
@@ -448,7 +448,7 @@ class EmundusworkflowModelitem extends JModelList
                 if($v['item_id'] == 2) { ////2 --> espace candidat
                     ///
                     if(json_decode($v['params'])->outputStatusSelected == "") {
-                        $_statusList[0] = "-1000";
+                        array_push($_statusList, -1);
                     }
                     else {
                         array_push($_statusList, json_decode($v['params'])->outputStatusSelected);
@@ -459,8 +459,6 @@ class EmundusworkflowModelitem extends JModelList
                     /// pass
                 }
             }
-
-//            var_dump($_statusList);die;
 
             $_t = array_filter(array_values($_statusList), 'strlen' );      //remove all empty values
 
@@ -484,7 +482,6 @@ class EmundusworkflowModelitem extends JModelList
 
                 $db2->setQuery($query1);
 
-//                var_dump($db2->loadObjectList());die;
                 $array1 = $db2->loadObjectList();
 
                 return $array1;
@@ -496,7 +493,6 @@ class EmundusworkflowModelitem extends JModelList
                     ->from($db2->quoteName('#__emundus_setup_status'))
                     ->where($db2->quoteName('#__emundus_setup_status.step') . 'NOT IN (' . $_lastString . ')');
                 $db2->setQuery($query1);
-//                var_dump($db2->loadObjectList());die;
 
                 $array1 = $db2->loadObjectList();
                 return $array1;
