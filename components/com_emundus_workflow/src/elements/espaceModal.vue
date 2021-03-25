@@ -247,8 +247,8 @@ export default {
   },
   created() {
     this.getAllFormType();
-    // this.updateInStatus();
-    // this.updateOutStatus();
+    this.updateInStatus();
+    this.updateOutStatus();
 
     this.form = this.element;
 
@@ -256,27 +256,27 @@ export default {
 
     this.form.editedStatusSelected = this.checked;
 
-      var data = {
-        wid:this.getWorkflowIdFromURL(),
-        id: this.form.id,
-      }
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=item&task=getinitstatus',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({ data: data })
-      }).then(response => {
-
-        this.$data.inStatus = response.data.data;
-        this.$data.outStatus = response.data.data;
-
-        // console.log(this.$data.inStatus);
-        // console.log(this.$data.outStatus);
-      }).catch(error => {
-        console.log(error);
-      })
+      // var data = {
+      //   wid:this.getWorkflowIdFromURL(),
+      //   id: this.form.id,
+      // }
+      // axios({
+      //   method: 'post',
+      //   url: 'index.php?option=com_emundus_workflow&controller=item&task=getinitstatus',
+      //   headers: {
+      //     "Content-Type": "application/x-www-form-urlencoded"
+      //   },
+      //   data: qs.stringify({ data: data })
+      // }).then(response => {
+      //
+      //   this.$data.inStatus = response.data.data;
+      //   this.$data.outStatus = response.data.data;
+      //
+      //   // console.log(this.$data.inStatus);
+      //   // console.log(this.$data.outStatus);
+      // }).catch(error => {
+      //   console.log(error);
+      // })
 
     // console.log(this.form.id);
 
