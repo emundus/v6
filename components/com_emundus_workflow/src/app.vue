@@ -4,7 +4,7 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
     <div contenteditable="true" class="editable-workflow-name" id="editable-workflow-name-div" v-on:keyup.enter="updateWorkflowname()" v-b-tooltip.top.hover title="Cliquer sur le nom du workflow pour le changer">
-      {{ this.$data.workflowname.workflow_name }}
+      {{ this.$data.workflowname }}
     </div>
 
     <p class="tooltip"> Dernier mis a jour: {{ this.$data.lastSave }}</p>
@@ -70,7 +70,7 @@ export default {
   data: function() {
     return {
       lastSave: '',
-      workflowname: [],
+      workflowname: '',
       seen: false,
       menu_message: "Menu",
       scene: {
@@ -84,17 +84,16 @@ export default {
   },
 
   created() {
-    this.updateLastSaving();
-    //this.cronSave();
+    // this.cronSave();
     this.alertWelcomeDisplay();
 
     this.loadWorkflow();
     this.insertInitBloc();
 
-    //this.cronUpdate();
+    // this.cronUpdate();
 
-    this.getworkflowname();
-    this.getAllItems();
+    this.getWorkflowInfo();
+    this.getMenu();
     this.getItemSimpleName();
   },
 
@@ -110,7 +109,7 @@ export default {
       })
     },
 
-    getworkflowname: function () {
+    getWorkflowInfo: function () {
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus_workflow&controller=workflow&task=getworkflowbyid',
@@ -121,7 +120,9 @@ export default {
           wid: this.getWorkflowIdFromURL()
         })
       }).then(response => {
-        this.$data.workflowname = (response.data.data)[0];
+        var _data = (response.data.data)[0];
+        this.$data.workflowname = _data.workflow_name;
+        this.$data.lastSave = _data.updated_at;
       }).catch(error => {
         console.log(error);
       })
@@ -202,7 +203,7 @@ export default {
       return window.location.href.split('id=')[1];
     },
 
-    getAllItems: function() {
+    getMenu: function() {
       axios.get("index.php?option=com_emundus_workflow&controller=item&task=getallitems").
       then(response => {
         this.items = response.data.data;
@@ -270,7 +271,7 @@ export default {
     },
 
     cronSave: function() {
-      setInterval(this.saveWorkflow,30000);
+      setInterval(this.saveWorkflow,60000);
     },
 
     saveWorkflow: function() {
@@ -422,26 +423,8 @@ export default {
       })
     },
 
-    updateLastSaving: function() {
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=workflow&task=getworkflowbyid',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          wid: this.getWorkflowIdFromURL(),
-        })
-      }).then(response => {
-        var _saved = (response.data.data)[0];
-        this.$data.lastSave = _saved.updated_at;
-      }).catch(error => {
-        console.log(error);
-      })
-    },
-
     cronUpdate: function() {
-      setInterval(this.updateLastSaving, 5000);
+      setInterval(this.updateLastSaving, 45000);
     },
   }
 }
