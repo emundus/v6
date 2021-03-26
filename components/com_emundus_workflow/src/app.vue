@@ -46,7 +46,6 @@
 import SimpleFlowchart from './components/SimpleFlowchart.vue';
 import addWorkflow from "./addWorkflow";
 import axios from 'axios';
-import {DateTime as LuxonDateTime} from "luxon";
 import Swal from "sweetalert2";
 import ModalConfigElement from "./ModalConfigElement";
 let now = new Date();
@@ -84,17 +83,19 @@ export default {
   },
 
   created() {
-    // this.cronSave();
+    this.cronSave();
     this.alertWelcomeDisplay();
 
     this.loadWorkflow();
     this.insertInitBloc();
 
-    // this.cronUpdate();
+    this.cronUpdate();
 
     this.getWorkflowInfo();
     this.getMenu();
     this.getItemSimpleName();
+
+    // setInterval(this.getWorkflowInfo(), 5000);
   },
 
   methods: {
@@ -275,8 +276,6 @@ export default {
     },
 
     saveWorkflow: function() {
-      let now = new Date();
-
       this.$data.scene.nodes.forEach(element => {
         var current_nodes = {
           id: element.id,
@@ -312,7 +311,6 @@ export default {
           data: this.getWorkflowIdFromURL(),
         })
       }).then(response => {
-        // console.log(response);
       })
     },
 
@@ -417,14 +415,13 @@ export default {
           data: info,
         })
       }).then(response => {
-        // console.log(response);
       }).catch(error => {
         console.log(error);
       })
     },
 
     cronUpdate: function() {
-      setInterval(this.updateLastSaving, 45000);
+      setInterval(this.getWorkflowInfo, 45000);
     },
   }
 }
