@@ -479,18 +479,23 @@ class EmundusController extends JControllerLegacy {
 
         $profileIDTrigger = $dispatcher->trigger('getWorkflowProfileByFnum', [$fnum,$status_id]);
 
-        $_keys = (array_keys($profileIDTrigger[0]['data']))[0];
-        $_pid = (json_decode($profileIDTrigger[0]['data'][$_keys]->params))->formNameSelected;
+        if(isset(json_decode($profileIDTrigger[0][0]->params)->formNameSelected)) {
+            $aid->profile = json_decode($profileIDTrigger[0][0]->params)->formNameSelected;
+        }
+        else {
+            $aid->profile = null;
+        }
 
         $session = JFactory::getSession();
         $aid = $session->get('emundusUser');
 
-        $aid->profile = $_pid;
+        $aid->profile = json_decode($profileIDTrigger[0][0]->params)->formNameSelected;
+        $aid->workflow = $profileIDTrigger[0][0]->id;
 
-        $menuTypeTrigger = $dispatcher->trigger('getMenuTypeByProfile', [$_pid]);
+        $menuTypeTrigger = $dispatcher->trigger('getMenuTypeByProfile', [$aid->profile = json_decode($profileIDTrigger[0][0]->params)->formNameSelected]);
         $aid->menutype = $menuTypeTrigger[0];
 
-        $_updatedPIDTrigger = $dispatcher->trigger('updateEmundusUserProfile', [$fnum,$_pid]);
+        $_updatedPIDTrigger = $dispatcher->trigger('updateEmundusUserProfile', [$fnum,$aid->profile = json_decode($profileIDTrigger[0][0]->params)->formNameSelected]);
 
 	    if (empty($redirect)) {
             $m_application 	= new EmundusModelApplication;
@@ -501,7 +506,7 @@ class EmundusController extends JControllerLegacy {
             }
         }
 
-        echo '<pre>'; var_dump($aid); echo '</pre>';
+        echo '<pre>'; var_dump($aid); echo '</pre>'; die;
 
         $app->redirect($redirect);
     }

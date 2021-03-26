@@ -269,7 +269,6 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
-
     //UPDATE PARAMS --> table [ jos_emundus_workflow_item ] // column [ params ]
     public function updateParamsByItemID($data) {
         $_string = "";

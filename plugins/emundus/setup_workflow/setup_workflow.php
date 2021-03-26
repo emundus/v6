@@ -101,19 +101,26 @@
 
             $_len = count($_rawData) - 1;
 
-            $session = JFactory::getSession();
-            $aid = $session->get('emundusUser');
+            unset($_rawData[0]);
+
+            $_exportData = array();
 
             try {
-                for ($i = 0; $i <= count($_rawData); $i++) {
-                    if (((json_decode($_rawData[$i]->params))->editedStatusSelected) !== $cid) {
-                        unset($_rawData[$i]);
+                for ($i = 1; $i <= count($_rawData); $i++) {
+                    $_array = explode(',', (json_decode($_rawData[$i]->params))->editedStatusSelected);
+                    foreach($_array as $key=>$value) {
+                        if($value == $cid) {
+                            array_push($_exportData, $_rawData[$i]);
+                            continue;
+                        }
+                        else {}
                     }
-                    else {}
                 }
 
-                return array('data' => $_rawData, 'len' => $_len);
+//                var_dump($_exportData);die;
+                return $_exportData;
             }
+
             catch(Exception $e) {
                 JLog::add('Could not get profile id by workflow and status -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
                 return $e->getMessage();
