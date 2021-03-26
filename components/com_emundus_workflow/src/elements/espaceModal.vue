@@ -34,7 +34,7 @@
       <div class="col-xs-8">
         <select v-model="form.outputStatusSelected" class="form-control-select">
           <b-form-select-option selected disabled>--Statut de sortie--</b-form-select-option>
-          <option v-for="(item, index) in this.$data.outStatus" :value="item.step" :disabled="item.disabled"> {{ item.value }}</option>
+          <option v-for="(item, index) in this.$data.outStatus" :value="item.step" :disabled="item.disabled" v-if="!item.disabled"> {{ item.value }}</option>
         </select>
       </div>
     </div>
@@ -127,7 +127,6 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        console.log(response);
         if(response.data.data !== null) {
           response.data.data.forEach(elt => { this.checked[elt.step] = true; })
         }
@@ -167,15 +166,17 @@ export default {
       }
 
       else {
-        _all.forEach(elt => elt['disabled'] = false);
-        var _merge1 = _all;
+        if(_idiff.length !== 0 && _iintersect.length == 0) {
+          _all.forEach(elt => elt['disabled'] = true);
+          var _merge1 = _all;
+        }
+        else {
+          _all.forEach(elt => elt['disabled'] = false);
+          var _merge1 = _all;
+        }
       }
 
       this.$data.inStatus = _merge1;
-
-      console.log('Input Merge');
-      console.log(_merge1);
-      console.log('End Input Merge');
     },
 
     getAvailableOutStatus: async function(data) {
@@ -200,10 +201,6 @@ export default {
       }
 
       this.$data.outStatus = _merge2;
-
-      console.log('Output Merge');
-      console.log(_merge2);
-      console.log('Output Merge');
     }
 
   },

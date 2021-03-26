@@ -78,7 +78,6 @@ export default {
           params: this.element,
         })
       }).then(response => {
-        console.log(response);
       }).catch(error => {
         console.log(error);
       })
