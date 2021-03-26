@@ -321,7 +321,132 @@ jimport('joomla.application.component.controller');
             exit;
         }
 
-        public function getin() {
+//        public function getin() {
+//            $user = JFactory::getUser();
+//
+//            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+//                $result = 0;
+//                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+//            } else {
+//                $jinput = JFactory::getApplication()->input;
+//                $data = $jinput->getRaw('wid');
+//
+//                $_cit = $this->model;
+//
+//                $_status = $_cit->getIn($data);
+//
+//                if ($_status) {
+//                    $tab = array('status' => 1, 'msg' => JText::_("OK"), 'data' => $_status);
+//                } else {
+//                    $tab = array('status' => 0, 'msg' => JText::_("FAILED"), 'data' => $_status);
+//                }
+//            }
+//            echo json_encode((object)$tab);
+//            exit;
+//        }
+//
+//
+//        public function getout() {
+//            $user = JFactory::getUser();
+//
+//            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+//                $result = 0;
+//                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+//            } else {
+//                $jinput = JFactory::getApplication()->input;
+//                $data = $jinput->getRaw('wid');
+//
+//                $_cit = $this->model;
+//
+//                $_status = $_cit->getOut($data);
+//
+//                if ($_status) {
+//                    $tab = array('status' => 1, 'msg' => JText::_("OK"), 'data' => $_status);
+//                } else {
+//                    $tab = array('status' => 0, 'msg' => JText::_("FAILED"), 'data' => $_status);
+//                }
+//            }
+//            echo json_encode((object)$tab);
+//            exit;
+//        }
+//
+//        public function getinitstatus() {
+//            $user = JFactory::getUser();
+//
+//            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+//                $result = 0;
+//                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+//            } else {
+//                $jinput = JFactory::getApplication()->input;
+//                $data = $jinput->getRaw('data');
+//
+////                print_r($data);die;
+//
+//                $_cit = $this->model;
+//
+//                $_status = $_cit->getInitStatus($data);
+//
+//                if ($_status) {
+//                    $tab = array('status' => 1, 'msg' => JText::_("OK"), 'data' => $_status);
+//                } else {
+//                    $tab = array('status' => 0, 'msg' => JText::_("FAILED"), 'data' => $_status);
+//                }
+//            }
+//            echo json_encode((object)$tab);
+//            exit;
+//        }
+//
+//        public function getinstatusbyitemid() {
+//            $user = JFactory::getUser();
+//
+//            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+//                $result = 0;
+//                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+//            } else {
+//                $jinput = JFactory::getApplication()->input;
+//                $data = $jinput->getRaw('id');
+//
+////                var_dump($data);die;
+//                $_cit = $this->model;
+//
+//                $_status = $_cit->getStatusByItemID($data, 'in');
+//
+//                if ($_status) {
+//                    $tab = array('status' => 1, 'msg' => JText::_("STATUS_BY_ITEM_ID"), 'data' => $_status);
+//                } else {
+//                    $tab = array('status' => 0, 'msg' => JText::_("FAILED_STATUS_BY_ITEM_ID"), 'data' => $_status);
+//                }
+//            }
+//            echo json_encode((object)$tab);
+//            exit;
+//        }
+//
+//        public function getoutstatusbyitemid() {
+//            $user = JFactory::getUser();
+//
+//            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+//                $result = 0;
+//                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+//            } else {
+//                $jinput = JFactory::getApplication()->input;
+//                $data = $jinput->getRaw('id');
+//
+////                var_dump($data);die;
+//                $_cit = $this->model;
+//
+//                $_status = $_cit->getStatusByItemID($data, 'out');
+//
+//                if ($_status) {
+//                    $tab = array('status' => 1, 'msg' => JText::_("STATUS_BY_ITEM_ID"), 'data' => $_status);
+//                } else {
+//                    $tab = array('status' => 0, 'msg' => JText::_("FAILED_STATUS_BY_ITEM_ID"), 'data' => $_status);
+//                }
+//            }
+//            echo json_encode((object)$tab);
+//            exit;
+//        }
+
+        public function getcurrentinputstatusbyitem() {
             $user = JFactory::getUser();
 
             if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -329,48 +454,47 @@ jimport('joomla.application.component.controller');
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
             } else {
                 $jinput = JFactory::getApplication()->input;
-                $data = $jinput->getRaw('wid');
+                $data = $jinput->getRaw('id');
 
                 $_cit = $this->model;
 
-                $_status = $_cit->getIn($data);
+                $_status = $_cit->getStatusByCurrentItem($data, 'in');
 
                 if ($_status) {
-                    $tab = array('status' => 1, 'msg' => JText::_("OK"), 'data' => $_status);
+                    $tab = array('status' => 1, 'msg' => JText::_("INPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
                 } else {
-                    $tab = array('status' => 0, 'msg' => JText::_("FAILED"), 'data' => $_status);
+                    $tab = array('status' => 0, 'msg' => JText::_("FAILED_INPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
                 }
             }
             echo json_encode((object)$tab);
             exit;
         }
 
+    public function getcurrentoutputstatusbyitem() {
+        $user = JFactory::getUser();
 
-        public function getout() {
-            $user = JFactory::getUser();
+        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('id');
 
-            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-                $result = 0;
-                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            $_cit = $this->model;
+
+            $_status = $_cit->getStatusByCurrentItem($data, 'out');
+
+            if ($_status) {
+                $tab = array('status' => 1, 'msg' => JText::_("INPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
             } else {
-                $jinput = JFactory::getApplication()->input;
-                $data = $jinput->getRaw('wid');
-
-                $_cit = $this->model;
-
-                $_status = $_cit->getOut($data);
-
-                if ($_status) {
-                    $tab = array('status' => 1, 'msg' => JText::_("OK"), 'data' => $_status);
-                } else {
-                    $tab = array('status' => 0, 'msg' => JText::_("FAILED"), 'data' => $_status);
-                }
+                $tab = array('status' => 0, 'msg' => JText::_("FAILED_INPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
             }
-            echo json_encode((object)$tab);
-            exit;
         }
+        echo json_encode((object)$tab);
+        exit;
+    }
 
-        public function getinitstatus() {
+    public function getavailableinputstatus() {
             $user = JFactory::getUser();
 
             if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -380,11 +504,9 @@ jimport('joomla.application.component.controller');
                 $jinput = JFactory::getApplication()->input;
                 $data = $jinput->getRaw('data');
 
-//                print_r($data);die;
-
                 $_cit = $this->model;
 
-                $_status = $_cit->getInitStatus($data);
+                $_status = $_cit->getAvailableStatusByItem($data,'in');
 
                 if ($_status) {
                     $tab = array('status' => 1, 'msg' => JText::_("OK"), 'data' => $_status);
@@ -396,55 +518,29 @@ jimport('joomla.application.component.controller');
             exit;
         }
 
-        public function getinstatusbyitemid() {
-            $user = JFactory::getUser();
+    public function getavailableoutputstatus() {
+        $user = JFactory::getUser();
 
-            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-                $result = 0;
-                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('data');
+
+            $_cit = $this->model;
+
+            $_status = $_cit->getAvailableStatusByItem($data, 'out');
+
+            if ($_status) {
+                $tab = array('status' => 1, 'msg' => JText::_("OK"), 'data' => $_status);
             } else {
-                $jinput = JFactory::getApplication()->input;
-                $data = $jinput->getRaw('id');
-
-//                var_dump($data);die;
-                $_cit = $this->model;
-
-                $_status = $_cit->getStatusByItemID($data, 'in');
-
-                if ($_status) {
-                    $tab = array('status' => 1, 'msg' => JText::_("STATUS_BY_ITEM_ID"), 'data' => $_status);
-                } else {
-                    $tab = array('status' => 0, 'msg' => JText::_("FAILED_STATUS_BY_ITEM_ID"), 'data' => $_status);
-                }
+                $tab = array('status' => 0, 'msg' => JText::_("FAILED"), 'data' => $_status);
             }
-            echo json_encode((object)$tab);
-            exit;
         }
-
-        public function getoutstatusbyitemid() {
-            $user = JFactory::getUser();
-
-            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-                $result = 0;
-                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-            } else {
-                $jinput = JFactory::getApplication()->input;
-                $data = $jinput->getRaw('id');
-
-//                var_dump($data);die;
-                $_cit = $this->model;
-
-                $_status = $_cit->getStatusByItemID($data, 'out');
-
-                if ($_status) {
-                    $tab = array('status' => 1, 'msg' => JText::_("STATUS_BY_ITEM_ID"), 'data' => $_status);
-                } else {
-                    $tab = array('status' => 0, 'msg' => JText::_("FAILED_STATUS_BY_ITEM_ID"), 'data' => $_status);
-                }
-            }
-            echo json_encode((object)$tab);
-            exit;
-        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 
 //        public function getallavailableoutstatus() {
 //            $user = JFactory::getUser();
