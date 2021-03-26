@@ -60,8 +60,6 @@
 <script>
 import axios from 'axios';
 import { DateTime } from 'vue-datetime';
-import { DateTime as LuxonDateTime, Settings } from 'luxon';
-import swal from 'sweetalert';
 
 import Swal from 'sweetalert2'
 
@@ -77,19 +75,6 @@ export default {
   data: function() {
     return {
       availableCampaigns: 0,
-      types: [
-        'text',
-        'number',
-        'email',
-        'password',
-        'search',
-        'url',
-        'tel',
-        'date',
-        'time',
-        'range',
-        'color'
-      ],
       workflow_message: '',
       form: {
         workflow_name: '',   //name of workflow
@@ -113,18 +98,19 @@ export default {
     // this.getAllCampaigns();
     this.getAllWorkflow();
     this.getAllAvailableCampaigns();
-
   },
 
   methods: {
-    getAllCampaigns: function() {
-      axios.get("index.php?option=com_emundus_workflow&controller=workflow&task=getassociatedcampaigns")
-          .then(response=>{
-            this.campaigns = response.data.data;
-          }).catch(error => {
-            console.log(error);
-      })
-    },
+    //may be used later !!!
+
+    // getAllCampaigns: function() {
+    //   axios.get("index.php?option=com_emundus_workflow&controller=workflow&task=getassociatedcampaigns")
+    //       .then(response=>{
+    //         this.campaigns = response.data.data;
+    //       }).catch(error => {
+    //         console.log(error);
+    //   })
+    // },
 
     getAllAvailableCampaigns: function() {
       axios.get("index.php?option=com_emundus_workflow&controller=workflow&task=getallavailablecampaigns")
@@ -140,7 +126,7 @@ export default {
       axios.get("index.php?option=com_emundus_workflow&controller=workflow&task=getallworkflows")
           .then(response=>{
             this.workflows = response.data.data;
-            if(response.data.count == 0) {
+            if(parseInt(response.data.count) == 0) {
               this.workflow_message = "Aucun workflow trouvé";
             }
             else {
@@ -163,7 +149,6 @@ export default {
           data: this.$data.selectedCampaign,
         }),
       }).then(answer => {
-        // console.log((answer.data.data)[0]);
         var workflow = {
           campaign_id :this.$data.selectedCampaign,
           workflow_name: this.$data.name || "Workflow de " + ((answer.data.data)[0]).label,
@@ -213,7 +198,6 @@ export default {
       //api 1 -- get workflow_name, campaign_id of last workflow
       let _response = await axios.get('index.php?option=com_emundus_workflow&controller=workflow&task=getworkflowbyid', { params: {wid:id} });
       var oldworkflow = ((_response.data.data)[0]);
-      let now = new Date();
 
       var newworkflow = {
         campaign_id :oldworkflow.campaign_id,
@@ -283,7 +267,6 @@ export default {
         }
       })
     },
-
 
     alertDuplicateDisplay: function(id) {
       Swal.fire({
