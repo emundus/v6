@@ -437,7 +437,41 @@ class EmundusworkflowModelitem extends JModelList
             return $db->loadObjectList();
         }
         catch(Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/item | Cannot get available status : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            JLog::add('component/com_emundus_workflow/models/item | Cannot get available status : ' . preg_replace("/[\r\n]/"," ",$query1->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
+    }
+
+    //get all params not being status --> $id
+    public function getNonStatusParams($id) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('#__emundus_workflow_item.*')
+                ->from($db->quoteName('#__emundus_workflow_item'))
+                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$id);
+
+            $db->setQuery($query);
+            $_data = $db->loadObject();
+
+            $_exportData = array();
+
+            if($_data->item_id == 2) {
+                $_profileArray = array("profile" => array(), "notes" => array(), "color" => array());
+                $_profileArray['profile'] = json_decode($_data->params)->formNameSelected;
+                $_profileArray['notes'] = json_decode($_data->params)->notes;
+                $_profileArray['color'] = json_decode($_data->params)->color;
+                $_exportData = $_profileArray;
+            }
+
+            if($_data->item == 3) {}
+
+            return $_exportData;
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/item | Cannot get non-status params : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
             return $e->getMessage();
         }
     }

@@ -141,7 +141,7 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        console.log(response);
+        // console.log(response);
         if(response.data.data !== null) {
           this.form.outputStatusSelected = (response.data.data)[0].step;
         }
@@ -201,6 +201,23 @@ export default {
       }
 
       this.$data.outStatus = _merge2;
+    },
+
+    getNonStatusParams: function(id) {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=item&task=getnonstatusparamsbyitem',
+        params: { id },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        if(response.data.data !== null) {
+          this.form.formNameSelected = (response.data.data).profile;
+          this.form.notes = (response.data.data).notes;
+        }
+        else {}
+      })
     }
 
   },
@@ -218,6 +235,8 @@ export default {
 
     this.getAvailableInStatus(data);
     this.getAvailableOutStatus(data);
+
+    this.getNonStatusParams(this.form.id);
   },
 
 }
