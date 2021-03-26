@@ -3,7 +3,6 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
-<!--    {{ this.$data.outStatus }}-->
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.form_name_title }}</label>
       <div class="col-xs-8">
@@ -69,7 +68,6 @@ export default {
   name: "espaceModal",
   props: {
     element: Object,
-    // isChecked: Array,
   },
   data: function() {
     return {
@@ -101,7 +99,6 @@ export default {
     getAllFormType: function() {
       axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallpublishedforms')
           .then(response => {
-            // console.log(response);
             this.$data.forms = response.data.data;
           })
           .catch(error => {
@@ -120,147 +117,6 @@ export default {
     getWorkflowIdFromURL: function () {
       return window.location.href.split('id=')[1];
     },
-
-    // getIn: function() {
-    //   axios({
-    //     method: 'post',
-    //     url: 'index.php?option=com_emundus_workflow&controller=item&task=getin',
-    //     headers: {
-    //       "Content-Type": "application/x-www-form-urlencoded"
-    //     },
-    //     data: qs.stringify({
-    //       wid: this.getWorkflowIdFromURL(),
-    //     })
-    //   }).then(response => {
-    //     //this.$data.inStatus = response.data.data;
-    //   }).catch(error => {
-    //     console.log(error);
-    //   })
-    // },
-    //
-    // getOut: function() {
-    //   axios({
-    //     method: 'post',
-    //     url: 'index.php?option=com_emundus_workflow&controller=item&task=getout',
-    //     headers: {
-    //       "Content-Type": "application/x-www-form-urlencoded"
-    //     },
-    //     data: qs.stringify({
-    //       wid: this.getWorkflowIdFromURL(),
-    //     })
-    //   }).then(response => {
-    //     this.$data.outStatus = response.data.data;
-    //
-    //   }).catch(error => {
-    //     console.log(error);
-    //   })
-    // },
-    //
-    // updateInStatus: async function(outStatus=undefined) {
-    //   var _rawAll = await axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus');
-    //   var _rawIn = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getin', { params: {wid:this.getWorkflowIdFromURL()} });
-    //
-    //   var as =_rawAll.data.data;
-    //   var bs = _rawIn.data.data;
-    //
-    //   //in intersections + differences
-    //   const _iintersection = as.filter(item1 => bs.some(item2 => item1.step === item2.step));
-    //   const _idifference = as.filter(({ step: id1 }) => !bs.some(({ step: id2 }) => id2 === id1));
-    //
-    //   //set _difference --> disabled = true
-    //   //set _intersection --> disabled = false
-    //
-    //   _idifference.forEach(elt => elt['disabled']=true);
-    //   _iintersection.forEach(elt => elt['disabled']=false);
-    //
-    //   var _merge = _idifference.concat(_iintersection);
-    //
-    //   console.log(this.checked);
-    //
-    //   // if(outStatus !== undefined && typeof outStatus !== null) {
-    //   //   var _mergeKeys = Object.keys(_merge);
-    //   //
-    //   //   _merge.forEach(elt => {
-    //   //     if(elt.step == outStatus) {
-    //   //       elt['disabled'] = true;
-    //   //       //this.isDisabled = true;
-    //   //     }
-    //   //     else {}
-    //   //   })
-    //   // }
-    //
-    //   this.$data.inStatus = _idifference.concat(_iintersection);
-    // },
-    //
-    // updateOutStatus: async function(inStatus=undefined) {
-    //   var _rawAll = await axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus');
-    //   var _rawOut = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getout', { params: {wid:this.getWorkflowIdFromURL()} });
-    //
-    //   var as =_rawAll.data.data;
-    //   var cs = _rawOut.data.data;
-    //
-    //   const _ointersection = as.filter(item1 => cs.some(item2 => item1.step === item2.step));
-    //   const _odifference = as.filter(({ step: id1 }) => !cs.some(({ step: id2 }) => id2 === id1));
-    //
-    //   _odifference.forEach(elt => elt['disabled']=true);
-    //   _ointersection.forEach(elt => elt['disabled']=false);
-    //
-    //   var _merge = _odifference.concat(_ointersection);
-    //
-    //   // if(inStatus !== undefined) {
-    //   //   var _inStatusKeys = Object.keys(inStatus);
-    //   //
-    //   //   _merge.forEach(elt => {
-    //   //     _inStatusKeys.forEach(keys => {
-    //   //       if (elt.step == keys && inStatus[keys] == true) {
-    //   //         elt['disabled'] = true;
-    //   //         this.isDisabled = true;
-    //   //       } else {}
-    //   //     })
-    //   //   })
-    //   // }
-    //
-    //   this.$data.outStatus = _merge;
-    // },
-    //
-    // //when loading --> input params ==> this.form.id
-    // loadSavedProfileModeIn: function(id) {
-    //   axios({
-    //     method: 'post',
-    //     url: 'index.php?option=com_emundus_workflow&controller=item&task=getinstatusbyitemid',
-    //     params: { id },
-    //     paramsSerializer: params => {
-    //       return qs.stringify(params);
-    //     }
-    //   }).then(response => {
-    //       console.log('>>> IN <<<');
-    //       console.log(response);
-    //       response.data.data.forEach(elt => {
-    //         // elt['disabled'] = false;
-    //         this.checked[elt.step] = true;
-    //       })
-    //       // this.$data.inStatus = response.data.data;
-    //   })
-    // },
-    //
-    // loadSavedProfileModeOut: function(id) {
-    //   axios({
-    //     method: 'post',
-    //     url: 'index.php?option=com_emundus_workflow&controller=item&task=getoutstatusbyitemid',
-    //     params: { id },
-    //     paramsSerializer: params => {
-    //       return qs.stringify(params);
-    //     }
-    //   }).then(response => {
-    //     console.log('>>> OUT <<<');
-    //     console.log(response);
-    //     this.form.outputStatusSelected = (response.data.data)[0].step;
-    //     // response.forEach(elt => {
-    //     //   this.checked[elt.step] = true;
-    //     // })
-    //     // this.$data.outStatus = response.data.data;
-    //   })
-    // }
 
     getCurrentStatus: function(id) {
       axios({
@@ -343,8 +199,6 @@ export default {
         var _merge2 = _all;
       }
 
-      // var _merge2 = _odiff.concat(_ointersect);
-
       this.$data.outStatus = _merge2;
 
       console.log('Output Merge');
@@ -367,66 +221,6 @@ export default {
 
     this.getAvailableInStatus(data);
     this.getAvailableOutStatus(data);
-
-    // //get input status
-    // axios({
-    //   method: 'post',
-    //   url: 'index.php?option=com_emundus_workflow&controller=item&task=getavailableinputstatus',
-    //   headers: {
-    //     "Content-Type": "application/x-www-form-urlencoded"
-    //   },
-    //   data: qs.stringify({ data: data })
-    // }).then(response => {
-    //   axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus')
-    //       .then(answer => {
-    //         let _idiff = (answer.data.data).filter(({ step: id1 }) => !(response.data.data).some(({ step: id2 }) => id2 === id1));
-    //
-    //         if(_idiff.length == 0) {
-    //           _idiff = answer.data.data;
-    //           _idiff.forEach(elt => elt['disabled']=false);
-    //         }
-    //         else {
-    //           _idiff.forEach(elt => elt['disabled'] = true);
-    //         }
-    //
-    //         console.log(_idiff);
-    //       })
-    //       .catch(error => {
-    //         console.log(error);
-    //       })
-    // }).catch(error => {
-    //   console.log(error);
-    // })
-    //
-    // //get output status
-    // axios({
-    //   method: 'post',
-    //   url: 'index.php?option=com_emundus_workflow&controller=item&task=getavailableoutputstatus',
-    //   headers: {
-    //     "Content-Type": "application/x-www-form-urlencoded"
-    //   },
-    //   data: qs.stringify({ data: data })
-    // }).then(response => {
-    //   axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus')
-    //       .then(answer => {
-    //         let _odiff = (answer.data.data).filter(({ step: id1 }) => !(response.data.data).some(({ step: id2 }) => id2 === id1));
-    //
-    //         if(_odiff.length == 0) {
-    //           _odiff = answer.data.data;
-    //           _odiff.forEach(elt => elt['disabled']=false);
-    //         }
-    //         else {
-    //           _odiff.forEach(elt => elt['disabled'] = true);
-    //         }
-    //
-    //         console.log(_odiff);
-    //       })
-    //       .catch(error => {
-    //         console.log(error);
-    //       })
-    // }).catch(error => {
-    //   console.log(error);
-    // })
   },
 
 }
