@@ -1479,7 +1479,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         try {
-            $query->update($db->quoteName('#__fabrik_group'))
+            $query->update($db->quoteName('#__fabrik_groups'))
                 ->set($db->quoteName('published') . ' = ' . 0)
                 ->where($db->quoteName('id') . ' = ' . $db->quote($group));
             $db->setQuery($query);

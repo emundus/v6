@@ -798,6 +798,9 @@ class EmundusonboardModelcampaign extends JModelList
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        $lang = JFactory::getLanguage();
+        $actualLanguage = substr($lang->getTag(), 0 , 2);
+
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
         $types = implode(";", array_values($types));
@@ -806,8 +809,8 @@ class EmundusonboardModelcampaign extends JModelList
             ->insert($db->quoteName('#__emundus_setup_attachments'));
         $query
             ->set($db->quoteName('lbl') . ' = ' . $db->quote('_em'))
-            ->set($db->quoteName('value') . ' = ' . $db->quote($document['name']['fr']))
-            ->set($db->quoteName('description') . ' = ' . $db->quote($document['description']['fr']))
+            ->set($db->quoteName('value') . ' = ' . $db->quote($document['name'][$actualLanguage]))
+            ->set($db->quoteName('description') . ' = ' . $db->quote($document['description'][$actualLanguage]))
             ->set($db->quoteName('allowed_types') . ' = ' . $db->quote($types))
             ->set($db->quoteName('ordering') . ' = ' . $db->quote(0))
             ->set($db->quoteName('nbmax') . ' = ' . $db->quote($document['nbmax']));
