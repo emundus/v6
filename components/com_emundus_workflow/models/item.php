@@ -298,13 +298,21 @@ class EmundusworkflowModelitem extends JModelList
         $db = JFactory::getDbo();
         $query= $db->getQuery(true);
         try {
-            $query->clear()
-                ->update($db->quoteName('#__emundus_workflow_item'))
-                ->set($db->quoteName('#__emundus_workflow_item.params') . '=' . $db->quote(json_encode($data)))
-                ->set($db->quoteName('#__emundus_workflow_item.style') . '=' . $db->quote($data['color']))
-                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . $id);
-            $db->setQuery($query);
+            if(isset($data['color'])) {
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_workflow_item'))
+                    ->set($db->quoteName('#__emundus_workflow_item.params') . '=' . $db->quote(json_encode($data)))
+                    ->set($db->quoteName('#__emundus_workflow_item.style') . '=' . $db->quote($data['color']))
+                    ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . $id);
+            }
+            else {
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_workflow_item'))
+                    ->set($db->quoteName('#__emundus_workflow_item.params') . '=' . $db->quote(json_encode($data)))
+                    ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . $id);
+            }
 
+            $db->setQuery($query);
             return $db->execute();
         }
         catch(Exception $e) {
