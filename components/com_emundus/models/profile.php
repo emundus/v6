@@ -328,7 +328,7 @@ class EmundusModelProfile extends JModelList {
     }
 
     function getCampaignInfoByFnum($fnum) {
-        $query = 'SELECT esc.*, ecc.date_time, ecc.submitted, ecc.date_submitted, ecc.fnum, esc.profile_id, esp.label, esp.menutype, ecc.submitted, ecc.status
+        $query = 'SELECT esc.*, esc.label as campaign_label, ecc.date_time, ecc.submitted, ecc.date_submitted, ecc.fnum, esc.profile_id, esp.label, esp.menutype, ecc.submitted, ecc.status
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON ecc.campaign_id = esc.id
 					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
@@ -646,7 +646,7 @@ class EmundusModelProfile extends JModelList {
             $emundusSession->candidature_posted = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] == 0  || @$profile["date_submitted"] == NULL)?0:1;
             $emundusSession->schoolyear = $campaign["year"];
             $emundusSession->code = $campaign["training"];
-            $emundusSession->campaign_name = $campaign["label"];
+            $emundusSession->campaign_name = $campaign["campaign_label"];
 
         } else {
             $emundusSession->profile                = $profile["profile"];
