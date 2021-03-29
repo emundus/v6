@@ -16,6 +16,7 @@
       <espace-modal v-if="this.type == 'Espace'" ref="forms" :element="element"/>
       <message-modal v-if="this.type == 'Message'" ref="emails" :element="element"/>
       <b-button variant="success" @click="updateParams()">Sauvegarder</b-button>
+      <b-button variant="danger" @click="exitModal()">Quitter</b-button>
     </modal>
   </div>
 </template>
@@ -25,6 +26,7 @@ import espaceModal from './elements/espaceModal.vue';
 import messageModal from './elements/messageModal.vue';
 
 import axios from 'axios';
+import Swal from "sweetalert2";
 const qs = require('qs');
 
 export default {
@@ -78,9 +80,24 @@ export default {
           params: this.element,
         })
       }).then(response => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Congrat',
+          text: 'Les parametres sont sauvegardés',
+          footer: '<a href>EMundus SAS</a>',
+          confirmButtonColor: '#28a745',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Swal.fire('Merci', 'Le workflow est sauvegardé', 'success');
+            this.$modal.hide('elementModal' + this.ID);
+          }})
       }).catch(error => {
         console.log(error);
       })
+    },
+
+    exitModal: function() {
+      this.$modal.hide('elementModal' + this.ID);
     },
 
     beforeOpen(event) {
