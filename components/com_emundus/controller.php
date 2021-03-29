@@ -477,25 +477,30 @@ class EmundusController extends JControllerLegacy {
         $_cid = $this->getModel('profile');
         $status_id = ($_cid->getFnumDetails($fnum))['step'];
 
-        $profileIDTrigger = $dispatcher->trigger('getWorkflowProfileByFnum', [$fnum,$status_id]);
-
-        if(isset(json_decode($profileIDTrigger[0][0]->params)->formNameSelected)) {
-            $aid->profile = json_decode($profileIDTrigger[0][0]->params)->formNameSelected;
-        }
-        else {
-            $aid->profile = null;
-        }
-
         $session = JFactory::getSession();
         $aid = $session->get('emundusUser');
 
-        $aid->profile = json_decode($profileIDTrigger[0][0]->params)->formNameSelected;
+        $profileIDTrigger = $dispatcher->trigger('getWorkflowProfileByFnum', [$fnum,$status_id]);
+
+        if(!empty($profileIDTrigger[0])) {
+            if (isset(json_decode($profileIDTrigger[0][0]->params)->formNameSelected)) {
+                $aid->profile = json_decode($profileIDTrigger[0][0]->params)->formNameSelected;
+            } else {
+            }
+        }
+
+        else {
+            $getProfileByStatus = $dispatcher->trigger('getProfileFromUnexistantStatus', [$status_id]);
+            $aid->profile = json_decode($getProfileByStatus[0][0]->profile_id);
+        }
+
+        $_updatedPIDTrigger = $dispatcher->trigger('updateEmundusUserProfile', [$fnum,$aid->profile]);
+
         $aid->workflow = $profileIDTrigger[0][0]->id;
 
-        $menuTypeTrigger = $dispatcher->trigger('getMenuTypeByProfile', [$aid->profile = json_decode($profileIDTrigger[0][0]->params)->formNameSelected]);
-        $aid->menutype = $menuTypeTrigger[0];
+        $menuTypeTrigger = $dispatcher->trigger('getMenuTypeByProfile', [$aid->profile]);       //get menu type from profile_id
 
-        $_updatedPIDTrigger = $dispatcher->trigger('updateEmundusUserProfile', [$fnum,$aid->profile = json_decode($profileIDTrigger[0][0]->params)->formNameSelected]);
+        $aid->menutype = $menuTypeTrigger[0];
 
 	    if (empty($redirect)) {
             $m_application 	= new EmundusModelApplication;
@@ -506,7 +511,7 @@ class EmundusController extends JControllerLegacy {
             }
         }
 
-        echo '<pre>'; var_dump($aid); echo '</pre>'; die;
+//        echo '<pre>'; var_dump($aid); echo '</pre>'; die;
 
         $app->redirect($redirect);
     }
