@@ -337,12 +337,18 @@ foreach ($parsed_data as $row_id => $insert_row) {
     $table = array_keys($insert_row)[0];
     $datas = $insert_row[$table];
 
-    $query->insert($table);
+    $query
+        ->clear()
+        ->insert($table);
     foreach ($datas as $key => $data){
         $query->set($db->quoteName($key) . ' = ' . $db->quote($data));
     }
     $db->setQuery($query);
-    $db->execute();
+    try {
+        $db->execute();
+    } catch(Exception $e) {
+        JLog::add('ERROR inserting data in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()).' error text -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.csvimport');
+    }
 
     // Insert into child repeat tables.
     if (isset($parsed_repeat) && !in_array($table, $executed_parent_tables) && in_array($table, array_keys($parsed_repeat[$row_id]))) {
