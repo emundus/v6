@@ -256,20 +256,27 @@ export default {
           // console.log(answer);
 
           var _style = (answer.data.data)[0];
+          var _id = (response.data.data).toString();
+
           this.$data.scene.nodes.push({
-            id: response.data.data,
+            id: _id,
             x: -400 + Math.floor((Math.random() * 100) + 1),
             y: 50 + Math.floor((Math.random() * 100) + 1),
             type: nodeCategory[index],
             label: '',
             background: _style.CSS_style,
           });
+
+          setTimeout(() => {
+            this.$modal.show('elementModal' + _id);
+          },500);
         })
 
       }).catch(error => {
         console.log(error);
       })
     },
+
 
     cronSave: function() {
       setInterval(this.saveWorkflow,60000);

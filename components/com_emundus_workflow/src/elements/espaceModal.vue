@@ -72,7 +72,7 @@ export default {
   data: function() {
     return {
       elementTitle: {
-        form_name_title: "Nom du frmulaire",
+        form_name_title: "Nom du formulaire",
         edited_status_title: "Statut d'édition",
         output_status_title: "Statut de sortie",
         notes_title: "Notes",
