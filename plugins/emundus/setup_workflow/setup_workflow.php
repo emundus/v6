@@ -117,11 +117,10 @@
                                 continue;
                             }
 
-                            else {
-                                ///Do something elese
-                            }
+                            else {}
                         }
                     }
+                    else {}
                 }
 
                 return $_exportData;
@@ -129,6 +128,29 @@
 
             catch(Exception $e) {
                 JLog::add('Could not get profile id by workflow and status -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
+                return $e->getMessage();
+            }
+        }
+
+        public function getProfileFromUnexistantStatus($sid) {
+            //// status doesn't exist --> get profile by campaign [[ one and only one profile ]]
+            $query = $this->db->getQuery(true);
+
+            try {
+                $query->select('#__emundus_setup_campaigns.profile_id')
+                    ->from($this->db->quoteName('#__emundus_setup_campaigns'))
+                    ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') . 'ON' .
+                        $this->db->quoteName('#__emundus_setup_campaigns.id') . '=' . $this->db->quoteName('#__emundus_campaign_candidature.campaign_id'))
+                    ->where($this->db->quoteName('#__emundus_campaign_candidature.status') . '=' . (int)$sid);
+
+                $this->db->setQuery($query);
+
+//                print_r($this->db->loadObject());die;
+                return $this->db->loadObjectList();
+            }
+
+            catch(Exception $e) {
+                JLog::add('Could not get profile by status -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
                 return $e->getMessage();
             }
         }
