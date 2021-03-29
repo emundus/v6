@@ -99,25 +99,31 @@
             $this->db->setQuery($query);
             $_rawData =  $this->db->loadObjectList();
 
-            $_len = count($_rawData) - 1;
-
             unset($_rawData[0]);
+            
+            $_inputStatusList = array();
 
             $_exportData = array();
 
             try {
                 for ($i = 1; $i <= count($_rawData); $i++) {
                     $_array = explode(',', (json_decode($_rawData[$i]->params))->editedStatusSelected);
-                    foreach($_array as $key=>$value) {
-                        if($value == $cid) {
-                            array_push($_exportData, $_rawData[$i]);
-                            continue;
+
+                    array_push($_inputStatusList, $_array);
+                    if(in_array($cid,$_array)) {
+                        foreach ($_array as $key => $value) {
+                            if ($value == $cid) {
+                                array_push($_exportData, $_rawData[$i]);
+                                continue;
+                            }
+
+                            else {
+                                ///Do something elese
+                            }
                         }
-                        else {}
                     }
                 }
 
-//                var_dump($_exportData);die;
                 return $_exportData;
             }
 
