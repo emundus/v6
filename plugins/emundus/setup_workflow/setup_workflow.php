@@ -137,15 +137,18 @@
             $query = $this->db->getQuery(true);
 
             try {
-                $query->select('#__emundus_setup_campaigns.profile_id')
+                $query->select('#__emundus_setup_campaigns.profile_id, #__emundus_workflow.id')
                     ->from($this->db->quoteName('#__emundus_setup_campaigns'))
+
+                    ->leftJoin($this->db->quoteName('#__emundus_workflow') . 'ON' .
+                        $this->db->quoteName('#__emundus_workflow.campaign_id') . '=' . $this->db->quoteName('#__emundus_setup_campaigns.id'))
+
                     ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') . 'ON' .
                         $this->db->quoteName('#__emundus_setup_campaigns.id') . '=' . $this->db->quoteName('#__emundus_campaign_candidature.campaign_id'))
                     ->where($this->db->quoteName('#__emundus_campaign_candidature.status') . '=' . (int)$sid);
 
                 $this->db->setQuery($query);
 
-//                print_r($this->db->loadObject());die;
                 return $this->db->loadObjectList();
             }
 
