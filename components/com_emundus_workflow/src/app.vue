@@ -582,7 +582,6 @@ export default {
 }
 [contenteditable="true"].editable-workflow-name br {
   display:none;
-
 }
 [contenteditable="true"].editable-workflow-name * {
   display:inline;

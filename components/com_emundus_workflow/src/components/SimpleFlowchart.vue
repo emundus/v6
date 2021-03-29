@@ -221,28 +221,6 @@ export default {
       this.$emit('nodeClick', id);
       this.mouse.lastX = e.pageX || e.clientX + document.documentElement.scrollLeft
       this.mouse.lastY = e.pageY || e.clientY + document.documentElement.scrollTop
-
-      //if type is init or cloture --> skipp
-      axios({
-        method: 'post',
-        url: "index.php?option=com_emundus_workflow&controller=item&task=getitem",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          id: id,
-        })
-      }).then(response => {
-        var _type = (response.data.data)[0];
-        if(_type.item_name == 'Initialisation' || _type.item_name == 'Cloture') {
-          //skip
-        }
-        else {
-          this.$modal.show('elementModal' + id);
-        }
-      }).catch(error => {
-        console.log(error);
-      })
     },
     handleMove(e) {
       if (this.action.linking) {
@@ -286,6 +264,9 @@ export default {
         if (typeof target.className === 'string' && target.className.indexOf('duplicate-option') > -1) {
           // this.$swal('Merci', 'Ce bloc est dupliqué', 'success');
           this.nodeCloned(this.action.dragging);
+        }
+        if (typeof target.className === 'string' && target.className.indexOf('configuration') > -1) {
+          this.nodeConfig(this.action.dragging);
         }
       }
       this.action.linking = false;
@@ -348,6 +329,31 @@ export default {
 
           this.alertDelete(id)
         }
+      })
+    },
+
+    nodeConfig(id) {
+      this.$emit('nodeConfig', id);
+      //if type is init or cloture --> skipp
+      axios({
+        method: 'post',
+        url: "index.php?option=com_emundus_workflow&controller=item&task=getitem",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          id: id,
+        })
+      }).then(response => {
+        var _type = (response.data.data)[0];
+        if(_type.item_name == 'Initialisation' || _type.item_name == 'Cloture') {
+          //skip
+        }
+        else {
+          this.$modal.show('elementModal' + id);
+        }
+      }).catch(error => {
+        console.log(error);
       })
     },
 

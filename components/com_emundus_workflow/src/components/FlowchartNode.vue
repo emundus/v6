@@ -17,6 +17,7 @@
     </div>
     <div v-show="show.delete" class="node-delete">&times;</div>
     <div v-show="show.clone" class="duplicate-option" :id="id" ref="duplicate">Dupliquer</div>
+    <div class="configuration" :id="id" ref="configuration">Configurer</div>
   </div>
 </template>
 
@@ -119,8 +120,13 @@ export default {
       e.preventDefault();
     },
 
-    handleDuplicatIten(e) {
-      this.emit('duplicateStart');
+    handleDuplicatItem(e) {
+      this.$emit('duplicateItem');
+      e.preventDefault();
+    },
+
+    handleConfigure(e) {
+      this.$emit('configureItem');
       e.preventDefault();
     }
   }
@@ -199,14 +205,13 @@ export default {
 
 .flowchart-node .duplicate-option {
   position: absolute;
-  right: 19px;
-  top: 60px;
+  margin: 20px 60px;
   width: 12px;
   height: 12px;
-  color: #0f17ba;
+  color: #ba0f8a;
   cursor: pointer;
   text-align: center;
-  font-size: small;
+  font-size: x-small;
 }
 
 .flowchart-node .remove-option {
@@ -223,8 +228,18 @@ export default {
   border-radius: 0.25rem !important;
 }
 
+.configuration {
+  font-size: x-small;
+  color: #0010ff;
+  text-align: center;
+  margin: 0px 5px;
+  cursor: pointer;
+}
+
+.configuration:hover {
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19) !important;
+}
 .selected {
   box-shadow: 0 0 0 2px #f85;
 }
-
 </style>
