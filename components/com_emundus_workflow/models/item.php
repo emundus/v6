@@ -579,4 +579,52 @@ class EmundusworkflowModelitem extends JModelList
             return $e->getMessage();
         }
     }
+
+    // check whether two blocs match or not --> params :: $data['from'] // $data['to']
+    public function checkMatchingStatus($data) {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query1 = $db->getQuery(true);
+
+        try {
+            //get from.params.outputStatus
+            $query->clear()
+                ->select('#__emundus_workflow_item.*')
+                ->from($db->quoteName('#__emundus_workflow_item'))
+                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['from']);
+            $db->setQuery($query);
+            $_fromParams = $db->loadObject();
+
+
+            //get to.params.inputStatus
+            $query1->clear()
+                ->select('#__emundus_workflow_item.*')
+                ->from($db->quoteName('#__emundus_workflow_item'))
+                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['to']);
+            $db->setQuery($query1);
+            $_toParams = $db->loadObject();
+
+            // check matching item
+            if(is_null($_fromParams->params) || is_null($_toParams) || empty($_fromParams) || empty($_toParams)) {
+                return false;
+            }
+
+            else {
+                $_inArray = explode(',', json_decode($_toParams->params)->inputStatus);
+
+                if(in_array(json_decode($_fromParams->params)->outputStatus, $_inArray)) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/item | Cannot get matching item : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
+    }
 }

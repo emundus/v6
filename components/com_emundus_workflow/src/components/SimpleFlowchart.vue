@@ -178,20 +178,33 @@ export default {
 
           axios({
             method: 'post',
-            url: 'index.php?option=com_emundus_workflow&controller=item&task=createlink',
+            url: 'index.php?option=com_emundus_workflow&controller=item&task=checkmatchingitems',
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
             data: qs.stringify({
               data: _links
             })
-          }).then(response => {
-            newLink['id'] = response.data.data;
-          }).catch(error => {
-            console.log(error);
+          }).then(answer => {
+            if(answer.data.data == true) {
+              axios({
+                method: 'post',
+                url: 'index.php?option=com_emundus_workflow&controller=item&task=createlink',
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded"
+                },
+                data: qs.stringify({
+                  data: _links
+                })
+              }).then(response => {
+                newLink['id'] = response.data.data;
+              }).catch(error => {
+                console.log(error);
+              })
+              this.scene.links.push(newLink)
+              this.$emit('linkAdded', newLink)
+            }
           })
-          this.scene.links.push(newLink)
-          this.$emit('linkAdded', newLink)
         }
       }
       this.draggingLink = null

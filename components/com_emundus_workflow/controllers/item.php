@@ -488,5 +488,31 @@ jimport('joomla.application.component.controller');
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function checkmatchingitems() {
+        $user = JFactory::getUser();
+
+        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('data');
+
+//            var_dump($data);die;
+
+            $_cit = $this->model;
+
+            $_status = $_cit->checkMatchingStatus($data);
+
+            if ($_status) {
+                $tab = array('status' => 1, 'msg' => JText::_("MATCHING_ITEM"), 'data' => $_status);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_("UNMATCHING_ITEM"), 'data' => $_status);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 }
 
