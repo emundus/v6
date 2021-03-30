@@ -204,6 +204,15 @@ export default {
               this.scene.links.push(newLink)
               this.$emit('linkAdded', newLink)
             }
+            else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                html: 'Les status entre les deux items ne sont pas pareils',
+                timer: 1500,
+                showConfirmButton:false,
+              })
+            }
           })
         }
       }
