@@ -480,9 +480,9 @@ jimport('joomla.application.component.controller');
             $_status = $_cit->matchLinkByItem($data);
 
             if ($_status) {
-                $tab = array('status' => 1, 'msg' => JText::_("SPECIFIC_LINK_MATCH"), 'data' => $_status);
+                $tab = array('status' => 1, 'msg' => JText::_("SPECIFIC_LINK_MATCH"), 'data' => $_status, 'permission' => 'available');
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_SPECIFIC_LINK"), 'data' => $_status);
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_SPECIFIC_LINK"), 'data' => $_status, 'permission' => 'unavailable');
             }
         }
         echo json_encode((object)$tab);
