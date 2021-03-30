@@ -21,6 +21,8 @@
       QUITTER
     </button>
 
+    <button @click="autoMatchLink()">Creer des liens</button>
+
     <transition name="bounce">
       <div class="element-menu" v-if="seen">
         <h2 style="align-items: center"> {{ this.$data.menu_message }} </h2>
@@ -430,6 +432,22 @@ export default {
     cronUpdate: function() {
       setInterval(this.getWorkflowInfo, 45000);
     },
+
+    //match all links by workflow
+    autoMatchLink: function() {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=item&task=matchalllinksbyworkflow',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({ data: this.getWorkflowIdFromURL(),})
+      }).then(response => {
+        // console.log(response);
+      }).catch(error => {
+        console.log(error);
+      })
+    }
   }
 }
 

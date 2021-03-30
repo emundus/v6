@@ -485,7 +485,7 @@ class EmundusworkflowModelitem extends JModelList
     }
 
     // auto-find the item having the same output status --> params --> $data['wid']
-    public function getAutoLinks($wid) {
+    public function matchAllLinksByWorkflow($wid) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 

@@ -441,7 +441,7 @@ jimport('joomla.application.component.controller');
         exit;
     }
 
-    public function getautolink() {
+    public function matchalllinksbyworkflow() {
         $user = JFactory::getUser();
 
         if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -455,7 +455,7 @@ jimport('joomla.application.component.controller');
 
             $_cit = $this->model;
 
-            $_status = $_cit->getAutoLinks($data);
+            $_status = $_cit->matchAllLinksByWorkflow($data);
 
             if ($_status) {
                 $tab = array('status' => 1, 'msg' => JText::_("GET_NON_STATUS_PARAMS"), 'data' => $_status);
