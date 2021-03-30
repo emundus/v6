@@ -120,6 +120,8 @@ export default {
         }
       }).then(response => {
         //based on the returned status [0] or [1] --> we will create a link between blocs
+        this.$emit('linkingStart',response.data.data);
+        this.$emit('linkingStop',this.ID);
       }).catch(error => {
         console.log(error);
       })
