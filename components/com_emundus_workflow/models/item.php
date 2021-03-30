@@ -521,7 +521,10 @@ class EmundusworkflowModelitem extends JModelList
                     if(in_array($v,$_inArray)) {
 
                         $_lst = $key . '...' . $k;
-                        array_push($_exportData, $_lst);
+                        if($key !== $k) {
+                            array_push($_exportData, $_lst);
+                        }
+                        else {}
                     }
                 }
             }
@@ -534,4 +537,46 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
+    public function matchLinkByItem($data) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);           //get current params
+        $query1 = $db->getQuery(true);          //get all remaining params
+
+        try {
+            $query->clear()
+                ->select('#__emundus_workflow_item.*')
+                ->from($db->quoteName('#__emundus_workflow_item'))
+                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
+            $db->setQuery($query);
+
+            $_currentParams = $db->loadObject();
+            $_currentInputStatus = explode(',', json_decode($_currentParams->params)->inputStatus);     //return an array
+
+            $query1->clear()
+                ->select('#__emundus_workflow_item.*')
+                ->from($db->quoteName('#__emundus_workflow_item'))
+                ->where($db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$data['wid'])
+                ->andWhere($db->quoteName('#__emundus_workflow_item.id') . '!=' . (int)$data['id']);
+
+            $db->setQuery($query1);
+            $_allParams = $db->loadObjectList();
+
+            //// match $_currentParams vs $_allParams
+            foreach($_allParams as $key => $value) {
+                if($value->item_id == 1 || $value->item_id == 4 || $value->item_id == 5 || $value->item_name == 'Initialisation' || $value->item_name == 'Message' || $value->item_name == 'Cloture') {
+                    unset($_allParams[$key]);
+                }
+                else {
+                    if(in_array(json_decode($value->params)->outputStatus,$_currentInputStatus)) {
+                        return $_allParams[$key]->id;
+                    }
+                    else {}
+                }
+            }
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/item | Cannot find suitable link : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
+    }
 }

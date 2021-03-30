@@ -451,16 +451,38 @@ jimport('joomla.application.component.controller');
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-//            var_dump($data);die;
-
             $_cit = $this->model;
 
             $_status = $_cit->matchAllLinksByWorkflow($data);
 
             if ($_status) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_NON_STATUS_PARAMS"), 'data' => $_status);
+                $tab = array('status' => 1, 'msg' => JText::_("LINK_MATCH"), 'data' => $_status);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_NON_STATUS_PARAMS"), 'data' => $_status);
+                $tab = array('status' => 0, 'msg' => JText::_("LINK_NO_MATCH"), 'data' => $_status);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function matchalllinksbyitem() {
+        $user = JFactory::getUser();
+
+        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('data');
+
+            $_cit = $this->model;
+
+            $_status = $_cit->matchLinkByItem($data);
+
+            if ($_status) {
+                $tab = array('status' => 1, 'msg' => JText::_("SPECIFIC_LINK_MATCH"), 'data' => $_status);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_SPECIFIC_LINK"), 'data' => $_status);
             }
         }
         echo json_encode((object)$tab);

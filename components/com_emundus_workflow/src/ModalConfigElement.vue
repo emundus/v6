@@ -88,8 +88,14 @@ export default {
           confirmButtonColor: '#28a745',
         }).then((result) => {
           if (result.isConfirmed) {
-            // Swal.fire('Merci', 'Le workflow est sauvegardé', 'success');
             this.$modal.hide('elementModal' + this.ID);
+
+            //// insert code here --> auto create link
+            var _data = {
+             wid: this.getWorkflowIdFromURL(),
+             id: this.ID,
+            }
+            this.autoCreateLink(_data);
           }})
       }).catch(error => {
         console.log(error);
@@ -98,6 +104,26 @@ export default {
 
     exitModal: function() {
       this.$modal.hide('elementModal' + this.ID);
+    },
+
+    getWorkflowIdFromURL: function () {
+      return window.location.href.split('id=')[1];
+    },
+
+    autoCreateLink: async function(data) {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=item&task=matchalllinksbyitem',
+        params: { data },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        //based on the returned status [0] or [1] --> we will create a link between blocs
+      }).catch(error => {
+        console.log(error);
+      })
+
     },
 
     beforeOpen(event) {
