@@ -440,5 +440,31 @@ jimport('joomla.application.component.controller');
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function getautolink() {
+        $user = JFactory::getUser();
+
+        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('data');
+
+//            var_dump($data);die;
+
+            $_cit = $this->model;
+
+            $_status = $_cit->getAutoLinks($data);
+
+            if ($_status) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_NON_STATUS_PARAMS"), 'data' => $_status);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_NON_STATUS_PARAMS"), 'data' => $_status);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 }
 

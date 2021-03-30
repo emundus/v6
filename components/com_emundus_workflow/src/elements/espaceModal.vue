@@ -32,7 +32,7 @@
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.output_status_title }}</label>
       <div class="col-xs-8">
-        <select v-model="form.outputStatusSelected" class="form-control-select">
+        <select v-model="form.outputStatus" class="form-control-select">
           <b-form-select-option selected disabled>--Statut de sortie--</b-form-select-option>
           <option v-for="(item, index) in this.$data.outStatus" :value="item.step" :disabled="item.disabled" v-if="!item.disabled"> {{ item.value }}</option>
         </select>
@@ -79,8 +79,8 @@ export default {
       },
       form: {
         formNameSelected: '',
-        editedStatusSelected: [],
-        outputStatusSelected: '',
+        inputStatus: [],
+        outputStatus: '',
         notes: '',
         color: "#0f4c81",
       },
@@ -143,7 +143,7 @@ export default {
       }).then(response => {
         // console.log(response);
         if(response.data.data !== null) {
-          this.form.outputStatusSelected = (response.data.data)[0].step;
+          this.form.outputStatus = (response.data.data)[0].step;
         }
         else {}
       })
@@ -225,7 +225,7 @@ export default {
     this.getAllFormType();
 
     this.form = this.element;
-    this.form.editedStatusSelected = this.checked;
+    this.form.inputStatus = this.checked;
     this.getCurrentStatus(this.form.id);
 
     var data = {

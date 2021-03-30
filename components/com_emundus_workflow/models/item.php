@@ -273,18 +273,17 @@ class EmundusworkflowModelitem extends JModelList
     public function updateParamsByItemID($data) {
         $_string = "";
 
-        if(isset($data['editedStatusSelected'])) {
-            foreach($data['editedStatusSelected'] as $key=>$value) {
+        if(isset($data['inputStatus'])) {
+            foreach($data['inputStatus'] as $key=>$value) {
                 if($value == "true") {
                     $_string .= (string)$key . ",";
+                    $_lastString = substr_replace($_string ,"",-1);
+                    $data['inputStatus'] = $_lastString;
                 }
                 else {}
             }
         }
         else {}
-
-        $_lastString = substr_replace($_string ,"",-1);
-        $data['editedStatusSelected'] = $_lastString;
 
         $id = (int)$data['id'];
 
@@ -313,6 +312,7 @@ class EmundusworkflowModelitem extends JModelList
             }
 
             $db->setQuery($query);
+
             return $db->execute();
         }
         catch(Exception $e) {
@@ -339,8 +339,8 @@ class EmundusworkflowModelitem extends JModelList
 
             //check the item type
             if (($_result->item_id) == 2) {
-                $_exportStatus['in'] = json_decode(($_result->params))->editedStatusSelected;
-                $_exportStatus['out'] = json_decode(($_result->params))->outputStatusSelected;
+                $_exportStatus['in'] = json_decode(($_result->params))->inputStatus;
+                $_exportStatus['out'] = json_decode(($_result->params))->outputStatus;
             }
             else if (($_result->item_id) == 3) {}
 
@@ -395,23 +395,23 @@ class EmundusworkflowModelitem extends JModelList
                 if($v['item_id'] == 2) { ////2 --> espace candidat
 
                     if($mode == 'in') {
-                        if (json_decode($v['params'])->editedStatusSelected == "") {
+                        if (json_decode($v['params'])->inputStatus == "") {
                             array_push($_statusList, -1);
                         }
 
                         else {
-                            array_push($_statusList, json_decode($v['params'])->editedStatusSelected);
+                            array_push($_statusList, json_decode($v['params'])->inputStatus);
                         }
                     }
 
                     if($mode == 'out') {
 
-                        if (json_decode($v['params'])->outputStatusSelected == "") {
+                        if (json_decode($v['params'])->outputStatus == "") {
                             array_push($_statusList, -1);
                         }
 
                         else {
-                            array_push($_statusList, json_decode($v['params'])->outputStatusSelected);
+                            array_push($_statusList, json_decode($v['params'])->outputStatus);
                         }
                     }
                 }
@@ -483,4 +483,55 @@ class EmundusworkflowModelitem extends JModelList
             return $e->getMessage();
         }
     }
+
+    // auto-find the item having the same output status --> params --> $data['wid']
+    public function getAutoLinks($wid) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            ///find all 'params' of workflow --> return an object list
+            $query->clear()
+                ->select('#__emundus_workflow_item.*')
+                ->from($db->quoteName('#__emundus_workflow_item'))
+                ->where($db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$wid);
+
+            $db->setQuery($query);
+            $_allParams = $db->loadObjectList();
+
+            $_inputStatusList = array();
+            $_outputStatusList = array();
+
+            $_exportData = array();
+
+            foreach($_allParams as $key=>$value) {
+                if ($value->item_id == 1 || $value->item_id == 5 || $value->item_name == 'Initialisation' || $value->item_name == 'Cloture' || $value->item_id == 4 || $value->item_name == 'Message') {
+                    unset($_allParams[$key]);
+                }
+                else {
+                    $_outputStatusList[$value->id] = json_decode($value->params)->outputStatus;
+                    $_inputStatusList[$value->id] = json_decode($value->params)->inputStatus;
+                }
+            }
+
+            foreach ($_inputStatusList as $key=>$val) {
+                $_inArray = explode(',', $val);
+
+                foreach($_outputStatusList as $k=>$v) {
+                    if(in_array($v,$_inArray)) {
+
+                        $_lst = $key . '...' . $k;
+                        array_push($_exportData, $_lst);
+                    }
+                }
+            }
+
+            return $_exportData;
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/item | Cannot find suitable link between item : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
+    }
+
 }
