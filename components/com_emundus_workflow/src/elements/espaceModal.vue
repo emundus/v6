@@ -222,19 +222,19 @@ export default {
 
   },
   created() {
-    this.getAllFormType();
-
     this.form = this.element;
     this.form.inputStatus = this.checked;
-    this.getCurrentStatus(this.form.id);
 
     var data = {
       wid:this.getWorkflowIdFromURL(),
       id: this.form.id,
     }
 
+    this.getCurrentStatus(this.form.id);
     this.getAvailableInStatus(data);
     this.getAvailableOutStatus(data);
+
+    this.getAllFormType();
 
     this.getNonStatusParams(this.form.id);
   },
