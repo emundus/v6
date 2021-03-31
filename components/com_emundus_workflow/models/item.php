@@ -421,15 +421,12 @@ class EmundusworkflowModelitem extends JModelList
                 ->select('#__emundus_workflow_item.item_id, #__emundus_workflow_item.params')
                 ->from($db->quoteName('#__emundus_workflow_item'))
                 ->where($db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)(json_decode($data))->wid)
-                ->andWhere($db->quoteName('#__emundus_workflow_item.item_id') . 'NOT IN (1,4,5,' . (int)(json_decode($data))->id . ')');
-
-//                ->andWhere($db->quoteName('#__emundus_workflow_item.item_id') . '!=' . '1')                     //not initialization
-//                ->andWhere($db->quoteName('#__emundus_workflow_item.item_id') . '!=' . '4')                     //not message
-//                ->andWhere($db->quoteName('#__emundus_workflow_item.item_id') . '!=' . '5')                     //not cloture
-//                ->andWhere($db->quoteName('#__emundus_workflow_item.id') . '!=' . (int)(json_decode($data))->id);
+                ->andWhere($db->quoteName('#__emundus_workflow_item.item_id') . '!=' . '1')                     //not initialization
+                ->andWhere($db->quoteName('#__emundus_workflow_item.item_id') . '!=' . '4')                     //not message
+                ->andWhere($db->quoteName('#__emundus_workflow_item.item_id') . '!=' . '5')                     //not cloture
+                ->andWhere($db->quoteName('#__emundus_workflow_item.id') . '!=' . (int)(json_decode($data))->id);
 
             $db->setQuery($query);
-
             $_results = $db->loadAssocList();
 
             $_statusList = array();     //empty array
@@ -476,13 +473,15 @@ class EmundusworkflowModelitem extends JModelList
 
             if($_lastString == "") { array_push($_lastString, -1); }
 
-            $query->clear()
-                    ->select('#__emundus_setup_status.*')
-                    ->from($db->quoteName('#__emundus_setup_status'))
-                    ->where($db->quoteName('#__emundus_setup_status.step') . 'NOT IN (' . $_lastString . ')');
+            $query1 = $db->getQuery(true);
 
-            $db->setQuery($query);
-            
+            $query1->clear()
+                ->select('#__emundus_setup_status.*')
+                ->from($db->quoteName('#__emundus_setup_status'))
+                ->where($db->quoteName('#__emundus_setup_status.step') . 'NOT IN (' . $_lastString . ')');
+
+            $db->setQuery($query1);
+
             return $db->loadObjectList();
         }
         catch(Exception $e) {

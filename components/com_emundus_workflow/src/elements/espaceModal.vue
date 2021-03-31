@@ -3,8 +3,6 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
-<!--    {{ this.$data.inStatus }}-->
-
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.form_name_title }}</label>
       <div class="col-xs-8">
@@ -17,17 +15,17 @@
 
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.edited_status_title }}</label>
-<!--      <div class="col-xs-8">-->
-<!--        <select v-model="form.editedStatusSelected" class="form-control-select" @change="updateOutStatus(form.editedStatusSelected)">-->
-<!--          <b-form-select-option selected disabled>&#45;&#45;Statut d'édition&#45;&#45;</b-form-select-option>-->
-<!--          <option v-for="(item, index) in this.$data.inStatus" :value="item.step" :disabled="item.disabled"> {{ item.value }}</option>-->
-<!--        </select>-->
+      <!--      <div class="col-xs-8">-->
+      <!--        <select v-model="form.editedStatusSelected" class="form-control-select" @change="updateOutStatus(form.editedStatusSelected)">-->
+      <!--          <b-form-select-option selected disabled>&#45;&#45;Statut d'édition&#45;&#45;</b-form-select-option>-->
+      <!--          <option v-for="(item, index) in this.$data.inStatus" :value="item.step" :disabled="item.disabled"> {{ item.value }}</option>-->
+      <!--        </select>-->
 
       <div v-for="item in this.$data.inStatus" v-if="!item.disabled">
         <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]"/>
         <label class="form-check-label" :for="item.step">{{item.value}}</label>
       </div>
-<!--      </div>-->
+      <!--      </div>-->
 
     </div>
 
@@ -107,15 +105,15 @@ export default {
             console.log(error);
           })
     },
-    // getAllStatus: function() {
-    //   axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus')
-    //       .then(response => {
-    //         this.$data.status = response.data.data;
-    //       })
-    //       .catch(error => {
-    //         console.log(error);
-    //       })
-    // },
+    getAllStatus: function() {
+      axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus')
+          .then(response => {
+            this.$data.status = response.data.data;
+          })
+          .catch(error => {
+            console.log(error);
+          })
+    },
     getWorkflowIdFromURL: function () {
       return window.location.href.split('id=')[1];
     },
@@ -224,19 +222,19 @@ export default {
 
   },
   created() {
+    this.getAllFormType();
+
     this.form = this.element;
     this.form.inputStatus = this.checked;
+    this.getCurrentStatus(this.form.id);
 
     var data = {
       wid:this.getWorkflowIdFromURL(),
       id: this.form.id,
     }
 
-    this.getCurrentStatus(this.form.id);
     this.getAvailableInStatus(data);
     this.getAvailableOutStatus(data);
-
-    this.getAllFormType();
 
     this.getNonStatusParams(this.form.id);
   },

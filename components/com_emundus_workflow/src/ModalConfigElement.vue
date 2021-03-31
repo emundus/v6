@@ -4,7 +4,7 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
     <modal :name="'elementModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen">
-      <b-badge variant="warning"><h3>Configuration globale</h3></b-badge>
+      <b-badge variant="warning"><h3>{{ this.$data.type }} Configuration</h3></b-badge>
       <br/>
       <br/>
       <b-nav tabs>
@@ -92,8 +92,8 @@ export default {
 
             //// insert code here --> auto create link
             var _data = {
-             wid: this.getWorkflowIdFromURL(),
-             id: this.ID,
+              wid: this.getWorkflowIdFromURL(),
+              id: this.ID,
             }
             this.autoCreateLink(_data);
           }})
@@ -130,39 +130,42 @@ export default {
           this.$emit('linkingStop', _data._to);
         }
         else {
-        //   // check if there are the links from this node --> if yes --> remove it [this.$emit.nodeDelete]// if no --> anything do
-        //   axios({
-        //     method: 'post',
-        //     url: 'index.php?option=com_emundus_workflow&controller=item&task=checkexistlink',
-        //     headers: {
-        //       "Content-Type": "application/x-www-form-urlencoded"
-        //     },
-        //     data: qs.stringify({data: this.ID})
-        //   }).then(answer => {
-        //     // console.log(answer);
-        //     if (answer.data.data == true) {
-        //       ///// link exist --> get link_id --> delete it
-        //       var _data = {
-        //         _from: null,
-        //         _to: this.ID,
-        //       }
-        //       axios({
-        //         method: 'post',
-        //         url: 'index.php?option=com_emundus_workflow&controller=item&task=getlinkbytoitem',
-        //         headers: {
-        //           "Content-Type": "application/x-www-form-urlencoded"
-        //         },
-        //         data: qs.stringify({ data: _data })
-        //       }).then(reply => {
-        //         var _linkArray = reply.data.data;
-        //         this.$emit('linkDelete', _linkArray[0].id);
-        //       })
-        //     }
-        //   })
+          // check if there are the links from this node --> if yes --> remove it [this.$emit.nodeDelete]// if no --> anything do
+          axios({
+            method: 'post',
+            url: 'index.php?option=com_emundus_workflow&controller=item&task=checkexistlink',
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({data: this.ID})
+          }).then(answer => {
+            // console.log(answer);
+            if (answer.data.data == true) {
+              ///// link exist --> get link_id --> delete it
+              var _data = {
+                _from: null,
+                _to: this.ID,
+              }
+              axios({
+                method: 'post',
+                url: 'index.php?option=com_emundus_workflow&controller=item&task=getlinkbytoitem',
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded"
+                },
+                data: qs.stringify({ data: _data })
+              }).then(reply => {
+                var _linkArray = reply.data.data;
+
+                console.log(_linkArray);
+                this.$emit('linkDelete', _linkArray[0].id);
+              })
+            }
+          })
         }
       }).catch(error => {
         console.log(error);
       })
+
     },
 
     beforeOpen(event) {
@@ -174,15 +177,15 @@ export default {
 
 <style>
 
-  .vm--modal {
-    padding: 10px 25px !important;
-  }
+.vm--modal {
+  padding: 10px 25px !important;
+}
 
-  .row {
-    margin-right:100px !important;
-  }
+.row {
+  margin-right:100px !important;
+}
 
-  .select {
-    max-width: 300px !important;
-  }
+.select {
+  max-width: 300px !important;
+}
 </style>
