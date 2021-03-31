@@ -13,8 +13,8 @@
       </b-nav>
       <br/>
       <br/>
-      <espace-modal v-if="this.type == 'Espace'" ref="forms" :element="element"/>
-      <message-modal v-if="this.type == 'Message'" ref="emails" :element="element"/>
+      <espace-modal v-if="this.type == 2" ref="forms" :element="element"/>
+      <message-modal v-if="this.type == 4" ref="emails" :element="element"/>
       <b-button variant="success" @click="updateParams()">Sauvegarder</b-button>
       <b-button variant="danger" @click="exitModal()">Quitter</b-button>
     </modal>
@@ -63,7 +63,7 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        this.$data.type = (response.data.data)[0].item_name;
+        this.$data.type = (response.data.data)[0].item_id;
       }).catch(error => {
         console.log(error);
       })
@@ -155,8 +155,6 @@ export default {
                 data: qs.stringify({ data: _data })
               }).then(reply => {
                 var _linkArray = reply.data.data;
-
-                console.log(_linkArray);
                 this.$emit('linkDelete', _linkArray[0].id);
               })
             }
@@ -165,7 +163,6 @@ export default {
       }).catch(error => {
         console.log(error);
       })
-
     },
 
     beforeOpen(event) {
