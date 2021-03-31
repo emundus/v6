@@ -499,8 +499,6 @@ jimport('joomla.application.component.controller');
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-//            var_dump($data);die;
-
             $_cit = $this->model;
 
             $_status = $_cit->checkMatchingStatus($data);
@@ -514,5 +512,55 @@ jimport('joomla.application.component.controller');
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function checkexistlink() {
+        $user = JFactory::getUser();
+
+        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('data');
+
+            $_cit = $this->model;
+
+            $_status = $_cit->checkExistLink($data);
+
+            if ($_status) {
+                $tab = array('status' => 1, 'msg' => JText::_("LINK_EXISTS"), 'data' => $_status);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_("LINK_DOES_NOT_EXIST"), 'data' => $_status);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+        public function getlinkbytoitem() {
+            $user = JFactory::getUser();
+
+            if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            } else {
+                $jinput = JFactory::getApplication()->input;
+                $data = $jinput->getRaw('data');
+
+//                var_dump($data);die;
+
+                $_cit = $this->model;
+
+                $_status = $_cit->getLinkByItem('to',$data);
+
+                if ($_status) {
+                    $tab = array('status' => 1, 'msg' => JText::_("LINK_EXISTS_YUPP"), 'data' => $_status);
+                } else {
+                    $tab = array('status' => 0, 'msg' => JText::_("LINK_DOES_NOT_EXIST_OOPS"), 'data' => $_status);
+                }
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
 }
 

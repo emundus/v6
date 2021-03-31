@@ -10,7 +10,7 @@
         @deleteLink="linkDelete(link.id)">
       </flowchart-link>
     </svg>
-    <modal-config-element v-for="(node, index) in scene.nodes" :ID="node.id" :element="node" @linkingStart="linkingStart" @linkingStop="linkingStop"> {{ node.id }}</modal-config-element>
+    <modal-config-element v-for="(node, index) in scene.nodes" :ID="node.id" :element="node" @linkingStart="linkingStart" @linkingStop="linkingStop" @linkDelete="linkDelete"> {{ node.id }}</modal-config-element>
     <flowchart-node v-bind.sync="node" 
       v-for="(node, index) in scene.nodes" 
       :key="`node${index}`"

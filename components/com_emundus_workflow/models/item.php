@@ -249,6 +249,46 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
+    //get link by item (_from or _to)
+    public function getLinkByItem($mode=null,$data) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            if($mode == 'from') {
+                //get link by from
+                $query->clear()
+                    ->select('#__emundus_workflow_links.*')
+                    ->from($db->quoteName('#__emundus_workflow_links'))
+                    ->where($db->quoteName('#__emundus_workflow_links.from') . '=' . (int)$data['_from']);
+                $db->setQuery($query);
+            }
+            else if($mode == 'to') {
+                //get link by to
+                $query->clear()
+                    ->select('#__emundus_workflow_links.*')
+                    ->from($db->quoteName('#__emundus_workflow_links'))
+                    ->where($db->quoteName('#__emundus_workflow_links.to') . '=' . (int)$data['_to']);
+                $db->setQuery($query);
+            }
+            else {
+                //get link by both from and to
+                $query->clear()
+                    ->select('#__emundus_workflow_links.*')
+                    ->from($db->quoteName('#__emundus_workflow_links'))
+                    ->where($db->quoteName('#__emundus_workflow_links.from') . '=' . (int)$data['_from'])
+                    ->andWhere($db->quoteName('#__emundus_workflow_links.from') . '=' . (int)$data['_to']);
+                $db->setQuery($query);
+            }
+//            var_dump($db->loadObjectList());die;
+            return $db->loadObjectList();
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/item | Cannot get link by item : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
+    }
+
     //GET ALL LINKS FROM WORKFLOW ID
     public function getAllLinksByWorkflowID($data) {
         $db = JFactory::getDbo();
@@ -624,6 +664,35 @@ class EmundusworkflowModelitem extends JModelList
         }
         catch(Exception $e) {
             JLog::add('component/com_emundus_workflow/models/item | Cannot get matching item : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
+    }
+
+    //check whether there are links from an item --> if yes --> remove
+    public function checkExistLink($data) {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('count(*)')
+                ->from($db->quoteName('#__emundus_workflow_links'))
+                ->where($db->quoteName('#__emundus_workflow_links.to') . '=' . (int)$data);
+            $db->setQuery($query);
+
+            $_count = $db->loadResult();
+
+            if((int)$_count > 0 ) {
+                return true;
+            }
+            else {
+                return false;
+            }
+            die;
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/item | Cannot check the link : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
             return $e->getMessage();
         }
     }

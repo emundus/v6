@@ -130,7 +130,37 @@ export default {
           this.$emit('linkingStop', _data._to);
         }
         else {
-          ////
+          // check if there are the links from this node --> if yes --> remove it [this.$emit.nodeDelete]// if no --> anything do
+          axios({
+            method: 'post',
+            url: 'index.php?option=com_emundus_workflow&controller=item&task=checkexistlink',
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({data: this.ID})
+          }).then(answer => {
+            // console.log(answer);
+            if (answer.data.data == true) {
+              ///// link exist --> get link_id --> delete it
+              var _data = {
+                _from: null,
+                _to: this.ID,
+              }
+              axios({
+                method: 'post',
+                url: 'index.php?option=com_emundus_workflow&controller=item&task=getlinkbytoitem',
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded"
+                },
+                data: qs.stringify({ data: _data })
+              }).then(reply => {
+                var _linkArray = reply.data.data;
+
+                console.log(_linkArray);
+                this.$emit('linkDelete', _linkArray[0].id);
+              })
+            }
+          })
         }
       }).catch(error => {
         console.log(error);
