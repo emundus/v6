@@ -95,9 +95,7 @@ export default {
 
     this.getWorkflowInfo();
     this.getMenu();
-    this.getItemSimpleName();
-
-    // setInterval(this.getWorkflowInfo(), 5000);
+    // this.getItemSimpleName();
   },
 
   methods: {
@@ -209,22 +207,31 @@ export default {
     getMenu: function() {
       axios.get("index.php?option=com_emundus_workflow&controller=item&task=getallitems").
       then(response => {
+
+        var itemCategory = [];
+        (response.data.data).forEach(element => itemCategory.push(element.item_name));
+        this.$props.nodeCategory = itemCategory;
+
+
         this.items = response.data.data;
         this.items.splice(0, 1);
+
+
       }).catch(error => {
         console.log(error);
       })
     },
 
-    getItemSimpleName: async function () {
-      var json = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getallitems');
-      var rawData = (JSON.parse(JSON.stringify(json))).data.data;
 
-      var itemCategory = [];
-      rawData.forEach(element => itemCategory.push(element.item_name));
-      this.$props.nodeCategory = itemCategory;
-      return this.$props.nodeCategory;
-    },
+    // getItemSimpleName: async function () {
+    //   var json = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getallitems');
+    //   var rawData = (JSON.parse(JSON.stringify(json))).data.data;
+    //
+    //   var itemCategory = [];
+    //   rawData.forEach(element => itemCategory.push(element.item_name));
+    //   this.$props.nodeCategory = itemCategory;
+    //   return this.$props.nodeCategory;
+    // },
 
     addNode: function (index) {
       let nodeCategory = this.$props.nodeCategory;
