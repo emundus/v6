@@ -18,8 +18,8 @@
     <div v-show="show.delete" class="node-delete">&times;</div>
     <div v-show="show.clone" class="duplicate-option" :id="id" ref="duplicate">Dupliquer</div>
     <div class="configuration" :id="id" ref="configuration">Configurer</div>
-    <div class="input-status" :id="id" ref="input-status" v-for="status in this.inputStatus">{{ status.value }}</div>
-    <div class="output-status" :id="id" ref="out-status" v-for="status in this.outputStatus">{{ status.value }}</div>
+    <div class="input-status" :id="id" ref="input-status" v-for="status in this.inputStatus">{{ status.value }} {{ status.step }}</div>
+    <div class="output-status" :id="id" ref="out-status" v-for="status in this.outputStatus">{{ status.value }} {{ status.step }}</div>
   </div>
 </template>
 
