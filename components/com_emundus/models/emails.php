@@ -1163,7 +1163,7 @@ class EmundusModelEmails extends JModelList {
 
         $columns = ['user_id_from', 'user_id_to', 'subject', 'message' , 'date_time'];
 
-        $values = [$row['user_id_from'], $row['user_id_to'], $this->_db->quote($row['subject']), $this->_db->quote($row['message']), $now];
+        $values = [$row['user_id_from'], $row['user_id_to'], $this->_db->quote($row['subject']), $this->_db->quote($row['message']), $this->_db->quote($now)];
 
         // If we are logging the email type as well, this allows us to put them in separate folders.
         if (isset($row['type']) && !empty($row['type'])) {
