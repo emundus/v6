@@ -151,6 +151,7 @@
                     //do something else
                 }
 
+                $_exportData['workflow_id'] = $_workflowID;
                 return $_exportData;
             }
 

@@ -492,8 +492,7 @@ class EmundusController extends JControllerLegacy {
             }
             else {
                 $aid->profile = json_decode($profileIDTrigger[0]['profile_id']);
-
-                $aid->workflow = json_decode($profileIDTrigger[0][0]->id);
+                $aid->workflow = json_decode($profileIDTrigger[0]['workflow_id']);
             }
         }
 
