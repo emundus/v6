@@ -99,28 +99,56 @@
             $this->db->setQuery($query);
             $_rawData =  $this->db->loadObjectList();
 
+            $_workflowID = $_rawData[0]->id;
+
             unset($_rawData[0]);
             
             $_inputStatusList = array();
+            $_outputStatusList = array();
 
             $_exportData = array();
 
+            $_inArrayString = "";
+            $_outArrayString = "";
+
             try {
                 for ($i = 1; $i <= count($_rawData); $i++) {
-                    $_array = explode(',', (json_decode($_rawData[$i]->params))->editedStatusSelected);
+                    $_inArray = explode(',', (json_decode($_rawData[$i]->params))->inputStatus);
+                    $_outArray = explode(',', (json_decode($_rawData[$i]->params))->outputStatus);
 
-                    array_push($_inputStatusList, $_array);
-                    if(in_array($cid,$_array)) {
-                        foreach ($_array as $key => $value) {
+                    array_push($_inputStatusList, $_inArray);
+                    array_push($_outputStatusList, $_outArray);
+
+                    foreach ($_outArray as $key => $value) {
+                        $_outArrayString .=  $value . ',';
+                    }
+
+                    /// if dossier status exists in inputStatusList --> return profile id
+                    foreach ($_inArray as $key => $value) {
+                        $_inArrayString .=  $value . ',';
+                        if(in_array($cid,$_inArray)) {
                             if ($value == $cid) {
                                 array_push($_exportData, $_rawData[$i]);
                                 continue;
                             }
-
-                            else {}
                         }
+                        else {}
                     }
-                    else {}
+                }
+
+                $_inArrayString = explode(',', substr_replace($_inArrayString ,"",-1));
+                $_outArrayString = explode(',', substr_replace($_outArrayString ,"",-1));
+
+                if(!in_array($cid,$_inArrayString) and in_array($cid,$_outArrayString)) {
+                    $_exportData = $this->getFirstProfileByWorkflow($_workflowID);
+                }
+
+                else if (!in_array($cid,$_inArrayString) and !in_array($cid,$_outArrayString)) {
+                    $_exportData = $this->getProfileFromUnexistantStatus($cid);
+                }
+
+                else {
+                    //do something else
                 }
 
                 return $_exportData;
@@ -130,6 +158,31 @@
                 JLog::add('Could not get profile id by workflow and status -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
                 return $e->getMessage();
             }
+        }
+
+        public function getFirstProfileByWorkflow($wid) {
+            $query = $this->db->getQuery(true);
+
+            //get the first profile by workflow
+            try {
+                $query->select('MIN(id), #__emundus_workflow_item.params')
+                    ->from($this->db->quoteName('#__emundus_workflow_item'))
+                    ->where($this->db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$wid)
+                    ->andWhere($this->db->quoteName('#__emundus_workflow_item.item_id') . '=' . 2);
+
+                $this->db->setQuery($query);
+
+                $_data = $this->db->loadAssoc();
+
+                $_exportData['profile_id'] = json_decode($_data['params'])->formNameSelected;
+
+                return $_exportData;
+            }
+            catch(Exception $e) {
+                JLog::add('Could not get first profile id by workflow -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
+                return $e->getMessage();
+            }
+
         }
 
         public function getProfileFromUnexistantStatus($sid) {

@@ -482,19 +482,21 @@ class EmundusController extends JControllerLegacy {
 
         $profileIDTrigger = $dispatcher->trigger('getWorkflowProfileByFnum', [$fnum,$status_id]);
 
-        if(!empty($profileIDTrigger[0])) {
-            if (isset(json_decode($profileIDTrigger[0][0]->params)->formNameSelected)) {
-                $aid->profile = json_decode($profileIDTrigger[0][0]->params)->formNameSelected;
-                $aid->workflow = $profileIDTrigger[0][0]->id;
-            } else {
+        if (isset(json_decode($profileIDTrigger[0][0]->params)->formNameSelected)) {
+            $aid->profile = json_decode($profileIDTrigger[0][0]->params)->formNameSelected;
+            $aid->workflow = $profileIDTrigger[0][0]->id;
+        } else {
+            if(isset($profileIDTrigger[0][0])) {
+                $aid->profile = json_decode($profileIDTrigger[0][0]->profile_id);
+                $aid->workflow = json_decode($profileIDTrigger[0][0]->id);
+            }
+            else {
+                $aid->profile = json_decode($profileIDTrigger[0]['profile_id']);
+
+                $aid->workflow = json_decode($profileIDTrigger[0][0]->id);
             }
         }
 
-        else {
-            $getProfileByStatus = $dispatcher->trigger('getProfileFromUnexistantStatus', [$status_id]);
-            $aid->profile = json_decode($getProfileByStatus[0][0]->profile_id);
-            $aid->workflow = json_decode($getProfileByStatus[0][0]->id);
-        }
 
         $_updatedPIDTrigger = $dispatcher->trigger('updateEmundusUserProfile', [$fnum,$aid->profile]);
 
@@ -511,7 +513,7 @@ class EmundusController extends JControllerLegacy {
             }
         }
 
-//        echo '<pre>'; var_dump($aid); echo '</pre>'; die;
+        echo '<pre>'; var_dump($aid); echo '</pre>'; die;
 
         $app->redirect($redirect);
     }
