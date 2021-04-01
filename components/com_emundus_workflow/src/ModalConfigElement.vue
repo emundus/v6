@@ -139,11 +139,11 @@ export default {
             },
             data: qs.stringify({data: this.ID})
           }).then(answer => {
-            // console.log(answer);
+            console.log(answer);
             if (answer.data.data == true) {
-              ///// link exist --> get link_id --> delete it
+              ///// link exists --> get link_id --> delete it
               var _data = {
-                _from: null,
+                _from: undefined,
                 _to: this.ID,
               }
               axios({
@@ -154,10 +154,13 @@ export default {
                 },
                 data: qs.stringify({ data: _data })
               }).then(reply => {
+
+                //// work well if input status !== output status --> why???
+
                 var _linkArray = reply.data.data;
 
-                console.log(_linkArray);
-                this.$emit('linkDelete', _linkArray[0].id);
+                console.log(_linkArray[0].id);
+                this.$emit('linkDelete', _linkArray[0].id);     /// <- bug here
               })
             }
           })
