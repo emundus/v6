@@ -111,6 +111,11 @@
             $_inArrayString = "";
             $_outArrayString = "";
 
+            // stock session here
+            $session = JFactory::getSession();
+            $aid = $session->get('emundusUser');
+            //
+
             try {
                 for ($i = 1; $i <= count($_rawData); $i++) {
                     $_inArray = explode(',', (json_decode($_rawData[$i]->params))->inputStatus);
@@ -139,20 +144,22 @@
                 $_inArrayString = explode(',', substr_replace($_inArrayString ,"",-1));
                 $_outArrayString = explode(',', substr_replace($_outArrayString ,"",-1));
 
-                if(!in_array($cid,$_inArrayString) and in_array($cid,$_outArrayString)) {
-                    $_exportData = $this->getFirstProfileByWorkflow($_workflowID);
-                }
+                $aid->workflow = $_workflowID;
 
-                else if (!in_array($cid,$_inArrayString) and !in_array($cid,$_outArrayString)) {
-                    $_exportData = $this->getProfileFromUnexistantStatus($cid);
+                if(isset(json_decode($_exportData[0]->params)->formNameSelected)) {
+                    $aid->profile = json_decode($_exportData[0]->params)->formNameSelected;
                 }
-
                 else {
-                    //do something else
+                    if (!in_array($cid, $_inArrayString) and in_array($cid, $_outArrayString)) {
+                        $_exportData = $this->getFirstProfileByWorkflow($_workflowID);
+                        $aid->profile = $_exportData['profile_id'];
+                    } else if (!in_array($cid, $_inArrayString) and !in_array($cid, $_outArrayString)) {
+                        $_exportData = $this->getProfileFromUnexistantStatus($cid);
+                        $aid->profile = $_exportData[0]->profile_id;
+                    }
                 }
 
-                $_exportData['workflow_id'] = $_workflowID;
-                return $_exportData;
+                return 0;
             }
 
             catch(Exception $e) {

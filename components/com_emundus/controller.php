@@ -482,21 +482,6 @@ class EmundusController extends JControllerLegacy {
 
         $profileIDTrigger = $dispatcher->trigger('getWorkflowProfileByFnum', [$fnum,$status_id]);
 
-        if (isset(json_decode($profileIDTrigger[0][0]->params)->formNameSelected)) {
-            $aid->profile = json_decode($profileIDTrigger[0][0]->params)->formNameSelected;
-            $aid->workflow = $profileIDTrigger[0][0]->id;
-        } else {
-            if(isset($profileIDTrigger[0][0])) {
-                $aid->profile = json_decode($profileIDTrigger[0][0]->profile_id);
-                $aid->workflow = json_decode($profileIDTrigger[0][0]->id);
-            }
-            else {
-                $aid->profile = json_decode($profileIDTrigger[0]['profile_id']);
-                $aid->workflow = json_decode($profileIDTrigger[0]['workflow_id']);
-            }
-        }
-
-
         $_updatedPIDTrigger = $dispatcher->trigger('updateEmundusUserProfile', [$fnum,$aid->profile]);
 
         $menuTypeTrigger = $dispatcher->trigger('getMenuTypeByProfile', [$aid->profile]);       //get menu type from profile_id
