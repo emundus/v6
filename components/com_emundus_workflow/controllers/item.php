@@ -321,7 +321,56 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
         exit;
     }
 
-    public function getcurrentinputstatusbyitem() {
+//    public function getcurrentinputstatusbyitem() {
+//        $user = JFactory::getUser();
+//
+//        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+//            $result = 0;
+//            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+//        } else {
+//            $jinput = JFactory::getApplication()->input;
+//            $data = $jinput->getRaw('id');
+//
+//            $_cit = $this->model;
+//
+//            $_status = $_cit->getStatusByCurrentItem($data, 'in');
+//
+//            if ($_status) {
+//                $tab = array('status' => 1, 'msg' => JText::_("INPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
+//            } else {
+//                $tab = array('status' => 0, 'msg' => JText::_("FAILED_INPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
+//            }
+//        }
+//        echo json_encode((object)$tab);
+//        exit;
+//    }
+//
+//    public function getcurrentoutputstatusbyitem() {
+//        $user = JFactory::getUser();
+//
+//        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+//            $result = 0;
+//            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+//        } else {
+//            $jinput = JFactory::getApplication()->input;
+//            $data = $jinput->getRaw('id');
+//
+//            $_cit = $this->model;
+//
+//            $_status = $_cit->getStatusByCurrentItem($data, 'out');
+//
+//            if ($_status) {
+//                $tab = array('status' => 1, 'msg' => JText::_("OUTPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
+//            } else {
+//                $tab = array('status' => 0, 'msg' => JText::_("FAILED_OUTPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
+//            }
+//        }
+//        echo json_encode((object)$tab);
+//        exit;
+//    }
+
+    //// GOAL --> Get all current status (input and output) by item
+    public function getcurrentstatusbyitem() {
         $user = JFactory::getUser();
 
         if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -333,36 +382,26 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
 
             $_cit = $this->model;
 
-            $_status = $_cit->getStatusByCurrentItem($data, 'in');
+            $_statusIn = $_cit->getStatusByCurrentItem($data, 'in');
+            $_statusOut = $_cit->getStatusByCurrentItem($data, 'out');
 
-            if ($_status) {
-                $tab = array('status' => 1, 'msg' => JText::_("INPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_("FAILED_INPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
+            if (!empty($_statusIn) and !empty($_statusOut)) {
+                $tab = array('status' => 1, 'msg' => JText::_("CURRENT_STATUS_BY_ITEM_ID"), 'dataIn' => $_statusIn, 'dataOut' => $_statusOut);
             }
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
 
-    public function getcurrentoutputstatusbyitem() {
-        $user = JFactory::getUser();
+            // no output status
+            else if($_statusIn and empty($_statusOut)) {
+                $tab = array('status' => 1, 'msg' => JText::_("CURRENT_STATUS_BY_ITEM_ID"), 'dataIn' => $_statusIn, 'dataOut' => null);
+            }
 
-        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
-            $data = $jinput->getRaw('id');
+            // no input status
+            else if(empty($_statusIn) and $_statusOut) {
+                $tab = array('status' => 1, 'msg' => JText::_("CURRENT_STATUS_BY_ITEM_ID"), 'dataIn' => null, 'dataOut' => $_statusOut);
+            }
 
-            $_cit = $this->model;
-
-            $_status = $_cit->getStatusByCurrentItem($data, 'out');
-
-            if ($_status) {
-                $tab = array('status' => 1, 'msg' => JText::_("OUTPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_("FAILED_OUTPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
+            // no input and output status
+            else {
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_CURRENT_STATUS_BY_ITEM_ID"), 'dataIn' => null, 'dataOut' => null);
             }
         }
         echo json_encode((object)$tab);

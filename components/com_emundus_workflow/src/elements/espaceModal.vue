@@ -121,32 +121,63 @@ export default {
     getCurrentStatus: function(id) {
       axios({
         method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=item&task=getcurrentinputstatusbyitem',
+        url: 'index.php?option=com_emundus_workflow&controller=item&task=getcurrentstatusbyitem',
         params: { id },
         paramsSerializer: params => {
           return qs.stringify(params);
         }
       }).then(response => {
-        if(response.data.data !== null) {
-          response.data.data.forEach(elt => { this.checked[elt.step] = true; })
+        console.log(response);
+
+        //match dataIn and dataOut
+        if(response.data.dataIn !== null && response.data.dataOut !== null) {
+          response.data.dataIn.forEach(elt => { this.checked[elt.step] = true; })
+          this.form.outputStatus = (response.data.dataOut)[0].step;
         }
+
+        else if (response.data.dataIn == null && response.data.dataOut !== null) {
+          this.form.outputStatus = (response.data.dataOut)[0].step;
+        }
+
+        else if (response.data.dataIn !== null && response.data.dataOut == null) {
+          response.data.dataIn.forEach(elt => { this.checked[elt.step] = true; })
+        }
+
         else {}
+
+      }).catch(error => {
+        console.log(error);
       })
 
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=item&task=getcurrentoutputstatusbyitem',
-        params: { id },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        // console.log(response);
-        if(response.data.data !== null) {
-          this.form.outputStatus = (response.data.data)[0].step;
-        }
-        else {}
-      })
+      //// old version <- ->
+      // axios({
+      //   method: 'post',
+      //   url: 'index.php?option=com_emundus_workflow&controller=item&task=getcurrentinputstatusbyitem',
+      //   params: { id },
+      //   paramsSerializer: params => {
+      //     return qs.stringify(params);
+      //   }
+      // }).then(response => {
+      //   if(response.data.data !== null) {
+      //     response.data.data.forEach(elt => { this.checked[elt.step] = true; })
+      //   }
+      //   else {}
+      // })
+      //
+      // axios({
+      //   method: 'post',
+      //   url: 'index.php?option=com_emundus_workflow&controller=item&task=getcurrentoutputstatusbyitem',
+      //   params: { id },
+      //   paramsSerializer: params => {
+      //     return qs.stringify(params);
+      //   }
+      // }).then(response => {
+      //   // console.log(response);
+      //   if(response.data.data !== null) {
+      //     this.form.outputStatus = (response.data.data)[0].step;
+      //   }
+      //   else {}
+      // })
     },
 
     getAvailableInStatus: async function(data) {
