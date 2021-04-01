@@ -286,7 +286,6 @@ export default {
       })
     },
 
-
     cronSave: function() {
       setInterval(this.saveWorkflow,60000);
     },

@@ -18,6 +18,8 @@
     <div v-show="show.delete" class="node-delete">&times;</div>
     <div v-show="show.clone" class="duplicate-option" :id="id" ref="duplicate">Dupliquer</div>
     <div class="configuration" :id="id" ref="configuration">Configurer</div>
+    <div class="input-status" :id="id" ref="input-status" v-for="status in this.inputStatus">{{ status.value }}</div>
+    <div class="output-status" :id="id" ref="out-status" v-for="status in this.outputStatus">{{ status.value }}</div>
   </div>
 </template>
 
@@ -78,11 +80,19 @@ export default {
       show: {
         delete: false,
         clone: false,
-      }
+      },
+
+      inputStatus: [],
+      outputStatus: [],
     }
   },
   mounted() {
   },
+
+  created() {
+    this.getCurrentStatus(this.id);
+  },
+
   computed: {
     nodeStyle() {
       return {
@@ -128,6 +138,22 @@ export default {
     handleConfigure(e) {
       this.$emit('configureItem');
       e.preventDefault();
+    },
+
+    getCurrentStatus: function (id) {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=item&task=getcurrentstatusbyitem',
+        params: { id },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        this.inputStatus = response.data.dataIn;
+        this.outputStatus = response.data.dataOut;
+      }).catch(error => {
+        console.log(error);
+      })
     }
   }
 }
@@ -241,5 +267,17 @@ export default {
 }
 .selected {
   box-shadow: 0 0 0 2px #f85;
+}
+
+.input-status {
+  margin: 5px -60px;
+  color: #0B7C08;
+  font-size: x-small;
+}
+
+.output-status {
+  margin: -80px 100px;
+  color: #7c084e;
+  font-size: x-small;
 }
 </style>
