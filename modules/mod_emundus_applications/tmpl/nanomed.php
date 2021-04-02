@@ -42,7 +42,7 @@ $first_page = $m_application->getFirstPage('index.php', $fnums);
                         </a>
 
                         <?php if (!empty($attachments) && ((int)($attachments[$application->fnum])>=100 && (int) ($forms[$application->fnum]) && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants) ) : ?>
-                            <a class="btn" href="<?= JRoute::_('index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url[$application->fnum]['link'])); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
+                            <a class="btn btn-success" href="<?= JRoute::_('index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($confirm_form_url[$application->fnum]['link'])); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
                         <?php endif; ?>
 
                         <?php if($application->status<=1) : ?>

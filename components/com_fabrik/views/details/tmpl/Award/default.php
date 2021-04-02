@@ -84,12 +84,14 @@ endforeach;*/
 
 $user = JFactory::getUser();
 $table = $form->db_table_name;
+
 $thematique = $this->data[$table.'___thematique_projet_raw'];
 $fnum = $this->data[$table.'___fnum_raw'];
+
 $student_id = $this->data[$table.'___user_raw'];
 $cid = $m_award->getCampaignId($fnum);
 $attachment_id = $m_award->getFabrikElement('visuel');
-$filename1 = $m_award->getUpload($fnum,$cid,$attachment_id);
+$filename = $m_award->getUpload($fnum,$cid,$attachment_id);
 $countThematique = $m_award->CountThematique($user->id, $thematique);
 $countVote = $m_award->CountVote($fnum,$user->id);
 $VoteTotal = $m_award->CountVotes($user->id);
@@ -115,7 +117,7 @@ $uid= $user->id;
 <input type="hidden" value="<?= $fnum ?>" id="fnum">
 <div class="navbar">
     <div class="navbar-content">
-        <div class="wrapper-menu-item" data-ix="menu-item-wrapper"><a href="/index.html" class="nav-link" data-ix="ia-navlink">LE CHALLENGE</a><a href="/projet/index.php?option=com_fabrik&view=list&listid=349" class="nav-link" data-ix="ia-navlink">PROJETS</a><a href="/reglement.html" class="nav-link" data-ix="ia-navlink">RÈGLEMENT</a><a href="/a-propos.html" class="nav-link margin" data-ix="ia-navlink">À PROPOS</a></div>
+        <div class="wrapper-menu-item" data-ix="menu-item-wrapper"><a href="/index.html" class="nav-link" data-ix="ia-navlink">LE CHALLENGE</a><a href="/projet/index.php?option=com_fabrik&view=list&listid=359" class="nav-link" data-ix="ia-navlink">PROJETS</a><a href="/reglement.html" class="nav-link" data-ix="ia-navlink">RÈGLEMENT</a><a href="/a-propos.html" class="nav-link margin" data-ix="ia-navlink">À PROPOS</a></div>
         <a href="#" class="burger w-inline-block" data-ix="burger">
             <div data-ix="center" class="line1 orange"></div>
             <div data-ix="center" class="line2 orange"></div>
@@ -127,9 +129,9 @@ $uid= $user->id;
     <div class="em-navbar w-container">
         <div class="em-wrappermenu"><a href="/index.html" class="em-logonavbar w-inline-block"><img src="/projet/images/custom/Groupe_VYV_Q.png" alt="Logo Groupe VYV"></a>
             <div class="em-miniwrappermenu">
-                <div class="em-wrapperitemmenu"><a href="/index.html" class="em-itemmenu">Le challenge</a><a href="/projet/index.php?option=com_fabrik&view=list&listid=349" class="em-itemmenu">PROJETS</a><a href="/reglement.html" class="em-itemmenu">règlement</a><a href="/a-propos.html" class="em-itemmenu">à propos</a></div>
+                <div class="em-wrapperitemmenu"><a href="/index.html" class="em-itemmenu">Le challenge</a><a href="/projet/index.php?option=com_fabrik&view=list&listid=359" class="em-itemmenu">PROJETS</a><a href="/reglement.html" class="em-itemmenu">règlement</a><a href="/a-propos.html" class="em-itemmenu">à propos</a></div>
             </div>
-            <a href="/projet/index.php?option=com_fabrik&view=list&listid=349" class="em-button-nav w-inline-block" data-ix="arrowcta-menu">
+            <a href="/projet/index.php?option=com_fabrik&view=list&listid=359" class="em-button-nav w-inline-block" data-ix="arrowcta-menu">
                 <div class="em-containerarrow"><img src="/projet/images/custom/5e049464ed2a2711565ccae1_arrow.svg" alt="" class="em-arrowcta-purple"><img src="/projet/images/custom/arrow.svg" alt="" class="em-arrowcta-white"></div>
                 <div class="em-textcta">VOTER</div>
                 <div class="em-overlay"></div>
@@ -148,7 +150,7 @@ $uid= $user->id;
         </div>
         <div class="em-columnrightproject w-col w-col-6">
             <div class="em-backgroudhero w-clearfix">
-                <div class="em-containerimageproject"></div><?php (!empty($filename))? ('<img src="'.JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename.'" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject">'):''?></div>
+                <div class="em-containerimageproject"></div><?= !empty($filename) ? '<img src="'.JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$student_id.DS.$filename.'" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject">':''?></div>
         </div>
     </div>
 </div>
@@ -196,20 +198,20 @@ $uid= $user->id;
         </div>
         <?php
 
-            if($countVote == 0 && $VoteTotal < 6) {
-                ?>
-                <div class="em-containervotetext">
-                    <h2 class="em-h2vote">Vous voulez soutenir ce projet ?</h2>
-                    <p class="em-soutenir-le-projet">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. <br></p>
-                    <a class="em-button-vote w-inline-block" data-ix="arrowcta-menu-4">
-                        <div class="em-containerarrow2"><img src="/projet/images/custom/arrow.svg" alt="" class="em-arrowcta-white2"></div>
-                        <div class="em-textcta">JE VOTE POUR CE PROJET</div>
-                        <div class="em-overlay2"></div>
-                    </a>
-                </div>
+        if($countVote == 0 && $VoteTotal < 6) {
+            ?>
+            <div class="em-containervotetext">
+                <h2 class="em-h2vote">Vous voulez soutenir ce projet ?</h2>
+                <p class="em-soutenir-le-projet">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. <br></p>
+                <a class="em-button-vote w-inline-block" data-ix="arrowcta-menu-4">
+                    <div class="em-containerarrow2"><img src="/projet/images/custom/arrow.svg" alt="" class="em-arrowcta-white2"></div>
+                    <div class="em-textcta">JE VOTE POUR CE PROJET</div>
+                    <div class="em-overlay2"></div>
+                </a>
+            </div>
 
 
-            <?php }
+        <?php }
 
         else {  ?>
             <div class="em-cardContainer-card-vote">
@@ -271,7 +273,7 @@ $uid= $user->id;
                         type: 'success',
                         title: "<?php echo JText::_('COM_EMUNDUS_VOTE_ACCEPTED'); ?>"
                     }).then((result) => {
-                        window.location.href = 'index.php?option=com_fabrik&view=list&listid=349';
+                        window.location.href = 'index.php?option=com_fabrik&view=list&listid=359';
                     });
 
                 } else {

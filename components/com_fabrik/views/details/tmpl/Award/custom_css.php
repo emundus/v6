@@ -40,7 +40,12 @@ echo <<<EOT
 /* BEGIN - Your CSS styling starts here */
 
 /* Add a padding on list program-year-page for example */
-
+.span12{
+width:100%!important;
+}
+#g-page-surround {
+  background: #f5f5f5 !important;
+}
 .w-inline-block {
     display: flex !important;
 }
@@ -53,12 +58,25 @@ echo <<<EOT
     width: 50% !important;
  }
  
+ .em-containerbottomfooter {
+    z-index: -1 !important;
+ }
+   
 
 .em-center.w-radio  .em-labelyesno.w-form-label {
      margin-top: 8px;
      font-weight: 500;
  }
 
+ .em-textcta2 {
+    position: relative;
+    z-index: 50;
+    padding-top: 3px;
+    line-height: 14px;
+    padding-left: 19px;
+    font-weight: 500;
+  }
+  
 .em-sectionenjeux {
     display: -webkit-box;
     display: -webkit-flex;
@@ -72,14 +90,24 @@ echo <<<EOT
     -ms-flex-align: center;
     align-items: center;
     background-color: #439064;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(67, 144, 100, 0.45)), to(rgba(67, 144, 100, 0.45))), url('../images/5e1c916fe402b63b1b8eaaf5_2vyv_wave_home_key-figures_center--white-near-1.png');
-    background-image: linear-gradient(180deg, rgba(67, 144, 100, 0.45), rgba(67, 144, 100, 0.45)), url('../images/5e1c916fe402b63b1b8eaaf5_2vyv_wave_home_key-figures_center--white-near-1.png');
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(67, 144, 100, 0.45)), to(rgba(67, 144, 100, 0.45))), url('../../../../../../images/custom/5e1c916fe402b63b1b8eaaf5_2vyv_wave_home_key-figures_center--white-near-1.png');
+    background-image: linear-gradient(180deg, rgba(67, 144, 100, 0.45), rgba(67, 144, 100, 0.45)), url('../../../../../../images/custom/5e1c916fe402b63b1b8eaaf5_2vyv_wave_home_key-figures_center--white-near-1.png');
     background-position: 0px 0px, 0% 100%;
     background-size: auto, cover;
     background-repeat: repeat, no-repeat;
     background-attachment: scroll, fixed;
   }
 
+
+  .em-cardContainer-card-vote {
+      display: flex;
+      justify-content: center;
+      
+  }
+  .em-cardContainer-card-vote p{
+   color: #fff;
+    font-size: 18px;
+}
 
 
 .g-content {
@@ -170,7 +198,7 @@ echo <<<EOT
     display: inline-block;
     margin-right: 4px;
     margin-left: 4px;
-    padding: 5px 20px;
+    padding: 0px 12px;
     -webkit-transition: color 200ms cubic-bezier(.55, .085, .68, .53), background-color 200ms cubic-bezier(.55, .085, .68, .53);
     transition: color 200ms cubic-bezier(.55, .085, .68, .53), background-color 200ms cubic-bezier(.55, .085, .68, .53);
     font-family: Wigrum, sans-serif;
@@ -180,7 +208,7 @@ echo <<<EOT
     font-weight: 400;
     text-decoration: none;
     text-transform: uppercase;
-    font-weight: 500;
+    font-weight: 400;
   }
   
   .em-itemmenu:hover {
@@ -204,7 +232,7 @@ echo <<<EOT
     z-index: 1;
     width: 40px;
     height: 40px;
-    background-image: url('/projet/images/custom/vyv/loggin.svg');
+    background-image: url('../../../../../../images/custom/loggin.svg');
     background-position: 50% 50%;
     background-size: contain;
     background-repeat: no-repeat;
@@ -307,7 +335,7 @@ echo <<<EOT
     position: relative;
     width: 40px;
     height: 40px;
-    background-image: url('/projet/images/custom/vyv/5e010047e5da7730b1877de8_2.svg');
+    background-image: url('../../../../../../images/custom/5e010047e5da7730b1877de8_2.svg');
     background-position: 50% 50%;
     background-size: contain;
     background-repeat: no-repeat;
@@ -331,7 +359,7 @@ echo <<<EOT
     margin-left: auto;
     border-radius: 50%;
     background-color: #eb5395;
-    background-image: url('/projet/images/custom/vyv/5e04ee200aa529dcfe7a95fc_Projet-solidaire_1.svg');
+    background-image: url('../../../../../../images/custom/5e04ee200aa529dcfe7a95fc_Projet-solidaire_1.svg');
     background-position: 50% 50%;
     background-size: 50%;
     background-repeat: no-repeat;
@@ -346,7 +374,7 @@ echo <<<EOT
     margin-left: auto;
     border-radius: 50%;
     background-color: #2da4d0;
-    background-image: url('/projet/images/custom/vyv/5e04ee200aa529dcfe7a95fc_Projet-solidaire_2.svg');
+    background-image: url('../../../../../../images/custom/5e04ee200aa529dcfe7a95fc_Projet-solidaire_2.svg');
     background-position: 50% 50%;
     background-size: 60%;
     background-repeat: no-repeat;
@@ -361,7 +389,7 @@ echo <<<EOT
     margin-left: auto;
     border-radius: 50%;
     background-color: #f4c60d;
-    background-image: url('/projet/images/custom/vyv/5e04ee200aa529dcfe7a95fc_Projet-solidaire.svg');
+    background-image: url('../../../../../../images/custom/5e04ee200aa529dcfe7a95fc_Projet-solidaire.svg');
     background-position: 50% 50%;
     background-size: 57%;
     background-repeat: no-repeat;
@@ -376,7 +404,7 @@ echo <<<EOT
     margin-left: auto;
     border-radius: 50%;
     background-color: #9fc766;
-    background-image: url('/projet/images/custom/vyv/Projet-solidaire.svg');
+    background-image: url('../../../../../../images/custom/Projet-solidaire.svg');
     background-position: 50% 50%;
     background-size: 59%;
     background-repeat: no-repeat;
@@ -391,7 +419,7 @@ echo <<<EOT
     margin-left: auto;
     border-radius: 50%;
     background-color: #ee7937;
-    background-image: url('/projet/images/custom/vyv/Vyv-festival.svg');
+    background-image: url('../../../../../../images/custom/Vyv-festival.svg');
     background-position: 50% 50%;
     background-size: 58%;
     background-repeat: no-repeat;
@@ -780,7 +808,7 @@ echo <<<EOT
     -webkit-transition: color 200ms cubic-bezier(.55, .085, .68, .53);
     transition: color 200ms cubic-bezier(.55, .085, .68, .53);
     color: #1e1e1e;
-    font-weight: 500;
+    font-weight: 400;
     text-decoration: none;
   }
   
@@ -860,8 +888,8 @@ echo <<<EOT
     -ms-flex-align: center;
     align-items: center;
     background-color: #482683;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(72, 38, 131, 0.8)), to(rgba(72, 38, 131, 0.8))), url('/projet/images/custom/vyv/Gradiant.png');
-    background-image: linear-gradient(180deg, rgba(72, 38, 131, 0.8), rgba(72, 38, 131, 0.8)), url('/projet/images/custom/vyv/Gradiant.png');
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(72, 38, 131, 0.8)), to(rgba(72, 38, 131, 0.8))), url('../../../../../../images/custom/Gradiant.png');
+    background-image: linear-gradient(180deg, rgba(72, 38, 131, 0.8), rgba(72, 38, 131, 0.8)), url('../../../../../../images/custom/Gradiant.png');
     background-position: 0px 0px, 0px 0px;
     background-size: auto, cover;
     -webkit-transform: translate(0px, 100%);
@@ -922,7 +950,7 @@ echo <<<EOT
     margin-top: 43px;
     color: #636363;
     text-decoration: underline;
-    font-weight: 500;
+    font-weight: 400;
   }
   
   .em--utility-page-wrap {
@@ -942,7 +970,7 @@ echo <<<EOT
     -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center;
-    background-image: url('/projet/images/custom/vyv/5e04d6a54c88a6740a582b50_blue-shape.png');
+    background-image: url('../../../../../../images/custom/5e04d6a54c88a6740a582b50_blue-shape.png');
     background-position: 100% 100%;
     background-size: 40%;
     background-repeat: no-repeat;
@@ -1048,7 +1076,7 @@ echo <<<EOT
     margin-top: 10px;
     color: #636363;
     text-decoration: underline;
-    font-weight: 500;
+    font-weight: 400;
   }
   
   .em-imageproject {
@@ -1056,8 +1084,8 @@ echo <<<EOT
     z-index: 5;
     width: 100%;
     height: 100%;
-    -o-object-fit: cover;
-    object-fit: cover;
+    object-fit: contain;
+    background: #F5F5F5;
   }
   
   .em-projectcategory {
@@ -1073,7 +1101,7 @@ echo <<<EOT
     color: #636363;
     font-size: 18px;
     line-height: 20px;
-    font-weight: 500;
+    font-weight: 400;
     margin-bottom:10px;
     margin-top:0px !important;
   }
@@ -1166,7 +1194,7 @@ echo <<<EOT
     -ms-flex-align: center;
     align-items: center;
     background-color: transparent;
-    background-image: url('/projet/images/custom/vyv/5e0f71de6a42a4ca854ae362_Groupe-VYV_RVB.svg');
+    background-image: url('../../../../../../images/custom/5e0f71de6a42a4ca854ae362_Groupe-VYV_RVB.svg');
     background-position: 50% 50%;
     background-repeat: no-repeat;
     box-shadow: none;
@@ -1185,8 +1213,8 @@ echo <<<EOT
     -ms-flex-align: center;
     align-items: center;
     background-color: #439064;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(67, 144, 100, 0.45)), to(rgba(67, 144, 100, 0.45))), url('/projet/images/custom/vyv/5e1c916fe402b63b1b8eaaf5_2vyv_wave_home_key-figures_center--white-near-1.png');
-    background-image: linear-gradient(180deg, rgba(67, 144, 100, 0.45), rgba(67, 144, 100, 0.45)), url('/projet/images/custom/vyv/5e1c916fe402b63b1b8eaaf5_2vyv_wave_home_key-figures_center--white-near-1.png');
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(67, 144, 100, 0.45)), to(rgba(67, 144, 100, 0.45))), url('../../../../../../images/custom/5e1c916fe402b63b1b8eaaf5_2vyv_wave_home_key-figures_center--white-near-1.png');
+    background-image: linear-gradient(180deg, rgba(67, 144, 100, 0.45), rgba(67, 144, 100, 0.45)), url('../../../../../../images/custom/5e1c916fe402b63b1b8eaaf5_2vyv_wave_home_key-figures_center--white-near-1.png');
     background-position: 0px 0px, 0% 100%;
     background-size: auto, cover;
     background-repeat: repeat, no-repeat;
@@ -1217,7 +1245,7 @@ echo <<<EOT
     color: #fff;
     font-size: 18px;
     line-height: 24px;
-    font-weight: 500;
+    font-weight: 400;
   }
   
   .em-overlay2 {
@@ -1408,7 +1436,7 @@ echo <<<EOT
     border-width: 1px;
     border-color: #482683;
     background-color: #3b173f;
-    background-image: url('/projet/images/custom/vyv/Retenu.svg');
+    background-image: url('../../../../../../images/custom/Retenu.svg');
     background-position: 50% 50%;
     background-size: 50%;
     background-repeat: no-repeat;
@@ -1507,7 +1535,7 @@ echo <<<EOT
       padding-right: 10px;
       padding-left: 10px;
       font-size: 13px;
-      line-height: 29px;
+      line-height: 13px;
     }
     .em-wrapperitemmenu {
       padding-right: 0px;
@@ -1590,6 +1618,14 @@ echo <<<EOT
       width: 13px;
       height: 13px;
     }
+
+    .nav-link {
+        margin-right: 4px;
+        margin-left: 4px;
+        font-size: 13px;
+        line-height: 13px;
+      }
+
     .em-paragrapheprojet {
       width: 100%;
       font-size: 15px;
@@ -1632,7 +1668,7 @@ echo <<<EOT
       width: 100%;
       font-size: 15px;
       line-height: 20px;
-      font-weight: 500;
+      font-weight: 400;
     }
     .em-soutenir-le-projet {
       width: 100%;
@@ -1694,7 +1730,7 @@ echo <<<EOT
       margin-top: 26px;
       color: #636363;
       text-decoration: underline;
-      font-weight: 500;
+      font-weight: 400;
     }
 
     .em-wrapper-project-row2 .em-colprojet.w-row .w-col.w-col-6 {
@@ -1759,16 +1795,16 @@ echo <<<EOT
     }
     .em-menufooter {
       width: 110px;
-      margin-right: 10px;
-      margin-left: 10px;
-      font-size: 12px;
+      margin-right: 10px !important;
+      margin-left: 10px !important;
+      font-size: 12px !important;
     }
     .em-rowfooter {
       -webkit-box-orient: vertical;
       -webkit-box-direction: reverse;
       -webkit-flex-direction: column-reverse;
       -ms-flex-direction: column-reverse;
-      flex-direction: column-reverse;
+      flex-direction: column-reverse !important;
     }
     .em-wrappermenufooter {
       display: -webkit-box;
@@ -1968,9 +2004,10 @@ echo <<<EOT
     .nav-link {
       margin-right: 4px;
       margin-left: 4px;
-      font-size: 2.4vw;
-      line-height: 2.4vw;
+      font-size: 9px;
+      line-height: 9px;
     }
+
     .nav-link.margin {
       margin-right: 15px;
     }
@@ -2030,6 +2067,15 @@ echo <<<EOT
     .em-question {
       width: 100%;
     }
+
+    .em-itemmenu {
+        margin-right: 4px;
+        margin-left: 4px;
+        font-size:9px;
+        line-height: 9px;
+      }
+
+
     .em-button-finalvote {
       width: 90%;
       height: 55px;
