@@ -4,7 +4,7 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
     <modal :name="'elementModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen">
-      <b-badge variant="warning"><h3>{{ this.$data.type }} Configuration</h3></b-badge>
+      <b-badge variant="warning"><h3>{{ this.$data.name }} Configuration</h3></b-badge>
       <br/>
       <br/>
       <b-nav tabs>
@@ -40,6 +40,7 @@ export default {
   data: function() {
     return {
       type: '',
+      name: '',
     }
   },
 
@@ -51,11 +52,8 @@ export default {
   methods: {
     getElementByItem: function () {
       axios({
-        method: 'post',
+        method: 'get',
         url: 'index.php?option=com_emundus_workflow&controller=item&task=getitem',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
         params: {
           id: this.ID,
         },
@@ -64,6 +62,7 @@ export default {
         }
       }).then(response => {
         this.$data.type = (response.data.data)[0].item_id;
+        this.$data.name = (response.data.data)[0].item_name;
       }).catch(error => {
         console.log(error);
       })
