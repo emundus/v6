@@ -21,7 +21,7 @@
       QUITTER
     </button>
 
-    <button @click="autoMatchLink()">Creer des liens</button>
+<!--    <button @click="autoMatchLink()">Creer des liens</button>-->
 
     <transition name="bounce">
       <div class="element-menu" v-if="seen">
@@ -303,7 +303,7 @@ export default {
 
         axios({
           method: 'post',
-          url: 'index.php?option=com_emundus_workflow&controller=item&task=saveitems',
+          url: 'index.php?option=com_emundus_workflow&controller=item&task=saveworkflow',
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -316,17 +316,17 @@ export default {
         })
       });
 
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=workflow&task=updatelastsavedworkflow',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          data: this.getWorkflowIdFromURL(),
-        })
-      }).then(response => {
-      })
+      // axios({
+      //   method: 'post',
+      //   url: 'index.php?option=com_emundus_workflow&controller=workflow&task=updatelastsavedworkflow',
+      //   headers: {
+      //     "Content-Type": "application/x-www-form-urlencoded"
+      //   },
+      //   data: qs.stringify({
+      //     data: this.getWorkflowIdFromURL(),
+      //   })
+      // }).then(response => {
+      // })
     },
 
     quitWorkflow: function() {

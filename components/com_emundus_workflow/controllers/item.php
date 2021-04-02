@@ -175,7 +175,7 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
     }
 
     //save all items
-    public function saveitems() {
+    public function saveworkflow() {
         $user = JFactory::getUser();
 
         if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -186,13 +186,12 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $data = $jinput->getRaw('data');
             $_cit = $this->model;
             $data['saved_by'] = $user->id;
-            $_items = $_cit->saveItems($data);
-
+            $_items = $_cit->saveWorkflow($data);
 
             if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("ITEM_SAVED"), 'data' => $_items);
+                $tab = array('status' => 1, 'msg' => JText::_("WORKFLOW_SAVED"), 'data' => $_items);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("ITEM_CANNOT_SAVED"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_SAVE_WORKFLOW"), 'data' => $_items);
             }
         }
         echo json_encode((object)$tab);

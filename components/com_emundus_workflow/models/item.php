@@ -178,14 +178,15 @@ class EmundusworkflowModelitem extends JModelList
     }
 
     //SAVE ALL ITEMS
-    public function saveItems($data) {
+    public function saveWorkflow($data) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         $data['last_saved'] = date('Y-m-d H:i:s');
 
         try {
-            $query
+            //save item
+            $query->clear()
                 ->update($db->quoteName('#__emundus_workflow_item'))
                 ->set($db->quoteName('#__emundus_workflow_item.axisX') . '=' . $data['axisX'] .
                     ',' . $db->quoteName('#__emundus_workflow_item.axisY') . '=' . $data['axisY'] .
@@ -197,6 +198,28 @@ class EmundusworkflowModelitem extends JModelList
                 ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
 
             $db->setQuery($query);
+            $db->execute();
+
+            //get workflow id
+            $query->clear()
+                ->select('#__emundus_workflow_item.workflow_id')
+                ->from($db->quoteName('#__emundus_workflow_item'))
+                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
+
+            $db->setQuery($query);
+            $_workflow_id = $db->loadObject()->workflow_id;
+
+            //update last saved workflow
+            $query->clear()
+                ->update($db->quoteName('#__emundus_workflow'))
+                ->set($db->quoteName('#__emundus_workflow.updated_at') . '=' . $db->quote($data['last_saved']) .
+                    ',' . $db->quoteName('#__emundus_workflow.user_id') . '=' . (int)$data['saved_by']
+                )
+                ->where($db->quoteName('#__emundus_workflow.id') . '=' . (int)$_workflow_id);
+
+            $db->setQuery($query);
+            $db->execute();
+
             return $db->execute();
         }
         catch(Exception $e) {
