@@ -85,7 +85,6 @@ export default {
   },
 
   created() {
-    this.cronSave();
     this.alertWelcomeDisplay();
 
     this.loadWorkflow();
@@ -238,10 +237,6 @@ export default {
 
           setTimeout(() => { this.$modal.show('elementModal' + _id) }, 500);
       })
-    },
-
-    cronSave: function() {
-      setInterval(this.saveWorkflow,60000);
     },
 
     saveWorkflow: function() {

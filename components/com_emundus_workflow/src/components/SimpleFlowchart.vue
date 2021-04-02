@@ -273,18 +273,47 @@ export default {
         // this.hasDragged = true
       }
     },
+
     handleUp(e) {
       const target = e.target || e.srcElement;
+
+      // save workflow when mouse up --> drag and drop
+      this.scene.nodes.findIndex((item) => {
+        if (item.id === this.action.dragging) {
+          var _saveNode = {
+            id: item.id,
+            type: item.type,
+            axisX: item.x,
+            axisY: item.y,
+            style: item.background,
+            item_label: document.getElementById('label_' + item.id).innerText,
+          }
+
+          axios({
+            method: 'post',
+            url: 'index.php?option=com_emundus_workflow&controller=item&task=saveworkflow',
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              data: _saveNode
+            })
+          }).then(response => {
+            console.log(response);
+          }).catch(error => {
+            console.log(error);
+          })
+        }
+      })
+
       if (this.$el.contains(target)) {
         if (typeof target.className !== 'string' || target.className.indexOf('node-input') < 0) {
           this.draggingLink = null;
         }
         if (typeof target.className === 'string' && target.className.indexOf('node-delete') > -1) {
-          // this.$swal('Merci', 'Ce bloc est supprimé', 'success');
           this.nodeDelete(this.action.dragging);
         }
         if (typeof target.className === 'string' && target.className.indexOf('duplicate-option') > -1) {
-          // this.$swal('Merci', 'Ce bloc est dupliqué', 'success');
           this.nodeCloned(this.action.dragging);
         }
         if (typeof target.className === 'string' && target.className.indexOf('configuration') > -1) {
