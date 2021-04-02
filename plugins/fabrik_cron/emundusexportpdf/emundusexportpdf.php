@@ -48,6 +48,7 @@ class PlgFabrik_Cronemundusexportpdf extends PlgFabrik_Cron {
 		jimport('joomla.mail.helper');
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
 
 		// LOGGER
@@ -57,6 +58,7 @@ class PlgFabrik_Cronemundusexportpdf extends PlgFabrik_Cron {
 
 		$m_files = new EmundusModelFiles;
 		$m_application  = new EmundusModelApplication;
+		$m_emails  = new EmundusModelEmails;
 
 		$params = $this->getParams();
 
@@ -96,12 +98,13 @@ class PlgFabrik_Cronemundusexportpdf extends PlgFabrik_Cron {
 		try {
 			$fnums = $db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Error getting files to be exported : '.$query, JLog::ERROR, 'com_emundus.emundusexportpdf');
+			JLog::add('Error getting files to be exported: '.$query, JLog::ERROR, 'com_emundus.emundusexportpdf');
 			return false;
 		}
 
 		// Generate emails from template and store it in message table
 		foreach ($fnums as $key => $value) {
+			JLog::add('Nb files to export: '.count($fnums), JLog::INFO, 'com_emundus.emundusexportpdf');
 			$fnum = $value->fnum;
 			$fnumInfo = $m_files->getFnumInfos($fnum);
 			$files_list = array();
@@ -110,12 +113,14 @@ class PlgFabrik_Cronemundusexportpdf extends PlgFabrik_Cron {
 			if (is_numeric($fnum) && !empty($fnum)) {
 				// Check if application form is in custom order
 				if (!empty($application_form_order)) {
+					JLog::add('Fabrik group to export: '.$application_form_order, JLog::INFO, 'com_emundus.emundusexportpdf');
 					$application_form_order = explode(',',$application_form_order);
 					$files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1, $application_form_order);
 				} else {
 					$files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1);
 				}
-
+				JLog::add('files_list: '.$files_list[0], JLog::INFO, 'com_emundus.emundusexportpdf');
+				JLog::add($fnum.': application exported', JLog::INFO, 'com_emundus.emundusexportpdf');
 				// Check if pdf attachements are in custom order
 				if (!empty($attachment_order)) {
 					$attachment_order = explode(',',$attachment_order);
@@ -127,23 +132,29 @@ class PlgFabrik_Cronemundusexportpdf extends PlgFabrik_Cron {
 					// Get all file attachements corresponding to fnum
 					$files[] = $m_application->getAttachmentsByFnum($fnum, null, null);
 				}
+				JLog::add('Nb attachments to export: '.count($files), JLog::INFO, 'com_emundus.emundusexportpdf');
 				// Break up the file array and get the attachement files
 				foreach ($files as $file) {
 					$tmpArray = array();
 					EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $file, $fnumInfo['applicant_id']);
 				}
+				JLog::add($fnum.': attachments exported', JLog::INFO, 'com_emundus.emundusexportpdf');
 			}
 
 			if (count($files_list) > 0) {
+				JLog::add('Nb files to merge: '.count($files_list), JLog::INFO, 'com_emundus.emundusexportpdf');
 				// all PDF in one file
 				require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
 				$pdf = new ConcatPdf();
-
+				JLog::add('Start merging: '.count($files_list), JLog::INFO, 'com_emundus.emundusexportpdf');
 				$pdf->setFiles($files_list);
+				JLog::add('Start concat: '.count($files_list), JLog::INFO, 'com_emundus.emundusexportpdf');
 				$pdf->concat();
+				JLog::add('File merged: '.count($files_list), JLog::INFO, 'com_emundus.emundusexportpdf');
 				if (isset($tmpArray)) {
 					foreach ($tmpArray as $fn) {
 						unlink($fn);
+						JLog::add($fn.' unlinked', JLog::INFO, 'com_emundus.emundusexportpdf');
 					}
 				}
 
@@ -163,6 +174,8 @@ class PlgFabrik_Cronemundusexportpdf extends PlgFabrik_Cron {
 				if (file_exists(JPATH_SITE . DS . 'tmp' . DS . $application_form_name)) {
 					unlink(JPATH_SITE . DS . 'tmp' . DS . $application_form_name);
 				}
+
+				JLog::add('File generated: '.JPATH_SITE . DS . 'tmp' . DS . $application_form_name, JLog::INFO, 'com_emundus.emundusexportpdf');
 
 				// Ouput pdf with desired file name
 				$pdf->Output(JPATH_SITE . DS . 'tmp' . DS . $application_form_name.".pdf", 'F');
@@ -190,7 +203,10 @@ class PlgFabrik_Cronemundusexportpdf extends PlgFabrik_Cron {
 					if (file_exists(JPATH_SITE.DS.$export_path.$application_form_name.".pdf")) {
 						unlink(JPATH_SITE.DS.$export_path.$application_form_name.".pdf");
 					}
+					JLog::add('PATH: '.JPATH_SITE.DS.$export_path.$application_form_name.".pdf", JLog::INFO, 'com_emundus.emundusexportpdf');
 					copy(JPATH_SITE.DS.'tmp'.DS.$application_form_name.".pdf", JPATH_SITE.DS.$export_path.$application_form_name.".pdf");
+
+					JLog::add('File copied: '.$application_form_name.".pdf", JLog::INFO, 'com_emundus.emundusexportpdf');
 				}
 				if (file_exists(JPATH_SITE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf")) {
 					unlink(JPATH_SITE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf");

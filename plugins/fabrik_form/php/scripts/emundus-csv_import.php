@@ -616,7 +616,9 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 			if ($table_name === 'jos_emundus_users') {
 
-				$fields[] = $db->quoteName($element_name).' = '.$element_value;
+                if($element_name != 'user_id'){
+                    $fields[] = $db->quoteName($element_name).' = '.$element_value;
+                }
 
 			} else {
 				$columns[] = $element_name;
@@ -626,10 +628,33 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		}
 
 		if ($table_name === 'jos_emundus_users') {
-			$query->clear()
-				->update($db->quoteName($table_name))
-				->set($fields)
-				->where($db->quoteName('user_id').' = '.$user->id);
+            if(array_key_exists('id_ehesp',$element)){
+                $select = array('email','id_ehesp');
+            }
+            else{
+                $select = array('email');
+            }
+            $query->clear()
+                ->select($db->quoteName($select))
+                ->from($db->quoteName('#__emundus_users'))
+                ->where($db->quoteName('user_id').' = '.$user->id);
+
+            $db->setQuery($query);
+            $existData = $db->loadObject();
+
+            if($element['email'] == $existData->email){
+                $app->enqueueMessage('The user with email : '.$existData->email.' already exist', 'info');
+            }
+            if(array_key_exists('id_ehesp',$element)){
+                if($element['id_ehesp'] !== $existData->id_ehesp){
+                    $app->enqueueMessage('The EHESP id : '.$existData->id_ehesp.' have been modified', 'info');
+                }
+            }
+
+            $query->clear()
+                ->update($db->quoteName($table_name))
+                ->set($fields)
+                ->where($db->quoteName('user_id').' = '.$user->id);
 		} else {
 
 			if (empty($fnum)) {

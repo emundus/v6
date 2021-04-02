@@ -102,7 +102,8 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 		// Get params set in eMundus component configuration
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$can_edit_until_deadline    = $eMConfig->get('can_edit_until_deadline', 0);
-		$application_form_order     = $eMConfig->get('application_form_order', null);
+        $can_edit_after_deadline    = $eMConfig->get('can_edit_after_deadline', '0');
+        $application_form_order     = $eMConfig->get('application_form_order', null);
 		$attachment_order           = $eMConfig->get('attachment_order', null);
 		$application_form_name      = $eMConfig->get('application_form_name', "application_form_pdf");
 		$export_pdf                 = $eMConfig->get('export_application_pdf', 0);
@@ -133,7 +134,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
         $isLimitObtained = $m_campaign->isLimitObtained($student->fnums[$student->fnum]->campaign_id);
 
 		// If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
-		if (($is_dead_line_passed || $isLimitObtained === true) && !in_array($student->id, $id_applicants)) {
+		if ((($is_dead_line_passed && $can_edit_after_deadline != 1) || $isLimitObtained === true) && !in_array($student->id, $id_applicants)) {
             if ($isLimitObtained === true) {
                 $this->getModel()->formErrorMsg = JText::_('LIMIT_OBTAINED');
             } else {
