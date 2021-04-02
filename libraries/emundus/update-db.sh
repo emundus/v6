@@ -30,6 +30,7 @@ fi
         echo "Begin clean up for : $tmp_path" >> $tmp_log_path
         ### search and remove patern for xls pdf and zip files in $i with a +7 mtime parameter
         find $tmp_path -name '*.xls' -mtime +7 -exec rm {} \;
+        find $tmp_path -name '*.xlsx' -mtime +7 -exec rm {} \;
         find $tmp_path -name '*.pdf' -mtime +7 -exec rm {} \;
         find $tmp_path -name '*.zip' -mtime +7 -exec rm {} \;
         echo "Folder ` $tmp_path ` is cleaned at $current_date" >> $tmp_log_path
