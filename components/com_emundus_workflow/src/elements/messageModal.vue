@@ -125,10 +125,6 @@ const qs = require('qs');
               console.log(error);
             })
       },
-
-      configureMessage: function() {
-
-      }
     }
   }
 </script>

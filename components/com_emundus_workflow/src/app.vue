@@ -114,6 +114,9 @@ export default {
       axios({
         method: 'get',
         url: 'index.php?option=com_emundus_workflow&controller=workflow&task=getworkflowbyid',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
         params: {
           wid: this.getWorkflowIdFromURL(),
         },
@@ -138,14 +141,18 @@ export default {
       }
 
       axios({
-        method: 'post',
+        // method: 'post',
+        method: 'get',
         url: "index.php?option=com_emundus_workflow&controller=item&task=getcounditembyid",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        data: qs.stringify({
+        params: {
           data: init,
-        })
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
       }).then(response => {
         //insert new init bloc
         if (response.data.status == 0) {
@@ -288,6 +295,9 @@ export default {
       axios({
         method: "get",
         url: "index.php?option=com_emundus_workflow&controller=settings&task=redirectjroute",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
         params: {
           link: link,
         },

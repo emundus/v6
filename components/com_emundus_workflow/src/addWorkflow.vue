@@ -284,6 +284,9 @@ export default {
       axios({
         method: "get",
         url: "index.php?option=com_emundus_workflow&controller=settings&task=redirectjroute",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
         params: {
           link: link,
         },
