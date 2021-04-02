@@ -208,9 +208,11 @@ export default {
       let nodeCategory = this.$props.nodeCategory;
       var items = {
         item_name: nodeCategory[index],
-        item_id: index+1,
+        item_id: index + 1,
         workflow_id: this.getWorkflowIdFromURL(),
         params: '',
+        axisX: -400 + Math.floor((Math.random() * 100) + 1),
+        axisY: 50 + Math.floor((Math.random() * 100) + 1),
       }
 
       axios({
@@ -223,35 +225,18 @@ export default {
           data: items
         })
       }).then(response => {
-        axios({
-          method: 'post',
-          url: "index.php?option=com_emundus_workflow&controller=item&task=getitem",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
-            id: response.data.data,
-          })
-        }).then(answer => {
-          var _style = (answer.data.data)[0];
-          var _id = (response.data.data).toString();
+          var _id = (response.data.data.id).toString();
 
           this.$data.scene.nodes.push({
             id: _id,
-            x: -400 + Math.floor((Math.random() * 100) + 1),
-            y: 50 + Math.floor((Math.random() * 100) + 1),
+            x: items.axisX,
+            y: items.axisY,
             type: nodeCategory[index],
             label: '',
-            background: _style.CSS_style,
+            background: response.data.data.style.CSS_style,
           });
 
-          setTimeout(() => {
-            this.$modal.show('elementModal' + _id);
-          },500);
-        })
-
-      }).catch(error => {
-        console.log(error);
+          setTimeout(() => { this.$modal.show('elementModal' + _id) }, 500);
       })
     },
 

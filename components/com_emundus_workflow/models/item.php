@@ -110,25 +110,48 @@ class EmundusworkflowModelitem extends JModelList
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        if(!empty($data)) {
-            $query->clear()
-                ->insert($db->quoteName('#__emundus_workflow_item'))
-                ->columns($db->quoteName(array_keys($data)))
-                ->values(implode(',', $db->quote(array_values($data))));
+        try {
+            if (!empty($data) or !isset($data)) {
+                //create item
+                $query->clear()
+                    ->insert($db->quoteName('#__emundus_workflow_item'))
+                    ->columns($db->quoteName(array_keys($data)))
+                    ->values(implode(',', $db->quote(array_values($data))));
 
-            try {
                 $db->setQuery($query);
                 $db->execute();
-                return $db->insertid();
+                $_itemID = $db->insertid();
+
+                //get color of this item
+                $query->clear()
+                    ->select('#__emundus_workflow_item_type.CSS_style')
+                    ->from($db->quoteName('#__emundus_workflow_item_type'))
+                    ->where($db->quoteName('#__emundus_workflow_item_type.id') . '=' . (int)$data['item_id']);
+
+                $db->setQuery($query);
+                $_CSSStyle = $db->loadObject();
+
+                //after creating --> save this item to database
+
+                // assign style -->
+                $data['style'] = $_CSSStyle->CSS_style;
+                $data['last_saved'] = date('Y-m-d H:i:s');
+
+                //assign id
+                $data['id'] = $_itemID;
+
+                $this->saveWorkflow($data);
+
+                return array('id' => $_itemID, 'style' => $_CSSStyle, 'saving_status' => $this->saveWorkflow($data));
             }
+            else {
+                return false;
+            }
+        }
             catch(Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/item | Cannot create new item : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
                 return $e->getMessage();
             }
-        }
-        else {
-            return false;
-        }
     }
 
     //DELETE ITEM

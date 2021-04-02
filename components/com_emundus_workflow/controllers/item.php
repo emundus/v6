@@ -40,8 +40,10 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
+
             $_cit = $this->model;
             $data['last_created'] = date('Y-m-d H:i:s');
+            $data['saved_by'] = $user->id;
 
             $_items = $_cit->createItem($data);
 

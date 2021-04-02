@@ -319,7 +319,6 @@ export default {
     },
     nodeDelete(id) {
       this.$emit('nodeDelete', id)
-      console.log('EMIT' + id);
       axios({
         method: 'post',
         url: "index.php?option=com_emundus_workflow&controller=item&task=getitem",

@@ -130,7 +130,7 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        console.log(response);
+        // console.log(response);
 
         //match dataIn and dataOut
         if(response.data.dataIn !== null && response.data.dataOut !== null) {
