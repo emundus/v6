@@ -95,7 +95,6 @@ export default {
 
     this.getWorkflowInfo();
     this.getMenu();
-    // this.getItemSimpleName();
   },
 
   methods: {
@@ -111,21 +110,20 @@ export default {
     },
 
     getWorkflowInfo: function () {
+      //// change post --> get to improve the performance
       axios({
-        method: 'post',
+        method: 'get',
         url: 'index.php?option=com_emundus_workflow&controller=workflow&task=getworkflowbyid',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+        params: {
+          wid: this.getWorkflowIdFromURL(),
         },
-        data: qs.stringify({
-          wid: this.getWorkflowIdFromURL()
-        })
+        paramsSerializer: params =>{
+          return qs.stringify(params);
+        }
       }).then(response => {
-        var _data = (response.data.data)[0];
-        this.$data.workflowname = _data.workflow_name;
-        this.$data.lastSave = _data.updated_at;
-      }).catch(error => {
-        console.log(error);
+          var _data = (response.data.data)[0];
+          this.$data.workflowname = _data.workflow_name;
+          this.$data.lastSave = _data.updated_at;
       })
     },
 
@@ -176,26 +174,6 @@ export default {
         }
         //restore current init bloc
         else {
-          // axios({
-          //   method: 'post',
-          //   url: 'index.php?option=com_emundus_workflow&controller=item&task=getinitid',
-          //   headers: {
-          //     "Content-Type": "application/x-www-form-urlencoded"
-          //   },
-          //   data: qs.stringify({
-          //     data: init.workflow_id
-          //   })
-          // }).then(response => {
-          //   this.scene.nodes.push({
-          //     id: (response.data.data)[0].id,
-          //     x: (response.data.data)[0].axisX,
-          //     y: (response.data.data)[0].axisY,
-          //     type: (response.data.data)[0].item_name,
-          //     label: (response.data.data)[0].item_label,
-          //   })
-          // }).catch(error => {
-          //   console.log(error)
-          // })
         }
       })
     },
@@ -207,31 +185,17 @@ export default {
     getMenu: function() {
       axios.get("index.php?option=com_emundus_workflow&controller=item&task=getallitems").
       then(response => {
-
         var itemCategory = [];
         (response.data.data).forEach(element => itemCategory.push(element.item_name));
         this.$props.nodeCategory = itemCategory;
 
-
         this.items = response.data.data;
         this.items.splice(0, 1);
-
 
       }).catch(error => {
         console.log(error);
       })
     },
-
-
-    // getItemSimpleName: async function () {
-    //   var json = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getallitems');
-    //   var rawData = (JSON.parse(JSON.stringify(json))).data.data;
-    //
-    //   var itemCategory = [];
-    //   rawData.forEach(element => itemCategory.push(element.item_name));
-    //   this.$props.nodeCategory = itemCategory;
-    //   return this.$props.nodeCategory;
-    // },
 
     addNode: function (index) {
       let nodeCategory = this.$props.nodeCategory;
@@ -262,8 +226,6 @@ export default {
             id: response.data.data,
           })
         }).then(answer => {
-          // console.log(answer);
-
           var _style = (answer.data.data)[0];
           var _id = (response.data.data).toString();
 
@@ -315,18 +277,6 @@ export default {
           console.log(error);
         })
       });
-
-      // axios({
-      //   method: 'post',
-      //   url: 'index.php?option=com_emundus_workflow&controller=workflow&task=updatelastsavedworkflow',
-      //   headers: {
-      //     "Content-Type": "application/x-www-form-urlencoded"
-      //   },
-      //   data: qs.stringify({
-      //     data: this.getWorkflowIdFromURL(),
-      //   })
-      // }).then(response => {
-      // })
     },
 
     quitWorkflow: function() {

@@ -130,7 +130,7 @@ export default {
               this.workflow_message = "Aucun workflow trouvé";
             }
             else {
-              this.workflow_message = "Il y a " + response.data.count + " workflows";
+              this.workflow_message = "Il y a " + response.data.count + " workflow(s)";
             }
           }).catch(error => {
             console.log(error);
