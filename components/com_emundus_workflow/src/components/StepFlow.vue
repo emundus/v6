@@ -1,26 +1,99 @@
 <template>
   <div id="stepflow">
+    <button @click="createStep()">Creer nouvelle etape</button>
     <div class="min-h-screen flex overflow-x-scroll py-12">
-      <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4">
+      <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id">
         <p>{{ column.title }}</p>
+        <button @click="deleteStep(column.id)">Annuler etape</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+const qs = require('qs');
+
 export default {
   name: "stepflow",
-  components: {
+
+  components: {},
+
+  props: {
+    ID: Number,             //id of step flow
   },
+
   data() {
     return {
-      columns: [
-        { title: "Step 1", },
-        { title: "Step 2", },
-        { title: "Step 3", },
-      ]
+      columns: []
     };
+  },
+
+  created() {
+    this.getAllSteps(); //// get all steps by workflow
+  },
+
+  methods: {
+    createStep: function() {
+      var _data = {
+        workflow_id : this.getWorkflowIdFromURL(),
+        step_label: "Candidature cycle 2",
+      }
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=step&task=createstep',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          data: _data
+        })
+      }).then(response => {
+          console.log(response);
+          this.columns.push({
+            id: response.data.data,
+            title: _data.step_label,
+          })
+      })
+    },
+
+    deleteStep: function(id) {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=step&task=deletestep',
+        params: { id },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        this.columns = this.columns.filter((step) => {
+          return step.id !== id;   // delete
+        })
+      })
+    },
+
+    getAllSteps: function() {
+      axios({
+        method: 'get',
+        url: 'index.php?option=com_emundus_workflow&controller=step&task=getallsteps',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        params: {
+          data: this.getWorkflowIdFromURL(),
+        },
+        paramsSerializer: params =>{
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        console.log(response);
+      })
+    },
+
+    // get the workflow id from url
+    getWorkflowIdFromURL: function () {
+      return window.location.href.split('id=')[1];
+    },
   }
 };
 </script>
