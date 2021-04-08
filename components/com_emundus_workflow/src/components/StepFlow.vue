@@ -1,31 +1,40 @@
 <template>
   <div id="stepflow">
-    <button @click="createStep()">Creer nouvelle etape</button>
+    <button @click="createStep()" v-if="!hideStep">Creer nouvelle etape</button>
     <div class="min-h-screen flex overflow-x-scroll py-12">
-      <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id">
-        <p>{{ column.title }}</p>
+      <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id" @click="openStep(column.id)" v-if="!hideStep">
+        <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
+        <modal-config-step :ID="column.id" :element="column"/>
         <button @click="deleteStep(column.id)">Annuler etape</button>
+        <button @click="configStep(column.id)">Configurer</button>
       </div>
+    <workflow-space v-for="column in columns" v-if="currentStep == column.id" :step="column"/>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import ModalConfigStep from "../ModalConfigStep";
+import SimpleFlowchart from "./SimpleFlowchart";
+import WorkflowSpace from "../WorkflowSpace";
 const qs = require('qs');
 
 export default {
   name: "stepflow",
 
-  components: {},
+  components: {ModalConfigStep, SimpleFlowchart, WorkflowSpace},
 
   props: {
     ID: Number,             //id of step flow
+    element: Object,
   },
 
   data() {
     return {
-      columns: []
+      columns: [],
+      currentStep: '',
+      hideStep: false,
     };
   },
 
@@ -34,10 +43,15 @@ export default {
   },
 
   methods: {
+    openStep: function(id) {
+      this.currentStep = id;
+      this.hideStep = true;
+    },
+
     createStep: function() {
       var _data = {
         workflow_id : this.getWorkflowIdFromURL(),
-        step_label: "Candidature cycle 2",
+        step_label: 'Etape # anonyme',
       }
       axios({
         method: 'post',
@@ -49,7 +63,6 @@ export default {
           data: _data
         })
       }).then(response => {
-          console.log(response);
           this.columns.push({
             id: response.data.data,
             title: _data.step_label,
@@ -86,21 +99,40 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        console.log(response);
+        var _steps = response.data.data;
+
+        _steps.forEach(step => {
+          this.columns.push({
+            id: step.id,
+            title: step.step_label,
+          })
+        })
       })
+    },
+
+    configStep: function(id) {
+      this.$modal.show("stepModal" + id);
     },
 
     // get the workflow id from url
     getWorkflowIdFromURL: function () {
       return window.location.href.split('id=')[1];
     },
+
+    setStepLabel: function(id) {
+      var data = {
+        step_label: document.getElementById('step_label_' + id).innerText,
+      }
+
+      console.log(data.step_label);
+    }
   }
 };
 </script>
 
 <style>
 .column-width {
-  min-width: 450px;
+  min-width: 240px;
   width: 450px;
 }
 
@@ -123,9 +155,9 @@ export default {
 }
 
 .bg-gray-100 {
-  background-color: #c6e1dc;
+  background-color: #e3e3e3;;
   background-image: radial-gradient(circle, black 1px, rgba(0, 0, 0, 0) 1px);
-  background-size: 3em 3em;
+  background-size: 2em 2em;
 }
 
 .py-12 {
@@ -138,7 +170,7 @@ export default {
 }
 
 .min-h-screen {
-  min-height: 100vh;
+  min-height: 25vh;
 }
 
 .flex {
@@ -151,4 +183,17 @@ export default {
   border-style: solid;
   border-color: #e2e8f0;
 }
+
+[contenteditable="true"].editable-step-label {
+  white-space: nowrap;
+  overflow: hidden;
+}
+[contenteditable="true"].editable-step-label br {
+  display:none;
+}
+[contenteditable="true"].editable-step-label * {
+  display:inline;
+  white-space:nowrap;
+}
+
 </style>

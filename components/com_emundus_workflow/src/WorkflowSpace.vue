@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="workflowspace">
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
@@ -9,17 +9,11 @@
 
     <p class="tooltip"> Dernier mis a jour: {{ this.$data.lastSave }}</p>
 
-    <button class="vertical-menu" @click="seen=!seen">
-      NEW BLOCK
-    </button>
-
-    <button class='save-button' @click="alertSaveDisplay()">
-      SAUVEGARDER
-    </button>
-
-    <button class='exit-button' @click="alertExitDisplay()">
-      QUITTER
-    </button>
+    <div class="button-group">
+      <b-button variant="warning" @click="seen=!seen" style="margin: 10px">Ajouter bloc</b-button>
+      <b-button variant="success" @click="alertSaveDisplay()" style="margin: 10px">Sauvegarder</b-button>
+      <b-button variant="danger" @click="alertExitDisplay()" style="margin: 10px">Quitter</b-button>
+    </div>
 
 <!--    <button @click="autoMatchLink()">Creer des liens</button>-->
 
@@ -29,7 +23,7 @@
         <li v-for="(item,index) in items" style="line-height: 2.8">
           <i :class="item.icon"/>
           <span style="margin: 0 35px"> {{ item.item_name }} </span>
-          <button @click="addNode(index+1)" class="add-button">ADD</button>
+          <button @click="addNode(index+1)" class="add-button">(+)</button>
         </li>
       </div>
     </transition>
@@ -56,7 +50,7 @@ const qs = require('qs');
 const _lst = [];
 
 export default {
-  name: 'app',
+  name: 'WorkflowSpace',
   components: {
     ModalConfigElement,
     SimpleFlowchart,
@@ -66,6 +60,7 @@ export default {
   props: {
     items: Array,
     nodeCategory: Array,
+    step: Object,
   },
 
   data: function() {
@@ -85,7 +80,7 @@ export default {
   },
 
   created() {
-    this.alertWelcomeDisplay();
+    //this.alertWelcomeDisplay();
 
     this.loadWorkflow();
     this.insertInitBloc();
@@ -401,7 +396,7 @@ export default {
 
 <style>
 
-.app {
+.workflowspace {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -417,8 +412,8 @@ export default {
 
 #g-container-main .element-menu {
   padding-bottom: 2px;
-  width: 300px;
-  position: fixed;
+  width: 210px;
+  position: absolute;
   display: block;
   top: 0;
   background: #fff;
@@ -532,17 +527,20 @@ export default {
 }
 
 .editable-workflow-name {
-  color: #8a1f11 !important;
+  color: #118a3b !important;
   font-size: xx-large !important;
   font-weight: bold !important;
   width: max-content;
-  border-bottom: 1px dotted black;
+  /*border-bottom: 1px dotted black;*/
+  text-decoration: underline #28a745;
 }
 
 [contenteditable="true"].editable-workflow-name {
   white-space: nowrap;
   width:max-content;
   overflow: hidden;
+  position: absolute;
+  top: 7vh;
 }
 [contenteditable="true"].editable-workflow-name br {
   display:none;
@@ -556,5 +554,13 @@ export default {
   opacity: 1 !important;
   font-size: small !important;
   color: #8a8a8a;
+  position: absolute;
+  top: 12vh;
+}
+
+.button-group {
+  position: absolute;
+  right: 85vh;
+  bottom: 86vh;
 }
 </style>

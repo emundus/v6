@@ -1,5 +1,6 @@
 import Vue from 'vue'
-import app from './app.vue'
+// import WorkflowSpace from "./WorkflowSpace";
+// import WorkflowDashboard from "./WorkflowDashboard";
 import addWorkflow from "@/addWorkflow";
 
 //import VueSidebarMenu from 'vue-sidebar-menu'
@@ -17,6 +18,8 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+import stepflow from "./components/StepFlow";
 
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue)
@@ -49,7 +52,7 @@ if(document.getElementById('add-item')) {
   new Vue({
     el: '#add-item',
     render(h) {
-      return h(app, {
+      return h(stepflow, {
         props:{}
       });
     }

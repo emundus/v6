@@ -3,24 +3,12 @@
     @mousemove="handleMove" 
     @mouseup="handleUp"
     @mousedown="handleDown">
-    <svg width="100%" :height="`${height}px`">
-      <flowchart-link v-bind.sync="link" 
-        v-for="(link, index) in lines" 
-        :key="`link${index}`"
-        @deleteLink="linkDelete(link.id)">
-      </flowchart-link>
+<!--    <svg width="100%" :height="`${height}vh`">-->
+    <svg width="100%" :height="`${height}vh`">
+      <flowchart-link v-bind.sync="link" v-for="(link, index) in lines" :key="`link${index}`" @deleteLink="linkDelete(link.id)"></flowchart-link>
     </svg>
     <modal-config-element v-for="(node, index) in scene.nodes" :ID="node.id" :element="node" @linkingStart="linkingStart" @linkingStop="linkingStop" @linkDelete="linkDelete"> {{ node.id }}</modal-config-element>
-    <flowchart-node v-bind.sync="node" 
-      v-for="(node, index) in scene.nodes" 
-      :key="`node${index}`"
-      :options="nodeOptions"
-      @linkingStart="linkingStart(node.id)"
-      @linkingStop="linkingStop(node.id)"
-      @nodeSelected="nodeSelected(node.id, $event)"
-      v-bind:style="{ background: node.background }"
-    >
-    </flowchart-node>
+    <flowchart-node v-bind.sync="node" v-for="(node, index) in scene.nodes" :key="`node${index}`" :options="nodeOptions" @linkingStart="linkingStart(node.id)" @linkingStop="linkingStop(node.id)" @nodeSelected="nodeSelected(node.id, $event)" v-bind:style="{ background: node.background }"></flowchart-node>
   </div>
 </template>
 
@@ -51,7 +39,7 @@ export default {
     },
     height: {
       type: Number,
-      default: 400,
+      default: 60,
     },
   },
   data() {
@@ -557,6 +545,7 @@ export default {
 
 .flowchart-container svg {
   cursor: grab;
+  height: 60vh;
 }
 
 .swal2-styled.swal2-confirm {
@@ -574,5 +563,4 @@ export default {
 .swal2-styled.swal2-cancel:hover {
   box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
-
 </style>

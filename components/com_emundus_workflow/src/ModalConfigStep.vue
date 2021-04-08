@@ -1,0 +1,201 @@
+<template>
+  <div id="ModalConfigStep">
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+
+    <modal :name="'stepModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen">
+
+      <!--  Set step in   -->
+      <div class="row mb-3">
+        <label class="col-sm-6 col-form-label">{{ this.title.inputStatusTitle }}</label>
+        <div class="col-xs-8">
+          <select v-model="form.inputStatus" class="form-control-select">
+            <b-form-select-option selected disabled>-- Statut d'entre de l'etape --</b-form-select-option>
+            <option v-for="instatus in this.inStatus" :value="instatus.step"> {{ instatus.value }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Step step out -->
+      <div class="row mb-3">
+        <label class="col-sm-6 col-form-label">{{ this.title.outputStatusTitle }}</label>
+        <div class="col-xs-8">
+          <select v-model="form.outputStatus" class="form-control-select">
+            <b-form-select-option selected disabled>-- Statut sortie de l'etape --</b-form-select-option>
+            <option v-for="outstatus in this.outStatus" :value="outstatus.step"> {{ outstatus.value }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Step start date -->
+      <div class="row mb-3">
+        <label class="col-sm-6 col-form-label">{{ this.title.startDateTitle }}</label>
+        <div class="col-xs-8">
+          Date debut
+        </div>
+      </div>
+
+      <!-- Step end date -->
+      <div class="row mb-3">
+        <label class="col-sm-6 col-form-label">{{ this.title.endDateTitle }}</label>
+        <div class="col-xs-8">
+          Date fin
+        </div>
+      </div>
+
+      <!-- Supplementary information -->
+      <div class="row mb-3">
+        <label class="col-sm-6 col-form-label">{{ this.title.notes }}</label>
+        <div class="col-xs-8">
+          <textarea id="notes_form" rows="3" v-model="form.notes" placeholder="Informations supplementaires" style="margin: -5px; width: 102%"></textarea>
+        </div>
+      </div>
+
+      <b-button variant="success" @click="updateParams()">Sauvegarder</b-button>
+      <b-button variant="danger" @click="exitModal()">Quitter</b-button>
+
+    </modal>
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+import Swal from "sweetalert2";
+const qs = require('qs');
+
+export default {
+  name: "ModalConfigStep",
+
+  props: {
+    ID: Number,
+    element: Object,
+  },
+
+  data: function() {
+    return {
+      title: {
+        inputStatusTitle: "Statut d'entre",
+        outputStatusTitle: "Statut de sortie",
+        startDateTitle: "Date debut",
+        endDateTitle: "Date fin",
+        notes: "Informations supplementaires",
+      },
+      //use for v-model
+      form: {
+        inputStatus: '',
+        outputStatus: '',
+        startDate: '',
+        endDate: '',
+        notes: '',
+      },
+      //use to keep the axios api
+      inStatus: [],
+      outStatus: [],
+    }
+  },
+
+  created() {
+
+  },
+
+  methods: {
+
+    // for test only
+    getAllStatus: function() {
+      axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus')
+          .then(response => {
+            this.inStatus = response.data.data;
+            this.outStatus = response.data.data;
+          })
+          .catch(error => { console.log(error); })
+    },
+
+    getCurrentParams: function(sid) {
+      axios({
+        method: 'get',
+        url: 'index.php?option=com_emundus_workflow&controller=step&task=getcurrentparams',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        params: { sid },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        this.form.inputStatus = response.data.data.inputStatus;
+        this.form.outputStatus = response.data.data.outputStatus;
+        this.form.notes = response.data.data.notes;
+      })
+    },
+
+    getAvailableStatus: function(data) {
+      axios({
+        method: 'get',
+        url: 'index.php?option=com_emundus_workflow&controller=step&task=getavailablestatus',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        params: { data },
+        paramsSerializer: params => {
+          return qs.stringify(params)
+        }
+      }).then(response => {
+        this.inStatus = response.data.dataIn;
+        this.outStatus = response.data.dataOut;
+      })
+    },
+
+    updateParams: function() {
+      // params :: this.form
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=step&task=updateparams',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          data: {
+            id: this.element.id,
+            params: this.form,
+          }
+        })
+      }).then(response => {
+        console.log(response);
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
+    exitModal: function() {
+      this.$modal.hide("stepModal" + this.element.id);
+    },
+
+    getWorkflowIdFromURL: function () {
+      return window.location.href.split('id=')[1];
+    },
+
+    beforeOpen() {
+      var data = {
+        wid: this.getWorkflowIdFromURL(),
+        sid: this.element.id,
+      }
+      this.getCurrentParams(this.element.id);
+      this.getAvailableStatus(data);  //for test only
+    }
+  },
+}
+</script>
+
+<style>
+.vm--modal {
+  padding: 10px 25px !important;
+}
+
+.row {
+  margin-right:100px !important;
+}
+
+.select {
+  max-width: 300px !important;
+}
+</style>
