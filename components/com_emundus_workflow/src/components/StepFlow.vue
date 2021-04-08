@@ -2,7 +2,7 @@
   <div id="stepflow">
     <button @click="createStep()" v-if="!hideStep">Creer nouvelle etape</button>
     <div class="min-h-screen flex overflow-x-scroll py-12">
-      <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id" @click="openStep(column.id)" v-if="!hideStep">
+      <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id" v-on:dblclick="openStep(column.id)" v-if="!hideStep">
         <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
         <modal-config-step :ID="column.id" :element="column"/>
         <button @click="deleteStep(column.id)">Annuler etape</button>
@@ -26,8 +26,8 @@ export default {
   components: {ModalConfigStep, SimpleFlowchart, WorkflowSpace},
 
   props: {
-    ID: Number,             //id of step flow
-    element: Object,
+    // ID: Number,             //id of step flow
+    // element: Object,        //element of step flow --> may be not used
   },
 
   data() {
@@ -51,7 +51,6 @@ export default {
     createStep: function() {
       var _data = {
         workflow_id : this.getWorkflowIdFromURL(),
-        step_label: 'Etape # anonyme',
       }
       axios({
         method: 'post',
@@ -65,7 +64,7 @@ export default {
       }).then(response => {
           this.columns.push({
             id: response.data.data,
-            title: _data.step_label,
+            title: 'Etape # anonyme ' + response.data.data,       // default name of step
           })
       })
     },
@@ -80,7 +79,7 @@ export default {
         }
       }).then(response => {
         this.columns = this.columns.filter((step) => {
-          return step.id !== id;   // delete
+          return step.id !== id;   // delete step
         })
       })
     },
@@ -93,7 +92,7 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         params: {
-          data: this.getWorkflowIdFromURL(),
+          wid: this.getWorkflowIdFromURL(),
         },
         paramsSerializer: params =>{
           return qs.stringify(params);
@@ -104,7 +103,7 @@ export default {
         _steps.forEach(step => {
           this.columns.push({
             id: step.id,
-            title: step.step_label,
+            title: 'Etape # anonyme ' + step.id,
           })
         })
       })
@@ -114,17 +113,33 @@ export default {
       this.$modal.show("stepModal" + id);
     },
 
-    // get the workflow id from url
+    // get the workflow id from url --> base function
     getWorkflowIdFromURL: function () {
       return window.location.href.split('id=')[1];
     },
 
+
     setStepLabel: function(id) {
       var data = {
         step_label: document.getElementById('step_label_' + id).innerText,
+        id: id,
       }
 
-      console.log(data.step_label);
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=step&task=updateparams',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        params: { data },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+
+      }).catch(error => {
+        console.log(error);
+      })
     }
   }
 };

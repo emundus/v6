@@ -31,7 +31,7 @@
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.startDateTitle }}</label>
         <div class="col-xs-8">
-          Date debut
+          Date debut (plus tard)
         </div>
       </div>
 
@@ -39,7 +39,7 @@
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.endDateTitle }}</label>
         <div class="col-xs-8">
-          Date fin
+          Date fin (plus tard)
         </div>
       </div>
 
@@ -99,17 +99,6 @@ export default {
   },
 
   methods: {
-
-    // for test only
-    getAllStatus: function() {
-      axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus')
-          .then(response => {
-            this.inStatus = response.data.data;
-            this.outStatus = response.data.data;
-          })
-          .catch(error => { console.log(error); })
-    },
-
     getCurrentParams: function(sid) {
       axios({
         method: 'get',
@@ -147,23 +136,45 @@ export default {
 
     updateParams: function() {
       // params :: this.form
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=step&task=updateparams',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          data: {
-            id: this.element.id,
-            params: this.form,
-          }
+
+      if(this.form.inputStatus !== null && this.form.outputStatus !== null) {
+        axios({
+          method: 'post',
+          url: 'index.php?option=com_emundus_workflow&controller=step&task=updateparams',
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            data: {
+              id: this.element.id,
+              params: this.form,
+            }
+          })
+        }).then(response => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Congrat',
+            text: 'Les parametres sont sauvegardés',
+            footer: '<a href>EMundus SAS</a>',
+            confirmButtonColor: '#28a745',
+          }).then(result => {
+            if(result.isConfirmed) {
+              this.exitModal();
+            }
+          })
+        }).catch(error => {
+          console.log(error);
         })
-      }).then(response => {
-        console.log(response);
-      }).catch(error => {
-        console.log(error);
-      })
+      }
+      else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          html: 'Le statut d\'entré et le statut de sortie doivent être configuré',
+          timer: 1500,
+          showConfirmButton:false,
+        })
+      }
     },
 
     exitModal: function() {

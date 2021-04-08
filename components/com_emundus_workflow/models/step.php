@@ -17,25 +17,29 @@ class EmundusworkflowModelstep extends JModelList {
         $this->query = $this->db->getQuery(true);
     }
 
-    //// get all steps of workflow
-    public function getAllStepsByWorkflow($data) {
-        try {
-            $this->query->clear()
-                ->select('#__emundus_workflow_step.*')
-                ->from($this->db->quoteName('#__emundus_workflow_step'))
-                ->where($this->db->quoteName('#__emundus_workflow_step.workflow_id') . '=' . (int)$data);
+    //// get all steps of workflow --> params ==> wid
+    public function getAllStepsByWorkflow($wid) {
+        if(!empty($wid) or isset($wid)) {
+            try {
+                $this->query->clear()
+                    ->select('#__emundus_workflow_step.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_step'))
+                    ->where($this->db->quoteName('#__emundus_workflow_step.workflow_id') . '=' . (int)$wid);
 
-            $this->db->setQuery($this->query);
-
-            return $this->db->loadObjectList();   //get all steps by workflow
+                $this->db->setQuery($this->query);      //set query string
+                return $this->db->loadObjectList();     //get all steps by workflow
+            }
+            catch (Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/step | Cannot get all steps by workflow' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                return $e->getMessage();
+            }
         }
-        catch(Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/step | Cannot get all steps' . preg_replace("/[\r\n]/"," ",$this->query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
-            return $e->getMessage();
+        else {
+            return false;
         }
     }
 
-    //// create new step --> data['step_name'], data['workflow_id'], data['step_in'], data['step_out']
+    //// create new step --> params ==> data['workflow_id']
     public function createStep($data) {
         if(!empty($data) or isset($data)) {
             try {
@@ -45,7 +49,6 @@ class EmundusworkflowModelstep extends JModelList {
                     ->values(implode(',', $this->db->quote(array_values($data))));
 
                 $this->db->setQuery($this->query);
-
                 $this->db->execute();
                 return $this->db->insertid();
             }
@@ -59,15 +62,16 @@ class EmundusworkflowModelstep extends JModelList {
         }
     }
 
-    //// delete a step which exists
-    public function deleteStep($data) {
-        if(!empty($data) or !isset($data)) {
+    //// delete a step which exists --> params ==> $id
+    public function deleteStep($id) {
+        if(!empty($id) or !isset($id)) {
             try {
                 $this->query->clear()
                     ->delete($this->db->quoteName('#__emundus_workflow_step'))
-                    ->where($this->query->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data);
+                    ->where($this->query->quoteName('#__emundus_workflow_step.id') . '=' . (int)$id);
 
                 $this->db->setQuery($this->query);
+
                 return $this->db->execute();
             }
             catch(Exception $e) {
@@ -84,11 +88,20 @@ class EmundusworkflowModelstep extends JModelList {
     public function updateStepParams($data) {
         if(!empty($data) or isset($data)) {
             try {
-                $this->query->clear()
-                    ->update($this->db->quoteName('#__emundus_workflow_step'))
-                    ->set($this->db->quoteName('#__emundus_workflow_step.params') . '=' . $this->db->quote(json_encode($data['params'])))
-                    ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
+                //// case 1 --> change the step label
+                if($data['step_label'] and empty($data['params'])) {
+                    $this->query->clear()
+                        ->update($this->db->quoteName('#__emundus_workflow_step'))
+                        ->set($this->db->quoteName('#__emundus_workflow_step.step_label') . '=' . $this->db->quote($data['step_label']))
+                        ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
+                }
 
+                else {
+                    $this->query->clear()
+                        ->update($this->db->quoteName('#__emundus_workflow_step'))
+                        ->set($this->db->quoteName('#__emundus_workflow_step.params') . '=' . $this->db->quote(json_encode($data['params'])))
+                        ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
+                }
                 $this->db->setQuery($this->query);
                 return $this->db->execute();
             }
@@ -102,12 +115,12 @@ class EmundusworkflowModelstep extends JModelList {
         }
     }
 
-    //// get current params of step
+    //// get current params of step --> params ==> sid
     public function getCurrentParamsByStep($sid) {
         if(!empty($sid) or isset($sid)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_step.*')
+                    ->select('#__emundus_workflow_step.params')
                     ->from($this->db->quoteName('#__emundus_workflow_step'))
                     ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$sid);
 
@@ -220,23 +233,23 @@ class EmundusworkflowModelstep extends JModelList {
     }
 
     ///update name of step
-    public function updateStepLabel($data) {
-        if(!empty($data) or isset($data)) {
-            try {
-                $this->query->clear()
-                    ->update($this->db->quoteName('#__emundus_workflow_step'))
-                    ->set($this->db->quoteName('#__emundus_workflow_step.step_label') . '=' . $this->db->quote($data['step_label']))
-                    ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
-
-                $this->db->setQuery($this->query);
-                return $this->db->execute();
-            }
-            catch(Exception $e) {
-                return $e->getMessage();
-            }
-        }
-        else {
-            return false;
-        }
-    }
+//    public function updateStepLabel($data) {
+//        if(!empty($data) or isset($data)) {
+//            try {
+//                $this->query->clear()
+//                    ->update($this->db->quoteName('#__emundus_workflow_step'))
+//                    ->set($this->db->quoteName('#__emundus_workflow_step.step_label') . '=' . $this->db->quote($data['step_label']))
+//                    ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
+//
+//                $this->db->setQuery($this->query);
+//                return $this->db->execute();
+//            }
+//            catch(Exception $e) {
+//                return $e->getMessage();
+//            }
+//        }
+//        else {
+//            return false;
+//        }
+//    }
 }

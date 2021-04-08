@@ -20,16 +20,14 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
-            $data = $jinput->getRaw('data');
+            $data = $jinput->getRaw('wid');
 
-            $_cit = $this->model;
+            $_steps = $this->model->getAllStepsByWorkflow($data);
 
-            $_items = $_cit->getAllStepsByWorkflow($data);
-
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_STEPS"), 'data' => $_items);
+            if ($_steps) {
+                $tab = array('status' => 1, 'msg' => JText::_("RETRIEVED_ALL_STEPS"), 'data' => $_steps);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_ALL_STEPS"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_RETRIEVE_ALL_STEPS"), 'data' => $_steps);
             }
         }
         echo json_encode((object)$tab);
@@ -47,13 +45,12 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_cit = $this->model;
-            $_items = $_cit->createStep($data);
+            $_steps = $this->model->createStep($data);
 
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("STEP_CREATED"), 'data' => $_items);
+            if ($_steps) {
+                $tab = array('status' => 1, 'msg' => JText::_("CREATE_STEP"), 'data' => $_steps);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_CREATE_STEP"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_CREATE_STEP"), 'data' => $_steps);
             }
         }
         echo json_encode((object)$tab);
@@ -71,13 +68,12 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('id');
 
-            $_cit = $this->model;
-            $_items = $_cit->deleteStep($data);
+            $_results = $this->model->deleteStep($data);
 
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("DELETE_STEP"), 'data' => $_items);
+            if ($_results) {
+                $tab = array('status' => 1, 'msg' => JText::_("DELETE_STEP"), 'data' => $_results);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_DELETE_STEP"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_DELETE_STEP"), 'data' => $_results);
             }
         }
         echo json_encode((object)$tab);
@@ -94,13 +90,12 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_cit = $this->model;
-            $_items = $_cit->updateStepParams($data);
+            $_update = $this->model->updateStepParams($data);
 
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("UPDATE_STEP_PARAMS"), 'data' => $_items);
+            if ($_update) {
+                $tab = array('status' => 1, 'msg' => JText::_("UPDATE_STEP_PARAMS"), 'data' => $_update);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_UPDATE_STEP_PARAMS"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_UPDATE_STEP_PARAMS"), 'data' => $_update);
             }
         }
         echo json_encode((object)$tab);
@@ -117,13 +112,12 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('sid');
 
-            $_cit = $this->model;
-            $_items = $_cit->getCurrentParamsByStep($data);
+            $_params = $this->model->getCurrentParamsByStep($data);
 
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_CURRENT_PARAMS"), 'data' => $_items);
+            if ($_params) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_CURRENT_PARAMS"), 'data' => $_params);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_CURRENT_PARAMS"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_CURRENT_PARAMS"), 'data' => $_params);
             }
         }
         echo json_encode((object)$tab);
@@ -140,9 +134,8 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_cit = $this->model;
-            $_status_in = $_cit->getAvailableStatus($data, 'in');
-            $_status_out = $_cit->getAvailableStatus($data, 'out');
+            $_status_in = $this->model->getAvailableStatus($data, 'in');
+            $_status_out = $this->model->getAvailableStatus($data, 'out');
 
             if ($_status_in and $_status_out) {
                 $tab = array('status' => 1, 'msg' => JText::_("GET_AVAILABLE_STATUS"), 'dataIn' => $_status_in, 'dataOut' => $_status_out);
@@ -163,28 +156,28 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
         exit;
     }
 
-    public function updatesteplabel() {
-        $user = JFactory::getUser();
-
-        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
-            $data = $jinput->getRaw('data');
-
-            var_dump($data);die;
-
-            $_cit = $this->model;
-            $_items = $_cit->updateStepLabel($data);
-
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("UPDATE_STEP_LABEL"), 'data' => $_items);
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_UPDATE_STEP_LABEL"), 'data' => $_items);
-            }
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
+//    public function updatesteplabel() {
+//        $user = JFactory::getUser();
+//
+//        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+//            $result = 0;
+//            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+//        } else {
+//            $jinput = JFactory::getApplication()->input;
+//            $data = $jinput->getRaw('data');
+//
+//            var_dump($data);die;
+//
+//            $_cit = $this->model;
+//            $_items = $_cit->updateStepLabel($data);
+//
+//            if ($_items) {
+//                $tab = array('status' => 1, 'msg' => JText::_("UPDATE_STEP_LABEL"), 'data' => $_items);
+//            } else {
+//                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_UPDATE_STEP_LABEL"), 'data' => $_items);
+//            }
+//        }
+//        echo json_encode((object)$tab);
+//        exit;
+//    }
 }
