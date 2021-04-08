@@ -62,18 +62,22 @@ export default {
           data: _data
         })
       }).then(response => {
-          this.columns.push({
-            id: response.data.data,
-            title: 'Etape # anonyme ' + response.data.data,       // default name of step
-          })
+        this.columns.push({
+          id: response.data.data.step_id,
+          title: 'Etape # anonyme ' + response.data.data.step_id,       // default name of step
+        })
       })
     },
 
     deleteStep: function(id) {
+      var data = {
+        id: id,
+        wid: this.getWorkflowIdFromURL(),
+      }
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus_workflow&controller=step&task=deletestep',
-        params: { id },
+        params: { data },
         paramsSerializer: params => {
           return qs.stringify(params);
         }

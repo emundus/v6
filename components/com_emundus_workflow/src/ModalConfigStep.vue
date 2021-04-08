@@ -147,6 +147,7 @@ export default {
           data: qs.stringify({
             data: {
               id: this.element.id,
+              wid: this.getWorkflowIdFromURL(),
               params: this.form,
             }
           })

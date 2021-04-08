@@ -66,7 +66,7 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
-            $data = $jinput->getRaw('id');
+            $data = $jinput->getRaw('data');
 
             $_results = $this->model->deleteStep($data);
 

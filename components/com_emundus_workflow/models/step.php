@@ -43,6 +43,8 @@ class EmundusworkflowModelstep extends JModelList {
     public function createStep($data) {
         if(!empty($data) or isset($data)) {
             try {
+
+                // step 1 --> create step
                 $this->query->clear()
                     ->insert($this->db->quoteName('#__emundus_workflow_step'))
                     ->columns($this->db->quoteName(array_keys($data)))
@@ -50,7 +52,23 @@ class EmundusworkflowModelstep extends JModelList {
 
                 $this->db->setQuery($this->query);
                 $this->db->execute();
-                return $this->db->insertid();
+                $_step_id = $this->db->insertid();
+
+                // step 2 --> update workflow::last_saved, workflow::saved_by --> params ==> $_step_id
+                $data['saved_by'] = JFactory::getUser()->id;
+                $data['last_saved'] = date('Y-m-d H:i:s');
+
+                /// from $_step_id --> get workflow_id
+                $this->query->clear()
+                    ->update($this->db->quoteName('#__emundus_workflow'))
+                    ->set($this->db->quoteName('#__emundus_workflow.updated_at') . '=' . $this->db->quote($data['last_saved']) .
+                        ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (int)$data['saved_by'])
+                    ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$data['workflow_id']);
+
+                $this->db->setQuery($this->query);
+                $this->db->execute();
+
+                return array("step_id" => $_step_id, "message" => $this->db->execute());
             }
             catch(Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/step | Cannot create new step' . preg_replace("/[\r\n]/"," ",$this->query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
@@ -63,16 +81,33 @@ class EmundusworkflowModelstep extends JModelList {
     }
 
     //// delete a step which exists --> params ==> $id
-    public function deleteStep($id) {
-        if(!empty($id) or !isset($id)) {
+    public function deleteStep($data) {
+
+        if(!empty($data) or !isset($data)) {
             try {
+                $wid = $data['wid'];
+
                 $this->query->clear()
                     ->delete($this->db->quoteName('#__emundus_workflow_step'))
-                    ->where($this->query->quoteName('#__emundus_workflow_step.id') . '=' . (int)$id);
+                    ->where($this->query->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
 
                 $this->db->setQuery($this->query);
+                $this->db->execute();
 
-                return $this->db->execute();
+                // track the log of workflow
+                $data = array('saved_by' => JFactory::getUser()->id, 'last_saved' => date('Y-m-d H:i:s'));
+
+                /// from $_step_id --> get workflow_id
+                $this->query->clear()
+                    ->update($this->db->quoteName('#__emundus_workflow'))
+                    ->set($this->db->quoteName('#__emundus_workflow.updated_at') . '=' . $this->db->quote($data['last_saved']) .
+                        ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (int)$data['saved_by'])
+                    ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$wid);
+
+                $this->db->setQuery($this->query);
+                $this->db->execute();
+
+                return array('message' => $this->db->execute());
             }
             catch(Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/step | Cannot delete step' . preg_replace("/[\r\n]/"," ",$this->query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
@@ -88,6 +123,7 @@ class EmundusworkflowModelstep extends JModelList {
     public function updateStepParams($data) {
         if(!empty($data) or isset($data)) {
             try {
+                $wid = $data['wid'];
                 //// case 1 --> change the step label
                 if($data['step_label'] and empty($data['params'])) {
                     $this->query->clear()
@@ -102,8 +138,24 @@ class EmundusworkflowModelstep extends JModelList {
                         ->set($this->db->quoteName('#__emundus_workflow_step.params') . '=' . $this->db->quote(json_encode($data['params'])))
                         ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
                 }
+
                 $this->db->setQuery($this->query);
-                return $this->db->execute();
+                $this->db->execute();
+
+                // track the log of workflow
+                $data = array('saved_by' => JFactory::getUser()->id, 'last_saved' => date('Y-m-d H:i:s'));
+
+                /// from $_step_id --> get workflow_id
+                $this->query->clear()
+                    ->update($this->db->quoteName('#__emundus_workflow'))
+                    ->set($this->db->quoteName('#__emundus_workflow.updated_at') . '=' . $this->db->quote($data['last_saved']) .
+                        ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (int)$data['saved_by'])
+                    ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$wid);
+
+                $this->db->setQuery($this->query);
+                $this->db->execute();
+
+                return array('message' => $this->db->execute());
             }
             catch(Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/step | Cannot update step params' . preg_replace("/[\r\n]/"," ",$this->query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
