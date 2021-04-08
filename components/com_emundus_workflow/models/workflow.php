@@ -48,24 +48,6 @@ class EmundusworkflowModelworkflow extends JModelList
         }
     }
 
-//    // GET COUNT ALL WORKFLOWS
-//    public function getCountAllWorkflows() {
-//        $db = JFactory::getDbo();
-//        $query = $db->getQuery(true);
-//
-//        try {
-//            $query->clear()
-//                ->select('count(*)')
-//                ->from($db->quoteName('#__emundus_workflow'));
-//            $db->setQuery($query);
-//            return $db->loadResult();
-//        }
-//        catch(Exception $e) {
-//            JLog::add('component/com_emundus_workflow/models/workflow | Cannot get count all workflows' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
-//            return $e->getMessage();
-//        }
-//    }
-
     //DELETE WORKFLOW BY ID
     public function deleteWorkflow($wid) {
         $db = JFactory::getDbo();
@@ -149,25 +131,6 @@ class EmundusworkflowModelworkflow extends JModelList
         }
         catch(Exception $e) {
             JLog::add('component/com_emundus_workflow/models/workflow | Cannot track workflow last saved : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
-            return $e->getMessage();
-        }
-    }
-
-    //GET CAMPAIGN BY ID
-    public function getCampaignByID($data) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $query->clear()
-                ->select('*')
-                ->from($db->quoteName('#__emundus_setup_campaigns'))
-                ->where($db->quoteName('#__emundus_setup_campaigns.id') . '=' . (int)$data);
-
-            $db->setQuery($query);
-            return $db->loadObjectList();
-        }
-        catch(Exception $e) {
             return $e->getMessage();
         }
     }
