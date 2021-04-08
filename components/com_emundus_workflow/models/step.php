@@ -231,25 +231,4 @@ class EmundusworkflowModelstep extends JModelList {
             return false;
         }
     }
-
-    ///update name of step
-//    public function updateStepLabel($data) {
-//        if(!empty($data) or isset($data)) {
-//            try {
-//                $this->query->clear()
-//                    ->update($this->db->quoteName('#__emundus_workflow_step'))
-//                    ->set($this->db->quoteName('#__emundus_workflow_step.step_label') . '=' . $this->db->quote($data['step_label']))
-//                    ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
-//
-//                $this->db->setQuery($this->query);
-//                return $this->db->execute();
-//            }
-//            catch(Exception $e) {
-//                return $e->getMessage();
-//            }
-//        }
-//        else {
-//            return false;
-//        }
-//    }
 }

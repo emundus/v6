@@ -155,29 +155,4 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
-
-//    public function updatesteplabel() {
-//        $user = JFactory::getUser();
-//
-//        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-//            $result = 0;
-//            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-//        } else {
-//            $jinput = JFactory::getApplication()->input;
-//            $data = $jinput->getRaw('data');
-//
-//            var_dump($data);die;
-//
-//            $_cit = $this->model;
-//            $_items = $_cit->updateStepLabel($data);
-//
-//            if ($_items) {
-//                $tab = array('status' => 1, 'msg' => JText::_("UPDATE_STEP_LABEL"), 'data' => $_items);
-//            } else {
-//                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_UPDATE_STEP_LABEL"), 'data' => $_items);
-//            }
-//        }
-//        echo json_encode((object)$tab);
-//        exit;
-//    }
 }
