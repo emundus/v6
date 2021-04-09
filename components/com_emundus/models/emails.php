@@ -1150,11 +1150,20 @@ class EmundusModelEmails extends JModelList {
     // @param $row array of data
     public function logEmail($row) {
 
+        $offset = JFactory::getConfig()->get('offset', 'UTC');
+        try {
+            $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+            $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+            $now = $dateTime->format('Y-m-d H:i:s');
+        } catch (Exception $e) {
+            $now = 'NOW()';
+        }
+
         $query = $this->_db->getQuery(true);
 
         $columns = ['user_id_from', 'user_id_to', 'subject', 'message' , 'date_time'];
 
-        $values = [$row['user_id_from'], $row['user_id_to'], $this->_db->quote($row['subject']), $this->_db->quote($row['message']), 'NOW()'];
+        $values = [$row['user_id_from'], $row['user_id_to'], $this->_db->quote($row['subject']), $this->_db->quote($row['message']), $this->_db->quote($now)];
 
         // If we are logging the email type as well, this allows us to put them in separate folders.
         if (isset($row['type']) && !empty($row['type'])) {
