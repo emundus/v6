@@ -47,7 +47,7 @@ class EmundusModelProfile extends JModelList {
         $db = JFactory::getDBO();
         $query = 'SELECT *
         			FROM #__emundus_setup_profiles esp
-                 	WHERE esp.published=1  AND status=1
+                 	WHERE esp.published=1
                   	ORDER BY esp.label';
         $db->setQuery($query);
         return $db->loadObjectList();
