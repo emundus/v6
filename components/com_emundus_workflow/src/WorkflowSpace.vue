@@ -3,14 +3,10 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
-    <div contenteditable="true" class="editable-workflow-name" id="editable-workflow-name-div" v-on:keyup.enter="setStepLabel()" v-b-tooltip.top.hover title="Cliquer sur le nom du workflow pour le changer">
-      {{ this.step.title }}
-    </div>
-
     <div class="button-group">
-      <b-button variant="warning" @click="seen=!seen" style="margin: 10px">(+) bloc</b-button>
-      <b-button variant="success" @click="alertSaveDisplay()" style="margin: 10px">Sauvegarder</b-button>
-      <b-button variant="danger" @click="alertExitDisplay()" style="margin: 10px">(x) étape</b-button>
+      <b-button variant="warning" @click="seen=!seen" style="margin: 10px">Ajouter bloc &nbsp<b-icon icon="clipboard-plus"></b-icon></b-button>
+      <b-button variant="success" @click="alertSaveDisplay()" style="margin: 10px">Sauvegarder &nbsp<b-icon icon="bookmark-check"></b-icon></b-button>
+      <b-button variant="danger" @click="alertExitDisplay()" style="margin: 10px">Quitter &nbsp<b-icon icon="x-circle"></b-icon></b-button>
     </div>
 
 <!--    <button @click="autoMatchLink()">Creer des liens</button>-->
@@ -81,9 +77,8 @@ export default {
   created() {
     this.getMenu();               // get menu bar of step
     this.loadStep();              // load step --> retrieve items and links
-    this.insertInitBloc();        // check if the init item exists or not --> if not, create it, if yes, do nothing
+    //this.insertInitBloc();        // check if the init item exists or not --> if not, create it, if yes, do nothing     // --> temporary unuse
     this.cronUpdate();
-    this.getWorkflowInfo();       // used for Step Workspace
   },
 
   methods: {
@@ -518,7 +513,7 @@ export default {
 }
 
 .button-group {
-  position: absolute;
+  position: sticky;
   right: 85vh;
   bottom: 85vh;
 }
