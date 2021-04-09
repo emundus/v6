@@ -4,7 +4,7 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
     <div contenteditable="true" class="editable-workflow-name" id="editable-workflow-name-div" v-on:keyup.enter="updateWorkflowname()" v-b-tooltip.top.hover title="Cliquer sur le nom du workflow pour le changer">
-      {{ this.$data.workflowname }}
+      {{ this.step.title }}
     </div>
 
     <p class="tooltip"> Dernier mis a jour: {{ this.$data.lastSave }}</p>
@@ -65,6 +65,7 @@ export default {
 
   data: function() {
     return {
+      loading: false,
       lastSave: '',
       workflowname: '',
       seen: false,
@@ -80,8 +81,6 @@ export default {
   },
 
   created() {
-    //this.alertWelcomeDisplay();
-
     this.loadWorkflow();
     this.insertInitBloc();
 
@@ -184,7 +183,7 @@ export default {
     },
 
     getMenu: function() {
-      axios.get("index.php?option=com_emundus_workflow&controller=item&task=getallitems").
+      axios.get("index.php?option=com_emundus_workflow&controller=item&task=getitemmenu").
       then(response => {
         var itemCategory = [];
         (response.data.data).forEach(element => itemCategory.push(element.item_name));
@@ -207,6 +206,7 @@ export default {
         params: '',
         axisX: -400 + Math.floor((Math.random() * 100) + 1),
         axisY: 50 + Math.floor((Math.random() * 100) + 1),
+        step_id: this.step.id,
       }
 
       axios({
@@ -314,7 +314,7 @@ export default {
           to: element.to,
         })
       });
-      },
+    },
     //next step --> clone workflow = clone all items
 
     alertExitDisplay: function() {
@@ -561,6 +561,6 @@ export default {
 .button-group {
   position: absolute;
   right: 85vh;
-  bottom: 86vh;
+  bottom: 85vh;
 }
 </style>

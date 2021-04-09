@@ -13,245 +13,249 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
-use Joomla\CMS\Date\Date;
 
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_workflow/models');
 
 class EmundusworkflowModelitem extends JModelList
 {
+    var $db = null;
+    var $query = null;
+
     public function __construct($config = array()) {
         parent::__construct($config);
+        $this->db = JFactory::getDbo();
+        $this->query = $this->db->getQuery(true);
     }
 
-    //GET ALL TYPES OF ELEMENT
-    public function getAllItems() {
-        $db = JFactory::getDbo();
-        $query =$db->getQuery(true);
-
+    //// get item menu
+    public function getItemMenu() {
         try {
-            //query string
-            $query->clear()
+            $this->query->clear()
                 ->select('*')
-                ->from($db->quoteName('#__emundus_workflow_item_type'));
+                ->from($this->db->quoteName('#__emundus_workflow_item_type'));
 
-            //execute query string
-            $db->setQuery($query);
-            return $db->loadObjectList();
+            $this->db->setQuery($this->query);
+            return $this->db->loadObjectList();
         }
         catch(Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/item | Cannot get all item types' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            JLog::add('component/com_emundus_workflow/models/item | Cannot get item menu' . preg_replace("/[\r\n]/"," ",$this->query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
             return $e->getMessage();
         }
     }
 
-    //GET ALL ITEMS BY WORKFLOW ID
-    public function getAllItemsByWorkflowId($id) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        try {
-            $query->clear()
-                ->select('#__emundus_workflow_item.*')
-                ->from($db->quoteName('#__emundus_workflow_item'))
-                ->where($db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$id);
+    //// get items by step --> params ==> $sid
+    public function getAllItemsByStep($sid) {
+        if(!empty($sid) or isset($sid)) {
+            try {
+                $this->query->clear()
+                    ->select('#__emundus_workflow_item.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_item'))
+                    ->where($this->db->quoteName('#__emundus_workflow_item.step_id') . '=' . (int)$sid);
 
-            $db->setQuery($query);
-            return $db->loadObjectList();
+                $this->db->setQuery($this->query);
+                return $this->db->loadObjectList();
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/item | Cannot get all items by step' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                return $e->getMessage();
+            }
         }
-        catch(Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/item | Cannot get all item by workflow' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
-            return $e->getMessage();
-        }
-    }
-
-    //GET INIT BLOC BY WORKFLOW ID
-    public function getInitIDByWorkflow($wid) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $query->clear()
-                ->select('#__emundus_workflow_item.*')
-                ->from($db->quoteName('#__emundus_workflow_item'))
-                ->where($db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$wid)
-                ->andWhere($db->quoteName('#__emundus_workflow_item.item_id') . '=' . 1);
-
-            $db->setQuery($query);
-            return $db->loadObjectList();
-        }
-        catch(Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/item | Cannot get init item by workflow' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
-            return $e->getMessage();
+        else {
+            return false;
         }
     }
 
-    //GET COUNT HOW MANY ITEM BY WORKFLOW ID
+    //get init bloc by workflow --> get init bloc by step
+    public function getInitIDByStep($sid) {
+        if(!empty($sid) or isset($sid)) {
+            try {
+                $this->query->clear()
+                    ->select('#__emundus_workflow_item.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_item'))
+                    ->where($this->db->quoteName('#__emundus_workflow_item.step_id') . '=' . (int)$sid)
+                    ->andWhere($this->db->quoteName('#__emundus_workflow_item.item_id') . '=' . 1);
+
+                $this->db->setQuery($this->query);
+                return $this->db->loadObjectList();
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/item | Cannot get init bloc by step' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    //// get count items by step --> params ==> $data['item_id'], $data['step_id']
     public function getCountItemByID($data) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        if(!empty($data) or isset($data)) {
+            try {
+                $this->query->clear()
+                    ->select('count(*)')
+                    ->from($this->db->quoteName('#__emundus_workflow_item'))
+                    ->where($this->db->quoteName('#__emundus_workflow_item.item_id') . ' = ' . (int)$data['item_id'])
+                    ->andWhere($this->db->quoteName('#__emundus_workflow_item.step_id') . ' = ' . (int)$data['step_id']);
 
-        try {
-            $query->clear()
-                ->select('count(*)')
-                ->from($db->quoteName('#__emundus_workflow_item'))
-                ->where($db->quoteName('#__emundus_workflow_item.item_id') . ' = ' . (int)$data['item_id'])
-                ->andWhere($db->quoteName('#__emundus_workflow_item.workflow_id') . ' = ' . (int)$data['workflow_id']);
-
-            $db->setQuery($query);
-            return $db->loadResult();
+                $this->db->setQuery($this->query);
+                return $this->db->loadResult();
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/item | Cannot count items' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                return $e->getMessage();
+            }
         }
-        catch(Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/item | Cannot count items' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
-            return $e->getMessage();
+        else {
+            return false;
         }
     }
 
-    //CREATE NEW ITEM
+    //// create new item --> params ==> $data
     public function createItem($data) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
         try {
             if (!empty($data) or !isset($data)) {
                 //create item
-                $query->clear()
-                    ->insert($db->quoteName('#__emundus_workflow_item'))
-                    ->columns($db->quoteName(array_keys($data)))
-                    ->values(implode(',', $db->quote(array_values($data))));
+                $this->query->clear()
+                    ->insert($this->db->quoteName('#__emundus_workflow_item'))
+                    ->columns($this->db->quoteName(array_keys($data)))
+                    ->values(implode(',', $this->db->quote(array_values($data))));
 
-                $db->setQuery($query);
-                $db->execute();
-                $_itemID = $db->insertid();
+                    $this->db->setQuery($this->query);
+                    $this->db->execute();
+                    $_itemID = $this->db->insertid();
 
-                //get color of this item
-                $query->clear()
-                    ->select('#__emundus_workflow_item_type.CSS_style')
-                    ->from($db->quoteName('#__emundus_workflow_item_type'))
-                    ->where($db->quoteName('#__emundus_workflow_item_type.id') . '=' . (int)$data['item_id']);
+                    //get color of this item
+                    $this->query->clear()
+                        ->select('#__emundus_workflow_item_type.CSS_style')
+                        ->from($this->db->quoteName('#__emundus_workflow_item_type'))
+                        ->where($this->db->quoteName('#__emundus_workflow_item_type.id') . '=' . (int)$data['item_id']);
 
-                $db->setQuery($query);
-                $_CSSStyle = $db->loadObject();
+                    $this->db->setQuery($this->query);
+                    $_CSSStyle = $this->db->loadObject();
 
-                //after creating --> save this item to database
+                    //after creating --> save this item to database
 
-                // assign style -->
-                $data['style'] = $_CSSStyle->CSS_style;
-                $data['last_saved'] = date('Y-m-d H:i:s');
+                    // assign style -->
+                    $data['style'] = $_CSSStyle->CSS_style;
+                    $data['last_saved'] = date('Y-m-d H:i:s');
 
-                //assign id
-                $data['id'] = $_itemID;
+                    //assign id
+                    $data['id'] = $_itemID;
 
-                $this->saveWorkflow($data);
+                    $this->saveWorkflow($data);
 
-                return array('id' => $_itemID, 'style' => $_CSSStyle, 'saving_status' => $this->saveWorkflow($data));
-            }
+                    return array('id' => $_itemID, 'style' => $_CSSStyle, 'saving_status' => $this->saveWorkflow($data));
+                }
             else {
-                return false;
+                    return false;
             }
         }
-            catch(Exception $e) {
-                JLog::add('component/com_emundus_workflow/models/item | Cannot create new item : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+        catch (Exception $e) {
+            JLog::add('component/com_emundus_workflow/models/item | Cannot create new item : ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+            return $e->getMessage();
+        }
+    }
+
+    //// delete item --> params ==> $id
+    public function deleteItem($id) {
+        if(!empty($data) or isset($data)) {
+            try {
+                $this->query->clear()
+                    ->delete($this->db->quoteName("#__emundus_workflow_item"))
+                    ->where($this->db->quoteName('#__emundus_workflow_item.id') . ' = ' . (int)$id);
+
+                $this->db->setQuery($this->query);
+
+                return $this->db->execute();
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/item | Cannot delete item : ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
                 return $e->getMessage();
             }
-    }
-
-    //DELETE ITEM
-    public function deleteItem($data) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try{
-            $query->clear()
-                ->delete($db->quoteName("#__emundus_workflow_item"))
-                ->where($db->quoteName('#__emundus_workflow_item.id') . ' = ' . (int)$data);
-
-            $db->setQuery($query);
-
-            return $db->execute();
         }
-        catch(Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/item | Cannot delete item : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
-            return $e->getMessage();
+        else {
+            return false;
         }
     }
 
-    //GET ITEM BY ID
+    //// get item by id --> use to call modal
     public function getItemByID($id) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        if(!empty($id) or isset($id)) {
+            try {
+                $this->query->clear()
+                    ->select('#__emundus_workflow_item.*, #__emundus_workflow_item_type.CSS_style')
+                    ->from($this->db->quoteName('#__emundus_workflow_item'))
+                    ->leftJoin($this->db->quoteName('#__emundus_workflow_item_type') .
+                        ' ON '
+                        . $this->db->quoteName('#__emundus_workflow_item.item_id') .
+                        '='
+                        . $this->db->quoteName('#__emundus_workflow_item_type.id')
+                    )
+                    ->where($this->db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$id);
 
-        try {
-            $query->clear()
-                ->select('#__emundus_workflow_item.*, #__emundus_workflow_item_type.CSS_style')
-                ->from($db->quoteName('#__emundus_workflow_item'))
-                ->leftJoin($db->quoteName('#__emundus_workflow_item_type') .
-                    ' ON '
-                    . $db->quoteName('#__emundus_workflow_item.item_id') .
-                    '='
-                    . $db->quoteName('#__emundus_workflow_item_type.id')
-                )
-                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int) $id);
-
-            $db->setQuery($query);
-            return $db->loadObjectList();
+                $this->db->setQuery($this->query);
+                return $this->db->loadObjectList();
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/item | Cannot get item by id: ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                return $e->getMessage();
+            }
         }
-        catch(Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/item | Cannot get item : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
-            return $e->getMessage();
+        else {
+            return false;
         }
     }
 
-    //SAVE ALL ITEMS
+    //// save all items
     public function saveWorkflow($data) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        if(!empty($data) or isset($data)) {
+            $data['last_saved'] = date('Y-m-d H:i:s');
 
-        $data['last_saved'] = date('Y-m-d H:i:s');
+            try {
+                //save item
+                $this->query->clear()
+                    ->update($this->db->quoteName('#__emundus_workflow_item'))
+                    ->set($this->db->quoteName('#__emundus_workflow_item.axisX') . '=' . $data['axisX'] .
+                        ',' . $this->db->quoteName('#__emundus_workflow_item.axisY') . '=' . $data['axisY'] .
+                        ',' . $this->db->quoteName('#__emundus_workflow_item.item_label') . '=' . $this->db->quote($data['item_label']) .
+                        ',' . $this->db->quoteName('#__emundus_workflow_item.style') . '=' . $this->db->quote($data['style']))
+                    ->where($this->db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
 
-        try {
-            //save item
-            $query->clear()
-                ->update($db->quoteName('#__emundus_workflow_item'))
-                ->set($db->quoteName('#__emundus_workflow_item.axisX') . '=' . $data['axisX'] .
-                    ',' . $db->quoteName('#__emundus_workflow_item.axisY') . '=' . $data['axisY'] .
-                    ',' . $db->quoteName('#__emundus_workflow_item.item_label') . '=' . $db->quote($data['item_label']) .
-                    ',' . $db->quoteName('#__emundus_workflow_item.last_saved') . '=' . $db->quote($data['last_saved']) .
-                    ',' . $db->quoteName('#__emundus_workflow_item.style') . '=' . $db->quote($data['style']) .
-                    ',' . $db->quoteName('#__emundus_workflow_item.saved_by') .   '=' . (int)$data['saved_by']
-                )
-                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
+                $this->db->setQuery($this->query);
+                $this->db->execute();
 
-            $db->setQuery($query);
-            $db->execute();
+                //get workflow id
+                $this->query->clear()
+                    ->select('#__emundus_workflow_item.workflow_id')
+                    ->from($this->db->quoteName('#__emundus_workflow_item'))
+                    ->where($this->db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
 
-            //get workflow id
-            $query->clear()
-                ->select('#__emundus_workflow_item.workflow_id')
-                ->from($db->quoteName('#__emundus_workflow_item'))
-                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
+                $this->db->setQuery($this->query);
+                $_workflow_id = $this->db->loadObject()->workflow_id;
 
-            $db->setQuery($query);
-            $_workflow_id = $db->loadObject()->workflow_id;
+                //update last saved workflow --> set last_saved, saved_by
 
-            //update last saved workflow
-            $query->clear()
-                ->update($db->quoteName('#__emundus_workflow'))
-                ->set($db->quoteName('#__emundus_workflow.updated_at') . '=' . $db->quote($data['last_saved']) .
-                    ',' . $db->quoteName('#__emundus_workflow.user_id') . '=' . (int)$data['saved_by']
-                )
-                ->where($db->quoteName('#__emundus_workflow.id') . '=' . (int)$_workflow_id);
+                $data['saved_by'] = JFactory::getUser()->id;
+                $data['last_saved'] = date('Y-m-d H:i:s');
 
-            $db->setQuery($query);
-            $db->execute();
+                $this->query->clear()
+                    ->update($this->db->quoteName('#__emundus_workflow'))
+                    ->set($this->db->quoteName('#__emundus_workflow.updated_at') . '=' . $this->db->quote($data['last_saved']) .
+                        ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (int)$data['saved_by']
+                    )
+                    ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$_workflow_id);
 
-            return $db->execute();
+                $this->db->setQuery($this->query);
+                $this->db->execute();
+
+                return $this->db->execute();
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/item | Cannot save item : ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                return $e->getMessage();
+            }
         }
-        catch(Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/item | Cannot save item : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
-            return $e->getMessage();
+        else {
+            return false;
         }
     }
 
-    //CREATE NEW LINK BETWEEN TWO ITEMS
+    //// create link between item
     public function createLink($data) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);

@@ -41,16 +41,12 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_cit = $this->model;
-            $data['last_created'] = date('Y-m-d H:i:s');
-            $data['saved_by'] = $user->id;
+            $_item = $this->model->createItem($data);
 
-            $_items = $_cit->createItem($data);
-
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("ITEM_CREATED"), 'data' => $_items);
+            if ($_item) {
+                $tab = array('status' => 1, 'msg' => JText::_("CREATE_ITEM_SUCCESSFULLY"), 'data' => $_item);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_CREATE_ITEM"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("CREATE_ITEM_FAILED"), 'data' => $_item);
             }
         }
         echo json_encode((object)$tab);
@@ -66,21 +62,17 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('id');
-            $_cit = $this->model;
 
-            $_items = $_cit->deleteItem($data);
+            $_result = $this->model->deleteItem($data);
 
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("ITEM_DELETED"), 'data' => $_items);
+            if ($_result) {
+                $tab = array('status' => 1, 'msg' => JText::_("DELETE_ITEM_SUCCESSFULLY"), 'data' => $_result);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_DELETE_ITEM"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("DELETE_ITEM_FAILED"), 'data' => $_result);
             }
         }
         echo json_encode((object)$tab);
         exit;
-    }
-
-    public function updateItemOrder() {
     }
 
     public function getcounditembyid() {
@@ -92,37 +84,32 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
-            $_cit = $this->model;
 
-            $_items = $_cit->getCountItemByID($data);
+            $_count = $this->model->getCountItemByID($data);
 
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("ITEM_FOUND"), 'data' => $_items);
+            if ($_count) {
+                $tab = array('status' => 1, 'msg' => JText::_("ITEM_FOUND"), 'data' => $_count);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("ITEM_NOT_FOUND"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("ITEM_NOT_FOUND"), 'data' => $_count);
             }
         }
         echo json_encode((object)$tab);
         exit;
     }
 
-    public function getallitems() {
+    public function getitemmenu() {
         $user = JFactory::getUser();
 
         if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $_wit = $this->model;
-
-            //do stuff
-            $items = $_wit->getAllItems();
-            if (count($items) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_("ITEMS_RETRIEVED"), 'data' => $items);
+            $_menu = $this->model->getItemMenu();
+            if (count($_menu) > 0) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_MENU_SUCCESSFULLY"), 'data' => $_menu);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("NO_ITEMS_FOUND"), 'data' => $items);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_MENU_FAILED"), 'data' => $_menu);
             }
-
         }
         echo json_encode((object)$tab);
         exit;
@@ -138,20 +125,20 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
-            $_cit = $this->model;
-            $_items = $_cit->getAllItemsByWorkflowId($data);
+
+            $_items = $this->model->getAllItemsByWorkflowId($data);
 
             if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_ITEM_FROM_WORKFLOW"), 'data' => $_items);
+                $tab = array('status' => 1, 'msg' => JText::_("GET_ITEM_FROM_STEP_SUCCESSFULLY"), 'data' => $_items);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_ITEM_FROM_WORKFLOW"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_ITEM_FROM_STEP_FAILED"), 'data' => $_items);
             }
         }
         echo json_encode((object)$tab);
         exit;
     }
 
-    // get item by id
+    // get item by id --> used to config modal
     public function getitem() {
         $user = JFactory::getUser();
 
@@ -161,15 +148,13 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('id');
-            $_cit = $this->model;
 
+            $_item = $this->model->getItemByID($data);
 
-            $_items = $_cit->getItemByID($data);
-
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("ITEM_GET"), 'data' => $_items);
+            if ($_item) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_ITEM_SUCCESSFULLY"), 'data' => $_item);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("ITEM_NOT_GET"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_ITEM_FAILED"), 'data' => $_item);
             }
         }
         echo json_encode((object)$tab);
@@ -186,14 +171,14 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
-            $_cit = $this->model;
-            $data['saved_by'] = $user->id;
-            $_items = $_cit->saveWorkflow($data);
 
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("WORKFLOW_SAVED"), 'data' => $_items);
+            $data['saved_by'] = $user->id;
+            $_result = $this->model->saveWorkflow($data);
+
+            if ($_result) {
+                $tab = array('status' => 1, 'msg' => JText::_("SAVE_WORKFLOW_SUCCESSFULLY"), 'data' => $_result);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_SAVE_WORKFLOW"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("SAVE_WORKFLOW_FAILED"), 'data' => $_result);
             }
         }
         echo json_encode((object)$tab);
@@ -211,13 +196,12 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_cit = $this->model;
-            $_items = $_cit->getInitIDByWorkflow($data);
+            $_inititem = $this->model->getInitIDByWorkflow($data);
 
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("INIT_GET"), 'data' => $_items);
+            if ($_inititem) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_INIT_BLOC_SUCCESSFULLY"), 'data' => $_inititem);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("INIT_CANNOT_GET"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_INIT_BLOC_FAILED"), 'data' => $_inititem);
             }
         }
         echo json_encode((object)$tab);
@@ -235,13 +219,12 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_cit = $this->model;
-            $_items = $_cit->createLink($data);
+            $_link = $this->model->createLink($data);
 
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("LINK_CREATED"), 'data' => $_items);
+            if ($_link) {
+                $tab = array('status' => 1, 'msg' => JText::_("CREATE_LINK_SUCCESSFULLY"), 'data' => $_link);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("LINK_CANNOT_CREATED"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("CREATE_LINK_FAILED"), 'data' => $_link);
             }
         }
         echo json_encode((object)$tab);
@@ -259,13 +242,12 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('id');
 
-            $_cit = $this->model;
-            $_items = $_cit->deleteLink($data);
+            $_result = $this->model->deleteLink($data);
 
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("LINK_DELETED"), 'data' => $_items);
+            if ($_result) {
+                $tab = array('status' => 1, 'msg' => JText::_("DELETE_LINK_SUCCESSFULLY"), 'data' => $_result);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("LINK_CANNOT_DELETED"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("DELETE_LINK_FAILED"), 'data' => $_result);
             }
         }
         echo json_encode((object)$tab);
@@ -283,13 +265,12 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_cit = $this->model;
-            $_items = $_cit->getAllLinksByWorkflowID($data);
+            $_links = $this->model->getAllLinksByWorkflowID($data);
 
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_LINK"), 'data' => $_items);
+            if ($_links) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_LINK_SUCCESSFULLY"), 'data' => $_links);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_LINK"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_LINK_FAILED"), 'data' => $_links);
             }
         }
         echo json_encode((object)$tab);
@@ -307,68 +288,17 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('params');
 
-            $_cit = $this->model;
+            $_result = $this->model->updateParamsByItemID($data);
 
-            $_items = $_cit->updateParamsByItemID($data);
-
-
-            if ($_items) {
-                $tab = array('status' => 1, 'msg' => JText::_("UPDATE_PARAMS"), 'data' => $_items);
+            if ($_result) {
+                $tab = array('status' => 1, 'msg' => JText::_("UPDATE_BLOC_PARAMS_SUCCESSFULLY"), 'data' => $_result);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_UPDATE_PARAMS"), 'data' => $_items);
+                $tab = array('status' => 0, 'msg' => JText::_("UPDATE_BLOC_PARAMS_FAILED"), 'data' => $_result);
             }
         }
         echo json_encode((object)$tab);
         exit;
     }
-
-//    public function getcurrentinputstatusbyitem() {
-//        $user = JFactory::getUser();
-//
-//        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-//            $result = 0;
-//            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-//        } else {
-//            $jinput = JFactory::getApplication()->input;
-//            $data = $jinput->getRaw('id');
-//
-//            $_cit = $this->model;
-//
-//            $_status = $_cit->getStatusByCurrentItem($data, 'in');
-//
-//            if ($_status) {
-//                $tab = array('status' => 1, 'msg' => JText::_("INPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
-//            } else {
-//                $tab = array('status' => 0, 'msg' => JText::_("FAILED_INPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
-//            }
-//        }
-//        echo json_encode((object)$tab);
-//        exit;
-//    }
-//
-//    public function getcurrentoutputstatusbyitem() {
-//        $user = JFactory::getUser();
-//
-//        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-//            $result = 0;
-//            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-//        } else {
-//            $jinput = JFactory::getApplication()->input;
-//            $data = $jinput->getRaw('id');
-//
-//            $_cit = $this->model;
-//
-//            $_status = $_cit->getStatusByCurrentItem($data, 'out');
-//
-//            if ($_status) {
-//                $tab = array('status' => 1, 'msg' => JText::_("OUTPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
-//            } else {
-//                $tab = array('status' => 0, 'msg' => JText::_("FAILED_OUTPUT_STATUS_BY_ITEM_ID"), 'data' => $_status);
-//            }
-//        }
-//        echo json_encode((object)$tab);
-//        exit;
-//    }
 
     //// GOAL --> Get all current status (input and output) by item
     public function getcurrentstatusbyitem() {
@@ -381,28 +311,26 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('id');
 
-            $_cit = $this->model;
-
-            $_statusIn = $_cit->getStatusByCurrentItem($data, 'in');
-            $_statusOut = $_cit->getStatusByCurrentItem($data, 'out');
+            $_statusIn = $this->model->getStatusByCurrentItem($data, 'in');
+            $_statusOut = $this->model->getStatusByCurrentItem($data, 'out');
 
             if (!empty($_statusIn) and !empty($_statusOut)) {
-                $tab = array('status' => 1, 'msg' => JText::_("CURRENT_STATUS_BY_ITEM_ID"), 'dataIn' => $_statusIn, 'dataOut' => $_statusOut);
+                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_CURRENT_STATUS_SUCCESSFULLY"), 'dataIn' => $_statusIn, 'dataOut' => $_statusOut);
             }
 
             // no output status
             else if($_statusIn and empty($_statusOut)) {
-                $tab = array('status' => 1, 'msg' => JText::_("CURRENT_STATUS_BY_ITEM_ID"), 'dataIn' => $_statusIn, 'dataOut' => null);
+                $tab = array('status' => 1, 'msg' => JText::_("JUST_GET_CURRENT_INPUT_STATUS"), 'dataIn' => $_statusIn, 'dataOut' => null);
             }
 
             // no input status
             else if(empty($_statusIn) and $_statusOut) {
-                $tab = array('status' => 1, 'msg' => JText::_("CURRENT_STATUS_BY_ITEM_ID"), 'dataIn' => null, 'dataOut' => $_statusOut);
+                $tab = array('status' => 1, 'msg' => JText::_("JUST_GET_CURRENT_OUTPUT_STATUS"), 'dataIn' => null, 'dataOut' => $_statusOut);
             }
 
             // no input and output status
             else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_CURRENT_STATUS_BY_ITEM_ID"), 'dataIn' => null, 'dataOut' => null);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_ALL_CURRENT_STATUS_FAILED"), 'dataIn' => null, 'dataOut' => null);
             }
         }
         echo json_encode((object)$tab);
@@ -419,14 +347,12 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_cit = $this->model;
-
-            $_status = $_cit->getAvailableStatusByItem($data, 'in');
+            $_status = $this->model->getAvailableStatusByItem($data, 'in');
 
             if ($_status) {
-                $tab = array('status' => 1, 'msg' => JText::_("AVAILABLE_INPUT_STATUS"), 'data' => $_status);
+                $tab = array('status' => 1, 'msg' => JText::_("GET_AVAILABLE_INPUT_STATUS_SUCCESSFULLY"), 'data' => $_status);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("NO_AVAILABLE_INPUT_STATUS"), 'data' => $_status);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_AVAILABLE_INPUT_STATUS_FAILED"), 'data' => $_status);
             }
         }
         echo json_encode((object)$tab);
@@ -448,15 +374,16 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $_status = $_cit->getAvailableStatusByItem($data, 'out');
 
             if ($_status) {
-                $tab = array('status' => 1, 'msg' => JText::_("AVAILABLE_OUTPUT_STATUS"), 'data' => $_status);
+                $tab = array('status' => 1, 'msg' => JText::_("GET_AVAILABLE_OUTPUT_STATUS_SUCCESSFULLY"), 'data' => $_status);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("NO_AVAILABLE_OUTPUT_STATUS"), 'data' => $_status);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_AVAILABLE_OUTPUT_STATUS_FAILED"), 'data' => $_status);
             }
         }
         echo json_encode((object)$tab);
         exit;
     }
 
+    // Next step: Combine getnonstatusparamsbyitem() with getcurrentstatusbyitem() --> reduce 1 SQL query
     public function getnonstatusparamsbyitem() {
         $user = JFactory::getUser();
 
@@ -467,14 +394,12 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('id');
 
-            $_cit = $this->model;
+            $_params = $this->model->getNonStatusParams($data);
 
-            $_status = $_cit->getNonStatusParams($data);
-
-            if ($_status) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_NON_STATUS_PARAMS"), 'data' => $_status);
+            if ($_params) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_NON_STATUS_PARAMS_SUCCESSFULLY"), 'data' => $_params);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_NON_STATUS_PARAMS"), 'data' => $_status);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_NON_STATUS_PARAMS_FAILED"), 'data' => $_params);
             }
         }
         echo json_encode((object)$tab);
@@ -491,14 +416,12 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_cit = $this->model;
+            $_links = $this->model->matchAllLinksByWorkflow($data);
 
-            $_status = $_cit->matchAllLinksByWorkflow($data);
-
-            if ($_status) {
-                $tab = array('status' => 1, 'msg' => JText::_("LINK_MATCH"), 'data' => $_status);
+            if ($_links) {
+                $tab = array('status' => 1, 'msg' => JText::_("MATCH_WORKFLOW_LINKS_SUCCESSFULLY"), 'data' => $_links);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("LINK_NO_MATCH"), 'data' => $_status);
+                $tab = array('status' => 0, 'msg' => JText::_("MATCH_WORKFLOW_LINKS_FAILED"), 'data' => $_links);
             }
         }
         echo json_encode((object)$tab);
@@ -515,14 +438,12 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_cit = $this->model;
+            $_links = $this->model->matchLinkByItem($data);
 
-            $_status = $_cit->matchLinkByItem($data);
-
-            if ($_status) {
-                $tab = array('status' => 1, 'msg' => JText::_("SPECIFIC_LINK_MATCH"), 'data' => $_status, 'permission' => 'available');
+            if ($_links) {
+                $tab = array('status' => 1, 'msg' => JText::_("MATCH_BLOC_LINK_SUCCESSFULLY"), 'data' => $_links, 'permission' => 'available');
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_SPECIFIC_LINK"), 'data' => $_status, 'permission' => 'unavailable');
+                $tab = array('status' => 0, 'msg' => JText::_("MATCH_BLOC_LINK_FAILED"), 'data' => $_links, 'permission' => 'unavailable');
             }
         }
         echo json_encode((object)$tab);
@@ -539,14 +460,12 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_cit = $this->model;
+            $_result = $this->model->checkMatchingStatus($data);
 
-            $_status = $_cit->checkMatchingStatus($data);
-
-            if ($_status) {
-                $tab = array('status' => 1, 'msg' => JText::_("MATCHING_ITEM"), 'data' => $_status);
+            if ($_result) {
+                $tab = array('status' => 1, 'msg' => JText::_("MATCH_ITEM_SUCCESSFULLY"), 'data' => $_result);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("UNMATCHING_ITEM"), 'data' => $_status);
+                $tab = array('status' => 0, 'msg' => JText::_("MATCH_ITEM_FAILED"), 'data' => $_result);
             }
         }
         echo json_encode((object)$tab);
@@ -563,14 +482,12 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_cit = $this->model;
+            $_result = $this->model->checkExistLink($data);
 
-            $_status = $_cit->checkExistLink($data);
-
-            if ($_status) {
-                $tab = array('status' => 1, 'msg' => JText::_("LINK_EXISTS"), 'data' => $_status);
+            if ($_result) {
+                $tab = array('status' => 1, 'msg' => JText::_("LINK_EXISTS"), 'data' => $_result);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("LINK_DOES_NOT_EXIST"), 'data' => $_status);
+                $tab = array('status' => 0, 'msg' => JText::_("LINK_DOES_NOT_EXIST"), 'data' => $_result);
             }
         }
         echo json_encode((object)$tab);
@@ -587,16 +504,12 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-//                var_dump($data);die;
+            $_result = $this->model->getLinkByItem('to',$data);
 
-            $_cit = $this->model;
-
-            $_status = $_cit->getLinkByItem('to',$data);
-
-            if ($_status) {
-                $tab = array('status' => 1, 'msg' => JText::_("LINK_EXISTS_YUPP"), 'data' => $_status);
+            if ($_result) {
+                $tab = array('status' => 1, 'msg' => JText::_("TO_LINK_EXISTS"), 'data' => $_result);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("LINK_DOES_NOT_EXIST_OOPS"), 'data' => $_status);
+                $tab = array('status' => 0, 'msg' => JText::_("TO_LINK_DOES_NOT_EXIST"), 'data' => $_result);
             }
         }
         echo json_encode((object)$tab);

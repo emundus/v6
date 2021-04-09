@@ -4,10 +4,8 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
     <div style="text-align: center">
-      <b-alert show variant="success" style="background-color: #d4edda; border-color: #c3e6cb; padding: 3.75rem; align-items: center" show dismissible>
-
+      <b-alert show variant="success" style="background-color: #fff3cd; border-color: #ffeeba; padding: 3.75rem; align-items: center" show dismissible>
           <h1>EMundus Workflow Demo</h1>
-
       </b-alert>
     </div>
 
@@ -16,7 +14,7 @@
     </b-form-group>
 
     <b-form-group label-cols="4" label-cols-lg="2" label-size="lg" label="Campagne associee" label-for="input-lg">
-      <b-form-select v-model="selectedCampaign" class="form-control-select">
+      <b-form-select v-model="selectedCampaign" class="form-control-select" id="campaign">
         <b-form-select-option disabled selected>-- Campagnes disponibles --</b-form-select-option>
         <option v-for="campaign in this.availableCampaigns" :value="campaign.id"> {{ campaign.label }} </option>
       </b-form-select>
@@ -61,7 +59,8 @@
 import axios from 'axios';
 import { DateTime } from 'vue-datetime';
 
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import $ from 'jquery';
 
 // CommonJS
 
@@ -95,23 +94,11 @@ export default {
   },
 
   created() {
-    // this.getAllCampaigns();
     this.getAllWorkflow();
     this.getAllAvailableCampaigns();
   },
 
   methods: {
-    //may be used later !!!
-
-    // getAllCampaigns: function() {
-    //   axios.get("index.php?option=com_emundus_workflow&controller=workflow&task=getassociatedcampaigns")
-    //       .then(response=>{
-    //         this.campaigns = response.data.data;
-    //       }).catch(error => {
-    //         console.log(error);
-    //   })
-    // },
-
     getAllAvailableCampaigns: function() {
       axios.get("index.php?option=com_emundus_workflow&controller=workflow&task=getallavailablecampaigns")
           .then(response=>{
@@ -139,38 +126,27 @@ export default {
 
     // create workflow with campaign
     createworkflow: function() {
+      var workflow = {
+        campaign_id :this.$data.selectedCampaign,
+        workflow_name: this.$data.name || "Workflow de" + $( "#campaign option:selected" ).text(),     // using jquery to get the campaign name
+      }
+
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_workflow&controller=workflow&task=getcampaignbyid",
+        url: "index.php?option=com_emundus_workflow&controller=workflow&task=createworkflow",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
-          data: this.$data.selectedCampaign,
+          data: workflow
         }),
-      }).then(answer => {
-        var workflow = {
-          campaign_id :this.$data.selectedCampaign,
-          workflow_name: this.$data.name || "Workflow de " + ((answer.data.data)[0]).label,
-        }
-          axios({
-            method: "post",
-            url: "index.php?option=com_emundus_workflow&controller=workflow&task=createworkflow",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              data: workflow
-            }),
-          }).then(response => {
-            this.workflow = response.data.data;
-            //redirect to workflow space
-            this.changeToWorkflowSpace(response.data.data);
-          }).catch(error => {
-            console.log(error);
-          })
-      })
-    },
+      }).then(response => {
+        this.workflow = response.data.data;
+        //redirect to step flow area
+        this.changeToWorkflowSpace(response.data.data);
+      }).catch(error => {
+        console.log(error);
+      })},
 
     //delete workflow
     deleteWorkflow: function(wid) {
@@ -192,7 +168,6 @@ export default {
     ///api 1 --> get workflow_name / campaign_id of last workflow
     ///api 2 --> get all items of last workflow
     ///api 3 --> create new workflow with api 1 + api 2
-
 
     duplicateWorkflow: async function(id) {
       //api 1 -- get workflow_name, campaign_id of last workflow
