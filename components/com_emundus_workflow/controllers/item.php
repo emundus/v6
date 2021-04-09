@@ -116,7 +116,7 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
     }
 
     // get all items by workflow
-    public function getallitemsbyworkflow() {
+    public function getallitemsbystep() {
         $user = JFactory::getUser();
 
         if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -126,7 +126,7 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_items = $this->model->getAllItemsByWorkflowId($data);
+            $_items = $this->model->getAllItemsByStep($data);
 
             if ($_items) {
                 $tab = array('status' => 1, 'msg' => JText::_("GET_ITEM_FROM_STEP_SUCCESSFULLY"), 'data' => $_items);
@@ -265,7 +265,7 @@ class EmundusworkflowControlleritem extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_links = $this->model->getAllLinksByWorkflowID($data);
+            $_links = $this->model->getAllLinksByStep($data);
 
             if ($_links) {
                 $tab = array('status' => 1, 'msg' => JText::_("GET_LINK_SUCCESSFULLY"), 'data' => $_links);

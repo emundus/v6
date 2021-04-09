@@ -3,16 +3,14 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
-    <div contenteditable="true" class="editable-workflow-name" id="editable-workflow-name-div" v-on:keyup.enter="updateWorkflowname()" v-b-tooltip.top.hover title="Cliquer sur le nom du workflow pour le changer">
+    <div contenteditable="true" class="editable-workflow-name" id="editable-workflow-name-div" v-on:keyup.enter="setStepLabel()" v-b-tooltip.top.hover title="Cliquer sur le nom du workflow pour le changer">
       {{ this.step.title }}
     </div>
 
-    <p class="tooltip"> Dernier mis a jour: {{ this.$data.lastSave }}</p>
-
     <div class="button-group">
-      <b-button variant="warning" @click="seen=!seen" style="margin: 10px">Ajouter bloc</b-button>
+      <b-button variant="warning" @click="seen=!seen" style="margin: 10px">(+) bloc</b-button>
       <b-button variant="success" @click="alertSaveDisplay()" style="margin: 10px">Sauvegarder</b-button>
-      <b-button variant="danger" @click="alertExitDisplay()" style="margin: 10px">Quitter</b-button>
+      <b-button variant="danger" @click="alertExitDisplay()" style="margin: 10px">(x) étape</b-button>
     </div>
 
 <!--    <button @click="autoMatchLink()">Creer des liens</button>-->
@@ -81,13 +79,11 @@ export default {
   },
 
   created() {
-    this.loadWorkflow();
-    this.insertInitBloc();
-
+    this.getMenu();               // get menu bar of step
+    this.loadStep();              // load step --> retrieve items and links
+    this.insertInitBloc();        // check if the init item exists or not --> if not, create it, if yes, do nothing
     this.cronUpdate();
-
-    this.getWorkflowInfo();
-    this.getMenu();
+    this.getWorkflowInfo();       // used for Step Workspace
   },
 
   methods: {
@@ -102,35 +98,16 @@ export default {
       })
     },
 
-    getWorkflowInfo: function () {
-      //// change post --> get to improve the performance
-      axios({
-        method: 'get',
-        url: 'index.php?option=com_emundus_workflow&controller=workflow&task=getworkflowbyid',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        params: {
-          wid: this.getWorkflowIdFromURL(),
-        },
-        paramsSerializer: params =>{
-          return qs.stringify(params);
-        }
-      }).then(response => {
-          var _data = (response.data.data)[0];
-          this.$data.workflowname = _data.workflow_name;
-          this.$data.lastSave = _data.updated_at;
-      })
-    },
-
     insertInitBloc: function () {
       var init = {
         item_id: 1,
+        step_id: this.step.id,                      // get step_id of item
         item_name: "Initialisation",
         workflow_id: this.getWorkflowIdFromURL(),
         axisX: -700,
         axisY: -50,
         style: '#9bde74',
+        params: '',     //empty string
       }
 
       axios({
@@ -147,9 +124,7 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        //insert new init bloc
         if (response.data.status == 0) {
-          //create new init bloc
           axios({
             method: 'post',
             url: "index.php?option=com_emundus_workflow&controller=item&task=createitem&workflowid=" + init.workflow_id + "&itemid=1",
@@ -172,9 +147,7 @@ export default {
             console.log(error);
           })
         }
-        //restore current init bloc
-        else {
-        }
+        else { }
       })
     },
 
@@ -288,13 +261,16 @@ export default {
       this.redirectJRoute('index.php?option=com_emundus_workflow&view=workflow');
     },
 
-    //load workflow = load items + load links
-    loadWorkflow: async function() {
-      let rawItems = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getallitemsbyworkflow', {params: {data: this.getWorkflowIdFromURL()}}); //get all items
-      let rawLinks = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getalllinks', {params: {data: this.getWorkflowIdFromURL()}}); //get all links
+    //load step --> get all items and links of this step
+    loadStep: async function() {
+      let rawItems = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getallitemsbystep', {params: {data: this.step.id}}); //get all items
+      let rawLinks = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getalllinks', {params: {data: this.step.id}}); //get all links
 
       var items = rawItems.data.data;    //items : Array
       var links = rawLinks.data.data;    //links: Array
+
+      console.log(items);
+      console.log(links);
 
       items.forEach(element => {
         this.$data.scene.nodes.push({
@@ -349,25 +325,8 @@ export default {
       this.saveWorkflow();
     },
 
-    updateWorkflowname: function() {
-      var info = {
-        workflow_name: document.getElementById('editable-workflow-name-div').innerText,
-        id: this.getWorkflowIdFromURL(),
-      }
+    setStepLabel: function() {
 
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=workflow&task=updateworkflow',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          data: info,
-        })
-      }).then(response => {
-      }).catch(error => {
-        console.log(error);
-      })
     },
 
     cronUpdate: function() {

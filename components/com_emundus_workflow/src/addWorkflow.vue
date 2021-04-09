@@ -33,7 +33,6 @@
 
       <tbody>
         <tr v-for="(workflow,index) in this.$props.workflows" :key="workflow.id">
-          <th>{{ index }}</th>
           <th>{{ workflow.id }}</th>
           <th>{{ workflow.workflow_name }}</th>
           <th> {{ workflow.label }} </th>
@@ -81,7 +80,7 @@ export default {
       name: '',
       selectedCampaign: 0,
       workflow_id: 0,
-      table_header: ['No.ligne', 'Workflow ID', 'Nom du workflow', 'Campagne Associeé', 'Dernier Mis-a-jour par', 'Créé à', 'Mis-a-jour ', 'Action'],
+      table_header: ['Workflow ID', 'Nom du workflow', 'Campagne Associeé', 'Dernier Mis-a-jour par', 'Créé à', 'Mis-a-jour ', 'Action'],
     }
   },
 
