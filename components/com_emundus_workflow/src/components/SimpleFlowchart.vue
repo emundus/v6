@@ -24,6 +24,7 @@ const qs = require('qs');
 export default {
   name: 'VueFlowchart',
   props: {
+    step: Object,
     scene: {
       type: Object,
       default() {
@@ -162,19 +163,20 @@ export default {
             to: index,
             workflow_id: this.getWorkflowIdFromURL(),
             link_label: '',
+            step_id: this.step.id,
           }
 
-          axios({
-            method: 'post',
-            url: 'index.php?option=com_emundus_workflow&controller=item&task=checkmatchingitems',
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              data: _links
-            })
-          }).then(answer => {
-            if(answer.data.data == true) {
+          // axios({
+          //   method: 'post',
+          //   url: 'index.php?option=com_emundus_workflow&controller=item&task=checkmatchingitems',
+          //   headers: {
+          //     "Content-Type": "application/x-www-form-urlencoded"
+          //   },
+          //   data: qs.stringify({
+          //     data: _links
+          //   })
+          // }).then(answer => {
+          //   if(answer.data.data == true) {
               axios({
                 method: 'post',
                 url: 'index.php?option=com_emundus_workflow&controller=item&task=createlink',
@@ -191,17 +193,17 @@ export default {
               })
               this.scene.links.push(newLink)
               this.$emit('linkAdded', newLink)
-            }
-            else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Erreur',
-                html: 'Les status entre les deux items ne sont pas pareils',
-                timer: 1500,
-                showConfirmButton:false,
-              })
-            }
-          })
+          //   }
+          //   else {
+          //     Swal.fire({
+          //       icon: 'error',
+          //       title: 'Erreur',
+          //       html: 'Les status entre les deux items ne sont pas pareils',
+          //       timer: 1500,
+          //       showConfirmButton:false,
+          //     })
+          //   }
+          // })
         }
       }
       this.draggingLink = null

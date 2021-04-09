@@ -28,7 +28,9 @@
                       @linkBreak="linkBreak"
                       @linkAdded="linkAdded"
                       @canvasClick="canvasClick"
-                      :height="800"/>
+                      :height="800"
+                      :step="step"
+                      />
   </div>
 </template>
 
