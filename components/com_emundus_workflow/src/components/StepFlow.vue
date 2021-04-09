@@ -3,25 +3,27 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
-    <div contenteditable="true" class="editable-workflow-name" id="editable-workflow-name-div" v-on:keyup.enter="setWorkflowLabel()" v-b-tooltip.top.hover title="Cliquer sur le nom du workflow pour le changer">
+    <div contenteditable="true" class="editable-workflow-name" id="editable-workflow-name-div" v-on:keyup.enter="setWorkflowLabel()" v-b-tooltip.top.hover title="Cliquer sur le nom du workflow pour le changer" v-if="!hideStep">
       {{ this.workflowName }}
     </div>
 
-    <p class="tooltip"> Dernier mis a jour: {{ this.lastUpdated }}</p>
+    <p class="tooltip" v-if="!hideStep"> Dernier mis a jour: {{ this.lastUpdated }}</p>
 
     <div class="min-h-screen flex overflow-x-scroll py-12">
       <div v-for="step in steps" :key="step.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + step.id" v-on:dblclick="openStep(step.id)" v-if="!hideStep" style="margin-right: 10rem !important">
-        <div contenteditable="true" class="editable-step-label" class="step-label" :id="'step_label_' + step.id" v-on:keyup.enter="setStepLabel(step.id)" style="background: #a8bb4a">{{ step.title }}</div>
+        <div contenteditable="true" class="editable-step-label" class="step-label" :id="'step_label_' + step.id" v-on:keyup.enter="setStepLabel(step.id)" style="background: rgb(134, 230, 230) none repeat scroll 0% 0%">{{ step.title }}</div>
         <modal-config-step :ID="step.id" :element="step"/>
-        <div class="button-group-step" style="position: absolute; margin-left: 1vh">
-          <b-button variant="danger" @click="deleteStep(step.id)" style="margin:10px" size="lg">(-) étape</b-button>
-          <b-button variant="warning" @click="configStep(step.id)" style="margin:10px" size="lg">Configurer</b-button>
-        </div>
+        <table style="border:0px; margin: -5px">
+          <tr>
+            <th class="btn-group-step"><b-button variant="danger" @click="deleteStep(step.id)" style="margin:5px; width: max-content">Supprimer &nbsp<b-icon icon="scissors"></b-icon></b-button></th>
+            <th class="btn-group-step"><b-button variant="warning" @click="configStep(step.id)" style="margin:10px; width: max-content">Configurer &nbsp<b-icon icon="gear"></b-icon></b-button></th>
+          </tr>
+        </table>
       </div>
         <workflow-space v-for="step in steps" v-if="currentStep == step.id" :step="step"/>
     </div>
 
-    <b-button variant="success" @click="createStep()" v-if="!hideStep" style="position:absolute" size="lg">(+) étape</b-button>
+    <b-button variant="success" @click="createStep()" v-if="!hideStep" style="position:absolute; width: max-content" size="lg">Ajouter étape &nbsp<b-icon icon="calendar-plus"></b-icon></b-button>
 
   </div>
 </template>
@@ -205,8 +207,8 @@ export default {
 
 <style>
 .column-width {
-  min-width: 240px;
-  width: 340px;
+  min-width: 300px;
+  width: 400px;
 }
 
 .px-3 {
@@ -305,6 +307,11 @@ export default {
 .step-label {
   text-align: center;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: x-large;
+  width:19.5vh;
+}
+
+.btn-group-step {
+  background: none !important;
+  padding: 0;
 }
 </style>
