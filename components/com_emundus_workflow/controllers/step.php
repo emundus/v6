@@ -25,14 +25,13 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             $_steps = $this->model->getAllStepsByWorkflow($data);
 
             if ($_steps) {
-                $tab = array('status' => 1, 'msg' => JText::_("RETRIEVED_ALL_STEPS"), 'data' => $_steps);
+                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_STEPS_SUCCESSFULLY"), 'data' => $_steps);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_RETRIEVE_ALL_STEPS"), 'data' => $_steps);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_ALL_STEPS_FAILED"), 'data' => $_steps);
             }
         }
         echo json_encode((object)$tab);
         exit;
-
     }
 
     public function createstep() {
@@ -45,17 +44,16 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_steps = $this->model->createStep($data);
+            $_step = $this->model->createStep($data);
 
-            if ($_steps) {
-                $tab = array('status' => 1, 'msg' => JText::_("CREATE_STEP"), 'data' => $_steps);
+            if ($_step) {
+                $tab = array('status' => 1, 'msg' => JText::_("CREATE_STEP_SUCCESSFULLY"), 'data' => $_step);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_CREATE_STEP"), 'data' => $_steps);
+                $tab = array('status' => 0, 'msg' => JText::_("CREATE_STEP_FAILED"), 'data' => $_step);
             }
         }
         echo json_encode((object)$tab);
         exit;
-
     }
 
     public function deletestep() {
@@ -68,12 +66,12 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_results = $this->model->deleteStep($data);
+            $_result = $this->model->deleteStep($data);
 
-            if ($_results) {
-                $tab = array('status' => 1, 'msg' => JText::_("DELETE_STEP"), 'data' => $_results);
+            if ($_result) {
+                $tab = array('status' => 1, 'msg' => JText::_("DELETE_STEP_SUCCESSFULLY"), 'data' => $_result);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_DELETE_STEP"), 'data' => $_results);
+                $tab = array('status' => 0, 'msg' => JText::_("DELETE_STEP_FAILED"), 'data' => $_result);
             }
         }
         echo json_encode((object)$tab);
@@ -90,12 +88,12 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_update = $this->model->updateStepParams($data);
+            $_result = $this->model->updateStepParams($data);
 
-            if ($_update) {
-                $tab = array('status' => 1, 'msg' => JText::_("UPDATE_STEP_PARAMS"), 'data' => $_update);
+            if ($_result) {
+                $tab = array('status' => 1, 'msg' => JText::_("UPDATE_STEP_PARAMS_SUCCESSFULLY"), 'data' => $_result);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_UPDATE_STEP_PARAMS"), 'data' => $_update);
+                $tab = array('status' => 0, 'msg' => JText::_("UPDATE_STEP_PARAMS_FAILED"), 'data' => $_result);
             }
         }
         echo json_encode((object)$tab);
@@ -115,9 +113,9 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             $_params = $this->model->getCurrentParamsByStep($data);
 
             if ($_params) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_CURRENT_PARAMS"), 'data' => $_params);
+                $tab = array('status' => 1, 'msg' => JText::_("GET_CURRENT_PARAMS_SUCCESSFULLY"), 'data' => $_params);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_CURRENT_PARAMS"), 'data' => $_params);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_CURRENT_PARAMS_FAILED"), 'data' => $_params);
             }
         }
         echo json_encode((object)$tab);
@@ -138,18 +136,18 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             $_status_out = $this->model->getAvailableStatus($data, 'out');
 
             if ($_status_in and $_status_out) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_AVAILABLE_STATUS"), 'dataIn' => $_status_in, 'dataOut' => $_status_out);
+                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_AVAILABLE_STATUS_SUCCESSFULLY"), 'dataIn' => $_status_in, 'dataOut' => $_status_out);
             }
 
             else if ($_status_in and empty($_status_out)){
-                $tab = array('status' => 1, 'msg' => JText::_("GET_AVAILABLE_STATUS"), 'dataIn' => $_status_in, 'dataOut' => null);
+                $tab = array('status' => 1, 'msg' => JText::_("JUST_GET_AVAILABLE_INPUT_STATUS"), 'dataIn' => $_status_in, 'dataOut' => null);
             }
 
             else if (empty($_status_in) and $_status_out) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_AVAILABLE_STATUS"), 'dataIn' => null, 'dataOut' => $_status_out);
+                $tab = array('status' => 1, 'msg' => JText::_("JUST_GET_AVAILABLE_OUTPUT_STATUS"), 'dataIn' => null, 'dataOut' => $_status_out);
             }
             else {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_AVAILABLE_STATUS"), 'dataIn' => null, 'dataOut' => null);
+                $tab = array('status' => 1, 'msg' => JText::_("GET_AVAILABLE_STATUS_FAILED"), 'dataIn' => null, 'dataOut' => null);
             }
         }
         echo json_encode((object)$tab);

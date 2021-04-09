@@ -43,48 +43,40 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
         $user = JFactory::getUser();
 
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
         }
         else {
-            $_wid = $this->model;
-
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('wid');        //get data from Vue template
 
-            //do stuff
-            $workflows = $_wid->deleteWorkflow($data);
+            $_result = $this->model->deleteWorkflow($data);
 
-            if ($workflows) {
-                $tab = array('status' => 1, 'msg' => JText::_("WORKFLOW_DELETED"), 'data' => $workflows);
+            if ($_result) {
+                $tab = array('status' => 1, 'msg' => JText::_("DELETE_WORKFLOW_SUCCESSFULLY"), 'data' => $_result);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_DELETE_WORKFLOW"), 'data' => $workflows);
+                $tab = array('status' => 0, 'msg' => JText::_("DELETE_WORKFLOW_FAILED"), 'data' => $_result);
             }
         }
         echo json_encode((object)$tab);
         exit;
     }
 
-    //get all workflowS
+    //get all workflows
     public function getallworkflows() {
         $user = JFactory::getUser();
 
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
         }
         else {
-            $_wid = $this->model;
+            $_workflows = $this->model->getAllWorkflows();
 
-            //do stuff
-            $workflows = $_wid->getAllWorkflows();
-
-            if (count($workflows) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_("WORKFLOW_RETRIEVED"), 'data' => $workflows, 'count' => count($workflows));
+            if (count($_workflows) > 0) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_WORKFLOWS_SUCCESSFULLY"), 'data' => $_workflows, 'count' => count($_workflows));
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_RETRIEVE_WORKFLOW"), 'data' => $workflows, 'count' => count($workflows));
+                $tab = array('status' => 0, 'msg' => JText::_("GET_ALL_WORKFLOWS_FAILED"), 'data' => $_workflows, 'count' => count($_workflows));
             }
         }
         echo json_encode((object)$tab);
@@ -96,42 +88,19 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
         $user = JFactory::getUser();
 
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status'=> $result, 'msg' => JText::_('ACCESS_DENIED'));
+            $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
         }
         else {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('wid');
 
-            $_wid = $this->model;
-
-            $_workflow = $_wid->getWorkflowByID($data);
+            $_workflow = $this->model->getWorkflowByID($data);
 
             if($_workflow) {
-                $tab = array('status' => 1, 'msg' => JText::_('RETRIEVED_WORKFLOW_BY_ID'), 'data' => $_workflow);
+                $tab = array('status' => 1, 'msg' => JText::_('GET_WORKFLOW_SUCCESSFULLY'), 'data' => $_workflow);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_('CANNOT_RETRIEVED_WORKFLOW_BY_ID'), 'data' => $_workflow);
-            }
-            echo json_encode((object)$tab);
-            exit;
-        }
-    }
-
-    //get associated campaigns
-    public function getassociatedcampaigns() {
-        $user = JFactory::getUser();
-
-        if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status'=> $result, 'msg' => JText::_('ACCESS_DENIED'));
-        }
-        else {
-            if(count($this->_campaigns) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_RETRIEVED'), 'data' => $this->_campaigns);
-            }
-            else {
-                $tab = array('status' => 0, 'msg' => JText::_('CANNOT_RETRIEVE_CAMPAIGN'), 'data' => $this->_campaigns);
+                $tab = array('status' => 0, 'msg' => JText::_('GET_WORKFLOW_FAILED'), 'data' => $_workflow);
             }
             echo json_encode((object)$tab);
             exit;
@@ -142,24 +111,22 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
         $user = JFactory::getUser();
 
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status'=> $result, 'msg' => JText::_('ACCESS_DENIED'));
+            $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
         }
         else {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
+
             $data['user_id'] = $user->id;
             $data['created_at'] = date('Y-m-d H:i:s');
 
-            $_wid = $this->model;
-
-            $_workflow = $_wid->createWorkflow($data);
+            $_workflow = $this->model->createWorkflow($data);
 
             if($_workflow) {
-                $tab = array('status' => 1, 'msg' => JText::_('WORKFLOW_CREATED'), 'data' => $_workflow);
+                $tab = array('status' => 1, 'msg' => JText::_('CREATE_WORKFLOW_SUCCESSFULLY'), 'data' => $_workflow);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_('CANNOT_CREATE_WORKFLOW'), 'data' => $_workflow);
+                $tab = array('status' => 0, 'msg' => JText::_('CREATE_WORKFLOW_FAILED'), 'data' => $_workflow);
             }
             echo json_encode((object)$tab);
             exit;
@@ -171,22 +138,19 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
         $user = JFactory::getUser();
 
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status'=> $result, 'msg' => JText::_('ACCESS_DENIED'));
+            $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
         }
         else {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_wid = $this->model;
+            $_result = $this->model->updateWorkflow($data);
 
-            $_workflow = $this->model->updateWorkflow($data);
-
-            if($_workflow) {
-                $tab = array('status' => 1, 'msg' => JText::_('UPDATE_WORKFLOW'), 'data' => $_workflow);
+            if($_result) {
+                $tab = array('status' => 1, 'msg' => JText::_('UPDATE_WORKFLOW_SUCCESSFULLY'), 'data' => $_result);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_('CANNOT_UPDATE_WORKFLOW'), 'data' => $_workflow);
+                $tab = array('status' => 0, 'msg' => JText::_('UPDATE_WORKFLOW_FAILED'), 'data' => $_result);
             }
             echo json_encode((object)$tab);
             exit;
@@ -198,20 +162,16 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
         $user = JFactory::getUser();
 
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
         }
         else {
-            $_wid = $this->model;
+            $_campaigns = $this->model->getAllAvailableCampaigns();
 
-            //do stuff
-            $workflows = $_wid->getAllAvailableCampaigns();
-
-            if (count($workflows) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_AVAILABLES_CAMPAIGNS"), 'data' => $workflows, 'count' => count($workflows));
+            if (count($_campaigns) > 0) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_AVAILABLES_CAMPAIGNS"), 'data' => $_campaigns, 'count' => count($_campaigns));
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_ALL_AVAILABLE_CAMPAIGNS"), 'data' => $workflows, 'count' => count($workflows));
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_GET_ALL_AVAILABLE_CAMPAIGNS"), 'data' => $_campaigns, 'count' => count($_campaigns));
             }
         }
         echo json_encode((object)$tab);
