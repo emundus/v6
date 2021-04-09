@@ -1106,12 +1106,14 @@ class EmundusonboardModelform extends JModelList {
                 }
 
                 $f_values = $falang->getFalang($undocument->id,'emundus_setup_attachments','value');
-                $undocument->value_en = $f_values->en->value;
-                $undocument->value_fr = $f_values->fr->value;
+			    $undocument->name = new stdClass;
+                $undocument->name->en = $f_values->en->value;
+                $undocument->name->fr = $f_values->fr->value;
 
                 $f_descriptions = $falang->getFalang($undocument->id,'emundus_setup_attachments','description');
-                $undocument->description_en = $f_descriptions->en->value;
-                $undocument->description_fr = $f_descriptions->fr->value;
+                $undocument->description = new stdClass;
+                $undocument->description->en = $f_descriptions->en->value;
+                $undocument->description->fr = $f_descriptions->fr->value;
             }
 
 			return $undocuments;
@@ -1671,5 +1673,59 @@ class EmundusonboardModelform extends JModelList {
         }
 
         return true;
+    }
+
+    function getDocumentsByProfile($prid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('sa.id as docid,sa.value as label,sap.*')
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles','sap'))
+                ->leftJoin($db->quoteName('#__emundus_setup_attachments','sa').' ON '.$db->quoteName('sa.id').' = '.$db->quoteName('sap.attachment_id'))
+                ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid))
+                ->order('sap.ordering');
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/form | Error cannot get documents by profile_id : ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function reorderDocuments($documents){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $results = array();
+
+        try {
+            foreach ($documents as $document) {
+                $query->update($db->quoteName('#__emundus_setup_attachment_profiles'))
+                    ->set($db->quoteName('ordering') . ' = ' . (int)$document['ordering'])
+                    ->where($db->quoteName('id') . ' = ' . (int)$document['id']);
+                $db->setQuery($query);
+                $results[] = $db->execute();
+            }
+            return $results;
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/form | Error cannot reorder documents : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function removeDocumentFromProfile($did){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->delete($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('id') . ' = ' . (int)$did);
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/form | Error cannot remove document : ' . $did . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
     }
 }

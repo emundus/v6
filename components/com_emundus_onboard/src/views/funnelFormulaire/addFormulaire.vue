@@ -19,7 +19,7 @@
         </div>
       </a>-->
     </div>
-    <FormCarrousel :formList="this.formList" :visibility="this.visibility" :key="formListReload" v-if="this.formList" @getEmitIndex="getEmitIndex" @formbuilder="formbuilder" />
+    <FormCarrousel :formList="this.formList" :documentsList="this.documentsList" :visibility="this.visibility" :key="formListReload" v-if="this.formList" @getEmitIndex="getEmitIndex" @formbuilder="formbuilder" />
   </div>
 </template>
 
@@ -51,6 +51,7 @@ export default {
       AddForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_FORM"),
       EmitIndex: "0",
       formList: "",
+      documentsList: [],
       formListReload: 0,
 
       form: {
@@ -85,6 +86,21 @@ export default {
         .catch(e => {
           console.log(e);
         });
+    },
+
+    getDocuments(profile_id){
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=form&task=getDocuments",
+        params: {
+          pid: profile_id,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        this.documentsList = response.data.data;
+      });
     },
 
     redirectJRoute(link) {
@@ -133,6 +149,7 @@ export default {
         })
       }).then(response => {
         this.getForms(this.profileId);
+        this.getDocuments(this.profileId);
         this.$emit("profileId", this.profileId);
       })
     },
@@ -155,6 +172,7 @@ export default {
   },
   created() {
     this.getForms(this.profileId);
+    this.getDocuments(this.profileId);
   },
   /*watch: {
     profileId: function() {

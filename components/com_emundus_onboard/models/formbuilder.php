@@ -266,7 +266,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $params['admission'] = "0";
         $params['ajax_validations'] = "0";
         $params['only_process_curl'] = array(
-            2 => "getEndContent"
+            2 => "onBeforeLoad"
         );
         $params['form_php_file'] = array(
             2 => "-1"
@@ -275,7 +275,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             2 => "0"
         );
         $params['thanks_message'] = array(
-            3 => "Votre candidature a bien été envoyé."
+            3 => "Félicitations, votre dossier a bien été envoyé."
         );
         $params['save_insession'] = array(
             3 => "0"

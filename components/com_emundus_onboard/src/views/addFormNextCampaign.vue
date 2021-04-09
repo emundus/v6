@@ -87,7 +87,7 @@
               :visibility="null"
           ></addFormulaire>
 
-          <addDocuments
+<!--          <addDocuments
               v-if="menuHighlight == 4"
               :funnelCategorie="formCategories[langue][menuHighlight]"
               :profileId="profileId"
@@ -95,7 +95,7 @@
               :menuHighlight="menuHighlight"
               :langue="actualLanguage"
               :manyLanguages="manyLanguages"
-          ></addDocuments>
+          ></addDocuments>-->
 
           <add-documents-dropfiles
               v-if="menuHighlight == 1"
@@ -254,14 +254,12 @@ export default {
         "Documents préalables",
         "Formulaire",
         "Documents d'informations",
-        "Documents",
       ],
       [
         "Global informations",
         "Preliminary documents",
         "Form",
         "Informations documents",
-        "Documents",
       ]
     ],
 

@@ -488,6 +488,78 @@ class EmundusonboardControllerform extends JControllerLegacy {
         exit;
     }
 
+    public function getDocuments() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $jinput = JFactory::getApplication()->input;
+            $profile_id = $jinput->getInt('pid');
+
+            $m_form = $this->model;
+            $documents = $m_form->getDocumentsByProfile($profile_id);
+
+            if (!empty($documents)) {
+                $tab = array('status' => 1, 'msg' => 'worked', 'data' => $documents);
+            } else {
+                $tab = array('status' => 0, 'msg' => 'Doesn t worked', 'data' => $documents);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function reorderDocuments() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $jinput = JFactory::getApplication()->input;
+            $documents = $jinput->getRaw('documents');
+
+            $m_form = $this->model;
+            $documents = $m_form->reorderDocuments($documents);
+
+            if (!empty($documents)) {
+                $tab = array('status' => 1, 'msg' => 'worked', 'data' => $documents);
+            } else {
+                $tab = array('status' => 0, 'msg' => 'Doesn t worked', 'data' => $documents);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function removeDocumentFromProfile() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $jinput = JFactory::getApplication()->input;
+            $did = $jinput->getInt('did');
+
+            $m_form = $this->model;
+            $result = $m_form->removeDocumentFromProfile($did);
+
+            if (!empty($result)) {
+                $tab = array('status' => 1, 'msg' => 'worked', 'data' => $result);
+            } else {
+                $tab = array('status' => 0, 'msg' => 'Doesn t worked', 'data' => $result);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function getgroupsbyform() {
         $user = JFactory::getUser();
 

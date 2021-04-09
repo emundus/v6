@@ -49,6 +49,14 @@
               @removeMenu="removeMenu"
               @modalClosed="optionsModal = false"
       />
+      <ModalAddDocuments
+          :pid="prid"
+          :currentDoc="currentDoc"
+          :langue="actualLanguage"
+          :manyLanguages="manyLanguages"
+          @modalClosed="optionsModal = false"
+          @UpdateDocuments="getDocuments"
+        />
     </div>
     <div class="row" v-if="indexHighlight != -1">
       <div class="sidebar-formbuilder" :style="actions_menu ? 'width: 15%' : ''">
@@ -198,7 +206,33 @@
                 </a>
               </li>
             </draggable>
-            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 10px" :title="addMenu">{{addMenu}}</button>
+            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 30px" :title="addMenu">{{addMenu}}</button>
+          </div>
+          <div class="form-pages">
+            <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><em class="far fa-folder-open mr-1" :alt="Documents"></em>{{ Documents }}</h4>
+            <draggable
+                handle=".handle"
+                v-model="documentsList"
+                :class="'draggables-list'"
+                @end="reorderingDocuments"
+            >
+              <li v-for="(doc, index) in documentsList" :key="index" class="MenuForm" @mouseover="enableGrabDocuments(index)" @mouseleave="disableGrabDocuments()">
+                  <span class="icon-handle" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
+                    <em class="fas fa-grip-vertical handle"></em>
+                  </span>
+                <a class="MenuFormItem"
+                   :title="doc.label">
+                  {{doc.label}}
+                </a>
+                <a class="cta-block pointer" @click="removeDocument(index,doc.id)" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
+                  <i class="fas fa-times" style="width: 15px;height: 15px;"></i>
+                </a>
+                <a @click="currentDoc = doc.docid;$modal.show('modalAddDocuments');optionsModal = true" :title="Edit" class="cta-block pointer" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
+                  <em class="fas fa-pen" style="width: 15px;height: 14px;" data-toggle="tooltip" data-placement="top"></em>
+                </a>
+              </li>
+            </draggable>
+            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalAddDocuments');optionsModal = true" style="margin-left: 30px" :title="AddNewDocument">{{AddNewDocument}}</button>
           </div>
           <div class="form-pages" style="padding-top: 20px" v-if="submittionPages">
             <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><img src="/images/emundus/menus/confirmation.png" class="mr-1" :alt="SubmitPage">{{SubmitPage}}</h4>
@@ -245,6 +279,7 @@
   import List from "./list";
   import Tasks from "@/views/tasks";
   import ModalTestingForm from "@/components/formClean/ModalTestingForm";
+  import ModalAddDocuments from "./advancedModals/ModalAddDocuments";
 
   const qs = require("qs");
 
@@ -258,6 +293,7 @@
       manyLanguages: Number
     },
     components: {
+      ModalAddDocuments,
       Tasks,
       ModalTestingForm,
       List,
@@ -276,6 +312,7 @@
         menuHighlight: 0,
         indexHighlight: -1,
         indexGrab: "0",
+        indexGrabDocuments: "0",
         updateFormLabel: false,
         animation: {
           enter: {
@@ -300,10 +337,16 @@
         profileLabel: "",
         id: 0,
         grab: 0,
+        grabDocs: 0,
         rgt: 0,
         builderKey: 0,
         builderSubmitKey: 0,
         files: 0,
+        //
+
+        // Documents variable
+        currentDoc: null,
+        documentsList: [],
         //
 
         // Testing
@@ -372,6 +415,8 @@
         SubmitPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMIT_PAGE"),
         testingForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_TESTING_FORM"),
         Form: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
+        Documents: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENTS"),
+        AddNewDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT"),
         Back: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
         Savingat: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVING_AT"),
         Validate: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
@@ -812,6 +857,36 @@
         });
       },
 
+      getDocuments(){
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=form&task=getDocuments",
+          params: {
+            pid: this.prid,
+          },
+          paramsSerializer: params => {
+             return qs.stringify(params);
+          }
+        }).then(response => {
+          this.documentsList = response.data.data;
+        });
+      },
+
+      removeDocument(index,did){
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=form&task=removeDocumentFromProfile",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            did: did,
+          })
+        }).then(() => {
+            this.documentsList.splice(index,1);
+        });
+      },
+
       /**
        * Récupère le nom du formulaire
        */
@@ -981,6 +1056,24 @@
       },
       //
 
+      // Draggable documents
+      reorderingDocuments: function () {
+        this.documentsList.forEach((doc, index) => {
+          doc.ordering = index;
+        });
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=form&task=reorderDocuments",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            documents: this.documentsList,
+          })
+        });
+      },
+      //
+
       // Draggable pages
       reorderItems(){
         this.formList.forEach(item => {
@@ -1009,6 +1102,16 @@
       disableGrab(){
         this.indexGrab = 0;
         this.grab = false;
+      },
+      enableGrabDocuments(index){
+        if(this.documentsList.length !== 1){
+          this.indexGrabDocuments = index;
+          this.grabDocs = true;
+        }
+      },
+      disableGrabDocuments(){
+        this.indexGrabDocuments = 0;
+        this.grabDocs = false;
       },
       startDragging(){
         if(typeof document.getElementsByClassName('no-elements-tip')[0] != 'undefined'){
@@ -1040,6 +1143,7 @@
       jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)");
       //this.indexHighlight = 0;
       this.getForms();
+      this.getDocuments();
       this.getSubmittionPage();
       this.getFilesByForm();
     },

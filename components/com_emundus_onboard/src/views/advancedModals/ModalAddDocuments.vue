@@ -31,6 +31,13 @@
 
       <div class="modalC-content">
         <div class="form-group">
+          <label for="name">{{DocTemplate}} :</label>
+          <select v-model="doc" class="dropdown-toggle" :disabled="Object.keys(models).length <= 0">
+            <option :value="null"></option>
+            <option v-for="(model, index) in models" :value="model.id">{{model.name[langue]}}</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label for="name">{{Name}}* :</label>
           <div class="input-can-translate">
             <input type="text" maxlength="100" class="form__input field-general w-input mb-0" v-model="form.name[langue]" id="name" :class="{ 'is-invalid': errors.name}" />
@@ -98,7 +105,7 @@ export default {
   props: {
     cid: Number,
     pid: Number,
-    doc: Object,
+    currentDoc: Number,
     manyLanguages: Number,
     langue: String,
   },
@@ -107,6 +114,7 @@ export default {
   },
   data() {
     return {
+      doc: null,
       form: {
         name: {
           fr: '',
@@ -152,10 +160,12 @@ export default {
         },
       ],
       selectedTypes: [],
+      models: [],
       createDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT"),
       editDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_EDIT_DOCUMENT"),
       Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
       Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+      DocTemplate: Joomla.JText._("COM_EMUNDUS_ONBOARD_TEMPLATE_DOC"),
       Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_LASTNAME"),
       Description: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
       MaxPerUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAXPERUSER"),
@@ -187,24 +197,11 @@ export default {
       };
 
       this.doc = null;
+
+      this.$emit("modalClosed");
     },
     beforeOpen(event) {
-      if(this.doc != null) {
-        this.form.name.fr = this.doc.value_fr;
-        this.form.name.en = this.doc.value_en;
-        this.form.description.fr = this.doc.description_fr;
-        this.form.description.en = this.doc.description_en;
-        if(this.doc.allowed_types.includes('pdf')) {
-          this.form.selectedTypes.pdf = true;
-        }
-        if(this.doc.allowed_types.includes('jpg') || this.doc.allowed_types.includes('png') || this.doc.allowed_types.includes('gif')) {
-          this.form.selectedTypes['jpg;png;gif'] = true;
-        }
-        if(this.doc.allowed_types.includes('xls') || this.doc.allowed_types.includes('xlsx') || this.doc.allowed_types.includes('odf')) {
-          this.form.selectedTypes['xls;xlsx;odf'] = true;
-        }
-        this.form.nbmax = this.doc.nbmax;
-      }
+      this.getModelsDocs();
     },
     createNewDocument() {
       this.errors = {
@@ -250,7 +247,7 @@ export default {
       let url = 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument';
       if(this.doc != null) {
         url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
-        params.did = this.doc.id;
+        params.did = this.doc;
       }
 
       axios({
@@ -265,7 +262,63 @@ export default {
         this.$modal.hide('modalAddDocuments')
       });
     },
+
+    getModelsDocs(){
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=form&task=getundocuments",
+      }).then(response => {
+        this.models = response.data.data;
+        if(this.currentDoc != null){
+          this.doc = this.currentDoc;
+        }
+      });
+    }
   },
+
+  watch: {
+    doc: function(val) {
+      if(val != null) {
+        const model = this.models.find(model => model.id == val);
+        this.form.name = model.name;
+        this.form.description = model.description;
+        if (model.allowed_types.includes('pdf')) {
+          this.form.selectedTypes.pdf = true;
+        } else {
+          this.form.selectedTypes.pdf = false;
+        }
+        if (model.allowed_types.includes('jpg') || model.allowed_types.includes('png') || model.allowed_types.includes('gif')) {
+          this.form.selectedTypes['jpg;png;gif'] = true;
+        } else {
+          this.form.selectedTypes['jpg;png;gif'] = false;
+        }
+        if (model.allowed_types.includes('xls') || model.allowed_types.includes('xlsx') || model.allowed_types.includes('odf')) {
+          this.form.selectedTypes['xls;xlsx;odf'] = true;
+        } else {
+          this.form.selectedTypes['xls;xlsx;odf'] = false;
+        }
+        this.form.nbmax = model.nbmax;
+      } else {
+        this.form = {
+          name: {
+            fr: '',
+            en: ''
+          },
+          description: {
+            fr: '',
+            en: ''
+          },
+          nbmax: 1,
+          selectedTypes: {
+            pdf: false,
+            'jpg;png;gif': false,
+            'doc;docx;odt': false,
+            'xls;xlsx;odf': false,
+          },
+        };
+      }
+    }
+  }
 };
 </script>
 
