@@ -23,6 +23,7 @@ class EmundusworkflowModelcommon extends JModelList {
                 ->where($db->quoteName('#__emundus_setup_profiles.published = 1'));
 
             $db->setQuery($query);
+
             return $db->loadObjectList();
         }
         catch(Exception $e) {

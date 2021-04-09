@@ -1,9 +1,9 @@
 <template>
-  <div class="flowchart-container" 
-    @mousemove="handleMove" 
-    @mouseup="handleUp"
-    @mousedown="handleDown">
-<!--    <svg width="100%" :height="`${height}vh`">-->
+  <div class="flowchart-container"
+       @mousemove="handleMove"
+       @mouseup="handleUp"
+       @mousedown="handleDown">
+    <!--    <svg width="100%" :height="`${height}vh`">-->
     <svg width="100%" :height="`${height}vh`">
       <flowchart-link v-bind.sync="link" v-for="(link, index) in lines" :key="`link${index}`" @deleteLink="linkDelete(link.id)"></flowchart-link>
     </svg>
@@ -90,8 +90,8 @@ export default {
         x = this.scene.centerX + toNode.x;
         y = this.scene.centerY + toNode.y;
         [ex, ey] = this.getPortPosition('top', x, y);
-        return { 
-          start: [cx, cy], 
+        return {
+          start: [cx, cy],
           end: [ex, ey],
           id: link.id,
         };
@@ -102,9 +102,9 @@ export default {
         x = this.scene.centerX + fromNode.x;
         y = this.scene.centerY + fromNode.y;
         [cx, cy] = this.getPortPosition('bottom', x, y);
-        // push temp dragging link, mouse cursor postion = link end postion 
-        lines.push({ 
-          start: [cx, cy], 
+        // push temp dragging link, mouse cursor postion = link end postion
+        lines.push({
+          start: [cx, cy],
           end: [this.draggingLink.mx, this.draggingLink.my],
         })
       }
@@ -119,7 +119,7 @@ export default {
   methods: {
     findNodeWithID(id) {
       return this.scene.nodes.find((item) => {
-          return id === item.id
+        return id === item.id
       })
     },
     getPortPosition(type, x, y) {
@@ -214,11 +214,11 @@ export default {
 
     linkDelete(id) {
       const deletedLink = this.scene.links.find((item) => {
-          return item.id === id;
+        return item.id === id;
       });
       if (deletedLink) {
         this.scene.links = this.scene.links.filter((item) => {
-            return item.id !== id;
+          return item.id !== id;
         });
         this.$emit('linkBreak', deletedLink);
         this.$swal('Merci', 'Cette liaison est supprimée', 'success');

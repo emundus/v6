@@ -1,30 +1,15 @@
 <template>
   <div id="stepflow">
-    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
-    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
-
-    <div contenteditable="true" class="editable-workflow-name" id="editable-workflow-name-div" v-on:keyup.enter="setWorkflowLabel()" v-b-tooltip.top.hover title="Cliquer sur le nom du workflow pour le changer" v-if="!hideStep">
-      {{ this.workflowName }}
-    </div>
-
-    <p class="tooltip" v-if="!hideStep"> Dernier mis a jour: {{ this.lastUpdated }}</p>
-
+    <button @click="createStep()" v-if="!hideStep">Creer nouvelle etape</button>
     <div class="min-h-screen flex overflow-x-scroll py-12">
-      <div v-for="step in steps" :key="step.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + step.id" v-on:dblclick="openStep(step.id)" v-if="!hideStep" style="margin-right: 10rem !important">
-        <div contenteditable="true" class="editable-step-label" class="step-label" :id="'step_label_' + step.id" v-on:keyup.enter="setStepLabel(step.id)" style="background: rgb(134, 230, 230) none repeat scroll 0% 0%">{{ step.title }}</div>
-        <modal-config-step :ID="step.id" :element="step"/>
-        <table style="border:0px; margin: -5px">
-          <tr>
-            <th class="btn-group-step"><b-button variant="danger" @click="deleteStep(step.id)" style="margin:5px; width: max-content">Supprimer &nbsp<b-icon icon="scissors"></b-icon></b-button></th>
-            <th class="btn-group-step"><b-button variant="warning" @click="configStep(step.id)" style="margin:10px; width: max-content">Configurer &nbsp<b-icon icon="gear"></b-icon></b-button></th>
-          </tr>
-        </table>
+      <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id" v-on:dblclick="openStep(column.id)" v-if="!hideStep">
+        <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
+        <modal-config-step :ID="column.id" :element="column"/>
+        <button @click="deleteStep(column.id)">Annuler etape</button>
+        <button @click="configStep(column.id)">Configurer</button>
       </div>
-        <workflow-space v-for="step in steps" v-if="currentStep == step.id" :step="step"/>
+      <workflow-space v-for="column in columns" v-if="currentStep == column.id" :step="column"/>
     </div>
-
-    <b-button variant="success" @click="createStep()" v-if="!hideStep" style="position:absolute; width: max-content" size="lg">Ajouter étape &nbsp<b-icon icon="calendar-plus"></b-icon></b-button>
-
   </div>
 </template>
 
@@ -40,21 +25,21 @@ export default {
 
   components: {ModalConfigStep, SimpleFlowchart, WorkflowSpace},
 
-  props: {},
+  props: {
+    // ID: Number,             //id of step flow
+    // element: Object,        //element of step flow --> may be not used
+  },
 
   data() {
     return {
-      steps: [],
+      columns: [],
       currentStep: '',
       hideStep: false,
-      workflowName: '',
-      lastUpdated: '',
     };
   },
 
   created() {
     this.getAllSteps(); //// get all steps by workflow
-    this.getWorkflow();
   },
 
   methods: {
@@ -77,7 +62,7 @@ export default {
           data: _data
         })
       }).then(response => {
-        this.steps.push({
+        this.columns.push({
           id: response.data.data.step_id,
           title: 'Etape # anonyme ' + response.data.data.step_id,       // default name of step
         })
@@ -97,7 +82,7 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        this.steps = this.steps.filter((step) => {
+        this.columns = this.columns.filter((step) => {
           return step.id !== id;   // delete step
         })
       })
@@ -120,7 +105,7 @@ export default {
         var _steps = response.data.data;
 
         _steps.forEach(step => {
-          this.steps.push({
+          this.columns.push({
             id: step.id,
             title: 'Etape # anonyme ' + step.id,
           })
@@ -136,6 +121,7 @@ export default {
     getWorkflowIdFromURL: function () {
       return window.location.href.split('id=')[1];
     },
+
 
     setStepLabel: function(id) {
       var data = {
@@ -158,57 +144,15 @@ export default {
       }).catch(error => {
         console.log(error);
       })
-    },
-
-    getWorkflow: function () {
-      //// change post --> get to improve the performance
-      axios({
-        method: 'get',
-        url: 'index.php?option=com_emundus_workflow&controller=workflow&task=getworkflowbyid',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        params: {
-          wid: this.getWorkflowIdFromURL(),
-        },
-        paramsSerializer: params =>{
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        var data = (response.data.data)[0];
-        this.workflowName = data.workflow_name;
-        this.lastUpdated = data.updated_at;
-      })
-    },
-
-    setWorkflowLabel: function() {
-      var info = {
-        workflow_name: document.getElementById('editable-workflow-name-div').innerText,
-        id: this.getWorkflowIdFromURL(),
-      }
-
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=workflow&task=updateworkflow',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          data: info,
-        })
-      }).then(response => {
-      }).catch(error => {
-        console.log(error);
-      })
-    },
+    }
   }
 };
 </script>
 
 <style>
 .column-width {
-  min-width: 300px;
-  width: 400px;
+  min-width: 240px;
+  width: 450px;
 }
 
 .px-3 {
@@ -222,7 +166,7 @@ export default {
 }
 
 .mr-4 {
-  margin-right: 7.5rem !important;
+  margin-right: 1rem;
 }
 
 .rounded-lg {
@@ -246,7 +190,6 @@ export default {
 
 .min-h-screen {
   min-height: 25vh;
-  margin-top: 5vh;
 }
 
 .flex {
@@ -272,46 +215,4 @@ export default {
   white-space:nowrap;
 }
 
-.editable-workflow-name {
-  color: #118a3b !important;
-  font-size: xx-large !important;
-  font-weight: bold !important;
-  width: max-content;
-  /*border-bottom: 1px dotted black;*/
-  text-decoration: underline #28a745;
-}
-
-[contenteditable="true"].editable-workflow-name {
-  white-space: nowrap;
-  width:max-content;
-  overflow: hidden;
-  position: absolute;
-  top: 7vh;
-}
-[contenteditable="true"].editable-workflow-name br {
-  display:none;
-}
-[contenteditable="true"].editable-workflow-name * {
-  display:inline;
-  white-space:nowrap;
-}
-
-.tooltip {
-  opacity: 1 !important;
-  font-size: small !important;
-  color: #8a8a8a;
-  position: absolute;
-  top: 12vh;
-}
-
-.step-label {
-  text-align: center;
-  font-family: Arial, Helvetica, sans-serif;
-  width:19.5vh;
-}
-
-.btn-group-step {
-  background: none !important;
-  padding: 0;
-}
 </style>

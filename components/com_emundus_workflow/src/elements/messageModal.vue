@@ -57,76 +57,76 @@
 import axios from 'axios';
 const qs = require('qs');
 
-  export default {
-    name: "messageModal",
+export default {
+  name: "messageModal",
 
-    props: {
-      element: Object,
-    },
+  props: {
+    element: Object,
+  },
 
-    data: function() {
-      return {
-        elementTitle: {
-          email_model_title: "Message",
-          input_status_title: "Statut d'entrée",
-          destination_title: "Destinataire",
-          notes_title: "Notes",
-        },
+  data: function() {
+    return {
+      elementTitle: {
+        email_model_title: "Message",
+        input_status_title: "Statut d'entrée",
+        destination_title: "Destinataire",
+        notes_title: "Notes",
+      },
 
-        form: {
-          emailSelected: '',
-          inputStatus: '',
-          destinationSelected: '',
-          notes: '',
-          color: "#0f4c81",
-        },
+      form: {
+        emailSelected: '',
+        inputStatus: '',
+        destinationSelected: '',
+        notes: '',
+        color: "#0f4c81",
+      },
 
-        emails: [],
-        status: [],
-        destination: [],
-      }
-    },
+      emails: [],
+      status: [],
+      destination: [],
+    }
+  },
 
-    created() {
-      this.getAllMessages();
-      this.getAllStatus();
-      this.getAllDestinations();
-      this.form = this.element;
-    },
+  created() {
+    this.getAllMessages();
+    this.getAllStatus();
+    this.getAllDestinations();
+    this.form = this.element;
+  },
 
-    methods: {
-      getAllMessages: function() {
-        axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallmessages')
+  methods: {
+    getAllMessages: function() {
+      axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallmessages')
           .then(response => {
             this.$data.emails = response.data.data;
           })
           .catch(error => {
             console.log(error);
           })
-      },
+    },
 
-      getAllStatus: function() {
-        axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus')
-            .then(response => {
-              this.$data.status = response.data.data;
-            })
-            .catch(error => {
-              console.log(error);
-            })
-      },
+    getAllStatus: function() {
+      axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus')
+          .then(response => {
+            this.$data.status = response.data.data;
+          })
+          .catch(error => {
+            console.log(error);
+          })
+    },
 
-      getAllDestinations: function() {
-        axios.get('index.php?option=com_emundus_workflow&controller=common&task=getalldestinations')
-            .then(response => {
-              this.$data.destination = response.data.data;
-              console.log(response);
-            })
-            .catch(error => {
-              console.log(error);
-            })
-      },
-    }
+    getAllDestinations: function() {
+      axios.get('index.php?option=com_emundus_workflow&controller=common&task=getalldestinations')
+          .then(response => {
+            this.$data.destination = response.data.data;
+            console.log(response);
+          })
+          .catch(error => {
+            console.log(error);
+          })
+    },
   }
+}
 </script>
 
 <style>
