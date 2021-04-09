@@ -422,6 +422,14 @@ input[type="text"],
   padding: 0 20px;
 }
 
+.view-list .g-container {
+  width: calc(100% - 75px) !important;
+}
+
+.view-list .g-container-main {
+  width: calc(100% - 75px) !important;
+}
+
 .g-back-office-emundus-tableau #g-container-main .g-container {
   position: relative;
   left: 75px;
