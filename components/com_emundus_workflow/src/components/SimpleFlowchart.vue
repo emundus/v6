@@ -8,7 +8,7 @@
       <flowchart-link v-bind.sync="link" v-for="(link, index) in lines" :key="`link${index}`" @deleteLink="linkDelete(link.id)"></flowchart-link>
     </svg>
     <modal-config-element v-for="(node, index) in scene.nodes" :ID="node.id" :element="node" @linkingStart="linkingStart" @linkingStop="linkingStop" @linkDelete="linkDelete"> {{ node.id }}</modal-config-element>
-    <flowchart-node v-bind.sync="node" v-for="(node, index) in scene.nodes" :key="`node${index}`" :options="nodeOptions" @linkingStart="linkingStart(node.id)" @linkingStop="linkingStop(node.id)" @nodeSelected="nodeSelected(node.id, $event)" v-bind:style="{ background: node.background }"></flowchart-node>
+    <flowchart-node v-bind.sync="node" v-for="(node, index) in scene.nodes" :key="`node${index}`" :options="nodeOptions" @linkingStart="linkingStart(node.id)" @linkingStop="linkingStop(node.id)" @nodeSelected="nodeSelected(node.id, $event)" v-bind:style="{ background: node.background }" :params="step"></flowchart-node>
   </div>
 </template>
 

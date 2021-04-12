@@ -18,8 +18,8 @@
     <div v-show="show.delete" class="node-delete">&times;</div>
     <div v-show="show.clone" class="duplicate-option" :id="id" ref="duplicate">Dupliquer</div>
     <div class="configuration" :id="id" ref="configuration">Configurer</div>
-    <div class="input-status" :id="id" ref="input-status" v-for="status in this.inputStatus">{{ status.value }} {{ status.step }}</div>
-    <div class="output-status" :id="id" ref="out-status" v-for="status in this.outputStatus">{{ status.value }} {{ status.step }}</div>
+    <div class="input-status" :id="id"> {{ this.params.stateIn }}</div>
+    <div class="output-status" :id="id"> {{ this.params.stateOut }}</div>
   </div>
 </template>
 
@@ -31,6 +31,7 @@ const qs = require('qs');
 export default {
   name: 'FlowchartNode',
   props: {
+    params: Object,
     background: {
       type: String,
       default: '',
@@ -90,7 +91,7 @@ export default {
   },
 
   created() {
-    this.getCurrentStatus(this.id);
+    //this.getCurrentStatus(this.id);
   },
 
   computed: {
@@ -270,14 +271,17 @@ export default {
 }
 
 .input-status {
-  margin: 5px -60px;
+  margin-left: -60px;
+  margin-top: -35px;
   color: #0B7C08;
   font-size: x-small;
+  position: absolute;
 }
 
 .output-status {
-  margin: -80px 100px;
-  color: #7c084e;
+  margin: -35px 90px;
+  color: #081b7c;
   font-size: x-small;
+  position: absolute;
 }
 </style>

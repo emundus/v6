@@ -126,6 +126,8 @@ export default {
           id: response.data.data.step_id,
           title: 'Etape # anonyme ' + response.data.data.step_id,       // default name of step
         })
+
+        setTimeout(() => { this.$modal.show('stepModal' + response.data.data.step_id) }, 500);
       })
     },
 
