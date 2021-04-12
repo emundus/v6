@@ -4,12 +4,15 @@
     <div class="min-h-screen flex overflow-x-scroll py-12">
       <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id" v-on:dblclick="openStep(column.id)" v-if="!hideStep">
         <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
-        <modal-config-step :ID="column.id" :element="column"/>
+        <modal-config-step :ID="column.id" :element="column" @updateState="updateStatus"/>
+        <div>{{ column.stateIn }}</div>
+        <div>{{ column.stateOut }}</div>
         <button @click="deleteStep(column.id)">Annuler etape</button>
         <button @click="configStep(column.id)">Configurer</button>
       </div>
       <workflow-space v-for="column in columns" v-if="currentStep == column.id" :step="column"/>
     </div>
+
   </div>
 </template>
 
@@ -25,10 +28,7 @@ export default {
 
   components: {ModalConfigStep, SimpleFlowchart, WorkflowSpace},
 
-  props: {
-    // ID: Number,             //id of step flow
-    // element: Object,        //element of step flow --> may be not used
-  },
+  props: {},
 
   data() {
     return {
@@ -43,6 +43,18 @@ export default {
   },
 
   methods: {
+    getCurrentStatus: function() {
+
+    },
+
+    updateStatus(result) {
+      const _id = (element) => element.id == result['id'];
+      var _index = this.columns.findIndex(_id);
+      this.columns[_index]['stateIn'] = result['input'];
+      this.columns[_index]['stateOut'] = result['output'];
+      this.$forceUpdate();
+    },
+
     openStep: function(id) {
       this.currentStep = id;
       this.hideStep = true;

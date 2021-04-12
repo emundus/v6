@@ -3,13 +3,13 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
-    <modal :name="'stepModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen">
+    <modal :name="'stepModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
 
       <!--  Set step in   -->
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.inputStatusTitle }}</label>
         <div class="col-xs-8">
-          <select v-model="form.inputStatus" class="form-control-select">
+          <select v-model="form.inputStatus" class="form-control-select" id="instatus-selected">
             <b-form-select-option selected disabled>-- Statut d'entre de l'etape --</b-form-select-option>
             <option v-for="instatus in this.inStatus" :value="instatus.step"> {{ instatus.value }}</option>
           </select>
@@ -20,7 +20,7 @@
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.outputStatusTitle }}</label>
         <div class="col-xs-8">
-          <select v-model="form.outputStatus" class="form-control-select">
+          <select v-model="form.outputStatus" class="form-control-select" id="outstatus-selected">
             <b-form-select-option selected disabled>-- Statut sortie de l'etape --</b-form-select-option>
             <option v-for="outstatus in this.outStatus" :value="outstatus.step"> {{ outstatus.value }}</option>
           </select>
@@ -61,6 +61,8 @@
 <script>
 import axios from 'axios';
 import Swal from "sweetalert2";
+import $ from 'jquery';
+
 const qs = require('qs');
 
 export default {
@@ -82,6 +84,7 @@ export default {
       },
       //use for v-model
       form: {
+        id: '',
         inputStatus: '',
         outputStatus: '',
         startDate: '',
@@ -91,6 +94,8 @@ export default {
       //use to keep the axios api
       inStatus: [],
       outStatus: [],
+
+      inStatusSelected: '',
     }
   },
 
@@ -111,6 +116,7 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
+        this.form.id = this.ID;
         this.form.inputStatus = response.data.data.inputStatus;
         this.form.outputStatus = response.data.data.outputStatus;
         this.form.notes = response.data.data.notes;
@@ -162,6 +168,7 @@ export default {
             if(result.isConfirmed) {
               this.exitModal();
             }
+            // this.inStatusSelected = $( "#instatus-selected option:selected" ).text();
           })
         }).catch(error => {
           console.log(error);
@@ -193,6 +200,16 @@ export default {
       }
       this.getCurrentParams(this.element.id);
       this.getAvailableStatus(data);  //for test only
+    },
+
+    beforeClose() {
+      let inputStatus = $( "#instatus-selected option:selected" ).text();
+      let outputStatus = $( "#outstatus-selected option:selected" ).text();
+      let result = [];
+      result['input'] = inputStatus;
+      result['output'] = outputStatus;
+      result['id'] = this.form.id;
+      this.$emit('updateState', result);
     }
   },
 }
