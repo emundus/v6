@@ -4,9 +4,12 @@
     <div class="min-h-screen flex overflow-x-scroll py-12">
       <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id" v-on:dblclick="openStep(column.id)" v-if="!hideStep">
         <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
-        <modal-config-step :ID="column.id" :element="column" @updateState="updateStatus"/>
         <div>{{ column.stateIn }}</div>
         <div>{{ column.stateOut }}</div>
+        <modal-config-step :ID="column.id" :element="column" @updateState="updateStatus"/>
+<!--        <div>{{ column.stateIn }}</div>-->
+<!--        <div>{{ column.stateOut }}</div>-->
+
         <button @click="deleteStep(column.id)">Annuler etape</button>
         <button @click="configStep(column.id)">Configurer</button>
       </div>
@@ -35,6 +38,8 @@ export default {
       columns: [],
       currentStep: '',
       hideStep: false,
+      stateIn: '',
+      stateOut: '',
     };
   },
 
@@ -43,16 +48,15 @@ export default {
   },
 
   methods: {
-    getCurrentStatus: function() {
-
-    },
-
     updateStatus(result) {
       const _id = (element) => element.id == result['id'];
       var _index = this.columns.findIndex(_id);
       this.columns[_index]['stateIn'] = result['input'];
       this.columns[_index]['stateOut'] = result['output'];
+
       this.$forceUpdate();
+
+      //// forceupdate --> call api to update status in database --> checkin if status (after) and status (before) are the same --> do nothing /// otherwise, call to axios
     },
 
     openStep: function(id) {
@@ -117,10 +121,34 @@ export default {
         var _steps = response.data.data;
 
         _steps.forEach(step => {
+          //// call to axios to get status of this step
+          var sid = step.id;
+          axios({
+            method: 'get',
+            url: 'index.php?option=com_emundus_workflow&controller=step&task=getcurrentparams',
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            params: { sid },
+            paramsSerializer: params => {
+              return qs.stringify(params);
+            }
+          }).then(answer => {
+            const _id = (element) => element.id == sid;
+            var _index = this.columns.findIndex(_id);
+
+            this.columns[_index]['stateIn'] = answer.data.data.inputStatusName;
+            this.columns[_index]['stateOut'] = answer.data.data.outputStatusName;
+            this.$forceUpdate();
+            console.log(this.columns);
+          });
+
           this.columns.push({
             id: step.id,
             title: 'Etape # anonyme ' + step.id,
           })
+          // this.stateIn = answer.data.data.inputStatus;
+          // this.stateOut = answer.data.data.outputStatus;
         })
       })
     },

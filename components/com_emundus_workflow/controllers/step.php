@@ -27,7 +27,7 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             if ($_steps) {
                 $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_STEPS_SUCCESSFULLY"), 'data' => $_steps);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("GET_ALL_STEPS_FAILED"), 'data' => $_steps);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_ALL_STEPS_FAILED_OR_NOTHING_STEP"), 'data' => $_steps);
             }
         }
         echo json_encode((object)$tab);
@@ -115,7 +115,29 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
             if ($_params) {
                 $tab = array('status' => 1, 'msg' => JText::_("GET_CURRENT_PARAMS_SUCCESSFULLY"), 'data' => $_params);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_("GET_CURRENT_PARAMS_FAILED"), 'data' => $_params);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_CURRENT_PARAMS_FAILED_OR_NOTHING_PARAMS"), 'data' => $_params);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getstatusattributs() {
+        $user = JFactory::getUser();
+
+        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('sid');
+
+            $_params = $this->model->getStatusAttributsFromStep($data);
+
+            if ($_params) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_CURRENT_PARAMS_SUCCESSFULLY"), 'data' => $_params);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_("GET_CURRENT_PARAMS_FAILED_OR_NOTHING_PARAMS"), 'data' => $_params);
             }
         }
         echo json_encode((object)$tab);

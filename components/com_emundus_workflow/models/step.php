@@ -18,6 +18,7 @@ class EmundusworkflowModelstep extends JModelList {
     }
 
     //// get all steps of workflow --> params ==> wid
+    /// get all steps --> get current params of this step
     public function getAllStepsByWorkflow($wid) {
         if(!empty($wid) or isset($wid)) {
             try {
@@ -167,8 +168,30 @@ class EmundusworkflowModelstep extends JModelList {
         }
     }
 
+    /// get status name from stats name
+    public function getStatusAttributsFromStep($sid) {
+        if(!empty($sid) or isset($sid)) {
+            try {
+                $this->query->clear()
+                    ->select('#__emundus_setup_status.*')
+                    ->from($this->db->quoteName('#__emundus_setup_status'))
+                    ->where($this->db->quoteName('#__emundus_setup_status.step') . '=' . (int)$sid);
+                $this->db->setQuery($this->query);
+                return $this->db->loadObject();
+            }
+            catch(Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/step | Cannot get status value from status step' . preg_replace("/[\r\n]/"," ",$this->query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
     //// get current params of step --> params ==> sid
     public function getCurrentParamsByStep($sid) {
+
         if(!empty($sid) or isset($sid)) {
             try {
                 $this->query->clear()
@@ -187,6 +210,9 @@ class EmundusworkflowModelstep extends JModelList {
                 $_exportArray['startDate'] = json_decode($_rawCurrentParams->params)->startDate;
                 $_exportArray['endDate'] = json_decode($_rawCurrentParams->params)->endDate;
                 $_exportArray['notes'] = json_decode($_rawCurrentParams->params)->notes;
+
+                $_exportArray['inputStatusName'] = ($this->getStatusAttributsFromStep($_exportArray['inputStatus']))->value;
+                $_exportArray['outputStatusName'] = ($this->getStatusAttributsFromStep($_exportArray['outputStatus']))->value;
 
                 return $_exportArray;
             }
