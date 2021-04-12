@@ -1,17 +1,20 @@
 <template>
   <div id="stepflow">
-    <button @click="createStep()" v-if="!hideStep">Creer nouvelle etape</button>
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+
+    <b-button @click="createStep()" v-if="!hideStep" variant="success">Creer nouvelle etape</b-button>
     <div class="min-h-screen flex overflow-x-scroll py-12">
       <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id" v-on:dblclick="openStep(column.id)" v-if="!hideStep">
         <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
-        <div>{{ column.stateIn }}</div>
-        <div>{{ column.stateOut }}</div>
+        <div style="color:red">{{ column.stateIn }}</div>
+        <div style="color:blueviolet">{{ column.stateOut }}</div>
         <modal-config-step :ID="column.id" :element="column" @updateState="updateStatus"/>
 <!--        <div>{{ column.stateIn }}</div>-->
 <!--        <div>{{ column.stateOut }}</div>-->
 
-        <button @click="deleteStep(column.id)">Annuler etape</button>
-        <button @click="configStep(column.id)">Configurer</button>
+        <b-button @click="deleteStep(column.id)" variant="danger">Annuler etape</b-button>
+        <b-button @click="configStep(column.id)" variant="warning" style="margin-left: 20px">Configurer</b-button>
       </div>
       <workflow-space v-for="column in columns" v-if="currentStep == column.id" :step="column"/>
     </div>
@@ -57,6 +60,47 @@ export default {
       this.$forceUpdate();
 
       //// forceupdate --> call api to update status in database --> checkin if status (after) and status (before) are the same --> do nothing /// otherwise, call to axios
+
+      if(this.form.inputStatus !== null && this.form.outputStatus !== null) {
+        axios({
+          method: 'post',
+          url: 'index.php?option=com_emundus_workflow&controller=step&task=updateparams',
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            data: {
+              id: this.element.id,
+              wid: this.getWorkflowIdFromURL(),
+              params: this.form,
+            }
+          })
+        }).then(response => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Congrat',
+            text: 'Les parametres sont sauvegardés',
+            footer: '<a href>EMundus SAS</a>',
+            confirmButtonColor: '#28a745',
+          }).then(result => {
+            if(result.isConfirmed) {
+              this.exitModal();
+            }
+            // this.inStatusSelected = $( "#instatus-selected option:selected" ).text();
+          })
+        }).catch(error => {
+          console.log(error);
+        })
+      }
+      else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          html: 'Le statut d\'entré et le statut de sortie doivent être configuré',
+          timer: 1500,
+          showConfirmButton:false,
+        })
+      }
     },
 
     openStep: function(id) {

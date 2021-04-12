@@ -125,6 +125,8 @@ class EmundusworkflowModelstep extends JModelList {
         if(!empty($data) or isset($data)) {
             try {
                 $wid = $data['wid'];
+                unset($data['params']['id']);
+
                 //// case 1 --> change the step label
                 if($data['step_label'] and empty($data['params'])) {
                     $this->query->clear()
