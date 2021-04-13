@@ -276,6 +276,9 @@ export default {
 
 .min-h-screen {
   min-height: 25vh;
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 60px;
 }
 
 .flex {
