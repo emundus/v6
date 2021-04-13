@@ -16,245 +16,229 @@
             JLog::addLogger(array('text_file' => 'com_emundus.setupWorkflow.php'), JLog::ALL, array('com_emundus_setupWorkflow'));
         }
 
-        public function onOpenFile($fnum) {
-            /// no need to go further if the plugin type is wrong or fnum is empty
-            if(empty($fnum)) {
-                return false;
-            }
-            else {
+        //// from 2 params ==> fnum
+        public function getProfileByFnum($fnum,$sid=null) {
+            if(!empty($fnum) or isset($fnum)) {
                 try {
-                    $query = $this->db->getQuery(true);
-                    $query->select('#__emundus_workflow.id, #__emundus_workflow.workflow_name')
-                        ->from($this->db->quoteName('#__emundus_workflow'))
-                        ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') .
-                            'ON' . $this->db->quoteName('#__emundus_workflow.campaign_id') .
-                            '='  . $this->db->quoteName('#__emundus_campaign_candidature.campaign_id')
-                        )
+                    $this->query
+                        ->select('#__emundus_workflow_step.*')
+                        ->from($this->db->quoteName('#__emundus_workflow_step'))
+                        ->leftJoin($this->db->quoteName('#__emundus_workflow') . 'ON' . $this->db->quoteName('#__emundus_workflow.id') . '=' . $this->db->quoteName('#__emundus_workflow_step.workflow_id'))
+                        ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') . 'ON' . $this->db->quoteName('#__emundus_workflow.campaign_id') . '=' . $this->db->quoteName('#__emundus_campaign_candidature.campaign_id'))
                         ->where($this->db->quoteName('#__emundus_campaign_candidature.fnum') . '=' . $fnum);
-                    $this->db->setQuery($query);
 
-                    if(empty($this->db->loadObject())) {
-                        JLog::add('No associated workflow found', JLog::ERROR, 'com_emundus_setupWorkflow');
-                        return false;
+                    /// right now, we will get step.id, step.workflow_id, step.params
+                    $this->db->setQuery($this->query);
+                    $_results = $this->db->loadObjectList();
+
+                    $_tempInputList = "";
+                    $_tempOutputList = "";
+
+                    $session = JFactory::getSession();
+                    $aid = $session->get('emundusUser');
+
+                    $aid->workflow = $_results[0]->id;
+
+                    foreach($_results as $key => $value) {
+                        $_tempInputList .= json_decode($value->params)->inputStatus . ',';
+                        $_tempOutputList .= json_decode($value->params)->outputStatus . ',';
+
+                        /// input status is in one of the step flow --> get this step id --> ....
+                        if((json_decode($value->params)->inputStatus) == $sid) {
+                            $_stepID = $value->id;
+                            $this->getProfileByStep($_stepID);  //// get profile by step id
+
+                            $aid->profile = json_decode($this->getProfileByStep($_stepID)[0]->params)->formNameSelected;       // profile_id
+                            $aid->step_id = $_stepID;
+                            $aid->message = 'step and profile founded';
+                            continue;          ///stop the loop
+                        }
+
+                        else { }
+                    }
+
+                    /// trim the last character
+                    $_inArrayString = explode(',', substr_replace($_tempInputList ,"",-1));
+                    $_outArrayString = explode(',', substr_replace($_tempOutputList ,"",-1));
+
+                    //// if the input status is not in $_inArrayString, but in $_outArrayString
+                    if(!in_array($sid, $_inArrayString) && in_array($sid, $_outArrayString)) {
+                        // get the first profile of this step flow
+//                        $this->getFirstProfileByStep($sid);
+                        $this->getFirstProfileOfFirstStep($sid);
+
+                        $aid->profile = json_decode($this->getFirstProfileOfFirstStep($sid)->params)->formNameSelected;
+                        $aid->step_id = null;
+                        $aid->message = 'get the first profile of the first step';
+                    }
+                    else if(!in_array($sid, $_inArrayString) && !in_array($sid, $_outArrayString)) {
+                        // get the default profile of this campaign
+                        $this->getDefaultProfileByFnum($fnum);
+                        $aid->profile = $this->getDefaultProfileByFnum($fnum);
+                        $aid->step_id = null;
+                        $aid->message = 'get the default profile of campaign';
                     }
                     else {
-                        return $this->db->loadObject();
+                        ////
                     }
-                }
 
+                    return $aid;
+                }
                 catch(Exception $e) {
-                    JLog::add('Could not get associated workflow -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
-                    return false;
+                    JLog::add('Could not get profile by fnum -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
+                    return $e->getMessage();
                 }
             }
-        }
-
-        public function getWorkflowByCampaignID($cid) {
-            try {
-                $query = $this->db->getQuery(true);
-                $query->select('*')
-                    ->from($this->db->quoteName('#__emundus_workflow'))
-                    ->where($this->db->quoteName('#__emundus_workflow.campaign_id') . '=' . (int)$cid);
-                $this->db->setQuery($query);
-                return $this->db->loadObject();
-            }
-            catch(Exception $e) {
-                JLog::add('Could not get associated workflow -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
-                return $e->getMessage();
+            else {
+                return false;
             }
         }
 
-        //get profile_id from workflow_id // status_id
-        public function getProfileByWorkflowIDStatusID($wid, $cid) {
-            $query = $this->db->getQuery(true);
-            $query->select('#__emundus_workflow_item.id, #__emundus_workflow_item.params')
-                ->from($this->db->quoteName('#__emundus_workflow_item'))
-                ->where($this->db->quoteName('#__emundus_workflow_item.item_id') . '=' . 2)
-                ->andWhere($this->db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$wid);
-            $this->db->setQuery($query);
-            $_params = $this->db->loadObjectList();
-
-            try {
-                for ($i = 0; $i <= count($_params); $i++) {
-                    if (((json_decode($_params[$i]->params))->editedStatusSelected) !== $cid) {
-                        unset($_params[$i]);
-                    }
+        //// get the profile if from step flow
+        public function getProfileByStep($step) {
+            if(!empty($step) or isset($step)) {
+                try {
+                    $this->query->clear()
+                        ->select('#__emundus_workflow_item.*')
+                        ->from($this->db->quoteName('#__emundus_workflow_item'))
+                        ->leftJoin($this->db->quoteName('#__emundus_workflow_step') . 'ON' . $this->db->quoteName('#__emundus_workflow_item.step_id') . '=' . $this->db->quoteName('#__emundus_workflow_step.id'))
+                        ->where($this->db->quoteName('#__emundus_workflow_item.item_id') . '=' . 2)
+                        ->andWhere($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$step);
+                    $this->db->setQuery($this->query);
+                    return $this->db->loadObjectList();
                 }
-                return $_params;
-            }
-            catch(Exception $e) {
-                JLog::add('Could not get profile id by workflow and status -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
-                return $e->getMessage();
-            }
-        }
-
-        public function getWorkflowProfileByFnum($fnum, $cid=null) {
-            $query = $this->db->getQuery(true);
-            $query->select('#__emundus_workflow.id, #__emundus_workflow_item.params')
-                ->from($this->db->quoteName('#__emundus_workflow_item'))
-                ->leftJoin($this->db->quoteName('#__emundus_workflow') . 'ON' . $this->db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . $this->db->quoteName('#__emundus_workflow.id'))
-                ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') . 'ON' . $this->db->quoteName('#__emundus_workflow.campaign_id') . '=' . $this->db->quoteName('#__emundus_campaign_candidature.campaign_id'))
-                ->where($this->db->quoteName('#__emundus_campaign_candidature.fnum') . '=' . $fnum);
-
-            $this->db->setQuery($query);
-            $_rawData =  $this->db->loadObjectList();
-
-            $_workflowID = $_rawData[0]->id;
-
-            unset($_rawData[0]);
-            
-            $_inputStatusList = array();
-            $_outputStatusList = array();
-
-            $_exportData = array();
-
-            $_inArrayString = "";
-            $_outArrayString = "";
-
-            // stock session here
-            $session = JFactory::getSession();
-            $aid = $session->get('emundusUser');
-            //
-
-            try {
-                for ($i = 1; $i <= count($_rawData); $i++) {
-                    $_inArray = explode(',', (json_decode($_rawData[$i]->params))->inputStatus);
-                    $_outArray = explode(',', (json_decode($_rawData[$i]->params))->outputStatus);
-
-                    array_push($_inputStatusList, $_inArray);
-                    array_push($_outputStatusList, $_outArray);
-
-                    foreach ($_outArray as $key => $value) {
-                        $_outArrayString .=  $value . ',';
-                    }
-
-                    /// if dossier status exists in inputStatusList --> return profile id
-                    foreach ($_inArray as $key => $value) {
-                        $_inArrayString .=  $value . ',';
-                        if(in_array($cid,$_inArray)) {
-                            if ($value == $cid) {
-                                array_push($_exportData, $_rawData[$i]);
-                                continue;
-                            }
-                        }
-                        else {}
-                    }
+                catch(Exception $e) {
+                    JLog::add('Could not get profile by step -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
+                    return $e->getMessage();
                 }
+            }
+            else {
+                return false;
+            }
+        }
 
-                $_inArrayString = explode(',', substr_replace($_inArrayString ,"",-1));
-                $_outArrayString = explode(',', substr_replace($_outArrayString ,"",-1));
+        //// get the first profile id of the first step of workflow
+        public function getFirstProfileOfFirstStep($step) {
+            if(!empty($step) or isset($step)) {
+                try {
+                    /// get the first step
+                    $this->query->clear()
+                        ->select('min(#__emundus_workflow_step.id)')
+                        ->from($this->db->quoteName('#__emundus_workflow_step'));
+                    $this->db->setQuery($this->query);
+                    $_minStepID = $this->db->loadResult();
 
-                $aid->workflow = $_workflowID;
-
-                if(isset(json_decode($_exportData[0]->params)->formNameSelected)) {
-                    $aid->profile = json_decode($_exportData[0]->params)->formNameSelected;
+                    /// from the step id, get the first profile of this step
+                    return $this->getFirstProfileByStep($_minStepID);
                 }
-                else {
-                    if (!in_array($cid, $_inArrayString) and in_array($cid, $_outArrayString)) {
-                        $_exportData = $this->getFirstProfileByWorkflow($_workflowID);
-                        $aid->profile = $_exportData['profile_id'];
-                    } else if (!in_array($cid, $_inArrayString) and !in_array($cid, $_outArrayString)) {
-                        $_exportData = $this->getProfileFromUnexistantStatus($cid);
-                        $aid->profile = $_exportData[0]->profile_id;
-                    }
+                catch(Exception $e) {
+                    JLog::add('Could not get the first profile from the first step -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
+                    return $e->getMessage();
                 }
-
-                return 0;
             }
-
-            catch(Exception $e) {
-                JLog::add('Could not get profile id by workflow and status -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
-                return $e->getMessage();
+            else {
+                return false;
             }
         }
 
-        public function getFirstProfileByWorkflow($wid) {
-            $query = $this->db->getQuery(true);
+        //// get the first profile of a step flow --> get the min(id) && item_id == 2
+        public function getFirstProfileByStep($step) {
+            if(!empty($step) or isset($step)) {
+                try {
+                    $this->query->clear()
+                        ->select('MIN(#__emundus_workflow_item.id), #__emundus_workflow_item.params')
+                        ->from('#__emundus_workflow_item')
+                        ->leftJoin($this->db->quoteName('#__emundus_workflow_step') . 'ON' . $this->db->quoteName('#__emundus_workflow_step.id') . '=' . $this->db->quoteName('#__emundus_workflow_item.step_id'))
+                        ->where($this->db->quoteName('#__emundus_workflow_item.item_id') .'=' . 2);
 
-            //get the first profile by workflow
-            try {
-                $query->select('MIN(id), #__emundus_workflow_item.params')
-                    ->from($this->db->quoteName('#__emundus_workflow_item'))
-                    ->where($this->db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)$wid)
-                    ->andWhere($this->db->quoteName('#__emundus_workflow_item.item_id') . '=' . 2);
-
-                $this->db->setQuery($query);
-
-                $_data = $this->db->loadAssoc();
-
-                $_exportData['profile_id'] = json_decode($_data['params'])->formNameSelected;
-
-                return $_exportData;
+                    $this->db->setQuery($this->query);
+                    return $this->db->loadObject();
+                }
+                catch(Exception $e) {
+                    JLog::add('Could not get the first profile by step -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
+                    return $e->getMessage();
+                }
             }
-            catch(Exception $e) {
-                JLog::add('Could not get first profile id by workflow -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
-                return $e->getMessage();
-            }
-
-        }
-
-        public function getProfileFromUnexistantStatus($sid) {
-            //// status doesn't exist --> get profile by campaign [[ one and only one profile ]]
-            $query = $this->db->getQuery(true);
-
-            try {
-                $query->select('#__emundus_setup_campaigns.profile_id, #__emundus_workflow.id')
-                    ->from($this->db->quoteName('#__emundus_setup_campaigns'))
-
-                    ->leftJoin($this->db->quoteName('#__emundus_workflow') . 'ON' .
-                        $this->db->quoteName('#__emundus_workflow.campaign_id') . '=' . $this->db->quoteName('#__emundus_setup_campaigns.id'))
-
-                    ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') . 'ON' .
-                        $this->db->quoteName('#__emundus_setup_campaigns.id') . '=' . $this->db->quoteName('#__emundus_campaign_candidature.campaign_id'))
-                    ->where($this->db->quoteName('#__emundus_campaign_candidature.status') . '=' . (int)$sid);
-
-                $this->db->setQuery($query);
-
-                return $this->db->loadObjectList();
-            }
-
-            catch(Exception $e) {
-                JLog::add('Could not get profile by status -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
-                return $e->getMessage();
+            else {
+                return false;
             }
         }
 
+        //// get the default profile of by fnum
+        public function getDefaultProfileByFnum($fnum) {
+            if(!empty($fnum) or isset($fnum)) {
+                try {
+                    $this->query->clear()
+                        ->select('#__emundus_setup_profiles.*')
+                        ->from($this->db->quoteName('#__emundus_setup_profiles'))
+                        ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns') . 'ON' . $this->db->quoteName('#__emundus_setup_profiles.id') . '=' . $this->db->quoteName('#__emundus_setup_campaigns.profile_id'))
+                        ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') . 'ON' . $this->db->quoteName('#__emundus_setup_campaigns.id') . '=' . $this->db->quoteName('#__emundus_campaign_candidature.campaign_id'))
+                        ->where($this->db->quoteName('#__emundus_campaign_candidature.fnum') . '=' . $fnum);
+
+                    $this->db->setQuery($this->query);
+                    return $this->db->loadResult();
+                }
+                catch(Exception $e) {
+                    JLog::add('Could not get default profile by campaign -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
+                    return $e->getMessage();
+                }
+            }
+            else {
+                return false;
+            }
+        }
+
+        //// get the menu type from profile id
         public function getMenuTypeByProfile($pid) {
-            $query = $this->db->getQuery(true);
 
-            try {
-                $query->select('#__emundus_setup_profiles.*')
-                    ->from($this->db->quoteName('#__emundus_setup_profiles'))
-                    ->where($this->db->quoteName('#__emundus_setup_profiles.id') . '=' . (int)$pid);
-                $this->db->setQuery($query);
-                return $this->db->loadObjectList()[0]->menutype;
+            if(!empty($pid) or isset($pid)) {
+                try {
+                    $this->query->clear()
+                        ->select('#__emundus_setup_profiles.*')
+                        ->from($this->db->quoteName('#__emundus_setup_profiles'))
+                        ->where($this->db->quoteName('#__emundus_setup_profiles.id') . '=' . (int)$pid);
+                    $this->db->setQuery($this->query);
+                    return $this->db->loadObject(); /// return the menu type
+                }
+                catch(Exception $e) {
+                    JLog::add('Could not get menu type by profile -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
+                    return $e->getMessage();
+                }
             }
-            catch(Exception $e) {
-                return $e->getMessage();
+            else {
+                return false;
             }
         }
 
-        public function updateEmundusUserProfile($fnum, $pid) {
-            $query_get_userid = $this->db->getQuery(true);
-            $query_update_profile_by_userid = $this->db->getQuery(true);
+        //// update the profile id from fnum and profile id --> table jos_emundus_users
+        public function updateUserProfile($fnum,$pid) {
+            if(!empty($fnum) or isset($fnum)) {
+                try {
+                    /// first query --> get the user_id by fnum
+                    $this->query->clear()
+                        ->select('#__emundus_campaign_candidature.*')
+                        ->from($this->db->quoteName('#__emundus_campaign_candidature'))
+                        ->where($this->db->quoteName('#__emundus_campaign_candidature.fnum') . '=' . $fnum);
 
-            try {
-                $query_get_userid->select('#__emundus_users.id')
-                    ->from($this->db->quoteName('#__emundus_users'))
-                    ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') . 'ON' . $this->db->quoteName('#__emundus_campaign_candidature.applicant_id') . '=' . $this->db->quoteName('#__emundus_users.user_id'))
-                    ->where($this->db->quoteName('#__emundus_campaign_candidature.fnum') . '=' . $fnum);
-                $this->db->setQuery($query_get_userid);
-                $_uid = $this->db->loadObject()->id;
+                    $this->db->setQuery($this->query);
+                    $_userID = $this->db->loadObject()->user_id;
 
-                $query_update_profile_by_userid->update($this->db->quoteName('#__emundus_users'))
-                    ->set($this->db->quoteName('#__emundus_users.profile') . '=' . (int) $pid)
-                    ->where($this->db->quoteName('#__emundus_users.id') . '=' . (int) $_uid);
-                $this->db->setQuery($query_update_profile_by_userid);
-                return $this->db->execute();
+                    /// second query --> update the data of jos_emundus_users from $_userID
+                    $this->query->clear()
+                        ->update('#__emundus_users')
+                        ->set($this->db->quoteName('#__emundus_users.profile') . '=' . (int)$pid)
+                        ->where($this->db->quoteName('#__emundus_users.user_id') . '=' . (int)$_userID);
+
+                    $this->db->setQuery($this->query);
+                    $this->db->execute();
+                }
+                catch(Exception $e) {
+                    JLog::add('Could not update the user profile -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
+                    return $e->getMessage();
+                }
             }
-
-            catch(Exception $e) {
-                return $e->getMessage();
+            else {
+                return false;
             }
         }
     }

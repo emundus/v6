@@ -470,23 +470,22 @@ class EmundusController extends JControllerLegacy {
 
 	    $m_profile->initEmundusSession($fnum);
 
-        //register the plugin
+
+        /// step 1 --> detect the stepflow
+
+////        //register the plugin
         JPluginHelper::importPlugin('emundus', 'setup_workflow');
         $dispatcher = JEventDispatcher::getInstance();
 
         $_cid = $this->getModel('profile');
         $status_id = ($_cid->getFnumDetails($fnum))['step'];
 
-        $session = JFactory::getSession();
-        $aid = $session->get('emundusUser');
+        $_profileIDTrigger = $dispatcher->trigger('getProfileByFnum', [$fnum,$status_id]);                       // get profile id --> use the variable $aid
 
-        $profileIDTrigger = $dispatcher->trigger('getWorkflowProfileByFnum', [$fnum,$status_id]);
+        $_menuTypeTrigger = $dispatcher->trigger('getMenuTypeByProfile', [$aid->profile]);                       // get the menutype from profile id
+        $aid->menutype = $_menuTypeTrigger[0]->menutype;                                                                // update the menu type
 
-        $_updatedPIDTrigger = $dispatcher->trigger('updateEmundusUserProfile', [$fnum,$aid->profile]);
-
-        $menuTypeTrigger = $dispatcher->trigger('getMenuTypeByProfile', [$aid->profile]);       //get menu type from profile_id
-
-        $aid->menutype = $menuTypeTrigger[0];
+        $_userProfileTrigger = $dispatcher->trigger('updateUserProfile', [$fnum, $aid->profile]);                // update user profile
 
 	    if (empty($redirect)) {
             $m_application 	= new EmundusModelApplication;

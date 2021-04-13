@@ -183,7 +183,7 @@ class EmundusworkflowModelstep extends JModelList {
             }
             catch(Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/step | Cannot get status value from status step' . preg_replace("/[\r\n]/"," ",$this->query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
-                return false;
+                return $e->getMessage();
             }
         }
         else {
