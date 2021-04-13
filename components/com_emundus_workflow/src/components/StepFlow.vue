@@ -183,10 +183,17 @@ export default {
             const _id = (element) => element.id == sid;
             var _index = this.columns.findIndex(_id);
 
-            this.columns[_index]['stateIn'] = answer.data.data.inputStatusName;
-            this.columns[_index]['stateOut'] = answer.data.data.outputStatusName;
+
+            // this.columns[_index]['stateIn'] = answer.data.data.inputStatusNames;
+
+            var _temp = answer.data.data.inputStatusNames;
+            var _stateIn = [];
+
+            _temp.forEach(elt => _stateIn.push(elt.value));
+            this.columns[_index]['stateIn'] = _stateIn.toString();
+
+            this.columns[_index]['stateOut'] = (answer.data.data.outputStatusNames)[0].value;
             this.$forceUpdate();
-            console.log(this.columns);
           });
 
           this.columns.push({

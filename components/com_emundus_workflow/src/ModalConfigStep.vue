@@ -5,18 +5,32 @@
 
     <modal :name="'stepModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
 
-      <!--  Set step in   -->
+<!--      please keep this code part, do not remove ||| option 1 : only one step in -->
+
+
+<!--      &lt;!&ndash;  Set step in   &ndash;&gt;-->
+<!--      <div class="row mb-3">-->
+<!--        <label class="col-sm-6 col-form-label">{{ this.title.inputStatusTitle }}</label>-->
+<!--        <div class="col-xs-8">-->
+<!--          <select v-model="form.inputStatus" class="form-control-select" id="instatus-selected">-->
+<!--            <b-form-select-option selected disabled>&#45;&#45; Statut d'entre de l'etape &#45;&#45;</b-form-select-option>-->
+<!--            <option v-for="instatus in this.inStatus" :value="instatus.step"> {{ instatus.value }}</option>-->
+<!--          </select>-->
+<!--        </div>-->
+<!--      </div>-->
+
+
+<!--&lt;!&ndash;    option 2 : multiple step in &ndash;&gt;-->
+
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.inputStatusTitle }}</label>
-        <div class="col-xs-8">
-          <select v-model="form.inputStatus" class="form-control-select" id="instatus-selected">
-            <b-form-select-option selected disabled>-- Statut d'entre de l'etape --</b-form-select-option>
-            <option v-for="instatus in this.inStatus" :value="instatus.step"> {{ instatus.value }}</option>
-          </select>
+        <div v-for="item in this.$data.inStatus" v-if="!item.disabled">
+          <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]"/>
+          <label class="form-check-label" :id="'status'+ item.step" name=""> {{item.value}}</label>
         </div>
       </div>
 
-      <!-- Step step out -->
+        <!-- Step step out -->
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.outputStatusTitle }}</label>
         <div class="col-xs-8">
@@ -27,7 +41,7 @@
         </div>
       </div>
 
-      <!-- Step start date -->
+      <!-- Step start date >>> add datetime picker -->
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.startDateTitle }}</label>
         <div class="col-xs-8">
@@ -35,7 +49,7 @@
         </div>
       </div>
 
-      <!-- Step end date -->
+      <!-- Step end date >>> add datetime picker -->
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.endDateTitle }}</label>
         <div class="col-xs-8">
@@ -85,7 +99,8 @@ export default {
       //use for v-model
       form: {
         id: '',
-        inputStatus: '',
+        // inputStatus: '',
+        inputStatus: [],
         outputStatus: '',
         startDate: '',
         endDate: '',
@@ -95,12 +110,15 @@ export default {
       inStatus: [],
       outStatus: [],
 
-      inStatusSelected: '',
+      checked: [],
+      inputList: [],
+
+      inStatusSelected: [],
     }
   },
 
   created() {
-
+      this.form.inputStatus = this.checked;
   },
 
   methods: {
@@ -116,10 +134,14 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
+        // console.log(response);
         this.form.id = this.ID;
-        this.form.inputStatus = response.data.data.inputStatus;
         this.form.outputStatus = response.data.data.outputStatus;
         this.form.notes = response.data.data.notes;
+        var _temp = response.data.data.inputStatus.split(',');
+        _temp.forEach(elt => {
+          this.checked[elt] = true;
+        });
       })
     },
 
@@ -135,7 +157,14 @@ export default {
           return qs.stringify(params)
         }
       }).then(response => {
-        this.inStatus = response.data.dataIn;
+        var _temp = response.data.dataIn;
+
+        if(_temp !== null) {
+          _temp.forEach(elt => elt['disabled'] = false);
+          this.inStatus = _temp;
+        }
+
+        // console.log(this.inStatus);
         this.outStatus = response.data.dataOut;
       })
     },
@@ -203,13 +232,19 @@ export default {
     },
 
     beforeClose() {
-      let inputStatus = $( "#instatus-selected option:selected" ).text();
-      let outputStatus = $( "#outstatus-selected option:selected" ).text();
-      let result = [];
-      result['input'] = inputStatus;
-      result['output'] = outputStatus;
-      result['id'] = this.form.id;
-      this.$emit('updateState', result);
+      let _result = [];
+      let _emit = [];
+      for(i = 0; i <= this.form.inputStatus.length; i++) {
+        if(this.form.inputStatus[i] == true) {
+          _result.push(document.getElementById('status'+i).innerText);
+        }
+      }
+
+      _emit['output'] = $( "#outstatus-selected option:selected" ).text();
+      _emit['input'] = _result.toString();
+      _emit['id'] = this.form.id;
+      console.log(_emit);
+      this.$emit('updateState', _emit);
     }
   },
 }

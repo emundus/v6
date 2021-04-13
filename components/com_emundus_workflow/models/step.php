@@ -123,6 +123,21 @@ class EmundusworkflowModelstep extends JModelList {
     //// update step params --> input :: step_id + step_params
     public function updateStepParams($data) {
         if(!empty($data) or isset($data)) {
+            /// ************************************************************************************************************
+            $_string = "";
+            if(isset($data['params']['inputStatus'])) {
+                foreach($data['params']['inputStatus'] as $key=>$value) {
+                    if($value == "true") {
+                        $_string .= (string)$key . ",";
+                        $_lastString = substr_replace($_string ,"",-1);
+                        $data['params']['inputStatus'] = $_lastString;
+                    }
+                    else {}
+                }
+            }
+            else {}
+            /// ************************************************************************************************************
+
             try {
                 $wid = $data['wid'];
                 unset($data['params']['id']);
@@ -170,7 +185,28 @@ class EmundusworkflowModelstep extends JModelList {
         }
     }
 
-    /// get status name from stats name
+    /// get (list) status name from (list) of steps
+    public function getListStatusNameFromStep($data) {
+        if(!empty($data) or isset($data)) {
+
+            try {
+                $this->query->clear()
+                    ->select('#__emundus_setup_status.*')
+                    ->from($this->db->quoteName('#__emundus_setup_status'))
+                    ->where($this->db->quoteName('#__emundus_setup_status.step') . 'IN (' . $data . ')');
+                $this->db->setQuery($this->query);
+                return $this->db->loadObjectList();
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    /// get status name from stats name (only one step)
     public function getStatusAttributsFromStep($sid) {
         if(!empty($sid) or isset($sid)) {
             try {
@@ -213,8 +249,11 @@ class EmundusworkflowModelstep extends JModelList {
                 $_exportArray['endDate'] = json_decode($_rawCurrentParams->params)->endDate;
                 $_exportArray['notes'] = json_decode($_rawCurrentParams->params)->notes;
 
-                $_exportArray['inputStatusName'] = ($this->getStatusAttributsFromStep($_exportArray['inputStatus']))->value;
-                $_exportArray['outputStatusName'] = ($this->getStatusAttributsFromStep($_exportArray['outputStatus']))->value;
+//                $_exportArray['inputStatusName'] = ($this->getStatusAttributsFromStep($_exportArray['inputStatus']))->value;
+//                $_exportArray['outputStatusName'] = ($this->getStatusAttributsFromStep($_exportArray['outputStatus']))->value;
+
+                $_exportArray['inputStatusNames'] = ($this->getListStatusNameFromStep($_exportArray['inputStatus']));
+                $_exportArray['outputStatusNames'] = ($this->getListStatusNameFromStep($_exportArray['outputStatus']));
 
                 return $_exportArray;
             }
