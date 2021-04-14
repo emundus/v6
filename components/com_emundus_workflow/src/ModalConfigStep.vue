@@ -4,7 +4,6 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
     <modal :name="'stepModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
-
 <!--      please keep this code part, do not remove ||| option 1 : only one step in -->
 
 
@@ -65,9 +64,10 @@
         </div>
       </div>
 
-      <b-button variant="success" @click="updateParams()">Sauvegarder</b-button>
-      <b-button variant="danger" @click="exitModal()">Quitter</b-button>
-
+      <div class="row mb-3">
+        <b-button variant="success" @click="updateParams()">Sauvegarder</b-button>
+        <b-button variant="danger" @click="exitModal()">Quitter</b-button>
+      </div>
     </modal>
   </div>
 </template>
@@ -215,7 +215,14 @@ export default {
     },
 
     exitModal: function() {
-      this.$modal.hide("stepModal" + this.element.id);
+      var _in = this.form.inputStatus;
+      var _out = this.form.outputStatus;
+
+      if(_in.length == 0 || _out === null) {
+        // console.log('--- delete ---');
+        this.$emit('deleteStep', this.element.id);          // using emit to pass event
+        this.$modal.hide("stepModal" + this.element.id);
+      }
     },
 
     getWorkflowIdFromURL: function () {
@@ -243,7 +250,7 @@ export default {
       _emit['output'] = $( "#outstatus-selected option:selected" ).text();
       _emit['input'] = _result.toString();
       _emit['id'] = this.form.id;
-      console.log(_emit);
+      //console.log(_emit);
       this.$emit('updateState', _emit);
     }
   },
@@ -257,9 +264,14 @@ export default {
 
 .row {
   margin-right:100px !important;
+  margin-left: 30px !important;
 }
 
 .select {
   max-width: 300px !important;
+}
+
+.col-form-label {
+  color: blue !important;
 }
 </style>

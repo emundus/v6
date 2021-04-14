@@ -9,7 +9,7 @@
         <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
         <div style="color:red">{{ column.stateIn }}</div>
         <div style="color:blueviolet">{{ column.stateOut }}</div>
-        <modal-config-step :ID="column.id" :element="column" @updateState="updateStatus"/>
+        <modal-config-step :ID="column.id" :element="column" @updateState="updateStatus" @deleteStep="deleteStep(column.id)"/>
 <!--        <div>{{ column.stateIn }}</div>-->
 <!--        <div>{{ column.stateOut }}</div>-->
 
