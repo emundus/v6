@@ -480,7 +480,9 @@ class EmundusController extends JControllerLegacy {
         $_cid = $this->getModel('profile');
         $status_id = ($_cid->getFnumDetails($fnum))['step'];
 
-        $_profileIDTrigger = $dispatcher->trigger('getProfileByFnum', [$fnum,$status_id]);                       // get profile id --> use the variable $aid
+        //$_profileIDTrigger = $dispatcher->trigger('getProfileByFnum', [$fnum,$status_id]);                       // get profile id --> use the variable $aid
+
+        $_profileIDTrigger = $dispatcher->trigger('getProfileByFnumBeta', [$fnum,$status_id]);                       // get profile id --> use the variable $aid
 
         $_menuTypeTrigger = $dispatcher->trigger('getMenuTypeByProfile', [$aid->profile]);                       // get the menutype from profile id
         $aid->menutype = $_menuTypeTrigger[0]->menutype;                                                                // update the menu type
