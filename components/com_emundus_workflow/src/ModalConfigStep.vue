@@ -195,7 +195,7 @@ export default {
             confirmButtonColor: '#28a745',
           }).then(result => {
             if(result.isConfirmed) {
-              this.exitModal();
+              this.$modal.hide("stepModal" + this.element.id);
             }
             // this.inStatusSelected = $( "#instatus-selected option:selected" ).text();
           })
