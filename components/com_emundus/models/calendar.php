@@ -75,9 +75,9 @@ class EmundusModelCalendar extends JModelLegacy {
         $category_data['params'] = array(
             'category_layout' => '',
             'image' => '',
-            'color' => $color[0],
+            'color' => $color,
             'etag' => '1',
-            'program' => $program[0],
+            'program' => $program,
             'googleId' => $googleId
         );
         $category_data['metadata'] = array(
