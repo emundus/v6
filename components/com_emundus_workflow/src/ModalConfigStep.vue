@@ -40,11 +40,20 @@
         </div>
       </div>
 
-      <!-- Step start date >>> add datetime picker -->
+<!--       Step start date >>> add datetime picker -->
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.startDateTitle }}</label>
         <div class="col-xs-8">
-          Date debut (plus tard)
+          <date-picker v-model="startDate" mode="dateTime" is24hr>
+            <template v-slot="{ inputValue, inputEvents }">
+              <input
+                  class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
+                  :value="inputValue"
+                  v-on="inputEvents"
+              />
+            </template>
+          </date-picker>
+
         </div>
       </div>
 
@@ -52,7 +61,16 @@
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.endDateTitle }}</label>
         <div class="col-xs-8">
-          Date fin (plus tard)
+          <date-picker v-model="endDate" mode="dateTime" is24hr>
+            <template v-slot="{ inputValue, inputEvents }">
+              <input
+                  class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
+                  :value="inputValue"
+                  v-on="inputEvents"
+              />
+            </template>
+          </date-picker>
+
         </div>
       </div>
 
@@ -76,6 +94,9 @@
 import axios from 'axios';
 import Swal from "sweetalert2";
 import $ from 'jquery';
+import Calendar from 'v-calendar/lib/components/calendar.umd'
+import DatePicker from 'v-calendar/lib/components/date-picker.umd'
+require('moment')().format('YYYY-MM-DD HH:mm:ss');
 
 const qs = require('qs');
 
@@ -87,6 +108,11 @@ export default {
     element: Object,
   },
 
+  components: {
+    Calendar,
+    DatePicker,
+  },
+
   data: function() {
     return {
       title: {
@@ -96,16 +122,18 @@ export default {
         endDateTitle: "Date fin",
         notes: "Informations supplementaires",
       },
-      //use for v-model
+      // use for form v-model
       form: {
         id: '',
         // inputStatus: '',
         inputStatus: [],
         outputStatus: '',
-        startDate: '',
-        endDate: '',
         notes: '',
       },
+
+      // use for date v-model
+      startDate: '',
+      endDate: '',
       //use to keep the axios api
       inStatus: [],
       outStatus: [],
@@ -172,7 +200,9 @@ export default {
     updateParams: function() {
       // params :: this.form
 
-      if(this.form.inputStatus !== null && this.form.outputStatus !== null) {
+      if(this.form.inputStatus !== null && this.form.outputStatus !== null
+        && this.startDate !== null && this.endDate !== null
+        && new Date(this.startDate).toISOString().slice(0, 19).replace('T', ' ') <= new Date(this.endDate).toISOString().slice(0, 19).replace('T', ' ')) {
         axios({
           method: 'post',
           url: 'index.php?option=com_emundus_workflow&controller=step&task=updateparams',
@@ -184,6 +214,8 @@ export default {
               id: this.element.id,
               wid: this.getWorkflowIdFromURL(),
               params: this.form,
+              start_date: new Date(this.startDate).toISOString().slice(0, 19).replace('T', ' '),
+              end_date: new Date(this.endDate).toISOString().slice(0, 19).replace('T', ' '),
             }
           })
         }).then(response => {
@@ -273,5 +305,17 @@ export default {
 
 .col-form-label {
   color: blue !important;
+}
+
+.theme-orange .vdatetime-popup__header,
+.theme-orange .vdatetime-calendar__month__day--selected > span > span,
+.theme-orange .vdatetime-calendar__month__day--selected:hover > span > span {
+  background: #FF9800;
+}
+
+.theme-orange .vdatetime-year-picker__item--selected,
+.theme-orange .vdatetime-time-picker__item--selected,
+.theme-orange .vdatetime-popup__actions__button {
+  color: #ff9800;
 }
 </style>
