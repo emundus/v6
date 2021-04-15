@@ -3728,4 +3728,24 @@ if (JFactory::getUser()->id == 63)
         $db->setQuery($query);
         return $db->loadAssocList();
     }
+    public function getTagsAssocStatus($status){
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $conditions = $db->quoteName('ss.step') . ' = ' . $db->quote($status);
+
+        $query->select('ssrt.tags')
+            ->from($db->quoteName('#__emundus_setup_status_repeat_tags', 'ssrt'))
+            ->leftJoin($db->quoteName('#__emundus_setup_status', 'ss') . ' ON ' . $db->quoteName('ss.id') . ' = ' . $db->quoteName('ssrt.parent_id'))
+            ->where($conditions);
+
+        $db->setQuery($query);
+
+        try{
+            return $db->loadColumn();
+        }
+        catch (Exception $e){
+            JLog::add($query->__toString(), JLog::ERROR, 'com_emundus');
+        }
+    }
 }
