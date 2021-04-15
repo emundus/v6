@@ -121,16 +121,82 @@ class EmundusworkflowModelstep extends JModelList {
     }
 
     //// update step params --> input :: step_id + step_params
+//    public function updateStepParams($data) {
+//        if(!empty($data) or isset($data)) {
+//            /// ************************************************************************************************************
+//            $_string = "";
+//            if(isset($data['params']['inputStatus'])) {
+//                foreach($data['params']['inputStatus'] as $key=>$value) {
+//                    if($value == "true") {
+//                        $_string .= (string)$key . ",";
+//                        $_lastString = substr_replace($_string ,"",-1);
+//                        $data['params']['inputStatus'] = $_lastString;
+//                    }
+//                    else {}
+//                }
+//            }
+//            else {}
+//            /// ************************************************************************************************************
+//
+//            try {
+//                $wid = $data['wid'];
+//                unset($data['params']['id']);
+//
+//                //// case 1 --> change the step label
+//                if($data['step_label'] and empty($data['params'])) {
+//                    $this->query->clear()
+//                        ->update($this->db->quoteName('#__emundus_workflow_step'))
+//                        ->set($this->db->quoteName('#__emundus_workflow_step.step_label') . '=' . $this->db->quote($data['step_label']))
+//                        ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
+//                }
+//
+//                else {
+//                    $this->query->clear()
+//                        ->update($this->db->quoteName('#__emundus_workflow_step'))
+//                        ->set($this->db->quoteName('#__emundus_workflow_step.params') . '=' . $this->db->quote(json_encode($data['params'])))
+//                        ->set($this->db->quoteName('#__emundus_workflow_step.start_date') . '=' . $this->db->quote($data['start_date']))
+//                        ->set($this->db->quoteName('#__emundus_workflow_step.end_date') . '=' . $this->db->quote($data['end_date']))
+//                        ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
+//                }
+//
+//                $this->db->setQuery($this->query);
+//                $this->db->execute();
+//
+//                // track the log of workflow
+//                $data = array('saved_by' => JFactory::getUser()->id, 'last_saved' => date('Y-m-d H:i:s'));
+//
+//                /// from $_step_id --> get workflow_id
+//                $this->query->clear()
+//                    ->update($this->db->quoteName('#__emundus_workflow'))
+//                    ->set($this->db->quoteName('#__emundus_workflow.updated_at') . '=' . $this->db->quote($data['last_saved']) .
+//                        ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (int)$data['saved_by'])
+//                    ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$wid);
+//
+//                $this->db->setQuery($this->query);
+//                $this->db->execute();
+//
+//                return array('message' => $this->db->execute());
+//            }
+//            catch(Exception $e) {
+//                JLog::add('component/com_emundus_workflow/models/step | Cannot update step params' . preg_replace("/[\r\n]/"," ",$this->query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+//                return $e->getMessage();
+//            }
+//        }
+//        else {
+//            return false;
+//        }
+//    }
+
     public function updateStepParams($data) {
         if(!empty($data) or isset($data)) {
             /// ************************************************************************************************************
             $_string = "";
-            if(isset($data['params']['inputStatus'])) {
-                foreach($data['params']['inputStatus'] as $key=>$value) {
+            if(isset($data['input_status'])) {
+                foreach($data['input_status'] as $key=>$value) {
                     if($value == "true") {
                         $_string .= (string)$key . ",";
                         $_lastString = substr_replace($_string ,"",-1);
-                        $data['params']['inputStatus'] = $_lastString;
+                        $data['input_status'] = $_lastString;
                     }
                     else {}
                 }
@@ -154,6 +220,8 @@ class EmundusworkflowModelstep extends JModelList {
                     $this->query->clear()
                         ->update($this->db->quoteName('#__emundus_workflow_step'))
                         ->set($this->db->quoteName('#__emundus_workflow_step.params') . '=' . $this->db->quote(json_encode($data['params'])))
+                        ->set($this->db->quoteName('#__emundus_workflow_step.input_status') . '=' . $this->db->quote($data['input_status']))
+                        ->set($this->db->quoteName('#__emundus_workflow_step.output_status') . '=' . $this->db->quote($data['output_status']))
                         ->set($this->db->quoteName('#__emundus_workflow_step.start_date') . '=' . $this->db->quote($data['start_date']))
                         ->set($this->db->quoteName('#__emundus_workflow_step.end_date') . '=' . $this->db->quote($data['end_date']))
                         ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
@@ -186,6 +254,7 @@ class EmundusworkflowModelstep extends JModelList {
             return false;
         }
     }
+
 
     /// get (list) status name from (list) of steps
     public function getListStatusNameFromStep($data) {
@@ -235,7 +304,7 @@ class EmundusworkflowModelstep extends JModelList {
         if(!empty($sid) or isset($sid)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_step.params')
+                    ->select('#__emundus_workflow_step.*')          /// get all attributs of stepflow
                     ->from($this->db->quoteName('#__emundus_workflow_step'))
                     ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$sid);
 
@@ -245,10 +314,11 @@ class EmundusworkflowModelstep extends JModelList {
                 //// parse this raw info into array
                 $_exportArray = array('inputStatus' => array(), 'outputStatus' => array(), 'startDate' => array(), 'endDate' => array(), 'notes' => array());
 
-                $_exportArray['inputStatus'] = json_decode($_rawCurrentParams->params)->inputStatus;
-                $_exportArray['outputStatus'] = json_decode($_rawCurrentParams->params)->outputStatus;
-                $_exportArray['startDate'] = json_decode($_rawCurrentParams->params)->startDate;
-                $_exportArray['endDate'] = json_decode($_rawCurrentParams->params)->endDate;
+                $_exportArray['inputStatus'] = $_rawCurrentParams->input_status;
+                $_exportArray['outputStatus'] = $_rawCurrentParams->output_status;
+                $_exportArray['startDate'] = $_rawCurrentParams->start_date;
+                $_exportArray['endDate'] = $_rawCurrentParams->end_date;
+
                 $_exportArray['notes'] = json_decode($_rawCurrentParams->params)->notes;
 
 //                $_exportArray['inputStatusName'] = ($this->getStatusAttributsFromStep($_exportArray['inputStatus']))->value;
