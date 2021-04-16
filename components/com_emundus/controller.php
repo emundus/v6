@@ -470,24 +470,16 @@ class EmundusController extends JControllerLegacy {
 
 	    $m_profile->initEmundusSession($fnum);
 
-
-        /// step 1 --> detect the stepflow
-
-////        //register the plugin
+        //register the plugin
         JPluginHelper::importPlugin('emundus', 'setup_workflow');
         $dispatcher = JEventDispatcher::getInstance();
 
         $_cid = $this->getModel('profile');
         $status_id = ($_cid->getFnumDetails($fnum))['step'];
 
-        //$_profileIDTrigger = $dispatcher->trigger('getProfileByFnum', [$fnum,$status_id]);                       // get profile id --> use the variable $aid
+        $_sessionTrigger = $dispatcher->trigger('onOpenFile', [$fnum,$status_id]);
 
-        $_profileIDTrigger = $dispatcher->trigger('getProfileByFnumBeta', [$fnum,$status_id]);                       // get profile id --> use the variable $aid
-
-        $_menuTypeTrigger = $dispatcher->trigger('getMenuTypeByProfile', [$aid->profile]);                       // get the menutype from profile id
-        $aid->menutype = $_menuTypeTrigger[0]->menutype;                                                                // update the menu type
-
-        $_userProfileTrigger = $dispatcher->trigger('updateUserProfile', [$fnum, $aid->profile]);                // update user profile
+//        echo '<pre>'; var_dump($aid); echo '</pre>'; die;
 
 	    if (empty($redirect)) {
             $m_application 	= new EmundusModelApplication;
@@ -497,8 +489,6 @@ class EmundusController extends JControllerLegacy {
                 $redirect = $m_application->getConfirmUrl();
             }
         }
-
-        echo '<pre>'; var_dump($aid); echo '</pre>'; die;
 
         $app->redirect($redirect);
     }
