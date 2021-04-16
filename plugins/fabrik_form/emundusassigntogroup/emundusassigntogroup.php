@@ -215,9 +215,9 @@ class PlgFabrik_FormEmundusassigntogroup extends plgFabrik_Form {
 
     public function syncAllActions($fnum) {
         try {
-
-            $select_fnum = empty($fnum) ?: ' AND fnum LIKE ' . $dbo->quote($fnum);
             $dbo = JFactory::getDBO();
+            $select_fnum = empty($fnum) ?: ' AND fnum LIKE ' . $dbo->quote($fnum);
+
             $queryGetMissingGroups = 'SELECT id FROM jos_emundus_setup_groups WHERE id NOT IN (SELECT group_id FROM jos_emundus_acl)';
             $queryActionID = "SELECT id FROM jos_emundus_setup_actions WHERE status >= 1";
             $groupAssocQuery = "select jega.fnum, jega.group_id, jega.action_id from jos_emundus_group_assoc as jega left join jos_emundus_setup_actions as jesa on jesa.id = jega.action_id where jesa.status = 1" .$select_fnum;
