@@ -66,23 +66,15 @@ class plgEmundusAdd_tag extends JPlugin {
         $db->setQuery($query);
         $schoolyear = $db->loadResult();
 
-        $query->clear()
-            ->select($db->quoteName('esc.id'))
-            ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
-            ->where($db->quoteName('esc.year'). ' LIKE ' . $db->quote($schoolyear));
-
-        $db->setQuery($query);
-
-        $cid = $db->loadResult();
-
         $aid = intval(substr($fnum, 21, 7));
         $query
             ->clear()
             ->select($db->quoteName('eta.id_tag'))
             ->from($db->quoteName('#__emundus_tag_assoc', 'eta'))
             ->join('LEFT',$db->quoteName('#__emundus_campaign_candidature', 'cc').' ON cc.fnum = eta.fnum')
+            ->join('LEFT', $db->quoteName('#__emundus_setup_campaigns', 'esc') .' ON esc.id = cc.campaign_id')
             ->join('LEFT',$db->quoteName('#__emundus_users', 'eu').' ON eu.user_id = cc.applicant_id')
-            ->where($db->quoteName('eu.user_id'). ' = ' . $db->quote($aid).' AND '.$db->quoteName('cc.campaign_id'). ' = ' . $cid);
+            ->where($db->quoteName('eu.user_id'). ' = ' . $db->quote($aid).' AND '.$db->quoteName('esc.year'). ' = ' . $db->quote($schoolyear));
 
         $db->setQuery($query);
 
