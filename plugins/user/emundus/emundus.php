@@ -388,7 +388,7 @@ class plgUserEmundus extends JPlugin
 	        // Init first_login parameter
             $user = JFactory::getUser();
             $table = JTable::getInstance('user', 'JTable');
-            $table->load($user->id);
+            /*$table->load($user->id);
 
             $params = $user->getParameters();
             if (!$params->get('first_login_date')) {
@@ -462,8 +462,8 @@ class plgUserEmundus extends JPlugin
 
                         }
                     }
-                }*/
-            }
+                }
+            }*/
 
             // Store token in User's Parameters
 

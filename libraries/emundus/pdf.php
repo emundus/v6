@@ -884,7 +884,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $tab[1] = parse_url($tab[1], PHP_URL_PATH);
             }
 
-            $logo = JPATH_BASE.DS.$tab[1];
+            $logo = JPATH_SITE.DS.$tab[1];
 
         }
     }

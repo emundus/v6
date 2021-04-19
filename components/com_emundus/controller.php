@@ -334,6 +334,7 @@ class EmundusController extends JControllerLegacy {
         $itemid        = $jinput->get('Itemid');
         $fnum          = $jinput->get->get('fnum');
         $current_user  = JFactory::getSession()->get('emundusUser');
+        $status_for_send = $eMConfig->get('status_for_send',0);
         $chemin = EMUNDUS_PATH_ABS;
         $db = JFactory::getDBO();
 
@@ -342,7 +343,7 @@ class EmundusController extends JControllerLegacy {
             $fnum = $user->fnum;
             if ($duplicate == 1 && $nb <= 1 && $copy_application_form == 1) {
                 $fnums = implode(',', $db->Quote(array_keys($user->fnums)));
-                $where = ' AND user_id='.$user->id.' AND attachment_id='.$attachment_id. ' AND `fnum` in (select fnum from `#__emundus_campaign_candidature` where `status`=0)';
+                $where = ' AND user_id='.$user->id.' AND attachment_id='.$attachment_id. ' AND `fnum` in (select fnum from `#__emundus_campaign_candidature` where `status` IN ('.$status_for_send.'))';
             } else {
                 $fnums = $db->Quote($fnum);
                 $where = ' AND user_id='.$user->id.' AND id='.$upload_id;

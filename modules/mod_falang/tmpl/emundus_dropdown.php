@@ -42,21 +42,21 @@ $document->addStyleSheet("modules/mod_falang/style/mod_falang_emundus.css");
         </script>
 
         <!-- >>> [PAID] >>> -->
-        <?php foreach($list as $language):?>
-            <?php if ($language->active) :?>
-                <a href="javascript:;" class="langChoose">
-                    <div class="langChoose__img_label">
-                   <?php if ($params->get('image', 1)):?>
-                      <?php echo JHtml::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native), $relativePath);?>
-                       <?php endif; ?>
-                        <?php if ($params->get('show_name', 1)):?>
-                       <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
-                   <?php endif; ?>
-                    </div>
-                    <span class="caret"></span>
-                </a>
-            <?php endif; ?>
-        <?php endforeach;?>
+    <?php foreach($list as $language):?>
+        <?php if ($language->active) :?>
+        <a href="javascript:;" class="langChoose">
+            <div class="langChoose__img_label">
+                <?php if ($params->get('image', 1)):?>
+                    <?php echo JHtml::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native), $relativePath);?>
+                <?php endif; ?>
+                <?php if ($params->get('show_name', 1)):?>
+                    <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
+                <?php endif; ?>
+            </div>
+            <span class="caret"></span>
+        </a>
+    <?php endif; ?>
+    <?php endforeach;?>
         <ul class="<?php echo $params->get('inline', 1) ? 'lang-inline' : 'lang-block';?>" style="display: none">
             <?php foreach($list as $language):?>
                 <?php if ($params->get('show_active', 0) || !$language->active):?>
@@ -64,10 +64,10 @@ $document->addStyleSheet("modules/mod_falang/style/mod_falang_emundus.css");
                         <?php if ($language->display) { ?>
                             <a href="<?php echo $language->link;?>">
                                 <?php if ($params->get('image', 1)):?>
-                                   <?php echo JHtml::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native), $relativePath);?>
+                                    <?php echo JHtml::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native), $relativePath);?>
                                 <?php endif; ?>
                                 <?php if ($params->get('show_name', 1)):?>
-                                   <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
+                                    <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
                                 <?php endif; ?>
                                 <?php if($language->active){?> <i class="fa fa-check lang_checked"></i> <?php } ?>
                             </a>
@@ -76,7 +76,7 @@ $document->addStyleSheet("modules/mod_falang/style/mod_falang_emundus.css");
                                 <?php echo JHtml::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native,'style'=>'opacity:0.5'), $relativePath);?>
                             <?php else : ?>
                                 <?php if ($params->get('show_name', 1)):?>
-                                  <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
+                                    <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
                                 <?php endif; ?>
                                 <?php if($language->active){?> <i class="fa fa-check lang_checked"></i> <?php } ?>
                             <?php endif; ?>

@@ -5,7 +5,7 @@
         class="col-md-12"
         :object="object"
         :groups="GroupList"
-        v-if="object"
+        v-if="object_json"
         :change="this.change"
         :changedElement="this.changedElement"
         :changedGroup="this.changedGroup"
@@ -32,6 +32,7 @@ import axios from "axios";
 import draggable from "vuedraggable";
 import BuilderViewer from "./BuilderView";
 import Swal from "sweetalert2";
+import _ from 'lodash';
 
 const qs = require("qs");
 
@@ -136,7 +137,9 @@ export default {
     }
   },
   created() {
-    this.getDataObject();
+    if(!_.isEmpty(this.object.object)){
+      this.getDataObject();
+    }
   },
   watch: {
     object: function() {

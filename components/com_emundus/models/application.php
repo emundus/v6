@@ -426,6 +426,7 @@ class EmundusModelApplication extends JModelList {
         }
 
         $session = JFactory::getSession();
+        $current_user = $session->get('emundusUser');
 
         if (!is_array($fnum)) {
             $profile_by_status = $m_profile->getProfileByStatus($fnum);
@@ -440,8 +441,8 @@ class EmundusModelApplication extends JModelList {
                 $profile_by_status = $this->_db->loadAssoc();
             }
 
-            $profile_id = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
-            //$profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $profile_by_status['profile_id'] && $current_user->applicant === 1) ? $current_user->profile : $profile_by_status['profile_id'];
+            $profile = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+            $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $profile && $current_user->applicant === 1) ? $current_user->profile : $profile;
 
             $forms = @EmundusHelperMenu::buildMenuQuery($profile_id);
             $nb = 0;
@@ -549,20 +550,21 @@ class EmundusModelApplication extends JModelList {
                 $profile_by_status = $this->_db->loadAssoc();
             }
 
-            $profile_id = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+            $profile = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+            $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $profile && $current_user->applicant === 1) ? $current_user->profile : $profile;
 
             $query = 'SELECT COUNT(profiles.id)
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 WHERE profiles.campaign_id = ' . intval($profile_by_status["campaign_id"]) . ' AND profiles.displayed = 1';
 
-            if (!empty($profile_id)) {
+            /*if (!empty($profile_id)) {
                 $query .= ' AND profile_id = ' . $profile_id;
-            }
+            }*/
 
             $this->_db->setQuery($query);
             $attachments = $this->_db->loadResult();
 
-            if (intval($attachments) != 0) {
+            if (intval($attachments) == 0) {
 
                 $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
@@ -601,9 +603,9 @@ class EmundusModelApplication extends JModelList {
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 WHERE profiles.campaign_id = ' . intval($profile_by_status["campaign_id"]) . ' AND profiles.displayed = 1';
 
-                if (!empty($profile_id)) {
+                /*if (!empty($profile_id)) {
                     $query .= ' AND profile_id = ' . $profile_id;
-                }
+                }*/
 
                 $this->_db->setQuery($query);
                 $attachments = $this->_db->loadResult();
@@ -3413,7 +3415,7 @@ class EmundusModelApplication extends JModelList {
      * @return bool
      */
     public function sendApplication($fnum, $applicant, $param = array(), $status = 1) {
-        include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
 
         if ($status == '-1') {
             $status = $applicant->status;

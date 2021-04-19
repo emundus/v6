@@ -5,15 +5,21 @@
         <FormViewer :link="formLinkArray[indexHighlight]" :visibility="this.visibility" v-if="formLinkArray[indexHighlight]" @editPage="EditPage" />
       </div>
         <ul class="col-md-3 sticky-form-pages">
-          <h3 class="mb-1" style="padding: 0;">{{ FormPage }} :</h3>
           <div class="form-pages">
-            <h4 class="ml-10px form-title" style="margin-bottom: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="Form">{{ Form }}</h4>
+            <h4 class="ml-10px form-title" style="margin: 0;padding: 0 10px;"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="Form">{{ Form }}</h4>
             <li v-for="(value, index) in formNameArray" :key="index" class="MenuForm">
               <a
                 class="MenuFormItem"
                 @click="ChangeIndex(index)"
                 :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
               >{{value.value}}</a>
+            </li>
+          </div>
+          <div class="form-pages">
+            <h4 class="ml-10px form-title" style="margin: 0;padding: 0 10px;"><em class="far fa-folder-open mr-1" :alt="Documents"></em>{{ Documents }}</h4>
+            <li v-for="(doc, index) in documentsList" :key="index" class="MenuForm">
+              <a class="MenuFormItem"
+              >{{doc.label}}</a>
             </li>
           </div>
         </ul>
@@ -32,6 +38,7 @@ export default {
   name: "FormCarrousel",
   props: {
     formList: Object,
+    documentsList: Object,
     visibility: Number
   },
   components: {
@@ -41,10 +48,12 @@ export default {
     return {
       indexHighlight: "0",
       formNameArray: [],
+      documentsList: [],
       formLinkArray: [],
       formArray: [],
       FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
       Form: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
+      Documents: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENTS"),
     };
   },
   methods: {
@@ -76,7 +85,7 @@ export default {
             console.log(e);
           });
       });
-    }
+    },
   },
   created() {
     this.getDataObject();

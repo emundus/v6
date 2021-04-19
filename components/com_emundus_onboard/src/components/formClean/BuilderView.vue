@@ -142,10 +142,7 @@
                             @modalClosed="$emit('modalClosed')"
                             :key="keyElements['element' + element.id]"
                     />
-                    <div class="d-flex builder-item-element__properties" :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id}">
-                      <span :class="element.publish ? 'icon-handle' : 'icon-handle-unpublished'" v-show="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel">
-                        <em class="fas fa-grip-vertical handle"></em>
-                      </span>
+                    <div class="d-flex builder-item-element__properties handle" :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id}">
                       <div class="w-100">
                         <div class="d-flex" style="align-items: baseline" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''">
                           <span v-if="element.label_value" @click="enableLabelInput(element.id)" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
@@ -179,14 +176,6 @@
                         <span v-if="element.tipBelow" v-html="element.tipBelow"></span>
                       </div>
                       <div class="actions-item-bar" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
-                        <!--                      <a class="d-flex mr-2" v-if="element.plugin != 'display'">
-                                                <div class="toggle">
-                                                  <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement(element)"/>
-                                                  <strong class="b switch"></strong>
-                                                  <strong class="b track"></strong>
-                                                </div>
-                                                <span class="ml-10px">{{Required}}</span>
-                                              </a>-->
                         <a class="d-flex mr-2 mb-1" v-if="element.plugin != 'calc'" @click="openParameters(element)" :title="Settings">
                           <em class="fas fa-cog settings-elt"></em>
                         </a>
@@ -201,6 +190,14 @@
                           <em class="fas fa-link settings-elt"></em>
                         </a>
                       </div>
+                      <a class="d-flex mr-2" v-if="element.plugin != 'display'" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
+                        <div class="toggle">
+                          <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement(element)"/>
+                          <strong class="b switch"></strong>
+                          <strong class="b track"></strong>
+                        </div>
+                        <span class="ml-10px" style="color:black">{{Required}}</span>
+                      </a>
                     </div>
                   </div>
                   </transition-group>
@@ -356,6 +353,37 @@ export default {
         console.log(e);*/
       });
     },
+
+    updateRequireElement(element) {
+      if(this.clickUpdatingLabel) {
+        this.updateLabelElement(element);
+      }
+      setTimeout(() => {
+        axios({
+          method: "post",
+          url:
+              "index.php?option=com_emundus_onboard&controller=formbuilder&task=changerequire",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            element: element
+          })
+        }).then(() => {
+          this.updateRequireEvent(element);
+        }).catch(e => {
+          this.$emit(
+              "show",
+              "foo-velocity",
+              "error",
+              this.updateFailed,
+              this.updating
+          );
+          console.log(e);
+        });
+      }, 300);
+    },
+
 
     updateRequireEvent(element) {
       axios({
@@ -1112,8 +1140,10 @@ export default {
     },
   },
   created() {
-    this.getDataObject();
-    this.getAccess();
+    if(!_.isEmpty(this.object.object)) {
+      this.getDataObject();
+      this.getAccess();
+    }
   },
   watch: {
     object: function() {
@@ -1156,7 +1186,7 @@ export default {
   }
   .switch{
     width: 13px;
-    background-color: #de6339;
+    background-color: #12db42;
   }
   .check:checked ~ .switch{
     left: 15px;
@@ -1173,6 +1203,8 @@ export default {
     cursor: grab;
     left: auto;
     right: 50px;
+    width: 100%;
+    height: 100%;
   }
   .icon-handle-group{
     color: #cecece;

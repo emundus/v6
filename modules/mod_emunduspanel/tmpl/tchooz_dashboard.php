@@ -30,10 +30,10 @@ if (!empty($tab)) :?>
                     <div class='container-2 w-container' style='max-width: unset'>
                         <div class='d-flex'>
                             <img src='/images/emundus/menus/dashboard.png' class='tchooz-icon-title' alt='dashboard'>
-                            <h1 class='tchooz-section-titles'>Tableau de bord</h1>
+                            <h1 class='tchooz-section-titles'>".JText::_('DASHBOARD')."</h1>
                         </div>
                         <div class='actions-add-block'>
-                            <p class='tchooz-section-description'>Retrouvez vos statistiques</p>
+                            <p class='tchooz-section-description'>".JText::_('STATISTICS')."</p>
                         </div>
                     </div>
                     </div>";

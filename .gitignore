@@ -59,8 +59,8 @@ administrator/templates/isis/images/logo.png
 ### NodeJS ###
 *~
 /components/com_emundus_onboard/node_modules/
-media/com_emundus_onboard/
-media/mod_emundus_dashboard_vue/
+## media/com_emundus_onboard/
+## media/mod_emundus_dashboard_vue/
 /modules/mod_emundus_dashboard_vue/node_modules/
 
 

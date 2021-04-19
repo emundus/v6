@@ -47,7 +47,7 @@ class EmundusModelProfile extends JModelList {
         $db = JFactory::getDBO();
         $query = 'SELECT *
         			FROM #__emundus_setup_profiles esp
-                 	WHERE esp.published=1  AND status=1
+                 	WHERE esp.published=1
                   	ORDER BY esp.label';
         $db->setQuery($query);
         return $db->loadObjectList();
@@ -218,18 +218,27 @@ class EmundusModelProfile extends JModelList {
         }
     }
 
-    function getAttachments($p) {
-        $query = 'SELECT attachment.*, profile.id AS selected, profile.displayed, profile.mandatory, profile.bank_needed
-					FROM #__emundus_setup_attachments AS attachment
-					LEFT JOIN #__emundus_setup_attachment_profiles AS profile ON profile.attachment_id = attachment.id AND profile.profile_id='.(int)$p.'
-					WHERE attachment.published=1
-					ORDER BY attachment.ordering';
+    function getAttachments($p, $mandatory = false) {
+        $query = $this->_db->getQuery(true);
+
+        $query
+            ->select(['attachment.*', $this->_db->quoteName('profile.id', 'selected'), $this->_db->quoteName('profile.mandatory'), $this->_db->quoteName('profile.bank_needed')])
+            ->from($this->_db->quoteName('#__emundus_setup_attachments', 'attachment'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles','profile').' ON '.$this->_db->quoteName('profile.attachment_id').' = '.$this->_db->quoteName('attachment.id') . ' AND ' . $this->_db->quoteName('profile.profile_id').' = '. (int)$p)
+            ->where($this->_db->quoteName('attachment.published') . ' = 1')
+            ->order($this->_db->quoteName('attachment.ordering'));
+
+        if ($mandatory) {
+            $query
+                ->andWhere($this->_db->quoteName('profile.mandatory') . ' = 1');
+        }
+
+        $this->_db->setQuery($query);
 
         try {
-            $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
         } catch(Exception $e) {
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+            JLog::add(' Error getting list  of attachments by profile at model/profile in query  -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             JError::raiseError(500, $e->getMessage());
         }
     }
@@ -328,7 +337,7 @@ class EmundusModelProfile extends JModelList {
     }
 
     function getCampaignInfoByFnum($fnum) {
-        $query = 'SELECT esc.*, ecc.date_time, ecc.submitted, ecc.date_submitted, ecc.fnum, esc.profile_id, esp.label, esp.menutype, ecc.submitted, ecc.status
+        $query = 'SELECT esc.*, esc.label as campaign_label, ecc.date_time, ecc.submitted, ecc.date_submitted, ecc.fnum, esc.profile_id, esp.label, esp.menutype, ecc.submitted, ecc.status
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON ecc.campaign_id = esc.id
 					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
@@ -646,7 +655,7 @@ class EmundusModelProfile extends JModelList {
             $emundusSession->candidature_posted = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] == 0  || @$profile["date_submitted"] == NULL)?0:1;
             $emundusSession->schoolyear = $campaign["year"];
             $emundusSession->code = $campaign["training"];
-            $emundusSession->campaign_name = $campaign["label"];
+            $emundusSession->campaign_name = $campaign["campaign_label"];
 
         } else {
             $emundusSession->profile                = $profile["profile"];

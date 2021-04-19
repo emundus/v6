@@ -798,6 +798,9 @@ class EmundusonboardModelcampaign extends JModelList
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        $lang = JFactory::getLanguage();
+        $actualLanguage = substr($lang->getTag(), 0 , 2);
+
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
         $types = implode(";", array_values($types));
@@ -806,8 +809,8 @@ class EmundusonboardModelcampaign extends JModelList
             ->insert($db->quoteName('#__emundus_setup_attachments'));
         $query
             ->set($db->quoteName('lbl') . ' = ' . $db->quote('_em'))
-            ->set($db->quoteName('value') . ' = ' . $db->quote($document['name']['fr']))
-            ->set($db->quoteName('description') . ' = ' . $db->quote($document['description']['fr']))
+            ->set($db->quoteName('value') . ' = ' . $db->quote($document['name'][$actualLanguage]))
+            ->set($db->quoteName('description') . ' = ' . $db->quote($document['description'][$actualLanguage]))
             ->set($db->quoteName('allowed_types') . ' = ' . $db->quote($types))
             ->set($db->quoteName('ordering') . ' = ' . $db->quote(0))
             ->set($db->quoteName('nbmax') . ' = ' . $db->quote($document['nbmax']));
@@ -831,14 +834,13 @@ class EmundusonboardModelcampaign extends JModelList
             $query->clear()
                 ->select('max(ordering)')
                 ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
-                ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($cid));
+                ->where($db->quoteName('profile_id') . ' = ' . $db->quote($pid));
             $db->setQuery($query);
             $ordering = $db->loadResult();
 
             $query->clear()
                 ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
             $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
-                ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($cid))
                 ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($newdocument))
                 ->set($db->quoteName('mandatory') . ' = ' . $db->quote(0))
                 ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
@@ -850,9 +852,12 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    public function updateDocument($document,$types,$did) {
+    public function updateDocument($document,$types,$did,$pid) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
+
+        $lang = JFactory::getLanguage();
+        $actualLanguage = substr($lang->getTag(), 0 , 2);
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
@@ -861,8 +866,8 @@ class EmundusonboardModelcampaign extends JModelList
         $query
             ->update($db->quoteName('#__emundus_setup_attachments'));
         $query
-            ->set($db->quoteName('value') . ' = ' . $db->quote($document['name']['fr']))
-            ->set($db->quoteName('description') . ' = ' . $db->quote($document['description']['fr']))
+            ->set($db->quoteName('value') . ' = ' . $db->quote($document['name'][$actualLanguage]))
+            ->set($db->quoteName('description') . ' = ' . $db->quote($document['description'][$actualLanguage]))
             ->set($db->quoteName('allowed_types') . ' = ' . $db->quote($types))
             ->set($db->quoteName('nbmax') . ' = ' . $db->quote($document['nbmax']))
             ->where($db->quoteName('id') . ' = ' . $db->quote($did));
@@ -874,6 +879,31 @@ class EmundusonboardModelcampaign extends JModelList
             $falang->updateFalang($document['name']['fr'],$document['name']['en'],$did,'emundus_setup_attachments','value');
             $falang->updateFalang($document['description']['fr'],$document['description']['en'],$did,'emundus_setup_attachments','description');
 
+            $query->clear()
+                ->select('count(id)')
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
+                ->andWhere($db->quoteName('attachment_id') . ' = ' . $db->quote($did));
+            $db->setQuery($query);
+            $assignations = $db->loadResult();
+
+            if(empty($assignations)) {
+                $query->clear()
+                    ->select('max(ordering)')
+                    ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+                    ->where($db->quoteName('profile_id') . ' = ' . $db->quote($pid));
+                $db->setQuery($query);
+                $ordering = $db->loadResult();
+
+                $query->clear()
+                    ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
+                $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
+                    ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
+                    ->set($db->quoteName('mandatory') . ' = ' . $db->quote(0))
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
+                $db->setQuery($query);
+                $db->execute();
+            }
             return true;
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/campaign | Cannot update a document ' . $did . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');

@@ -37,6 +37,8 @@ if (!$mainframe->isAdmin()) {
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $copy_application_form = $eMConfig->get('copy_application_form', 0);
     $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
+    $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
+
     $id_applicants 			 = $eMConfig->get('id_applicants', '0');
     $applicants 			 = explode(',',$id_applicants);
 
@@ -73,7 +75,7 @@ if (!$mainframe->isAdmin()) {
         if ($fnum == @$user->fnum) {
             //try to access edit view
             if ($view == 'form') {
-                if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || $can_edit) {
+                if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || ($is_dead_line_passed && $can_edit_after_deadline && $isLimitObtained !== true) || $can_edit) {
                     $reload_url = false;
                 }
             }
@@ -109,7 +111,7 @@ if (!$mainframe->isAdmin()) {
             }
 
         } else {
-            if ($is_dead_line_passed || $isLimitObtained === true) {
+            if (($is_dead_line_passed && $can_edit_after_deadline == 0) || $isLimitObtained === true) {
                 if ($reload_url) {
                     if ($isLimitObtained === true) {
                         JError::raiseNotice(401, 'The campaign limit is obtained. / La limite pour cette campagne est atteinte.');
@@ -120,7 +122,7 @@ if (!$mainframe->isAdmin()) {
                 }
             } else {
                 if ($is_app_sent) {
-                    if ($can_edit_until_deadline != 0) {
+                    if ($can_edit_until_deadline != 0 || $can_edit_after_deadline != 0) {
                         if ($reload_url) {
                             $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                         }

@@ -23,7 +23,7 @@ fi
 
 
 # Fix replace #_ to $dbprefix (by default: jos_)
-sed -i "s:"#_":"$db_prefix":g" $sql_update_path*
+sed -i "s:"#_":"$db_prefix":g" $sql_file
 
 echo -e "Emundus SQL Install Tchooz Menu \n\n"
 
