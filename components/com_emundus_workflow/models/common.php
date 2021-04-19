@@ -132,6 +132,7 @@ class EmundusworkflowModelcommon extends JModelList {
                         $this->aid->step_id = $_stepID;
                         $this->aid->message = 'Step and Profile Found in Workflow -- Profile with Edition permission';
                         $this->aid->editable_status = $_inArray;
+                        $this->aid->output_status = json_decode($value->params)->outputStatus;
                         return $this->aid;
                         continue;
                     }
@@ -160,6 +161,7 @@ class EmundusworkflowModelcommon extends JModelList {
                     $this->aid->step_id = null;
                     $this->aid->message = '-- No profile found, get the default profile of associated campaign --';
                     $this->aid->editable_status = null;
+                    $this->aid->output_status = null;
                     return $this->aid;
                 }
                 else {
@@ -199,53 +201,6 @@ class EmundusworkflowModelcommon extends JModelList {
             return false;
         }
     }
-
-//    //// get the first profile id of the first step of workflow
-//    public function getFirstProfileOfFirstStep($step) {
-//        if(!empty($step) or isset($step)) {
-//            try {
-//                /// get the first step
-//                $this->query->clear()
-//                    ->select('min(#__emundus_workflow_step.id)')
-//                    ->from($this->db->quoteName('#__emundus_workflow_step'));
-//                $this->db->setQuery($this->query);
-//                $_minStepID = $this->db->loadResult();
-//
-//                /// from the step id, get the first profile of this step
-//                return $this->getFirstProfileByStep($_minStepID);
-//            }
-//            catch(Exception $e) {
-//                JLog::add('Could not get the first profile from the first step -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
-//                return $e->getMessage();
-//            }
-//        }
-//        else {
-//            return false;
-//        }
-//    }
-
-    //// get the first profile of a step flow --> get the min(id) && item_id == 2
-//    public function getFirstProfileByStep($step) {
-//        if(!empty($step) or isset($step)) {
-//            try {
-//                $this->query->clear()
-//                    ->select('MIN(#__emundus_workflow_item.id), #__emundus_workflow_item.params')
-//                    ->from('#__emundus_workflow_item')
-//                    ->leftJoin($this->db->quoteName('#__emundus_workflow_step') . 'ON' . $this->db->quoteName('#__emundus_workflow_step.id') . '=' . $this->db->quoteName('#__emundus_workflow_item.step_id'))
-//                    ->where($this->db->quoteName('#__emundus_workflow_item.item_id') .'=' . 2);
-//
-//                $this->db->setQuery($this->query);
-//                return $this->db->loadObject();
-//            }
-//            catch(Exception $e) {
-//                JLog::add('Could not get the first profile by step -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
-//                return $e->getMessage();
-//            }
-//        }
-//        else {
-//            return false;
-//        }
-//    }
 
     //// get the default profile of by fnum
     public function getDefaultProfileByFnum($fnum) {
@@ -489,6 +444,49 @@ class EmundusworkflowModelcommon extends JModelList {
                 }
                 $this->db->setQuery($this->query);
                 return $this->db->loadObject();
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    //// get the last page --> used to run confirm post
+    public function getLastPage($menutype) {
+        if(!empty($menutype)) {
+            try {
+                $this->query->clear()
+                    ->select('#__menu.*')
+                    ->from($this->db->quoteName('#__menu'))
+                    ->where($this->db->quoteName('#__menu.menutype') . '=' . '"' . $menutype . '"');
+                $this->db->setQuery($this->query);
+                $_rawData = $this->db->loadObjectList();
+
+                $_orderList = array('left' => array(), 'right' => array());
+
+                /// find the max lft and rgt from $_rawData
+                foreach ($_rawData as $key => $value) {
+                    $_orderList['left'][$value->id] = $value->lft;
+                    $_orderList['right'][$value->id] = $value->rgt;
+                }
+
+                $_isLastPage = (array_search(max(array_values($_orderList['left'])), $_orderList['left']) == array_search(max(array_values($_orderList['right'])), $_orderList['right'])) ? true : false;
+
+                if ($_isLastPage) {
+                    $_lastPage = array_search(max(array_values($_orderList['left'])), $_orderList['left']);
+
+                    foreach ($_rawData as $_key => $_value) {
+                        if ($_value->id == $_lastPage) {
+                            return $_value;
+                        }
+                    }
+                } else {
+                    $_lastPage = false;
+                    return false;
+                }
             }
             catch(Exception $e) {
                 return $e->getMessage();
