@@ -173,13 +173,15 @@ class EmundusViewApplication extends JViewLegacy {
                         if (!empty($formid)) {
 
                             if (count($myEval) > 0) {
+                                // if it is my eval, I get edit it for ever
+                                $this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid='.$myEval[0]->id.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
 
-                                if (EmundusHelperAccess::asAccessAction(5, 'u', $this->_user->id, $fnum)) {
+                                /*if (EmundusHelperAccess::asAccessAction(5, 'u', $this->_user->id, $fnum)) {
                                     $this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid='.$myEval[0]->id.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
                                 }
                                 elseif (EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id, $fnum)) {
                                     $this->url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&rowid='.$myEval[0]->id.'&jos_emundus_final_grade___student_id[value]='.$this->student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
-                                }
+                                }*/
 
                             } else {
 
