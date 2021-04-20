@@ -11,15 +11,25 @@
         "thecodingmachine/gotenberg-php-client": "^6.2",
         "phpoffice/phpspreadsheet": "^1.12",
         "phpoffice/phpword": "^0.17.0",
+        "setasign/fpdf": "1.8.*",
         "setasign/fpdi": "^2.3",
-		"setasign/fpdi_pdf-parser": "^2.0"
+        "tecnickcom/tcpdf": "6.2.*",
+        "setasign/fpdi_pdf-parser": "^2.0"
     },
-	
+
+    "http-basic": {
+        "www.setasign.com": {
+            "username": "achat@emundus.fr",
+            "password": "EvCd9DwuqmJxZ3A"
+        }
+    },
+
     "repositories": [
         {
             "type": "composer",
             "url": "https://www.setasign.com/downloads/"
         }
     ]
+
 
 }
