@@ -128,6 +128,8 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             $reload = $jinput->get('r', 0);
             $reload++;
 
+//            var_dump($fnum);die;
+
             // ***************************** use $this->_commonModel to check the constraint date
             //// get the start_date, end_date from $user->fnum and $user->status
 
@@ -176,13 +178,13 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                     if ($view == 'form') {
                         //if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || $can_edit) {
                         if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || ($_is_editable_status && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || $can_edit) {
-                            var_dump('editable1');
+                            //var_dump('editable1');
                             $reload_url = false;
                         }
                     }
                     //try to access detail view or other
                     else {
-                        var_dump('un-editable1');
+                        //var_dump('un-editable1');
                         $reload_url = false;
                     }
                 }
@@ -193,13 +195,13 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
                     if ($view == 'form') {
                         if ($can_edit) {
-                            var_dump('editable2');
+                            //var_dump('editable2');
                             $reload_url = false;
                         }
                     } else {
                         //try to access detail view or other
                         if ($can_read) {
-                            var_dump('un-editable2');
+                            //var_dump('un-editable2');
                             $reload_url = false;
                         }
                     }
@@ -211,21 +213,21 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                 if (in_array($user->id, $applicants)) {
 
                     if ($reload_url) {
-                        var_dump('editable3');
+                        //var_dump('editable3');
                         $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                     }
 
                 } else {
 
                     if ($is_dead_line_passed || !$is_campaign_started || $isLimitObtained === true) {
-                        var_dump('un-editable3');
+                        //var_dump('un-editable3');
                         if ($reload_url) {
                             if ($isLimitObtained === true) {
                                 JError::raiseNotice(401, JText::_('LIMIT_OBTAINED'));
                             } else {
                                 JError::raiseNotice(401, JText::_('PERIOD'));
                             }
-                            var_dump('un-editable4');
+                            //var_dump('un-editable4');
                             $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                         }
 
@@ -235,18 +237,18 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                         if ($_is_editable_status) {
                             if ($can_edit_until_deadline != 0) {
                                 if ($reload_url) {
-                                    var_dump('editable5');
+                                    //var_dump('editable5');
                                     $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                                 }
                             } else {
                                 if ($reload_url) {
-                                    var_dump('un-editable5');
+                                    //var_dump('un-editable5');
                                     $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                                 }
                             }
                         } else {
                             if ($reload_url) {
-                                var_dump('editable6');
+                                //var_dump('editable6');
                                 $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                             }
                         }
@@ -264,7 +266,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                     if ($can_read == 1) {
                         if ($reload < 3) {
                             $reload++;
-                            var_dump('un-editable7');
+                            //var_dump('un-editable7');
                             $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
                         }
                     } else {
@@ -420,7 +422,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                                 }
                             }
                             $reload++;
-                            var_dump('editable8');
+                            //var_dump('editable8');
                             $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                         }
                     } catch (Exception $e) {
@@ -507,7 +509,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             }
         }
 
-        $jinput = $app->input();
+        $jinput = $app->input;
 
         $formid = $jinput->get('formid');
 
@@ -523,10 +525,15 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             // get the output status
             if (!is_null($student->output_status)) {
                 //// update to new output_status
+//                $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $student->output_status . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
                 $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $student->output_status . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+                //$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $now . ',status=' . $student->output_status . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+
             } else {
                 /// use the default status
+//                $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $this->getParam('emundusconfirmpost_status', '1') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
                 $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $this->getParam('emundusconfirmpost_status', '1') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+                //$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $now . ',status=' . $this->getParam('emundusconfirmpost_status', '1') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
             }
             $this->db->setQuery($query);
 
