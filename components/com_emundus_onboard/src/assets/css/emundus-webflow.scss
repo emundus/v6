@@ -450,7 +450,7 @@ textarea.w-input {
   cursor: pointer;
   padding: 5px 30px;
   border-radius: 25px;
-  white-space: nowrap;
+  // white-space: nowrap;
   border: solid 2px $dark-green;
   color: $dark-green;
 }
@@ -1678,7 +1678,7 @@ textarea {
   cursor: pointer;
   padding: 5px;
   border-radius: 4px;
-  white-space: nowrap;
+  //white-space: nowrap;
   margin-left: 10px;
   font-size: 14px;
   &:not(.MenuFormItem_current) {
@@ -1754,9 +1754,11 @@ textarea {
 .right-arrow {
   background: url("../images/icons/right-arrow.svg");
   background-repeat: no-repeat;
-  width: 65%;
+  width: 55%;
   background-position-x: 95%;
-  background-position-y: 1px;
+  background-position-y: center;
+  background-size: 1em;
+  margin-bottom: 0;
 }
 .eye-icon {
   background: url("../images/formbuilder_icons/eye-solid.svg");
@@ -1858,6 +1860,10 @@ textarea {
   padding: 10px 0 15px 15px;
   cursor: pointer;
   filter: brightness(0.2);
+  font-size: 0.8em;
+  .action-label{
+    margin-bottom: 0;
+  }
 }
 .action-link:hover > .action-label{
   color: $dark-blue;

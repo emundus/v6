@@ -29,6 +29,7 @@
     <p v-if="eval == 0 && !updateIntroPage" class="introP" v-html="object_json.intro_value" @click="enableUpdatingPageIntro(object_json)" />
     <div style="width: max-content;margin-left: 20px" v-show="updateIntroPage && indexPage == object_json.id">
       <div class="input-can-translate" style="margin-top: 10px">
+<!--        <editor :height="'10em'" :text="object_json.intro['fr']" :lang="actualLanguage" :enable_variables="false" :id="'editor_fr'" v-model="object_json.intro['fr']" style="max-height: 180px;max-width: 50vw;"></editor>-->
         <textarea v-if="object_json.intro" v-model="object_json.intro[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.intro_page ? '' : 'mb-1'" :id="'update_intro_' + object_json.id"/>
         <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.intro_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPageIntro(object_json.id)"></button>
         <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.intro_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
@@ -227,6 +228,7 @@ const qs = require("qs");
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
 import Swal from "sweetalert2";
+import Editor from "../editor";
 
 export default {
   name: "BuilderViewer",
@@ -244,6 +246,7 @@ export default {
     manyLanguages: Number
   },
   components: {
+    Editor,
     datePicker,
     draggable,
     modalEditElement,
