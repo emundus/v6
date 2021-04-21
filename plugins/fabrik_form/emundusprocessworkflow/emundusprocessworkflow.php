@@ -91,8 +91,6 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_workflow'.DS.'models'.DS.'common.php');        /// import workflow mode
 
-//            $_eMWorkflow = new EmundusworkflowModelcommon;
-
             jimport('joomla.log.log');
             JLog::addLogger(['text_file' => 'com_emundus.isApplicationSent.php'], JLog::ALL, ['com_emundus']);
 
@@ -128,7 +126,10 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             $reload = $jinput->get('r', 0);
             $reload++;
 
-//            var_dump($fnum);die;
+            $formid = $jinput->get('formid');
+
+            $_lastPage = $this->_commonModel->getLastPage($user->menutype)->link;
+            $_lastFormID = (explode('formid=', $_lastPage))[1];
 
             // ***************************** use $this->_commonModel to check the constraint date
             //// get the start_date, end_date from $user->fnum and $user->status
@@ -151,12 +152,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                 $is_campaign_started = ($now >= $_startDate) ? true : false;
             }
 
-//            var_dump($formid);
-//            die;
             //// ************* end of date time checking
-
-            /// corriger ici --> changer $this->getParam('applicationsent_status', 0) par la liste des status d'edition de cette etape
-            $is_app_sent = !in_array(@$user->status, explode(',', $this->getParam('applicationsent_status', 0)));
 
             $can_edit = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
             $can_read = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
@@ -176,15 +172,12 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                 if ($fnum == @$user->fnum) {
                     //try to access edit view
                     if ($view == 'form') {
-                        //if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || $can_edit) {
                         if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || ($_is_editable_status && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || $can_edit) {
-                            //var_dump('editable1');
                             $reload_url = false;
                         }
                     }
                     //try to access detail view or other
                     else {
-                        //var_dump('un-editable1');
                         $reload_url = false;
                     }
                 }
@@ -195,13 +188,11 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
                     if ($view == 'form') {
                         if ($can_edit) {
-                            //var_dump('editable2');
                             $reload_url = false;
                         }
                     } else {
                         //try to access detail view or other
                         if ($can_read) {
-                            //var_dump('un-editable2');
                             $reload_url = false;
                         }
                     }
@@ -213,42 +204,35 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                 if (in_array($user->id, $applicants)) {
 
                     if ($reload_url) {
-                        //var_dump('editable3');
                         $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                     }
 
                 } else {
 
                     if ($is_dead_line_passed || !$is_campaign_started || $isLimitObtained === true) {
-                        //var_dump('un-editable3');
                         if ($reload_url) {
                             if ($isLimitObtained === true) {
                                 JError::raiseNotice(401, JText::_('LIMIT_OBTAINED'));
                             } else {
                                 JError::raiseNotice(401, JText::_('PERIOD'));
                             }
-                            //var_dump('un-editable4');
                             $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                         }
 
                     } else {
 
-                        //if ($is_app_sent) {
                         if ($_is_editable_status) {
                             if ($can_edit_until_deadline != 0) {
                                 if ($reload_url) {
-                                    //var_dump('editable5');
                                     $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                                 }
                             } else {
                                 if ($reload_url) {
-                                    //var_dump('un-editable5');
                                     $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                                 }
                             }
                         } else {
                             if ($reload_url) {
-                                //var_dump('editable6');
                                 $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                             }
                         }
@@ -266,7 +250,6 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                     if ($can_read == 1) {
                         if ($reload < 3) {
                             $reload++;
-                            //var_dump('un-editable7');
                             $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
                         }
                     } else {
@@ -422,7 +405,6 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                                 }
                             }
                             $reload++;
-                            //var_dump('editable8');
                             $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                         }
                     } catch (Exception $e) {
@@ -435,7 +417,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
         return true;
     }
 
-    ////// on after process
+    ////// on after process --> using for confirmation page
     public function onAfterProcess() {
         $app = JFactory::getApplication();
 
