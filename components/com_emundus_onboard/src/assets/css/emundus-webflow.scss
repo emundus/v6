@@ -835,10 +835,10 @@ input[type="reset"] {
   display: flex;
   align-items: center;
   margin-bottom: 1em;
+}
 
-  .block-label {
-    width: 83%;
-  }
+.list-item-header .block-label {
+  width: 83%;
 }
 .column-inner-block-2 {
   height: auto;
