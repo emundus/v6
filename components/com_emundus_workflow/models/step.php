@@ -187,16 +187,17 @@ class EmundusworkflowModelstep extends JModelList {
 //        }
 //    }
 
+    //// update step params --> input :: step_id + step_params
     public function updateStepParams($data) {
         if(!empty($data) or isset($data)) {
             /// ************************************************************************************************************
             $_string = "";
-            if(isset($data['input_status'])) {
-                foreach($data['input_status'] as $key=>$value) {
+            if(isset($data['params']['inputStatus'])) {
+                foreach($data['params']['inputStatus'] as $key=>$value) {
                     if($value == "true") {
                         $_string .= (string)$key . ",";
                         $_lastString = substr_replace($_string ,"",-1);
-                        $data['input_status'] = $_lastString;
+                        $data['params']['inputStatus'] = $_lastString;
                     }
                     else {}
                 }
@@ -220,8 +221,6 @@ class EmundusworkflowModelstep extends JModelList {
                     $this->query->clear()
                         ->update($this->db->quoteName('#__emundus_workflow_step'))
                         ->set($this->db->quoteName('#__emundus_workflow_step.params') . '=' . $this->db->quote(json_encode($data['params'])))
-                        ->set($this->db->quoteName('#__emundus_workflow_step.input_status') . '=' . $this->db->quote($data['input_status']))
-                        ->set($this->db->quoteName('#__emundus_workflow_step.output_status') . '=' . $this->db->quote($data['output_status']))
                         ->set($this->db->quoteName('#__emundus_workflow_step.start_date') . '=' . $this->db->quote($data['start_date']))
                         ->set($this->db->quoteName('#__emundus_workflow_step.end_date') . '=' . $this->db->quote($data['end_date']))
                         ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
@@ -299,12 +298,13 @@ class EmundusworkflowModelstep extends JModelList {
     }
 
     //// get current params of step --> params ==> sid
+    //// get current params of step --> params ==> sid
     public function getCurrentParamsByStep($sid) {
 
         if(!empty($sid) or isset($sid)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_step.*')          /// get all attributs of stepflow
+                    ->select('#__emundus_workflow_step.*')
                     ->from($this->db->quoteName('#__emundus_workflow_step'))
                     ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$sid);
 
@@ -314,11 +314,10 @@ class EmundusworkflowModelstep extends JModelList {
                 //// parse this raw info into array
                 $_exportArray = array('inputStatus' => array(), 'outputStatus' => array(), 'startDate' => array(), 'endDate' => array(), 'notes' => array());
 
-                $_exportArray['inputStatus'] = $_rawCurrentParams->input_status;
-                $_exportArray['outputStatus'] = $_rawCurrentParams->output_status;
+                $_exportArray['inputStatus'] = json_decode($_rawCurrentParams->params)->inputStatus;
+                $_exportArray['outputStatus'] = json_decode($_rawCurrentParams->params)->outputStatus;
                 $_exportArray['startDate'] = $_rawCurrentParams->start_date;
                 $_exportArray['endDate'] = $_rawCurrentParams->end_date;
-
                 $_exportArray['notes'] = json_decode($_rawCurrentParams->params)->notes;
 
 //                $_exportArray['inputStatusName'] = ($this->getStatusAttributsFromStep($_exportArray['inputStatus']))->value;
@@ -338,6 +337,7 @@ class EmundusworkflowModelstep extends JModelList {
             return false;
         }
     }
+
 
     ////get all available status (input + output) --> if $input == empty --> set (-1) // if $output == empty --> set (-1) // input = workflow_id, step_id
     public function getAvailableStatus($data, $mode) {

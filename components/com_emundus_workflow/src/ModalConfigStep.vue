@@ -33,7 +33,7 @@
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.outputStatusTitle }}</label>
         <div class="col-xs-8">
-          <select v-model="outputStatus" class="form-control-select" id="outstatus-selected">
+          <select v-model="form.outputStatus" class="form-control-select" id="outstatus-selected">
             <b-form-select-option selected disabled>-- Statut sortie de l'etape --</b-form-select-option>
             <option v-for="outstatus in this.outStatus" :value="outstatus.step"> {{ outstatus.value }}</option>
           </select>
@@ -125,17 +125,15 @@ export default {
       // use for form v-model
       form: {
         id: '',
+        // inputStatus: '',
+        inputStatus: [],
+        outputStatus: '',
         notes: '',
       },
 
       // use for date v-model
       startDate: '',
       endDate: '',
-
-      // use for status v-model
-      inputStatus: [],
-      outputStatus: '',
-
       //use to keep the axios api
       inStatus: [],
       outStatus: [],
@@ -148,7 +146,7 @@ export default {
   },
 
   created() {
-    this.inputStatus = this.checked;
+    this.form.inputStatus = this.checked;
   },
 
   methods: {
@@ -166,11 +164,11 @@ export default {
       }).then(response => {
         // console.log(response);
         this.form.id = this.ID;
-        this.outputStatus = response.data.data.outputStatus;
+        this.form.outputStatus = response.data.data.outputStatus;
         this.form.notes = response.data.data.notes;
+
         this.startDate = response.data.data.startDate;
         this.endDate = response.data.data.endDate;
-
         var _temp = response.data.data.inputStatus.split(',');
         _temp.forEach(elt => {
           this.checked[elt] = true;
@@ -196,6 +194,8 @@ export default {
           _temp.forEach(elt => elt['disabled'] = false);
           this.inStatus = _temp;
         }
+
+        // console.log(this.inStatus);
         this.outStatus = response.data.dataOut;
       })
     },
@@ -203,7 +203,7 @@ export default {
     updateParams: function() {
       // params :: this.form
 
-      if(this.inputStatus !== null && this.outputStatus !== null
+      if(this.form.inputStatus !== null && this.form.outputStatus !== null
           && this.startDate !== null && this.endDate !== null
           && new Date(this.startDate).toISOString().slice(0, 19).replace('T', ' ') <= new Date(this.endDate).toISOString().slice(0, 19).replace('T', ' ')) {
         axios({
@@ -217,8 +217,6 @@ export default {
               id: this.element.id,
               wid: this.getWorkflowIdFromURL(),
               params: this.form,
-              input_status: this.inputStatus,
-              output_status: this.outputStatus,
               start_date: new Date(this.startDate).toISOString().slice(0, 19).replace('T', ' '),
               end_date: new Date(this.endDate).toISOString().slice(0, 19).replace('T', ' '),
             }
@@ -252,8 +250,8 @@ export default {
     },
 
     exitModal: function() {
-      var _in = this.inputStatus;
-      var _out = this.outputStatus;
+      var _in = this.form.inputStatus;
+      var _out = this.form.outputStatus;
 
       if(_in.length == 0 || _out === null) {
         // console.log('--- delete ---');
@@ -278,8 +276,8 @@ export default {
     beforeClose() {
       let _result = [];
       let _emit = [];
-      for(i = 0; i <= this.inputStatus.length; i++) {
-        if(this.inputStatus[i] == true) {
+      for(i = 0; i <= this.form.inputStatus.length; i++) {
+        if(this.form.inputStatus[i] == true) {
           _result.push(document.getElementById('status'+i).innerText);
         }
       }
