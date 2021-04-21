@@ -498,7 +498,6 @@ defined('_JEXEC') or die;
     }
 
     function enableTitles(state = null){
-        console.log(window.innerWidth);
         if(jQuery(".image-title").css("display") == 'none' && state == null){
             localStorage.setItem('menu', 'true');
             jQuery(".tchooz-vertical-toplevel").css("width","250px");
