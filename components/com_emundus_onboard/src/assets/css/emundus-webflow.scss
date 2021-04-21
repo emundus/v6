@@ -761,7 +761,7 @@ input[type="reset"] {
   font-size: 24px;
   line-height: 35px;
   font-weight: 700;
-  width: 75%;
+  width: 90%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -835,6 +835,10 @@ input[type="reset"] {
   display: flex;
   align-items: center;
   margin-bottom: 1em;
+
+  .block-label {
+    width: 83%;
+  }
 }
 .column-inner-block-2 {
   height: auto;
