@@ -88,7 +88,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
                     ->clear()
                     ->select('*')
                     ->from($db->quoteName('#__emundus_hikashop'))
-                    ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR ' . $db->quoteName('user_id') . ' = ' . $user);
+                    ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR ' . $db->quoteName('user') . ' = ' . $user);
                 break;
 
         }
