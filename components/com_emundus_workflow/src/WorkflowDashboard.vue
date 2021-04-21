@@ -3,8 +3,8 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
-    <workflow-creator-menu @updateTable="updateTable" @gotoStepFlow="redirectStepFlow"/>
-    <workflow-info-table ref="infotable" @gotoStepFlow="redirectStepFlow"/>
+    <workflow-creator-menu @updateTable="updateTable" @gotoStepFlow="redirectStepFlow" ref="creatormenu"/>
+    <workflow-info-table ref="infotable" @gotoStepFlow="redirectStepFlow" @updateCampaign="updateCampaign"/>
 <!--    <table class="styled-table">-->
 <!--      <thead>-->
 <!--      <tr>-->
@@ -71,6 +71,12 @@ export default {
     updateTable: function(signal) {
       if(signal === 1) {
         this.$refs.infotable.getAllWorkflow();
+      }
+    },
+
+    updateCampaign: function(isUpdate) {
+      if(isUpdate == true) {
+        this.$refs.creatormenu.getAllAvailableCampaigns();
       }
     },
 

@@ -54,11 +54,9 @@ export default {
 
   methods: {
     getAllAvailableCampaigns: function() {
-      axios.get("index.php?option=com_emundus_workflow&controller=workflow&task=getallavailablecampaigns").then(
-          response=>{
-            this.availableCampaign = response.data.data;
-          }).
-      catch(error => {console.log(error);})
+      axios.get("index.php?option=com_emundus_workflow&controller=workflow&task=getallavailablecampaigns")
+          .then(response=>{this.availableCampaign = response.data.data;})
+          .catch(error => {console.log(error);})
     },
 
     createWorkflow: function() {

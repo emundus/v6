@@ -89,13 +89,15 @@ export default {
         })
 
         let _rows = $('#infotable tbody tr').length - 1;
-
-        console.log(_rows);
         if(_rows == 0) {
           this.workflowMessage = "Aucun workflow trouvé";
         } else {
           this.workflowMessage = "Il y a " + _rows + " workflow(s)";
         }
+
+        /// call to getAvailableCampaign
+        let isUpdate = true;
+        this.$emit('updateCampaign', isUpdate);
       }).catch(error => {
         console.log(error);
       })
