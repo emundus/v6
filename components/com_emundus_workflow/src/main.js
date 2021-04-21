@@ -1,10 +1,6 @@
-import Vue from 'vue'
-// import WorkflowSpace from "./WorkflowSpace";
-// import WorkflowDashboard from "./WorkflowDashboard";
-import addWorkflow from "@/addWorkflow";
+import Vue from 'vue';
+import workflowDashboard from './WorkflowDashboard';
 
-//import VueSidebarMenu from 'vue-sidebar-menu'
-//import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
 import VueSweetalert2 from 'vue-sweetalert2';
@@ -37,11 +33,17 @@ Vue.use(VueSweetalert2);
 import InputColorPicker from "vue-native-color-picker";
 Vue.use(InputColorPicker);
 
-if (document.getElementById('add-workflow')) {
+export const bus = new Vue();
+
+new Vue({
+  render: h => h(App),
+}).$mount('#app')
+
+if (document.getElementById('workflow-dashboard')) {
   new Vue({
-    el: '#add-workflow',
+    el: '#workflow-dashboard',
     render(h) {
-      return h(addWorkflow, {
+      return h(workflowDashboard, {
         props: {}
       });
     }

@@ -36,7 +36,7 @@
 
 <script>
 import SimpleFlowchart from './components/SimpleFlowchart.vue';
-import addWorkflow from "./addWorkflow";
+// import addWorkflow from "./addWorkflow";
 import axios from 'axios';
 import Swal from "sweetalert2";
 import ModalConfigElement from "./ModalConfigElement";
@@ -50,7 +50,7 @@ export default {
   components: {
     ModalConfigElement,
     SimpleFlowchart,
-    addWorkflow,
+    // addWorkflow,
   },
 
   props: {
