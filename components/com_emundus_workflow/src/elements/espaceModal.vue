@@ -13,31 +13,31 @@
       </div>
     </div>
 
-<!--    <div class="row mb-3">-->
-<!--      <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.edited_status_title }}</label>-->
-<!--      &lt;!&ndash;      <div class="col-xs-8">&ndash;&gt;-->
-<!--      &lt;!&ndash;        <select v-model="form.editedStatusSelected" class="form-control-select" @change="updateOutStatus(form.editedStatusSelected)">&ndash;&gt;-->
-<!--      &lt;!&ndash;          <b-form-select-option selected disabled>&#45;&#45;Statut d'édition&#45;&#45;</b-form-select-option>&ndash;&gt;-->
-<!--      &lt;!&ndash;          <option v-for="(item, index) in this.$data.inStatus" :value="item.step" :disabled="item.disabled"> {{ item.value }}</option>&ndash;&gt;-->
-<!--      &lt;!&ndash;        </select>&ndash;&gt;-->
+    <!--    <div class="row mb-3">-->
+    <!--      <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.edited_status_title }}</label>-->
+    <!--      &lt;!&ndash;      <div class="col-xs-8">&ndash;&gt;-->
+    <!--      &lt;!&ndash;        <select v-model="form.editedStatusSelected" class="form-control-select" @change="updateOutStatus(form.editedStatusSelected)">&ndash;&gt;-->
+    <!--      &lt;!&ndash;          <b-form-select-option selected disabled>&#45;&#45;Statut d'édition&#45;&#45;</b-form-select-option>&ndash;&gt;-->
+    <!--      &lt;!&ndash;          <option v-for="(item, index) in this.$data.inStatus" :value="item.step" :disabled="item.disabled"> {{ item.value }}</option>&ndash;&gt;-->
+    <!--      &lt;!&ndash;        </select>&ndash;&gt;-->
 
-<!--      <div v-for="item in this.$data.inStatus" v-if="!item.disabled">-->
-<!--        <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]"/>-->
-<!--        <label class="form-check-label" :for="item.step">{{item.value}}</label>-->
-<!--      </div>-->
-<!--      &lt;!&ndash;      </div>&ndash;&gt;-->
+    <!--      <div v-for="item in this.$data.inStatus" v-if="!item.disabled">-->
+    <!--        <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]"/>-->
+    <!--        <label class="form-check-label" :for="item.step">{{item.value}}</label>-->
+    <!--      </div>-->
+    <!--      &lt;!&ndash;      </div>&ndash;&gt;-->
 
-<!--    </div>-->
+    <!--    </div>-->
 
-<!--    <div class="row mb-3">-->
-<!--      <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.output_status_title }}</label>-->
-<!--      <div class="col-xs-8">-->
-<!--        <select v-model="form.outputStatus" class="form-control-select">-->
-<!--          <b-form-select-option selected disabled>&#45;&#45;Statut de sortie&#45;&#45;</b-form-select-option>-->
-<!--          <option v-for="(item, index) in this.$data.outStatus" :value="item.step" :disabled="item.disabled" v-if="!item.disabled"> {{ item.value }}</option>-->
-<!--        </select>-->
-<!--      </div>-->
-<!--    </div>-->
+    <!--    <div class="row mb-3">-->
+    <!--      <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.output_status_title }}</label>-->
+    <!--      <div class="col-xs-8">-->
+    <!--        <select v-model="form.outputStatus" class="form-control-select">-->
+    <!--          <b-form-select-option selected disabled>&#45;&#45;Statut de sortie&#45;&#45;</b-form-select-option>-->
+    <!--          <option v-for="(item, index) in this.$data.outStatus" :value="item.step" :disabled="item.disabled" v-if="!item.disabled"> {{ item.value }}</option>-->
+    <!--        </select>-->
+    <!--      </div>-->
+    <!--    </div>-->
 
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.notes_title }}</label>

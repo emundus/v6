@@ -5,7 +5,7 @@
 
     <div style="text-align: center">
       <b-alert show variant="success" style="background-color: #fff3cd; border-color: #ffeeba; padding: 3.75rem; align-items: center" show dismissible>
-          <h1>EMundus Workflow Demo</h1>
+        <h1>EMundus Workflow Demo</h1>
       </b-alert>
     </div>
 
@@ -24,27 +24,27 @@
 
     <table class="styled-table">
       <thead>
-        <tr>
-          <th v-for="(theader,index) in this.$data.table_header" :key="index">
-            {{ theader }}
-          </th>
-        </tr>
+      <tr>
+        <th v-for="(theader,index) in this.$data.table_header" :key="index">
+          {{ theader }}
+        </th>
+      </tr>
       </thead>
 
       <tbody>
-        <tr v-for="(workflow,index) in this.$props.workflows" :key="workflow.id">
-          <th>{{ workflow.id }}</th>
-          <th>{{ workflow.workflow_name }}</th>
-          <th> {{ workflow.label }} </th>
-          <th>{{ workflow.name }}</th>
-          <th>{{ workflow.created_at }}</th>
-          <th>{{ workflow.updated_at }}</th>
-          <th>
-            <button @click="changeToWorkflowSpace(workflow.id)" class="edit-button">OUVRIR</button>
-            <button @click="alertDeleteDisplay(workflow.id)" class="delete-button">SUPPRIMER</button>
-            <button @click="alertDuplicateDisplay(workflow.id)" class="duplicate-button">DUPLIQUER</button>
-          </th>
-        </tr>
+      <tr v-for="(workflow,index) in this.$props.workflows" :key="workflow.id">
+        <th>{{ workflow.id }}</th>
+        <th>{{ workflow.workflow_name }}</th>
+        <th> {{ workflow.label }} </th>
+        <th>{{ workflow.name }}</th>
+        <th>{{ workflow.created_at }}</th>
+        <th>{{ workflow.updated_at }}</th>
+        <th>
+          <button @click="changeToWorkflowSpace(workflow.id)" class="edit-button">OUVRIR</button>
+          <button @click="alertDeleteDisplay(workflow.id)" class="delete-button">SUPPRIMER</button>
+          <button @click="alertDuplicateDisplay(workflow.id)" class="duplicate-button">DUPLIQUER</button>
+        </th>
+      </tr>
       </tbody>
     </table>
     <div class="alert-count">
@@ -119,7 +119,7 @@ export default {
               this.workflow_message = "Il y a " + response.data.count + " workflow(s)";
             }
           }).catch(error => {
-            console.log(error);
+        console.log(error);
       })
     },
 
@@ -280,109 +280,109 @@ export default {
 </script>
 
 <style>
-  .styled-table {
-    border-collapse: collapse;
-    margin: 25px 0;
-    font-size: 0.9em;
-    font-family: sans-serif;
-    min-width: 400px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-  }
+.styled-table {
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  min-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
 
-  .styled-table thead tr {
-    background-color: #009879;
-    color: #ffffff;
-    text-align: left;
-  }
+.styled-table thead tr {
+  background-color: #009879;
+  color: #ffffff;
+  text-align: left;
+}
 
-  .styled-table th {
-    background: none;
-  }
+.styled-table th {
+  background: none;
+}
 
-  .styled-table td {
-    padding: 12px 15px;
-  }
+.styled-table td {
+  padding: 12px 15px;
+}
 
-  .styled-table tbody tr {
-    border-bottom: 1px solid #dddddd;
-  }
+.styled-table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
 
-  .styled-table tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
-  }
+.styled-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
 
-  .edit-button {
-    top: auto;
-    background-color: #06ba00;
-    border-color: #06ba00;
-    color: #fff;
-    display: inline-block;
-    text-align: center;
-    vertical-align: center;
-    user-select: none;
-    border-radius: .25rem;
-    margin: 5px;
-    padding: 4px 20px;
-  }
+.edit-button {
+  top: auto;
+  background-color: #06ba00;
+  border-color: #06ba00;
+  color: #fff;
+  display: inline-block;
+  text-align: center;
+  vertical-align: center;
+  user-select: none;
+  border-radius: .25rem;
+  margin: 5px;
+  padding: 4px 20px;
+}
 
-  .edit-button:hover {
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
-  }
+.edit-button:hover {
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
 
-  .delete-button {
-    top: auto;
-    background-color: red;
-    border-color: red;
-    color: #fff;
-    display: inline-block;
-    text-align: center;
-    vertical-align: center;
-    user-select: none;
-    border-radius: .25rem !important;
-    margin: 5px;
-    padding: 4px 20px;
-  }
+.delete-button {
+  top: auto;
+  background-color: red;
+  border-color: red;
+  color: #fff;
+  display: inline-block;
+  text-align: center;
+  vertical-align: center;
+  user-select: none;
+  border-radius: .25rem !important;
+  margin: 5px;
+  padding: 4px 20px;
+}
 
-  .duplicate-button {
-    top: auto;
-    background-color: orange;
-    border-color: orange;
-    color: #fff;
-    display: inline-block;
-    text-align: center;
-    vertical-align: center;
-    user-select: none;
-    border-radius: .25rem;
-    margin: 5px;
-    padding: 4px 20px;
-  }
+.duplicate-button {
+  top: auto;
+  background-color: orange;
+  border-color: orange;
+  color: #fff;
+  display: inline-block;
+  text-align: center;
+  vertical-align: center;
+  user-select: none;
+  border-radius: .25rem;
+  margin: 5px;
+  padding: 4px 20px;
+}
 
-  .delete-button:hover {
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
-  }
+.delete-button:hover {
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
 
-  .swal2-styled.swal2-confirm {
-    border-radius: 5px !important;
-  }
+.swal2-styled.swal2-confirm {
+  border-radius: 5px !important;
+}
 
-  .swal2-styled.swal2-confirm:hover {
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
-  }
+.swal2-styled.swal2-confirm:hover {
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
 
-  .swal2-styled.swal2-cancel {
-    border-radius: 5px !important;
-  }
+.swal2-styled.swal2-cancel {
+  border-radius: 5px !important;
+}
 
-  .swal2-styled.swal2-cancel:hover {
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
-  }
+.swal2-styled.swal2-cancel:hover {
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
 
-  .alert-count {
-    border-radius: 4px;
-    border: 1px solid #c80101;
-    text-align: center;
-    width: 100%;
-    font-size: large;
-    color: #0A246A;
-  }
+.alert-count {
+  border-radius: 4px;
+  border: 1px solid #c80101;
+  text-align: center;
+  width: 100%;
+  font-size: large;
+  color: #0A246A;
+}
 </style>

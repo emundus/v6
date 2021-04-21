@@ -4,7 +4,7 @@ import Vue from 'vue'
 import addWorkflow from "@/addWorkflow";
 
 //import VueSidebarMenu from 'vue-sidebar-menu'
-import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
+//import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
 import VueSweetalert2 from 'vue-sweetalert2';
@@ -58,4 +58,3 @@ if(document.getElementById('add-item')) {
     }
   });
 }
-

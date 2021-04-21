@@ -9,7 +9,7 @@
       <b-button variant="danger" @click="alertExitDisplay()" style="margin: 10px">Quitter &nbsp<b-icon icon="x-circle"></b-icon></b-button>
     </div>
 
-<!--    <button @click="autoMatchLink()">Creer des liens</button>-->
+    <!--    <button @click="autoMatchLink()">Creer des liens</button>-->
 
     <transition name="bounce">
       <div class="element-menu" v-if="seen">
@@ -30,7 +30,7 @@
                       @canvasClick="canvasClick"
                       :height="800"
                       :step="step"
-                      />
+    />
   </div>
 </template>
 
@@ -189,18 +189,18 @@ export default {
           data: items
         })
       }).then(response => {
-          var _id = (response.data.data.id).toString();
+        var _id = (response.data.data.id).toString();
 
-          this.$data.scene.nodes.push({
-            id: _id,
-            x: items.axisX,
-            y: items.axisY,
-            type: nodeCategory[index],
-            label: '',
-            background: response.data.data.style.CSS_style,
-          });
+        this.$data.scene.nodes.push({
+          id: _id,
+          x: items.axisX,
+          y: items.axisY,
+          type: nodeCategory[index],
+          label: '',
+          background: response.data.data.style.CSS_style,
+        });
 
-          setTimeout(() => { this.$modal.show('elementModal' + _id) }, 500);
+        setTimeout(() => { this.$modal.show('elementModal' + _id) }, 500);
       })
     },
 

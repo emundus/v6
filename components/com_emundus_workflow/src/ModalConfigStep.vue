@@ -4,22 +4,22 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
     <modal :name="'stepModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
-<!--      please keep this code part, do not remove ||| option 1 : only one step in -->
+      <!--      please keep this code part, do not remove ||| option 1 : only one step in -->
 
 
-<!--      &lt;!&ndash;  Set step in   &ndash;&gt;-->
-<!--      <div class="row mb-3">-->
-<!--        <label class="col-sm-6 col-form-label">{{ this.title.inputStatusTitle }}</label>-->
-<!--        <div class="col-xs-8">-->
-<!--          <select v-model="form.inputStatus" class="form-control-select" id="instatus-selected">-->
-<!--            <b-form-select-option selected disabled>&#45;&#45; Statut d'entre de l'etape &#45;&#45;</b-form-select-option>-->
-<!--            <option v-for="instatus in this.inStatus" :value="instatus.step"> {{ instatus.value }}</option>-->
-<!--          </select>-->
-<!--        </div>-->
-<!--      </div>-->
+      <!--      &lt;!&ndash;  Set step in   &ndash;&gt;-->
+      <!--      <div class="row mb-3">-->
+      <!--        <label class="col-sm-6 col-form-label">{{ this.title.inputStatusTitle }}</label>-->
+      <!--        <div class="col-xs-8">-->
+      <!--          <select v-model="form.inputStatus" class="form-control-select" id="instatus-selected">-->
+      <!--            <b-form-select-option selected disabled>&#45;&#45; Statut d'entre de l'etape &#45;&#45;</b-form-select-option>-->
+      <!--            <option v-for="instatus in this.inStatus" :value="instatus.step"> {{ instatus.value }}</option>-->
+      <!--          </select>-->
+      <!--        </div>-->
+      <!--      </div>-->
 
 
-<!--&lt;!&ndash;    option 2 : multiple step in &ndash;&gt;-->
+      <!--&lt;!&ndash;    option 2 : multiple step in &ndash;&gt;-->
 
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.inputStatusTitle }}</label>
@@ -29,7 +29,7 @@
         </div>
       </div>
 
-        <!-- Step step out -->
+      <!-- Step step out -->
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.outputStatusTitle }}</label>
         <div class="col-xs-8">
@@ -40,7 +40,7 @@
         </div>
       </div>
 
-<!--       Step start date >>> add datetime picker -->
+      <!--       Step start date >>> add datetime picker -->
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.startDateTitle }}</label>
         <div class="col-xs-8">
@@ -148,7 +148,7 @@ export default {
   },
 
   created() {
-      this.inputStatus = this.checked;
+    this.inputStatus = this.checked;
   },
 
   methods: {
@@ -204,8 +204,8 @@ export default {
       // params :: this.form
 
       if(this.inputStatus !== null && this.outputStatus !== null
-        && this.startDate !== null && this.endDate !== null
-        && new Date(this.startDate).toISOString().slice(0, 19).replace('T', ' ') <= new Date(this.endDate).toISOString().slice(0, 19).replace('T', ' ')) {
+          && this.startDate !== null && this.endDate !== null
+          && new Date(this.startDate).toISOString().slice(0, 19).replace('T', ' ') <= new Date(this.endDate).toISOString().slice(0, 19).replace('T', ' ')) {
         axios({
           method: 'post',
           url: 'index.php?option=com_emundus_workflow&controller=step&task=updateparams',

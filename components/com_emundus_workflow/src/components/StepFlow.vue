@@ -10,8 +10,8 @@
         <div style="color:red">{{ column.stateIn }}</div>
         <div style="color:blueviolet">{{ column.stateOut }}</div>
         <modal-config-step :ID="column.id" :element="column" @updateState="updateStatus" @deleteStep="deleteStep(column.id)"/>
-<!--        <div>{{ column.stateIn }}</div>-->
-<!--        <div>{{ column.stateOut }}</div>-->
+        <!--        <div>{{ column.stateIn }}</div>-->
+        <!--        <div>{{ column.stateOut }}</div>-->
 
         <b-button @click="deleteStep(column.id)" variant="danger">Annuler etape</b-button>
         <b-button @click="configStep(column.id)" variant="warning" style="margin-left: 20px">Configurer</b-button>

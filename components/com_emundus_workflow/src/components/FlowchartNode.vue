@@ -1,19 +1,19 @@
 <template>
-  <div class="flowchart-node" :style="nodeStyle" 
-    @mousedown="handleMousedown"
-    @mouseover="handleMouseOver"
-    @mouseleave="handleMouseLeave"
-    v-bind:class="{selected: options.selected === id}">
+  <div class="flowchart-node" :style="nodeStyle"
+       @mousedown="handleMousedown"
+       @mouseover="handleMouseOver"
+       @mouseleave="handleMouseLeave"
+       v-bind:class="{selected: options.selected === id}">
     <div class="node-port node-input"
-       @mousedown="inputMouseDown"
-       @mouseup="inputMouseUp">
+         @mousedown="inputMouseDown"
+         @mouseup="inputMouseUp">
     </div>
     <div class="node-main">
       <div v-text="type" class="node-type"></div>
       <p contenteditable="true" class="node-label" :id="'label_'+id" v-text="label"/>
     </div>
-    <div class="node-port node-output" 
-      @mousedown="outputMouseDown">
+    <div class="node-port node-output"
+         @mousedown="outputMouseDown">
     </div>
     <div v-show="show.delete" class="node-delete">&times;</div>
     <div v-show="show.clone" class="duplicate-option" :id="id" ref="duplicate">Dupliquer</div>
@@ -49,7 +49,7 @@ export default {
       validator(val) {
         return typeof val === 'number'
       }
-    },    
+    },
     y: {
       type: Number,
       default: 0,
@@ -97,8 +97,8 @@ export default {
   computed: {
     nodeStyle() {
       return {
-        top: this.options.centerY + this.y * this.options.scale + 'px', // remove: this.options.offsetTop + 
-        left: this.options.centerX + this.x * this.options.scale + 'px', // remove: this.options.offsetLeft + 
+        top: this.options.centerY + this.y * this.options.scale + 'px', // remove: this.options.offsetTop +
+        left: this.options.centerX + this.x * this.options.scale + 'px', // remove: this.options.offsetLeft +
         transform: `scale(${this.options.scale})`,
       }
     }
