@@ -1,6 +1,6 @@
 <template>
   <div id="workflow-info-table">
-    <table class="styled-table" id="info-table">
+    <table class="styled-table" id="infotable">
       <thead>
       <tr>
         <th v-for="(theader,index) in this.$data.table_header" :key="index">
@@ -88,11 +88,13 @@ export default {
           return elt.id !== wid;
         })
 
-        let _rows = $('info-table').find('tr').length;
+        let _rows = $('#infotable tbody tr').length - 1;
+
+        console.log(_rows);
         if(_rows == 0) {
           this.workflowMessage = "Aucun workflow trouvé";
         } else {
-          this.workflowMessage = "Il y a " + response.data.count + " workflow(s)";
+          this.workflowMessage = "Il y a " + _rows + " workflow(s)";
         }
       }).catch(error => {
         console.log(error);

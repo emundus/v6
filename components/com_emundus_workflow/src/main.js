@@ -35,10 +35,6 @@ Vue.use(InputColorPicker);
 
 export const bus = new Vue();
 
-new Vue({
-  render: h => h(App),
-}).$mount('#app')
-
 if (document.getElementById('workflow-dashboard')) {
   new Vue({
     el: '#workflow-dashboard',
