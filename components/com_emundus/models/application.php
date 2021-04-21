@@ -733,7 +733,7 @@ class EmundusModelApplication extends JModelList {
             $form .= '</div>';
 
             // liste des groupes pour le formulaire d'une table
-            $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
+            $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params
                       FROM #__fabrik_formgroup ff, #__fabrik_groups fg
                       WHERE ff.group_id = fg.id AND fg.published = 1 AND ff.form_id = '.$table[$i]->form_id.'
                       ORDER BY ff.ordering';
@@ -748,6 +748,13 @@ class EmundusModelApplication extends JModelList {
 
             /*-- Liste des groupes -- */
             foreach ($groupes as $itemg) {
+
+                $g_params = json_decode($itemg->params);
+
+                if(!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
+                    continue;
+                }
+
                 // liste des items par groupe
                 $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
                             FROM #__fabrik_elements fe
@@ -857,7 +864,7 @@ class EmundusModelApplication extends JModelList {
 
                         // TABLEAU DE PLUSIEURS LIGNES
                     }
-                    elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0) {
+                    elseif ((int)$g_params->repeated === 1) {
 
                         $form .= '<table class="table table-bordered table-striped">
                             <thead>
@@ -1198,7 +1205,7 @@ class EmundusModelApplication extends JModelList {
                     $forms .= '</div>';
 
 	                // liste des groupes pour le formulaire d'une table
-	                $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
+	                $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params
 	                            FROM #__fabrik_formgroup ff, #__fabrik_groups fg
 	                            WHERE ff.group_id = fg.id AND fg.published = 1 AND
 	                                  ff.form_id = "'.$itemt->form_id.'"
@@ -1208,7 +1215,9 @@ class EmundusModelApplication extends JModelList {
 
 	                /*-- Liste des groupes -- */
 	                foreach ($groupes as $itemg) {
-	                	if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
+                        $g_params = json_decode($itemg->params);
+
+	                	if (($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups) )|| !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
 			                $forms .= '<fieldset class="em-personalDetail">
 											<legend class="legend">'.JText::_($itemg->label).'</legend>
 											<table class="em-restricted-group">
@@ -1237,7 +1246,7 @@ class EmundusModelApplication extends JModelList {
 	                    if (count($elements) > 0) {
 
 
-	                        if ($itemg->repeated > 0 || $itemg->repeated_1 > 0) {
+	                        if ((int)$g_params->repeated === 1) {
 
 	                            $query = 'SELECT table_join FROM #__fabrik_joins WHERE list_id='.$itemt->table_id.' AND group_id='.$itemg->group_id.' AND table_join_key like "parent_id"';
                                 try {
@@ -1664,7 +1673,7 @@ class EmundusModelApplication extends JModelList {
 
             	$breaker = ($em_breaker) ? ($key === 0) ? '' : 'class="breaker"' : '';
                 // liste des groupes pour le formulaire d'une table
-                $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1, fg.params as params
+                $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
                             WHERE ff.group_id = fg.id AND fg.published = 1';
 
@@ -1701,7 +1710,7 @@ class EmundusModelApplication extends JModelList {
 
                     $g_params = json_decode($itemg->params);
 
-                    if(!EmundusHelperAccess::checkAllowedAcces($this->_user->id, (int)$g_params->access)) {
+                    if(!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
                         continue;
                     }
 
@@ -1752,7 +1761,7 @@ class EmundusModelApplication extends JModelList {
                             // TABLEAU DE PLUSIEURS LIGNES avec moins de 7 colonnes
                         }
 
-                        elseif (($itemg->repeated > 0 || $itemg->repeated_1 > 0) && count($elements) < 6 && !$asTextArea) {
+                        elseif (((int)$g_params->repeated === 1) && count($elements) < 6 && !$asTextArea) {
                             //-- Entrée du tableau -- */
                             $t_elt = array();
                             foreach ($elements as &$element) {
@@ -1961,7 +1970,7 @@ class EmundusModelApplication extends JModelList {
                             // TABLEAU DE PLUSIEURS LIGNES sans tenir compte du nombre de lignes
                         }
 
-                        elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0) {
+                        elseif ((int)$g_params->repeated === 1) {
 
                             //-- Entrée du tableau -- */
                             $t_elt = array();
@@ -2329,7 +2338,7 @@ class EmundusModelApplication extends JModelList {
             foreach ($tableuser as $key => $itemt) {
                 $forms .= ($options['show_list_label']==1)?'<h2>'.JText::_($itemt->label).'</h2>':'';
                 // liste des groupes pour le formulaire d'une table
-                $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
+                $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
                             WHERE ff.group_id = fg.id AND fg.published = 1 AND
                                   ff.form_id = "'.$itemt->form_id.'"
@@ -2341,6 +2350,13 @@ class EmundusModelApplication extends JModelList {
 
                 /*-- Liste des groupes -- */
                 foreach($groupes as $keyg => $itemg) {
+
+                    $g_params = json_decode($itemg->params);
+
+                    if(!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
+                        continue;
+                    }
+
                     // liste des items par groupe
                     $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
                                 FROM #__fabrik_elements fe
@@ -2386,7 +2402,7 @@ class EmundusModelApplication extends JModelList {
                             }
 
                             // TABLEAU DE PLUSIEURS LIGNES
-                        } elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0){
+                        } elseif ((int)$g_params->repeated === 1){
                             $forms .= '<p><table class="adminlist">
                               <thead>
                               <tr> ';
