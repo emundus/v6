@@ -21,8 +21,12 @@ import Swal from "sweetalert2";
 import ModalConfigElement from "../ModalConfigElement";
 const qs = require('qs');
 
+import { commonMixin } from "../common-mixin";
+
 export default {
   name: 'VueFlowchart',
+  mixins: [commonMixin],
+
   props: {
     step: Object,
     scene: {
@@ -431,13 +435,18 @@ export default {
 
     // delete item by id
     deleteItem: function(id) {
+      let deletedNode = {
+        id: id,
+        workflow_id: this.$data.id,
+      }
+
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus_workflow&controller=item&task=deleteitem',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        data: qs.stringify({id})
+        data: qs.stringify({data : deletedNode })
       }).then(response => {
       }).catch(error => {
         console.log(error);

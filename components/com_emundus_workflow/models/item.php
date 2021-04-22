@@ -20,11 +20,15 @@ class EmundusworkflowModelitem extends JModelList
 {
     var $db = null;
     var $query = null;
+    var $workflow_model = null;
 
     public function __construct($config = array()) {
         parent::__construct($config);
+
         $this->db = JFactory::getDbo();
         $this->query = $this->db->getQuery(true);
+
+        $this->workflow_model = JModelLegacy::getInstance('workflow', 'EmundusworkflowModel');          /// get workflow_model
     }
 
     //// get item menu
@@ -158,15 +162,19 @@ class EmundusworkflowModelitem extends JModelList
     }
 
     //// delete item --> params ==> $id
-    public function deleteItem($id) {
-        if(!empty($id) or isset($id)) {
+    public function deleteItem($data) {
+        if(!empty($data) or isset($data)) {
             try {
                 $this->query->clear()
                     ->delete($this->db->quoteName("#__emundus_workflow_item"))
-                    ->where($this->db->quoteName('#__emundus_workflow_item.id') . ' = ' . (int)$id);
+                    ->where($this->db->quoteName('#__emundus_workflow_item.id') . ' = ' . (int)$data['id']);
 
                 $this->db->setQuery($this->query);
-                return $this->db->execute();
+                $this->db->execute();
+
+                $this->workflow_model->workflowSavingTrigger($data['workflow_id']);
+
+                return (object)['message'=>true];
             }
             catch (Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/item | Cannot delete item : ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
