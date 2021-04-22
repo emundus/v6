@@ -110,7 +110,7 @@ if($user != null) {
                 echo '<br/><div class="select">';
                 echo '<select class="profile-select" id="profile" name="profiles" onchange="postCProfile()"> ';
                 foreach ($user->emProfiles as $profile) {
-                    if (array_key_exists($profile->id, $ids_array) && $profile->published && !$applicant_option) {
+                    if ($profile->published && !$applicant_option) {
                         echo '<option  value="'.$profile->id.".".$ids_array[$profile->id].'"' .(in_array($user->profile, $app_prof)?'selected="selected"':"").'>'.JText::_('APPLICANT').'</option>';
                         $applicant_option = true;
                     } elseif (!$profile->published) {

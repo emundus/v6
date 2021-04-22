@@ -10,10 +10,10 @@
             </li>
         </ul>
         <div class="form-group controls" v-if="indexHighlight == 0 && this.form.content.col1 != null">
-            <editor :text="form.content.col1" :lang="actualLanguage" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="form.content.col1"></editor>
+            <editor :height="'30em'" :text="form.content.col1" :lang="actualLanguage" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="form.content.col1"></editor>
         </div>
         <div class="form-group controls" v-if="indexHighlight == 1 && this.form.content.col2 != null">
-            <editor :text="form.content.col2" :lang="actualLanguage" :enable_variables="false" :id="'editor_en'" :key="dynamicComponent" v-model="form.content.col2"></editor>
+            <editor :height="'30em'" :text="form.content.col2" :lang="actualLanguage" :enable_variables="false" :id="'editor_en'" :key="dynamicComponent" v-model="form.content.col2"></editor>
         </div>
     </div>
 </template>

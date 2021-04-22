@@ -92,7 +92,6 @@ export default {
         }
       }).then(response => {
         this.campaigns = response.data.data;
-        console.log(response);
       });
     }
   },

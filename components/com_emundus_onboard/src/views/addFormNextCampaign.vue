@@ -279,7 +279,7 @@ export default {
     formProgramsDesc: [
       [
         "Ajoutez des utilisateurs, affectez-les à des rôles qui va leur donner des droits sur les dossiers.",
-        "Définissez une phase d'évaluation en créeant une grille avec différents critères.",
+        "Définissez une phase d'évaluation en créant une grille avec différents critères.",
         "Configurer des envois d'emails automatique aux changements de statuts de vos différents candidats.",
       ],
       [

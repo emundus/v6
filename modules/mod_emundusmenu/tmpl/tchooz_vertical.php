@@ -150,18 +150,26 @@ defined('_JEXEC') or die;
     /*** END ***/
     .message-tooltip{
         background: #fff;
-        width: auto;
+        width: 12rem;
         height: auto;
         position: fixed;
         margin-left: 60px;
         color: black;
-        padding: 10px;
+        padding: 15px;
         align-items: center;
+        font-weight: 600;
         border-radius: 5px;
-        border: solid 2px #16afe1;
+        border: solid 2px #fff;
         display: none;
         margin-top: -38px;
+        box-shadow: 0 5px 10px rgb(0 0 0 / 10%);
     }
+    .message-tooltip p {
+        font-weight: 600;
+        border-bottom: 1px solid #e0e0e5;
+        padding-bottom: 10px;
+    }
+    
     .message-tooltip::after {
         content: "";
         position: absolute;
@@ -173,7 +181,7 @@ defined('_JEXEC') or die;
         border-right-color: transparent;
         border-right-style: solid;
         border-right-width: 10px;
-        border-right: 10px solid #16afe1;
+        border-right: 10px solid #fff;
     }
 
     .g-sublevel{
@@ -183,7 +191,7 @@ defined('_JEXEC') or die;
         height: 110%;
         position: absolute;
         display: block;
-        border: solid 2px #16AFE1;
+       border: solid 2px #fff;
         border-radius: 5px;
         content: "";
     }
@@ -498,7 +506,6 @@ defined('_JEXEC') or die;
     }
 
     function enableTitles(state = null){
-        console.log(window.innerWidth);
         if(jQuery(".image-title").css("display") == 'none' && state == null){
             localStorage.setItem('menu', 'true');
             jQuery(".tchooz-vertical-toplevel").css("width","250px");

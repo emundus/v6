@@ -67,15 +67,15 @@
               <div class="action-links">
                   <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="addMenu">
                     <em class="add-page-icon"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{addMenu}}</label>
+                    <label class="action-label col-md-offset-1 col-sm-offset-1">{{addMenu}}</label>
                   </a>
                   <a class="d-flex action-link" @click="createGroup()" :title="addGroup">
                     <em class="add-group-icon"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{addGroup}}</label>
+                    <label class="action-label col-md-offset-1 col-sm-offset-1">{{addGroup}}</label>
                   </a>
                   <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements" :title="addItem">
                     <em class="add-element-icon"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
+                    <label class="action-label col-md-offset-1 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
                   </a>
 <!--                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="testForm" :title="testingForm">
                     <em class="far fa-play-circle" style="font-size: 22px"></em>
@@ -160,7 +160,7 @@
           </div>
         </div>
         <div v-if="menuHighlight === 1" class="form-builder">
-          <div class="form-viewer-builder" :class="[addingElement || actions_menu ? 'col-sm-offset-5 col-md-offset-4 col-lg-offset-1 col-sm-7 col-md-6' : 'col-md-8',optionsModal ? 'col-sm-5 col-md-6' : 'col-md-8']">
+          <div class="form-viewer-builder" :class="[addingElement || actions_menu ? 'col-sm-offset-5 col-md-offset-4 col-lg-offset-1 col-sm-7 col-md-7' : 'col-md-8',optionsModal ? 'col-sm-5 col-md-6' : 'col-md-8']">
             <Builder
                     :object="submittionPages[indexHighlight]"
                     v-if="submittionPages[indexHighlight]"
@@ -1344,7 +1344,7 @@
 
   @media all and (min-width: 1280px) and (max-width: 1660px)  {
     .col-lg-offset-1{
-      margin-left: 23%;
+      margin-left: 15%;
     }
   }
 

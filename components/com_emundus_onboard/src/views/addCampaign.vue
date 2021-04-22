@@ -210,7 +210,7 @@
             </button>
           </div>
           <div class="form-group controls">
-            <editor :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" v-if="form.training" :placeholder="ProgramResume" :id="'program_campaign_'" :key="editorKey"></editor>
+            <editor :height="'30em'" :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" v-if="form.training" :placeholder="ProgramResume" :id="'program_campaign_'" :key="editorKey"></editor>
           </div>
 
           <transition name="slide-fade">
@@ -232,7 +232,7 @@
                   <span class="error">{{ProgLabelRequired}}</span>
                 </p>
                 <div class="form-group controls">
-                  <editor :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" :placeholder="ProgramResume" :id="'new_program_campaign_'" :key="editorKey"></editor>
+                  <editor :height="'30em'" :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" :placeholder="ProgramResume" :id="'new_program_campaign_'" :key="editorKey"></editor>
                 </div>
               </div>
             </div>
