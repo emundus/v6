@@ -13,12 +13,7 @@
 
     <transition name="bounce">
       <div class="element-menu" v-if="seen">
-        <h2 style="align-items: center"> {{ this.$data.menu_message }} </h2>
-        <li v-for="(item,index) in items" style="line-height: 2.8">
-          <i :class="item.icon"/>
-          <span style="margin: 0 35px"> {{ item.item_name }} </span>
-          <button @click="addNode(index+1)" class="add-button">(+)</button>
-        </li>
+        <workflow-space-tools-menu :stepID="step" @createItem="createNode"/>
       </div>
     </transition>
 
@@ -41,6 +36,8 @@ import { commonMixin } from "./common-mixin";
 import axios from 'axios';
 import Swal from "sweetalert2";
 import ModalConfigElement from "./ModalConfigElement";
+import WorkflowSpaceToolsMenu from "./components/WorkflowSpaceToolsMenu";
+
 let now = new Date();
 const qs = require('qs');
 
@@ -49,11 +46,10 @@ const _lst = [];
 export default {
   name: 'WorkflowSpace',
   mixins: [commonMixin],      //// using mixin
-  components: { ModalConfigElement, SimpleFlowchart, },
+  components: { ModalConfigElement, SimpleFlowchart, WorkflowSpaceToolsMenu},
 
   props: {
     items: Array,
-    nodeCategory: Array,
     step: Object,
   },
 
@@ -63,7 +59,7 @@ export default {
       lastSave: '',
       workflowname: '',
       seen: false,
-      menu_message: "Menu",
+      // menu_message: "Menu",
       scene: {
         centerX: 1024,
         centerY: 140,
@@ -75,13 +71,17 @@ export default {
   },
 
   created() {
-    this.getMenu();               // get menu bar of step
     this.loadStep();              // load step --> retrieve items and links
     //this.insertInitBloc();        // check if the init item exists or not --> if not, create it, if yes, do nothing     // --> temporary unuse
     this.cronUpdate();
   },
 
   methods: {
+    createNode: function(newItem) {
+      this.scene.nodes.push(newItem);
+      setTimeout(() => { this.$modal.show('elementModal' + newItem.id) }, 500);
+    },
+
     alertWelcomeDisplay: function() {
       Swal.fire({
         icon: 'success',
@@ -143,58 +143,6 @@ export default {
           })
         }
         else { }
-      })
-    },
-
-    getMenu: function() {
-      axios.get("index.php?option=com_emundus_workflow&controller=item&task=getitemmenu").
-      then(response => {
-        var itemCategory = [];
-        (response.data.data).forEach(element => itemCategory.push(element.item_name));
-        this.$props.nodeCategory = itemCategory;
-
-        this.items = response.data.data;
-        this.items.splice(0, 1);
-
-      }).catch(error => {
-        console.log(error);
-      })
-    },
-
-    addNode: function (index) {
-      let nodeCategory = this.$props.nodeCategory;
-      var items = {
-        item_name: nodeCategory[index],
-        item_id: index + 1,
-        workflow_id: this.$data.id,
-        params: '',
-        axisX: -400 + Math.floor((Math.random() * 100) + 1),
-        axisY: 50 + Math.floor((Math.random() * 100) + 1),
-        step_id: this.step.id,
-      }
-
-      axios({
-        method: 'post',
-        url: "index.php?option=com_emundus_workflow&controller=item&task=createitem&workflowid=" + items.workflow_id + "&itemid=" + items.item_id,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          data: items
-        })
-      }).then(response => {
-        var _id = (response.data.data.id).toString();
-
-        this.$data.scene.nodes.push({
-          id: _id,
-          x: items.axisX,
-          y: items.axisY,
-          type: nodeCategory[index],
-          label: '',
-          background: response.data.data.style.CSS_style,
-        });
-
-        setTimeout(() => { this.$modal.show('elementModal' + _id) }, 500);
       })
     },
 
@@ -260,8 +208,8 @@ export default {
       var items = rawItems.data.data;    //items : Array
       var links = rawLinks.data.data;    //links: Array
 
-      console.log(items);
-      console.log(links);
+      // console.log(items);
+      // console.log(links);
 
       items.forEach(element => {
         this.$data.scene.nodes.push({
