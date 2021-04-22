@@ -33,8 +33,6 @@ Vue.use(VueSweetalert2);
 import InputColorPicker from "vue-native-color-picker";
 Vue.use(InputColorPicker);
 
-export const bus = new Vue();
-
 if (document.getElementById('workflow-dashboard')) {
   new Vue({
     el: '#workflow-dashboard',

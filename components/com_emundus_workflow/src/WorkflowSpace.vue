@@ -36,7 +36,8 @@
 
 <script>
 import SimpleFlowchart from './components/SimpleFlowchart.vue';
-// import addWorkflow from "./addWorkflow";
+import { commonMixin } from "./common-mixin";
+
 import axios from 'axios';
 import Swal from "sweetalert2";
 import ModalConfigElement from "./ModalConfigElement";
@@ -47,11 +48,8 @@ const _lst = [];
 
 export default {
   name: 'WorkflowSpace',
-  components: {
-    ModalConfigElement,
-    SimpleFlowchart,
-    // addWorkflow,
-  },
+  mixins: [commonMixin],      //// using mixin
+  components: { ModalConfigElement, SimpleFlowchart, },
 
   props: {
     items: Array,
@@ -100,7 +98,7 @@ export default {
         item_id: 1,
         step_id: this.step.id,                      // get step_id of item
         item_name: "Initialisation",
-        workflow_id: this.getWorkflowIdFromURL(),
+        workflow_id: this.$data.id,
         axisX: -700,
         axisY: -50,
         style: '#9bde74',
@@ -148,10 +146,6 @@ export default {
       })
     },
 
-    getWorkflowIdFromURL: function () {
-      return window.location.href.split('id=')[1];
-    },
-
     getMenu: function() {
       axios.get("index.php?option=com_emundus_workflow&controller=item&task=getitemmenu").
       then(response => {
@@ -172,7 +166,7 @@ export default {
       var items = {
         item_name: nodeCategory[index],
         item_id: index + 1,
-        workflow_id: this.getWorkflowIdFromURL(),
+        workflow_id: this.$data.id,
         params: '',
         axisX: -400 + Math.floor((Math.random() * 100) + 1),
         axisY: 50 + Math.floor((Math.random() * 100) + 1),
@@ -338,7 +332,7 @@ export default {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        data: qs.stringify({ data: this.getWorkflowIdFromURL(),})
+        data: qs.stringify({ data: this.$data.id,})
       }).then(response => {
         // console.log(response);
       }).catch(error => {
