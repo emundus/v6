@@ -3,7 +3,7 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
-    <div contenteditable="true" class="editable-workflow-label" id="editable-workflow-label" v-on:keyup.enter="updateWorkflowLabel()">
+    <div contenteditable="true" class="editable-workflow-label" id="editable-workflow-label" v-on:keyup.enter="updateWorkflowLabel()" v-if="!hideStep">
       {{ this.workflowLabel }}
     </div>
 
@@ -32,6 +32,7 @@ import ModalConfigStep from "../ModalConfigStep";
 import SimpleFlowchart from "./SimpleFlowchart";
 import WorkflowSpace from "../WorkflowSpace";
 const qs = require('qs');
+import $ from 'jquery';
 
 import { commonMixin } from '../common-mixin'; /// using mixin in this case
 
@@ -197,7 +198,7 @@ export default {
 
     updateWorkflowLabel: function() {
       let newLabel = {
-        workflow_name: document.getElementById('editable-workflow-label').innerText,
+        workflow_name: $("#editable-workflow-label").text(),
         id: this.$data.id,
       }
 
@@ -219,7 +220,7 @@ export default {
 
     setStepLabel: function(id) {
       var data = {
-        step_label: document.getElementById('step_label_' + id).innerText,
+        step_label: $("#step_label_" + id).text(),
         id: id,
       }
 
@@ -321,4 +322,26 @@ export default {
   white-space:nowrap;
 }
 
+
+/* editable step label */
+.editable-step-label {
+  color: #118a3b !important;
+  font-size: xx-large !important;
+  /*font-weight: bold !important;*/
+  width: max-content;
+  /*border-bottom: 1px dotted black;*/
+  text-decoration: underline #28a745;
+}
+
+[contenteditable="true"].editable-step-label {
+  white-space: nowrap;
+  overflow: hidden;
+}
+[contenteditable="true"].editable-step-label br {
+  display:none;
+}
+[contenteditable="true"].editable-step-label * {
+  display:inline;
+  white-space:nowrap;
+}
 </style>
