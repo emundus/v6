@@ -715,6 +715,9 @@ class EmundusModelApplication extends JModelList {
     public function getFormByFabrikFormID($formID, $aid, $fnum = 0) {
         $h_access = new EmundusHelperAccess;
 
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+
         $form = '';
 
         // Get table by form ID
