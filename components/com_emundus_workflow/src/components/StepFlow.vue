@@ -127,7 +127,6 @@ export default {
       }).then(response => {
         this.columns.push({
           id: response.data.data.step_id,
-          //title: 'Etape # anonyme ' + response.data.data.step_id,       // default name of step
         })
 
         setTimeout(() => { this.$modal.show('stepModal' + response.data.data.step_id) }, 500);
@@ -196,12 +195,13 @@ export default {
             this.columns[_index]['stateIn'] = _stateIn.toString();
 
             this.columns[_index]['stateOut'] = (answer.data.data.outputStatusNames)[0].value;
+
+            this.columns[_index]['title'] = answer.data.data.stepLabel;
             this.$forceUpdate();
           });
 
           this.columns.push({
             id: step.id,
-            title: 'Etape # anonyme ' + step.id,
           })
           // this.stateIn = answer.data.data.inputStatus;
           // this.stateOut = answer.data.data.outputStatus;

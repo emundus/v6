@@ -103,13 +103,15 @@ import Swal from "sweetalert2";
 import $ from 'jquery';
 import Calendar from 'v-calendar/lib/components/calendar.umd'
 import DatePicker from 'v-calendar/lib/components/date-picker.umd'
+import { commonMixin } from "./common-mixin";
+
 require('moment')().format('YYYY-MM-DD HH:mm:ss');
 
 const qs = require('qs');
 
 export default {
   name: "ModalConfigStep",
-
+  mixins: [commonMixin],
   props: {
     ID: Number,
     element: Object,
@@ -181,6 +183,8 @@ export default {
         _temp.forEach(elt => {
           this.checked[elt] = true;
         });
+
+        this.stepLabel = response.data.data.stepLabel;
       })
     },
 
@@ -224,7 +228,7 @@ export default {
             data: {
               id: this.element.id,
               step_label: this.stepLabel,
-              wid: this.getWorkflowIdFromURL(),
+              wid: this.$data.id,
               params: this.form,
               start_date: new Date(this.startDate).toISOString().slice(0, 19).replace('T', ' '),
               end_date: new Date(this.endDate).toISOString().slice(0, 19).replace('T', ' '),
@@ -269,13 +273,9 @@ export default {
       }
     },
 
-    getWorkflowIdFromURL: function () {
-      return window.location.href.split('id=')[1];
-    },
-
     beforeOpen() {
       var data = {
-        wid: this.getWorkflowIdFromURL(),
+        wid: this.$data.id,
         sid: this.element.id,
       }
       this.getCurrentParams(this.element.id);
