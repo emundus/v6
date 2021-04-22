@@ -105,17 +105,19 @@ class EmundusworkflowModelworkflow extends JModelList {
     }
 
     /// change the workflow name --> update
-    public function updateWorkflow($data) {
+    public function updateWorkflowLabel($data) {
         if(!empty($data) or isset($data)) {
             try {
                 $this->query->update($this->db->quoteName('#__emundus_workflow'))
-                    ->set($this->db->quoteName('#__emundus_workflow.workflow_name') . '=' . $this->db->quote($data['workflow_name']) .
-                        ',' . $this->db->quoteName('#__emundus_workflow.updated_at') . '=' . $this->db->quote(date('Y-m-d H:i:s')) .
-                        ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (JFactory::getUser())->id)
+                    ->set($this->db->quoteName('#__emundus_workflow.workflow_name') . '=' . $this->db->quote($data['workflow_name']))
                     ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$data['id']);
 
                 $this->db->setQuery($this->query);
-                return $this->db->execute();
+                $this->db->execute();
+
+                $this->workflowSavingTrigger((int)$data['id']);
+
+                return (object)['message' => true];
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/workflow | Cannot update the workflow name : ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
                 return $e->getMessage();
@@ -141,6 +143,29 @@ class EmundusworkflowModelworkflow extends JModelList {
         catch(Exception $e) {
             JLog::add('component/com_emundus_workflow/models/workflow | Cannot get available campaigns : ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
             return $e->getMessage();
+        }
+    }
+
+    //// saving trigger
+    public function workflowSavingTrigger($wid) {
+        if(!empty($wid)) {
+            try {
+                $this->query->clear()
+                    ->update($this->db->quoteName('#__emundus_workflow'))
+                    ->set($this->db->quoteName('#__emundus_workflow.updated_at') . '=' . $this->db->quote(date('Y-m-d H:i:s')) .
+                        ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (JFactory::getUser())->id)
+                    ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$wid);
+
+                $this->db->setQuery($this->query);
+                return $this->db->execute();
+            }
+            catch(Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/workflow | Cannot activate the saving trigger : ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
         }
     }
 }

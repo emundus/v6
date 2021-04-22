@@ -10,11 +10,15 @@ class EmundusworkflowModelstep extends JModelList {
     //// constructor
     var $db = null;
     var $query = null;
+    var $workflow_model = null;
 
     public function __construct($config = array()) {
         parent::__construct($config);
+
         $this->db = JFactory::getDbo();
         $this->query = $this->db->getQuery(true);
+
+        $this->workflow_model = JModelLegacy::getInstance('workflow', 'EmundusworkflowModel');          /// get workflow_model
     }
 
     //// get all steps of workflow --> params ==> wid
@@ -42,7 +46,6 @@ class EmundusworkflowModelstep extends JModelList {
     public function createStep($data) {
         if (!empty($data) or isset($data)) {
             try {
-
                 // step 1 --> create step
                 $this->query->clear()
                     ->insert($this->db->quoteName('#__emundus_workflow_step'))
@@ -53,21 +56,10 @@ class EmundusworkflowModelstep extends JModelList {
                 $this->db->execute();
                 $_step_id = $this->db->insertid();
 
-                // step 2 --> update workflow::last_saved, workflow::saved_by --> params ==> $_step_id
-                $data['saved_by'] = JFactory::getUser()->id;
-                $data['last_saved'] = date('Y-m-d H:i:s');
+                // step 2 --> update last saving time
+                $this->workflow_model->workflowSavingTrigger((int)$data['workflow_id']);
 
-                /// from $_step_id --> get workflow_id
-                $this->query->clear()
-                    ->update($this->db->quoteName('#__emundus_workflow'))
-                    ->set($this->db->quoteName('#__emundus_workflow.updated_at') . '=' . $this->db->quote($data['last_saved']) .
-                        ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (int)$data['saved_by'])
-                    ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$data['workflow_id']);
-
-                $this->db->setQuery($this->query);
-                $this->db->execute();
-
-                return array("step_id" => $_step_id, "message" => $this->db->execute());
+                return (object)["step_id" => $_step_id, "message" => $this->db->execute()];
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/step | Cannot create new step' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
                 return $e->getMessage();
@@ -79,11 +71,11 @@ class EmundusworkflowModelstep extends JModelList {
 
     //// delete a step which exists --> params ==> $id
     public function deleteStep($data) {
-
         if (!empty($data) or !isset($data)) {
             try {
                 $wid = $data['wid'];
 
+                // step 1 --> delete stepflow
                 $this->query->clear()
                     ->delete($this->db->quoteName('#__emundus_workflow_step'))
                     ->where($this->query->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
@@ -91,20 +83,9 @@ class EmundusworkflowModelstep extends JModelList {
                 $this->db->setQuery($this->query);
                 $this->db->execute();
 
-                // track the log of workflow
-                $data = array('saved_by' => JFactory::getUser()->id, 'last_saved' => date('Y-m-d H:i:s'));
-
-                /// from $_step_id --> get workflow_id
-                $this->query->clear()
-                    ->update($this->db->quoteName('#__emundus_workflow'))
-                    ->set($this->db->quoteName('#__emundus_workflow.updated_at') . '=' . $this->db->quote($data['last_saved']) .
-                        ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (int)$data['saved_by'])
-                    ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$wid);
-
-                $this->db->setQuery($this->query);
-                $this->db->execute();
-
-                return array('message' => $this->db->execute());
+                // step 2 --> update last saving time
+                $this->workflow_model->workflowSavingTrigger($wid);
+                return (object)['message'=>$this->db->execute()];
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/step | Cannot delete step' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
                 return $e->getMessage();

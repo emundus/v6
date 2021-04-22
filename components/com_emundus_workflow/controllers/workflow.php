@@ -134,7 +134,7 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
     }
 
     //update workflow -->
-    public function updateworkflow() {
+    public function updateworkflowlabel() {
         $user = JFactory::getUser();
 
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -144,7 +144,7 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_result = $this->model->updateWorkflow($data);
+            $_result = $this->model->updateWorkflowLabel($data);
 
             if($_result) {
                 $tab = array('status' => 1, 'msg' => JText::_('UPDATE_WORKFLOW_SUCCESSFULLY'), 'data' => $_result);
