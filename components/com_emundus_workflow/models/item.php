@@ -376,47 +376,53 @@ class EmundusworkflowModelitem extends JModelList
 
     //UPDATE PARAMS --> table [ jos_emundus_workflow_item ] // column [ params ]
     public function updateParamsByItemID($data) {
+
+//        var_dump($data['workflow_id']);die;
+
         if(!empty($data) or isset($data)) {
             $_string = "";
 
-            if (isset($data['inputStatus'])) {
-                foreach ($data['inputStatus'] as $key => $value) {
+            if (isset($data['params']['inputStatus'])) {
+                foreach ($data['params']['inputStatus'] as $key => $value) {
                     if ($value == "true") {
                         $_string .= (string)$key . ",";
                         $_lastString = substr_replace($_string, "", -1);
-                        $data['inputStatus'] = $_lastString;
+                        $data['params']['inputStatus'] = $_lastString;
                     } else {
                     }
                 }
             } else {
             }
 
-            $id = (int)$data['id'];
+            $id = (int)$data['params']['id'];
 
-            unset($data['id']);
-            unset($data['type']);
-            unset($data['label']);
-            unset($data['x']);
-            unset($data['y']);
-            unset($data['background']);
+            unset($data['params']['id']);
+            unset($data['params']['type']);
+            unset($data['params']['label']);
+            unset($data['params']['x']);
+            unset($data['params']['y']);
+            unset($data['params']['background']);
 
             try {
-                if (isset($data['color'])) {
+                if (isset($data['params']['color'])) {
                     $this->query->clear()
                         ->update($this->db->quoteName('#__emundus_workflow_item'))
-                        ->set($this->db->quoteName('#__emundus_workflow_item.params') . '=' . $this->db->quote(json_encode($data)))
-                        ->set($this->db->quoteName('#__emundus_workflow_item.style') . '=' . $this->db->quote($data['color']))
+                        ->set($this->db->quoteName('#__emundus_workflow_item.params') . '=' . $this->db->quote(json_encode($data['params'])))
+                        ->set($this->db->quoteName('#__emundus_workflow_item.style') . '=' . $this->db->quote($data['params']['color']))
                         ->where($this->db->quoteName('#__emundus_workflow_item.id') . '=' . $id);
                 } else {
                     $this->query->clear()
                         ->update($this->db->quoteName('#__emundus_workflow_item'))
-                        ->set($this->db->quoteName('#__emundus_workflow_item.params') . '=' . $this->db->quote(json_encode($data)))
+                        ->set($this->db->quoteName('#__emundus_workflow_item.params') . '=' . $this->db->quote(json_encode($data['params'])))
                         ->where($this->db->quoteName('#__emundus_workflow_item.id') . '=' . $id);
                 }
 
                 $this->db->setQuery($this->query);
 
-                return $this->db->execute();
+                $this->db->execute();
+
+                $this->workflow_model->workflowSavingTrigger($data['workflow_id']);
+                return (object)['message'=>true];
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/item | Cannot update params : ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
                 return $e->getMessage();

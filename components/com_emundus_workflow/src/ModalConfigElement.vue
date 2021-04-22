@@ -29,8 +29,11 @@ import axios from 'axios';
 import Swal from "sweetalert2";
 const qs = require('qs');
 
+import { commonMixin } from "./common-mixin";
+
 export default {
   name: "ModalConfigElement",
+  mixins: [commonMixin],
 
   components: {
     espaceModal,
@@ -79,7 +82,10 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
-          params: this.element,
+          data : {
+            params: this.element,
+            workflow_id: this.$data.id,     // get workflow id from url
+          }
         })
       }).then(response => {
         Swal.fire({
