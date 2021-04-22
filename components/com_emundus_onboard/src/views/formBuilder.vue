@@ -973,6 +973,7 @@
         }).then(response => {
 
           this.documentsList = response.data.data;
+
         });
       },
 

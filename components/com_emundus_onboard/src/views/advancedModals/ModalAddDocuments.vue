@@ -209,8 +209,10 @@ export default {
         nbmax: false,
         selectedTypes: false
       };
+
       if(this.form.name[this.langue] === ''){
         this.errors.name = true;
+
         return 0;
       }
       if(this.form.nbmax === '' || this.form.nbmax === 0){
@@ -223,11 +225,29 @@ export default {
       }
 
       if(this.translate.name === false){
-        this.form.name.en = this.form.name.fr;
+
+        if(this.manyLanguages ==0 && this.langue=="en"){
+
+          this.form.name.fr=this.form.name.en
+
+        } else  {
+
+          this.form.name.en = this.form.name.fr;
+
+        }
       }
 
       if(this.translate.description === false){
-        this.form.description.en = this.form.description.fr;
+
+        if(this.manyLanguages ==0 && this.langue=="en") {
+
+          this.form.description.fr = this.form.description.en;
+
+        }else {
+
+          this.form.description.en = this.form.description.fr;
+
+        }
       }
 
       let types = [];
