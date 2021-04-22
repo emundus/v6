@@ -3,6 +3,10 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
+    <div contenteditable="true" class="editable-workflow-label" id="editable-workflow-label" v-on:keyup.enter="updateWorkflowLabel()">
+      {{ this.workflowLabel }}
+    </div>
+
     <b-button @click="createStep()" v-if="!hideStep" variant="success" style="position: absolute; top:500px">(+)</b-button>
     <div class="min-h-screen flex overflow-x-scroll py-12">
       <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id" v-on:dblclick="openStep(column.id)" v-if="!hideStep">
@@ -46,10 +50,12 @@ export default {
       hideStep: false,
       stateIn: '',
       stateOut: '',
+      workflowLabel: '',
     };
   },
 
   created() {
+    this.getWorkflowFromURL();    //// get workflow name from url
     this.getAllSteps(); //// get all steps by workflow
   },
 
@@ -172,6 +178,45 @@ export default {
       this.$modal.show("stepModal" + id);
     },
 
+    getWorkflowFromURL: function() {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=workflow&task=getworkflowbyid',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          wid: this.$data.id,
+        })
+      }).then(response => {
+        this.workflowLabel = ((response.data.data)[0]).workflow_name;
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
+    updateWorkflowLabel: function() {
+      let newLabel = {
+        workflow_name: document.getElementById('editable-workflow-label').innerText,
+        id: this.$data.id,
+      }
+
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=workflow&task=updateworkflow',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          data: newLabel,
+        })
+      }).then(response => {
+        console.log(response);
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
     setStepLabel: function(id) {
       var data = {
         step_label: document.getElementById('step_label_' + id).innerText,
@@ -255,14 +300,23 @@ export default {
   border-color: #e2e8f0;
 }
 
-[contenteditable="true"].editable-step-label {
+.editable-workflow-label {
+  color: #118a3b !important;
+  font-size: xx-large !important;
+  /*font-weight: bold !important;*/
+  width: max-content;
+  /*border-bottom: 1px dotted black;*/
+  text-decoration: underline #28a745;
+}
+
+[contenteditable="true"].editable-workflow-label {
   white-space: nowrap;
   overflow: hidden;
 }
-[contenteditable="true"].editable-step-label br {
+[contenteditable="true"].editable-workflow-label br {
   display:none;
 }
-[contenteditable="true"].editable-step-label * {
+[contenteditable="true"].editable-workflow-label * {
   display:inline;
   white-space:nowrap;
 }
