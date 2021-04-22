@@ -100,7 +100,7 @@ export default {
           })
         }).then(() => {
           if(!this.testing) {
-            window.location.href = '/configuration-forms'
+            this.redirectJRoute('index.php?option=com_emundus_onboard&view=form');
           } else {
             if(campaigns.length > 0){
               this.$emit("testForm");
@@ -110,7 +110,7 @@ export default {
         });
       } else {
         if(!this.testing) {
-          window.location.href = '/configuration-forms'
+          this.redirectJRoute('index.php?option=com_emundus_onboard&view=form');
         } else {
           this.$modal.hide('modalAffectCampaign');
         }
@@ -141,6 +141,20 @@ export default {
               .then(response => {
                 this.campaigns = response.data.data;
               });
+    },
+    redirectJRoute(link) {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        params: {
+          link: link,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        window.location.href = window.location.pathname + response.data.data;
+      });
     }
   },
 };

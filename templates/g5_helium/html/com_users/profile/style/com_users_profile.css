@@ -28,10 +28,11 @@ a.btn:hover{
 }
 
 form#member-profile.well {
-    background: #fafafa;
+    background: #fff;
     border: none;
     margin-top: 50px;
     margin-bottom: 50px;
+    border-radius: 5px;
 }
 
 form#member-profile  fieldset .em-heading-form {

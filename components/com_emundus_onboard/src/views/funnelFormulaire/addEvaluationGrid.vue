@@ -7,10 +7,10 @@
     />
     <div class="container-evaluation">
       <div class="text-center" v-if="grid == null">
-        <button class="bouton-sauvergarder-et-continuer-3" style="float: none" type="button" @click="$modal.show('modalAddEvaluation')">{{addGrid}}</button>
+        <button class="bouton-sauvergarder-et-continuer" style="float: none" type="button" @click="$modal.show('modalAddEvaluation')">{{addGrid}}</button>
       </div>
       <div class="text-center" v-if="grid != null">
-        <button class="bouton-sauvergarder-et-continuer-3" style="float: none" type="button" @click="evaluationBuilder">Modifier la grille</button>
+        <button class="bouton-sauvergarder-et-continuer" style="float: none" type="button" @click="evaluationBuilder">Modifier la grille</button>
       </div>
       <FormViewerEvaluation :link="link" :prog="prog" :key="viewer" v-if="grid != null"/>
     </div>

@@ -56,7 +56,7 @@
             </div>
 
             <div class="form-group controls">
-              <editor :text="form.notes" :lang="actualLanguage" v-if="dynamicComponent" :enable_variables="false" :id="'program'" v-model="form.notes"  :placeholder="ProgramResume"></editor>
+              <editor :height="'30em'" :text="form.notes" :lang="actualLanguage" v-if="dynamicComponent" :enable_variables="false" :id="'program'" v-model="form.notes"  :placeholder="ProgramResume"></editor>
             </div>
 
             <div class="form-group d-flex">
