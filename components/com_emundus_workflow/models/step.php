@@ -107,6 +107,9 @@ class EmundusworkflowModelstep extends JModelList {
 
                 $this->db->setQuery($this->query);
                 $this->db->execute();
+
+                $this->workflow_model->workflowSavingTrigger($data['workflow_id']);
+
             } else {
                 /// ************************************************************************************************************
                 $_string = "";
@@ -146,20 +149,8 @@ class EmundusworkflowModelstep extends JModelList {
                     $this->db->setQuery($this->query);
                     $this->db->execute();
 
-                    // track the log of workflow
-                    $data = array('saved_by' => JFactory::getUser()->id, 'last_saved' => date('Y-m-d H:i:s'));
-
-                    /// from $_step_id --> get workflow_id
-                    $this->query->clear()
-                        ->update($this->db->quoteName('#__emundus_workflow'))
-                        ->set($this->db->quoteName('#__emundus_workflow.updated_at') . '=' . $this->db->quote($data['last_saved']) .
-                            ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (int)$data['saved_by'])
-                        ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$wid);
-
-                    $this->db->setQuery($this->query);
-                    $this->db->execute();
-
-                    return array('message' => $this->db->execute());
+                    $this->workflow_model->workflowSavingTrigger((int)$wid);
+                    return (object)['message'=>true];
                 } catch (Exception $e) {
                     JLog::add('component/com_emundus_workflow/models/step | Cannot update step params' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
                     return $e->getMessage();

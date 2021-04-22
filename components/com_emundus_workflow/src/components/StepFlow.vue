@@ -222,6 +222,7 @@ export default {
       var data = {
         step_label: $("#step_label_" + id).text(),
         id: id,
+        workflow_id: this.$data.id,
       }
 
       axios({
