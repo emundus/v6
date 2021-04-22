@@ -29,8 +29,11 @@ import SimpleFlowchart from "./SimpleFlowchart";
 import WorkflowSpace from "../WorkflowSpace";
 const qs = require('qs');
 
+import { commonMixin } from '../common-mixin'; /// using mixin in this case
+
 export default {
   name: "stepflow",
+  mixins: [commonMixin],
 
   components: {ModalConfigStep, SimpleFlowchart, WorkflowSpace},
 
@@ -47,6 +50,7 @@ export default {
   },
 
   created() {
+    console.log(this.$data.id);
     this.getAllSteps(); //// get all steps by workflow
   },
 
