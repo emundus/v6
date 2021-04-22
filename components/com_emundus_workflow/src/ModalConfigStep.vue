@@ -296,7 +296,7 @@ export default {
       _emit['id'] = this.form.id;
 
       _emit['label'] = $("#step_label").val();      // pass label to parent component (stepflow)
-      this.$emit('updateState', _emit);
+      this.$emit('updateStep', _emit);
     }
   },
 }

@@ -9,7 +9,7 @@
         <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
         <div style="color:red">{{ column.stateIn }}</div>
         <div style="color:blueviolet">{{ column.stateOut }}</div>
-        <modal-config-step :ID="column.id" :element="column" @updateState="updateStatus" @deleteStep="deleteStep(column.id)"/>
+        <modal-config-step :ID="column.id" :element="column" @updateStep="updateStep" @deleteStep="deleteStep(column.id)"/>
         <!--        <div>{{ column.stateIn }}</div>-->
         <!--        <div>{{ column.stateOut }}</div>-->
 
@@ -54,7 +54,7 @@ export default {
   },
 
   methods: {
-    updateStatus(result) {
+    updateStep(result) {
       const _id = (element) => element.id == result['id'];
       var _index = this.columns.findIndex(_id);
       this.columns[_index]['stateIn'] = result['input'];
@@ -63,47 +63,6 @@ export default {
       this.$forceUpdate();
 
       //// forceupdate --> call api to update status in database --> checkin if status (after) and status (before) are the same --> do nothing /// otherwise, call to axios
-
-      if(this.form.inputStatus !== null && this.form.outputStatus !== null) {           //// --> this.form.inputStatus == undefined
-        axios({
-          method: 'post',
-          url: 'index.php?option=com_emundus_workflow&controller=step&task=updateparams',
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
-            data: {
-              id: this.element.id,
-              wid: this.$data.id,
-              params: this.form,
-            }
-          })
-        }).then(response => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Congrat',
-            text: 'Les parametres sont sauvegardés',
-            footer: '<a href>EMundus SAS</a>',
-            confirmButtonColor: '#28a745',
-          }).then(result => {
-            if(result.isConfirmed) {
-              this.exitModal();
-            }
-            // this.inStatusSelected = $( "#instatus-selected option:selected" ).text();
-          })
-        }).catch(error => {
-          console.log(error);
-        })
-      }
-      else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur',
-          html: 'Le statut d\'entré et le statut de sortie doivent être configuré',
-          timer: 1500,
-          showConfirmButton:false,
-        })
-      }
     },
 
     openStep: function(id) {
