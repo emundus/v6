@@ -3,7 +3,9 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
-    <span class="step-label"> Nom de l'etape </span>
+    <div contenteditable="true" class="editable-label" id="editable-label" v-on:keyup.enter="updateStepLabel()">
+      {{ this.step.title }}
+    </div>
 
     <div class="button-group">
       <b-button variant="warning" @click="seen=!seen" style="margin: 10px">Ajouter bloc &nbsp<b-icon icon="clipboard-plus"></b-icon></b-button>
@@ -40,19 +42,21 @@ import Swal from "sweetalert2";
 import ModalConfigElement from "./ModalConfigElement";
 import WorkflowSpaceToolsMenu from "./components/WorkflowSpaceToolsMenu";
 
+import $ from 'jquery';
+
 const qs = require('qs');
 
 export default {
   name: 'WorkflowSpace',
   mixins: [commonMixin],      //// using mixin
-  components: { ModalConfigElement, SimpleFlowchart, WorkflowSpaceToolsMenu},
+  components: {ModalConfigElement, SimpleFlowchart, WorkflowSpaceToolsMenu},
 
   props: {
     items: Array,
     step: Object,
   },
 
-  data: function() {
+  data: function () {
     return {
       seen: false,
       scene: {
@@ -72,19 +76,21 @@ export default {
   },
 
   methods: {
-    createNode: function(newItem) {
+    createNode: function (newItem) {
       this.scene.nodes.push(newItem);
-      setTimeout(() => { this.$modal.show('elementModal' + newItem.id) }, 500);
+      setTimeout(() => {
+        this.$modal.show('elementModal' + newItem.id)
+      }, 500);
     },
 
-    alertWelcomeDisplay: function() {
+    alertWelcomeDisplay: function () {
       Swal.fire({
         icon: 'success',
         title: 'Bienvenue',
         text: 'C\'est vos espace de travail!',
         footer: '<a href>Tutorials</a>',
         timer: 3000,
-        showConfirmButton:false,
+        showConfirmButton: false,
       })
     },
 
@@ -136,12 +142,12 @@ export default {
           }).catch(error => {
             console.log(error);
           })
+        } else {
         }
-        else { }
       })
     },
 
-    saveWorkflow: function() {
+    saveWorkflow: function () {
       this.$data.scene.nodes.forEach(element => {
         var current_nodes = {
           id: element.id,
@@ -168,9 +174,9 @@ export default {
       });
     },
 
-    quitWorkflow: function() {
+    quitWorkflow: function () {
       this.saveWorkflow();
-      setTimeout(this.changeToDashboard(),4500);    //set timeout = 4.5 seconds
+      setTimeout(this.changeToDashboard(), 4500);    //set timeout = 4.5 seconds
     },
 
     redirectJRoute(link) {
@@ -187,7 +193,7 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        window.location.href =  response.data.data;
+        window.location.href = response.data.data;
       });
     },
 
@@ -196,7 +202,7 @@ export default {
     },
 
     //load step --> get all items and links of this step
-    loadStep: async function() {
+    loadStep: async function () {
       let rawItems = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getallitemsbystep', {params: {data: this.step.id}}); //get all items
       let rawLinks = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getalllinks', {params: {data: this.step.id}}); //get all links
 
@@ -224,7 +230,7 @@ export default {
     },
     //next step --> clone workflow = clone all items
 
-    alertExitDisplay: function() {
+    alertExitDisplay: function () {
       Swal.fire({
         title: 'Quitter l\'espace de travail',
         text: "Le workflow sera sauvegardé automatiquement",
@@ -244,37 +250,56 @@ export default {
       })
     },
 
-    alertSaveDisplay: function() {
+    alertSaveDisplay: function () {
       Swal.fire({
         icon: 'success',
         title: 'Congrat',
         text: 'Le workflow est sauvegardé!',
         footer: '<a href>EMundus SAS</a>',
         timer: 2000,
-        showConfirmButton:false,
+        showConfirmButton: false,
       })
       this.saveWorkflow();
     },
 
-    setStepLabel: function() {
+    setStepLabel: function () {
 
     },
 
-    cronUpdate: function() {
+    cronUpdate: function () {
       setInterval(this.getWorkflowInfo, 45000);
     },
 
     //match all links by workflow
-    autoMatchLink: function() {
+    autoMatchLink: function () {
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus_workflow&controller=item&task=matchalllinksbyworkflow',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        data: qs.stringify({ data: this.$data.id,})
+        data: qs.stringify({data: this.$data.id,})
       }).then(response => {
         // console.log(response);
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
+    updateStepLabel: function () {
+      let updatedData = {
+        step_label: document.getElementById('editable-label').innerText,
+        id: this.step.id,
+      }
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=step&task=updateparams',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({ data: updatedData, })
+      }).then(response => {
+
       }).catch(error => {
         console.log(error);
       })
@@ -416,26 +441,29 @@ export default {
   box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 
-.editable-workflow-name {
+.editable-label {
   color: #118a3b !important;
   font-size: xx-large !important;
-  font-weight: bold !important;
+  /*font-weight: bold !important;*/
   width: max-content;
   /*border-bottom: 1px dotted black;*/
   text-decoration: underline #28a745;
 }
 
-[contenteditable="true"].editable-workflow-name {
+[contenteditable="true"].editable-label {
   white-space: nowrap;
   width:max-content;
   overflow: hidden;
   position: absolute;
   top: 7vh;
+  /*font-weight: bold !important;*/
 }
-[contenteditable="true"].editable-workflow-name br {
+
+[contenteditable="true"].editable-label br {
   display:none;
 }
-[contenteditable="true"].editable-workflow-name * {
+
+[contenteditable="true"].editable-label * {
   display:inline;
   white-space:nowrap;
 }
