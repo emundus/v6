@@ -250,7 +250,7 @@ export default {
         params.did = this.doc;
       }
 
-      axios({
+     axios({
         method: "post",
         url: url,
         headers: {
@@ -260,6 +260,7 @@ export default {
       }).then((rep) => {
         this.$emit("UpdateDocuments");
         this.$modal.hide('modalAddDocuments')
+
       });
     },
 

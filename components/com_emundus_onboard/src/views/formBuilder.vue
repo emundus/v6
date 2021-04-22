@@ -121,7 +121,7 @@
       <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
         <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-offset-2 col-md-6' : 'col-md-8'">
           <div class="d-flex" v-show="!updateFormLabel">
-            <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="profileLabel">{{profileLabel}}</h2>
+            <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="profileLabel">{{profileLabel}}  </h2>
             <a @click="enableUpdatingForm" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
               <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
             </a>
@@ -233,6 +233,7 @@
               </li>
             </draggable>
             <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalAddDocuments');optionsModal = true" style="margin-left: 30px" :title="AddNewDocument">{{AddNewDocument}}</button>
+
           </div>
           <div class="form-pages" style="padding-top: 20px" v-if="submittionPages">
             <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><img src="/images/emundus/menus/confirmation.png" class="mr-1" :alt="SubmitPage">{{SubmitPage}}</h4>
@@ -404,6 +405,28 @@
             icon: 'fas fa-paragraph',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
+          fileupload: {
+            id: 7,
+            value: 'emundus_fileupload',
+            icon: 'fas fa-file-upload',
+            //name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FILE")
+          },
+        },
+        //create document when choosing plugin emundunsFileupload plugin
+        docForm: {
+          name: {
+            fr: 'Document sans nom',
+            en: 'Unamed document'
+          },
+          description: {
+            fr: 'Document sans description',
+            en: 'Document without description'
+          },
+          nbmax: 1,
+          selectedTypes: {
+            pdf: true,
+          },
         },
         addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
         addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
@@ -436,18 +459,88 @@
         }
         if(!_.isEmpty(list[this.indexHighlight].object.Groups)){
           this.loading = true;
+
+          if (plugin=="emundus_fileupload"){
+
+            let types = [];
+            Object.keys(this.docForm.selectedTypes).forEach(key => {
+              if(this.docForm.selectedTypes[key] == true){
+                types.push(key);
+              }
+            });
+
+            let params = {
+              document: this.docForm,
+              types: types,
+              cid: this.cid,
+              pid: this.prid,
+            }
+              this.createElementEMundusFileUpload(params,gid,plugin,order);
+          } else {
+
+            axios({
+              method: "post",
+              url:
+                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                gid: gid,
+                plugin: plugin
+              })
+            }).then((result) => {
+
+              axios({
+                method: "get",
+                url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+                params: {
+                  element: result.data.scalar,
+                  gid: gid
+                },
+                paramsSerializer: params => {
+                  return qs.stringify(params);
+                }
+              }).then(response => {
+
+
+                this.menuHighlightCustumisation(response,gid,order);
+
+                this.loading = false;
+              });
+            });
+
+          }
+
+
+        }
+
+      },
+      createElementEMundusFileUpload(params,gid,plugin,order){
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=campaign&task=createdocument",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify(params)
+        }).then((rep) => {
+
+          this.$emit("UpdateDocuments");
           axios({
             method: "post",
             url:
-                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
+                "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
             data: qs.stringify({
               gid: gid,
-              plugin: plugin
+              plugin: plugin,
+              attachementId: rep.data.data
             })
           }).then((result) => {
+
             axios({
               method: "get",
               url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
@@ -459,24 +552,31 @@
                 return qs.stringify(params);
               }
             }).then(response => {
-              if(this.menuHighlight === 0) {
-                this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid], 'elements[element' + response.data.id + ']', response.data)
-                this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts.splice(order, 0, response.data);
-                this.$refs.builder.updateOrder(gid, this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts);
-                this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
-                this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
-                this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
-              } else {
-                this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
-                this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
-                this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
-                this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
-                this.$refs.builder_submit.$refs.builder_viewer.enableActionBar(response.data.id);
-                this.$refs.builder_submit.$refs.builder_viewer.enableLabelInput(response.data.id);
-              }
+             this.menuHighlightCustumisation(response,gid,order);
+             this.getDocuments();
               this.loading = false;
             });
           });
+
+        });
+      },
+
+      menuHighlightCustumisation(response,gid,order){
+
+        if(this.menuHighlight === 0) {
+          this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid], 'elements[element' + response.data.id + ']', response.data)
+          this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts.splice(order, 0, response.data);
+          this.$refs.builder.updateOrder(gid, this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts);
+          this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+          this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
+          this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
+        } else {
+          this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
+          this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
+          this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
+          this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+          this.$refs.builder_submit.$refs.builder_viewer.enableActionBar(response.data.id);
+          this.$refs.builder_submit.$refs.builder_viewer.enableLabelInput(response.data.id);
         }
       },
       addingNewElement: function(evt) {
@@ -491,6 +591,7 @@
         let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
         if(typeof gid != 'undefined'){
           this.createElement(gid, plugin, evt.newIndex);
+
         }
       },
       addingNewElementByDblClick: _.debounce(function(plugin) {
@@ -548,6 +649,8 @@
 
       // Update component dynamically
       UpdateName(index, label) {
+        //console.log("we update element");
+        //console.log(this.formObjectArray[index].object);
         this.formObjectArray[index].object.show_title.value = label;
       },
       UpdateIntro(index, intro) {
@@ -868,6 +971,7 @@
              return qs.stringify(params);
           }
         }).then(response => {
+
           this.documentsList = response.data.data;
         });
       },

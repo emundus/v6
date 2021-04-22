@@ -780,7 +780,7 @@ class FabrikFEModelGroup extends FabModel
 			$this->joinModel = JModelLegacy::getInstance('Join', 'FabrikFEModel');
 			$this->joinModel->setId($group->join_id);
 			$js = $this->getListModel()->getJoins();
-
+			print_r($js);
 			// $$$ rob set join models data from preloaded table joins - reduced load time
 			for ($x = 0; $x < count($js); $x++)
 			{

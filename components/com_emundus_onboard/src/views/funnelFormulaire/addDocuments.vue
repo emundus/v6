@@ -280,6 +280,8 @@ export default {
     },
 
     addDocument(undoc){
+      console.log('un doc');
+      console.log(undoc);
       axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=form&task=adddocument",

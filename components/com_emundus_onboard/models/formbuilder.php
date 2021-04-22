@@ -329,7 +329,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         return $params;
     }
 
-    function prepareElementParameters($plugin) {
+    function prepareElementParameters($plugin,$attachementId) {
         $params = array(
             'bootstrap_class' => 'input-xlarge',
             'show_in_rss_feed' => 0,
@@ -385,10 +385,10 @@ class EmundusonboardModelformbuilder extends JModelList {
             $params['notempty-validation_condition'] = array();
         }
 
-        return $this->updateElementParams($plugin,null,$params);
+        return $this->updateElementParams($plugin,null,$params,$attachementId);
     }
 
-    function updateElementParams($plugin, $oldplugin, $params){
+    function updateElementParams($plugin, $oldplugin, $params,$attachementId){
         try {
             // Reset params
             if ($oldplugin != null) {
@@ -673,6 +673,11 @@ class EmundusonboardModelformbuilder extends JModelList {
                 case 'display':
                     $params['display_showlabel'] = 1;
                     $params['store_in_db'] = 0;
+                    break;
+                case 'emundus_fileupload':
+                    $params['size']=10485760;
+                    $params['attachmentId']=$attachementId;
+                    $params['can_submit_encrypted']=2;
                     break;
                 default:
                     break;
@@ -1500,7 +1505,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param int $evaluation
      * @return mixed
      */
-    function createSimpleElement($gid,$plugin,$evaluation = 0) {
+    function createSimpleElement($gid,$plugin,$attachementId,$evaluation = 0) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -1513,16 +1518,20 @@ class EmundusonboardModelformbuilder extends JModelList {
         $default = '';
         //
 
+
+
         if ($plugin === 'birthday') {
             $dbtype = 'DATE';
         } elseif ($plugin === 'textarea') {
             $dbtype = 'TEXT';
         } elseif ($plugin === 'display') {
             $default = 'Ajoutez du texte personnalisé pour vos candidats';
-        }
+        } /*elseif ($plugin === 'fileupload'){
+            $dbtype='FILEUPLOAD';
+        }*/
 
         // Prepare parameters
-        $params = $this->prepareElementParameters($plugin);
+        $params = $this->prepareElementParameters($plugin,$attachementId);
         //
 
         $query->clear()
@@ -1601,6 +1610,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
             $db->setQuery($query);
             $dbtable = $db->loadObject()->dbtable;
+            //echo $dbtable;
             $formid = $db->loadObject()->formid;
 
             if ($evaluation) {
@@ -2948,7 +2958,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             // Create parent_id element
             $query = $db->getQuery(true);
-            $params = $this->prepareElementParameters('field');
+            $params = $this->prepareElementParameters('field',0);
             $params['validations'] = array();
 
             $query->clear()
@@ -3209,6 +3219,26 @@ class EmundusonboardModelformbuilder extends JModelList {
             return $db->execute();
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot delete testing file ' . $fnum . ' of the user ' . $uid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function retriveElementFormAssociatedDoc($gid,$docid) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+
+            $query->select('*')
+
+                ->from($db->quoteName('#__emundus_setup_attachments'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($docid));
+
+            $db->setQuery($query);
+
+            return $db->loadObject();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot get ordering of group ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }

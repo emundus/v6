@@ -498,7 +498,6 @@ export default {
       this.programForm = this.programs.find(program => program.code == this.form.training);
       this.editorKey++;
     },
-
     updateCode() {
       if(this.programForm.label !== ''){
         this.programForm.code = this.programForm.label.toUpperCase().replace(/[^a-zA-Z0-9]/g,'_').substring(0,10) + '_00';
@@ -534,6 +533,56 @@ export default {
                 this.status = response.data.data;
               });
     },
+
+    createCampaignWithExistingProgram(form_data){
+      axios({
+        method: "post",
+        url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({body: form_data})
+      }).then(response => {
+        this.campaign = response.data.data;
+        this.quitFunnelOrContinue(this.quit);
+      }).catch(error => {
+        console.log(error);
+      });
+    },
+
+    createCampainWithNoExistingProgram(programForm){
+      axios({
+        method: "post",
+        url: "index.php?option=com_emundus_onboard&controller=program&task=createprogram",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({body: programForm})
+      }).then(() => {
+        this.form.training = programForm.code;
+        if (typeof this.form.start_date == 'object') {
+          this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+        }
+        if (typeof this.form.end_date == 'object') {
+          this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+        }
+
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({body: this.form})
+        }).then(response => {
+          this.campaign = response.data.data;
+          this.quitFunnelOrContinue(this.quit);
+        }).catch(error => {
+          console.log(error);
+        });
+      });
+    },
+
 
     submit() {
       // Checking errors
@@ -613,10 +662,13 @@ export default {
 
       let newsession = false;
 
+
       if (this.campaign !== "") {
         let task = 'createprogram';
         let params = {body: this.programForm}
+
         if(this.form.training != ""){
+
           task = 'updateprogram';
           params = { body: this.programForm, id: this.form.progid };
         }
@@ -647,14 +699,12 @@ export default {
           console.log(error);
         });
       } else {
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=program&task=createprogram",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({body: this.programForm})
-        }).then(() => {
+
+        // get program code if there is training value
+
+        if(this.form.training !=="")  {
+
+          this.programForm = this.programs.find(program => program.code == this.form.training);
           this.form.training = this.programForm.code;
           if (typeof this.form.start_date == 'object') {
             this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
@@ -662,20 +712,10 @@ export default {
           if (typeof this.form.end_date == 'object') {
             this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
           }
-          axios({
-            method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({body: this.form})
-          }).then(response => {
-            this.campaign = response.data.data;
-            this.quitFunnelOrContinue(this.quit);
-          }).catch(error => {
-            console.log(error);
-          });
-        });
+          this.createCampaignWithExistingProgram(this.form);
+        } else {
+            this.createCampainWithNoExistingProgram(this.programForm);
+        }
       }
 
       this.years.forEach((elt) => {

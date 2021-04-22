@@ -819,7 +819,6 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query);
             $db->execute();
             $newdocument = $db->insertid();
-
             $falang->insertFalang($document['name']['fr'],$document['name']['en'],$newdocument,'emundus_setup_attachments','value');
             $falang->insertFalang($document['description']['fr'],$document['description']['en'],$newdocument,'emundus_setup_attachments','description');
 
@@ -830,7 +829,6 @@ class EmundusonboardModelcampaign extends JModelList
                 ->where($db->quoteName('id') . ' = ' . $db->quote($newdocument));
             $db->setQuery($query);
             $db->execute();
-
             $query->clear()
                 ->select('max(ordering)')
                 ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
@@ -845,7 +843,8 @@ class EmundusonboardModelcampaign extends JModelList
                 ->set($db->quoteName('mandatory') . ' = ' . $db->quote(0))
                 ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
             $db->setQuery($query);
-            return $db->execute();
+            $db->execute();
+            return $newdocument;
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/campaign | Cannot create a document : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return $e->getMessage();
@@ -1099,6 +1098,7 @@ class EmundusonboardModelcampaign extends JModelList
                     ->set($db->quoteName('content') . ' = ' . $db->quote($newcontent))
                     ->where($db->quoteName('id') . '=' .  $db->quote($form_module->id));
                 $db->setQuery($query);
+
                 return $db->execute();
             } else {
                 return true;
