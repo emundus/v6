@@ -50,7 +50,6 @@ export default {
   },
 
   created() {
-    console.log(this.$data.id);
     this.getAllSteps(); //// get all steps by workflow
   },
 
@@ -75,7 +74,7 @@ export default {
           data: qs.stringify({
             data: {
               id: this.element.id,
-              wid: this.getWorkflowIdFromURL(),
+              wid: this.$data.id,
               params: this.form,
             }
           })
@@ -114,7 +113,7 @@ export default {
 
     createStep: function() {
       var _data = {
-        workflow_id : this.getWorkflowIdFromURL(),
+        workflow_id : this.$data.id,
       }
       axios({
         method: 'post',
@@ -138,7 +137,7 @@ export default {
     deleteStep: function(id) {
       var data = {
         id: id,
-        wid: this.getWorkflowIdFromURL(),
+        wid: this.$data.id,
       }
       axios({
         method: 'post',
@@ -162,7 +161,7 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         params: {
-          wid: this.getWorkflowIdFromURL(),
+          wid: this.$data.id,
         },
         paramsSerializer: params =>{
           return qs.stringify(params);
@@ -213,12 +212,6 @@ export default {
     configStep: function(id) {
       this.$modal.show("stepModal" + id);
     },
-
-    // get the workflow id from url --> base function
-    getWorkflowIdFromURL: function () {
-      return window.location.href.split('id=')[1];
-    },
-
 
     setStepLabel: function(id) {
       var data = {
