@@ -66,7 +66,7 @@ class EmundusModelProfile extends JModelList {
 
     function getUserProfiles($uid) {
         $db = JFactory::getDBO();
-        $query = 'SELECT DISTINCT esp.id , esp.label
+        $query = 'SELECT DISTINCT esp.id , esp.label, esp.published, esp.status
 		FROM #__emundus_setup_profiles esp
 		LEFT JOIN #__emundus_users_profiles eup on eup.profile_id = esp.id
 		WHERE eup.user_id = '.$uid;

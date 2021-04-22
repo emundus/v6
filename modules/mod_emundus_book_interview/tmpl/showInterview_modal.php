@@ -36,33 +36,31 @@ defined('_JEXEC') or die;
 
         var eventId = <?php echo $next_interview->id; ?>;
 
-        $$("#btnBook").setStyle('background-color','#4183D7');
-        $$("#btnBook").set('text','Loading... ');
-        $$("#btnBook").removeProperty("onclick");
+        var bookBtn = document.getElementById('btnBook');
+        bookBtn.style.backgroundColor = '#4183D7';
+        bookBtn.style.innerText = 'Loading...';
+        bookBtn.removeAttribute("onclick");
 
-        var ajax = new Request({
+        jQuery.ajax({
             url: 'index.php?option=com_emundus&controller=calendar&task=cancelinterview&format=raw',
             method: 'POST',
             data: {
                 eventId: eventId
             },
-            onSuccess: function(result) {
+            success: function(result) {
                 result = JSON.parse(result);
                 if (result.status) {
                     location.reload(true);
                 } else {
-                    $$('#btnBook').setStyle('background-color','#96281B');
-                    $$('#btnBook').set('text','Error!');
+                    bookBtn.style.backgroundColor = '#96281B';
+                    bookBtn.style.innerText = 'Error!';
                 }
             },
-            onFailure: function(jqXHR, textStatus, errorThrown) {
-                $$('#btnBook').setStyle('background-color','#96281B');
-                $$('#btnBook').set('text','Error!');
+            error: function(jqXHR, textStatus, errorThrown) {
+                bookBtn.style.backgroundColor = '#96281B';
+                bookBtn.style.innerText = 'Error!';
             }
         });
-
-        ajax.send();
-
     }
 
 </script>

@@ -56,7 +56,7 @@
             </table-column>
         </table-component>
         <div class="loading-form" v-if="loading">
-            <Ring-Loader :color="'#de6339'" />
+            <Ring-Loader :color="'#12DB42'" />
         </div>
     </div>
 </template>

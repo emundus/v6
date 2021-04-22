@@ -11,20 +11,7 @@
         </select>
       </div>
       <div class="form-group">
-        <label>{{placeholdertext}}
-          <button v-tooltip="{
-          content: msg,
-          trigger: 'hover',
-          placement: 'top-center',
-          offset: 5,
-          popperOptions: {
-            preventOverflow: false
-          },
-          delay: {
-            show: 500,
-            hide: 300,
-            },
-          }"><em class="fas fa-question-circle"></em></button> :</label>
+        <label>{{placeholdertext}} :</label>
         <input type="text" class="form__input field-general w-input" v-model="element.params.placeholder" />
       </div>
       <div class="form-group">
@@ -33,14 +20,14 @@
       </div>
       <div class="form-group">
         <label>{{maxlength}} :</label>
-        <input type="number" max="255" min="1" class="form__input field-general w-input" v-model="element.params.maxlength" />
+        <input type="number" min="1" class="form__input field-general w-input" v-model="element.params.maxlength" />
       </div>
 
 <!--      v-show - shox this div when option 4 is checked-->
       <div class="form-group" v-if="element.params.password == 0">
         <label>{{inputmasktitle}}</label>
         <input type="text" id="format" class="form__input field-general w-input" v-model="element.params.text_input_mask" :placeholder="[[ inputmaskplaceholder ]]"/>
-        <label style="font-size: xx-small">{{tipData}}</label>
+        <label style="font-size: small">{{tipData}}</label>
       </div>
     </div>
   </div>
@@ -108,6 +95,6 @@ export default {
     background: transparent;
   }
 #fieldF{
-  padding: 10px;
+  padding: 10px 0;
 }
 </style>
