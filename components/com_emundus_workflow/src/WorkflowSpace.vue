@@ -3,6 +3,8 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
+    <span class="step-label"> Nom de l'etape </span>
+
     <div class="button-group">
       <b-button variant="warning" @click="seen=!seen" style="margin: 10px">Ajouter bloc &nbsp<b-icon icon="clipboard-plus"></b-icon></b-button>
       <b-button variant="success" @click="alertSaveDisplay()" style="margin: 10px">Sauvegarder &nbsp<b-icon icon="bookmark-check"></b-icon></b-button>
@@ -38,10 +40,7 @@ import Swal from "sweetalert2";
 import ModalConfigElement from "./ModalConfigElement";
 import WorkflowSpaceToolsMenu from "./components/WorkflowSpaceToolsMenu";
 
-let now = new Date();
 const qs = require('qs');
-
-const _lst = [];
 
 export default {
   name: 'WorkflowSpace',
@@ -55,11 +54,7 @@ export default {
 
   data: function() {
     return {
-      loading: false,
-      lastSave: '',
-      workflowname: '',
       seen: false,
-      // menu_message: "Menu",
       scene: {
         centerX: 1024,
         centerY: 140,
@@ -207,9 +202,6 @@ export default {
 
       var items = rawItems.data.data;    //items : Array
       var links = rawLinks.data.data;    //links: Array
-
-      // console.log(items);
-      // console.log(links);
 
       items.forEach(element => {
         this.$data.scene.nodes.push({
@@ -460,5 +452,10 @@ export default {
   position: sticky;
   right: 85vh;
   bottom: 85vh;
+}
+
+.step-label {
+  position: absolute;
+  top: 100px;
 }
 </style>

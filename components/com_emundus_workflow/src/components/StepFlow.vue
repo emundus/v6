@@ -59,7 +59,7 @@ export default {
       var _index = this.columns.findIndex(_id);
       this.columns[_index]['stateIn'] = result['input'];
       this.columns[_index]['stateOut'] = result['output'];
-
+      this.columns[_index]['title'] = result['label'];
       this.$forceUpdate();
 
       //// forceupdate --> call api to update status in database --> checkin if status (after) and status (before) are the same --> do nothing /// otherwise, call to axios
@@ -127,7 +127,7 @@ export default {
       }).then(response => {
         this.columns.push({
           id: response.data.data.step_id,
-          title: 'Etape # anonyme ' + response.data.data.step_id,       // default name of step
+          //title: 'Etape # anonyme ' + response.data.data.step_id,       // default name of step
         })
 
         setTimeout(() => { this.$modal.show('stepModal' + response.data.data.step_id) }, 500);

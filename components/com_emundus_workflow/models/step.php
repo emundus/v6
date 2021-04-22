@@ -221,6 +221,7 @@ class EmundusworkflowModelstep extends JModelList {
                     $this->query->clear()
                         ->update($this->db->quoteName('#__emundus_workflow_step'))
                         ->set($this->db->quoteName('#__emundus_workflow_step.params') . '=' . $this->db->quote(json_encode($data['params'])))
+                        ->set($this->db->quoteName('#__emundus_workflow_step.step_label') . '=' . $this->db->quote($data['step_label']))
                         ->set($this->db->quoteName('#__emundus_workflow_step.start_date') . '=' . $this->db->quote($data['start_date']))
                         ->set($this->db->quoteName('#__emundus_workflow_step.end_date') . '=' . $this->db->quote($data['end_date']))
                         ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
@@ -297,7 +298,6 @@ class EmundusworkflowModelstep extends JModelList {
         }
     }
 
-    //// get current params of step --> params ==> sid
     //// get current params of step --> params ==> sid
     public function getCurrentParamsByStep($sid) {
 

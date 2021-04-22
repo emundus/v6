@@ -3,7 +3,7 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
-    <modal :name="'stepModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
+    <modal :name="'stepModal' + ID" :width="580" :height="700" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
       <!--      please keep this code part, do not remove ||| option 1 : only one step in -->
 
 
@@ -20,6 +20,13 @@
 
 
       <!--&lt;!&ndash;    option 2 : multiple step in &ndash;&gt;-->
+
+      <div class="row mb-3">
+        <label class="col-sm-6 col-form-label">{{ this.title.label }}</label>
+        <div class="col-xs-8">
+          <textarea id="step_label" rows="3" v-model="stepLabel" placeholder="Nom de l'etape" style="width: 95%; height: 35px !important"></textarea>
+        </div>
+      </div>
 
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.inputStatusTitle }}</label>
@@ -116,6 +123,7 @@ export default {
   data: function() {
     return {
       title: {
+        label: "Nom de l'etape",
         inputStatusTitle: "Statut d'entre",
         outputStatusTitle: "Statut de sortie",
         startDateTitle: "Date debut",
@@ -125,7 +133,6 @@ export default {
       // use for form v-model
       form: {
         id: '',
-        // inputStatus: '',
         inputStatus: [],
         outputStatus: '',
         notes: '',
@@ -142,6 +149,7 @@ export default {
       inputList: [],
 
       inStatusSelected: [],
+      stepLabel: '',
     }
   },
 
@@ -215,6 +223,7 @@ export default {
           data: qs.stringify({
             data: {
               id: this.element.id,
+              step_label: this.stepLabel,
               wid: this.getWorkflowIdFromURL(),
               params: this.form,
               start_date: new Date(this.startDate).toISOString().slice(0, 19).replace('T', ' '),
@@ -285,7 +294,8 @@ export default {
       _emit['output'] = $( "#outstatus-selected option:selected" ).text();
       _emit['input'] = _result.toString();
       _emit['id'] = this.form.id;
-      //console.log(_emit);
+
+      _emit['label'] = $("#step_label").val();      // pass label to parent component (stepflow)
       this.$emit('updateState', _emit);
     }
   },
