@@ -124,6 +124,7 @@ class EmundusworkflowModelcommon extends JModelList {
                     $_outArray = explode(',', json_decode($value->params)->outputStatus);
 
                     //// case 1 --> if status exists in input status of a step --> get its profile id (view=form), and update the session tree
+
                     if(in_array($sid, $_inArray)) {
                         $_stepID = $value->id;
                         $this->getProfileByStep($_stepID);
@@ -134,28 +135,31 @@ class EmundusworkflowModelcommon extends JModelList {
                         $this->aid->editable_status = $_inArray;
                         $this->aid->output_status = json_decode($value->params)->outputStatus;
                         return $this->aid;
-                        continue;
                     }
-
-                    //// case 2 --> if status exists in only output status of a step --> get its profile id (view=details), and update the session tree
-                    else if(!in_array($sid, $_inArray) && in_array($sid, $_outArray)) {
-                        $_stepID = $value->id;
-                        $this->getProfileByStep($_stepID);
-
-                        $this->aid->profile = json_decode($this->getProfileByStep($_stepID)[0]->params)->formNameSelected;
-                        $this->aid->step_id = $_stepID;
-                        $this->aid->message = '-- Profile with Read-only permission --';
-                        $this->aid->editable_status = null;
-                        return $this->aid;
-                        continue;
-                    }
-                    else { }
                 }
+
+                //// case 2 --> if status only exists in output status --> get its profile id (view=detail), and update the session tree
 
                 $_inArrayString = explode(',', substr_replace($_tempInputList ,"",-1));
                 $_outArrayString = explode(',', substr_replace($_tempOutputList ,"",-1));
 
-                if(!in_array($sid, $_inArrayString) && !in_array($sid, $_outArrayString)) {
+                if(!in_array($sid, $_inArrayString) && in_array($sid, $_outArrayString)) {
+                    $_stepIndex = array_search($sid, $_outArrayString);
+                    $_stepData = $_stepParams[$_stepIndex];
+
+                    $_stepID = $_stepData->id;
+                    $this->getProfileByStep($_stepID);
+
+                    $this->aid->profile = json_decode($this->getProfileByStep($_stepID)[0]->params)->formNameSelected;
+                    $this->aid->step_id = $_stepID;
+                    $this->aid->message = '-- Profile with Read-only permission --';
+                    $this->aid->editable_status = null;
+                    $this->aid->output_status = null;
+                    return $this->aid;
+                }
+
+                /// case 3 --> if status does not exist in both Input and Output status --> get the default profile of associated campaign
+                else if(!in_array($sid, $_inArrayString) && !in_array($sid, $_outArrayString)) {
                     $this->getDefaultProfileByFnum($fnum);
                     $this->aid->profile = $this->getDefaultProfileByFnum($fnum);
                     $this->aid->step_id = null;
