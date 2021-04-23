@@ -10,18 +10,18 @@
         :cid="campaignId"
     />
     <div class="w-row">
-      <div class="tchooz-sidebar-menu">
+      <!--<div class="tchooz-sidebar-menu">
         <transition name="slide-right">
           <div class="col-md-12 tchooz-sidebar-menus">
             <div class="container-menu-funnel">
               <div v-if="profileId == null && loading == false" style="display: flex;" class="required">
                 <em class="fas fa-exclamation-circle icon-warning-margin"></em>
                 <p>{{chooseProfileWarning}}</p>
-              </div>
+              </div>-->
               <!--                  <a class="close-submenu pointer" @click="closeSubmenu = !closeSubmenu" :class="!closeSubmenu ? 'rotate-icon' : ''">
                                   <img src="/images/emundus/menus/exit.png">
                                 </a>-->
-              <div>
+             <!-- <div>
                 <label class="tchooz-dark-blue" style="font-size: 16px">{{form.label}}</label>
                 <p>{{From}} {{form.start_date}}</p>
                 <p>{{To}} {{form.end_date}}</p>
@@ -47,9 +47,9 @@
             </div>
           </div>
         </transition>
-      </div>
+      </div>-->
 
-      <div class="col-md-10 col-sm-10 col-sm-offset-4 col-md-offset-3 col-lg-offset-1 p-1" style="padding-left: 2em !important">
+      <div class="col-md-12 col-sm-10 col-sm-offset-4 col-md-offset-1 col-lg-offset-1 p-1" style="padding-left: 2em !important">
         <div class="section-sub-menu">
           <div class="container-2 w-container" style="max-width: unset">
             <div class="d-flex">
@@ -57,10 +57,55 @@
               <h2 class="tchooz-section-titles" v-if="menuHighlight != -1">{{formCategories[langue][menuHighlight]}}</h2>
               <h2 class="tchooz-section-titles" v-if="menuHighlightProg != -1">{{formPrograms[langue][menuHighlightProg]}}</h2>
             </div>
+
             <p class="tchooz-section-description" v-if="menuHighlight != -1" v-html="formCategoriesDesc[langue][menuHighlight]" style="margin-top: 20px"></p>
             <p class="tchooz-section-description" v-if="menuHighlightProg != -1" v-html="formProgramsDesc[langue][menuHighlightProg]" style="margin-top: 20px"></p>
-          </div>
+            <hr>
+            <div class="d-flex">
+              <p>
+                <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>  {{From}} {{form.start_date}}   {{To}} {{form.end_date}}
+              </p>
+            </div>
+
+            <div v-if="profileId == null && loading == false" style="display: flex;" class="d-flex required">
+              <em class="fas fa-exclamation-circle icon-warning-margin"></em>
+              <p>{{chooseProfileWarning}}</p>
+            </div>
+            </div>
+
+
+
+
+
         </div>
+        <!--- start Menu --->
+        <div class="d-flex" >
+          <ul class="nav nav-tabs topnav">
+
+            <li v-for="(formCat, index) in formCategories[langue]" :key="index" v-show="closeSubmenu">
+              <a  @click="profileId != null ? changeToCampMenu(index): ''"
+                  class="menu-item"
+                  :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
+                {{ formCat }}
+              </a>
+            </li>
+
+            <li v-for="(formProg, index) in formPrograms[langue]" :key="index" v-show="closeSubmenu">
+              <a @click="profileId != null ? changeToProgMenu(index) : ''"
+                 class="menu-item"
+                 :class="[(menuHighlightProg == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
+                {{ formProg }}
+              </a>
+
+            </li>
+
+          </ul>
+        </div>
+        <br>
+
+
+        <!-- end Menu -->
+
         <div v-if="menuHighlightProg != -1" class="warning-message-program mb-1">
           <p style="color: #e5283b;"><em class="fas fa-exclamation-triangle mr-1 red"></em>{{ProgramWarning}}</p>
           <ul v-if="campaignsByProgram.length > 0">
@@ -501,4 +546,19 @@ export default {
 .w-container{
   max-width: unset;
 }
+.topnav  {
+  /*background-color: #333;*/
+  overflow: hidden;
+  margin-left: auto;
+  border-bottom: 1px solid #ddd
+}
+.w--current{
+  border: 1px solid #ddd;
+  background-color: white;
+  border-bottom-left-radius: unset;
+  border-bottom-right-radius: unset;
+}
+
+
+
 </style>
