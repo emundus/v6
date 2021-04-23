@@ -309,6 +309,10 @@ class EmundusworkflowModelcommon extends JModelList {
                 /// from $_rawStepData --> get the step id if dossier status is in inputStatus
                 foreach($_rawStepData as $key => $value) {
                     $_inStatusList = explode(',', json_decode($value->params)->inputStatus);
+
+                    $_tempInputList .= json_decode($value->params)->inputStatus . ',';
+                    $_tempOutputList .= json_decode($value->params)->outputStatus . ',';
+
                     if(in_array($sid,$_inStatusList)) {
                         $_stepID = $value->id;
                         $_startDate = $this->getDateTimeByStep($_stepID)->start_date;
@@ -320,7 +324,25 @@ class EmundusworkflowModelcommon extends JModelList {
 
                         return (object)$_exportData;
                     }
-                    else { }
+                }
+
+                $_inArrayString = explode(',', substr_replace($_tempInputList ,"",-1));
+                $_outArrayString = explode(',', substr_replace($_tempOutputList ,"",-1));
+
+                if(!in_array($sid, $_inArrayString) && in_array($sid, $_outArrayString)) {
+                    $_stepIndex = array_search($sid, $_outArrayString);
+                    $_stepData = $_rawStepData[$_stepIndex];
+
+                    $_stepID = $_stepData->id;
+
+                    $_startDate = $this->getDateTimeByStep($_stepID)->start_date;
+                    $_endDate = $this->getDateTimeByStep($_stepID)->end_date;
+
+                    $_exportData['start_date'] = $_startDate;
+                    $_exportData['end_date'] = $_endDate;
+                    $_exportData['step'] = $_stepID;
+
+                    return (object)$_exportData;
                 }
 
                 //// if step is not found --> return the profile of status (find in jos_emundus_setup_status and jos_emundus_campaign_workflow)
