@@ -840,7 +840,7 @@ class EmundusonboardModelcampaign extends JModelList
                 ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
             $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
                 ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($newdocument))
-                ->set($db->quoteName('mandatory') . ' = ' . $db->quote(0))
+                ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
                 ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
             $db->setQuery($query);
             $db->execute();
@@ -872,8 +872,16 @@ class EmundusonboardModelcampaign extends JModelList
             ->where($db->quoteName('id') . ' = ' . $db->quote($did));
 
         try{
+
             $db->setQuery($query);
             $db->execute();
+            $query->clear()
+                ->update($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
+                ->where($db->quoteName('attachment_id') . ' = ' . $db->quote($did));
+            $db->setQuery($query);
+            $db->execute();
+
 
             $falang->updateFalang($document['name']['fr'],$document['name']['en'],$did,'emundus_setup_attachments','value');
             $falang->updateFalang($document['description']['fr'],$document['description']['en'],$did,'emundus_setup_attachments','description');
@@ -887,6 +895,7 @@ class EmundusonboardModelcampaign extends JModelList
             $assignations = $db->loadResult();
 
             if(empty($assignations)) {
+
                 $query->clear()
                     ->select('max(ordering)')
                     ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
@@ -898,10 +907,12 @@ class EmundusonboardModelcampaign extends JModelList
                     ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
                 $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
                     ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
-                    ->set($db->quoteName('mandatory') . ' = ' . $db->quote(0))
+                    ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
                     ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
                 $db->setQuery($query);
+
                 $db->execute();
+
             }
             return true;
         } catch (Exception $e) {

@@ -1087,9 +1087,10 @@ class EmundusonboardModelform extends JModelList {
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
-		$query->select('*')
-			->from($db->quoteName('#__emundus_setup_attachments'))
-			->where($db->quoteName('published') . ' = ' . 1)
+		$query->select(array('a.*', 'b.mandatory'))
+			->from($db->quoteName('#__emundus_setup_attachments','a'))
+            ->join('LEFT', $db->quoteName('#__emundus_setup_attachment_profiles', 'b') . ' ON ' . $db->quoteName('b.attachment_id') . ' = ' . $db->quoteName('a.id'))
+			->where($db->quoteName('a.published') . ' = ' . 1)
 			->order($db->quoteName('ordering'));
 
 		$db->setQuery($query);

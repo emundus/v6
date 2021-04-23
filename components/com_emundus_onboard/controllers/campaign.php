@@ -487,6 +487,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             $types = $jinput->getRaw('types');
             $cid = $jinput->getInt('cid');
             $pid = $jinput->getInt('pid');
+
             $m_camp = $this->model;
 
             $result = $m_camp->createDocument($document,$types,$cid,$pid);
@@ -514,6 +515,8 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             $did = $jinput->getInt('did');
             $cid = $jinput->getInt('cid');
             $pid = $jinput->getInt('pid');
+
+
             $m_camp = $this->model;
 
             $result = $m_camp->updateDocument($document,$types,$did,$pid);
@@ -527,6 +530,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
 
     public function updateDocumentFalang(){
 

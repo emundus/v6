@@ -187,7 +187,7 @@
             <label class="saving-at">{{ Savingat }} {{lastUpdate}}<em class="fas fa-sync ml-10px"></em></label>
           </div>
           <div class="form-pages">
-            <h4 class="ml-10px form-title" style="margin-bottom: 0;padding: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="Form">{{ Form }}</h4>
+            <h4 class="ml-10px form-title" style="margin-bottom: 0;padding: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="Form">{{ Form }} x)</h4>
             <draggable
                 handle=".handle"
                 v-model="formList"

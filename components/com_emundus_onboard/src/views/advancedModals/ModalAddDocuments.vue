@@ -30,6 +30,17 @@
         </div>
 
       <div class="modalC-content">
+        <div class="mb-1">
+
+          <a class="d-flex tool-icon" >
+            <div class="toggle">
+              <input type="checkbox" class="check" v-model="req" @click="updateRequireMandatory()"/>
+              <strong class="b switch"></strong>
+              <strong class="b track"></strong>
+            </div>
+            <span class="ml-10px" >{{Required}}</span>
+          </a>
+        </div>
         <div class="form-group">
           <label for="name">{{DocTemplate}} :</label>
           <select v-model="doc" class="dropdown-toggle" :disabled="Object.keys(models).length <= 0">
@@ -131,11 +142,13 @@ export default {
           'doc;docx;odt': false,
           'xls;xlsx;odf': false,
         },
+        mandatory: 0
       },
       translate: {
         name: false,
         description: false
       },
+      req:false,
       errors: {
         name: false,
         nbmax: false,
@@ -158,7 +171,9 @@ export default {
           title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS"),
           value: 'xls;xlsx;odf'
         },
+
       ],
+
       selectedTypes: [],
       models: [],
       createDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT"),
@@ -174,6 +189,7 @@ export default {
       MaxRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAXPERUSER_REQUIRED"),
       TypeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED_REQUIRED"),
       TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+      Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
     };
   },
   methods: {
@@ -204,6 +220,7 @@ export default {
       this.getModelsDocs();
     },
     createNewDocument() {
+     // console.log(this.form);
       this.errors = {
         name: false,
         nbmax: false,
@@ -278,6 +295,8 @@ export default {
         },
         data: qs.stringify(params)
       }).then((rep) => {
+       // console.log(rep);
+        this.req=false;
         this.$emit("UpdateDocuments");
         this.$modal.hide('modalAddDocuments')
 
@@ -290,19 +309,65 @@ export default {
         url: "index.php?option=com_emundus_onboard&controller=form&task=getundocuments",
       }).then(response => {
         this.models = response.data.data;
+        //console.log("les docsddd")
+       // console.log(this.models);
         if(this.currentDoc != null){
           this.doc = this.currentDoc;
         }
       });
-    }
+    },
+    updateRequireMandatory(){
+      console.log(this.req);
+      if(this.req==true) {
+        this.form.mandatory=0
+        //console.log("doc mandatory is " + 1);
+      }else {
+        this.form.mandatory=1
+        //console.log("doc mandatory is"+ 0)
+      }
+      /*setTimeout(() => {
+        axios({
+          method: "post",
+          url:
+              "index.php?option=com_emundus_onboard&controller=formbuilder&task=changerequire",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            element: this.element
+          })
+        }).then(() => {
+          this.$emit("updateRequireEvent");
+        }).catch(e => {
+          this.$emit(
+              "show",
+              "foo-velocity",
+              "error",
+              this.updateFailed,
+              this.updating
+          );
+          console.log(e);
+        });
+      }, 300);*/
+    },
   },
 
   watch: {
     doc: function(val) {
       if(val != null) {
         const model = this.models.find(model => model.id == val);
+
         this.form.name = model.name;
         this.form.description = model.description;
+        this.form.mandatory=model.mandatory
+        //this.form.mandatory=1;
+        if(model.mandatory==1) {
+
+          this.req=true;
+
+        }else {
+          this.req=false;
+        }
         if (model.allowed_types.includes('pdf')) {
           this.form.selectedTypes.pdf = true;
         } else {
@@ -339,7 +404,8 @@ export default {
         };
       }
     }
-  }
+  },
+
 };
 </script>
 
