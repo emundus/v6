@@ -1911,7 +1911,7 @@ textarea:hover {
   transform: scale(2, 1.5);
   font-size: 2em;
   font-weight: 700;
-  color: #ccc;
+  color: $base-primary-color;
 }
 
 #gototop:hover div::after {
