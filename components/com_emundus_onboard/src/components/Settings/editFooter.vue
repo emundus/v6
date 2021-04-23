@@ -10,10 +10,10 @@
             </li>
         </ul>
         <div class="form-group controls" v-if="indexHighlight == 0 && this.form.content.col1 != null">
-            <editor :text="form.content.col1" :lang="actualLanguage" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="form.content.col1"></editor>
+            <editor :height="'30em'" :text="form.content.col1" :lang="actualLanguage" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="form.content.col1"></editor>
         </div>
         <div class="form-group controls" v-if="indexHighlight == 1 && this.form.content.col2 != null">
-            <editor :text="form.content.col2" :lang="actualLanguage" :enable_variables="false" :id="'editor_en'" :key="dynamicComponent" v-model="form.content.col2"></editor>
+            <editor :height="'30em'" :text="form.content.col2" :lang="actualLanguage" :enable_variables="false" :id="'editor_en'" :key="dynamicComponent" v-model="form.content.col2"></editor>
         </div>
     </div>
 </template>
@@ -73,41 +73,5 @@
         }
     };
 </script>
-<style>
-    .menus-home-row{
-        display: flex;
-        flex-direction: row;
-        padding-left: 0 !important;
-        padding-top: 1em;
-        margin: 0 auto;
-        overflow-x: scroll;
-    }
-
-    .MenuFormHome {
-        list-style: none;
-        text-decoration: none;
-        margin: 10px 10px 30px 10px;
-        min-width: 100px;
-    }
-
-    .MenuFormItemHome {
-        text-decoration: none;
-        color: black;
-        cursor: pointer;
-        padding: 5px;
-        border-radius: 5px;
-        white-space: nowrap;
-    }
-    .MenuFormItemHome:not(.MenuFormItemHome_current):hover {
-        color: grey;
-    }
-    .MenuFormItemHome_current {
-        color: white;
-        cursor: pointer;
-        background-color: #de6339;
-    }
-    .MenuFormItemHome_current:after, .MenuFormItemHome_current:before {
-        opacity: 1 !important;
-        width: 50% !important;
-    }
+<style scoped>
 </style>

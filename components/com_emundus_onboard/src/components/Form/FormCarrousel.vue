@@ -1,20 +1,28 @@
 <template>
   <div class="container-fluid">
-    <div class="row card">
-      <div class="col-md-12">
-        <ul class="menus-row">
-          <li v-for="(value, index) in formNameArray" :key="index" class="MenuForm">
-            <a
-              @click="ChangeIndex(index)"
-              class="MenuFormItem"
-              :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
-            >{{value.value}}</a>
-          </li>
+    <div class="menu-block">
+      <div class="col-md-8 form-viewer-builder" style="padding: 30px">
+        <FormViewer :link="formLinkArray[indexHighlight]" :visibility="this.visibility" v-if="formLinkArray[indexHighlight]" @editPage="EditPage" />
+      </div>
+        <ul class="col-md-3 sticky-form-pages">
+          <div class="form-pages">
+            <h4 class="ml-10px form-title" style="margin: 0;padding: 0 10px;"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="Form">{{ Form }}</h4>
+            <li v-for="(value, index) in formNameArray" :key="index" class="MenuForm">
+              <a
+                class="MenuFormItem"
+                @click="ChangeIndex(index)"
+                :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
+              >{{value.value}}</a>
+            </li>
+          </div>
+          <div class="form-pages">
+            <h4 class="ml-10px form-title" style="margin: 0;padding: 0 10px;"><em class="far fa-folder-open mr-1" :alt="Documents"></em>{{ Documents }}</h4>
+            <li v-for="(doc, index) in documentsList" :key="index" class="MenuForm">
+              <a class="MenuFormItem"
+              >{{doc.label}}</a>
+            </li>
+          </div>
         </ul>
-      </div>
-      <div class="col-md-12 card-body" style="margin-bottom: 50%">
-        <FormViewer :link="formLinkArray[indexHighlight]" :visibility="this.visibility" v-if="formLinkArray[indexHighlight]" />
-      </div>
     </div>
   </div>
 </template>
@@ -30,6 +38,7 @@ export default {
   name: "FormCarrousel",
   props: {
     formList: Object,
+    documentsList: Object,
     visibility: Number
   },
   components: {
@@ -39,15 +48,22 @@ export default {
     return {
       indexHighlight: "0",
       formNameArray: [],
+      documentsList: [],
       formLinkArray: [],
-      formArray: []
+      formArray: [],
+      FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
+      Form: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
+      Documents: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENTS"),
     };
   },
   methods: {
     ChangeIndex(index) {
       this.indexHighlight = index;
-      document.cookie = 'page='+index+'; expires=Session; path=/'
-      this.$emit("getEmitIndex", this.indexHighlight);
+      //document.cookie = 'page='+index+'; expires=Session; path=/'
+      //this.$emit("getEmitIndex", this.indexHighlight);
+    },
+    EditPage() {
+      this.$emit("formbuilder", this.indexHighlight);
     },
     getDataObject: function() {
       this.formList.forEach(element => {
@@ -69,7 +85,7 @@ export default {
             console.log(e);
           });
       });
-    }
+    },
   },
   created() {
     this.getDataObject();
@@ -80,5 +96,18 @@ export default {
 <style scoped>
 .container-fluid {
   margin-bottom: 5%;
+}
+.menu-block{
+  padding: 0;
+}
+
+.form-title{
+  display: flex;
+  align-items: center;
+  padding: 1em;
+  color: black !important;
+}
+.form-title img{
+  width: 25px;
 }
 </style>

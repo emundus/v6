@@ -1,9 +1,8 @@
 <template>
-  <div class="column-menu-main w-row" style="margin-top: 120px">
     <div class="w-row">
-      <div class="col-md-2 p-1">
+      <div class="tchooz-sidebar-menu">
         <transition name="slide-right">
-          <div class="col-md-12 mt-2">
+          <div class="col-md-12 tchooz-sidebar-menus">
             <div class="container-menu-funnel">
               <div v-for="(settingsCat, index) in settingsCategories[langue]" :key="index">
                 <a @click="menuHighlight = index"
@@ -16,46 +15,83 @@
         </transition>
       </div>
 
-      <div class="col-md-10 p-1" style="padding-left: 2em !important;">
+      <div class="col-md-10 col-md-offset-1 p-1" style="padding-left: 2em !important;">
         <div class="d-flex justify-content-between" style="margin-bottom: 10px">
-          <h2 class="mb-0">{{settingsCategories[langue][menuHighlight]}}</h2>
-          <div class="d-flex" v-if="menuHighlight == 0">
+          <div class="d-flex" style="width: 100%;justify-content: end;margin-bottom: -90px;" v-if="menuHighlight != 0 && menuHighlight != 7  && menuHighlight != 8">
             <transition name="slide-right">
               <div class="loading-form-save" v-if="saving">
-                <Ring-Loader :color="'#de6339'" />
+                <Ring-Loader :color="'#12DB42'" />
               </div>
             </transition>
             <transition name="slide-right">
-              <div v-if="endSaving" class="d-flex">
+              <div class="loading-form-save d-flex" v-if="endSaving">
                 <i class="fas fa-check"></i><span class="mr-1">{{Saved}}</span>
               </div>
             </transition>
-            <button type="button" @click="savePage()" class="bouton-sauvergarder-et-continuer">{{ Save }}</button>
+            <button type="button" v-if="menuHighlight != 0 && menuHighlight != 7" @click="saveCurrentPage()" class="bouton-sauvergarder-et-continuer" :style="menuHighlight == 4 || menuHighlight == 5 ? 'right: 10%' : ''">{{ Save }}</button>
           </div>
         </div>
         <transition name="slide-right">
-          <customization
-                  v-if="menuHighlight == 0"
-                  @updateLoading="updateLoading"
-                  :actualLanguage="actualLanguage"
-                  :manyLanguages="manyLanguages"
-                  ref="customization"
-          ></customization>
+          <editStyle
+              v-if="menuHighlight == 0 && coordinatorAccess != 0"
+              @LaunchLoading="updateLoading"
+              @StopLoading="updateLoading"
+              ref="styling"
+          ></editStyle>
 
-          <!--<editUsers
-                  v-if="menuHighlight == 1 && coordinatorAccess != 0"
-                  ref="users"
-          ></editUsers>-->
+          <editHomepage
+              v-if="menuHighlight == 1 && coordinatorAccess != 0"
+              ref="homepage"
+              :actualLanguage="actualLanguage"
+              :manyLanguages="manyLanguages"
+          ></editHomepage>
+
+          <editCGV
+              v-if="menuHighlight == 2 && coordinatorAccess != 0"
+              ref="cgv"
+              :actualLanguage="actualLanguage"
+              :manyLanguages="manyLanguages"
+          ></editCGV>
+
+          <editFooter
+              v-if="menuHighlight == 3 && coordinatorAccess != 0"
+              ref="footer"
+              :actualLanguage="actualLanguage"
+              :manyLanguages="manyLanguages"
+          ></editFooter>
+
+          <editStatus
+              v-if="menuHighlight == 4 && coordinatorAccess != 0"
+              @LaunchLoading="updateLoading"
+              @StopLoading="updateLoading"
+              ref="status"
+              :actualLanguage="actualLanguage"
+              :manyLanguages="manyLanguages"
+          ></editStatus>
+
+          <editTags
+              v-if="menuHighlight == 5"
+              @LaunchLoading="updateLoading"
+              @StopLoading="updateLoading"
+              ref="tags"
+          ></editTags>
+
+          <edit-applicants
+              v-if="menuHighlight == 6"
+              @LaunchLoading="updateLoading"
+              @StopLoading="updateLoading"
+              ref="applicants"
+          ></edit-applicants>
 
           <editDatas
-                  v-if="menuHighlight == 1 && coordinatorAccess != 0"
+                  v-if="menuHighlight == 7 && coordinatorAccess != 0"
                   ref="datas"
                   :actualLanguage="actualLanguage"
                   :manyLanguages="manyLanguages"
           ></editDatas>
 
           <help-settings
-              v-if="menuHighlight == 2"
+              v-if="menuHighlight == 8"
               ref="help"
               :actualLanguage="actualLanguage"
               :manyLanguages="manyLanguages"
@@ -63,7 +99,6 @@
         </transition>
       </div>
     </div>
-    <tasks></tasks>
 
     <!--<div
             class="section-sauvegarder-et-continuer-funnel"
@@ -77,7 +112,6 @@
         </div>
       </div>
     </div>-->
-  </div>
 </template>
 
 <script>
@@ -88,10 +122,12 @@ import editHomepage from "../components/Settings/editHomepage";
 import editStyle from "../components/Settings/editStyle";
 import editDatas from "../components/Settings/editDatas";
 import editUsers from "../components/Settings/editUsers";
-import customization from "../components/Settings/Customization"
+import editCGV from "../components/Settings/editCGV";
+import editFooter from "../components/Settings/editFooter";
 import helpSettings from "@/components/Settings/helpSettings";
 import Tasks from "@/views/tasks";
 import HelpSettings from "@/components/Settings/helpSettings";
+import EditApplicants from "@/components/Settings/editApplicants";
 
 const qs = require("qs");
 
@@ -99,15 +135,17 @@ export default {
   name: "globalSettings",
 
   components: {
+    EditApplicants,
     HelpSettings,
     Tasks,
     editStatus,
     editTags,
+    editCGV,
+    editFooter,
     editHomepage,
     editStyle,
     editDatas,
-    editUsers,
-    customization
+    editUsers
   },
 
   props: {
@@ -124,12 +162,24 @@ export default {
 
     settingsCategories: [
       [
-        "Personnalisation",
+        "Style",
+        "Page d'accueil",
+        "Conditions générales",
+        "Pied de page",
+        "Statuts",
+        "Etiquettes",
+        "Candidats",
         "Référentiels de données",
         "Aide"
       ],
       [
         "Styling",
+        "Home page",
+        "General Terms and Conditions",
+        "Footer",
+        "Status",
+        "Tags",
+        "Applicants",
         "Data repository",
         "Help"
       ]
@@ -139,11 +189,116 @@ export default {
     Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
     Save: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE"),
     Saved: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVED"),
+    Settings: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER"),
   }),
 
   methods: {
-    savePage() {
-      this.$refs.customization.saveCurrentPage();
+    updateStatus(status) {
+      this.updateLoading(true);
+      axios({
+        method: "post",
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatestatus',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          status: status
+        })
+      }).then(() => {
+        this.updateLoading(false);
+      });
+    },
+
+    updateTags(tags){
+      this.updateLoading(true);
+      axios({
+        method: "post",
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatetags',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          tags: tags
+        })
+      }).then(() => {
+        this.updateLoading(false);
+      });
+    },
+
+    updateFooter(content) {
+      this.updateLoading(true);
+      axios({
+        method: "post",
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatefooter',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          content: content
+        })
+      }).then(() => {
+        this.updateLoading(false);
+      });
+    },
+
+    updateHomepage(content,label,color) {
+      this.updateLoading(true);
+      axios({
+        method: "post",
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatehomepage',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          content: content,
+          label: label,
+          color: color
+        })
+      }).then(() => {
+        this.updateLoading(false);
+      });
+    },
+
+    updateCgv(content) {
+      this.updateLoading(true);
+      axios({
+        method: "post",
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatecgv',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          content: content
+        })
+      }).then(() => {
+        this.updateLoading(false);
+      });
+    },
+
+    saveCurrentPage() {
+      switch (this.menuHighlight) {
+        case 1:
+          this.updateHomepage(this.$refs.homepage.$data.form.content,this.$refs.homepage.$data.form.label,this.$refs.homepage.$data.form.titleColor);
+          break;
+        case 2:
+          this.updateCgv(this.$refs.cgv.$data.form.content);
+          break;
+        case 3:
+          this.updateFooter(this.$refs.footer.$data.form.content);
+          break;
+        case 4:
+          this.updateStatus(this.$refs.status.$data.status);
+          break;
+        case 5:
+          this.updateTags(this.$refs.tags.$data.tags);
+          break;
+        case 6:
+          this.updateLoading(true);
+          setTimeout(() => {
+            this.updateLoading(false);
+          },500);
+          break;
+      }
     },
 
     updateLoading(run) {
@@ -163,6 +318,11 @@ export default {
     if (this.actualLanguage == "en") {
       this.langue = 1;
     }
+    /*this.$nextTick(function () {
+      window.setInterval(() => {
+        this.saveCurrentPage();
+      },20000);
+    })*/
   },
 };
 </script>
@@ -171,6 +331,13 @@ export default {
 .fa-check{
   width: 40px;
   font-size: 25px;
-  color: green;
+  color: #12DB42;
+}
+.bouton-sauvergarder-et-continuer,.loading-form-save{
+  position: static;
+  z-index: 10;
+  width: auto;
+  margin-top: -14px;
+  margin-right: 20px;
 }
 </style>

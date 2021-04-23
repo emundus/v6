@@ -45,6 +45,6 @@ WHERE title LIKE 'Menu-onboarding';
 
 # Update the coordinator to prepare the first onboarding
 UPDATE jos_users
-SET params = '{\"admin_language\":\"\",\"language\":\"\",\"editor\":\"\",\"helpsite\":\"\",\"timezone\":\"\",\"admin_style\":\"\",\"first_login\":\"true\",\"first_campaign\":\"true\",\"first_form\":\"true\",\"first_formbuilder\":\"true\",\"first_documents\":\"true\",\"first_databasejoin\":\"true\",\"first_program\":\"true\"}';
+SET params = '{\"admin_language\":\"\",\"language\":\"\",\"editor\":\"\",\"helpsite\":\"\",\"timezone\":\"\",\"admin_style\":\"\",\"first_login\":\"true\",\"first_campaign\":\"true\",\"first_form\":\"true\",\"first_formbuilder\":\"true\",\"first_documents\":\"true\",\"first_databasejoin\":\"true\",\"first_program\":\"true\"}'
 WHERE id = 95;
 #

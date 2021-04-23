@@ -82,7 +82,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     display: flex !important;
     flex-direction: column;
     align-items: center;
-    background: #fafafa;
+    background: #fff;
     width: 60%;
     margin-left: auto;
     margin-right: auto;
@@ -179,11 +179,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     .view-reset .reset-complete .form-validate.form-horizontal.well {
         width: 90% !important;
     }
-
-    .view-reset #g-navigation {
-        height: auto !important;
-    }
-
+    
     .view-reset #g-navigation .g-container {
         height: auto !important;
     }
