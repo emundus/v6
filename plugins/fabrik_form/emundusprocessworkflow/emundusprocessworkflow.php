@@ -584,7 +584,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             } else {
                 /// use the default status
 //                $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $this->getParam('emundusconfirmpost_status', '1') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
-                $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $this->getParam('emundusconfirmpost_status', '1') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+                $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $this->getParam('emundusprocessworkflow_status', '') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
                 //$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $now . ',status=' . $this->getParam('emundusconfirmpost_status', '1') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
             }
             $this->db->setQuery($query);
@@ -612,7 +612,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             if (!is_null($student->output_status)) {
                 $step = $student->output_status;
             } else {
-                $step = $this->getParam('emundusconfirmpost_status', '1');
+                $step = $this->getParam('emundusprocessworkflow_status', '');
             }
 
             $code = array($student->code);
@@ -717,6 +717,8 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                     copy(JPATH_BASE . DS . 'tmp' . DS . $application_form_name . ".pdf", JPATH_BASE . DS . "images" . DS . "emundus" . DS . "files" . DS . $student->id . DS . $fnum . "_application_form_pdf.pdf");
                 }
             }
+            $app->redirect($this->getParam('emundusprocessworkflow_redirect_jump_page'),JText::_('APPLICATION_SENT'));        // jump the main page + show the thanks message
+
         }
         else {
             /// do nothing here

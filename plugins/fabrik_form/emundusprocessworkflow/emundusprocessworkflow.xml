@@ -11,11 +11,8 @@
     <description>EMundus Workflow Plugin</description>
     <files>
         <filename plugin="emundusprocessworkflow">emundusprocessworkflow.php</filename>
+        <filename>index.html</filename>
+        <folder>forms</folder>
+        <folder>language</folder>
     </files>
-    <config>
-        <fields name="params">
-            <fieldset name="basic">
-            </fieldset>
-        </fields>
-    </config>
 </extension>
