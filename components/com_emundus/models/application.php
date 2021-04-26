@@ -1300,6 +1300,7 @@ class EmundusModelApplication extends JModelList {
                                                 // Do not display elements with no value inside them.
                                                 if ($show_empty_fields == 0 && trim($r_elt) == '') {
                                                     $forms .= '<td></td>';
+                                                    $j++;
                                                     continue;
                                                 }
 
