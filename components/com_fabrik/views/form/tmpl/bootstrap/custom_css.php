@@ -600,7 +600,7 @@ form#member-profile .form-horizontal .control-label {
     margin-right: auto;
 }
 .view-registration .login div.em-heading-registration  div.icon-title.registrationicon, .view-form .em-formRegistrationCenter div.em-heading-registration div.icon-title.registrationicon {
-      background-image: url(/components/com_emundus_onboard/src/assets/images/register.svg);
+      background-image: url(/media/com_emundus/images/register.svg);
       background-size: contain;
       background-repeat: no-repeat;
 }

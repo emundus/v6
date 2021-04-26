@@ -99,7 +99,7 @@ input,
 span,
 div,
 legend {
-  font-weight: 300;
+  font-weight: 400;
   font-style: normal;
   line-height: normal;
 }
@@ -2167,7 +2167,7 @@ textarea:hover {
 }
 
 #gototop:hover div::after {
-  color: $dark-green;
+  color: #ccc;
 }
 
 /* ALERT */
