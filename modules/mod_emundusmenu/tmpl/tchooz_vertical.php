@@ -150,7 +150,7 @@ defined('_JEXEC') or die;
     /*** END ***/
     .message-tooltip {
         background: #fff;
-        width: 12rem;
+        width: 13rem;
         height: auto;
         position: fixed;
         margin-left: 60px;
@@ -180,7 +180,7 @@ defined('_JEXEC') or die;
     }
 
      .g-main-nav .g-standard .g-sublevel .g-menu-item a.g-menu-item-container:hover   {
-        background: #dcdada;
+        background: #eeeeee;
          border-radius: 5px;
      }
 
