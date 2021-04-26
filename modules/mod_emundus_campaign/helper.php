@@ -28,14 +28,14 @@ class modEmundusCampaignHelper {
         $db = JFactory::getDbo();
         $query  = $db->getQuery(true);
         if ($teachingUnityDates) {
-            $query->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.programmes as prog_type, pr.id as p_id, pr.notes')
+            $query->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.programmes as prog_type, pr.id as p_id')
                 ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                 ->leftJoin($db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                 ->leftJoin($db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training').' AND '.$db->quoteName('ca.year').' = '.$db->quoteName('tu.schoolyear'))
                 ->where('ca.published=1 AND "'.$this->now.'" <= ca.end_date and "'.$this->now.'">= ca.start_date '.$condition);
         } else {
             $query  = $db->getQuery(true);
-            $query->select('ca.*, pr.apply_online, pr.code, pr.link, pr.programmes as prog_type, pr.id as p_id, pr.notes');
+            $query->select('ca.*, pr.apply_online, pr.code, pr.link, pr.programmes as prog_type, pr.id as p_id');
             $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
             $query->where('ca.training = pr.code AND ca.published=1 AND "'.$this->now.'" <= ca.end_date and "'.$this->now.'">= ca.start_date '.$condition);
         }
@@ -115,14 +115,14 @@ class modEmundusCampaignHelper {
 
         if ($teachingUnityDates) {
             $query
-                ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.notes as desc')
+                ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end')
                 ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                 ->leftJoin($db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                 ->leftJoin($db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training').' AND '.$db->quoteName('ca.year').' = '.$db->quoteName('tu.schoolyear'))
                 ->where('ca.training = pr.code AND ca.published=1 '.$condition);
         } else {
             $query
-                ->select('ca.*, pr.apply_online, pr.code, pr.link, pr.notes')
+                ->select('ca.*, pr.apply_online, pr.code, pr.link')
                 ->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr')
                 ->where('ca.training = pr.code AND ca.published=1 '.$condition);
         }
@@ -197,24 +197,6 @@ class modEmundusCampaignHelper {
         try {
             $db->setQuery($query);
             return $db->loadObject();
-        } catch (Exception $e) {
-            return null;
-        }
-    }
-
-    public function getFaq(){
-        $db = JFactory::getDbo();
-        $query  = $db->getQuery(true);
-
-        $query
-            ->select('c.id,c.title,c.introtext')
-            ->from($db->quoteName('#__content', 'c'))
-            ->leftJoin($db->quoteName('#__categories', 'ca') . ' ON ' . $db->quoteName('ca.id') . ' = '. $db->quoteName('c.catid'))
-            ->where($db->quoteName('ca.alias') . ' LIKE ' . $db->quote('f-a-q'));
-
-        try {
-            $db->setQuery($query);
-            return $db->loadObjectList();
         } catch (Exception $e) {
             return null;
         }

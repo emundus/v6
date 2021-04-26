@@ -16,13 +16,10 @@
                 @updateDatabases="getDatabases"
         />
         <div class="d-flex">
-          <a @click="$modal.show('modalAddDatas')" class="bouton-ajouter-green bouton-ajouter pointer mr-1" style="width: max-content">
-            <div class="add-button-div">
-              <em class="fas fa-plus mr-1"></em>
-              {{ CreateDatas }}
-            </div>
-          </a>
-            <button type="button" class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalImportDatas')">
+            <button type="button" class="bouton-sauvergarder-et-continuer-3 mr-1" @click="$modal.show('modalAddDatas')">
+                {{CreateDatas}}
+            </button>
+            <button type="button" class="bouton-sauvergarder-et-continuer-3" @click="$modal.show('modalImportDatas')">
                 {{ImportDatas}}
             </button>
         </div>
@@ -50,7 +47,7 @@
             </div>
         </div>
         <div class="loading-form" v-if="loading">
-            <Ring-Loader :color="'#12db42'" />
+            <Ring-Loader :color="'#de6339'" />
         </div>
     </div>
 </template>

@@ -80,10 +80,6 @@ table {
     max-width: 30vw; 
 }
 
-.g-back-office-emundus-tableau.view-list.email-history-indicators-page h1 {
-    color: #000;
-}
-
 .view-list .g-container {
     width: 100vw; 
 }
@@ -118,7 +114,7 @@ border-radius: 4px;
 
 @media all and (max-width: 959px) {
   .email-history-indicators-page form {
-    padding: 0 !important;
+    padding: 0 !important;f
   }
 }
 

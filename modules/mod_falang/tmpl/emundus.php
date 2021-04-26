@@ -102,17 +102,17 @@ if (!empty($yireo_plugin)) {
 
 
 <div class="mod-languages<?php echo $moduleclass_sfx ?> <?php echo ($params->get('dropdown', 1) && $params->get('advanced_dropdown', 1)) ? ' advanced-dropdown' : '';?>">
-<?php if ($headerText) : ?>
-	<div class="pretext"><p><?php echo $headerText; ?></p></div>
-<?php endif; ?>
+    <?php if ($headerText) : ?>
+        <div class="pretext"><p><?php echo $headerText; ?></p></div>
+    <?php endif; ?>
 
-<?php if ($params->get('dropdown',1)) : ?>
-    <?php require JModuleHelper::getLayoutPath('mod_falang', $params->get('layout', 'emundus') . '_dropdown'); ?>
-<?php else : ?>
-    <?php require JModuleHelper::getLayoutPath('mod_falang', $params->get('layout', 'default') . '_list'); ?>
-<?php endif; ?>
+    <?php if ($params->get('dropdown',1)) : ?>
+        <?php require JModuleHelper::getLayoutPath('mod_falang', $params->get('layout', 'emundus') . '_dropdown'); ?>
+    <?php else : ?>
+        <?php require JModuleHelper::getLayoutPath('mod_falang', $params->get('layout', 'default') . '_list'); ?>
+    <?php endif; ?>
 
-<?php if ($footerText) : ?>
-	<div class="posttext"><p><?php echo $footerText; ?></p></div>
-<?php endif; ?>
+    <?php if ($footerText) : ?>
+        <div class="posttext"><p><?php echo $footerText; ?></p></div>
+    <?php endif; ?>
 </div>

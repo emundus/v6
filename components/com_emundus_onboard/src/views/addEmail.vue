@@ -8,23 +8,16 @@
         :classes="'vue-notification-custom'"
     />
     <div class="w-container">
-      <div class="section-sub-menu sub-form" v-if="email == ''">
-        <div class="container-2 w-container" style="max-width: unset">
-          <div class="d-flex">
-            <img src="/images/emundus/menus/email.png" class="tchooz-icon-title" alt="email">
-            <h1 class="tchooz-section-titles">{{AddEmail}}</h1>
-          </div>
-        </div>
-      </div>
       <form id="program-form" @submit.prevent="submit">
         <div class="sous-container">
-          <p class="required mb-1">{{RequiredFieldsIndicate}}</p>
+          <p class="required">{{RequiredFieldsIndicate}}</p>
           <div class="heading-form">
+            <div class="icon-title informations"></div>
             <h2 class="heading">{{ Informations }}</h2>
           </div>
           <div class="w-form">
             <div class="form-group">
-              <label>{{emailName}} <span style="color: #E5283B">*</span></label>
+              <label>{{emailName}} *</label>
               <input
                       type="text"
                       class="form__input field-general w-input"
@@ -37,8 +30,8 @@
             </p>
 
             <div class="form-group controls forms-emails-editor">
-              <label>{{emailBody}} <span style="color: #E5283B">*</span></label>
-              <editor :height="'30em'" :text="form.message" v-if="dynamicComponent" :lang="actualLanguage" :enable_variables="true" v-model="form.message" :id="'email'" :placeholder="EmailResume" :class="{ 'is-invalid': errors.message}"></editor>
+              <label>{{emailBody}} *</label>
+              <editor :text="form.message" v-if="dynamicComponent" :lang="actualLanguage" :enable_variables="true" v-model="form.message" :id="'email'" :placeholder="EmailResume" :class="{ 'is-invalid': errors.message}"></editor>
             </div>
             <p v-if="errors.message" class="error col-md-12 mb-2">
               <span class="error">{{BodyRequired}}</span>
@@ -49,6 +42,7 @@
         <div class="divider"></div>
         <div class="sous-container last-container">
           <div class="heading-form">
+            <div class="icon-title"></div>
             <h2 class="heading">{{ Advanced }}</h2>
           </div>
           <div class="form-group">
@@ -81,6 +75,7 @@
         <div class="divider"></div>
         <div class="sous-container last-container" v-if="email == ''">
           <div class="heading-form">
+            <div class="icon-title"></div>
             <h2 class="heading">{{ Trigger }}</h2>
           </div>
 
@@ -94,7 +89,7 @@
 
           <div v-if="triggered">
             <div class="form-group">
-              <label>{{Actions}}<span style="color: #E5283B">*</span></label>
+              <label>{{Actions}}*</label>
               <select v-model="trigger.action_status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.action_status}">
                 <option value="to_current_user">{{TheCandidate}}</option>
                 <option value="to_applicant">{{Manual}}</option>
@@ -105,7 +100,7 @@
             </div>
 
             <div class="form-group">
-              <label>{{Status}}<span style="color: #E5283B">*</span></label>
+              <label>{{Status}}*</label>
               <select v-model="trigger.status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.status}">
                 <option v-for="(statu,index) in status" :key="index" :value="statu.step">{{statu.value}}</option>
               </select>
@@ -115,7 +110,7 @@
             </div>
 
             <div class="form-group">
-              <label>{{Target}}<span style="color: #E5283B">*</span></label>
+              <label>{{Target}}*</label>
               <select v-model="trigger.target" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.target}">
                 <option value="5">{{Administrators}}</option>
                 <option value="6">{{Evaluators}}</option>
@@ -127,7 +122,7 @@
               </p>
             </div>
             <div class="form-group" v-if="trigger.target == 0" style="align-items: baseline">
-              <label>{{ChooseUsers}}<span style="color: #E5283B">*</span> :</label>
+              <label>{{ChooseUsers}}* :</label>
               <div class="wrap">
                 <div class="search">
                   <input type="text" class="searchTerm" :placeholder="Search" v-model="searchTerm" @keyup="searchUserByTerm">
@@ -160,15 +155,16 @@
 
         <div class="section-sauvegarder-et-continuer">
           <div class="w-container">
-            <div class="container-evaluation d-flex justify-content-between">
-              <button
-                  type="button"
-                  class="bouton-sauvergarder-et-continuer w-retour"
-                  onclick="history.go(-1)">
-                {{ retour }}
-              </button>
-              <button type="submit" class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green">
+            <div class="container-evaluation w-clearfix">
+              <button type="submit" class="bouton-sauvergarder-et-continuer">
                 {{ continuer }}
+              </button>
+              <button
+                      type="button"
+                      class="bouton-sauvergarder-et-continuer w-retour"
+                      onclick="history.go(-1)"
+              >
+                {{ retour }}
               </button>
             </div>
           </div>
@@ -176,6 +172,7 @@
       </form>
     </div>
   </div>
+  <tasks></tasks>
 </template>
 
 <script>
@@ -205,7 +202,6 @@
 
       dynamicComponent: false,
 
-      AddEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
       Advanced: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
       Informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
       Trigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER"),
@@ -387,7 +383,7 @@
             },
             data: qs.stringify({ body: this.form, code: this.email })
           }).then(response => {
-            this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+            window.location.href = '/configuration-emails'
           }).catch(error => {
             console.log(error);
           });
@@ -412,7 +408,7 @@
                 users: this.selectedUsers
               })
             }).then((rep) => {
-              this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+              window.location.href = '/configuration-emails'
             });
           }).catch(error => {
             console.log(error);
@@ -429,21 +425,6 @@
           this.enableTip = true;
           this.tip();
         }
-      },
-
-      redirectJRoute(link) {
-        axios({
-          method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
-          params: {
-            link: link,
-          },
-          paramsSerializer: params => {
-            return qs.stringify(params);
-          }
-        }).then(response => {
-          window.location.href = window.location.pathname + response.data.data;
-        });
       },
 
       /**

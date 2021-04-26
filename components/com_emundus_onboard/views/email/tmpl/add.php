@@ -13,7 +13,6 @@ $document = JFactory::getDocument();
 $document->addScript('media/com_emundus_onboard/chunk-vendors.js');
 $document->addStyleSheet('media/com_emundus_onboard/app.css');
 
-JText::script('COM_EMUNDUS_ONBOARD_ADD_EMAIL');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER');

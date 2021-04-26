@@ -4,7 +4,7 @@
     <modal
       :name="'modalAddTrigger' + triggerAction"
       height="auto"
-      transition="little-move-left"
+      transition="nice-modal-fade"
       :min-width="200"
       :min-height="200"
       :delay="100"
@@ -17,28 +17,24 @@
                 :model="this.form.model"
                 :models="this.models"
         />
-
-      <div class="fixed-header-modal">
+      <div class="modalC-content">
+        <div class="update-field-header">
           <div class="topright">
             <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)">
-              <em class="fas fa-times"></em>
+              <em class="fas fa-times-circle"></em>
             </button>
           </div>
-                        <div class="update-field-header">
           <h2 class="update-title-header">
              {{addTrigger}}
           </h2>
-                        </div>
         </div>
-
-      <div class="modalC-content">
         <div class="form-group">
           <label>{{Model}}* :</label>
           <div class="input-can-translate">
             <select v-model="form.model" class="dropdown-toggle" :class="{ 'is-invalid': errors.model}">
               <option v-for="(model, index) in models" :key="index" :value="model.id">{{model.subject}}</option>
             </select>
-            <button class="btnPreview mb-0" type="button" v-if="form.model != -1" @click.prevent="$modal.show('modalEmailPreview_' + form.model)">
+            <button class="btnPreview mb-0" type="button" v-if="form.model != -1" @click.prevent="$modal.show('modalEmailPreview')">
               <em class="fas fa-eye"></em>
             </button>
           </div>
@@ -97,15 +93,15 @@
           </p>
         </div>
       </div>
-      <div class="d-flex justify-content-between mb-1">
-                <button type="button"
-                        class="bouton-sauvergarder-et-continuer w-retour"
-                        @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)"
-                >{{Retour}}</button>
+      <div class="col-md-12 mb-1">
         <button type="button"
           class="bouton-sauvergarder-et-continuer"
           @click.prevent="createTrigger()"
         >{{ Continuer }}</button>
+        <button type="button"
+          class="bouton-sauvergarder-et-continuer w-retour"
+          @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)"
+        >{{Retour}}</button>
       </div>
     </modal>
   </span>

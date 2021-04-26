@@ -61,7 +61,6 @@
 						<option value="nantes">Nantes</option>
 						<option value="old">LIST_OLD</option>
 						<option value="single_campaign">Single Campaign</option>
-						<option value="tchooz_single_campaign">Tchooz Single Campaign</option>
 					</field>
 					<field type="list" name="mod_em_campaign_class" label="MOD_EM_CAMPAIGN_CLASS" description="MOD_EM_CAMPAIGN_CLASS_DESC">
 						<option value="">LIST_DEFAULT</option>
@@ -132,12 +131,6 @@
 					</field>
 
 					<field type="text" name="mod_em_program_code" label="MOD_EM_PROGRAM_CODE" description="MOD_EM_PROGRAM_CODE_DESC"/>
-
-					<field type="checkboxes" name="mod_em_campaign_modules_tab" label="MOD_EM_CAMPAIGN_LIST_TAB" description="MOD_EM_CAMPAIGN_LIST_TAB_DESC">
-						<option checked="true" value="campaign">Campaign</option>
-						<option checked="false" value="faq">FAQ</option>
-						<option checked="false" value="documents">Documents</option>
-					</field>
 
 				</fieldset>
 			</fields>

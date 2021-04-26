@@ -54,7 +54,7 @@ export default {
     const sleep = milliseconds => {
       return new Promise(resolve => setTimeout(resolve, milliseconds));
     };
-    sleep(2000).then(() => {
+    sleep(500).then(() => {
       this.search = this.year;
     });
   },

@@ -1,5 +1,5 @@
 <template class="program-item">
-  <div class="main-column-block">
+  <div class="main-column-block w-row">
     <div class="column-block w-col w-col-11">
       <div class="block-dash" :class="isPublished ? '' : 'unpublishedBlock'">
         <div class="column-blocks w-row">

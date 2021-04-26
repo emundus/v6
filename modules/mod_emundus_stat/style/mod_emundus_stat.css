@@ -35,18 +35,17 @@
 
 
 .btnConsulter {
-	border-radius:25px;
+	border-radius:4px;
 	color:white;
-	font-size: 14px;
+	padding:4px 12px;
 	white-space: normal;
 	display:inline-block;
 	margin-bottom: 10px;
-	padding: 5px 30px;
 }
 .btnConsulter:hover {
-	border-radius:25px;
+	border-radius:4px;
 	background:transparent;
-	padding: 5px 30px;
+	padding:4px 12px;
 	white-space: normal;
 	display:inline-block;
 }
@@ -56,7 +55,7 @@
 .btnConsulter a {
 	text-decoration:none;
 	color:white;
-	font-size: 14px;
+	font-size:12px;
 }
 
 

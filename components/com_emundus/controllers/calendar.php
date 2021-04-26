@@ -56,7 +56,9 @@ class EmundusControllerCalendar extends JControllerLegacy {
             $google_calendar_id = '';
         }
 
-        echo json_encode(['status' => $m_calendar->dpcalendar_add_calendar($calendar_title, $calendar_alias, $calendar_color, $google_calendar_id, $dpcalendar_parent_id, $calendar_program)]);
+        $m_calendar->dpcalendar_add_calendar($calendar_title, $calendar_alias, $calendar_color, $google_calendar_id, $dpcalendar_parent_id, $calendar_program);
+
+        echo json_encode(['status' => true]);
 
     }
 

@@ -14,7 +14,7 @@ $document->addStyleSheet("modules/mod_falang/style/mod_falang_emundus.css");
 ?>
 <form name="lang" method="post" action="<?php echo htmlspecialchars(JUri::current()); ?>">
     <?php if (!$params->get('advanced_dropdown',0)) : ?>
-    	<select class="inputbox" onchange="document.location.replace(this.value);" >
+        <select class="inputbox" onchange="document.location.replace(this.value);" >
             <?php foreach($list as $language):?>
                 <?php if ($language->display) { ?>
                     <option value="<?php echo $language->link;?>" <?php echo !empty($language->active) ? 'selected="selected"' : ''?>><?php echo $language->title_native;?></option>

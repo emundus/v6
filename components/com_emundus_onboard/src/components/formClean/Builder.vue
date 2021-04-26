@@ -5,13 +5,11 @@
         class="col-md-12"
         :object="object"
         :groups="GroupList"
-        v-if="object_json"
+        v-if="object"
         :change="this.change"
         :changedElement="this.changedElement"
         :changedGroup="this.changedGroup"
         @show="show"
-        @modalClosed="$emit('modalClosed')"
-        @modalOpen="$emit('modalOpen')"
         :UpdateUx="UpdateUx"
         @UpdateUxf="UpdateUXF"
         :key="builderViewKey"
@@ -32,7 +30,6 @@ import axios from "axios";
 import draggable from "vuedraggable";
 import BuilderViewer from "./BuilderView";
 import Swal from "sweetalert2";
-import _ from 'lodash';
 
 const qs = require("qs");
 
@@ -137,9 +134,7 @@ export default {
     }
   },
   created() {
-    if(!_.isEmpty(this.object.object)){
-      this.getDataObject();
-    }
+    this.getDataObject();
   },
   watch: {
     object: function() {
