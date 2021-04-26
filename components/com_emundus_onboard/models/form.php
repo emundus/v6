@@ -768,7 +768,7 @@ class EmundusonboardModelform extends JModelList {
 				$db->setQuery($query);
 				$db->execute();
 				$newprofile = $db->insertid();
-
+                //echo $newprofile;
                 $this->createMenuType('menu-profile' . $newprofile,$data['label']);
 
                 $query->clear()
@@ -782,8 +782,8 @@ class EmundusonboardModelform extends JModelList {
 
 				// Create a first page
                 $label = array(
-                    'fr' => 'Ma première page',
-                    'en' => 'My first page'
+                    'fr' => 'Ma première page___'.$newprofile,
+                    'en' => 'My first page___'.$newprofile
                 );
                 $intro = array(
                     'fr' => 'Décrivez votre page de formulaire avec une introduction',

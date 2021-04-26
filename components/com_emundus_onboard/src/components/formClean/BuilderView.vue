@@ -8,14 +8,14 @@
       v-html="object_json.show_page_heading.page_heading"
     />
     <div class="d-flex header-form-page mb-1" v-if="eval == 0 && !updatePage">
-      <h2 v-if="object_json.show_title" class="page_header mr-1" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
+      <h2 v-if="object_json.show_title" class="page_header mr-1" @click="enableUpdatingPage(object_json)" v-html="this.slpitProfileIdfromLabel(object_json.show_title.value)" />
       <span @click="$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="Edit" class="cta-block pointer" style="font-size: 16px">
         <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
       </span>
     </div>
     <div style="width: max-content;margin-left: 20px" v-show="updatePage && indexPage == object_json.id">
       <div class="input-can-translate" style="margin-top: 40px">
-        <input v-if="object_json.show_title" v-model="object_json.show_title.label[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.label_page ? '' : 'mb-1'" @keyup.enter="updateLabelPage(object_json)" :id="'update_input_' + object_json.id"/>
+        <input v-if="object_json.show_title" v-model="object_json.show_title.label[actualLanguage]"  class="form__input field-general w-input" style="width: 400px;" :class="translate.label_page ? '' : 'mb-1'" @keyup.enter="updateLabelPage(object_json)" :id="'update_input_' + object_json.id"/>
         <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPage(object_json.id)"></button>
         <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
           <a @click="updateLabelPage(object_json)" :title="Validate">
@@ -334,6 +334,11 @@ export default {
   },
   methods: {
     // Elements update
+    slpitProfileIdfromLabel(label){
+
+      return (label.split('___'))[0]
+
+    },
     async updateElementsOrder(group, list, elt) {
       var elements = list.map((element, index) => {
         return { id: element.id, order: index + 1 };
@@ -471,7 +476,7 @@ export default {
           did: docid,
         })
       }).then((rep) => {
-            console.log("docdeleted from profile");
+           // console.log("docdeleted from profile");
             console.log(rep);
           }
       );
@@ -489,7 +494,7 @@ export default {
           cid: this.cid
         })
       }).then((rep) => {
-            console.log("remove docuement from profile");
+            //console.log("remove docuement from profile");
             console.log(rep);
           }
       );
@@ -497,8 +502,8 @@ export default {
     },
 
     deleteElement(element,index) {
-      console.log("delete elements");
-      console.log(element);
+      //console.log("delete elements");
+      //console.log(element);
       if(this.clickUpdatingLabel) {
           this.updateLabelElement(element);
       }
@@ -562,7 +567,7 @@ export default {
       this.$modal.show('modalEditElement' + element.id)
     },
     retrieveAssociateElementDoc(docid){
-      console.log("retrieve doc element ");
+      //console.log("retrieve doc element ");
       axios({
         method: "post",
         url: 'index.php?option=com_emundus_onboard&controller=formbuilder&task=retriveElementFormAssociatedDoc',
@@ -574,8 +579,8 @@ export default {
           docid:docid
         })
       }).then((result)=>{
-        console.log(result);
-        console.log("retrieve doc perform");
+        //console.log(result);
+        //console.log("retrieve doc perform");
         //this.elementAssociateDocUpdateForm.name[this.actualLanguage]=result.data.value;
         //this.elementAssociateDocUpdateForm.name.en=result.data.value
         this.elementAssociateDocUpdateForm.description[this.actualLanguage]=result.data.description;
@@ -598,14 +603,14 @@ export default {
 
 
         this.elementAssociateDocUpdateForm.nbmax=result.data.nbmax;
-        console.log(this.elementAssociateDocUpdateForm);
-        console.log("end retrieving");
+        //console.log(this.elementAssociateDocUpdateForm);
+        //console.log("end retrieving");
       })
     },
 
     updateAssociateDocElement(params){
-      console.log('start updating assoc doc')
-      console.log(params);
+      //console.log('start updating assoc doc')
+      //console.log(params);
       axios({
         method: "post",
         url: 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument',
@@ -614,8 +619,8 @@ export default {
         },
         data: qs.stringify(params)
       }).then((rep) => {
-        console.log(rep);
-        console.log("doc update succesfully");
+        //console.log(rep);
+        //console.log("doc update succesfully");
         axios({
           method: "post",
           url: 'index.php?option=com_emundus_onboard&controller=campaign&task=updateDocumentFalang',
@@ -625,7 +630,7 @@ export default {
           data: qs.stringify(params)
         }).then((rep)=>{
           console.log(rep);
-          console.log("update faleng");
+          //console.log("update faleng");
         })
         //this.$emit("UpdateDocuments");
         //this.$modal.hide('modalAddDocuments')
@@ -634,8 +639,8 @@ export default {
     },
 
     updateLabelElement(element) {
-      console.log("this is element label update id");
-      console.log(element);
+      //console.log("this is element label update id");
+      //console.log(element);
       if(element.plugin=="emundus_fileupload") {
         this.retrieveAssociateElementDoc(element.params.attachmentId);
       }
@@ -654,15 +659,10 @@ export default {
         this.elementAssociateDocUpdateForm.name.fr=labels.fr
 
 
-      console.log("labels")
-      console.log(labels);
+      //console.log("labels")
+      //console.log(labels);
       this.elementAssociateDocUpdateForm.name.fr=labels.fr;
       }
-
-
-
-
-
 
       axios({
         method: "post",
@@ -717,8 +717,8 @@ export default {
         } else {
 
           if(element.plugin=="emundus_fileupload") {
-            console.log('result status none 0');
-            console.log("trying to update asssociate doc name")
+            //console.log('result status none 0');
+            //console.log("trying to update asssociate doc name")
 
             let types = [];
             Object.keys(this.elementAssociateDocUpdateForm.selectedTypes).forEach(key => {
@@ -1032,9 +1032,12 @@ export default {
 
     // Page trigger
     updateLabelPage(page) {
+
+      //console.log("update label page");
+      //console.log(page);
       let labels = {
-        fr: page.show_title.label.fr,
-        en: page.show_title.label.en
+        fr: page.show_title.label.fr+'___'+this.prid,
+        en: page.show_title.label.en+'___'+this.prid
       }
       axios({
         method: "post",
@@ -1058,7 +1061,7 @@ export default {
             },
             data: qs.stringify({
               pid: page.id,
-              label: page.show_title.label.fr
+              label: page.show_title.label.fr+'___'+this.prid
             })
           });
         }
@@ -1149,6 +1152,10 @@ export default {
 
     getDataObject: _.debounce(function() {
       this.object_json = this.object.object;
+      this.object_json.show_title.label.fr=this.slpitProfileIdfromLabel(this.object_json.show_title.label.fr);
+      this.object_json.show_title.label.en=this.slpitProfileIdfromLabel(this.object_json.show_title.label.en);
+
+      console.log("after json");
       this.getElementsArray();
     }, 500),
     getApiData: _.debounce(function() {

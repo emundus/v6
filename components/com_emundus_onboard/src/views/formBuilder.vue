@@ -187,7 +187,7 @@
             <label class="saving-at">{{ Savingat }} {{lastUpdate}}<em class="fas fa-sync ml-10px"></em></label>
           </div>
           <div class="form-pages">
-            <h4 class="ml-10px form-title" style="margin-bottom: 0;padding: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="Form">{{ Form }} x)</h4>
+            <h4 class="ml-10px form-title" style="margin-bottom: 0;padding: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="Form">{{ Form }}</h4>
             <draggable
                 handle=".handle"
                 v-model="formList"
@@ -201,8 +201,7 @@
                 <a @click="changeGroup(index,value.rgt);menuHighlight = 0"
                    class="MenuFormItem"
                    :title="value.label"
-                   :class="indexHighlight == index && menuHighlight === 0 ? 'MenuFormItem_current' : ''">
-                  {{value.label}}
+                   :class="indexHighlight == index && menuHighlight === 0 ? 'MenuFormItem_current' : ''" v-html="slpitProfileIdfromLabel(value.label)">
                 </a>
               </li>
             </draggable>
@@ -243,7 +242,7 @@
                  style="margin-left: 5px"
                  :title="value.object.show_title.value"
                  :class="indexHighlight == index && menuHighlight === 1 ? 'MenuFormItem_current' : ''">
-                {{value.object.show_title.value}}
+                {{value.object.show_title.value}} x)
               </a>
             </li>
           </div>
@@ -452,6 +451,12 @@
     },
 
     methods: {
+      slpitProfileIdfromLabel(label){
+
+        return (label.split('___'))[0]
+
+      },
+
       createElement(gid,plugin,order) {
         let list = this.formObjectArray;
         if(this.menuHighlight === 1){
@@ -516,6 +521,7 @@
         }
 
       },
+
       createElementEMundusFileUpload(params,gid,plugin,order){
         axios({
           method: "post",

@@ -166,6 +166,19 @@ export default {
 
       if(this.label[this.actualLanguage] != '' || this.model_id != -1) {
         this.submitted = true;
+
+        if(this.actualLanguage=='fr'&& this.label.en==''){
+          this.label.fr=this.label.fr+'___'+this.profileId;
+          this.label.en='My new page___'+this.profileId;
+
+        } else if(this.actualLanguage=='en'&& this.label.fr==''){
+          this.label.en=this.label.en+'___'+this.profileId;
+          this.label.fr='Ma nouvelle page___'+this.profileId;
+        } else {
+          this.label.en=this.label.en+'___'+this.profileId;
+          this.label.fr=this.label.fr+'___'+this.profileId;
+        }
+
         axios({
           method: "post",
           url:
