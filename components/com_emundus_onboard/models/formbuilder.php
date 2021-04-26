@@ -304,7 +304,8 @@ class EmundusonboardModelformbuilder extends JModelList {
         $params['redirect_content_popup_title'] = array(
             3 => ""
         );
-        $params['plugins'] = array("emundusisapplicationsent", "emundusconfirmpost", "php", "redirect");
+        //$params['plugins'] = array("emundusisapplicationsent", "emundusconfirmpost", "php", "redirect");
+        $params['plugins'] = array("emundusprocessworkflow", "php");            // replace 3 plugins by 1 plugin
 
         return $params;
     }
@@ -324,7 +325,8 @@ class EmundusonboardModelformbuilder extends JModelList {
         $params['form_php_require_once'] = array(
             2 => "0"
         );
-        $params['plugins'] = array("emundusredirect", "emundusisapplicationsent", "php");
+//        $params['plugins'] = array("emundusredirect", "emundusisapplicationsent", "php");
+        $params['plugins'] = array("emundusredirect", "emundusprocessworkflow", "php");
 
         return $params;
     }
