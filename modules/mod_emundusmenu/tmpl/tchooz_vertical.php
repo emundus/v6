@@ -25,7 +25,7 @@ defined('_JEXEC') or die;
         margin-top: 2px !important;
     }
 
-    /*** Navbar ***/
+    /*** Navbar */
     #header-a{
         position: relative;
         left: 5%;
@@ -77,7 +77,7 @@ defined('_JEXEC') or die;
     /*** END ***/
 
     /*** Sublevel parent ***/
-    .parent-active .item::before,.active .item::before{
+     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before{
         background: #12DB42;
         width: 5px;
         height: 100%;
@@ -148,28 +148,42 @@ defined('_JEXEC') or die;
         padding: 0;width: 30px
     }
     /*** END ***/
-    .message-tooltip{
+    .message-tooltip {
         background: #fff;
         width: 12rem;
         height: auto;
         position: fixed;
         margin-left: 60px;
         color: black;
-        padding: 15px;
         align-items: center;
         font-weight: 600;
-        border-radius: 5px;
-        border: solid 2px #fff;
         display: none;
         margin-top: -38px;
         box-shadow: 0 5px 10px rgb(0 0 0 / 10%);
     }
+
+   li.g-menu-item  .message-tooltip {
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    li.g-menu-item  .message-tooltip:hover {
+        background: #f8f8f8;
+    }
+
     .message-tooltip p {
         font-weight: 600;
         border-bottom: 1px solid #e0e0e5;
         padding-bottom: 10px;
+        padding: 15px;
+        border-radius: 5px;
     }
-    
+
+     .g-main-nav .g-standard .g-sublevel .g-menu-item a.g-menu-item-container:hover   {
+        background: #dcdada;
+         border-radius: 5px;
+     }
+
     .message-tooltip::after {
         content: "";
         position: absolute;
@@ -191,7 +205,7 @@ defined('_JEXEC') or die;
         height: 110%;
         position: absolute;
         display: block;
-       border: solid 2px #fff;
+      /* border: solid 2px #fff;*/
         border-radius: 5px;
         content: "";
     }
@@ -320,7 +334,7 @@ defined('_JEXEC') or die;
                 }
                 // The next item is on the same level.
                 else {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><a'.$class.' href="'. $item->flink . '"'. $item->title .'>'.$item->title.'</a></div>';
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><a '.$class.' href="'. $item->flink . '"'. $item->title .'>'.$item->title.'</a></div>';
                     echo '</li>';
                 }
             endforeach;
