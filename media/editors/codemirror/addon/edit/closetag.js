@@ -128,10 +128,9 @@
         replacement = head + "style";
       } else {
         var context = inner.mode.xmlCurrentContext && inner.mode.xmlCurrentContext(state)
-        var top = context.length ? context[context.length - 1] : ""
-        if (!context || (context.length && closingTagExists(cm, context, top, pos)))
+        if (!context || (context.length && closingTagExists(cm, context, context[context.length - 1], pos)))
           return CodeMirror.Pass;
-        replacement = head + top
+        replacement = head + context[context.length - 1]
       }
       if (cm.getLine(pos.line).charAt(tok.end) != ">") replacement += ">";
       replacements[i] = replacement;

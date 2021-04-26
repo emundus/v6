@@ -7,10 +7,6 @@ configuration_file=../../configuration.php
 sql_update_path=../../administrator/components/com_admin/sql/updates/mysql/
 log_path=../../logs/emundus-db-update.log
 
-## Clean TMP SETTINGS
-tmp_log_path=../../logs/emundus-clean-tmp.log
-tmp_path=../../tmp/
-
 ## Database SETTINGS
 mysql_db=`cat $configuration_file | grep -Po "(?<=public .db = ')[^']+(?=')"`
 mysql_user=`cat $configuration_file | grep -Po "(?<=public .user = ')[^']+(?=')"`
@@ -24,17 +20,6 @@ if [[ -z $mysql_host ]]; then
 	mysql_host="localhost"
 	mysql_port="3306"
 fi
-
-# TMP CLEANER
-        echo "-----------------------------------------------------------------------------" >> $tmp_log_path
-        echo "Begin clean up for : $tmp_path" >> $tmp_log_path
-        ### search and remove patern for xls pdf and zip files in $i with a +7 mtime parameter
-        find $tmp_path -name '*.xls' -mtime +7 -exec rm {} \;
-        find $tmp_path -name '*.xlsx' -mtime +7 -exec rm {} \;
-        find $tmp_path -name '*.pdf' -mtime +7 -exec rm {} \;
-        find $tmp_path -name '*.zip' -mtime +7 -exec rm {} \;
-        echo "Folder ` $tmp_path ` is cleaned at $current_date" >> $tmp_log_path
-        echo "-----------------------------------------------------------------------------" >> $tmp_log_path
 
 
 

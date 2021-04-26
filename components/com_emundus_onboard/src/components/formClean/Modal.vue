@@ -4,42 +4,25 @@
     <modal
             :name="'modalEditElement' + ID"
             height="auto"
-            transition="little-move-left"
+            transition="nice-modal-fade"
             :min-width="200"
             :min-height="200"
             :delay="100"
             :adaptive="true"
-            :clickToClose="true"
+            :clickToClose="false"
             @closed="beforeClose"
             @before-open="beforeOpen"
     >
-      <div class="fixed-header-modal">
-            <div class="topright">
-              <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalEditElement' + ID)">
-                <em class="fas fa-times"></em>
-              </button>
-            </div>
-          <div class="update-field-header">
-            <h2 class="update-title-header">
-              {{ElementOptions}}
-            </h2>
-          </div>
-        </div>
       <div v-if="element != null" class="modalC-content">
-        <div class="mb-1">
-          <a class="d-flex tool-icon mb-1" @click="publishUnpublishElement()">
-            <em :class="[element.publish ? 'fa-eye-slash' : 'fa-eye','far']" style="width: 45px" :id="'publish_icon_' + element.id"></em>
-            <span class="ml-10px" v-if="element.publish">{{Unpublish}}</span>
-            <span class="ml-10px" v-if="!element.publish">{{Publish}}</span>
-          </a>
-          <a class="d-flex tool-icon" v-if="plugin != 'display'">
-            <div class="toggle">
-              <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement()"/>
-              <strong class="b switch"></strong>
-              <strong class="b track"></strong>
-            </div>
-            <span class="ml-10px">{{Required}}</span>
-          </a>
+        <div class="update-field-header">
+          <div class="topright">
+            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalEditElement' + ID)">
+              <em class="fas fa-times-circle"></em>
+            </button>
+          </div>
+          <h2 class="update-title-header">
+            {{label[actualLanguage]}}
+          </h2>
         </div>
         <div class="form-group mb-2">
           <label>{{fieldType}} :</label>
@@ -59,19 +42,18 @@
           <displayF v-if="plugin =='display'" :element="element"></displayF>
         </div>
       </div>
-      <div class="d-flex justify-content-between mb-1">
-        <button type="button"
-                class="bouton-sauvergarder-et-continuer w-retour"
-                @click.prevent="$modal.hide('modalEditElement' + ID)">
-          {{Retour}}
-        </button>
+      <div class="col-md-12 mb-1">
         <button type="button"
                 class="bouton-sauvergarder-et-continuer"
                 @click.prevent="UpdateParams"
         >{{ Continuer }}</button>
+        <button type="button"
+                class="bouton-sauvergarder-et-continuer w-retour"
+                @click.prevent="$modal.hide('modalEditElement' + ID)"
+        >{{Retour}}</button>
       </div>
       <div class="loading-form" v-if="loading">
-        <Ring-Loader :color="'#12DB42'" />
+        <Ring-Loader :color="'#de6339'" />
       </div>
     </modal>
   </span>
@@ -151,21 +133,13 @@
         Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
         Require: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_REQUIRED"),
         Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE"),
+        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
         dataSaved: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED"),
         informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS"),
         fieldType: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_TYPE"),
         Delete: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
         LabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
         TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-        ElementOptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ELEMENT_OPTIONS"),
-        Unpublish: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH"),
-        Publish: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_PUBLISH"),
-        Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
-        update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
-        updating: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
-        updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
-        updateFailed: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
         //
       };
     },
@@ -265,7 +239,6 @@
                   this.informations
           );
         }
-        this.$emit("modalClosed");
       },
       beforeOpen(event) {
         this.initialisation();
@@ -273,66 +246,6 @@
       initialisation() {
         this.getElement();
         this.getDatabases();
-      },
-
-      publishUnpublishElement() {
-        axios({
-          method: "post",
-          url:
-              "index.php?option=com_emundus_onboard&controller=formbuilder&task=publishunpublishelement",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
-            element: this.element.id,
-          })
-        }).then(response => {
-          this.element.publish = !this.element.publish;
-          this.$emit("publishUnpublishEvent");
-          this.$emit(
-              "show",
-              "foo-velocity",
-              "success",
-              this.updateSuccess,
-              this.update
-          );
-        }).catch(e => {
-          this.$emit(
-              "show",
-              "foo-velocity",
-              "error",
-              this.updateFailed,
-              this.updating
-          );
-          console.log(e);
-        });
-      },
-
-      updateRequireElement() {
-        setTimeout(() => {
-          axios({
-            method: "post",
-            url:
-                "index.php?option=com_emundus_onboard&controller=formbuilder&task=changerequire",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              element: this.element
-            })
-          }).then(() => {
-            this.$emit("updateRequireEvent");
-          }).catch(e => {
-            this.$emit(
-                "show",
-                "foo-velocity",
-                "error",
-                this.updateFailed,
-                this.updating
-            );
-            console.log(e);
-          });
-        }, 300);
       },
     },
     computed: {
@@ -365,7 +278,4 @@
 </script>
 
 <style scoped>
-  .check{
-    width: 100%;
-  }
 </style>

@@ -233,19 +233,9 @@
     cm.setCursor(cm.getCursor());
   }
 
-  function makePrompt(msg) {
-    var fragment = document.createDocumentFragment();
-    var input = document.createElement("input");
-    input.setAttribute("type", "text");
-    input.style.width = "10em";
-    fragment.appendChild(document.createTextNode(msg + ": "));
-    fragment.appendChild(input);
-    return fragment;
-  }
-
   function getInput(cm, msg, f) {
     if (cm.openDialog)
-      cm.openDialog(makePrompt(msg), f, {bottom: true});
+      cm.openDialog(msg + ": <input type=\"text\" style=\"width: 10em\"/>", f, {bottom: true});
     else
       f(prompt(msg, ""));
   }

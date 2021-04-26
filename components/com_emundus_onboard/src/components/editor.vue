@@ -36,7 +36,6 @@ export default {
     lang: String,
     placeholder: String,
     id: String,
-    height: String,
     enable_variables: Boolean
   },
 
@@ -76,7 +75,7 @@ export default {
       toolbar: 'undo redo | forecolor bold italic underline strikethrough | fontsizeselect formatselect | image link preview | alignleft aligncenter alignright alignjustify hr | bullist numlist | outdent indent | insertfile media anchor| charmap emoticons backcolor | searchreplace print',
       fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
       content_css: baseUrl + 'skins/ui/oxide/content.min.css',
-      height: this.height,
+      height: '30em',
       branding: false,
       elementpath: false,
       statusbar: false,
@@ -128,7 +127,7 @@ export default {
           return '<span>[' + item.tag + ']</span>';
         },
         render: function(item) {
-          return '<li class="email-tags">' +
+          return '<li>' +
               '<a href="javascript:;"><span>' + item.tag + '</span><p>' + item.description + '</p></a>' +
               '</li>';
         },

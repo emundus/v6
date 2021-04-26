@@ -65,19 +65,19 @@ class EmundusModelCalendar extends JModelLegacy {
         }
 
         $category_data['id'] = 0;
-        $category_data['parent_id'] = (int)$parentId;
-        $category_data['title'] = $title;
-        $category_data['alias'] = $alias;
-        $category_data['path'] = $parentAlias."/".$alias;
+        $category_data['parent_id'] = $parentId;
+        $category_data['title'] = $title[0];
+        $category_data['alias'] = $alias[0];
+        $category_data['path'] = $parentAlias."/".$alias[0];
         $category_data['extension'] = 'com_dpcalendar';
         $category_data['published'] = 1;
         $category_data['language'] = '*';
         $category_data['params'] = array(
             'category_layout' => '',
             'image' => '',
-            'color' => $color,
+            'color' => $color[0],
             'etag' => '1',
-            'program' => $program,
+            'program' => $program[0],
             'googleId' => $googleId
         );
         $category_data['metadata'] = array(
@@ -85,7 +85,7 @@ class EmundusModelCalendar extends JModelLegacy {
             'robots' => ''
         );
 
-        return $this->createCategory($category_data);
+        $this->createCategory($category_data);
 
     }
 
@@ -648,8 +648,6 @@ class EmundusModelCalendar extends JModelLegacy {
 
     // Helper function, creates a category.
     function createCategory($data) {
-        $table = JTable::getInstance('Category');
-
         $data['rules'] = array(
             'core.edit.state' => array(),
             'core.edit.delete' => array(),
@@ -658,14 +656,18 @@ class EmundusModelCalendar extends JModelLegacy {
             'core.edit.own' => array(1 => true)
         );
 
-        $table->setLocation($data['parent_id'], 'last-child');
+        $basePath = JPATH_ADMINISTRATOR.'/components/com_categories';
+        require_once $basePath.'/models/category.php';
 
-        $table->bind($data);
+        $config  = array('table_path' => $basePath.'/tables');
+        $m_categories = new CategoriesModelCategory($config);
 
-        if ($table->check() && $table->store()) {
-            return true;
-        } else {
+        if (!$m_categories->save($data)) {
+            $err_msg = $m_categories->getError();
             return false;
+        } else {
+            $id = $m_categories->getItem()->id;
+            return true;
         }
     }
 

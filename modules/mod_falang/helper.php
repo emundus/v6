@@ -18,11 +18,11 @@ JLoader::register('MenusHelper', JPATH_ADMINISTRATOR . '/components/com_menus/he
 
 abstract class modFaLangHelper
 {
-    public static function getList(&$params)
-    {
-        $lang   = JFactory::getLanguage();
-        $languages	= JLanguageHelper::getLanguages();
-        $app	= JFactory::getApplication();
+	public static function getList(&$params)
+	{
+		$lang   = JFactory::getLanguage();
+		$languages	= JLanguageHelper::getLanguages();
+		$app	= JFactory::getApplication();
         $levels = JFactory::getUser()->getAuthorisedViewLevels();
 
 
@@ -31,19 +31,19 @@ abstract class modFaLangHelper
         $default_lang = JComponentHelper::getParams('com_languages')->get('site', 'en-GB');
         $default_sef 	= $lang_codes[$default_lang]->sef;
 
-        jimport('joomla.application.component.helper');
-        $cparams = JComponentHelper::getParams('com_falang');
+		jimport('joomla.application.component.helper');
+		$cparams = JComponentHelper::getParams('com_falang');
 
         $menu = $app->getMenu();
         $active = $menu->getActive();
         $uri = JURI::getInstance();
 
 
-        //falang 2.9.5 need to clone uri
-        $router = JRouter::getInstance($app->getName());
-        $tmpuri = clone($uri);
-        $router->parse($tmpuri);
-        $vars = $router->getVars();
+		//falang 2.9.5 need to clone uri
+		$router = JRouter::getInstance($app->getName());
+		$tmpuri = clone($uri);
+		$router->parse($tmpuri);
+		$vars = $router->getVars();
 
 
         //On edit mode the flag/name must be disabled
@@ -63,10 +63,10 @@ abstract class modFaLangHelper
         //methond valid since Joomla 3.2+
         $assoc =  JLanguageAssociations::isEnabled();
 
-        if ($assoc) {
-            if ($active) {
-                $associations = MenusHelper::getAssociations($active->id);
-            }
+		if ($assoc) {
+			if ($active) {
+				$associations = MenusHelper::getAssociations($active->id);
+			}
             // Load component associations
             $class = str_replace('com_', '', $app->input->get('option')) . 'HelperAssociation';
             JLoader::register($class, JPATH_COMPONENT_SITE . '/helpers/association.php');
@@ -78,12 +78,12 @@ abstract class modFaLangHelper
                     $cassociations = call_user_func(array($class, 'getAssociations'));
                 }
             }
-        }
-        foreach($languages as $i => &$language) {
-            // Do not display language without frontend UI, check user access level
-            if ((!JLanguage::exists($language->lang_code)) || ($language->access && !in_array($language->access, $levels))) {
-                unset($languages[$i]);
-            }
+		}
+   		foreach($languages as $i => &$language) {
+			// Do not display language without frontend UI, check user access level
+			if ((!JLanguage::exists($language->lang_code)) || ($language->access && !in_array($language->access, $levels))) {
+				unset($languages[$i]);
+			}
 
             $language_filter = JLanguageMultilang::isEnabled();
 
@@ -107,10 +107,10 @@ abstract class modFaLangHelper
                 if (isset($cassociations[$language->lang_code])) {
                     $language->link = JRoute::_($cassociations[$language->lang_code] . '&lang=' . $language->sef);
                     //fix mijoshop link
-                    if (isset($_GET['mijoshop_store_id'])) {
-                        $_link = explode('?', $language->link);
-                        $language->link = $_link[0];
-                    }
+					if (isset($_GET['mijoshop_store_id'])) {
+						$_link = explode('?', $language->link);
+						$language->link = $_link[0];
+					}
                     //if association existe for this language display flag.
                     $language->display = true;
                 }elseif (isset($associations[$language->lang_code]) && $menu->getItem($associations[$language->lang_code])) {
@@ -118,10 +118,12 @@ abstract class modFaLangHelper
                     $language->display = true;
                     $itemid = $associations[$language->lang_code];
 
-                    //3.4 Hikashop try to fix on product swither with native joomla menu
-                    $extraparams = modFaLangHelper::fixHikashopProductSwitch($language,$lang,$default_lang,$vars);
-
-                    $language->link = JRoute::_('index.php?lang=' . $language->sef . '&Itemid=' . $itemid .$extraparams  );
+	                //if ($app->input->get->get(‘option’, ‘’) !== ‘com_mojishop’) {
+	                //since 2.9.3 it's no more necessary
+//                    if (isset($_GET['option']) && $_GET['option'] != 'com_mijoshop') {
+//                        $vars['Itemid'] = $itemid;
+//                    }
+	                $language->link = JRoute::_('index.php?lang=' . $language->sef . '&Itemid=' . $itemid);
 
                 }
                 else {
@@ -140,64 +142,64 @@ abstract class modFaLangHelper
                         }
 
                         if (modFaLangHelper::sh404Enabled()){
-                            //TODO Check when the following JSite::getRouter(); is removed
+                        	//TODO Check when the following JSite::getRouter(); is removed
                             $router = JSite::getRouter();
                             $urlvars = $router->getVars();
                             $urlvars['lang'] = $language->sef;
-                            $url = 'index.php?'.JURI::buildQuery($urlvars);
-                            $language->link = JRoute::_($url);
+	                        $url = 'index.php?'.JURI::buildQuery($urlvars);
+	                        $language->link = JRoute::_($url);
                             continue;
                         }
 
-                        //workaround to fix index language
-                        $vars['lang'] = $language->sef;
+                         //workaround to fix index language
+                         $vars['lang'] = $language->sef;
 
-                        //fix for home menu on Joomla 3.7
-                        if (isset($vars['Itemid']) && ($vars['Itemid'] == $homes['*']->id) ){
-                            $language->link = JRoute::_('index.php?lang=' . $language->sef . '&Itemid=' . $homes['*']->id);
-                            continue;
-                        }
+						//fix for home menu on Joomla 3.7
+	                    if (isset($vars['Itemid']) && ($vars['Itemid'] == $homes['*']->id) ){
+		                    $language->link = JRoute::_('index.php?lang=' . $language->sef . '&Itemid=' . $homes['*']->id);
+		                    continue;
+	                    }
 
-                        //2.9.0
+	                    //2.9.0
 
-                        //look on menu_show for translated language by default is disabled due to extra query
-                        if ($cparams->get('advanced_menu_show',false) && !empty($vars['Itemid']))
-                        {
-                            $menu_show = 1;//default visible
+	                    //look on menu_show for translated language by default is disabled due to extra query
+	                    if ($cparams->get('advanced_menu_show',false) && !empty($vars['Itemid']))
+	                    {
+		                    $menu_show = 1;//default visible
 
-                            if ($lang->getTag() != $language->lang_code)
-                            {
-                                $fManager = FalangManager::getInstance();
-                                $id_lang  = $fManager->getLanguageID($language->lang_code);
-                                $db       = JFactory::getDbo();
-                                // get translated path if exist
-                                $query = $db->getQuery(true);
-                                $query->select('fc.value')
-                                    ->from('#__falang_content fc')
-                                    ->where('fc.reference_id = ' . (int) $vars['Itemid'])
-                                    ->where('fc.language_id = ' . (int) $id_lang)
-                                    ->where('fc.reference_field = \'params\'')
-                                    ->where('fc.published = 1')
-                                    ->where('fc.reference_table = \'menu\'');
-                                $db->setQuery($query);
-                                $translatedParams = $db->loadResult();
+		                    if ($lang->getTag() != $language->lang_code)
+		                    {
+			                    $fManager = FalangManager::getInstance();
+			                    $id_lang  = $fManager->getLanguageID($language->lang_code);
+			                    $db       = JFactory::getDbo();
+			                    // get translated path if exist
+			                    $query = $db->getQuery(true);
+			                    $query->select('fc.value')
+				                    ->from('#__falang_content fc')
+				                    ->where('fc.reference_id = ' . (int) $vars['Itemid'])
+				                    ->where('fc.language_id = ' . (int) $id_lang)
+				                    ->where('fc.reference_field = \'params\'')
+				                    ->where('fc.published = 1')
+				                    ->where('fc.reference_table = \'menu\'');
+			                    $db->setQuery($query);
+			                    $translatedParams = $db->loadResult();
 
-                                $registry = new \Joomla\Registry\Registry();
-                                $registry->loadString($translatedParams);
-                                $menu_show = (int)$registry->get('menu_show','1');
+			                    $registry = new \Joomla\Registry\Registry();
+			                    $registry->loadString($translatedParams);
+			                    $menu_show = (int)$registry->get('menu_show','1');
 
-                            } else {
-                                $_menu        = $menu->getItem($vars['Itemid']);
-                                $_menu_params = $_menu->getParams();
-                                $menu_show    = (int)$_menu_params->get('menu_show','1');
-                            }
-                            if ($menu_show == 0){$language->display = false;}
-                        }
-                        //fin 2.8.45
+		                    } else {
+			                    $_menu        = $menu->getItem($vars['Itemid']);
+			                    $_menu_params = $_menu->getParams();
+			                    $menu_show    = (int)$_menu_params->get('menu_show','1');
+		                    }
+		                    if ($menu_show == 0){$language->display = false;}
+	                    }
+	                    //fin 2.8.45
 
 
 
-                        //since 2.2.1
+	                    //since 2.2.1
                         //case of article category view
                         //set the language used to reload category with the right language
                         $jfm = FalangManager::getInstance();
@@ -242,11 +244,11 @@ abstract class modFaLangHelper
                             $item = $model->getItem($vars['id']);
 
                             //v2.9.0
-                            //for specific language item
-                            //set display to false exept for the display language and for associated item.
-                            if ($item->language != '*' && $language->lang_code != $item->language){
-                                $language->display = false;
-                            }
+	                        //for specific language item
+	                        //set display to false exept for the display language and for associated item.
+	                        if ($item->language != '*' && $language->lang_code != $item->language){
+		                        $language->display = false;
+	                        }
 
 
                             //get alias of content item without the id , so i don't have the translation
@@ -262,16 +264,16 @@ abstract class modFaLangHelper
 
                         //2.9.0
                         //case of k2 item with specific language set
-                        if (!empty($vars['view']) && $vars['view'] == 'item'  && !empty($vars['option']) && $vars['option'] == 'com_k2') {
-                            JModelLegacy::addIncludePath(JPATH_SITE.'/components/com_k2/models', 'K2Model');
-                            $model = JModelLegacy::getInstance('Item', 'K2Model', array('ignore_request'=>true));
-                            $item = $model->getData();
+	                    if (!empty($vars['view']) && $vars['view'] == 'item'  && !empty($vars['option']) && $vars['option'] == 'com_k2') {
+		                    JModelLegacy::addIncludePath(JPATH_SITE.'/components/com_k2/models', 'K2Model');
+		                    $model = JModelLegacy::getInstance('Item', 'K2Model', array('ignore_request'=>true));
+		                    $item = $model->getData();
 
-                            if ($item->language != '*' && $language->lang_code != $item->language){
-                                $language->display = false;
-                            }
-                        }
-                        //end 2.9.0
+		                    if ($item->language != '*' && $language->lang_code != $item->language){
+			                    $language->display = false;
+		                    }
+	                    }
+						//end 2.9.0
 
                         //new version 1.5
                         //case for k2 item alias write twice
@@ -287,8 +289,8 @@ abstract class modFaLangHelper
                         //fix for virtuemart url with showall, limitstart, limit on productsdetail page
                         if (isset($vars['option']) && $vars['option'] == 'com_virtuemart'){
                             if (isset($vars['view']) && $vars['view'] == 'productdetails'){
-                                vmLanguage::setLanguageByTag($language->lang_code);
-                                unset($vars['showall']);
+	                            vmLanguage::setLanguageByTag($language->lang_code);
+	                            unset($vars['showall']);
                                 unset($vars['limitstart']);
                                 unset($vars['limit']);
                             }
@@ -297,10 +299,10 @@ abstract class modFaLangHelper
 
                         //fix for hikashop url with start on product page
                         if (isset($vars['option']) && $vars['option'] == 'com_hikashop'){
-                            if (isset($vars['view']) && $vars['view'] == 'product'){
-                                unset($vars['start']);
-                            }
-                        }
+							  if (isset($vars['view']) && $vars['view'] == 'product'){
+								  unset($vars['start']);
+							  }
+						}						
 
                         $url = 'index.php?'.JURI::buildQuery($vars);
                         $language->link = JRoute::_($url);
@@ -400,59 +402,59 @@ abstract class modFaLangHelper
                         }
                     }
                     //default case
-                    else
-                    {
-                        //since 3.4.3 JUri Reset needed
-                        //fix problem on mod_login (same position before falang module
+             else
+             {
+	             //since 3.4.3 JUri Reset needed
+	             //fix problem on mod_login (same position before falang module
 
-                        //fix 2.8.4
-                        // bug when menu item translation don't link to the same item or type
-                        // need to load the path of the ItemId
-                        //si on est sur une page traduite on doit récupérer la traduction du path en cours
-                        JUri::reset();
-                        $uri = JUri::getInstance();
-                        $uri->setVar('lang', $language->sef);
+	             //fix 2.8.4
+	             // bug when menu item translation don't link to the same item or type
+	             // need to load the path of the ItemId
+	             //si on est sur une page traduite on doit récupérer la traduction du path en cours
+	             JUri::reset();
+	             $uri = JUri::getInstance();
+	             $uri->setVar('lang', $language->sef);
 
-                        $input = JFactory::getApplication()->input;
-                        $vars = $input->getArray();
+	             $input = JFactory::getApplication()->input;
+	             $vars = $input->getArray();
 
-                        //set language link
-                        $language->link = modFaLangHelper::getLinkWithoutSefEnabled($language, $lang, $default_lang, $vars);
+	             //set language link
+	             $language->link = modFaLangHelper::getLinkWithoutSefEnabled($language, $lang, $default_lang, $vars);
 
-                        //v2.9.0
-                        //for specific language item on content
-                        //set display to false exept for the display language and for associated item.
-                        if ($uri->getVar('view') == 'article' && $uri->getVar('option') == 'com_content')
-                        {
-                            JModelLegacy::addIncludePath(JPATH_SITE.'/components/com_content/models', 'ContentModel');
-                            $model = JModelLegacy::getInstance('Article', 'ContentModel', array('ignore_request'=>true));
-                            $appParams = JFactory::getApplication()->getParams();
-                            $model->setState('params', $appParams);
-                            $item = $model->getItem($uri->getVar('id'));
+	             //v2.9.0
+	             //for specific language item on content
+	             //set display to false exept for the display language and for associated item.
+	             if ($uri->getVar('view') == 'article' && $uri->getVar('option') == 'com_content')
+	             {
+		             JModelLegacy::addIncludePath(JPATH_SITE.'/components/com_content/models', 'ContentModel');
+		             $model = JModelLegacy::getInstance('Article', 'ContentModel', array('ignore_request'=>true));
+		             $appParams = JFactory::getApplication()->getParams();
+		             $model->setState('params', $appParams);
+		             $item = $model->getItem($uri->getVar('id'));
 
-                            if ($item->language != '*' && $language->lang_code != $item->language)
-                            {
-                                $language->display = false;
-                            }
-                        }//end 2.9.0
+		             if ($item->language != '*' && $language->lang_code != $item->language)
+		             {
+			             $language->display = false;
+		             }
+	             }//end 2.9.0
 
-                        //2.9.0
-                        //case of k2 item with specific language set
-                        if ($uri->getVar('view') == 'item'  && $uri->getVar('option') == 'com_k2') {
-                            JModelLegacy::addIncludePath(JPATH_SITE.'/components/com_k2/models', 'K2Model');
-                            $model = JModelLegacy::getInstance('Item', 'K2Model', array('ignore_request'=>true));
-                            $item = $model->getData();
+	             //2.9.0
+	             //case of k2 item with specific language set
+	             if ($uri->getVar('view') == 'item'  && $uri->getVar('option') == 'com_k2') {
+		             JModelLegacy::addIncludePath(JPATH_SITE.'/components/com_k2/models', 'K2Model');
+		             $model = JModelLegacy::getInstance('Item', 'K2Model', array('ignore_request'=>true));
+		             $item = $model->getData();
 
-                            if ($item->language != '*' && $language->lang_code != $item->language){
-                                $language->display = false;
-                            }
-                        }//end 2.9.0
+		             if ($item->language != '*' && $language->lang_code != $item->language){
+			             $language->display = false;
+		             }
+	             }//end 2.9.0
 
 
 
-                        //fix problem on mod_login (same position before falang module
-                        JUri::reset();
-                    }//end sef
+	             //fix problem on mod_login (same position before falang module
+	             JUri::reset();
+             }//end sef
                 }
             }
             //no language filter published
@@ -460,16 +462,16 @@ abstract class modFaLangHelper
                 $language->link = 'index.php';
             }
 
-        }
-        return $languages;
-    }
+		}
+		return $languages;
+	}
 
     public static function isFalangDriverActive() {
         $db = JFactory::getDBO();
         if (!is_a($db,"JFalangDatabase")){
-            return false;
+           return false;
         }
-        return true;
+           return true;
     }
 
     public static function isEditMode(){
@@ -509,143 +511,66 @@ abstract class modFaLangHelper
         }
     }
 
-    /**
-     *
-     * New method to build link for non sef url when the translated url don't link to the same item
-     * $language language in the loop of flang
-     * $lang Language displayed on the site
-     * $default_lang site default langue
-     *
-     * @since version 2.8.4
-     */
+	/**
+	 *
+	 * New method to build link for non sef url when the translated url don't link to the same item
+	 * $language language in the loop of flang
+	 * $lang Language displayed on the site
+	 * $default_lang site default langue
+	 *
+	 * @since version 2.8.4
+	 */
     public static function getLinkWithoutSefEnabled($language,$lang,$default_lang,$vars)
     {
 
-        //workaround to fix index language
-        if (empty($vars['lang'])){
-            $vars['lang'] = $language->sef;
-        }
+	    //workaround to fix index language
+	    if (empty($vars['lang'])){
+		    $vars['lang'] = $language->sef;
+	    }
 
-        $link = null;
+	    $link = null;
 
-        //build link for a language look not for the page language displayed
-        if (($lang->getTag() != $language->lang_code) && !empty($vars['Itemid']))
-        {
-            $fManager = FalangManager::getInstance();
-            $id_lang  = $fManager->getLanguageID($language->lang_code);
-            $db       = JFactory::getDbo();
-            // get translated path if exist
-            $query = $db->getQuery(true);
-            $query->select('fc.value')
-                ->from('#__falang_content fc')
-                ->where('fc.reference_id = ' . (int) $vars['Itemid'])
-                ->where('fc.language_id = ' . (int) $id_lang)
-                ->where('fc.reference_field = \'link\'')
-                ->where('fc.published = 1')
-                ->where('fc.reference_table = \'menu\'');
-            $db->setQuery($query);
-            $translatedPath = $db->loadResult();
+	    //build link for a language look not for the page language displayed
+	    if (($lang->getTag() != $language->lang_code) && !empty($vars['Itemid']))
+	    {
+		    $fManager = FalangManager::getInstance();
+		    $id_lang  = $fManager->getLanguageID($language->lang_code);
+		    $db       = JFactory::getDbo();
+		    // get translated path if exist
+		    $query = $db->getQuery(true);
+		    $query->select('fc.value')
+			    ->from('#__falang_content fc')
+			    ->where('fc.reference_id = ' . (int) $vars['Itemid'])
+			    ->where('fc.language_id = ' . (int) $id_lang)
+			    ->where('fc.reference_field = \'link\'')
+			    ->where('fc.published = 1')
+			    ->where('fc.reference_table = \'menu\'');
+		    $db->setQuery($query);
+		    $translatedPath = $db->loadResult();
 
-            // $translatedPath not exist if not translated or site default language
-            // don't pass id to the query , so no translation given by falang
-            $query = $db->getQuery(true);
-            $query->select('m.link')
-                ->from('#__menu m')
-                ->where('m.id = ' . (int) $vars['Itemid']);
-            $db->setQuery($query);
-            $originalPath = $db->loadResult();
+		    // $translatedPath not exist if not translated or site default language
+		    // don't pass id to the query , so no translation given by falang
+		    $query = $db->getQuery(true);
+		    $query->select('m.link')
+			    ->from('#__menu m')
+			    ->where('m.id = ' . (int) $vars['Itemid']);
+		    $db->setQuery($query);
+		    $originalPath = $db->loadResult();
 
-            //v3.4.4
-            //fix case for item linked to a blog menu and display submenu (the itemId is releated to the blog menu
-            //not item
-            if (($originalPath == $translatedPath) || empty($translatedPath)){
-                return JUri::getInstance()->toString(array('scheme', 'host', 'port', 'path', 'query'));
-            }
+		    //si language de boucle et language site
+		    if (isset($translatedPath)){
+		    	$link = $translatedPath;
+		    } else {
+		    	$link = $originalPath;
+		    }
+		    $link = $link . '&Itemid=' . (int) $vars['Itemid'] . '&lang=' . $language->sef;
+		    //fix com_mwosoby component who need the id
+		    if (!empty($vars['id'])){
+			    $link .= '&id='.(int)$vars['id'];
+		    }
 
-            //si language de boucle et language site
-            if (isset($translatedPath)){
-                $link = $translatedPath;
-            } else {
-                $link = $originalPath;
-            }
-            $link = $link . '&Itemid=' . (int) $vars['Itemid'] . '&lang=' . $language->sef;
-            //fix com_mwosoby component who need the id
-            if (!empty($vars['id'])){
-                $link .= '&id='.(int)$vars['id'];
-            }
-
-            return $link;
-        }
-        return JUri::getInstance()->toString(array('scheme', 'host', 'port', 'path', 'query'));
-    }
-
-    /**
-     *
-     * get the extra param's to build the route for hikahsop product page with default joomal menu
-     * $loop_language language in the loop of flang
-     * $site_language Language tag displayed on the site
-     * $default_language site default language
-     * $vars
-     *
-     * @since version 3.4
-     */
-    public static function fixHikashopProductSwitch($loop_language,$site_language,$default_lang,$vars){
-        $name ='';
-        if (isset($vars['option']) && $vars['option'] == 'com_hikashop') {
-            if (isset($vars['ctrl']) && $vars['ctrl'] == 'product' && isset($vars['task'])  && $vars['task'] == 'show') {
-                if (isset($vars['cid'])) {
-                    //si langue deu site la variable name est la bonne
-                    if ($loop_language == $site_language){
-                        $name = $vars['name'];
-                    }
-                    // si pas la langue par default traduction dans falang
-                    elseif ( $default_lang != $loop_language->lang_code ) {
-                        $fManager = FalangManager::getInstance();
-                        $id_lang  = $fManager->getLanguageID( $loop_language->lang_code );
-                        $db       = JFactory::getDbo();
-                        $dbQuery  = $db->getQuery( true )
-                            ->select( 'fc.value' )
-                            ->from( '#__falang_content fc' )
-                            ->where( 'fc.reference_id = ' . (int) $vars['cid'] )
-                            ->where( 'fc.language_id = ' . (int) $id_lang )
-                            ->where( 'fc.reference_field = \'product_alias\'' )
-                            ->where( 'fc.published = 1' )
-                            ->where( 'fc.reference_table = \'hikashop_product\'' );
-
-                        $db->setQuery( $dbQuery );
-                        $alias = $db->loadResult();
-                        if ( isset( $alias ) ) {
-                            $name = $alias;
-                        }
-
-                    }
-
-                    //pas de traduction et pas de langue du site affiché
-                    //on prends l'alias du produit
-                    if (empty($name)){
-                        // translated languague look in native table
-                        $db      = JFactory::getDbo();
-                        $dbQuery = $db->getQuery( true )
-                            ->select( 'product_alias' )
-                            ->from( '#__hikashop_product' )
-                            ->where( 'product_id = ' . (int) $vars['cid'] );
-                        $db->setQuery( $dbQuery );
-                        $alias = $db->loadResult();
-                        if ( isset( $alias ) ) {
-                            $name = $alias;
-                        }
-
-                    }
-
-                    return '&cid='.$vars['cid'].'&name='.$name;
-                }
-
-            }
-
-        }
-
-
-        return $name;
-
+		    return $link;
+	    }
+	    return JUri::getInstance()->toString(array('scheme', 'host', 'port', 'path', 'query'));
     }
 }

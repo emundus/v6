@@ -581,7 +581,7 @@
 			type="url"
 			target="_blank"
 			title="MOD_MENU_HELP_RESOURCES"
-			link="https://community.joomla.org/service-providers-directory/"
+			link="https://resources.joomla.org"
 			class="class:help-jrd"
 			scope="help"
 		/>

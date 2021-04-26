@@ -16,12 +16,7 @@
     />
     <div class="choices-buttons">
       <h2 style="margin-bottom: 0">{{ CandidateAction }}</h2>
-      <a @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null" class="bouton-ajouter bouton-ajouter-green pointer" style="width: max-content">
-        <div class="add-button-div">
-          <em class="fas fa-plus mr-1"></em>
-          {{ addTrigger }}
-        </div>
-      </a>
+      <button type="button" @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null" class="bouton-sauvergarder-et-continuer">{{ addTrigger }}</button>
     </div>
     <p>{{ TheCandidateDescription }}</p>
     <transition-group :name="'slide-down'" type="transition">
@@ -40,22 +35,15 @@
           </p>
           <p>{{Status}} {{trigger.status}}</p>
         </div>
-        <div style="display: grid">
-          <button type="button" @click="removeTrigger(trigger.trigger_id)" class="buttonDeleteDoc" :title="removeTrig"><em class="fas fa-times"></em></button>
-          <a @click="editTrigger(trigger)" class="cta-block pointer">
-            <em class="fas fa-pen"></em>
-          </a>
+        <div>
+          <button type="button" @click="removeTrigger(trigger.trigger_id)" class="remove-user"><em class="fas fa-times"></em></button>
+          <button type="button" @click="editTrigger(trigger)"><em class="fas fa-edit"></em></button>
         </div>
       </div>
     </transition-group>
     <div class="choices-buttons">
       <h2 style="margin-bottom: 0">{{ ManagerAction }}</h2>
-      <a @click="$modal.show('modalAddTriggermanual'); triggerSelected = null" class="bouton-ajouter bouton-ajouter-green pointer" style="width: max-content">
-        <div class="add-button-div">
-          <em class="fas fa-plus mr-1"></em>
-          {{ addTrigger }}
-        </div>
-      </a>
+      <button type="button" @click="$modal.show('modalAddTriggermanual'); triggerSelected = null" class="bouton-sauvergarder-et-continuer">{{ addTrigger }}</button>
     </div>
     <p>{{ ManualDescription }}</p>
     <transition-group :name="'slide-down'" type="transition">
@@ -74,11 +62,9 @@
           </p>
           <p>{{Status}} {{trigger.status}}</p>
         </div>
-        <div style="display: grid">
-          <button type="button" @click="removeTrigger(trigger.trigger_id)" class="buttonDeleteDoc"><em class="fas fa-times"></em></button>
-          <a @click="editTrigger(trigger)" class="cta-block pointer">
-            <em class="fas fa-pen"></em>
-          </a>
+        <div>
+          <button type="button" @click="removeTrigger(trigger.trigger_id)" class="remove-user"><em class="fas fa-times"></em></button>
+          <button type="button" @click="editTrigger(trigger)"><em class="fas fa-edit"></em></button>
         </div>
       </div>
     </transition-group>
@@ -104,7 +90,6 @@ export default {
       manual_trigger: 0,
       candidate_trigger: 0,
       addTrigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER"),
-      removeTrig: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_REMOVETRIGGER"),
       affectTriggers: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_AFFECTTRIGGERS"),
       ChooseEmailTrigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_EMAIL_TRIGGER"),
       Target: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET"),
@@ -183,11 +168,10 @@ export default {
     display: flex;
     justify-content: space-between;
     padding: 30px;
-    background-color: #fff;
+    background-color: #f0f0f0;
     border-radius: 5px;
     align-items: center;
-    margin: 1em 0;
-    border: solid 2px #ececec;
+    margin-bottom: 1em;
   }
 
   .remove-user{
@@ -201,5 +185,18 @@ export default {
   }
   .remove-user:hover > .fa-times {
     color: white;
+  }
+
+  .fa-times{
+    color: red;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+  }
+
+  .fa-edit{
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
   }
 </style>

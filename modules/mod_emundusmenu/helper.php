@@ -22,7 +22,7 @@ class modEmundusMenuHelper
 	 * @return	array
 	 * @since	1.5
 	 */
-	static function getList(&$params,$default_menutype = null)
+	static function getList(&$params)
 	{
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
@@ -46,11 +46,7 @@ class modEmundusMenuHelper
 			$start		= (int) $params->get('startLevel');
 			$end		= (int) $params->get('endLevel');
 			$showAll	= $params->get('showAllChildren');
-			if($default_menutype != null){
-				$items 		= $menu->getItems('menutype', $default_menutype);
-			} else {
-				$items 		= $menu->getItems('menutype', $user->menutype);
-			}
+			$items 		= $menu->getItems('menutype', $user->menutype);
 
 			$lastitem	= 0;
 
@@ -118,7 +114,7 @@ class modEmundusMenuHelper
 					else {
 						$item->flink = JRoute::_($item->flink);
 					}
-
+				
 					$item->title        = htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8', false);
 					$item->anchor_css   = htmlspecialchars($item->params->get('menu-anchor_css', ''), ENT_COMPAT, 'UTF-8', false);
 					$item->anchor_title = htmlspecialchars($item->params->get('menu-anchor_title', ''), ENT_COMPAT, 'UTF-8', false);
