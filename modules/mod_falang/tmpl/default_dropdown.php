@@ -8,13 +8,11 @@
 
 // No direct access to this file
 defined('_JEXEC') or die;
-$document = JFactory::getDocument();
-$document->addStyleSheet("modules/mod_falang/style/mod_falang.css");
 
 ?>
 <form name="lang" method="post" action="<?php echo htmlspecialchars(JUri::current()); ?>">
     <?php if (!$params->get('advanced_dropdown',0)) : ?>
-    	<select class="inputbox" onchange="document.location.replace(this.value);" >
+        <select class="inputbox" onchange="document.location.replace(this.value);" >
             <?php foreach($list as $language):?>
                 <?php if ($language->display) { ?>
                     <option value="<?php echo $language->link;?>" <?php echo !empty($language->active) ? 'selected="selected"' : ''?>><?php echo $language->title_native;?></option>
@@ -42,21 +40,18 @@ $document->addStyleSheet("modules/mod_falang/style/mod_falang.css");
         </script>
 
         <!-- >>> [PAID] >>> -->
-        <?php foreach($list as $language):?>
-            <?php if ($language->active) :?>
-                <a href="javascript:;" class="langChoose">
-                    <div class="langChoose__img_label">
-                   <?php if ($params->get('image', 1)):?>
-                      <?php echo JHtml::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native), $relativePath);?>
-                       <?php endif; ?>
-                        <?php if ($params->get('show_name', 1)):?>
-                       <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
-                   <?php endif; ?>
-                    </div>
-                    <span class="caret"></span>
-                </a>
+    <?php foreach($list as $language):?>
+        <?php if ($language->active) :?>
+        <a href="javascript:;" class="langChoose">
+            <?php if ($params->get('image', 1)):?>
+                <?php echo JHtml::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native), $relativePath);?>
+            <?php else : ?>
+                <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
             <?php endif; ?>
-        <?php endforeach;?>
+            <span class="caret"></span>
+        </a>
+    <?php endif; ?>
+    <?php endforeach;?>
         <ul class="<?php echo $params->get('inline', 1) ? 'lang-inline' : 'lang-block';?>" style="display: none">
             <?php foreach($list as $language):?>
                 <?php if ($params->get('show_active', 0) || !$language->active):?>
@@ -64,10 +59,10 @@ $document->addStyleSheet("modules/mod_falang/style/mod_falang.css");
                         <?php if ($language->display) { ?>
                             <a href="<?php echo $language->link;?>">
                                 <?php if ($params->get('image', 1)):?>
-                                   <?php echo JHtml::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native), $relativePath);?>
+                                    <?php echo JHtml::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native), $relativePath);?>
                                 <?php endif; ?>
                                 <?php if ($params->get('show_name', 1)):?>
-                                   <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
+                                    <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
                                 <?php endif; ?>
                                 <?php if($language->active){?> <i class="fa fa-check lang_checked"></i> <?php } ?>
                             </a>
@@ -76,7 +71,7 @@ $document->addStyleSheet("modules/mod_falang/style/mod_falang.css");
                                 <?php echo JHtml::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native,'style'=>'opacity:0.5'), $relativePath);?>
                             <?php else : ?>
                                 <?php if ($params->get('show_name', 1)):?>
-                                  <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
+                                    <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
                                 <?php endif; ?>
                                 <?php if($language->active){?> <i class="fa fa-check lang_checked"></i> <?php } ?>
                             <?php endif; ?>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="3.0" method="upgrade">
 
-	<name>emundus_onboard</name>
+	<name>Tchooz</name>
 	<!-- The following elements are optional and free of formatting constraints -->
 	<creationDate>April 2020</creationDate>
 	<author>eMundus</author>
@@ -48,7 +48,7 @@
 
 	<administration>
 		<!-- Administration Menu Section -->
-		<menu link='index.php?option=com_emundus_onboard'>emundus_onboard</menu>
+		<menu link='index.php?option=com_emundus_onboard'>Tchooz</menu>
 		<!-- Administration Main File Copy Section -->
 		<!-- Note the folder attribute: This attribute describes the folder
 			to copy FROM in the package to install therefore files copied
