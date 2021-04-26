@@ -133,10 +133,10 @@ export default {
       //console.log()
       this.changes = true;
       //if(!((this.label.en).contains("___"+prid))) {
-        this.label.en = this.label.en + "___" + prid
+        this.label.en = prid+'_'+this.label.en
       //}
       //if(!this.label.fr.contains('___'+prid)) {
-        this.label.fr = this.label.fr + '___' + prid
+        this.label.fr = prid+'_'+this.label.fr
       //}
       this.axioschange(this.intro, this.tempEl.intro_raw);
       this.axioschange(this.label, this.tempEl.show_title.titleraw);
@@ -281,8 +281,8 @@ export default {
         });
       this.axiostrad(this.tempEl.show_title.titleraw)
         .then(response => {
-          this.label.fr = (response.data.fr.split('___'))[0];
-          this.label.en = (response.data.en.split('___'))[0];
+          this.label.fr = (response.data.fr.split('_'))[1];
+          this.label.en = (response.data.en.split('_'))[1];
         })
         .catch(function(response) {
           console.log(response);

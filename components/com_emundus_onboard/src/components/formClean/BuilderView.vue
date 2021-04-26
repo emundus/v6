@@ -336,7 +336,7 @@ export default {
     // Elements update
     slpitProfileIdfromLabel(label){
 
-      return (label.split('___'))[0]
+      return (label.split('_'))[1]
 
     },
     async updateElementsOrder(group, list, elt) {
@@ -1036,8 +1036,8 @@ export default {
       //console.log("update label page");
       //console.log(page);
       let labels = {
-        fr: page.show_title.label.fr+'___'+this.prid,
-        en: page.show_title.label.en+'___'+this.prid
+        fr: this.prid+'_'+page.show_title.label.fr,
+        en: this.prid+'_'+page.show_title.label.en
       }
       axios({
         method: "post",
@@ -1061,7 +1061,7 @@ export default {
             },
             data: qs.stringify({
               pid: page.id,
-              label: page.show_title.label.fr+'___'+this.prid
+              label: this.prid+'_'+page.show_title.label.fr
             })
           });
         }
@@ -1152,10 +1152,11 @@ export default {
 
     getDataObject: _.debounce(function() {
       this.object_json = this.object.object;
+      //console.log(this.object_json.show_title.label.fr);
       this.object_json.show_title.label.fr=this.slpitProfileIdfromLabel(this.object_json.show_title.label.fr);
       this.object_json.show_title.label.en=this.slpitProfileIdfromLabel(this.object_json.show_title.label.en);
 
-      console.log("after json");
+      //console.log("after json");
       this.getElementsArray();
     }, 500),
     getApiData: _.debounce(function() {

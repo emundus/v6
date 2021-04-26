@@ -453,7 +453,7 @@
     methods: {
       slpitProfileIdfromLabel(label){
 
-        return (label.split('___'))[0]
+        return (label.split('_'))[1]
 
       },
 
