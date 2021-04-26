@@ -16,60 +16,61 @@ $form = $this->form;
 $model = $this->getModel();
 
 if ($this->params->get('show_page_heading', 1)) : ?>
-	<div class="componentheading<?php echo $this->params->get('pageclass_sfx')?>">
-		<?php echo $this->escape($this->params->get('page_heading')); ?>
-	</div>
+    <div class="componentheading<?php echo $this->params->get('pageclass_sfx')?>">
+        <?php echo $this->escape($this->params->get('page_heading')); ?>
+    </div>
 <?php
 endif;
 
 if ($this->params->get('show-title', 1)) :?>
-<div class="page-header">
-	<h1><?php echo $form->label;?></h1>
-</div>
+    <div class="page-header">
+        <h1><?php $title = explode('-', $form->label); echo $title = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0])); ?></h1>
+    </div>
 <?php
 endif;
-
+$document = JFactory::getDocument();
+$document->setTitle($title);
 echo $form->intro;
 if ($this->isMambot) :
-	echo '<div class="fabrikForm fabrikDetails fabrikIsMambot" id="' . $form->formid . '">';
+    echo '<div class="fabrikForm fabrikDetails fabrikIsMambot" id="' . $form->formid . '">';
 else :
-	echo '<div class="fabrikForm fabrikDetails" id="' . $form->formid . '">';
+    echo '<div class="fabrikForm fabrikDetails" id="' . $form->formid . '">';
 endif;
 echo $this->plugintop;
 echo $this->loadTemplate('buttons');
 echo $this->loadTemplate('relateddata');
 foreach ($this->groups as $group) :
-	$this->group = $group;
-	?>
+    $this->group = $group;
+    ?>
 
-		<div class="<?php echo $group->class; ?>" id="group<?php echo $group->id;?>" style="<?php echo $group->css;?>">
+    <div class="<?php echo $group->class; ?>" id="group<?php echo $group->id;?>" style="<?php echo $group->css;?>">
 
-		<?php
-		if ($group->showLegend) :?>
-			<h3 class="legend">
-				<span><?php echo $group->title;?></span>
-			</h3>
-		<?php endif;
+        <?php
+        if ($group->showLegend) :?>
+            <h3 class="legend">
+                <span><?php echo $group->title;?></span>
+            </h3>
+        <?php endif;
 
-		if (!empty($group->intro)) : ?>
-			<div class="groupintro"><?php echo $group->intro ?></div>
-		<?php
-		endif;
+        if (!empty($group->intro)) : ?>
+            <div class="groupintro"><?php echo $group->intro ?></div>
+        <?php
+        endif;
 
-		// Load the group template - this can be :
-		//  * default_group.php - standard group non-repeating rendered as an unordered list
-		//  * default_repeatgroup.php - repeat group rendered as an unordered list
-		//  * default_repeatgroup_table.php - repeat group rendered in a table.
+        // Load the group template - this can be :
+        //  * default_group.php - standard group non-repeating rendered as an unordered list
+        //  * default_repeatgroup.php - repeat group rendered as an unordered list
+        //  * default_repeatgroup_table.php - repeat group rendered in a table.
 
-		$this->elements = $group->elements;
-		echo $this->loadTemplate($group->tmpl);
+        $this->elements = $group->elements;
+        echo $this->loadTemplate($group->tmpl);
 
-		if (!empty($group->outro)) : ?>
-			<div class="groupoutro"><?php echo $group->outro ?></div>
-		<?php
-		endif;
-		?>
-	</div>
+        if (!empty($group->outro)) : ?>
+            <div class="groupoutro"><?php echo $group->outro ?></div>
+        <?php
+        endif;
+        ?>
+    </div>
 <?php
 endforeach;
 
