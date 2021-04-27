@@ -49,7 +49,7 @@
         </transition>
       </div>-->
 
-      <div class="col-md-12 col-sm-10 col-sm-offset-4 col-md-offset-1 col-lg-offset-1 p-1" style="padding-left: 2em !important">
+      <div class="col-md-12 col-sm-10 p-1" style="padding-left: 2em !important">
         <div class="section-sub-menu">
           <div class="container-2 w-container" style="max-width: unset">
             <div class="d-flex">
@@ -549,7 +549,7 @@ export default {
 .topnav  {
   /*background-color: #333;*/
   overflow: hidden;
-  margin-left: auto;
+  margin: 0 auto;
   border-bottom: 1px solid #ddd
 }
 .w--current{
