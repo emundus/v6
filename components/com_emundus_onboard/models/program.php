@@ -161,7 +161,7 @@ class EmundusonboardModelprogram extends JModelList {
 
         $db = $this->getDbo();
         $query = $db->getQuery(true);
-//var_dump($data);
+
         if (array_values($data)[1] == "") {
             $data = null;
         }
