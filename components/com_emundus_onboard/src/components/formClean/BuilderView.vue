@@ -8,7 +8,7 @@
       v-html="object_json.show_page_heading.page_heading"
     />
     <div class="d-flex header-form-page mb-1" v-if="eval == 0 && !updatePage">
-      <h2 v-if="object_json.show_title" class="page_header mr-1" @click="enableUpdatingPage(object_json)" v-html="this.slpitProfileIdfromLabel(object_json.show_title.value)" />
+      <h2 v-if="object_json.show_title" class="page_header mr-1" @click="enableUpdatingPage(object_json)" v-html="this.splitProfileIdFromLabel(object_json.show_title.value)" />
       <span @click="$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="Edit" class="cta-block pointer" style="font-size: 16px">
         <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
       </span>
@@ -334,11 +334,10 @@ export default {
   },
   methods: {
     // Elements update
-    slpitProfileIdfromLabel(label){
-
-      return (label.split('_'))[1]
-
+    splitProfileIdFromLabel(label){
+      return (label.split(/-(.+)/))[1];
     },
+
     async updateElementsOrder(group, list, elt) {
       var elements = list.map((element, index) => {
         return { id: element.id, order: index + 1 };
@@ -369,16 +368,7 @@ export default {
           });
         });
         elt.group_id = group;
-      }).catch(e => {
-        /*this.$emit(
-                "show",
-                "foo-velocity",
-                "error",
-                this.orderFailed,
-                this.updating
-        );
-        console.log(e);*/
-      });
+      }).catch(e => {});
     },
 
     updateRequireElement(element) {
@@ -406,7 +396,6 @@ export default {
               this.updateFailed,
               this.updating
           );
-          console.log(e);
         });
       }, 300);
     },
@@ -458,11 +447,7 @@ export default {
         data: qs.stringify({
           did: docid,
         })
-      }).then((rep) => {
-
-        //console.log(rep);
-          }
-      );
+      }).then((rep) => {});
 
       // delete document form profile
       axios({
@@ -475,11 +460,8 @@ export default {
         data: qs.stringify({
           did: docid,
         })
-      }).then((rep) => {
-           // console.log("docdeleted from profile");
-            console.log(rep);
-          }
-      );
+      }).then((rep) => {});
+
       // remove document
       axios({
         method: "post",
@@ -493,17 +475,10 @@ export default {
           prid: this.prid,
           cid: this.cid
         })
-      }).then((rep) => {
-            //console.log("remove docuement from profile");
-            console.log(rep);
-          }
-      );
-
+      }).then((rep) => {});
     },
 
     deleteElement(element,index) {
-      //console.log("delete elements");
-      //console.log(element);
       if(this.clickUpdatingLabel) {
           this.updateLabelElement(element);
       }
@@ -543,9 +518,7 @@ export default {
               delete this.object_json.Groups['group_' + element.group_id].elements['element' + element.id];
               this.$forceUpdate();
             });
-          }).catch(e => {
-            console.log(e);
-          });
+          }).catch(e => {});
         }
       });
     },
@@ -567,7 +540,6 @@ export default {
       this.$modal.show('modalEditElement' + element.id)
     },
     retrieveAssociateElementDoc(docid){
-      //console.log("retrieve doc element ");
       axios({
         method: "post",
         url: 'index.php?option=com_emundus_onboard&controller=formbuilder&task=retriveElementFormAssociatedDoc',
@@ -579,10 +551,6 @@ export default {
           docid:docid
         })
       }).then((result)=>{
-        //console.log(result);
-        //console.log("retrieve doc perform");
-        //this.elementAssociateDocUpdateForm.name[this.actualLanguage]=result.data.value;
-        //this.elementAssociateDocUpdateForm.name.en=result.data.value
         this.elementAssociateDocUpdateForm.description[this.actualLanguage]=result.data.description;
 
         if (result.data.allowed_types.includes('pdf')) {
@@ -603,14 +571,10 @@ export default {
 
 
         this.elementAssociateDocUpdateForm.nbmax=result.data.nbmax;
-        //console.log(this.elementAssociateDocUpdateForm);
-        //console.log("end retrieving");
       })
     },
 
     updateAssociateDocElement(params){
-      //console.log('start updating assoc doc')
-      //console.log(params);
       axios({
         method: "post",
         url: 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument',
@@ -619,8 +583,6 @@ export default {
         },
         data: qs.stringify(params)
       }).then((rep) => {
-        //console.log(rep);
-        //console.log("doc update succesfully");
         axios({
           method: "post",
           url: 'index.php?option=com_emundus_onboard&controller=campaign&task=updateDocumentFalang',
@@ -628,19 +590,11 @@ export default {
             "Content-Type": "application/x-www-form-urlencoded"
           },
           data: qs.stringify(params)
-        }).then((rep)=>{
-          console.log(rep);
-          //console.log("update faleng");
-        })
-        //this.$emit("UpdateDocuments");
-        //this.$modal.hide('modalAddDocuments')
-
+        }).then((rep)=>{})
       });
     },
 
     updateLabelElement(element) {
-      //console.log("this is element label update id");
-      //console.log(element);
       if(element.plugin=="emundus_fileupload") {
         this.retrieveAssociateElementDoc(element.params.attachmentId);
       }
@@ -658,9 +612,6 @@ export default {
         this.elementAssociateDocUpdateForm.name.en=labels.en;
         this.elementAssociateDocUpdateForm.name.fr=labels.fr
 
-
-      //console.log("labels")
-      //console.log(labels);
       this.elementAssociateDocUpdateForm.name.fr=labels.fr;
       }
 
@@ -717,9 +668,6 @@ export default {
         } else {
 
           if(element.plugin=="emundus_fileupload") {
-            //console.log('result status none 0');
-            //console.log("trying to update asssociate doc name")
-
             let types = [];
             Object.keys(this.elementAssociateDocUpdateForm.selectedTypes).forEach(key => {
               if (this.elementAssociateDocUpdateForm.selectedTypes[key] == true) {
@@ -770,7 +718,6 @@ export default {
                 this.updateFailed,
                 this.updating
         );
-        console.log(e);
       });
     },
 
@@ -810,7 +757,6 @@ export default {
                   this.updateFailed,
                   this.updating
           );
-        console.log(e);
       });
     },
     //
@@ -866,7 +812,6 @@ export default {
                 this.updateFailed,
                 this.updating
         );
-        console.log(e);
       });
     },
 
@@ -904,9 +849,7 @@ export default {
               this.updateGroup = false;
               this.$forceUpdate();
             });
-          }).catch(e => {
-            console.log(e);
-          });
+          }).catch(e => {});
         }
       });
     },
@@ -945,7 +888,6 @@ export default {
                 this.orderFailed,
                 this.updating
         );
-        console.log(e);
       });
     },
 
@@ -1032,12 +974,9 @@ export default {
 
     // Page trigger
     updateLabelPage(page) {
-
-      //console.log("update label page");
-      //console.log(page);
       let labels = {
-        fr: this.prid+'_'+page.show_title.label.fr,
-        en: this.prid+'_'+page.show_title.label.en
+        fr: this.prid+'-'+page.show_title.label.fr,
+        en: this.prid+'-'+page.show_title.label.en
       }
       axios({
         method: "post",
@@ -1095,7 +1034,6 @@ export default {
             this.updateFailed,
             this.updating
         );
-        console.log(e);
       });
     },
 
@@ -1146,17 +1084,14 @@ export default {
             this.updateFailed,
             this.updating
         );
-        console.log(e);
       });
     },
 
     getDataObject: _.debounce(function() {
       this.object_json = this.object.object;
-      //console.log(this.object_json.show_title.label.fr);
-      this.object_json.show_title.label.fr=this.slpitProfileIdfromLabel(this.object_json.show_title.label.fr);
-      this.object_json.show_title.label.en=this.slpitProfileIdfromLabel(this.object_json.show_title.label.en);
+      this.object_json.show_title.label.fr=this.splitProfileIdFromLabel(this.object_json.show_title.label.fr);
+      this.object_json.show_title.label.en=this.splitProfileIdFromLabel(this.object_json.show_title.label.en);
 
-      //console.log("after json");
       this.getElementsArray();
     }, 500),
     getApiData: _.debounce(function() {
@@ -1210,7 +1145,6 @@ export default {
     enableLabelInput(eid) {
       if(!this.updateGroup && !this.updateIntroPage && !this.updatePage) {
         this.clickUpdatingLabel = true;
-        console.log("updating  element label");
         setTimeout(() => {
           document.getElementById('label_' + eid).focus();
         }, 100);

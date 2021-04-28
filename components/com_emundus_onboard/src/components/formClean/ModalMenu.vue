@@ -168,15 +168,15 @@ export default {
         this.submitted = true;
 
         if(this.actualLanguage=='fr'&& this.label.en==''){
-          this.label.fr=this.profileId+'_'+this.label.fr;
-          this.label.en=this.profileId+'_'+'My new page'
+          this.label.fr=this.profileId+'-'+this.label.fr;
+          this.label.en=this.profileId+'-'+'My new page'
 
         } else if(this.actualLanguage=='en'&& this.label.fr==''){
-          this.label.en=this.profileId+'_'+this.label.en;
-          this.label.fr=this.profileId+'_Ma nouvelle page';
+          this.label.en=this.profileId+'-'+this.label.en;
+          this.label.fr=this.profileId+'-Ma nouvelle page';
         } else {
-          this.label.en=this.profileId+'_'+this.label.en;
-          this.label.fr=this.profileId+'_'+this.label.fr;
+          this.label.en=this.profileId+'-'+this.label.en;
+          this.label.fr=this.profileId+'-'+this.label.fr;
         }
 
         axios({

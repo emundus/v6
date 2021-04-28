@@ -221,7 +221,7 @@
                   </span>
                 <a class="MenuFormItem"
                    :title="doc.label">
-                  {{doc.label}}
+                  {{doc.label}}<span v-if="doc.mandatory == 1" style="color: red">*</span>
                 </a>
                 <a class="cta-block pointer" @click="removeDocument(index,doc.id)" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
                   <i class="fas fa-times" style="width: 15px;height: 15px;"></i>
@@ -242,7 +242,7 @@
                  style="margin-left: 5px"
                  :title="value.object.show_title.value"
                  :class="indexHighlight == index && menuHighlight === 1 ? 'MenuFormItem_current' : ''">
-                {{value.object.show_title.value}} x)
+                {{value.object.show_title.value}}
               </a>
             </li>
           </div>
@@ -404,13 +404,13 @@
             icon: 'fas fa-paragraph',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
-          fileupload: {
+          /*fileupload: {
             id: 7,
             value: 'emundus_fileupload',
             icon: 'fas fa-file-upload',
             //name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FILE")
-          },
+          },*/
         },
         //create document when choosing plugin emundunsFileupload plugin
         docForm: {
@@ -452,9 +452,7 @@
 
     methods: {
       slpitProfileIdfromLabel(label){
-
-        return (label.split('_'))[1]
-
+        return (label.split(/-(.+)/))[1];
       },
 
       createElement(gid,plugin,order) {
@@ -1215,10 +1213,8 @@
         this.grab = false;
       },
       enableGrabDocuments(index){
-        if(this.documentsList.length !== 1){
-          this.indexGrabDocuments = index;
-          this.grabDocs = true;
-        }
+        this.indexGrabDocuments = index;
+        this.grabDocs = true;
       },
       disableGrabDocuments(){
         this.indexGrabDocuments = 0;
