@@ -12,19 +12,19 @@
         <div class="container-2 w-container" style="max-width: unset">
           <div class="d-flex">
             <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
-            <h1 class="tchooz-section-titles">{{AddCampaign}}</h1>
+            <h1 class="tchooz-section-titles">{{translations.AddCampaign}}</h1>
           </div>
         </div>
       </div>
       <form id="campaign-form" @submit.prevent="submit">
         <div class="sous-container">
-          <p class="required mb-1">{{RequiredFieldsIndicate}}</p>
+          <p class="required mb-1">{{translations.RequiredFieldsIndicate}}</p>
 <!--          <div class="heading-form">
             <div class="icon-title"></div>
             <h2 class="heading">{{ Parameter }}</h2>
           </div>-->
           <div class="form-group campaign-label">
-            <label for="campLabel">{{CampName}} <span style="color: #E5283B">*</span></label>
+            <label for="campLabel">{{translations.CampName}} <span style="color: #E5283B">*</span></label>
             <div class="input-can-translate">
                 <input
                   id="campLabel"
@@ -41,39 +41,39 @@
             <translation :label="form.label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
           </div>
           <p v-if="errors.label" class="error col-md-12 mb-2">
-            <span class="error">{{LabelRequired}}</span>
+            <span class="error">{{translations.LabelRequired}}</span>
           </p>
           <div class="d-flex justify-content-between">
             <div class="w-col col-md-5">
               <div class="w-form">
-                <label for="startDate">{{StartDate}} <span style="color: #E5283B">*</span></label>
+                <label for="startDate">{{translations.StartDate}} <span style="color: #E5283B">*</span></label>
                 <datetime
                     id="startDate"
-                  :placeholder="StartDate"
+                  :placeholder="translations.StartDate"
                   type="datetime"
                   :input-id="'start_date'"
                   v-model="form.start_date"
-                  :phrases="{ok: OK, cancel: Cancel}"
+                  :phrases="{ok: translations.OK, cancel: translations.Cancel}"
                 ></datetime>
               </div>
             </div>
             <div class="w-col col-md-5">
               <div class="w-form">
-                <label for="endDate">{{EndDate}} <span style="color: #E5283B">*</span></label>
+                <label for="endDate">{{translations.EndDate}} <span style="color: #E5283B">*</span></label>
                 <datetime
                     id="endDate"
-                  :placeholder="EndDate + ' *'"
+                  :placeholder="translations.EndDate + ' *'"
                   type="datetime"
                   :input-id="'end_date'"
                   :min-datetime="minDate"
                   v-model="form.end_date"
-                  :phrases="{ok: OK, cancel: Cancel}"
+                  :phrases="{ok: translations.OK, cancel: translations.Cancel}"
                 ></datetime>
               </div>
             </div>
           </div>
           <div class="form-group campaign-label">
-            <label for="year">{{PickYear}} <span style="color: #E5283B">*</span></label>
+            <label for="year">{{translations.PickYear}} <span style="color: #E5283B">*</span></label>
             <autocomplete
                 :id="'year'"
                 @searched="onSearchYear"
@@ -95,7 +95,7 @@
               <strong class="b switch"></strong>
               <strong class="b track"></strong>
             </div>
-            <span for="published" class="ml-10px">{{ Publish }}</span>
+            <span for="published" class="ml-10px">{{ translations.Publish }}</span>
           </div>
           <div class="form-group d-flex">
             <div class="toggle">
@@ -110,12 +110,12 @@
               <strong class="b switch"></strong>
               <strong class="b track"></strong>
             </div>
-            <span for="limit" class="ml-10px">{{ FilesLimit }}</span>
+            <span for="limit" class="ml-10px">{{ translations.FilesLimit }}</span>
           </div>
           <transition name="'slide-down'">
             <div v-if="form.is_limited == 1">
               <div class="form-group campaign-label">
-                <label for="campLabel">{{FilesNumberLimit}} <span style="color: #E5283B">*</span></label>
+                <label for="campLabel">{{translations.FilesNumberLimit}} <span style="color: #E5283B">*</span></label>
                 <input type="number"
                        class="form__input field-general w-input"
                        v-model="form.limit"
@@ -123,10 +123,10 @@
                 />
               </div>
               <p v-if="errors.limit_files_number" class="error">
-                <span class="error">{{FilesLimitRequired}}</span>
+                <span class="error">{{translations.FilesLimitRequired}}</span>
               </p>
               <div class="form-group campaign-label">
-                <label for="campLabel">{{StatusLimit}} <span style="color: #E5283B">*</span></label>
+                <label for="campLabel">{{translations.StatusLimit}} <span style="color: #E5283B">*</span></label>
                 <div class="users-block" :class="{ 'is-invalid': errors.limit_status}">
                   <div v-for="(statu, index) in status" :key="index" class="user-item">
                     <input type="checkbox" class="form-check-input bigbox" v-model="form.limit_status[statu.step]">
@@ -136,7 +136,7 @@
                   </div>
                 </div>
                 <p v-if="errors.limit_status" class="error">
-                  <span class="error">{{StatusLimitRequired}}</span>
+                  <span class="error">{{translations.StatusLimitRequired}}</span>
                 </p>
               </div>
             </div>
@@ -147,10 +147,10 @@
 
         <div class="sous-container">
           <div class="heading-form">
-            <h2 class="heading">{{ Information }}</h2>
+            <h2 class="heading">{{ translations.Information }}</h2>
           </div>
           <div class="form-group campaign-label">
-            <label for="campResume" style="top: 5em">{{Resume}} <span style="color: #E5283B"></span></label>
+            <label for="campResume" style="top: 5em">{{translations.Resume}} <span style="color: #E5283B"></span></label>
             <textarea
               type="textarea"
               rows="2"
@@ -164,7 +164,7 @@
             />
           </div>
           <p v-if="errors.short_description" class="error col-md-12 mb-2">
-            <span class="error">{{ResumeRequired}}</span>
+            <span class="error">{{translations.ResumeRequired}}</span>
           </p>
           <!--<div class="form-group campaign-label">
             <label for="campDescription" style="top: 12em">{{Description}}</label>
@@ -186,7 +186,7 @@
 
         <div class="sous-container last-container">
           <div class="heading-form">
-            <h2 class="heading">{{ Program }}</h2>
+            <h2 class="heading">{{ translations.Program }}</h2>
           </div>
           <div class="form-group container-flexbox-choisir-ou-plus w-clearfix">
             <select
@@ -196,7 +196,7 @@
               v-on:change="setCategory"
               :disabled="this.programs.length <= 0"
             >
-              <option value="">{{ ChooseProg }}</option>
+              <option value="">{{ translations.ChooseProg }}</option>
               <option
                 v-for="(item, index) in this.programs"
                 v-bind:value="item.code"
@@ -205,19 +205,19 @@
                 {{ item.label }}
               </option>
             </select>
-            <button v-if="coordinatorAccess != 0" :title="AddProgram" type="button" @click="displayProgram" class="buttonAddDoc" id="add-program">
+            <button v-if="coordinatorAccess != 0" :title="translations.AddProgram" type="button" @click="displayProgram" class="buttonAddDoc" id="add-program">
               <em class="fas fa-plus"></em>
             </button>
           </div>
           <div class="form-group controls">
-            <editor :height="'30em'" :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" v-if="form.training" :placeholder="ProgramResume" :id="'program_campaign_'" :key="editorKey"></editor>
+            <editor :height="'30em'" :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" v-if="form.training" :placeholder="translations.ProgramResume" :id="'program_campaign_'" :key="editorKey"></editor>
           </div>
 
           <transition name="slide-fade">
             <div class="program-addCampaign" v-if="isHiddenProgram">
               <div class="w-form">
                 <div class="form-group prog-label">
-                  <label for="prog_label" style="top: 5.7em">{{ProgName}} <span style="color: #E5283B">*</span></label>
+                  <label for="prog_label" style="top: 5.7em">{{translations.ProgName}} <span style="color: #E5283B">*</span></label>
                   <input
                     type="text"
                     id="prog_label"
@@ -229,10 +229,10 @@
                   />
                 </div>
                 <p v-if="errors.progLabel" class="error col-md-12 mb-2">
-                  <span class="error">{{ProgLabelRequired}}</span>
+                  <span class="error">{{translations.ProgLabelRequired}}</span>
                 </p>
                 <div class="form-group controls">
-                  <editor :height="'30em'" :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" :placeholder="ProgramResume" :id="'new_program_campaign_'" :key="editorKey"></editor>
+                  <editor :height="'30em'" :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" :placeholder="translations.ProgramResume" :id="'new_program_campaign_'" :key="editorKey"></editor>
                 </div>
               </div>
             </div>
@@ -248,14 +248,14 @@
                   type="button"
                   class="bouton-sauvergarder-et-continuer w-retour"
                   onclick="history.go(-1)">
-                {{ Retour }}
+                {{ translations.Retour }}
               </button>
               <div class="d-flex">
                 <button
                     type="button"
                     class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green"
                     @click="quit = 1; submit()">
-                  {{ Continuer }}
+                  {{ translations.Continuer }}
                 </button>
               </div>
             </div>
@@ -335,6 +335,7 @@ export default {
       year: "",
       published: 1,
       is_limited: 0,
+      profile_id: 9,
       limit: 50,
       limit_status: [],
     },
@@ -372,40 +373,42 @@ export default {
       limit_status: false
     },
 
-    Parameter: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER"),
-    CampName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME"),
-    StartDate: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE"),
-    EndDate: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE"),
-    Information: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
-    Resume: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME"),
-    Description: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
-    Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
-    AddProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDPROGRAM"),
-    ChooseProg: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG"),
-    PickYear: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR"),
-    Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-    Quitter: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_QUITTER"),
-    Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-    Publish: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-    DepotDeDossier: Joomla.JText._("COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER"),
-    ProgName: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGNAME"),
-    ProgCode: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGCODE"),
-    ChooseCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
-    NameCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_NAMECATEGORY"),
-    LabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
-    RequiredFieldsIndicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
-    ProgramResume: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_RESUME"),
-    ProgLabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL"),
-    ResumeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMP_REQUIRED_RESUME"),
-    OK: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-    Cancel: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
-    TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-    FilesLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT"),
-    FilesNumberLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER"),
-    StatusLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS"),
-    StatusLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
-    FilesLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED"),
-    AddCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
+    translations: {
+      Parameter: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER"),
+      CampName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME"),
+      StartDate: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE"),
+      EndDate: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE"),
+      Information: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
+      Resume: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME"),
+      Description: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
+      Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+      AddProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDPROGRAM"),
+      ChooseProg: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG"),
+      PickYear: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR"),
+      Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+      Quitter: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_QUITTER"),
+      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+      Publish: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
+      DepotDeDossier: Joomla.JText._("COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER"),
+      ProgName: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGNAME"),
+      ProgCode: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGCODE"),
+      ChooseCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
+      NameCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_NAMECATEGORY"),
+      LabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
+      RequiredFieldsIndicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
+      ProgramResume: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_RESUME"),
+      ProgLabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL"),
+      ResumeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMP_REQUIRED_RESUME"),
+      OK: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+      Cancel: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+      TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+      FilesLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT"),
+      FilesNumberLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER"),
+      StatusLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS"),
+      StatusLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
+      FilesLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED"),
+      AddCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
+    },
 
     submitted: false
   }),
@@ -458,6 +461,8 @@ export default {
             Object.values(response.data.data.campaign.status).forEach((statu) => {
               this.form.limit_status[parseInt(statu.limit_status)] = true;
             });
+          } else {
+            this.form.limit_status = [];
           }
         }).catch(e => {
           console.log(e);
