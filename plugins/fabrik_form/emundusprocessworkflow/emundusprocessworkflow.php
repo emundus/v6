@@ -29,13 +29,13 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
     var $db = null;
     var $query = null;
-    var $_commonModel = null;
+    var $_workflowPluginModel = null;
 
     public function __construct(&$subject, $config = array()) {
         parent::__construct($subject, $config);
         $this->db = JFactory::getDbo();
         $this->query = $this->db->getQuery(true);
-        $this->_commonModel = JModelLegacy::getInstance('common', 'EmundusworkflowModel');
+        $this->_workflowPluginModel = JModelLegacy::getInstance('plugin', 'EmundusworkflowModel');
     }
 
     /**
@@ -88,7 +88,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
         if (!$mainframe->isAdmin()) {
             require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
             require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
-            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus_workflow' . DS . 'models' . DS . 'common.php');        /// import workflow model
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus_workflow' . DS . 'models' . DS . 'plugin.php');        /// import workflow model
 
             jimport('joomla.log.log');
             JLog::addLogger(['text_file' => 'com_emundus.processWorkflow.php'], JLog::ALL, ['com_emundus']);
@@ -127,7 +127,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
             $formid = $jinput->get('formid');
 
-            $_lastPage = $this->_commonModel->getLastPage($user->menutype)->link;
+            $_lastPage = $this->_workflowPluginModel->getLastPage($user->menutype)->link;
             $_lastFormID = (explode('formid=', $_lastPage))[1];
 
             if ($view == 'form' and $formid == $_lastFormID) {
@@ -204,11 +204,11 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                 // ***************************** use $this->_commonModel to check the constraint date
                 //// get the start_date, end_date from $user->fnum and $user->status
 
-                $_startDate = $this->_commonModel->getStepByFnumAndStatus($user->fnum, $user->status)->start_date;
-                $_endDate = $this->_commonModel->getStepByFnumAndStatus($user->fnum, $user->status)->end_date;
+                $_startDate = $this->_workflowPluginModel->getStepByFnumAndStatus($user->fnum, $user->status)->start_date;
+                $_endDate = $this->_workflowPluginModel->getStepByFnumAndStatus($user->fnum, $user->status)->end_date;
 
                 /// retrieve all editable status from stepflow --> $is_editable_status
-                $_editable_status = $this->_commonModel->updateSessionTree($user->fnum, $user->status)->editable_status;              //// gettype --> array
+                $_editable_status = $this->_workflowPluginModel->updateSessionTree($user->fnum, $user->status)->editable_status;              //// gettype --> array
                 $_is_editable_status = !in_array($user->status, $_editable_status);
 
                 // *****************************
@@ -560,7 +560,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             }
         }
 
-        $_lastPage = $this->_commonModel->getLastPage($user->menutype)->link;
+        $_lastPage = $this->_workflowPluginModel->getLastPage($user->menutype)->link;
         $_lastFormID = (explode('formid=', $_lastPage))[1];
 
         $_nextFormID = (explode('&Itemid=', explode('formid=', $link)[1]))[0];
@@ -873,8 +873,8 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             $student = JFactory::getSession()->get('emundusUser');
 
             //// get start_date and end_date from $_commonModel
-            $_startDate = $this->_commonModel->getStepByFnumAndStatus($student->fnum, $student->status)->start_date;
-            $_endDate = $this->_commonModel->getStepByFnumAndStatus($student->fnum, $student->status)->end_date;
+            $_startDate = $this->_workflowPluginModel->getStepByFnumAndStatus($student->fnum, $student->status)->start_date;
+            $_endDate = $this->_workflowPluginModel->getStepByFnumAndStatus($student->fnum, $student->status)->end_date;
 
             $is_dead_line_passed = ($now > $_endDate || $now < $_startDate) ? true : false;
 

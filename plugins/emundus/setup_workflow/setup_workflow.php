@@ -20,7 +20,7 @@ class plgEmundusSetup_workflow extends JPlugin {
             $this->db = JFactory::getDbo();
             $this->query = $this->db->getQuery(true);
 
-            $this->_model = JModelLegacy::getInstance('common', 'EmundusworkflowModel');
+            $this->_model = JModelLegacy::getInstance('plugin', 'EmundusworkflowModel');
 
             jimport('joomla.log.log');
             JLog::addLogger(array('text_file' => 'com_emundus.setupWorkflow.php'), JLog::ALL, array('com_emundus_setupWorkflow'));
