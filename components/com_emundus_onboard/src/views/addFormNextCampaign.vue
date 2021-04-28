@@ -379,15 +379,16 @@ export default {
       this.form.label = campaign.label;
       this.form.profile_id = campaign.profile_id;
       this.form.program_id = campaign.progid;
+
       this.form.start_date = campaign.start_date;
       this.form.end_date = campaign.end_date;
       this.form.start_date = moment(this.form.start_date).format(
-          "DD/MM/YYYY"
+          "DD/MM/YYYY h:mm A"
       );
       if (this.form.end_date == "0000-00-00 00:00:00") {
         this.form.end_date = null;
       } else {
-        this.form.end_date = moment(this.form.end_date).format("DD/MM/YYYY");
+        this.form.end_date = moment(this.form.end_date).format("DD/MM/YYYY h:mm A");
       }
 
       axios.get(
