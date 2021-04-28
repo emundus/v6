@@ -540,6 +540,7 @@ export default {
     },
 
     createCampaignWithExistingProgram(form_data){
+
       axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
@@ -556,6 +557,8 @@ export default {
     },
 
     createCampainWithNoExistingProgram(programForm){
+
+
       axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=program&task=createprogram",
@@ -564,14 +567,9 @@ export default {
         },
         data: qs.stringify({body: programForm})
       }).then(() => {
-        this.form.training = programForm.code;
-        if (typeof this.form.start_date == 'object') {
+          this.form.training = programForm.code;
           this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-        }
-        if (typeof this.form.end_date == 'object') {
           this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
-        }
-
         axios({
           method: "post",
           url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
@@ -581,7 +579,7 @@ export default {
           data: qs.stringify({body: this.form})
         }).then(response => {
           this.campaign = response.data.data;
-          this.quitFunnelOrContinue(this.quit);
+         this.quitFunnelOrContinue(this.quit);
         }).catch(error => {
           console.log(error);
         });
@@ -686,6 +684,8 @@ export default {
           data: qs.stringify(params)
         }).then((response) => {
           this.form.training = this.programForm.code;
+
+
           this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
           this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
           axios({
@@ -711,14 +711,12 @@ export default {
 
           this.programForm = this.programs.find(program => program.code == this.form.training);
           this.form.training = this.programForm.code;
-          if (typeof this.form.start_date == 'object') {
-            this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-          }
-          if (typeof this.form.end_date == 'object') {
-            this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
-          }
+          this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+          this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
           this.createCampaignWithExistingProgram(this.form);
         } else {
+
+
             this.createCampainWithNoExistingProgram(this.programForm);
         }
       }
