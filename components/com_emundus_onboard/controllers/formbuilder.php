@@ -504,7 +504,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $changeresponse = $m_form->createSimpleElement($gid, $plugin, 1);
+            $changeresponse = $m_form->createSimpleElement($gid, $plugin, null, 1);
         }
         echo json_encode((object)$changeresponse);
         exit;

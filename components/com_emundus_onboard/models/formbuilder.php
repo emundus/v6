@@ -398,7 +398,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         return $this->updateElementParams($plugin,null,$params,$attachementId);
     }
 
-    function updateElementParams($plugin, $oldplugin, $params,$attachementId){
+    function updateElementParams($plugin, $oldplugin, $params,$attachementId = null){
         try {
             // Reset params
             if ($oldplugin != null) {
@@ -1512,10 +1512,11 @@ class EmundusonboardModelformbuilder extends JModelList {
      *
      * @param $gid
      * @param $plugin
+     * @param $attachementId
      * @param int $evaluation
      * @return mixed
      */
-    function createSimpleElement($gid,$plugin,$attachementId,$evaluation = 0) {
+    function createSimpleElement($gid,$plugin,$attachementId = null,$evaluation = 0) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
