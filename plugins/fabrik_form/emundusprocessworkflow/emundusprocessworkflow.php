@@ -511,6 +511,8 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
         $jinput = JFactory::getApplication()->input;
         $formid = $jinput->get('formid');
 
+        $_reload = $jinput->get('r');
+
         /// get the next url --> formid, menutype
         $this->query = 'SELECT CONCAT(link,"&Itemid=",id) FROM #__menu WHERE published=1 AND menutype = "' . $user->menutype . '" AND access IN (' . implode(',', $levels) . ') AND parent_id != 1 AND lft = 2+(
 					SELECT menu.lft FROM `#__menu` AS menu WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="' . $user->menutype . '" AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)=' . $formid . ')';
@@ -563,8 +565,9 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
         $_nextFormID = (explode('&Itemid=', explode('formid=', $link)[1]))[0];
 
-        if($formid !== $_nextFormID)
-            $app->redirect($link);
+//        if($formid !== $_nextFormID)
+        if($formid !== $_lastFormID)
+            $app->redirect($link . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload);
             /// insert emundusredirect plugin here ---
             if ($copy_form === 1 && isset($user->fnum)) {
 
