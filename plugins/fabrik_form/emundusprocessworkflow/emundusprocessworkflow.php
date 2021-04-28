@@ -41,10 +41,10 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
     /**
      * Get an element name
      *
-     * @param   string  $pname  Params property name to look up
-     * @param   bool    $short  Short (true) or full (false) element name, default false/full
+     * @param string $pname Params property name to look up
+     * @param bool $short Short (true) or full (false) element name, default false/full
      *
-     * @return	string	element full name
+     * @return    string    element full name
      */
     public function getFieldName($pname, $short = false) {
         $params = $this->getParams();
@@ -60,9 +60,9 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
     /**
      * Get the fields value regardless of whether its in joined data or no
      *
-     * @param   string  $pname    Params property name to get the value for
-     * @param   array   $data     Posted form data
-     * @param   mixed   $default  Default value
+     * @param string $pname Params property name to get the value for
+     * @param array $data Posted form data
+     * @param mixed $default Default value
      *
      * @return  mixed  value
      */
@@ -88,16 +88,15 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
         if (!$mainframe->isAdmin()) {
             require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
             require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
-
-            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus_workflow' . DS . 'models' . DS . 'common.php');        /// import workflow mode
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus_workflow' . DS . 'models' . DS . 'common.php');        /// import workflow model
 
             jimport('joomla.log.log');
-            JLog::addLogger(['text_file' => 'com_emundus.isApplicationSent.php'], JLog::ALL, ['com_emundus']);
+            JLog::addLogger(['text_file' => 'com_emundus.processWorkflow.php'], JLog::ALL, ['com_emundus']);
 
             $formModel = $this->getModel();
             $listModel = $formModel->getListModel();
 
-            $user = JFactory::getSession()->get('emundusUser');
+            $user = JFactory::getSession()->get('emundusUser');         // get session
 
             if (empty($user)) {
                 $user = JFactory::getUser();
@@ -154,15 +153,13 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                     // See if applicant has uploaded the required scolarship form.
                     try {
 
-                        $query = 'SELECT count(id) FROM #__emundus_uploads
-						WHERE attachment_id = '.$scholarship_document_id.'
-						AND fnum LIKE '.$db->Quote($user->fnum);
+                        $this->query = 'SELECT count(id) FROM #__emundus_uploads WHERE attachment_id = '.$scholarship_document_id.' AND fnum LIKE '.$db->Quote($user->fnum);
 
-                        $db->setQuery($query);
+                        $db->setQuery($this->query);
                         $uploaded_document = $db->loadResult();
 
                     } catch (Exception $e) {
-                        JLog::Add('Error in plugin/isApplicationCompleted at SQL query : '.$query, Jlog::ERROR, 'plugins');
+                        JLog::Add('Error in plugin/isApplicationCompleted at SQL query : '.$this->query, Jlog::ERROR, 'plugins');
                     }
 
                     $pay_scholarship = $eMConfig->get('pay_scholarship', 0);
@@ -270,15 +267,12 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                 }
 
                 if (isset($user->fnum) && !empty($user->fnum)) {
-
                     if (in_array($user->id, $applicants)) {
-
                         if ($reload_url) {
                             $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&usekey=fnum&rowid=" . $user->fnum . "&r=" . $reload);
                         }
 
                     } else {
-
                         if ($is_dead_line_passed || !$is_campaign_started || $isLimitObtained === true) {
                             if ($reload_url) {
                                 if ($isLimitObtained === true) {
@@ -290,7 +284,6 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                             }
 
                         } else {
-
                             if ($_is_editable_status) {
                                 if ($can_edit_until_deadline != 0) {
                                     if ($reload_url) {
@@ -306,13 +299,10 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                                     $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&usekey=fnum&rowid=" . $user->fnum . "&r=" . $reload);
                                 }
                             }
-
                         }
                     }
 
-
                 } else {
-
                     if ($can_edit == 1) {
                         return true;
                     } else {
@@ -334,7 +324,6 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                         $table = $listModel->getTable();
                         $table_elements = $formModel->getElementOptions(false, 'name', false, false, array(), '', true);
                         $rowid = $formModel->data["rowid"];
-
                         $elements = array();
                         foreach ($table_elements as $key => $element) {
                             $elements[] = $element->value;
@@ -342,8 +331,8 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
                         // check if data stored for current user
                         try {
-                            $query = 'SELECT ' . implode(',', $elements) . ' FROM ' . $table->db_table_name . ' WHERE user=' . $user->id;
-                            $db->setQuery($query);
+                            $this->query = 'SELECT ' . implode(',', $elements) . ' FROM ' . $table->db_table_name . ' WHERE user=' . $user->id;
+                            $db->setQuery($this->query);
                             $stored = $db->loadAssoc();
                             if (count($stored) > 0) {
                                 // update form data
@@ -352,11 +341,10 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                                 unset($stored['fnum']);
 
                                 try {
-                                    $query = 'INSERT INTO ' . $table->db_table_name . ' (`fnum`, `' . implode('`,`', array_keys($stored)) . '`) VALUES(' . $db->Quote($rowid) . ', ' . implode(',', $db->Quote($stored)) . ')';
-                                    $db->setQuery($query);
+                                    $this->query = 'INSERT INTO ' . $table->db_table_name . ' (`fnum`, `' . implode('`,`', array_keys($stored)) . '`) VALUES(' . $db->Quote($rowid) . ', ' . implode(',', $db->Quote($stored)) . ')';
+                                    $db->setQuery($this->query);
                                     $db->execute();
                                     $id = $db->insertid();
-
                                 } catch (Exception $e) {
                                     $error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
                                     JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -369,9 +357,8 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                                     foreach ($groups as $key => $group) {
                                         $group_params = json_decode($group->gparams);
                                         if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
-
-                                            $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id = ' . $group->group_id . ' AND table_key LIKE "id" AND table_join_key LIKE "parent_id"';
-                                            $db->setQuery($query);
+                                            $this->query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id = ' . $group->group_id . ' AND table_key LIKE "id" AND table_join_key LIKE "parent_id"';
+                                            $db->setQuery($this->query);
                                             try {
                                                 $repeat_table = $db->loadResult();
                                             } catch (Exception $e) {
@@ -388,20 +375,17 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                                     }
                                     if (count($data) > 0) {
                                         foreach ($data as $key => $d) {
-
                                             try {
-                                                $query = 'SELECT ' . implode(',', $d['element_name']) . ' FROM ' . $d['table'] . ' WHERE parent_id=' . $parent_id;
-                                                $db->setQuery($query);
+                                                $this->query = 'SELECT ' . implode(',', $d['element_name']) . ' FROM ' . $d['table'] . ' WHERE parent_id=' . $parent_id;
+                                                $db->setQuery($this->query);
                                                 $stored = $db->loadAssoc();
-
                                                 if (count($stored) > 0) {
                                                     // update form data
                                                     unset($stored['id']);
                                                     unset($stored['parent_id']);
-
                                                     try {
-                                                        $query = 'INSERT INTO ' . $d['table'] . ' (`parent_id`, `' . implode('`,`', array_keys($stored)) . '`) VALUES(' . $id . ', ' . implode(',', $db->Quote($stored)) . ')';
-                                                        $db->setQuery($query);
+                                                        $this->query = 'INSERT INTO ' . $d['table'] . ' (`parent_id`, `' . implode('`,`', array_keys($stored)) . '`) VALUES(' . $id . ', ' . implode(',', $db->Quote($stored)) . ')';
+                                                        $db->setQuery($this->query);
                                                         $db->execute();
                                                     } catch (Exception $e) {
                                                         $error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
@@ -423,14 +407,14 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
                                 if (count($fnums) > 0) {
                                     $previous_fnum = array_keys($fnums);
-                                    $query = 'SELECT eu.*, esa.nbmax
+                                    $this->query = 'SELECT eu.*, esa.nbmax
 											FROM #__emundus_uploads as eu
 											LEFT JOIN #__emundus_setup_attachments as esa on esa.id=eu.attachment_id
 											LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id=' . $user->profile . '
 											WHERE eu.user_id=' . $user->id . '
 											AND eu.fnum like ' . $db->Quote($previous_fnum[0]) . '
 											AND esap.duplicate=1';
-                                    $db->setQuery($query);
+                                    $db->setQuery($this->query);
                                     $stored = $db->loadAssocList();
 
                                     if (count($stored) > 0) {
@@ -448,20 +432,20 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                                             unset($row['nbmax']);
 
                                             try {
-                                                $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id=' . $user->id . ' AND attachment_id=' . $row['attachment_id'] . ' AND fnum like ' . $db->Quote($user->fnum);
-                                                $db->setQuery($query);
+                                                $this->query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id=' . $user->id . ' AND attachment_id=' . $row['attachment_id'] . ' AND fnum like ' . $db->Quote($user->fnum);
+                                                $db->setQuery($this->query);
                                                 $cpt = $db->loadResult();
 
                                                 if ($cpt < $nbmax) {
-                                                    $query = 'INSERT INTO #__emundus_uploads (`fnum`, `' . implode('`,`', array_keys($row)) . '`) VALUES(' . $db->Quote($user->fnum) . ', ' . implode(',', $db->Quote($row)) . ')';
-                                                    $db->setQuery($query);
+                                                    $this->query = 'INSERT INTO #__emundus_uploads (`fnum`, `' . implode('`,`', array_keys($row)) . '`) VALUES(' . $db->Quote($user->fnum) . ', ' . implode(',', $db->Quote($row)) . ')';
+                                                    $db->setQuery($this->query);
                                                     $db->execute();
                                                     $id = $db->insertid();
                                                     $path = EMUNDUS_PATH_ABS . $user->id . DS;
 
                                                     if (!copy($path . $src, $path . $dest)) {
-                                                        $query = 'UPDATE #__emundus_uploads SET filename=' . $src . ' WHERE id=' . $id;
-                                                        $db->setQuery($query);
+                                                        $this->query = 'UPDATE #__emundus_uploads SET filename=' . $src . ' WHERE id=' . $id;
+                                                        $db->setQuery($this->query);
                                                         $db->execute();
                                                     }
                                                 }
@@ -487,88 +471,436 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
         }
     }
 
-    ////// on after process --> using for confirmation page
+    // integrate emundusredirect, redirect, emundusconfirmpost
     public function onAfterProcess() {
         $app = JFactory::getApplication();
 
-        include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
+        include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
+
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
         jimport('joomla.log.log');
-        JLog::addLogger(array('text_file' => 'com_emundus.submit.php'), JLog::ALL, array('com_emundus'));
+        JLog::addLogger(array('text_file' => 'com_emundus.processWorkflow.php'), JLog::ALL, array('com_emundus'));
 
-        // Get params set in eMundus component configuration
         $eMConfig = JComponentHelper::getParams('com_emundus');
+        $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', 0);
+        $application_form_order = $eMConfig->get('application_form_order', null);
+        $attachment_order = $eMConfig->get('attachment_order', null);
+        $application_form_name = $eMConfig->get('application_form_name', "application_form_pdf");
+        $export_pdf = $eMConfig->get('export_application_pdf', 0);
+        $export_path = $eMConfig->get('export_path', null);
+        $id_applicants = explode(',', $eMConfig->get('id_applicants', '0'));
 
-        $can_edit_until_deadline    = $eMConfig->get('can_edit_until_deadline', 0);
-        $application_form_order     = $eMConfig->get('application_form_order', null);
-        $attachment_order           = $eMConfig->get('attachment_order', null);
-        $application_form_name      = $eMConfig->get('application_form_name', "application_form_pdf");
-        $export_pdf                 = $eMConfig->get('export_application_pdf', 0);
-        $export_path                = $eMConfig->get('export_path', null);
-        $id_applicants              = explode(',',$eMConfig->get('id_applicants', '0'));
-
-        $m_application  = new EmundusModelApplication;
-        $m_files        = new EmundusModelFiles;
-        $m_emails       = new EmundusModelEmails;
+        $m_application = new EmundusModelApplication;
+        $m_files = new EmundusModelFiles;
+        $m_emails = new EmundusModelEmails;
         $m_campaign = new EmundusModelCampaign;
+        $m_profile = new EmundusModelProfile();
 
-        $offset = $app->get('offset', 'UTC');
-        try {
-            $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
-            $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
-            $now = $dateTime->format('Y-m-d H:i:s');
-        }
-        catch (Exception $e) {
-            echo $e->getMessage() . '<br />';
-        }
+        $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
-        $student = JFactory::getSession()->get('emundusUser');
+        $copy_form = (int)$this->getParam('emundusprocessworkflow_copy_form', '0');             // copy_form --> emundusredirect
 
-        //// get start_date and end_date from $_commonModel
-        $_startDate = $this->_commonModel->getStepByFnumAndStatus($student->fnum,$student->status)->start_date;
-        $_endDate = $this->_commonModel->getStepByFnumAndStatus($student->fnum,$student->status)->end_date;
+        $user = JFactory::getSession()->get('emundusUser');
+        $levels = JAccess::getAuthorisedViewLevels($user->id);
 
-        $is_dead_line_passed = ($now > $_endDate || $now < $_startDate) ? true : false;
-
-        // Check campaign limit, if the limit is obtained, then we set the deadline to true
-        $isLimitObtained = $m_campaign->isLimitObtained($student->fnums[$student->fnum]->campaign_id);
-
-        // If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
-        if (($is_dead_line_passed || $isLimitObtained === true) && !in_array($student->id, $id_applicants)) {
-            if ($isLimitObtained === true) {
-                $this->getModel()->formErrorMsg = JText::_('LIMIT_OBTAINED');
-            } else {
-                $this->getModel()->formErrorMsg = JText::_('CANDIDATURE_PERIOD_TEXT');
-            }
-            return false;
-        }
-
-        // Database UPDATE data
-        //// Applicant cannot delete this attachments now
-        if (!$can_edit_until_deadline) {
-            $query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = '.$student->id. ' AND fnum like '.$this->db->Quote($student->fnum);
-            $this->db->setQuery($query);
-
-            try {
-                $this->db->execute();
-            } catch (Exception $e) {
-                // catch any database errors.
-                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            }
-        }
-
-        $jinput = $app->input;
-
+        $jinput = JFactory::getApplication()->input;
         $formid = $jinput->get('formid');
 
-        $_lastPage = $this->_commonModel->getLastPage($student->menutype)->link;
+        /// get the next url --> formid, menutype
+        $this->query = 'SELECT CONCAT(link,"&Itemid=",id) FROM #__menu WHERE published=1 AND menutype = "' . $user->menutype . '" AND access IN (' . implode(',', $levels) . ') AND parent_id != 1 AND lft = 2+(
+					SELECT menu.lft FROM `#__menu` AS menu WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="' . $user->menutype . '" AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)=' . $formid . ')';
+
+        $this->db->setQuery($this->query);
+        $link = $this->db->loadResult();
+
+        if (empty($link)) {
+            try {
+                $this->query = 'SELECT CONCAT(link,"&Itemid=",id) FROM #__menu WHERE published=1 AND menutype = "' . $user->menutype . '"  AND access IN (' . implode(',', $levels) . ')
+						AND parent_id != 1 AND lft = 4+(
+								SELECT menu.lft
+								FROM `#__menu` AS menu
+								WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="' . $user->menutype . '"
+								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)=' . $formid . ')';
+
+                $this->db->setQuery($this->query);
+                $link = $this->db->loadResult();
+            } catch (Exception $e) {
+                $error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
+                JLog::add($error, JLog::ERROR, 'com_emundus');
+            }
+
+            if (empty($link)) {
+                try {
+                    $this->query = 'SELECT CONCAT(link,"&Itemid=",id) FROM #__menu WHERE published=1 AND menutype = "' . $user->menutype . '" AND type!="separator" AND published=1 AND alias LIKE "checklist%"';
+                    $this->db->setQuery($this->query);
+                    $link = $this->db->loadResult();
+
+                } catch (Exception $e) {
+                    $error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
+                    JLog::add($error, JLog::ERROR, 'com_emundus');
+                }
+
+                if (empty($link)) {
+                    try {
+                        $this->query = 'SELECT CONCAT(link,"&Itemid=",id) FROM #__menu WHERE published=1 AND menutype = "' . $user->menutype . '" AND type LIKE "component" AND published=1 AND level = 1 ORDER BY id ASC';
+                        $this->db->setQuery($this->query);
+                        $link = $this->db->loadResult();
+                    } catch (Exception $e) {
+                        $error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
+                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
+        }
+
+        $_lastPage = $this->_commonModel->getLastPage($user->menutype)->link;
         $_lastFormID = (explode('formid=', $_lastPage))[1];
 
-        if($formid == $_lastFormID) {
+        $_nextFormID = (explode('&Itemid=', explode('formid=', $link)[1]))[0];
+
+        if($formid !== $_nextFormID)
+            $app->redirect($link);
+            /// insert emundusredirect plugin here ---
+            if ($copy_form === 1 && isset($user->fnum)) {
+
+                JLog::addLogger(['text_file' => 'com_emundus.duplicate.php'], JLog::ALL, ['duplicate']);
+
+                // Get some form definition
+                $data = $this->getProcessData();
+                $table = explode('___', key($data));
+                $table_name = $table[0];
+                $fnums = $user->fnums;
+                unset($fnums[$user->fnum]);
+
+                $fabrik_repeat_group = array();
+
+                if (!empty($data['fabrik_repeat_group'])) {
+                    foreach ($data['fabrik_repeat_group'] as $key => $value) {
+                        $fabrik_repeat_group[] = $key;
+                    }
+                }
+
+                // only repeated groups
+                $fabrik_group_rowids_key = array();
+
+                if (!empty($data['fabrik_group_rowids'])) {
+                    foreach ($data['fabrik_group_rowids'] as $key => $value) {
+                        $repeat_table_name = $table_name.'_'.$key.'_repeat';
+                        $this->query = 'SELECT id FROM '.$repeat_table_name.' WHERE parent_id='.$data['rowid'];
+                        $this->db->setQuery($this->query);
+                        $fabrik_group_rowids_key[$key] = $this->db->loadColumn();
+                    }
+                }
+
+                // Only if other application files found
+                if (!empty($fnums)) {
+                    $this->query = 'SELECT * FROM '.$table_name.' WHERE id='.$data['rowid'];
+                    $this->db->setQuery($this->query);
+                    $parent_data = $this->db->loadAssoc();
+                    unset($parent_data['fnum']);
+                    unset($parent_data['id']);
+
+                    // new record
+                    if (isset($data['usekey_newrecord']) && $data['usekey_newrecord']==1) {
+                        // Parent table
+                        $parent_id = array();
+                        foreach ($fnums as $key => $fnum) {
+                            $this->query = 'INSERT INTO `'.$table_name.'` (`'.implode('`,`', array_keys($parent_data)).'`, `fnum`) VALUES ';
+                            $this->query .= '('.implode(',', $this->db->Quote($parent_data)).', '.$this->db->Quote($key).')';
+
+                            $this->db->setQuery($this->query);
+
+                            try {
+                                $this->db->execute();
+                                $parent_id[] = $this->db->insertid();
+
+                            } catch (Exception $e) {
+                                $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                                JLog::add($error, JLog::ERROR, 'com_emundus');
+                            }
+                        }
+
+                        // Repeated table
+                        foreach ($fabrik_group_rowids_key as $key => $rowids) {
+                            if (count($rowids) > 0) {
+                                $repeat_table_name = $table_name.'_'.$key.'_repeat';
+                                $this->query = 'SELECT * FROM `'.$repeat_table_name.'` WHERE id IN ('.implode(',', $rowids).')';
+                                try {
+                                    $this->db->setQuery($this->query);
+                                    $repeat_data = $this->db->loadAssocList();
+                                } catch (Exception $e) {
+                                    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                                    JLog::add($error, JLog::ERROR, 'com_emundus');
+                                }
+
+                                if (!empty($repeat_data)) {
+                                    foreach ($parent_id as $parent) {
+                                        $parent_data = array();
+                                        foreach ($repeat_data as $key => $d) {
+                                            unset($d['parent_id']);
+                                            unset($d['id']);
+                                            $columns = '`'.implode('`,`', array_keys($d)).'`';
+                                            $parent_data[] = '('.implode(',', $this->db->Quote($d)).', '.$parent.')';
+                                        }
+                                        $this->query = 'INSERT INTO `'.$repeat_table_name.'` ('.$columns.', `parent_id`) VALUES ';
+                                        $this->query .= implode(',', $parent_data);
+                                        $this->db->setQuery($this->query);
+
+                                        try {
+                                            $this->db->execute();
+                                        } catch (Exception $e) {
+                                            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                                            JLog::add($error, JLog::ERROR, 'com_emundus');
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    } else {
+                        // Parent table
+                        $updated_fnum = array();
+                        foreach ($fnums as $fnum => $f) {
+                            $this->query = 'UPDATE `'.$table_name.'` SET ';
+                            $parent_update = array();
+                            foreach ($parent_data as $key => $value) {
+                                $parent_update[] = '`'.$key.'`='.$this->db->Quote($value);
+                            }
+                            $this->query .= implode(',', $parent_update);
+                            $this->query .= ' WHERE fnum like '.$this->db->Quote($fnum);
+
+                            $this->db->setQuery($this->query);
+                            try {
+                                $this->db->execute();
+                                $updated_fnum[] = $fnum;
+                            } catch (Exception $e) {
+                                $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                                JLog::add($error, JLog::ERROR, 'com_emundus');
+                            }
+                        }
+
+                        if (!empty($updated_fnum)) {
+                            $this->query = 'SELECT id FROM `'.$table_name.'` WHERE fnum IN ('.implode(',', $this->db->Quote($updated_fnum)).')';
+                            $this->db->setQuery($this->query);
+                            $parent_id = $this->db->loadColumn();
+                        }
+
+                        // Repeated table
+                        foreach ($fabrik_group_rowids_key as $key => $rowids) {
+                            if (!empty($rowids)) {
+                                $repeat_table_name = $table_name.'_'.$key.'_repeat';
+                                $this->query = 'SELECT * FROM `'.$repeat_table_name.'` WHERE id IN ('.implode(',', $rowids).')';
+                                try {
+                                    $this->db->setQuery($this->query);
+                                    $repeat_data = $this->db->loadAssocList('id');
+                                } catch (Exception $e) {
+                                    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                                    JLog::add($error, JLog::ERROR, 'com_emundus');
+                                }
+                                if (!empty($parent_id)) {
+                                    $this->query = 'DELETE FROM `'.$repeat_table_name.'` WHERE parent_id IN ('.implode(',', $parent_id).')';
+                                    $this->db->setQuery($this->query);
+                                    try {
+                                        $this->db->execute();
+                                    } catch (Exception $e) {
+                                        $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                                    }
+
+                                    if (!empty($repeat_data)) {
+                                        foreach ($parent_id as $parent) {
+                                            $parent_data = array();
+                                            foreach ($repeat_data as $key => $d) {
+                                                unset($d['parent_id']);
+                                                unset($d['id']);
+                                                $columns = '`'.implode('`,`', array_keys($d)).'`';
+                                                $parent_data[] = '('.implode(',', $this->db->Quote($d)).', '.$parent.')';
+                                            }
+
+                                            $this->query = 'INSERT INTO `'.$repeat_table_name.'` ('.$columns.', `parent_id`) VALUES ';
+                                            $this->query .= implode(',', $parent_data);
+                                            $this->db->setQuery($this->query);
+                                            try {
+                                                $this->db->execute();
+                                            } catch (Exception $e) {
+                                                $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                                                JLog::add($error, JLog::ERROR, 'com_emundus');
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                $toStatus = (Int)$this->getParam('emundusprocessworkflow_field_status', '-1');
+                if (isset($toStatus) && $toStatus != -1 && isset($user->fnum)) {
+                    $this->query = $this->db->getQuery(true);
+                    // Conditions for which status should be updated.
+                    // We only want to update the user's status to another value if it's 0 (NOT SENT).
+                    $conditions = [
+                        $this->db->quoteName('fnum').' LIKE '.$user->fnum,
+                        $this->db->quoteName('status').' = 0'
+                    ];
+
+                    $this->query->update($this->db->quoteName('#__emundus_campaign_candidature'))
+                        ->set([$this->db->quoteName('status').' = '.$toStatus])
+                        ->where($conditions);
+
+                    try {
+                        $this->db->setQuery($this->query);
+                        $this->db->execute();
+                    } catch (Exception $e) {
+                        JLog::add('Error updating file status : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                    }
+                }
+
+                require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+                $m_application = new EmundusModelApplication();
+
+                /*
+                * REDIRECTION ONCE DUPLICATION IS DONE
+                */
+                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+
+                if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
+                    $levels = JAccess::getAuthorisedViewLevels($user->id);
+
+                    if (isset($user->fnum)) {
+                        $m_application->getFormsProgress($user->fnum);
+                        $m_application->getAttachmentsProgress($user->fnum);
+                    }
+                } else {
+
+                    try {
+                        $this->query = 'SELECT db_table_name FROM `#__fabrik_lists` WHERE `form_id` ='.$formid;
+                        $this->db->setQuery($this->query);
+                        $db_table_name = $this->db->loadResult();
+
+                    } catch (Exception $e) {
+                        $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                    }
+
+                    $fnum = $jinput->get($db_table_name.'___fnum');
+                    $s1 = JRequest::getVar($db_table_name.'___user', null, 'POST');
+                    $s2 = JRequest::getVar('sid', '', 'GET');
+                    $student_id = !empty($s2)?$s2:$s1;
+
+                    $sid = is_array($student_id)?$student_id[0]:$student_id;
+
+                    try {
+
+                        $this->query = 'UPDATE `'.$db_table_name.'` SET `user`='.$sid.' WHERE fnum like '.$this->db->Quote($fnum);
+                        $this->db->setQuery($this->query);
+                        $this->db->execute();
+
+                    } catch (Exception $e) {
+                        $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                    }
+
+                    $link = JRoute::_('index.php?option=com_fabrik&view=form&formid='.$formid.'&usekey=fnum&rowid='.$fnum.'&tmpl=component');
+
+                    echo "<hr>";
+                    echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
+                    echo "<hr>";
+                    exit;
+                }
+
+                if ($this->getParam('emundusprocessworkflow_notify_complete_file', 0) == 1) {
+
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                    $m_application = new EmundusModelApplication;
+                    $m_checklist = new EmundusModelChecklist();
+
+                    $attachments = $m_application->getAttachmentsProgress($user->fnum);
+                    $forms = $m_application->getFormsProgress($user->fnum);
+                    $send_file_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
+
+                    if ($attachments >= 100 && $forms >= 100) {
+
+                        echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>';
+                        echo '<script src="https://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>';
+                        die("<script>
+				    	$(document).ready(() => {
+				      		Swal.fire({
+					        	position: 'top',
+					        	type: 'info',
+					        	title: '".JText::_('PLG_FABRIK_FORM_EMUNDUSREDIRECT_FILE_COMPLETE')."',
+					        	confirmButtonText: '".JText::_('PLG_FABRIK_FORM_EMUNDUSREDIRECT_SEND_FILE')."',
+					        	showCancelButton: true,
+					        	cancelButtonText: '".JText::_('PLG_FABRIK_FORM_EMUNDUSREDIRECT_CONTINUE')."',
+					        	onClose: () => {
+					            	window.location.href = '".$link."';
+					        	}
+				            })
+			                .then(confirm => {
+                                if (confirm.value) {
+                                    window.location.href = '".$send_file_url."';
+                                } else {
+                                    window.location.href = '".$link."';
+                                }
+                            })
+				      });
+				  </script>");
+                    }
+                }
+            }
+
+        else {
+            /// insert emundusconfirmpost (with some changes of worflow) here
+            $app = JFactory::getApplication();
+            $offset = $app->get('offset', 'UTC');
+
+            try {
+                $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+                $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+                $now = $dateTime->format('Y-m-d H:i:s');
+            } catch (Exception $e) {
+                echo $e->getMessage() . '<br />';
+            }
+
+            $student = JFactory::getSession()->get('emundusUser');
+
+            //// get start_date and end_date from $_commonModel
+            $_startDate = $this->_commonModel->getStepByFnumAndStatus($student->fnum, $student->status)->start_date;
+            $_endDate = $this->_commonModel->getStepByFnumAndStatus($student->fnum, $student->status)->end_date;
+
+            $is_dead_line_passed = ($now > $_endDate || $now < $_startDate) ? true : false;
+
+            // Check campaign limit, if the limit is obtained, then we set the deadline to true
+            $isLimitObtained = $m_campaign->isLimitObtained($student->fnums[$student->fnum]->campaign_id);
+
+            // If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
+            if (($is_dead_line_passed || $isLimitObtained === true) && !in_array($student->id, $id_applicants)) {
+                if ($isLimitObtained === true) {
+                    $this->getModel()->formErrorMsg = JText::_('LIMIT_OBTAINED');
+                } else {
+                    $this->getModel()->formErrorMsg = JText::_('CANDIDATURE_PERIOD_TEXT');
+                }
+                return false;
+            }
+
+            // Database UPDATE data
+            //// Applicant cannot delete this attachments now
+            if (!$can_edit_until_deadline) {
+                $this->query = 'UPDATE #__emundus_uploads SET can_be_deleted = 0 WHERE user_id = ' . $student->id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+                $this->db->setQuery($this->query);
+
+                try {
+                    $this->db->execute();
+                } catch (Exception $e) {
+                    // catch any database errors.
+                    JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                }
+            }
 
             JPluginHelper::importPlugin('emundus');
             $dispatcher = JEventDispatcher::getInstance();
@@ -577,27 +909,26 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             // get the output status
             if (!is_null($student->output_status)) {
                 //// update to new output_status
-//                $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $student->output_status . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
-                $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $student->output_status . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+                //                $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $student->output_status . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+                $this->query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $student->output_status . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
                 //$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $now . ',status=' . $student->output_status . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
 
             } else {
                 /// use the default status
-//                $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $this->getParam('emundusconfirmpost_status', '1') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
-                $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $this->getParam('emundusprocessworkflow_status', '') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+                //                $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $this->getParam('emundusconfirmpost_status', '1') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+                $this->query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $this->getParam('emundusprocessworkflow_output_status', '') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
                 //$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $now . ',status=' . $this->getParam('emundusconfirmpost_status', '1') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
             }
-            $this->db->setQuery($query);
+            $this->db->setQuery($this->query);
 
             try {
                 $this->db->execute();
-
             } catch (Exception $e) {
                 JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
             }
 
-            $query = 'UPDATE #__emundus_declaration SET time_date=NOW() WHERE user=' . $student->id . ' AND fnum like ' . $this->db->Quote($student->fnum);
-            $this->db->setQuery($query);
+            $this->query = 'UPDATE #__emundus_declaration SET time_date=NOW() WHERE user=' . $student->id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+            $this->db->setQuery($this->query);
 
             try {
                 $this->db->execute();
@@ -612,7 +943,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             if (!is_null($student->output_status)) {
                 $step = $student->output_status;
             } else {
-                $step = $this->getParam('emundusprocessworkflow_status', '');
+                $step = $this->getParam('emundusprocessworkflow_output_status', '');
             }
 
             $code = array($student->code);
@@ -717,11 +1048,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                     copy(JPATH_BASE . DS . 'tmp' . DS . $application_form_name . ".pdf", JPATH_BASE . DS . "images" . DS . "emundus" . DS . "files" . DS . $student->id . DS . $fnum . "_application_form_pdf.pdf");
                 }
             }
-            $app->redirect($this->getParam('emundusprocessworkflow_redirect_jump_page'),JText::_('APPLICATION_SENT'));        // jump the main page + show the thanks message
-
-        }
-        else {
-            /// do nothing here
+            $app->redirect($this->getParam('emundusprocessworkflow_redirect_jump_page'), JText::_($this->getParam('emundusprocessworkflow_thanks_message')));
         }
     }
 
