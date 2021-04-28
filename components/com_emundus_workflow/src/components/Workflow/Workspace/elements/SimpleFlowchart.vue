@@ -15,13 +15,13 @@
 <script>
 import FlowchartLink from './FlowchartLink.vue';
 import FlowchartNode from './FlowchartNode.vue';
-import { getMousePosition } from '../assets/position';
+import { getMousePosition } from '../../../../assets/position';
 import axios from 'axios';
 import Swal from "sweetalert2";
-import ModalConfigElement from "../ModalConfigElement";
+import ModalConfigElement from "../../../Modal/WorkflowModal/ModalConfigElement";
 const qs = require('qs');
 
-import { commonMixin } from "../common-mixin";
+import { commonMixin } from "../../../../mixins/common-mixin";
 
 export default {
   name: 'VueFlowchart',

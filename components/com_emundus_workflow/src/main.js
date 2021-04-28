@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import workflowDashboard from './WorkflowDashboard';
+import workflowDashboard from './components/Workflow/Dashboard/WorkflowDashboard';
 
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
@@ -15,7 +15,7 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-import stepflow from "./components/StepFlow";
+import stepflow from "./components/StepFlow/StepFlow";
 
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue)

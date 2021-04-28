@@ -103,7 +103,7 @@ import Swal from "sweetalert2";
 import $ from 'jquery';
 import Calendar from 'v-calendar/lib/components/calendar.umd'
 import DatePicker from 'v-calendar/lib/components/date-picker.umd'
-import { commonMixin } from "./common-mixin";
+import { commonMixin } from "../../../mixins/common-mixin";
 
 require('moment')().format('YYYY-MM-DD HH:mm:ss');
 

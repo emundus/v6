@@ -28,13 +28,13 @@
 
 <script>
 import axios from 'axios';
-import ModalConfigStep from "../ModalConfigStep";
-import SimpleFlowchart from "./SimpleFlowchart";
-import WorkflowSpace from "../WorkflowSpace";
+import ModalConfigStep from "../Modal/StepFlowModal/ModalConfigStep";
+import SimpleFlowchart from "../Workflow/Workspace/elements/SimpleFlowchart";
+import WorkflowSpace from "../Workflow/Workspace/WorkflowSpace";
 const qs = require('qs');
 import $ from 'jquery';
 
-import { commonMixin } from '../common-mixin'; /// using mixin in this case
+import { commonMixin } from '../../mixins/common-mixin'; /// using mixin in this case
 
 export default {
   name: "stepflow",

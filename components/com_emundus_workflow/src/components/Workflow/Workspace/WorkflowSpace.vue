@@ -34,13 +34,13 @@
 </template>
 
 <script>
-import SimpleFlowchart from './components/SimpleFlowchart.vue';
-import { commonMixin } from "./common-mixin";
+import SimpleFlowchart from './elements/SimpleFlowchart.vue';
+import { commonMixin } from "../../../mixins/common-mixin";
 
 import axios from 'axios';
 import Swal from "sweetalert2";
-import ModalConfigElement from "./ModalConfigElement";
-import WorkflowSpaceToolsMenu from "./components/WorkflowSpaceToolsMenu";
+import ModalConfigElement from "../../Modal/WorkflowModal/ModalConfigElement";
+import WorkflowSpaceToolsMenu from "./elements/WorkflowSpaceToolsMenu";
 
 import $ from 'jquery';
 

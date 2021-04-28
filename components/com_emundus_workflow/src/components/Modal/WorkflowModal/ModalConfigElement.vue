@@ -22,14 +22,14 @@
 </template>
 
 <script>
-import espaceModal from './elements/espaceModal.vue';
-import messageModal from './elements/messageModal.vue';
+import espaceModal from './element/espaceModal.vue';
+import messageModal from './element/messageModal.vue';
 
 import axios from 'axios';
 import Swal from "sweetalert2";
 const qs = require('qs');
 
-import { commonMixin } from "./common-mixin";
+import { commonMixin } from "../../../mixins/common-mixin";
 
 export default {
   name: "ModalConfigElement",

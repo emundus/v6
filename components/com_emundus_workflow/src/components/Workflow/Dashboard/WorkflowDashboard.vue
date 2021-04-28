@@ -43,8 +43,8 @@ import { DateTime } from 'vue-datetime';
 
 import Swal from 'sweetalert2';
 
-import WorkflowCreatorMenu from "./components/WorkflowCreatorMenu";       // import menu creator menu --> 1 textbox + 1 dropdown menu
-import WorkflowInfoTable from "./components/WorkflowInfoTable";           // import workflow info table --> to view all informations about workflow
+import WorkflowCreatorMenu from "./elements/WorkflowCreatorMenu";       // import menu creator menu --> 1 textbox + 1 dropdown menu
+import WorkflowInfoTable from "./elements/WorkflowInfoTable";           // import workflow info table --> to view all informations about workflow
 
 let now = new Date();
 

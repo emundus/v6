@@ -12,7 +12,7 @@
 <script>
 import axios from "axios";
 const qs = require('qs');
-import { commonMixin } from "../common-mixin";
+import { commonMixin } from "../../../../mixins/common-mixin";
 
 export default {
   name: "WorkflowSpaceToolsMenu",
