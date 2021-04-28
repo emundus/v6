@@ -236,7 +236,8 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-
+        var _index = this.columns.findIndex((element) => element.id == id);
+        this.columns[_index]['title'] = data.step_label;
       }).catch(error => {
         console.log(error);
       })
