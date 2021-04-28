@@ -565,7 +565,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
         $_nextFormID = (explode('&Itemid=', explode('formid=', $link)[1]))[0];
 
-//        if($formid !== $_nextFormID)
+//        if($formid !== $_nextFormID)          --> keep this line
         if($formid !== $_lastFormID)
             $app->redirect($link . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload);
             /// insert emundusredirect plugin here ---
@@ -911,16 +911,10 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
             // get the output status
             if (!is_null($student->output_status)) {
-                //// update to new output_status
-                //                $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $student->output_status . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
-                $this->query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $student->output_status . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
-                //$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $now . ',status=' . $student->output_status . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
-
+                $this->query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $this->db->quote($now) . ', status=' . $student->output_status . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
             } else {
                 /// use the default status
-                //                $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $this->getParam('emundusconfirmpost_status', '1') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
-                $this->query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status=' . $this->getParam('emundusprocessworkflow_output_status', '') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
-                //$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $now . ',status=' . $this->getParam('emundusconfirmpost_status', '1') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+                $this->query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $this->db->quote($now) . ', status=' . $this->getParam('emundusprocessworkflow_output_status', '') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
             }
             $this->db->setQuery($this->query);
 
