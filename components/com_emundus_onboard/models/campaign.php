@@ -462,10 +462,19 @@ class EmundusonboardModelcampaign extends JModelList
                     $limit_status = $data['limit_status'];
                     array_splice($data, $i, 1);
                 }
+                if ($key == 'profile_id') {
+                    $query->select('id')
+                        ->from($db->quoteName('#__emundus_setup_profiles'))
+                        ->where($db->quoteName('published') . ' = 1')
+                        ->andWhere($db->quoteName('status') . ' = 1');
+                    $db->setQuery($query);
+                    $data['profile_id'] = $db->loadResult();
+                }
                 $i++;
             }
 
-            $query->insert($db->quoteName('#__emundus_setup_campaigns'))
+            $query->clear()
+                ->insert($db->quoteName('#__emundus_setup_campaigns'))
                 ->columns($db->quoteName(array_keys($data)))
                 ->values(implode(',', $db->Quote(array_values($data))));
 
