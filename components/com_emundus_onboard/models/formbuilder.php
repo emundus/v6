@@ -262,71 +262,71 @@ class EmundusonboardModelformbuilder extends JModelList {
     }
 
     function prepareSubmittionPlugin($params) {
-        $params['applicationsent_status'] = "0";
-        $params['admission'] = "0";
-        $params['ajax_validations'] = "0";
-        $params['only_process_curl'] = array(
-            2 => "onBeforeLoad"
-        );
-        $params['form_php_file'] = array(
-            2 => "-1"
-        );
-        $params['form_php_require_once'] = array(
-            2 => "0"
-        );
-        $params['thanks_message'] = array(
-            3 => "Félicitations, votre dossier a bien été envoyé."
-        );
-        $params['save_insession'] = array(
-            3 => "0"
-        );
-        $params['redirect_conditon'] = array(
-            3 => ""
-        );
-        $params['redirect_content_reset_form'] = array(
-            3 => "1"
-        );
-        $params['redirect_content_how'] = array(
-            3 => "popup"
-        );
-        $params['redirect_content_popup_width'] = array(
-            3 => ""
-        );
-        $params['redirect_content_popup_height'] = array(
-            3 => ""
-        );
-        $params['redirect_content_popup_x_offset'] = array(
-            3 => ""
-        );
-        $params['redirect_content_popup_y_offset'] = array(
-            3 => ""
-        );
-        $params['redirect_content_popup_title'] = array(
-            3 => ""
-        );
+//        $params['applicationsent_status'] = "0";
+//        $params['admission'] = "0";
+//        $params['ajax_validations'] = "0";
+//        $params['only_process_curl'] = array(
+//            2 => "onBeforeLoad"
+//        );
+//        $params['form_php_file'] = array(
+//            2 => "-1"
+//        );
+//        $params['form_php_require_once'] = array(
+//            2 => "0"
+//        );
+//        $params['thanks_message'] = array(
+//            3 => "Félicitations, votre dossier a bien été envoyé."
+//        );
+//        $params['save_insession'] = array(
+//            3 => "0"
+//        );
+//        $params['redirect_conditon'] = array(
+//            3 => ""
+//        );
+//        $params['redirect_content_reset_form'] = array(
+//            3 => "1"
+//        );
+//        $params['redirect_content_how'] = array(
+//            3 => "popup"
+//        );
+//        $params['redirect_content_popup_width'] = array(
+//            3 => ""
+//        );
+//        $params['redirect_content_popup_height'] = array(
+//            3 => ""
+//        );
+//        $params['redirect_content_popup_x_offset'] = array(
+//            3 => ""
+//        );
+//        $params['redirect_content_popup_y_offset'] = array(
+//            3 => ""
+//        );
+//        $params['redirect_content_popup_title'] = array(
+//            3 => ""
+//        );
         //$params['plugins'] = array("emundusisapplicationsent", "emundusconfirmpost", "php", "redirect");
-        $params['plugins'] = array("emundusprocessworkflow", "php");            // replace 3 plugins by 1 plugin
+        $params['plugins'] = array("emundusprocessworkflow");            // replace 3 plugins by 1 plugin
 
         return $params;
     }
 
     function prepareFormPlugin($params) {
-        $params['emundusredirect_field_status'] = "-1";
-        $params['copy_form'] = "0";
-        $params['notify_complete_file'] = "0";
-        $params['applicationsent_status'] = "0";
-        $params['admission'] = "0";
+//        $params['emundusredirect_field_status'] = "-1";
+//        $params['copy_form'] = "0";
+//        $params['notify_complete_file'] = "0";
+//        $params['applicationsent_status'] = "0";
+        //$params['admission'] = "0";
         $params['only_process_curl'] = array(
-            2 => "getEndContent"
+            1 => "getEndContent"
         );
         $params['form_php_file'] = array(
-            2 => "-1"
+            1 => "-1"
         );
         $params['form_php_require_once'] = array(
-            2 => "0"
+            1 => "0"
         );
 //        $params['plugins'] = array("emundusredirect", "emundusisapplicationsent", "php");
-        $params['plugins'] = array("emundusredirect", "emundusprocessworkflow", "php");
+        $params['plugins'] = array("emundusprocessworkflow", "php");
 
         return $params;
     }
