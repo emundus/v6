@@ -1184,7 +1184,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	 */
 	function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null) {
 
-        include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
         $m_email = new EmundusModelEmails;
 		$m_messages = new EmundusModelMessages();
 
