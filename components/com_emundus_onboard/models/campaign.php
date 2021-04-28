@@ -804,7 +804,6 @@ class EmundusonboardModelcampaign extends JModelList
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
         $types = implode(";", array_values($types));
-
         $query
             ->insert($db->quoteName('#__emundus_setup_attachments'));
         $query

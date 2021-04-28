@@ -1701,13 +1701,18 @@ class EmundusonboardModelform extends JModelList {
 
         try {
             foreach ($documents as $document) {
+
                 $query->update($db->quoteName('#__emundus_setup_attachment_profiles'))
                     ->set($db->quoteName('ordering') . ' = ' . (int)$document['ordering'])
                     ->where($db->quoteName('id') . ' = ' . (int)$document['id']);
                 $db->setQuery($query);
+
                 $results[] = $db->execute();
+                $query->clear();
             }
+
             return $results;
+
         } catch (Exception $e){
             JLog::add('component/com_emundus_onboard/models/form | Error cannot reorder documents : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;

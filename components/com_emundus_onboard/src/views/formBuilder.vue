@@ -854,7 +854,7 @@
         await axios.get(ellink + "&format=vue_jsonclean")
             .then(response => {
               this.formObjectArray[index].object = response.data;
-              console.log(response.data)
+             // console.log(response.data)
               /*this.formObjectArray.push({
                 object: response.data,
                 rgt: this.formList[index].rgt,
@@ -1170,6 +1170,7 @@
         this.documentsList.forEach((doc, index) => {
           doc.ordering = index;
         });
+
         axios({
           method: "post",
           url: "index.php?option=com_emundus_onboard&controller=form&task=reorderDocuments",
@@ -1178,6 +1179,7 @@
           },
           data: qs.stringify({
             documents: this.documentsList,
+
           })
         });
       },
