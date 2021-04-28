@@ -215,10 +215,33 @@ class EmundusModelChecklist extends JModelList
 
 		//$filename = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($user->lastname.'_'.$user->firstname,ENT_NOQUOTES,'UTF-8'))));
 
-        $file_array = explode(".", $file);
-        $filename = $fnumInfos['applicant_id'].'-'.$fnumInfos['id'].'-'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
+		$file_array = explode(".", $file);
 
-        return $filename;
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$applicant_file_name = $eMConfig->get('applicant_file_name', null);
+
+		if (!empty($applicant_file_name)) {
+
+			require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+			$m_emails = new EmundusModelEmails;
+
+			$tags = $m_emails->setTags($fnumInfos['applicant_id'], null, $fnumInfos['fnum']);
+			$application_form_name = '[APPLICANT_NAME]';
+			$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
+			//$application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
+
+			// Format filename
+			$application_form_name = $m_emails->stripAccents($application_form_name);
+			$application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
+			$application_form_name = preg_replace('/\s/', '_', $application_form_name);
+			$application_form_name = strtolower($application_form_name);
+			$filename = $application_form_name.'_'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
+
+		} else {
+			$filename = $fnumInfos['applicant_id'].'-'.$fnumInfos['id'].'-'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
+		}
+
+		return $filename;
 	}
 }
 ?>

@@ -165,6 +165,7 @@
 		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"/>
 		<field name="attachment_order" type="text" size="6" label="COM_EMUNDUS_CANDIDACY_FORM_ORDER" description="COM_EMUNDUS_CANDIDACY_FORM_ORDER_DESC"/>
 		<field name="application_form_name" type="text" default="application_form_pdf" size="6" label="COM_EMUNDUS_CANDIDACY_FILE_NAME" description="COM_EMUNDUS_CANDIDACY_FILE_NAME_DESC"/>
+		<field name="applicant_file_name" type="text" default="" size="6" label="COM_EMUNDUS_APPLICANT_FILE_NAME" description="COM_EMUNDUS_APPLICANT_FILE_NAME_DESC"/>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_EMAIL_REMINDER" name="email" description="COM_EMUNDUS_EMAIL_REMINDER_DESC">
 		<field name="nb_email_per_batch" type="text" size="3" default="50" label="NB_EMAIL_PER_BATCH" description="NB_EMAIL_PER_BATCH_DESC" />
