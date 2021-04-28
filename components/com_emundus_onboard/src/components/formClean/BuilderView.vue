@@ -8,7 +8,7 @@
       v-html="object_json.show_page_heading.page_heading"
     />
     <div class="d-flex header-form-page mb-1" v-if="eval == 0 && !updatePage">
-      <h2 v-if="object_json.show_title" class="page_header mr-1" @click="enableUpdatingPage(object_json)" v-html="this.splitProfileIdFromLabel(object_json.show_title.value)" />
+      <h2 v-if="object_json.show_title" class="page_header mr-1" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
       <span @click="$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="Edit" class="cta-block pointer" style="font-size: 16px">
         <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
       </span>
@@ -1089,8 +1089,8 @@ export default {
 
     getDataObject: _.debounce(function() {
       this.object_json = this.object.object;
-      this.object_json.show_title.label.fr=this.splitProfileIdFromLabel(this.object_json.show_title.label.fr);
-      this.object_json.show_title.label.en=this.splitProfileIdFromLabel(this.object_json.show_title.label.en);
+      /*this.object_json.show_title.label.fr=this.splitProfileIdFromLabel(this.object_json.show_title.label.fr);
+      this.object_json.show_title.label.en=this.splitProfileIdFromLabel(this.object_json.show_title.label.en);*/
 
       this.getElementsArray();
     }, 500),

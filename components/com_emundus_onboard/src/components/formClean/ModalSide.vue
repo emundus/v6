@@ -127,16 +127,16 @@ export default {
     UpdateParams() {
       //console.log("changes");
       //console.log(this.element);
-      let prid=(this.tempEl.show_title.titleraw.split("_"))[1];
+      //let prid=(this.tempEl.show_title.titleraw.split("_"))[1];
       //console.log("this is prid "+prid);
       //console.log(this.label.en);
       //console.log()
       this.changes = true;
       //if(!((this.label.en).contains("___"+prid))) {
-        this.label.en = prid+'_'+this.label.en
+        //this.label.en = prid+'_'+this.label.en
       //}
       //if(!this.label.fr.contains('___'+prid)) {
-        this.label.fr = prid+'_'+this.label.fr
+        //this.label.fr = prid+'_'+this.label.fr
       //}
       this.axioschange(this.intro, this.tempEl.intro_raw);
       this.axioschange(this.label, this.tempEl.show_title.titleraw);
@@ -281,8 +281,10 @@ export default {
         });
       this.axiostrad(this.tempEl.show_title.titleraw)
         .then(response => {
-          this.label.fr = (response.data.fr.split('_'))[1];
-          this.label.en = (response.data.en.split('_'))[1];
+          //this.label.fr = (response.data.fr.split('_'))[1];
+         // this.label.en = (response.data.en.split('_'))[1];
+          this.label.fr=response.data.fr
+          this.label.en=response.data;en
         })
         .catch(function(response) {
           console.log(response);

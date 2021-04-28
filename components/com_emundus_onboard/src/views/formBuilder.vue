@@ -201,7 +201,8 @@
                 <a @click="changeGroup(index,value.rgt);menuHighlight = 0"
                    class="MenuFormItem"
                    :title="value.label"
-                   :class="indexHighlight == index && menuHighlight === 0 ? 'MenuFormItem_current' : ''" v-html="slpitProfileIdfromLabel(value.label)">
+                   :class="indexHighlight == index && menuHighlight === 0 ? 'MenuFormItem_current' : ''" >
+                    {{value.label}}
                 </a>
               </li>
             </draggable>

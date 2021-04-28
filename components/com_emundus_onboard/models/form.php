@@ -781,8 +781,10 @@ class EmundusonboardModelform extends JModelList {
 
 				// Create a first page
                 $label = array(
-                    'fr' => $newprofile.' - Ma première page',
-                    'en' => $newprofile.' - My first page'
+                    //'fr' => $newprofile.' - Ma première page',
+                    //'en' => $newprofile.' - My first page'
+                    'fr' => 'Ma première page',
+                    'en' => 'My first page'
                 );
                 $intro = array(
                     'fr' => 'Décrivez votre page de formulaire avec une introduction',
