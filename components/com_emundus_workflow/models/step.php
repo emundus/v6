@@ -74,7 +74,7 @@ class EmundusworkflowModelstep extends JModelList {
                 // step 3 --> update last saving time
                 $this->workflow_model->workflowSavingTrigger((int)$data['workflow_id']);
 
-                return (object)["step_id" => $_step_id, "message" => $this->db->execute()];
+                return (object)["step_id" => $_step_id, "ordering" => $_currentOrdering, "message" => $this->db->execute()];
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/step | Cannot create new step' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
                 return $e->getMessage();
@@ -90,7 +90,26 @@ class EmundusworkflowModelstep extends JModelList {
             try {
                 $wid = $data['wid'];
 
-                // step 1 --> delete stepflow
+                // step 1 --> get all stepflows having id > current(id)
+                $this->query->clear()
+                    ->select('#__emundus_workflow_step.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_step'))
+                    ->where($this->db->quoteName('#__emundus_workflow_step.workflow_id') . '=' . $wid)
+                    ->andWhere($this->db->quoteName('#__emundus_workflow_step.id') . '>' . (int)$data['id']);
+                $this->db->setQuery($this->query);
+                $_stepList = $this->db->loadObjectList();
+
+                foreach($_stepList as $key => $value) {
+                    /// update the ordering of $value->id
+                    $this->query->clear()
+                        ->update($this->db->quoteName('#__emundus_workflow_step'))
+                        ->set($this->db->quoteName('#__emundus_workflow_step.ordering') . '=' . (int)($value->ordering - 1))
+                        ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$value->id);
+                    $this->db->setQuery($this->query);
+                    $this->db->execute();
+                }
+
+                // step 2 --> delete stepflow
                 $this->query->clear()
                     ->delete($this->db->quoteName('#__emundus_workflow_step'))
                     ->where($this->query->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
@@ -98,7 +117,7 @@ class EmundusworkflowModelstep extends JModelList {
                 $this->db->setQuery($this->query);
                 $this->db->execute();
 
-                // step 2 --> update last saving time
+                // step 3 --> update last saving time
                 $this->workflow_model->workflowSavingTrigger($wid);
                 return (object)['message'=>$this->db->execute()];
             } catch (Exception $e) {

@@ -103,6 +103,7 @@ export default {
       }).then(response => {
         this.columns.push({
           id: response.data.data.step_id,
+          order: response.data.data.ordering,
         })
 
         setTimeout(() => { this.$modal.show('stepModal' + response.data.data.step_id) }, 500);
