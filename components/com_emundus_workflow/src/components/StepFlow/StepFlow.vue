@@ -88,7 +88,7 @@ export default {
     },
 
     createStep: function() {
-      var _data = {
+      let _data = {
         workflow_id : this.$data.id,
       }
       axios({

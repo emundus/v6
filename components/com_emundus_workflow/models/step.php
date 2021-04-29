@@ -46,7 +46,22 @@ class EmundusworkflowModelstep extends JModelList {
     public function createStep($data) {
         if (!empty($data) or isset($data)) {
             try {
-                // step 1 --> create step
+                // step 1 --> get the current ordering --> if nothing previous step --> return 0, else increment 1
+                $this->query->clear()
+                    ->select('max(#__emundus_workflow_step.ordering)')
+                    ->from($this->db->quoteName('#__emundus_workflow_step'))
+                    ->where($this->db->quoteName('#__emundus_workflow_step.workflow_id') . '=' . (int)$data['workflow_id']);
+                $this->db->setQuery($this->query);
+                $_currentOrdering = $this->db->loadResult();
+
+                if(is_null($_currentOrdering)) {
+                    $_currentOrdering = 0;
+                } else {
+                    $_currentOrdering += 1;
+                }
+                $data['ordering'] = $_currentOrdering;
+
+                // step 2 --> create step normally
                 $this->query->clear()
                     ->insert($this->db->quoteName('#__emundus_workflow_step'))
                     ->columns($this->db->quoteName(array_keys($data)))
@@ -56,7 +71,7 @@ class EmundusworkflowModelstep extends JModelList {
                 $this->db->execute();
                 $_step_id = $this->db->insertid();
 
-                // step 2 --> update last saving time
+                // step 3 --> update last saving time
                 $this->workflow_model->workflowSavingTrigger((int)$data['workflow_id']);
 
                 return (object)["step_id" => $_step_id, "message" => $this->db->execute()];
