@@ -220,7 +220,7 @@ export default {
       this.getModelsDocs();
     },
     createNewDocument() {
-     // console.log(this.form);
+
       this.errors = {
         name: false,
         nbmax: false,
@@ -283,6 +283,7 @@ export default {
 
       let url = 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument';
       if(this.doc != null) {
+
         url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
         params.did = this.doc;
       }
@@ -295,7 +296,7 @@ export default {
         },
         data: qs.stringify(params)
       }).then((rep) => {
-       // console.log(rep);
+
         this.req=false;
         this.$emit("UpdateDocuments");
         this.$modal.hide('modalAddDocuments')
@@ -309,21 +310,20 @@ export default {
         url: "index.php?option=com_emundus_onboard&controller=form&task=getundocuments",
       }).then(response => {
         this.models = response.data.data;
-        //console.log("les docsddd")
-       // console.log(this.models);
+
         if(this.currentDoc != null){
           this.doc = this.currentDoc;
         }
       });
     },
     updateRequireMandatory(){
-      console.log(this.req);
+
       if(this.req==true) {
         this.form.mandatory=0
-        //console.log("doc mandatory is " + 1);
+
       }else {
         this.form.mandatory=1
-        //console.log("doc mandatory is"+ 0)
+
       }
       /*setTimeout(() => {
         axios({

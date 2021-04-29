@@ -910,14 +910,23 @@ class EmundusonboardModelcampaign extends JModelList
                     ->where($db->quoteName('profile_id') . ' = ' . $db->quote($pid));
                 $db->setQuery($query);
                 $ordering = $db->loadResult();
-
-                $query->clear()
-                    ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
-                $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
-                    ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
-                    ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
-                    ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
-                $db->setQuery($query);
+                if ($did !==20){
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
+                    $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
+                        ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
+                        ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
+                        ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
+                    $db->setQuery($query);
+                } else {
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
+                    $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
+                        ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
+                        ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
+                        ->set($db->quoteName('displayed') . ' = '. 0)
+                        ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
+                }
 
                 $db->execute();
 

@@ -216,7 +216,7 @@
                 :class="'draggables-list'"
                 @end="reorderingDocuments"
             >
-              <li v-for="(doc, index) in documentsList" :key="index" class="MenuForm" @mouseover="enableGrabDocuments(index)" @mouseleave="disableGrabDocuments()">
+              <li v-for="(doc, index) in documentsList" :key="index" class="MenuForm" @mouseover="enableGrabDocuments(index)" @mouseleave="disableGrabDocuments()" v-if="doc.displayed==1">
                   <span class="icon-handle" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
                     <em class="fas fa-grip-vertical handle"></em>
                   </span>
@@ -405,27 +405,29 @@
             icon: 'fas fa-paragraph',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
-          /*fileupload: {
+          fileupload: {
             id: 7,
             value: 'emundus_fileupload',
             icon: 'fas fa-file-upload',
             //name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FILE")
-          },*/
+          },
         },
         //create document when choosing plugin emundunsFileupload plugin
         docForm: {
           name: {
-            fr: 'Document sans nom',
-            en: 'Unamed document'
+            fr: 'Autres document',
+            en: 'Other documents'
           },
           description: {
-            fr: 'Document sans description',
-            en: 'Document without description'
+            fr: '',
+            en: ''
           },
-          nbmax: 1,
+          nbmax: 5,
           selectedTypes: {
             pdf: true,
+            jpg: true,
+            jpeg:true
           },
         },
         addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
@@ -478,6 +480,7 @@
               types: types,
               cid: this.cid,
               pid: this.prid,
+              did: 20
             }
               this.createElementEMundusFileUpload(params,gid,plugin,order);
           } else {
@@ -506,7 +509,8 @@
                   return qs.stringify(params);
                 }
               }).then(response => {
-
+                    console.log("none emundus file upload");
+                    console.log(response);
 
                 this.menuHighlightCustumisation(response,gid,order);
 
@@ -524,7 +528,7 @@
       createElementEMundusFileUpload(params,gid,plugin,order){
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=campaign&task=createdocument",
+          url: "index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -557,6 +561,7 @@
                 return qs.stringify(params);
               }
             }).then(response => {
+
              this.menuHighlightCustumisation(response,gid,order);
              this.getDocuments();
               this.loading = false;
@@ -592,9 +597,10 @@
           document.getElementsByClassName('no-elements-tip')[0].style.border = '2px dashed #c3c3ce';
           document.getElementsByClassName('no-elements-tip')[0].innerHTML = Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS");
         }
-        let plugin = evt.clone.id.split('_')[1];
+        let plugin = evt.clone.id.split(/_(.+)/)[1];
         let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
         if(typeof gid != 'undefined'){
+
           this.createElement(gid, plugin, evt.newIndex);
 
         }
@@ -654,8 +660,7 @@
 
       // Update component dynamically
       UpdateName(index, label) {
-        //console.log("we update element");
-        //console.log(this.formObjectArray[index].object);
+
         this.formObjectArray[index].object.show_title.value = label;
       },
       UpdateIntro(index, intro) {
