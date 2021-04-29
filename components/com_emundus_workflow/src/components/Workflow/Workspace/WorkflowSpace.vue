@@ -30,6 +30,10 @@
                       :height="800"
                       :step="step"
     />
+
+    <button v-on:click="returnStep()">Ouvrir Step</button>
+
+
   </div>
 </template>
 
@@ -76,6 +80,11 @@ export default {
   },
 
   methods: {
+    returnStep: function() {
+      let result = true;
+      this.$emit('returnBack', result);
+    },
+
     createNode: function (newItem) {
       this.scene.nodes.push(newItem);
       setTimeout(() => {
