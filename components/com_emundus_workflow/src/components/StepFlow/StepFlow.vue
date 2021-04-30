@@ -7,8 +7,10 @@
       {{ this.workflowLabel }}
     </div>
 
-    <b-button @click="createStep()" v-if="hideStep == false" variant="success" style="position: absolute; top:500px">(+)</b-button>
-    <div class="min-h-screen flex overflow-x-scroll py-12">
+    <b-button @click="createStep()" v-if="hideStep == false" variant="success" style="position: sticky">(+)</b-button>
+<!--    <div class="min-h-screen flex overflow-x-scroll py-12">-->
+    <draggable :invertedSwapThreshold="0.4" :invertSwap="true" v-model="columns" :group="columns" class="flex">
+
       <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id" v-on:dblclick="openStep(column.id)" v-if="hideStep == false">
         <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
         <div style="color:red">{{ column.stateIn }}</div>
@@ -21,8 +23,8 @@
         <b-button @click="configStep(column.id)" variant="warning" style="margin-left: 20px">Configurer</b-button>
       </div>
       <workflow-space v-for="column in columns" v-if="currentStep == column.id && hideWorkflow == false" :step="column" @returnBack="returnToStepFlow"/>
-    </div>
-
+    </draggable>
+<!--  </div>-->
   </div>
 </template>
 
@@ -37,11 +39,13 @@ import $ from 'jquery';
 import { commonMixin } from '../../mixins/common-mixin';
 import workflowDashboard from "../Workflow/Dashboard/WorkflowDashboard"; /// using mixin in this case
 
+import draggable from 'vuedraggable';
+
 export default {
   name: "stepflow",
   mixins: [commonMixin],
 
-  components: {ModalConfigStep, SimpleFlowchart, WorkflowSpace},
+  components: {ModalConfigStep, SimpleFlowchart, WorkflowSpace, draggable},
 
   props: {},
 
@@ -335,7 +339,6 @@ export default {
   white-space:nowrap;
 }
 
-
 /* editable step label */
 .editable-step-label {
   color: #118a3b !important;
@@ -356,5 +359,15 @@ export default {
 [contenteditable="true"].editable-step-label * {
   display:inline;
   white-space:nowrap;
+}
+
+.flex {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  overflow-x: scroll;
+  overflow-y: scroll;
+  gap: 60px;
 }
 </style>
