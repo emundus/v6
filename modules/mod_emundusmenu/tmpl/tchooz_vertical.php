@@ -111,6 +111,8 @@ defined('_JEXEC') or die;
         display: flex;
         align-items: center;
         white-space: nowrap;
+        position: relative;
+        z-index: 2;
         transition: all 0.3s ease-in-out;
     }
     .tchooz-vertical-item a img{
@@ -506,7 +508,7 @@ defined('_JEXEC') or die;
     function enableTooltip(menu){
         if(jQuery(".image-title").css("display") != 'none') {
             if(typeof jQuery("#sublevel_list_" + menu)[0] != 'undefined'){
-                jQuery("#tooltip-" + menu).css('margin-left', '250px');
+                jQuery("#tooltip-" + menu).css('margin-left', '200px');
                 jQuery("#tooltip-" + menu).css('display', 'block');
             }
         } else {
