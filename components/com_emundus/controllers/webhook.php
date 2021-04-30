@@ -28,7 +28,6 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
 	public function __construct(array $config = array()) {
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controller.php');
 
 		$this->m_files = new EmundusModelFiles;
 		$this->controller = new EmundusController;
@@ -404,7 +403,12 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		}
 		return true;
 	}
-    
+
+	/**
+	 * 
+	 * @return csv file of all sent application files
+	 * 
+	 */
     public function export_siscole(){
 
 		$mainframe = JFactory::getApplication();
