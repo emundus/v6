@@ -337,7 +337,7 @@ export default {
 /*}*/
 .bg-gray-100 {
   background-color: #fff;;
-  //background-image: radial-gradient(circle, black 1px, rgba(0, 0, 0, 0) 1px);
+  /*background-image: radial-gradient(circle, black 1px, rgba(0, 0, 0, 0) 1px);*/
   background-size: 2em 2em;
 }
 /*.bg-gray-100:active {*/
