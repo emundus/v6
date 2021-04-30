@@ -27,6 +27,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
 	public function __construct(array $config = array()) {
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
 		$this->m_files = new EmundusModelFiles;
 
 		// Attach logging system.
@@ -397,4 +398,121 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		}
 		return true;
 	}
+
+	/**
+	 * 
+	 * @return csv file of all sent application files
+	 * 
+	 */
+    public function export_siscole(){
+
+        $eMConfig 	= JComponentHelper::getParams('com_emundus');
+        $filtre_ip  = $eMConfig->get('filtre_ip');
+        $filtre_ip  = explode(',',$filtre_ip);
+        $secret 	= JFactory::getConfig()->get('secret');
+        $token 		= JFactory::getApplication()->input->get('token');
+        $fnum 		= JFactory::getApplication()->input->get('rowid');
+        $filename   = $eMConfig->get('filename');
+        $url        = 'images'.DS.'emundus'.DS.'files'.DS.'archives';
+        $file       = JPATH_BASE.DS.$url.DS.$filename.'.csv';
+        $date = date('Y-m-d');
+        $time_date = date('Y-m-d H:i:s');
+
+        $db = JFactory::getDbo();
+
+        $file_name = basename($file);
+        if(isset($_SERVER['HTTP_X_REAL_IP'])){
+            $ip = $_SERVER['HTTP_X_REAL_IP'];
+        }
+        else{
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+
+        if ($token != $secret) {
+            JLog::add('Bad token sent.', JLog::ERROR, 'com_emundus.webhook');
+            return false;
+        }
+
+        $query = $db->getQuery(true);
+
+        $query->select('COUNT(*) as nb_requete, is_downloaded')
+            ->from($db->quoteName('#__emundus_files_request'))
+            ->where($db->quoteName('attachment_id').' = 77 AND '. $db->quoteName('ip_address'). ' LIKE ' . $db->quote($ip).' AND '. $db->quoteName('time_date'). ' LIKE ' . $db->quote($date.'%'));
+
+        $db->setQuery($query);
+		try{
+        	$ip_addess_request = $db->loadAssoc();
+		} 
+		catch (Exception $e){
+			JLog::add('An error occurring in sql request: '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
+		}
+
+        if(
+			(in_array($ip, $filtre_ip) && $ip_addess_request['nb_requete'] == 0 && ($ip_addess_request['is_downloaded'] == 1 || $ip_addess_request['is_downloaded'] == null)) 
+			|| ((in_array($ip,$filtre_ip) && $ip_addess_request['nb_requete'] >= 1 && ($ip_addess_request['is_downloaded'] == 1 || $ip_addess_request['is_downloaded'] == null)))
+			){
+
+            header('Content-type: text/csv');
+            header('Content-Disposition: attachment; filename='.$file_name);
+            header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+            header('Cache-Control: no-store, no-cache, must-revalidate');
+            header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+            header('Pragma: anytextexeptno-cache', true);
+            header('Cache-control: private');
+            header('Expires: 0');
+
+            ob_clean();
+            flush();
+
+            //if(file_put_contents($file_name, file_get_contents(JURI::base().$url.DS.$file_name))){
+            if(readfile($file)){
+
+                $attachment_id = $eMConfig->get('attachment_id');
+                $bytes = random_bytes(32);
+                $new_token = bin2hex($bytes);
+
+                JLog::add('File downloaded from ip address: '.$ip, JLog::NOTICE, 'com_emundus.webhook');
+
+                $query = $db->getQuery(true);
+
+                if($ip_addess_request['nb_requete'] == 0){
+                    $columns = array('time_date','fnum','keyid', 'attachment_id', 'filename','ip_address','is_downloaded');
+
+                    $values = array($db->quote($time_date),$db->quote($fnum),$db->quote($new_token), 77, $db->quote($filename.$date.'.csv'),$db->quote($ip),0);
+
+                    $query
+                        ->insert($db->quoteName('#__emundus_files_request'))
+                        ->columns($db->quoteName($columns))
+                        ->values(implode(',', $values));
+
+                    $db->setQuery($query);
+                }
+                else{
+                    $fields = array(
+                        $db->quoteName('time_date') . ' = ' . $db->quote($time_date),
+                        $db->quoteName('is_downloaded') . ' = 0',
+                    );
+
+                    // Conditions for which records should be updated.
+                    $conditions = array(
+                        $db->quoteName('ip_address') . ' LIKE ' . $db->quote($ip),
+                        $db->quoteName('time_date'). ' LIKE ' . $db->quote($date.'%')
+                    );
+                    $query->update($db->quoteName('#__emundus_files_request'))->set($fields)->where($conditions);
+                    $db->setQuery($query);
+                }
+                try{
+                    $db->execute();
+                }
+                catch (Exception $e){
+                    JLog::add('An error occurring in sql request: '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
+                }
+                exit;
+            }
+        }
+        else {
+            JLog::add('Your ip address is blocked', JLog::ERROR, 'com_emundus.webhook');
+			echo JText::_('ACCESS_DENIED');
+        }
+    }
 }
