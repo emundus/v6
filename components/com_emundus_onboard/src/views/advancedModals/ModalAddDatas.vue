@@ -13,17 +13,20 @@
             @closed="beforeClose"
             @before-open="beforeOpen"
     >
-      <div class="modalC-content">
-        <div class="update-field-header">
+      <div class="fixed-header-modal">
           <div class="topright">
             <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddDatas')">
-              <em class="fas fa-times-circle"></em>
+              <em class="fas fa-times"></em>
             </button>
           </div>
+                                <div class="update-field-header">
           <h2 class="update-title-header">
              {{CreateDatasTable}}
           </h2>
+                                </div>
         </div>
+
+      <div class="modalC-content">
         <div class="form-group">
           <label>{{Name}} :</label>
           <input v-model="form.label" type="text" maxlength="40" class="form__input field-general w-input" style="margin: 0" :class="{ 'is-invalid': errors.label}"/>
@@ -47,14 +50,14 @@
           </div>
         </div>
       </div>
-      <div class="col-md-12 mb-1">
+      <div class="d-flex justify-content-between mb-1">
+                <button type="button" class="bouton-sauvergarder-et-continuer w-retour"
+                        @click.prevent="$modal.hide('modalAddDatas')">
+          {{Retour}}
+        </button>
         <button type="button" class="bouton-sauvergarder-et-continuer"
            @click.prevent="saveDatas()">
           {{ Continuer }}
-        </button>
-        <button type="button" class="bouton-sauvergarder-et-continuer w-retour"
-           @click.prevent="$modal.hide('modalAddDatas')">
-          {{Retour}}
         </button>
       </div>
     </modal>

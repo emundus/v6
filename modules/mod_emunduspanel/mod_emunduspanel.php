@@ -69,7 +69,7 @@ $link = "index.php";
 if ($lean_mode) {
     $m_profiles = new EmundusModelProfile;
 	$app_prof = $m_profiles->getApplicantsProfilesArray();
-	
+
 	$user_prof = [];
 	foreach ($user->emProfiles as $prof) {
 		$user_prof[] = $prof->id;
@@ -205,6 +205,6 @@ if (!empty($fnum)) {
 }
 
 if (!empty(@$user->fnums) || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-	require(JModuleHelper::getLayoutPath('mod_emunduspanel'));
+	require JModuleHelper::getLayoutPath('mod_emunduspanel', $params->get('panel_style', 'default'));
 }
 

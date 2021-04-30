@@ -181,6 +181,19 @@
 					<option
 							value="1">JYes</option>
 				</field>
+
+				<field
+						name="show_payment_status"
+						type="radio"
+						default="0"
+						label="MOD_EMUNDUS_SHOW_PAYMENT_STATUS"
+						description="MOD_EMUNDUS_SHOW_PAYMENT_STATUS_DESC">
+					<option
+							value="0">JNo</option>
+					<option
+							value="1">JYes</option>
+				</field>
+
 				<field
 						name="tags"
 						type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
