@@ -363,4 +363,28 @@ class EmundusworkflowModelstep extends JModelList {
             return false;
         }
     }
+
+    // update the step ordering each time of changing
+    public function updateStepOrdering($data) {
+        if(!empty($data)) {
+            try {
+                foreach($data as $key => $value) {
+                    $this->query->clear()
+                        ->update($this->db->quoteName('#__emundus_workflow_step'))
+                        ->set($this->db->quoteName('#__emundus_workflow_step.ordering') . ' = ' . (int)$value)
+                        ->where($this->db->quoteName('#__emundus_workflow_step.id') . ' = ' . (int)$key);
+                    $this->db->setQuery($this->query);
+                    $this->db->execute();
+                }
+                return ['message'=>true];
+            }
+            catch(Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/step | Cannot update step ordering' . preg_replace("/[\r\n]/"," ",$this->query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
 }

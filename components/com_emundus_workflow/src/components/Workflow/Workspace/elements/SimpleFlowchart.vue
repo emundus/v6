@@ -552,6 +552,8 @@ export default {
   background-size: 2em 2em;
   border-style: none;
   width: 1850px;
+  overflow-x: scroll;
+  overflow-y: scroll;
 }
 
 .flowchart-container svg {

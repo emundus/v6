@@ -175,4 +175,27 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    /// update the step ordering when chaning
+    public function updatestepordering() {
+        $user = JFactory::getUser();
+
+        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('data');            // get data from vuejs
+
+            $_newOrder = $this->model->updateStepOrdering($data);
+
+            if (!empty($_newOrder)) {
+                $tab = array('status' => 1, 'msg' => JText::_("UPDATE_NEW_STEP_ORDER"), 'data' => $_newOrder);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_("CANNOT_UPDATE_NEW_STEP_ORDER"), 'data' => $_newOrder);
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+    }
 }

@@ -10,7 +10,12 @@
     <b-button @click="createStep()" v-if="hideStep == false" variant="success" style="position: sticky">(+)</b-button>
 <!--    <div class="min-h-screen flex overflow-x-scroll py-12">-->
     <draggable :invertedSwapThreshold="0.4" :invertSwap="true" v-model="columns" :group="columns" class="flex">
-      <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id" v-on:dblclick="openStep(column.id)" v-if="hideStep == false" style="">
+      <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id"
+           v-on:dblclick="openStep(column.id)"
+           v-if="hideStep == false" style=""
+           @dragstart="dragStart"
+           @dragend="dragEnd"
+      >
         <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
         <div style="color:red">{{ column.stateIn }}</div>
         <div style="color:blueviolet">{{ column.stateOut }}</div>
@@ -41,6 +46,32 @@ import workflowDashboard from "../Workflow/Dashboard/WorkflowDashboard"; /// usi
 
 import draggable from 'vuedraggable';
 
+const isOverlapping = (div1, div2) => {
+  if(div1.length && div1.length > 1) {
+    div1 = div1[0];
+  }
+  if(div2.length && div2.length >1) {
+    div2 = div2[0];
+  }
+
+  const rect1 = div1 instanceof  Element ? div1.getBoundingClientRect() : false;    // define the bounding box of div1
+  const rect2 = div2 instanceof  Element ? div2.getBoundingClientRect() : false;    // define the bounding box of div2
+
+  let overlap = false;
+
+  if(rect1 && rect2) {
+    overlap = !(
+        rect1.right < rect2.left ||
+        rect1.left > rect2.right ||
+        rect1.bottom < rect2.top ||
+        rect1.top > rect2.bottom
+    );
+    return overlap;
+  }
+  console.log(overlap);
+  return overlap;
+}
+
 export default {
   name: "stepflow",
   mixins: [commonMixin],
@@ -67,8 +98,39 @@ export default {
   },
 
   methods: {
+    dragStart: function(event) {
+      const e = event.target.id;      // get the <div id> from selected step
+      let id = e.split('step_')[1];   // get id
+      event.dataTransfer.setData('step', id);
+      this.$emit('dragStart', id);
+    },
+
+    dragEnd: function(event) {
+      let newIndex = [];
+      event.preventDefault();
+      //this.columns.forEach(elt => console.log('step_' + elt.id, this.columns.indexOf(elt)));
+      this.columns.forEach((elt) => {
+        newIndex[elt.id] = this.columns.indexOf(elt);
+      });
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=step&task=updatestepordering',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          data: newIndex
+        })
+      }).then(response => {
+
+      }).catch(error => {
+        console.log(error);
+      })
+      //// update the ordering in models::step.php --> tips: each time of dragEnd --> call the api
+    },
+
     returnToStepFlow(result) {
-      if(result === true) {
+      if (result === true) {
         this.hideStep = false;
         this.hideWorkflow = true;
       }
@@ -87,15 +149,15 @@ export default {
       //// forceupdate --> call api to update status in database --> checkin if status (after) and status (before) are the same --> do nothing /// otherwise, call to axios
     },
 
-    openStep: function(id) {
+    openStep: function (id) {
       this.currentStep = id;
       this.hideStep = true;
       this.hideWorkflow = false;
     },
 
-    createStep: function() {
+    createStep: function () {
       let _data = {
-        workflow_id : this.$data.id,
+        workflow_id: this.$data.id,
       }
       axios({
         method: 'post',
@@ -112,11 +174,13 @@ export default {
           order: response.data.data.ordering,
         })
 
-        setTimeout(() => { this.$modal.show('stepModal' + response.data.data.step_id) }, 500);
+        setTimeout(() => {
+          this.$modal.show('stepModal' + response.data.data.step_id)
+        }, 500);
       })
     },
 
-    deleteStep: function(id) {
+    deleteStep: function (id) {
       var data = {
         id: id,
         wid: this.$data.id,
@@ -124,7 +188,7 @@ export default {
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus_workflow&controller=step&task=deletestep',
-        params: { data },
+        params: {data},
         paramsSerializer: params => {
           return qs.stringify(params);
         }
@@ -135,7 +199,7 @@ export default {
       })
     },
 
-    getAllSteps: function() {
+    getAllSteps: function () {
       axios({
         method: 'get',
         url: 'index.php?option=com_emundus_workflow&controller=step&task=getallsteps',
@@ -145,7 +209,7 @@ export default {
         params: {
           wid: this.$data.id,
         },
-        paramsSerializer: params =>{
+        paramsSerializer: params => {
           return qs.stringify(params);
         }
       }).then(response => {
@@ -160,7 +224,7 @@ export default {
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
-            params: { sid },
+            params: {sid},
             paramsSerializer: params => {
               return qs.stringify(params);
             }
@@ -192,11 +256,11 @@ export default {
       })
     },
 
-    configStep: function(id) {
+    configStep: function (id) {
       this.$modal.show("stepModal" + id);
     },
 
-    getWorkflowFromURL: function() {
+    getWorkflowFromURL: function () {
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus_workflow&controller=workflow&task=getworkflowbyid',
@@ -213,7 +277,7 @@ export default {
       })
     },
 
-    updateWorkflowLabel: function() {
+    updateWorkflowLabel: function () {
       let newLabel = {
         workflow_name: $("#editable-workflow-label").text(),
         id: this.$data.id,
@@ -235,7 +299,7 @@ export default {
       })
     },
 
-    setStepLabel: function(id) {
+    setStepLabel: function (id) {
       var data = {
         step_label: $("#step_label_" + id).text(),
         id: id,
@@ -248,7 +312,7 @@ export default {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        params: { data },
+        params: {data},
         paramsSerializer: params => {
           return qs.stringify(params);
         }
@@ -258,7 +322,7 @@ export default {
       }).catch(error => {
         console.log(error);
       })
-    }
+    },
   }
 };
 </script>
