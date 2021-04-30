@@ -29,7 +29,8 @@ class EmundusworkflowModelstep extends JModelList {
                 $this->query->clear()
                     ->select('#__emundus_workflow_step.*')
                     ->from($this->db->quoteName('#__emundus_workflow_step'))
-                    ->where($this->db->quoteName('#__emundus_workflow_step.workflow_id') . '=' . (int)$wid);
+                    ->where($this->db->quoteName('#__emundus_workflow_step.workflow_id') . '=' . (int)$wid)
+                    ->order('#__emundus_workflow_step.ordering ASC');
 
                 $this->db->setQuery($this->query);      //set query string
                 return $this->db->loadObjectList();     //get all steps by workflow
@@ -246,13 +247,14 @@ class EmundusworkflowModelstep extends JModelList {
                 $this->query->clear()
                     ->select('#__emundus_workflow_step.*')
                     ->from($this->db->quoteName('#__emundus_workflow_step'))
-                    ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$sid);
+                    ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$sid)
+                    ->order('#__emundus_workflow_step.ordering ASC');
 
                 $this->db->setQuery($this->query);
                 $_rawCurrentParams = $this->db->loadObject();       //get current params (raw info)
 
                 //// parse this raw info into array
-                $_exportArray = array('inputStatus' => array(), 'outputStatus' => array(), 'startDate' => array(), 'endDate' => array(), 'notes' => array(), 'stepLabel' => array());
+                $_exportArray = array('inputStatus' => array(), 'outputStatus' => array(), 'startDate' => array(), 'endDate' => array(), 'notes' => array(), 'stepLabel' => array(), 'ordering' => array());
 
                 $_exportArray['inputStatus'] = json_decode($_rawCurrentParams->params)->inputStatus;
                 $_exportArray['outputStatus'] = json_decode($_rawCurrentParams->params)->outputStatus;
@@ -260,6 +262,7 @@ class EmundusworkflowModelstep extends JModelList {
                 $_exportArray['endDate'] = $_rawCurrentParams->end_date;
                 $_exportArray['notes'] = json_decode($_rawCurrentParams->params)->notes;
                 $_exportArray['stepLabel'] = $_rawCurrentParams->step_label;
+                $_exportArray['ordering'] = $_rawCurrentParams->ordering;
 
 //                $_exportArray['inputStatusName'] = ($this->getStatusAttributsFromStep($_exportArray['inputStatus']))->value;
 //                $_exportArray['outputStatusName'] = ($this->getStatusAttributsFromStep($_exportArray['outputStatus']))->value;

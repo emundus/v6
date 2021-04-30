@@ -21,6 +21,7 @@
         <div style="color:blueviolet">{{ column.stateOut }}</div>
         <div style="color:blue"> {{ column.startDate }}</div>
         <div style="color:orange"> {{ column.endDate }}</div>
+        <div style="color:forestgreen"> Ordre {{ column.ordering }} </div>
         <modal-config-step :ID="column.id" :element="column" @updateStep="updateStep" @deleteStep="deleteStep(column.id)"/>
         <!--        <div>{{ column.stateIn }}</div>-->
         <!--        <div>{{ column.stateOut }}</div>-->
@@ -45,32 +46,6 @@ import { commonMixin } from '../../mixins/common-mixin';
 import workflowDashboard from "../Workflow/Dashboard/WorkflowDashboard"; /// using mixin in this case
 
 import draggable from 'vuedraggable';
-
-const isOverlapping = (div1, div2) => {
-  if(div1.length && div1.length > 1) {
-    div1 = div1[0];
-  }
-  if(div2.length && div2.length >1) {
-    div2 = div2[0];
-  }
-
-  const rect1 = div1 instanceof  Element ? div1.getBoundingClientRect() : false;    // define the bounding box of div1
-  const rect2 = div2 instanceof  Element ? div2.getBoundingClientRect() : false;    // define the bounding box of div2
-
-  let overlap = false;
-
-  if(rect1 && rect2) {
-    overlap = !(
-        rect1.right < rect2.left ||
-        rect1.left > rect2.right ||
-        rect1.bottom < rect2.top ||
-        rect1.top > rect2.bottom
-    );
-    return overlap;
-  }
-  console.log(overlap);
-  return overlap;
-}
 
 export default {
   name: "stepflow",
@@ -108,7 +83,6 @@ export default {
     dragEnd: function(event) {
       let newIndex = [];
       event.preventDefault();
-      //this.columns.forEach(elt => console.log('step_' + elt.id, this.columns.indexOf(elt)));
       this.columns.forEach((elt) => {
         newIndex[elt.id] = this.columns.indexOf(elt);
       });
@@ -122,11 +96,10 @@ export default {
           data: newIndex
         })
       }).then(response => {
-
+        //// forceupdate the new order --> this.$emit
       }).catch(error => {
         console.log(error);
       })
-      //// update the ordering in models::step.php --> tips: each time of dragEnd --> call the api
     },
 
     returnToStepFlow(result) {
@@ -244,6 +217,7 @@ export default {
             this.columns[_index]['title'] = answer.data.data.stepLabel;
             this.columns[_index]['startDate'] = answer.data.data.startDate;
             this.columns[_index]['endDate'] = answer.data.data.endDate;
+            this.columns[_index]['ordering'] = answer.data.data.ordering;
             this.$forceUpdate();
           });
 
@@ -362,8 +336,8 @@ export default {
 /*  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;*/
 /*}*/
 .bg-gray-100 {
-  background-color: #e3e3e3;;
-  background-image: radial-gradient(circle, black 1px, rgba(0, 0, 0, 0) 1px);
+  background-color: #fff;;
+  //background-image: radial-gradient(circle, black 1px, rgba(0, 0, 0, 0) 1px);
   background-size: 2em 2em;
 }
 /*.bg-gray-100:active {*/
