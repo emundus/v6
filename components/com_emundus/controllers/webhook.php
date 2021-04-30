@@ -406,6 +406,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	 */
     public function export_siscole(){
 
+		$mainframe = JFactory::getApplication();
         $eMConfig 	= JComponentHelper::getParams('com_emundus');
         $filtre_ip  = $eMConfig->get('filtre_ip');
         $filtre_ip  = explode(',',$filtre_ip);
@@ -416,7 +417,13 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $url        = 'images'.DS.'emundus'.DS.'files'.DS.'archives';
         $file       = JPATH_BASE.DS.$url.DS.$filename.'.csv';
         $date = date('Y-m-d');
-        $time_date = date('Y-m-d H:i:s');
+        //$time_date = date('Y-m-d H:i:s');
+		$offset = $mainframe->get('offset', 'UTC');
+		$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+		$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+		$time_date = $dateTime->format('Y-m-d H:i:s');
+
+
 
         $db = JFactory::getDbo();
 
@@ -435,7 +442,21 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
         $query = $db->getQuery(true);
 
-        $query->select('COUNT(*) as nb_requete, is_downloaded')
+		$query = $db->getQuery(true);
+
+        $query->select('filename')
+            ->from($db->quoteName('#__emundus_files_request'))
+            ->order('id DESC');
+
+        $db->setQuery($query);
+		try{
+        	$last_filename = $db->loadResult();
+		} 
+		catch (Exception $e){
+			JLog::add('An error occurring in sql request: '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
+		}
+
+		$query->select('COUNT(*) as nb_requete, is_downloaded')
             ->from($db->quoteName('#__emundus_files_request'))
             ->where($db->quoteName('attachment_id').' = 77 AND '. $db->quoteName('ip_address'). ' LIKE ' . $db->quote($ip).' AND '. $db->quoteName('time_date'). ' LIKE ' . $db->quote($date.'%'));
 
@@ -478,7 +499,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
                 if($ip_addess_request['nb_requete'] == 0){
                     $columns = array('time_date','fnum','keyid', 'attachment_id', 'filename','ip_address','is_downloaded');
 
-                    $values = array($db->quote($time_date),$db->quote($fnum),$db->quote($new_token), 77, $db->quote($filename.$date.'.csv'),$db->quote($ip),0);
+                    $values = array($db->quote($time_date),$db->quote($fnum),$db->quote($new_token), 77, $db->quote($last_filename),$db->quote($ip),0);
 
                     $query
                         ->insert($db->quoteName('#__emundus_files_request'))
