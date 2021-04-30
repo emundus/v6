@@ -14,13 +14,13 @@
         <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
         <div style="color:red">{{ column.stateIn }}</div>
         <div style="color:blueviolet">{{ column.stateOut }}</div>
+        <div style="color:blue"> {{ column.startDate }}</div>
+        <div style="color:orange"> {{ column.endDate }}</div>
         <modal-config-step :ID="column.id" :element="column" @updateStep="updateStep" @deleteStep="deleteStep(column.id)"/>
         <!--        <div>{{ column.stateIn }}</div>-->
         <!--        <div>{{ column.stateOut }}</div>-->
-        <div class="btn-group-step" style="margin-bottom: -30px">
-          <b-button @click="configStep(column.id)" variant="warning">Configurer</b-button>
-          <b-button @click="deleteStep(column.id)" variant="danger" style="margin-left: 20px">(-)</b-button>
-        </div>
+        <b-button @click="configStep(column.id)" variant="warning">Configurer</b-button>
+        <b-button @click="deleteStep(column.id)" variant="danger" style="margin-left: 20px">(-)</b-button>
       </div>
       <workflow-space v-for="column in columns" v-if="currentStep == column.id && hideWorkflow == false" :step="column" @returnBack="returnToStepFlow" onmousedown="return false"/>
     </draggable>
@@ -80,6 +80,8 @@ export default {
       this.columns[_index]['stateIn'] = result['input'];
       this.columns[_index]['stateOut'] = result['output'];
       this.columns[_index]['title'] = result['label'];
+      this.columns[_index]['startDate'] = result['startDate'];
+      this.columns[_index]['endDate'] = result['endDate'];
       this.$forceUpdate();
 
       //// forceupdate --> call api to update status in database --> checkin if status (after) and status (before) are the same --> do nothing /// otherwise, call to axios
@@ -174,10 +176,10 @@ export default {
 
             _temp.forEach(elt => _stateIn.push(elt.value));
             this.columns[_index]['stateIn'] = _stateIn.toString();
-
             this.columns[_index]['stateOut'] = (answer.data.data.outputStatusNames)[0].value;
-
             this.columns[_index]['title'] = answer.data.data.stepLabel;
+            this.columns[_index]['startDate'] = answer.data.data.startDate;
+            this.columns[_index]['endDate'] = answer.data.data.endDate;
             this.$forceUpdate();
           });
 
@@ -266,43 +268,43 @@ export default {
   min-width: 240px;
   width: 450px;
 }
-.column-width:active {
-  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;
-}
+/*.column-width:active {*/
+/*  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;*/
+/*}*/
 .px-3 {
   padding-left: .75rem;
   padding-right: .75rem;
 }
-.px-3:active {
-  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;
-}
+/*.px-3:active {*/
+/*  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;*/
+/*}*/
 .py-3 {
   padding-top: .75rem;
   padding-bottom: .75rem;
 }
-.py-3:active {
-  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;
-}
+/*.py-3:active {*/
+/*  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;*/
+/*}*/
 .mr-4 {
   margin-right: 1rem;
 }
-.mr-4:active {
-  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;
-}
+/*.mr-4:active {*/
+/*  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;*/
+/*}*/
 .rounded-lg {
   border-radius: .5rem;
 }
-.rounded-lg:active {
-  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;
-}
+/*.rounded-lg:active {*/
+/*  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;*/
+/*}*/
 .bg-gray-100 {
   background-color: #e3e3e3;;
   background-image: radial-gradient(circle, black 1px, rgba(0, 0, 0, 0) 1px);
   background-size: 2em 2em;
 }
-.bg-gray-100:active {
-  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;
-}
+/*.bg-gray-100:active {*/
+/*  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;*/
+/*}*/
 .py-12 {
   padding-top: 3rem;
   padding-bottom: 3rem;

@@ -57,6 +57,7 @@
                   class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
                   :value="inputValue"
                   v-on="inputEvents"
+                  :id="'start_date_' + ID"
               />
             </template>
           </date-picker>
@@ -74,6 +75,7 @@
                   class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
                   :value="inputValue"
                   v-on="inputEvents"
+                  :id="'end_date_' + ID"
               />
             </template>
           </date-picker>
@@ -293,6 +295,9 @@ export default {
 
       _emit['output'] = $( "#outstatus-selected option:selected" ).text();
       _emit['input'] = _result.toString();
+      _emit['startDate'] = $( "#start_date_" + this.ID).val();
+      _emit['endDate'] = $( "#end_date_" + this.ID).val();
+
       _emit['id'] = this.form.id;
 
       _emit['label'] = $("#step_label").val();      // pass label to parent component (stepflow)
