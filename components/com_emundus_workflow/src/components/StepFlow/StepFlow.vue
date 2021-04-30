@@ -10,19 +10,19 @@
     <b-button @click="createStep()" v-if="hideStep == false" variant="success" style="position: sticky">(+)</b-button>
 <!--    <div class="min-h-screen flex overflow-x-scroll py-12">-->
     <draggable :invertedSwapThreshold="0.4" :invertSwap="true" v-model="columns" :group="columns" class="flex">
-
-      <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id" v-on:dblclick="openStep(column.id)" v-if="hideStep == false">
+      <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id" v-on:dblclick="openStep(column.id)" v-if="hideStep == false" style="">
         <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
         <div style="color:red">{{ column.stateIn }}</div>
         <div style="color:blueviolet">{{ column.stateOut }}</div>
         <modal-config-step :ID="column.id" :element="column" @updateStep="updateStep" @deleteStep="deleteStep(column.id)"/>
         <!--        <div>{{ column.stateIn }}</div>-->
         <!--        <div>{{ column.stateOut }}</div>-->
-
-        <b-button @click="deleteStep(column.id)" variant="danger">Annuler etape</b-button>
-        <b-button @click="configStep(column.id)" variant="warning" style="margin-left: 20px">Configurer</b-button>
+        <div class="btn-group-step" style="margin-bottom: -30px">
+          <b-button @click="configStep(column.id)" variant="warning">Configurer</b-button>
+          <b-button @click="deleteStep(column.id)" variant="danger" style="margin-left: 20px">(-)</b-button>
+        </div>
       </div>
-      <workflow-space v-for="column in columns" v-if="currentStep == column.id && hideWorkflow == false" :step="column" @returnBack="returnToStepFlow"/>
+      <workflow-space v-for="column in columns" v-if="currentStep == column.id && hideWorkflow == false" :step="column" @returnBack="returnToStepFlow" onmousedown="return false"/>
     </draggable>
 <!--  </div>-->
   </div>
@@ -266,31 +266,43 @@ export default {
   min-width: 240px;
   width: 450px;
 }
-
+.column-width:active {
+  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;
+}
 .px-3 {
   padding-left: .75rem;
   padding-right: .75rem;
 }
-
+.px-3:active {
+  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;
+}
 .py-3 {
   padding-top: .75rem;
   padding-bottom: .75rem;
 }
-
+.py-3:active {
+  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;
+}
 .mr-4 {
   margin-right: 1rem;
 }
-
+.mr-4:active {
+  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;
+}
 .rounded-lg {
   border-radius: .5rem;
 }
-
+.rounded-lg:active {
+  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;
+}
 .bg-gray-100 {
   background-color: #e3e3e3;;
   background-image: radial-gradient(circle, black 1px, rgba(0, 0, 0, 0) 1px);
   background-size: 2em 2em;
 }
-
+.bg-gray-100:active {
+  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;
+}
 .py-12 {
   padding-top: 3rem;
   padding-bottom: 3rem;
@@ -366,8 +378,16 @@ export default {
   flex-direction: row;
   justify-content: center;
   flex-wrap: wrap;
-  overflow-x: scroll;
-  overflow-y: scroll;
   gap: 60px;
+  min-height: 60vh;
+  margin-top: 5vh;
+}
+@keyframes shake {
+  from {
+    transform: rotate(-4deg);
+  }
+  to {
+    transform: rotate(4deg);
+  }
 }
 </style>
