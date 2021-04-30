@@ -12,7 +12,7 @@
                 class="MenuFormItem"
                 @click="ChangeIndex(index)"
                 :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
-                v-html="splitProfileIdfromLabel(value.value)"
+                v-html="value.value"
               >{{value.value}}</a>
             </li>
           </div>
