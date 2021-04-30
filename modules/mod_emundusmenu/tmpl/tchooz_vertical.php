@@ -521,6 +521,7 @@ defined('_JEXEC') or die;
             jQuery(".tchooz-vertical-toplevel").css("width","250px");
             jQuery(".tchooz-vertical-item").css("width","auto");
             jQuery(".grey-navbar-icons").css("opacity","1");
+            jQuery(".sidebar-formbuilder").css("opacity","0");
             if(window.innerWidth >= 1280) {
                 jQuery("#g-footer").css("padding-left", "300px");
                 jQuery("#g-container-main").css("padding-left", "180px");
@@ -529,6 +530,7 @@ defined('_JEXEC') or die;
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
                 jQuery(".image-title").css("opacity","1");
+                jQuery(".sidebar-formbuilder").css("display","none");
                 setTimeout(() => {
                     jQuery(".g-menu-parent-indicator").css("display","block");
                 },50);
@@ -537,6 +539,7 @@ defined('_JEXEC') or die;
             jQuery(".tchooz-vertical-toplevel").css("width","250px");
             jQuery(".tchooz-vertical-item").css("width","auto");
             jQuery(".grey-navbar-icons").css("opacity","1");
+            jQuery(".sidebar-formbuilder").css("opacity","0");
             if(window.innerWidth >= 1280) {
                 jQuery("#g-footer").css("padding-left", "300px");
                 jQuery("#g-container-main").css("padding-left", "180px");
@@ -545,6 +548,7 @@ defined('_JEXEC') or die;
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
                 jQuery(".image-title").css("opacity","1");
+                jQuery(".sidebar-formbuilder").css("display","none");
                 setTimeout(() => {
                     jQuery(".g-menu-parent-indicator").css("display","block");
                 },50);
@@ -554,6 +558,8 @@ defined('_JEXEC') or die;
             jQuery(".tchooz-vertical-toplevel").css("width","55px");
             jQuery(".image-title").css("opacity","0");
             jQuery(".g-menu-parent-indicator").css("display","none");
+            jQuery(".sidebar-formbuilder").css("display","block");
+            jQuery(".sidebar-formbuilder").css("opacity","1");
             if(window.innerWidth >= 1280) {
                 jQuery("#g-container-main").css("padding-left", "0");
                 jQuery("#g-footer").css("padding-left", "80px");
