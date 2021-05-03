@@ -216,7 +216,7 @@ class EmundusworkflowModelstep extends JModelList {
 
     /// get (list) status name from (list) of steps
     public function getListStatusNameFromStep($data) {
-        if(!empty($data)) {
+        if($data !== "") {
             try {
                 $this->query->clear()
                     ->select('#__emundus_setup_status.*')
