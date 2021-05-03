@@ -62,10 +62,5 @@ administrator/templates/isis/images/logo.png
 ## media/com_emundus_onboard/
 ## media/mod_emundus_dashboard_vue/
 /modules/mod_emundus_dashboard_vue/node_modules/
-index.php
-configuration.php
-.htaccess
-configuration.php.dist
-htaccess.htaccess
 
 
