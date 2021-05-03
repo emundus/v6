@@ -49,7 +49,7 @@ class EmundusworkflowModelitem extends JModelList
 
     //// get items by step --> params ==> $sid
     public function getAllItemsByStep($sid) {
-        if(!empty($sid) or isset($sid)) {
+        if(!empty($sid)) {
             try {
                 $this->query->clear()
                     ->select('#__emundus_workflow_item.*')
@@ -71,7 +71,7 @@ class EmundusworkflowModelitem extends JModelList
 
     //get init bloc by workflow --> get init bloc by step
     public function getInitIDByStep($sid) {
-        if(!empty($sid) or isset($sid)) {
+        if(!empty($sid)) {
             try {
                 $this->query->clear()
                     ->select('#__emundus_workflow_item.*')
@@ -94,7 +94,7 @@ class EmundusworkflowModelitem extends JModelList
 
     //// get count items by step --> params ==> $data['item_id'], $data['step_id']
     public function getCountItemByID($data) {
-        if(!empty($data) or isset($data)) {
+        if(!empty($data)) {
             try {
                 $this->query->clear()
                     ->select('count(*)')
@@ -117,53 +117,48 @@ class EmundusworkflowModelitem extends JModelList
 
     //// create new item --> params ==> $data
     public function createItem($data) {
-        try {
-            if (!empty($data) or !isset($data)) {
-                //create item
+        if (!empty($data)) {
+            try {
+                //// step 1 --> create new item --> add new row in database
                 $this->query->clear()
                     ->insert($this->db->quoteName('#__emundus_workflow_item'))
                     ->columns($this->db->quoteName(array_keys($data)))
                     ->values(implode(',', $this->db->quote(array_values($data))));
 
-                    $this->db->setQuery($this->query);
-                    $this->db->execute();
-                    $_itemID = $this->db->insertid();
+                $this->db->setQuery($this->query);
+                $this->db->execute();
+                $_itemID = $this->db->insertid();
 
-                    //get color of this item
-                    $this->query->clear()
-                        ->select('#__emundus_workflow_item_type.CSS_style')
-                        ->from($this->db->quoteName('#__emundus_workflow_item_type'))
-                        ->where($this->db->quoteName('#__emundus_workflow_item_type.id') . '=' . (int)$data['item_id']);
+                //// step 2 --> get the CSS style of this item
+                $this->query->clear()
+                    ->select('#__emundus_workflow_item_type.CSS_style')
+                    ->from($this->db->quoteName('#__emundus_workflow_item_type'))
+                    ->where($this->db->quoteName('#__emundus_workflow_item_type.id') . '=' . (int)$data['item_id']);
 
-                    $this->db->setQuery($this->query);
-                    $_CSSStyle = $this->db->loadObject();
+                $this->db->setQuery($this->query);
+                $_CSSStyle = $this->db->loadObject();
 
-                    //after creating --> save this item to database
+                // step 3 --> save this item to database
+                $data['style'] = $_CSSStyle->CSS_style;
+                $data['id'] = $_itemID;
 
-                    // assign style -->
-                    $data['style'] = $_CSSStyle->CSS_style;
-                    $data['last_saved'] = date('Y-m-d H:i:s');
+                $this->saveItemById($data);
 
-                    //assign id
-                    $data['id'] = $_itemID;
-
-                    $this->saveWorkflow($data);
-
-                    return array('id' => $_itemID, 'style' => $_CSSStyle, 'saving_status' => $this->saveWorkflow($data));
-                }
-            else {
-                    return false;
+                return array('id' => $_itemID, 'style' => $_CSSStyle, 'saving_status' => $this->saveItemById($data));
+            }
+            catch (Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/item | Cannot create new item : ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                return $e->getMessage();
             }
         }
-        catch (Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/item | Cannot create new item : ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
-            return $e->getMessage();
+        else {
+            return false;
         }
     }
 
     //// delete item --> params ==> $id
     public function deleteItem($data) {
-        if(!empty($data) or isset($data)) {
+        if(!empty($data)) {
             try {
                 $this->query->clear()
                     ->delete($this->db->quoteName("#__emundus_workflow_item"))
@@ -172,7 +167,7 @@ class EmundusworkflowModelitem extends JModelList
                 $this->db->setQuery($this->query);
                 $this->db->execute();
 
-                $this->workflow_model->workflowSavingTrigger($data['workflow_id']);
+                $this->workflow_model->workflowLastActivity($data['workflow_id']);
 
                 return (object)['message'=>true];
             }
@@ -188,7 +183,7 @@ class EmundusworkflowModelitem extends JModelList
 
     //// get item by id --> use to call modal
     public function getItemByID($id) {
-        if(!empty($id) or isset($id)) {
+        if(!empty($id)) {
             try {
                 $this->query->clear()
                     ->select('#__emundus_workflow_item.*, #__emundus_workflow_item_type.CSS_style')
@@ -214,13 +209,11 @@ class EmundusworkflowModelitem extends JModelList
         }
     }
 
-    //// save all items
-    public function saveWorkflow($data) {
-        if(!empty($data) or isset($data)) {
-            $data['last_saved'] = date('Y-m-d H:i:s');
-
+    //// save item by id
+    public function saveItemById($data) {
+        if(!empty($data)) {
             try {
-                //save item
+                //// step 1 --> save all item attributs
                 $this->query->clear()
                     ->update($this->db->quoteName('#__emundus_workflow_item'))
                     ->set($this->db->quoteName('#__emundus_workflow_item.axisX') . '=' . $data['axisX'] .
@@ -232,30 +225,9 @@ class EmundusworkflowModelitem extends JModelList
                 $this->db->setQuery($this->query);
                 $this->db->execute();
 
-                //get workflow id
-                $this->query->clear()
-                    ->select('#__emundus_workflow_item.workflow_id')
-                    ->from($this->db->quoteName('#__emundus_workflow_item'))
-                    ->where($this->db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
-
-                $this->db->setQuery($this->query);
-                $_workflow_id = $this->db->loadObject()->workflow_id;
-
-                //update last saved workflow --> set last_saved, saved_by
-
-                $data['saved_by'] = JFactory::getUser()->id;
-                $data['last_saved'] = date('Y-m-d H:i:s');
-
-                $this->query->clear()
-                    ->update($this->db->quoteName('#__emundus_workflow'))
-                    ->set($this->db->quoteName('#__emundus_workflow.updated_at') . '=' . $this->db->quote($data['last_saved']) .
-                        ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (int)$data['saved_by'])
-                    ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$_workflow_id);
-
-                $this->db->setQuery($this->query);
-                $this->db->execute();
-
-                return $this->db->execute();
+                //// step 2 --> update workflow logs
+                $this->workflow_model->workflowLastActivity($data['workflow_id']);
+                return array('message' => 'true', 'data' => $this->db->execute());
             }
             catch (Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/item | Cannot save item : ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
@@ -269,7 +241,7 @@ class EmundusworkflowModelitem extends JModelList
 
     //// create link between item
     public function createLink($data) {
-        if(!empty($data) or isset($data)) {
+        if(!empty($data)) {
             try {
                 $this->query->clear()
                     ->insert($this->db->quoteName('#__emundus_workflow_links'))
@@ -291,7 +263,7 @@ class EmundusworkflowModelitem extends JModelList
 
     //DELETE LINK BETWEEN TWO ITEMS
     public function deleteLink($data) {
-        if(!empty($data) or isset($data)) {
+        if(!empty($data)) {
             try {
                 $this->query->clear()
                     ->delete($this->db->quoteName('#__emundus_workflow_links'))
@@ -312,7 +284,7 @@ class EmundusworkflowModelitem extends JModelList
 
     //get link by item (_from or _to)
     public function getLinkByItem($mode=null,$data) {
-        if(!empty($data) or isset($data)) {
+        if(!empty($data)) {
             try {
                 if ($mode == 'from') {
                     //get link by from
@@ -354,7 +326,7 @@ class EmundusworkflowModelitem extends JModelList
 
     //GET ALL LINKS FROM WORKFLOW ID
     public function getAllLinksByStep($data) {
-        if(!empty($data) or isset($data)) {
+        if(!empty($data)) {
             try {
                 $this->query->clear()
                     ->select('#__emundus_workflow_links.*')
@@ -377,9 +349,7 @@ class EmundusworkflowModelitem extends JModelList
     //UPDATE PARAMS --> table [ jos_emundus_workflow_item ] // column [ params ]
     public function updateParamsByItemID($data) {
 
-//        var_dump($data['workflow_id']);die;
-
-        if(!empty($data) or isset($data)) {
+        if(!empty($data)) {
             $_string = "";
 
             if (isset($data['params']['inputStatus'])) {
@@ -421,7 +391,7 @@ class EmundusworkflowModelitem extends JModelList
 
                 $this->db->execute();
 
-                $this->workflow_model->workflowSavingTrigger($data['workflow_id']);
+                $this->workflow_model->workflowLastActivity($data['workflow_id']);
                 return (object)['message'=>true];
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/item | Cannot update params : ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
@@ -435,7 +405,7 @@ class EmundusworkflowModelitem extends JModelList
 
     //A1, B1 --> from itself --> need to refactor
     public function getStatusByCurrentItem($iid,$mode) {
-        if((!empty($iid) or isset($iid)) and (!empty($mode) or isset($mode))) {
+        if(!empty($iid) and !empty($mode)) {
             try {
                 $this->query->clear()
                     ->select('#__emundus_workflow_item.*')
@@ -563,7 +533,7 @@ class EmundusworkflowModelitem extends JModelList
 
     //get all params not being status --> $id
     public function getNonStatusParams($id) {
-        if(!empty($id) or isset($id)) {
+        if(!empty($id)) {
             try {
                 $this->query->clear()
                     ->select('#__emundus_workflow_item.*')
@@ -599,7 +569,7 @@ class EmundusworkflowModelitem extends JModelList
 
     // auto-find the item having the same output status --> params --> $data['wid']
     public function matchAllLinksByWorkflow($wid) {
-        if(!empty($wid) or isset($wid)) {
+        if(!empty($wid)) {
             try {
                 ///find all 'params' of workflow --> return an object list
                 $this->query->clear()
@@ -762,7 +732,7 @@ class EmundusworkflowModelitem extends JModelList
             else {
                 return false;
             }
-            die;
+            die; //// fill in up
         }
         catch(Exception $e) {
             JLog::add('component/com_emundus_workflow/models/item | Cannot check the link : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');

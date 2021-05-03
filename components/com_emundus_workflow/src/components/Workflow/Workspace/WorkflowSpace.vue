@@ -165,7 +165,7 @@ export default {
 
         axios({
           method: 'post',
-          url: 'index.php?option=com_emundus_workflow&controller=item&task=saveworkflow',
+          url: 'index.php?option=com_emundus_workflow&controller=item&task=saveitem',
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
