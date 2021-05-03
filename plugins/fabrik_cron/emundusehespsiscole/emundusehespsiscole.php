@@ -64,10 +64,10 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
         $query->from($db->quoteName('#__emundus_logs'));
         $query->where($db->quoteName('message') . ' IN ('.$status.') AND '.$db->quoteName('timestamp').' BETWEEN '.$db->quote($lastrun).' AND '.$db->quote($date).' ORDER BY timestamp DESC');
 */
-        // Suite à la demande de pouvoir télécharger tous lmes dossiers complets, on ne cherche plus à identifier les dossiers dernièrement modifiés
+        // Suite à la demande de pouvoir télécharger tous les dossiers complets, on ne cherche plus à identifier les dossiers dernièrement modifiés, seulement ceux non-archivés parmis une liste de statuts
         $query->select('fnum');
         $query->from($db->quoteName('#__emundus_campaign_candidature'));
-        $query->where($db->quoteName('status') . ' IN ('.$status.') ORDER BY date_submitted DESC');
+        $query->where($db->quoteName('published') . '=1 AND '.$db->quoteName('status') . ' IN ('.$status.') ORDER BY date_submitted DESC');
 
         $db->setQuery($query);
 
