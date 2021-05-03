@@ -24,7 +24,7 @@ class EmundusworkflowModelstep extends JModelList {
     //// get all steps of workflow --> params ==> wid
     /// get all steps --> get current params of this step
     public function getAllStepsByWorkflow($wid) {
-        if (!empty($wid) or isset($wid)) {
+        if (!empty($wid)) {
             try {
                 $this->query->clear()
                     ->select('#__emundus_workflow_step.*')
@@ -45,7 +45,7 @@ class EmundusworkflowModelstep extends JModelList {
 
     //// create new step --> params ==> data['workflow_id']
     public function createStep($data) {
-        if (!empty($data) or isset($data)) {
+        if (!empty($data)) {
             try {
                 // step 1 --> get the current ordering --> if nothing previous step --> return 0, else increment 1
                 $this->query->clear()
@@ -73,7 +73,7 @@ class EmundusworkflowModelstep extends JModelList {
                 $_step_id = $this->db->insertid();
 
                 // step 3 --> update last saving time
-                $this->workflow_model->workflowSavingTrigger((int)$data['workflow_id']);
+                $this->workflow_model->workflowLastActivity((int)$data['workflow_id']);
 
                 return (object)["step_id" => $_step_id, "ordering" => $_currentOrdering, "message" => $this->db->execute()];
             } catch (Exception $e) {
@@ -87,7 +87,7 @@ class EmundusworkflowModelstep extends JModelList {
 
     //// delete a step which exists --> params ==> $id
     public function deleteStep($data) {
-        if (!empty($data) or !isset($data)) {
+        if (!empty($data)) {
             try {
                 $wid = $data['wid'];
 
@@ -136,7 +136,7 @@ class EmundusworkflowModelstep extends JModelList {
                 $this->db->execute();
 
                 // step 5 --> update last saving time
-                $this->workflow_model->workflowSavingTrigger($wid);
+                $this->workflow_model->workflowLastActivity($wid);
                 return (object)['message'=>$this->db->execute()];
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/step | Cannot delete step' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
@@ -149,7 +149,7 @@ class EmundusworkflowModelstep extends JModelList {
 
     //// update step params --> input :: step_id + step_params
     public function updateStepParams($data) {
-        if (!empty($data) or isset($data)) {
+        if (!empty($data)) {
             if (!isset($data['params'])) {
                 //// just update label
                 $this->query->clear()
@@ -160,7 +160,7 @@ class EmundusworkflowModelstep extends JModelList {
                 $this->db->setQuery($this->query);
                 $this->db->execute();
 
-                $this->workflow_model->workflowSavingTrigger($data['workflow_id']);
+                $this->workflow_model->workflowLastActivity($data['workflow_id']);
 
             } else {
                 /// ************************************************************************************************************
@@ -201,7 +201,7 @@ class EmundusworkflowModelstep extends JModelList {
                     $this->db->setQuery($this->query);
                     $this->db->execute();
 
-                    $this->workflow_model->workflowSavingTrigger((int)$wid);
+                    $this->workflow_model->workflowLastActivity((int)$wid);
                     return (object)['message'=>true];
                 } catch (Exception $e) {
                     JLog::add('component/com_emundus_workflow/models/step | Cannot update step params' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
@@ -216,8 +216,7 @@ class EmundusworkflowModelstep extends JModelList {
 
     /// get (list) status name from (list) of steps
     public function getListStatusNameFromStep($data) {
-        if(!empty($data) or isset($data)) {
-
+        if(!empty($data)) {
             try {
                 $this->query->clear()
                     ->select('#__emundus_setup_status.*')
@@ -227,6 +226,7 @@ class EmundusworkflowModelstep extends JModelList {
                 return $this->db->loadObjectList();
             }
             catch(Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/step | Cannot get status list from step' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
                 return $e->getMessage();
             }
         }
@@ -237,7 +237,7 @@ class EmundusworkflowModelstep extends JModelList {
 
     /// get status name from stats name (only one step)
     public function getStatusAttributsFromStep($sid) {
-        if(!empty($sid) or isset($sid)) {
+        if(!empty($sid)) {
             try {
                 $this->query->clear()
                     ->select('#__emundus_setup_status.*')
@@ -258,8 +258,7 @@ class EmundusworkflowModelstep extends JModelList {
 
     //// get current params of step --> params ==> sid
     public function getCurrentParamsByStep($sid) {
-
-        if(!empty($sid) or isset($sid)) {
+        if(!empty($sid)) {
             try {
                 $this->query->clear()
                     ->select('#__emundus_workflow_step.*')
@@ -302,7 +301,7 @@ class EmundusworkflowModelstep extends JModelList {
 
     ////get all available status (input + output) --> if $input == empty --> set (-1) // if $output == empty --> set (-1) // input = workflow_id, step_id
     public function getAvailableStatus($data, $mode) {
-        if(!empty($data) or isset($data)) {
+        if(!empty($data)) {
             try {
                 $this->query->clear()
                     ->select('#__emundus_workflow_step.*')
