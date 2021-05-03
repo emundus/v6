@@ -119,6 +119,8 @@ class EmundusworkflowControllerworkflow extends JControllerLegacy {
 
             $data['user_id'] = $user->id;
             $data['created_at'] = date('Y-m-d H:i:s');
+            $data['saved_at'] = date('Y-m-d H:i:s');
+            $data['last_activity'] = date('Y-m-d H:i:s');
 
             $_workflow = $this->model->createWorkflow($data);
 

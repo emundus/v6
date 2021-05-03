@@ -46,23 +46,26 @@ class EmundusworkflowModelworkflow extends JModelList {
 
     /// delete workflow by id
     public function deleteWorkflow($wid) {
-        try{
-            $this->query->clear()
-                ->delete($this->db->quoteName('#__emundus_workflow'))
-                ->where(('#__emundus_workflow.id') . ' = ' . (int)$wid);
+        if(!empty($wid)) {
+            try {
+                $this->query->clear()
+                    ->delete($this->db->quoteName('#__emundus_workflow'))
+                    ->where(('#__emundus_workflow.id') . ' = ' . (int)$wid);
 
-            $this->db->setQuery($this->query);
-            return $this->db->execute();
+                $this->db->setQuery($this->query);
+                return $this->db->execute();
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus_workflow/models/workflow | Cannot delete workflow' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
+                return $e->getMessage();
+            }
         }
-        catch(Exception $e) {
-            JLog::add('component/com_emundus_workflow/models/workflow | Cannot delete workflow' . preg_replace("/[\r\n]/"," ",$this->query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
-            return $e->getMessage();
+        else {
+            return false;
         }
     }
 
     //// create workflow --> update the last_saved
     public function createWorkflow($data) {
-        $data['updated_at'] = date('Y-m-d H:i:s');
         if(!empty($data)) {
             try {
                 $this->query->clear()
@@ -86,7 +89,7 @@ class EmundusworkflowModelworkflow extends JModelList {
 
     /// get workflow by id
     public function getWorkflowByID($wid) {
-        if(!empty($wid) or isset($wid)) {
+        if(!empty($wid)) {
             try {
                 $this->query->clear()
                     ->select('*')
@@ -106,7 +109,7 @@ class EmundusworkflowModelworkflow extends JModelList {
 
     /// change the workflow name --> update
     public function updateWorkflowLabel($data) {
-        if(!empty($data) or isset($data)) {
+        if(!empty($data)) {
             try {
                 $this->query->update($this->db->quoteName('#__emundus_workflow'))
                     ->set($this->db->quoteName('#__emundus_workflow.workflow_name') . '=' . $this->db->quote($data['workflow_name']))
@@ -115,8 +118,7 @@ class EmundusworkflowModelworkflow extends JModelList {
                 $this->db->setQuery($this->query);
                 $this->db->execute();
 
-                $this->workflowSavingTrigger((int)$data['id']);
-
+                $this->workflowLastActivity((int)$data['id']);
                 return (object)['message' => true];
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/workflow | Cannot update the workflow name : ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
@@ -147,12 +149,12 @@ class EmundusworkflowModelworkflow extends JModelList {
     }
 
     //// saving trigger
-    public function workflowSavingTrigger($wid) {
+    public function workflowLastActivity($wid) {
         if(!empty($wid)) {
             try {
                 $this->query->clear()
                     ->update($this->db->quoteName('#__emundus_workflow'))
-                    ->set($this->db->quoteName('#__emundus_workflow.updated_at') . '=' . $this->db->quote(date('Y-m-d H:i:s')) .
+                    ->set($this->db->quoteName('#__emundus_workflow.last_activity') . '=' . $this->db->quote(date('Y-m-d H:i:s')) .
                         ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (JFactory::getUser())->id)
                     ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$wid);
 
