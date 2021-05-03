@@ -385,14 +385,14 @@ class EmundusworkflowModelstep extends JModelList {
     }
 
     // update the step ordering each time of changing
-    public function updateStepOrdering($data) {
+    public function updateStepOrdering($data,$wid) {
         if(!empty($data)) {
             try {
                 foreach($data as $key => $value) {
                     $this->query->clear()
                         ->update($this->db->quoteName('#__emundus_workflow_step'))
-                        ->set($this->db->quoteName('#__emundus_workflow_step.ordering') . ' = ' . (int)$value)
-                        ->where($this->db->quoteName('#__emundus_workflow_step.id') . ' = ' . (int)$key);
+                        ->set($this->db->quoteName('#__emundus_workflow_step.ordering') . ' = ' . (int)$key)
+                        ->where($this->db->quoteName('#__emundus_workflow_step.id') . ' = ' . (int)$value);
                     $this->db->setQuery($this->query);
                     $this->db->execute();
                 }

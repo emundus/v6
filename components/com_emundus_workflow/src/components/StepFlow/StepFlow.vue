@@ -9,7 +9,7 @@
 
     <b-button @click="createStep()" v-if="hideStep == false" variant="success" style="position: sticky">(+)</b-button>
 <!--    <div class="min-h-screen flex overflow-x-scroll py-12">-->
-    <draggable :invertedSwapThreshold="0.4" :invertSwap="true" v-model="columns" :group="columns" class="flex">
+    <draggable :invertedSwapThreshold="0.4" :invertSwap="true" v-model="columns" :group="columns" class="flex" :sort="true">
       <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id"
            v-on:dblclick="openStep(column.id)"
            v-if="hideStep == false" style=""
@@ -21,7 +21,7 @@
         <div style="color:blueviolet">{{ column.stateOut }}</div>
         <div style="color:blue"> {{ column.startDate }}</div>
         <div style="color:orange"> {{ column.endDate }}</div>
-        <div style="color:forestgreen"> Ordre {{ column.ordering }} </div>
+        <div style="color:forestgreen"> Ordre {{ column.order }} </div>
         <modal-config-step :ID="column.id" :element="column" @updateStep="updateStep" @deleteStep="deleteStep(column.id)"/>
         <!--        <div>{{ column.stateIn }}</div>-->
         <!--        <div>{{ column.stateOut }}</div>-->
@@ -46,12 +46,13 @@ import { commonMixin } from '../../mixins/common-mixin';
 import workflowDashboard from "../Workflow/Dashboard/WorkflowDashboard"; /// using mixin in this case
 
 import draggable from 'vuedraggable';
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 
 export default {
   name: "stepflow",
   mixins: [commonMixin],
 
-  components: {ModalConfigStep, SimpleFlowchart, WorkflowSpace, draggable},
+  components: {ModalConfigStep, SimpleFlowchart, WorkflowSpace, draggable, PulseLoader},
 
   props: {},
 
@@ -64,6 +65,7 @@ export default {
       stateOut: '',
       workflowLabel: '',
       hideWorkflow: false,
+      loading: false,
     };
   },
 
@@ -84,7 +86,8 @@ export default {
       let newIndex = [];
       event.preventDefault();
       this.columns.forEach((elt) => {
-        newIndex[elt.id] = this.columns.indexOf(elt);
+        // newIndex[elt.id] = this.columns.indexOf(elt);
+        newIndex[this.columns.indexOf(elt)] = elt.id;
       });
       axios({
         method: 'post',
@@ -96,7 +99,13 @@ export default {
           data: newIndex
         })
       }).then(response => {
-        //// forceupdate the new order --> this.$emit
+        var counter;
+        for(counter = 0; counter < newIndex.length; counter++) {
+          const _id = (element) => element.id == newIndex[counter];
+          var _index = this.columns.findIndex(_id);
+          this.columns[_index]['order'] = counter;
+          this.$forceUpdate();
+        }
       }).catch(error => {
         console.log(error);
       })
@@ -169,6 +178,7 @@ export default {
         this.columns = this.columns.filter((step) => {
           return step.id !== id;   // delete step
         })
+        location.reload();
       })
     },
 
@@ -205,7 +215,6 @@ export default {
             const _id = (element) => element.id == sid;
             var _index = this.columns.findIndex(_id);
 
-
             // this.columns[_index]['stateIn'] = answer.data.data.inputStatusNames;
 
             var _temp = answer.data.data.inputStatusNames;
@@ -217,7 +226,7 @@ export default {
             this.columns[_index]['title'] = answer.data.data.stepLabel;
             this.columns[_index]['startDate'] = answer.data.data.startDate;
             this.columns[_index]['endDate'] = answer.data.data.endDate;
-            this.columns[_index]['ordering'] = answer.data.data.ordering;
+            this.columns[_index]['order'] = answer.data.data.ordering;
             this.$forceUpdate();
           });
 

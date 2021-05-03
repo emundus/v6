@@ -186,8 +186,9 @@ class EmundusworkflowControllerstep extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');            // get data from vuejs
+            $wid = $jinput->getRaw('wid');
 
-            $_newOrder = $this->model->updateStepOrdering($data);
+            $_newOrder = $this->model->updateStepOrdering($data, $wid);
 
             if (!empty($_newOrder)) {
                 $tab = array('status' => 1, 'msg' => JText::_("UPDATE_NEW_STEP_ORDER"), 'data' => $_newOrder);
