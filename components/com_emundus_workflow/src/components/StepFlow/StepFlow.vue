@@ -96,7 +96,8 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
-          data: newIndex
+          data: newIndex,
+          wid: this.$data.id,
         })
       }).then(response => {
         /// I think I should put this code snippet before axios -->

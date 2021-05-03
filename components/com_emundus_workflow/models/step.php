@@ -385,7 +385,7 @@ class EmundusworkflowModelstep extends JModelList {
 
     // update the step ordering each time of changing
     public function updateStepOrdering($data,$wid) {
-        if(!empty($data)) {
+        if(!empty($data) && !empty($wid)) {
             try {
                 foreach($data as $key => $value) {
                     $this->query->clear()
@@ -404,7 +404,10 @@ class EmundusworkflowModelstep extends JModelList {
                     ->order('#__emundus_workflow_step.ordering ASC');
                 $this->db->setQuery($this->query);
 
-                return ['message'=>true, 'data' => $this->db->loadObjectList()];
+                /// update logs for workflow
+                $this->workflow_model->workflowLastActivity($wid);
+
+                return ['message'=>true, 'data' => $this->db->execute()];
             }
             catch(Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/step | Cannot update step ordering' . preg_replace("/[\r\n]/"," ",$this->query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
