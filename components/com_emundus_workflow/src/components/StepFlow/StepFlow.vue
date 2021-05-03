@@ -99,6 +99,7 @@ export default {
           data: newIndex
         })
       }).then(response => {
+        /// I think I should put this code snippet before axios -->
         var counter;
         for(counter = 0; counter < newIndex.length; counter++) {
           const _id = (element) => element.id == newIndex[counter];
@@ -178,7 +179,20 @@ export default {
         this.columns = this.columns.filter((step) => {
           return step.id !== id;   // delete step
         })
-        location.reload();
+
+        let newIndex = [];
+        this.columns.forEach((elt) => {
+          // newIndex[elt.id] = this.columns.indexOf(elt);
+          newIndex[this.columns.indexOf(elt)] = elt.id;
+        });
+
+        var counter;
+        for(counter = 0; counter < newIndex.length; counter++) {
+          const _id = (element) => element.id == newIndex[counter];
+          var _index = this.columns.findIndex(_id);
+          this.columns[_index]['order'] = counter;
+          this.$forceUpdate();
+        }
       })
     },
 
