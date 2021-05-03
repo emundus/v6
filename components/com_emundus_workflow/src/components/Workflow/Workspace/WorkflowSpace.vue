@@ -30,10 +30,6 @@
                       :height="800"
                       :step="step"
     />
-
-    <button v-on:click="returnStep()">Ouvrir Step</button>
-
-
   </div>
 </template>
 
@@ -185,7 +181,7 @@ export default {
 
     quitWorkflow: function () {
       this.saveWorkflow();
-      setTimeout(this.changeToDashboard(), 4500);    //set timeout = 4.5 seconds
+      setTimeout(this.returnStep(), 4500);
     },
 
     redirectJRoute(link) {

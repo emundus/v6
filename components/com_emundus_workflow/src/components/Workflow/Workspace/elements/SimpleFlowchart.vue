@@ -232,6 +232,7 @@ export default {
       }
     },
     nodeSelected(id, e) {
+      e.preventDefault();       // prevent page loading
       this.action.dragging = id;
       this.action.selected = id;
       this.$emit('nodeClick', id);
@@ -320,6 +321,7 @@ export default {
     },
 
     handleDown(e) {
+      e.preventDefault();     /// prevent page loading
       const target = e.target || e.srcElement;
       // console.log('for scroll', target, e.keyCode, e.which)
       if ((target === this.$el || target.matches('svg, svg *')) && e.which === 1) {
