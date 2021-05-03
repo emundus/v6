@@ -28,7 +28,7 @@
         <b-button @click="configStep(column.id)" variant="warning">Configurer</b-button>
         <b-button @click="deleteStep(column.id)" variant="danger" style="margin-left: 20px">(-)</b-button>
       </div>
-      <workflow-space v-for="column in columns" v-if="currentStep == column.id && hideWorkflow == false" :step="column" @returnBack="returnToStepFlow" onmousedown="return false"/>
+      <workflow-space v-for="column in columns" v-if="currentStep == column.id && hideWorkflow == false" :step="column" @returnBack="returnToStepFlow" ondragstart="return false"/>
     </draggable>
 <!--  </div>-->
   </div>
