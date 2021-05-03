@@ -149,14 +149,27 @@ class EmundusworkflowModelworkflow extends JModelList {
     }
 
     //// saving trigger
-    public function workflowLastActivity($wid) {
+    public function workflowLastActivity($wid, $option=null) {
         if(!empty($wid)) {
             try {
-                $this->query->clear()
-                    ->update($this->db->quoteName('#__emundus_workflow'))
-                    ->set($this->db->quoteName('#__emundus_workflow.last_activity') . '=' . $this->db->quote(date('Y-m-d H:i:s')) .
-                        ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (JFactory::getUser())->id)
-                    ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$wid);
+                if(is_null($option)) {
+                    $this->query->clear()
+                        ->update($this->db->quoteName('#__emundus_workflow'))
+                        ->set($this->db->quoteName('#__emundus_workflow.last_activity') . '=' . $this->db->quote(date('Y-m-d H:i:s')) .
+                            ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (JFactory::getUser())->id)
+                        ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$wid);
+                }
+
+                else if($option == "saved_at") {
+                    $this->query->clear()
+                        ->update($this->db->quoteName('#__emundus_workflow'))
+                        ->set($this->db->quoteName('#__emundus_workflow.saved_at') . '=' . $this->db->quote(date('Y-m-d H:i:s')) .
+                            ',' . $this->db->quoteName('#__emundus_workflow.user_id') . '=' . (JFactory::getUser())->id)
+                        ->where($this->db->quoteName('#__emundus_workflow.id') . '=' . (int)$wid);
+                }
+                else {
+                    exit;
+                }
 
                 $this->db->setQuery($this->query);
                 return $this->db->execute();
