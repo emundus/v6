@@ -405,13 +405,13 @@
             icon: 'fas fa-paragraph',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
-          fileupload: {
+          /*fileupload: {
             id: 7,
             value: 'emundus_fileupload',
             icon: 'fas fa-file-upload',
             //name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FILE")
-          },
+          },*/
         },
         //create document when choosing plugin emundunsFileupload plugin
         docForm: {
