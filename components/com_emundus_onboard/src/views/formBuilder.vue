@@ -59,10 +59,14 @@
         />
     </div>
     <div class="row" v-if="indexHighlight != -1">
-      <div class="sidebar-formbuilder" :style="actions_menu ? 'width: 15%' : ''">
+      <div class="sidebar-formbuilder" :style="actions_menu ? 'width: 250px' : ''">
         <transition name="move-right">
           <div class="actions-menu menu-block">
-            <button class="g-menu-item g-standard burger-button"><img src="/images/emundus/menus/menu.png" @click="enableActionsMenu" style="width: 30px" alt="Menu"></button>
+<!--            <button class="g-menu-item g-standard burger-button"><img src="/images/emundus/menus/menu.png" @click="enableActionsMenu" style="width: 30px" alt="Menu"></button>-->
+            <a class="d-flex back-button-action pointer" style="padding: 0 15px" :title="Back">
+              {{ BuildYourForm }}
+            </a>
+            <hr style="width: 80%;margin: 10px auto;">
             <div>
               <div class="action-links">
                   <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="addMenu">
@@ -206,7 +210,7 @@
                 </a>
               </li>
             </draggable>
-            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 30px" :title="addMenu">{{addMenu}}</button>
+            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 30px" :title="addMenuAction">{{addMenuAction}}</button>
           </div>
           <div class="form-pages">
             <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><em class="far fa-folder-open mr-1" :alt="Documents"></em>{{ Documents }}</h4>
@@ -307,7 +311,7 @@
     data() {
       return {
         // UX variables
-        actions_menu: false,
+        actions_menu: true,
         optionsModal: false,
         UpdateUx: false,
         menuHighlight: 0,
@@ -431,6 +435,7 @@
           },
         },
         addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
+        addMenuAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU_ACTION"),
         addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
         addItem: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
         Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS"),
@@ -450,6 +455,7 @@
         updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
         updateFailed: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
         ExitFormbuilder: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EXIT_FORMBUILDER"),
+        BuildYourForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_BUILD_YOUR_FORM"),
       };
     },
 
@@ -1254,8 +1260,8 @@
       //
     },
     created() {
-      jQuery("#g-navigation .g-main-nav .tchooz-vertical-toplevel > li").css("transform", "translateX(-100px)");
-      jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)");
+      //jQuery("#g-navigation .g-main-nav .tchooz-vertical-toplevel > li").css("transform", "translateX(-100px)");
+      //jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)");
       //this.indexHighlight = 0;
       this.getForms();
       this.getDocuments();
@@ -1332,6 +1338,9 @@
   .fa-sync{
     transition: all 1s ease-in-out;
   }
+  #header-b{
+    background: #f8f8f8;
+  }
   @media all and (min-width: 1660px) {
     .col-lg-offset-1 {
       margin-left: 13.333%;
@@ -1354,7 +1363,7 @@
 
   @media all and (min-width: 1280px) and (max-width: 1660px)  {
     .col-lg-offset-1{
-      margin-left: 15%;
+      margin-left: 23%;
     }
   }
 
@@ -1374,9 +1383,5 @@
       order: 3;
       margin-left: 25px;
     }
-  }
-
-  .action-label{
-    display: none;
   }
 </style>

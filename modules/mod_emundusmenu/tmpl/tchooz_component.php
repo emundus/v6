@@ -17,7 +17,7 @@ if ($item->menu_image) {
 		$linktype = '<img src="'.$item->menu_image.'" alt="'.$item->title.'" /><span class="image-title" style="display: none;opacity: 0">'.$item->title.'</span>' :
 		$linktype = '<img src="'.$item->menu_image.'" alt="'.$item->title.'" />';
 } else {
-    if($item->deeper || $item->level == 1) {
+    if($item->deeper && $item->level == 1) {
         $linktype = '<span class="simple-letter">' . $item->title[0] . '</span><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';
     } else {
         //$linktype = 'test';
