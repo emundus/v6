@@ -132,6 +132,29 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
+
+     public function SubLabelsxValues() {
+        $user = JFactory::getUser();
+        $m_form = $this->model;
+
+        $jinput = JFactory::getApplication()->input;
+        $element = $jinput->getRaw('element');
+        $newLabel = $jinput->getString('NewSubLabel');
+
+        $lang = JFactory::getLanguage();
+        $locallang = $lang->getTag();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+	        $result = 0;
+	        $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $changeresponse = $m_form->SubLabelsxValues($element,  $locallang, $newLabel,  $user->id);
+        }
+
+        echo json_encode((object)$changeresponse);
+        exit;
+     }
+
     /**
      * Update translations of an element
      *

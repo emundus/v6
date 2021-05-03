@@ -7,24 +7,16 @@
             :speed="500"
             :classes="'vue-notification-custom'"
     />
-    <div class="w-container general-information">
-      <div class="section-sub-menu sub-form" v-if="campaign == ''">
-        <div class="container-2 w-container" style="max-width: unset">
-          <div class="d-flex">
-            <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
-            <h1 class="tchooz-section-titles">{{AddCampaign}}</h1>
-          </div>
-        </div>
-      </div>
+    <div class="w-container">
       <form id="campaign-form" @submit.prevent="submit">
         <div class="sous-container">
-          <p class="required mb-1">{{RequiredFieldsIndicate}}</p>
-<!--          <div class="heading-form">
+          <p class="required">{{RequiredFieldsIndicate}}</p>
+          <div class="heading-form">
             <div class="icon-title"></div>
             <h2 class="heading">{{ Parameter }}</h2>
-          </div>-->
+          </div>
           <div class="form-group campaign-label">
-            <label for="campLabel">{{CampName}} <span style="color: #E5283B">*</span></label>
+            <label for="campLabel">{{CampName}} *</label>
             <div class="input-can-translate">
                 <input
                   id="campLabel"
@@ -43,12 +35,11 @@
           <p v-if="errors.label" class="error col-md-12 mb-2">
             <span class="error">{{LabelRequired}}</span>
           </p>
-          <div class="d-flex justify-content-between">
-            <div class="w-col col-md-5">
+          <div class="w-row">
+            <div class="w-col w-col-6">
               <div class="w-form">
-                <label for="startDate">{{StartDate}} <span style="color: #E5283B">*</span></label>
+                <label for="campLabel">{{StartDate}} *</label>
                 <datetime
-                    id="startDate"
                   :placeholder="StartDate"
                   type="datetime"
                   :input-id="'start_date'"
@@ -57,11 +48,10 @@
                 ></datetime>
               </div>
             </div>
-            <div class="w-col col-md-5">
+            <div class="w-col w-col-6">
               <div class="w-form">
-                <label for="endDate">{{EndDate}} <span style="color: #E5283B">*</span></label>
+                <label for="campLabel">{{EndDate}} *</label>
                 <datetime
-                    id="endDate"
                   :placeholder="EndDate + ' *'"
                   type="datetime"
                   :input-id="'end_date'"
@@ -73,13 +63,13 @@
             </div>
           </div>
           <div class="form-group campaign-label">
-            <label for="year">{{PickYear}} <span style="color: #E5283B">*</span></label>
+            <label for="campLabel">{{PickYear}} *</label>
             <autocomplete
-                :id="'year'"
-                @searched="onSearchYear"
-                :items="this.session"
-                :year="form.year"
-                :name="'2020 - 2021'"
+                    :id="'year'"
+                    @searched="onSearchYear"
+                    :items="this.session"
+                    :year="form.year"
+                    :name="'2020 - 2021'"
             />
           </div>
           <div class="form-group d-flex">
@@ -95,7 +85,7 @@
               <strong class="b switch"></strong>
               <strong class="b track"></strong>
             </div>
-            <span for="published" class="ml-10px">{{ Publish }}</span>
+            <label for="published" class="ml-10px">{{ Publish }}</label>
           </div>
           <div class="form-group d-flex">
             <div class="toggle">
@@ -110,12 +100,12 @@
               <strong class="b switch"></strong>
               <strong class="b track"></strong>
             </div>
-            <span for="limit" class="ml-10px">{{ FilesLimit }}</span>
+            <label for="limit" class="ml-10px">{{ FilesLimit }}</label>
           </div>
           <transition name="'slide-down'">
             <div v-if="form.is_limited == 1">
               <div class="form-group campaign-label">
-                <label for="campLabel">{{FilesNumberLimit}} <span style="color: #E5283B">*</span></label>
+                <label for="campLabel">{{FilesNumberLimit}} *</label>
                 <input type="number"
                        class="form__input field-general w-input"
                        v-model="form.limit"
@@ -126,7 +116,7 @@
                 <span class="error">{{FilesLimitRequired}}</span>
               </p>
               <div class="form-group campaign-label">
-                <label for="campLabel">{{StatusLimit}} <span style="color: #E5283B">*</span></label>
+                <label for="campLabel">{{StatusLimit}} *</label>
                 <div class="users-block" :class="{ 'is-invalid': errors.limit_status}">
                   <div v-for="(statu, index) in status" :key="index" class="user-item">
                     <input type="checkbox" class="form-check-input bigbox" v-model="form.limit_status[statu.step]">
@@ -147,15 +137,19 @@
 
         <div class="sous-container">
           <div class="heading-form">
+            <div class="icon-title informations"></div>
             <h2 class="heading">{{ Information }}</h2>
           </div>
+          <p class="paragraphe-sous-titre">
+            {{ InformationDesc }}
+          </p>
           <div class="form-group campaign-label">
-            <label for="campResume" style="top: 5em">{{Resume}} <span style="color: #E5283B"></span></label>
+            <label for="campResume" style="top: 5em">{{Resume}} *</label>
             <textarea
               type="textarea"
               rows="2"
               id="campResume"
-              maxlength="500"
+              maxlength="200"
               class="form__input field-general w-input"
               placeholder=" "
               v-model="form.short_description"
@@ -186,8 +180,12 @@
 
         <div class="sous-container last-container">
           <div class="heading-form">
+            <div class="icon-title programme"></div>
             <h2 class="heading">{{ Program }}</h2>
           </div>
+          <p class="paragraphe-sous-titre">
+            {{ ProgramDesc }}
+          </p>
           <div class="form-group container-flexbox-choisir-ou-plus w-clearfix">
             <select
               class="dropdown-toggle w-select" style="margin-bottom: 0"
@@ -205,19 +203,22 @@
                 {{ item.label }}
               </option>
             </select>
-            <button v-if="coordinatorAccess != 0" :title="AddProgram" type="button" @click="displayProgram" class="buttonAddDoc" id="add-program">
-              <em class="fas fa-plus"></em>
-            </button>
-          </div>
-          <div class="form-group controls">
-            <editor :height="'30em'" :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" v-if="form.training" :placeholder="ProgramResume" :id="'program_campaign_'" :key="editorKey"></editor>
+            <div v-if="coordinatorAccess != 0"
+              @click="displayProgram"
+              id="add-program"
+              class="addCampProgEmail">
+            </div>
           </div>
 
           <transition name="slide-fade">
-            <div class="program-addCampaign" v-if="isHiddenProgram">
+            <div class="sous-container program-addCampaign" v-if="isHiddenProgram">
+              <h2 class="heading">{{ AddProgram }}</h2>
+              <p class="paragraphe-sous-titre">
+                {{ AddProgramDesc }}
+              </p>
               <div class="w-form">
                 <div class="form-group prog-label">
-                  <label for="prog_label" style="top: 5.7em">{{ProgName}} <span style="color: #E5283B">*</span></label>
+                  <label for="prog_label" style="top: 5.7em">{{ProgName}} *</label>
                   <input
                     type="text"
                     id="prog_label"
@@ -231,8 +232,50 @@
                 <p v-if="errors.progLabel" class="error col-md-12 mb-2">
                   <span class="error">{{ProgLabelRequired}}</span>
                 </p>
+
+                <div class="form-group campaign-label">
+                  <label style="top: 10.7em">{{ChooseCategory}}</label>
+                  <autocomplete
+                    @searched="onSearchCategory"
+                    :items="this.categories"
+                    :year="programForm.programmes"
+                  />
+                </div>
+
                 <div class="form-group controls">
-                  <editor :height="'30em'" :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" :placeholder="ProgramResume" :id="'new_program_campaign_'" :key="editorKey"></editor>
+                  <editor :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" :placeholder="ProgramResume" :id="'program_campaign'"></editor>
+                </div>
+
+                <div class="form-group d-flex">
+                  <div class="toggle">
+                    <input type="checkbox"
+                           true-value="1"
+                           false-value="0"
+                           class="check"
+                           id="prog_published"
+                           name="prog_published"
+                           v-model="programForm.published"
+                    />
+                    <strong class="b switch"></strong>
+                    <strong class="b track"></strong>
+                  </div>
+                  <label for="prog_published" class="ml-10px">{{ Publish }}</label>
+                </div>
+
+                <div class="form-group d-flex">
+                  <div class="toggle">
+                    <input type="checkbox"
+                           true-value="1"
+                           false-value="0"
+                           class="check"
+                           id="apply"
+                           name="apply"
+                           v-model="programForm.apply_online"
+                    />
+                    <strong class="b switch"></strong>
+                    <strong class="b track"></strong>
+                  </div>
+                  <label for="apply" class="ml-10px mb-0">{{ DepotDeDossier }}</label>
                 </div>
               </div>
             </div>
@@ -242,30 +285,35 @@
         <div class="divider"></div>
 
         <div class="section-sauvegarder-et-continuer">
-          <div class="w-container btns-sauvegarder-et-continuer">
-            <div class="container-evaluation d-flex justify-content-between">
+          <div class="w-container">
+            <div class="container-evaluation w-clearfix">
               <button
-                  type="button"
-                  class="bouton-sauvergarder-et-continuer w-retour"
-                  onclick="history.go(-1)">
+                type="button"
+                class="bouton-sauvergarder-et-continuer"
+                @click="quit = 1; submit()">
+                {{ Continuer }}
+              </button>
+              <button
+                type="button"
+                class="bouton-sauvergarder-et-continuer w-quitter"
+                @click="quit = 0; submit()">
+                {{ Quitter }}
+              </button>
+              <button
+                type="button"
+                class="bouton-sauvergarder-et-continuer w-retour"
+                onclick="history.go(-1)">
                 {{ Retour }}
               </button>
-              <div class="d-flex">
-                <button
-                    type="button"
-                    class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green"
-                    @click="quit = 1; submit()">
-                  {{ Continuer }}
-                </button>
-              </div>
             </div>
           </div>
         </div>
       </form>
     </div>
     <div class="loading-form" v-if="submitted">
-      <RingLoader :color="'#12DB42'" />
+      <RingLoader :color="'#de6339'" />
     </div>
+    <tasks></tasks>
   </div>
 </template>
 
@@ -315,12 +363,12 @@ export default {
 
     programs: [],
     years: [],
+    categories: [],
     status: [],
 
+    new_category: "",
+
     session: [],
-    old_training: "",
-    old_program_form: "",
-    editorKey: 0,
 
     form: {
       label: {
@@ -405,7 +453,6 @@ export default {
     StatusLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS"),
     StatusLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
     FilesLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED"),
-    AddCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
 
     submitted: false
   }),
@@ -423,49 +470,39 @@ export default {
       axios.get(
           `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaign}`
         ).then(response => {
-          this.form = response.data.data.campaign;
-          this.$emit('getInformations',this.form);
-          this.programForm = response.data.data.program;
-
-          // Check label translations
-          this.form.label = {
-            fr: '',
-            en: '',
-          }
-          if(response.data.data.label.fr == null) {
+          if(response.data.data.label.fr == null && response.data.data.label.en == null){
             this.form.label.fr = response.data.data.campaign.label;
-          } else {
-            this.form.label.fr = response.data.data.label.fr.value;
-          }
-          if(response.data.data.label.en == null) {
             this.form.label.en = response.data.data.campaign.label;
           } else {
+            this.form.label.fr = response.data.data.label.fr.value;
             this.form.label.en = response.data.data.label.en.value;
           }
-          //
-
-          // Convert date
+          this.form.published = response.data.data.campaign.published;
+          this.form.description = response.data.data.campaign.description;
+          this.form.short_description = response.data.data.campaign.short_description;
+          this.form.start_date = response.data.data.campaign.start_date;
+          this.form.end_date = response.data.data.campaign.end_date;
+          this.form.training = response.data.data.campaign.training;
+          this.form.year = response.data.data.campaign.year;
+          this.form.is_limited = response.data.data.campaign.is_limited;
+          this.form.limit = response.data.data.campaign.limit;
           this.form.start_date = LuxonDateTime.fromSQL(this.form.start_date);
           this.form.end_date = LuxonDateTime.fromSQL(this.form.end_date);
-          if (this.form.end_date == "0000-00-00T00:00:00.000Z") {
-            this.form.end_date = "";
-          } else {
-            this.olderDate = this.form.end_date;
-          }
-          //
-
           if(typeof response.data.data.campaign.status != 'undefined') {
             Object.values(response.data.data.campaign.status).forEach((statu) => {
               this.form.limit_status[parseInt(statu.limit_status)] = true;
             });
+          }
+          if (this.form.end_date == "0000-00-00T00:00:00.000Z") {
+            this.form.end_date = "";
+          } else {
+            this.olderDate = this.form.end_date;
           }
         }).catch(e => {
           console.log(e);
         });
     }
     //
-
-    // Get all programs
     axios.get("index.php?option=com_emundus_onboard&controller=program&task=getallprogram")
       .then(response => {
         this.programs = response.data.data;
@@ -475,9 +512,7 @@ export default {
       }).catch(e => {
         console.log(e);
       });
-    //
 
-    // Get years
     axios.get("index.php?option=com_emundus_onboard&controller=campaign&task=getyears")
       .then(response => {
         this.years = response.data.data;
@@ -488,15 +523,19 @@ export default {
       }).catch(e => {
         console.log(e);
       });
-    //
+
+    axios.get("index.php?option=com_emundus_onboard&controller=program&task=getprogramcategories")
+      .then(response => {
+        this.categories  = response.data.data;
+      }).catch(e => {
+        console.log(e);
+      });
     this.getStatus();
   },
 
   methods: {
     setCategory(e) {
       this.year.programmes = e.target.options[e.target.options.selectedIndex].dataset.category;
-      this.programForm = this.programs.find(program => program.code == this.form.training);
-      this.editorKey++;
     },
 
     updateCode() {
@@ -517,6 +556,19 @@ export default {
       } else {
         this.programForm.code = '';
       }
+    },
+
+    checkCode() {
+      this.programs.forEach((element, index) => {
+        if(this.programForm.code == element.code){
+          let newCode = parseInt(element.code.split('_')[1]) + 1;
+          if(newCode > 10) {
+            this.programForm.code = this.programForm.label.toUpperCase()  + '_' + newCode;
+          } else {
+            this.programForm.code = this.programForm.label.toUpperCase()  + '_0' + newCode;
+          }
+        }
+      });
     },
 
     enableLabelTranslation(){
@@ -545,7 +597,7 @@ export default {
         limit_files_number: false,
         limit_status: false
       }
-      if(this.form.label.fr == "" && this.form.label.en == ""){
+      if(this.form.label.fr == ""){
          window.scrollTo({ top: 0, behavior: 'smooth' });
          this.errors.label = true;
          return 0;
@@ -579,6 +631,13 @@ export default {
         }
       }
 
+      if (this.form.short_description == "") {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('campResume').focus();
+        this.errors.short_description = true;
+        return 0;
+      }
+
       if (this.form.training == "") {
         if(this.isHiddenProgram){
           if (this.programForm.label == "") {
@@ -589,6 +648,8 @@ export default {
             this.errors.progCode = true;
             document.getElementById('prog_code').focus();
             return 0;
+          } else {
+            this.form.training = this.programForm.code;
           }
         } else {
           document.getElementById('select_prog').focus();
@@ -611,97 +672,83 @@ export default {
 
       this.submitted = true;
 
-      let newsession = false;
+      axios({
+        method: "post",
+        url: "index.php?option=com_emundus_onboard&controller=program&task=createprogram",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({ body: this.programForm })
+      }).then(() => {
+          let newsession = true;
 
-      if (this.campaign !== "") {
-        let task = 'createprogram';
-        let params = {body: this.programForm}
-        if(this.form.training != ""){
-          task = 'updateprogram';
-          params = { body: this.programForm, id: this.form.progid };
-        }
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=program&task=" + task,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify(params)
-        }).then((response) => {
-          this.form.training = this.programForm.code;
-          this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-          this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
-          axios({
-            method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=campaign&task=updatecampaign",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({ body: this.form, cid: this.campaign })
-          }).then(response => {
-            this.$emit('nextSection')
-          }).catch(error => {
-            console.log(error);
-          });
+          if (this.campaign !== "") {
+            if(typeof this.form.start_date == 'object'){
+              this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+            }
+            if(typeof this.form.end_date == 'object'){
+              this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+            }
+            axios({
+              method: "post",
+              url: "index.php?option=com_emundus_onboard&controller=campaign&task=updatecampaign",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({ body: this.form, cid: this.campaign })
+            }).then(response => {
+                this.quitFunnelOrContinue(this.quit);
+              }).catch(error => {
+                console.log(error);
+              });
+          } else {
+            if(typeof this.form.start_date == 'object'){
+              this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+            }
+            if(typeof this.form.end_date == 'object'){
+              this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+            }
+            axios({
+              method: "post",
+              url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({ body: this.form })
+            }).then(response => {
+                this.campaign = response.data.data;
+                this.quitFunnelOrContinue(this.quit);
+              }).catch(error => {
+                console.log(error);
+              });
+          }
+        this.years.forEach((elt) => {
+          if(elt.schoolyear == this.year.schoolyear){
+            newsession = false;
+          }
+        });
+          if(newsession) {
+            axios({
+              method: "post",
+              url: "index.php?option=com_emundus_onboard&controller=campaign&task=createyear",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({body: this.year})
+            }).then(response => {})
+                .catch(error => {
+                  console.log(error);
+                });
+          }
         }).catch(error => {
           console.log(error);
         });
-      } else {
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=program&task=createprogram",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({body: this.programForm})
-        }).then(() => {
-          this.form.training = this.programForm.code;
-          if (typeof this.form.start_date == 'object') {
-            this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-          }
-          if (typeof this.form.end_date == 'object') {
-            this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
-          }
-          axios({
-            method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({body: this.form})
-          }).then(response => {
-            this.campaign = response.data.data;
-            this.quitFunnelOrContinue(this.quit);
-          }).catch(error => {
-            console.log(error);
-          });
-        });
-      }
-
-      this.years.forEach((elt) => {
-        if(elt.schoolyear == this.year.schoolyear){
-          newsession = true;
-        }
-      });
-      if(newsession){
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=campaign&task=createyear",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({ body: this.year })
-        }).then(response => {}).catch(error => {
-          console.log(error);
-        });
-      }
-  },
+    },
 
     quitFunnelOrContinue(quit) {
       if (quit == 0) {
-        this.redirectJRoute('index.php?option=com_emundus_onboard&view=campaign');
+        window.location.href = '/configuration-campaigns'
       } else if (quit == 1) {
-        document.cookie = 'campaign_'+this.campaign+'_menu = 2; expires=Session; path=/'
         this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.campaign + '&index=0')
       }
     },
@@ -738,26 +785,9 @@ export default {
     },
 
     displayProgram() {
-      if(this.isHiddenProgram){
-        document.getElementById('add-program').style = 'transform: rotate(0)';
-        this.form.training = this.old_training;
-        this.programForm = this.old_program_form;
-        document.getElementById('select_prog').removeAttribute('disabled');
-      } else {
-        this.old_training = this.form.training;
-        this.old_program_form = this.programForm;
-        this.form.training = "";
-        this.programForm = {
-          code: "",
-          label: "",
-          notes: "",
-          programmes: "",
-          published: 1,
-          apply_online: 1
-        }
-        document.getElementById('add-program').style = 'transform: rotate(135deg)';
-        document.getElementById('select_prog').setAttribute('disabled', 'disabled');
-      }
+      this.isHiddenProgram ? document.getElementById('add-program').style = 'transform: rotate(0)' : document.getElementById('add-program').style = 'transform: rotate(135deg)';
+      this.form.training = "";
+      this.isHiddenProgram ? document.getElementById('select_prog').removeAttribute('disabled') : document.getElementById('select_prog').setAttribute('disabled', 'disabled');
       this.isHiddenProgram = !this.isHiddenProgram;
     },
 
@@ -797,7 +827,7 @@ export default {
         group,
         title: `${title}`,
         text,
-        duration: 100000
+        duration: 10000
       });
     },
     clean(group) {
@@ -823,19 +853,5 @@ export default {
 .addCampProgEmail{
   width: 32px;
   height: 30px;
-  filter: invert(1);
 }
-
-  .w-container.general-information {
-    max-width: inherit !important;
-  }
-
-   .w-container.btns-sauvegarder-et-continuer {
-     max-width: inherit !important;
-  }
-
-  .w-container.btns-sauvegarder-et-continuer .container-evaluation {
-    margin: 0;
-  }
-
 </style>

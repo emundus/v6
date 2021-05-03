@@ -2,31 +2,28 @@
   <!-- modalC -->
   <span :id="'modalMenu'">
     <modal
-        :name="'modalMenu'"
-        height="auto"
-        transition="little-move-left"
-        :min-width="200"
-        :min-height="200"
-        :delay="100"
-        :adaptive="true"
-        :clickToClose="true"
-        @closed="beforeClose"
-        @before-open="beforeOpen"
+      :name="'modalMenu'"
+      height="auto"
+      transition="nice-modal-fade"
+      :min-width="200"
+      :min-height="200"
+      :delay="100"
+      :adaptive="true"
+      :clickToClose="false"
+      @closed="beforeClose"
+      @before-open="beforeOpen"
     >
-            <div class="fixed-header-modal">
-              <div class="topright">
+      <div class="modalC-content">
+        <div class="update-field-header">
+          <div class="topright">
             <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalMenu')">
-              <em class="fas fa-times"></em>
+              <em class="fas fa-times-circle"></em>
             </button>
           </div>
-        <div class="update-field-header">
           <h2 class="update-title-header">
              {{addMenu}}
           </h2>
         </div>
-            </div>
-      <div class="modalC-content">
-
 
         <div class="form-group">
           <label>{{ChooseExistingPageModel}} :</label>
@@ -49,32 +46,30 @@
         <div class="form-group mt-1" :class="{'mb-0': translate.intro}">
           <label>{{Intro}} :</label>
           <div class="input-can-translate">
-              <textarea v-model="intro[actualLanguage]" class="form__input field-general w-input" rows="3" maxlength="2000" style="margin: 0"></textarea>
+              <textarea v-model="intro[actualLanguage]" class="form__input field-general w-input" rows="3" maxlength="300" style="margin: 0"></textarea>
               <button class="translate-icon" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>
           </div>
         </div>
         <translation :label="intro" :actualLanguage="actualLanguage" v-if="translate.intro"></translation>
         <div class="col-md-12 d-flex" v-if="model_id == -1">
           <input type="checkbox" v-model="template">
-          <label class="ml-10px mb-0">{{SaveAsTemplate}}</label>
+          <label class="ml-10px mb-0">{{SaveAsTemplate}} :</label>
         </div>
       </div>
-      <div class="d-flex justify-content-between mb-1">
+      <div class="col-md-12 mb-1">
         <button
             type="button"
-            class="bouton-sauvergarder-et-continuer w-retour"
-            @click.prevent="$modal.hide('modalMenu')">
-          {{Retour}}
-        </button>
+          class="bouton-sauvergarder-et-continuer"
+          @click.prevent="createMenu()"
+        >{{ Continuer }}</button>
         <button
             type="button"
-            class="bouton-sauvergarder-et-continuer"
-            @click.prevent="createMenu()">
-          {{ Add }}
-        </button>
+          class="bouton-sauvergarder-et-continuer w-retour"
+          @click.prevent="$modal.hide('modalMenu')"
+        >{{Retour}}</button>
       </div>
       <div class="loading-form" style="top: 10vh" v-if="submitted">
-        <Ring-Loader :color="'#12db42'" />
+        <Ring-Loader :color="'#de6339'" />
       </div>
     </modal>
   </span>
@@ -118,7 +113,7 @@ export default {
       Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
       Intro: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_INTRO"),
       Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Add: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD"),
+      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
       dataSaved: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED"),
       informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS"),
       addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
@@ -132,22 +127,13 @@ export default {
     beforeClose(event) {
       if (this.changes === true) {
         this.$emit(
-            "show",
-            "foo-velocity",
-            "warn",
-            this.dataSaved,
-            this.informations
+          "show",
+          "foo-velocity",
+          "warn",
+          this.dataSaved,
+          this.informations
         );
       }
-      this.label = {
-        fr: '',
-        en: ''
-      }
-      this.intro = {
-        fr: '',
-        en: ''
-      }
-      this.$emit("modalClosed");
       this.changes = false;
     },
     beforeOpen(event) {
@@ -169,7 +155,7 @@ export default {
         axios({
           method: "post",
           url:
-              "index.php?option=com_emundus_onboard&controller=formbuilder&task=createMenu",
+                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=createMenu",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },

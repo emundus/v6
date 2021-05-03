@@ -101,14 +101,8 @@
           }
           replaceToken = true;
         }
-        var returnHintsFromAtValues = function(atValues) {
-          if (atValues)
-            for (var i = 0; i < atValues.length; ++i) if (!prefix || matches(atValues[i], prefix, matchInMiddle))
-              result.push(quote + atValues[i] + quote);
-          return returnHints();
-        };
-        if (atValues && atValues.then) return atValues.then(returnHintsFromAtValues);
-        return returnHintsFromAtValues(atValues);
+        for (var i = 0; i < atValues.length; ++i) if (!prefix || matches(atValues[i], prefix, matchInMiddle))
+          result.push(quote + atValues[i] + quote);
       } else { // An attribute name
         if (token.type == "attribute") {
           prefix = token.string;
@@ -118,14 +112,11 @@
           result.push(attr);
       }
     }
-    function returnHints() {
-      return {
-        list: result,
-        from: replaceToken ? Pos(cur.line, tagStart == null ? token.start : tagStart) : cur,
-        to: replaceToken ? Pos(cur.line, token.end) : cur
-      };
-    }
-    return returnHints();
+    return {
+      list: result,
+      from: replaceToken ? Pos(cur.line, tagStart == null ? token.start : tagStart) : cur,
+      to: replaceToken ? Pos(cur.line, token.end) : cur
+    };
   }
 
   CodeMirror.registerHelper("hint", "xml", getHints);

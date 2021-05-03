@@ -74,8 +74,7 @@
       name: "xml",
       htmlMode: true,
       multilineTagIndentFactor: parserConfig.multilineTagIndentFactor,
-      multilineTagIndentPastTag: parserConfig.multilineTagIndentPastTag,
-      allowMissingTagName: parserConfig.allowMissingTagName,
+      multilineTagIndentPastTag: parserConfig.multilineTagIndentPastTag
     });
 
     var tags = {};

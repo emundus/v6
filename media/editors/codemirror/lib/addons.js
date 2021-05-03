@@ -118,7 +118,7 @@
   };
 
   function initPanels(cm) {
-    var wrap = cm.getWrapperElement()
+    var wrap = cm.getWrapperElement();
     var style = window.getComputedStyle ? window.getComputedStyle(wrap) : wrap.currentStyle;
     var height = parseInt(style.height);
     var info = cm.state.panels = {
@@ -126,10 +126,9 @@
       panels: [],
       wrapper: document.createElement("div")
     };
-    var hasFocus = cm.hasFocus(), scrollPos = cm.getScrollInfo()
     wrap.parentNode.insertBefore(info.wrapper, wrap);
+    var hasFocus = cm.hasFocus();
     info.wrapper.appendChild(wrap);
-    cm.scrollTo(scrollPos.left, scrollPos.top)
     if (hasFocus) cm.focus();
 
     cm._setSize = cm.setSize;
@@ -157,11 +156,8 @@
     var info = cm.state.panels;
     cm.state.panels = null;
 
-    var wrap = cm.getWrapperElement()
-    var hasFocus = cm.hasFocus(), scrollPos = cm.getScrollInfo()
+    var wrap = cm.getWrapperElement();
     info.wrapper.parentNode.replaceChild(wrap, info.wrapper);
-    cm.scrollTo(scrollPos.left, scrollPos.top)
-    if (hasFocus) cm.focus();
     wrap.style.height = info.setHeight;
     cm.setSize = cm._setSize;
     cm.setSize();
@@ -263,7 +259,7 @@
     cm.operation(function() {
       var linesep = cm.lineSeparator() || "\n";
       cm.replaceSelection(linesep + linesep, null);
-      moveSel(cm, -1)
+      cm.execCommand("goCharLeft");
       ranges = cm.listSelections();
       for (var i = 0; i < ranges.length; i++) {
         var line = ranges[i].head.line;
@@ -271,17 +267,6 @@
         cm.indentLine(line + 1, null, true);
       }
     });
-  }
-
-  function moveSel(cm, dir) {
-    var newRanges = [], ranges = cm.listSelections(), primary = 0
-    for (var i = 0; i < ranges.length; i++) {
-      var range = ranges[i]
-      if (range.head == cm.getCursor()) primary = i
-      var pos = range.head.ch || dir > 0 ? {line: range.head.line, ch: range.head.ch + dir} : {line: range.head.line - 1}
-      newRanges.push({anchor: pos, head: pos})
-    }
-    cm.setSelections(newRanges, primary)
   }
 
   function contractSelection(sel) {
@@ -340,9 +325,10 @@
     var right = pos % 2 ? ch : pairs.charAt(pos + 1);
     cm.operation(function() {
       if (type == "skip") {
-        moveSel(cm, 1)
+        cm.execCommand("goCharRight");
       } else if (type == "skipThree") {
-        moveSel(cm, 3)
+        for (var i = 0; i < 3; i++)
+          cm.execCommand("goCharRight");
       } else if (type == "surround") {
         var sels = cm.getSelections();
         for (var i = 0; i < sels.length; i++)
@@ -355,10 +341,10 @@
       } else if (type == "both") {
         cm.replaceSelection(left + right, null);
         cm.triggerElectric(left + right);
-        moveSel(cm, -1)
+        cm.execCommand("goCharLeft");
       } else if (type == "addFour") {
         cm.replaceSelection(left + left + left + left, "before");
-        moveSel(cm, 1)
+        cm.execCommand("goCharRight");
       }
     });
   }
@@ -506,10 +492,9 @@
         replacement = head + "style";
       } else {
         var context = inner.mode.xmlCurrentContext && inner.mode.xmlCurrentContext(state)
-        var top = context.length ? context[context.length - 1] : ""
-        if (!context || (context.length && closingTagExists(cm, context, top, pos)))
+        if (!context || (context.length && closingTagExists(cm, context, context[context.length - 1], pos)))
           return CodeMirror.Pass;
-        replacement = head + top
+        replacement = head + context[context.length - 1]
       }
       if (cm.getLine(pos.line).charAt(tok.end) != ">") replacement += ">";
       replacements[i] = replacement;
@@ -602,7 +587,7 @@
     if (config && config.strict && (dir > 0) != (pos == where.ch)) return null;
     var style = cm.getTokenTypeAt(Pos(where.line, pos + 1));
 
-    var found = scanForBracket(cm, Pos(where.line, pos + (dir > 0 ? 1 : 0)), dir, style, config);
+    var found = scanForBracket(cm, Pos(where.line, pos + (dir > 0 ? 1 : 0)), dir, style || null, config);
     if (found == null) return null;
     return {from: Pos(where.line, pos), to: found && found.pos,
             match: found && found.ch == match.charAt(0), forward: dir > 0};
@@ -631,8 +616,7 @@
       if (lineNo == where.line) pos = where.ch - (dir < 0 ? 1 : 0);
       for (; pos != end; pos += dir) {
         var ch = line.charAt(pos);
-        if (re.test(ch) && (style === undefined ||
-                            (cm.getTokenTypeAt(Pos(lineNo, pos + 1)) || "") == (style || ""))) {
+        if (re.test(ch) && (style === undefined || cm.getTokenTypeAt(Pos(lineNo, pos + 1)) == style)) {
           var match = matching[ch];
           if (match && (match.charAt(1) == ">") == (dir > 0)) stack.push(ch);
           else if (!stack.length) return {pos: Pos(lineNo, pos), ch: ch};
@@ -645,12 +629,11 @@
 
   function matchBrackets(cm, autoclear, config) {
     // Disable brace matching in long lines, since it'll cause hugely slow updates
-    var maxHighlightLen = cm.state.matchBrackets.maxHighlightLineLength || 1000,
-      highlightNonMatching = config && config.highlightNonMatching;
+    var maxHighlightLen = cm.state.matchBrackets.maxHighlightLineLength || 1000;
     var marks = [], ranges = cm.listSelections();
     for (var i = 0; i < ranges.length; i++) {
       var match = ranges[i].empty() && findMatchingBracket(cm, ranges[i].head, config);
-      if (match && (match.match || highlightNonMatching !== false) && cm.getLine(match.from.line).length <= maxHighlightLen) {
+      if (match && cm.getLine(match.from.line).length <= maxHighlightLen) {
         var style = match.match ? "CodeMirror-matchingbracket" : "CodeMirror-nonmatchingbracket";
         marks.push(cm.markText(match.from, Pos(match.from.line, match.from.ch + 1), {className: style}));
         if (match.to && cm.getLine(match.to.line).length <= maxHighlightLen)
@@ -660,7 +643,7 @@
 
     if (marks.length) {
       // Kludge to work around the IE bug from issue #1193, where text
-      // input stops going to the textarea whenever this fires.
+      // input stops going to the textare whever this fires.
       if (ie_lt8 && cm.state.focused) cm.focus();
 
       var clear = function() {
@@ -683,25 +666,25 @@
     });
   }
 
-  function clearHighlighted(cm) {
-    if (cm.state.matchBrackets && cm.state.matchBrackets.currentlyHighlighted) {
-      cm.state.matchBrackets.currentlyHighlighted();
-      cm.state.matchBrackets.currentlyHighlighted = null;
-    }
-  }
-
   CodeMirror.defineOption("matchBrackets", false, function(cm, val, old) {
+    function clear(cm) {
+      if (cm.state.matchBrackets && cm.state.matchBrackets.currentlyHighlighted) {
+        cm.state.matchBrackets.currentlyHighlighted();
+        cm.state.matchBrackets.currentlyHighlighted = null;
+      }
+    }
+
     if (old && old != CodeMirror.Init) {
       cm.off("cursorActivity", doMatchBrackets);
       cm.off("focus", doMatchBrackets)
-      cm.off("blur", clearHighlighted)
-      clearHighlighted(cm);
+      cm.off("blur", clear)
+      clear(cm);
     }
     if (val) {
       cm.state.matchBrackets = typeof val == "object" ? val : {};
       cm.on("cursorActivity", doMatchBrackets);
       cm.on("focus", doMatchBrackets)
-      cm.on("blur", clearHighlighted)
+      cm.on("blur", clear)
     }
   });
 
@@ -823,16 +806,13 @@ CodeMirror.registerHelper("fold", "brace", function(cm, start) {
     }
   }
 
-  var startBrace = findOpening("{"), startBracket = findOpening("[")
-  var startToken, endToken, startCh
-  if (startBrace != null && (startBracket == null || startBracket > startBrace)) {
-    startCh = startBrace; startToken = "{"; endToken = "}"
-  } else if (startBracket != null) {
-    startCh = startBracket; startToken = "["; endToken = "]"
-  } else {
-    return
+  var startToken = "{", endToken = "}", startCh = findOpening("{");
+  if (startCh == null) {
+    startToken = "[", endToken = "]";
+    startCh = findOpening("[");
   }
 
+  if (startCh == null) return;
   var count = 1, lastLine = cm.lastLine(), end, endCh;
   outer: for (var i = line; i <= lastLine; ++i) {
     var text = cm.getLine(i), pos = i == line ? startCh : 0;
@@ -1487,7 +1467,7 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
 "use strict";
 
 CodeMirror.multiplexingMode = function(outer /*, others */) {
-  // Others should be {open, close, mode [, delimStyle] [, innerStyle] [, parseDelimiters]} objects
+  // Others should be {open, close, mode [, delimStyle] [, innerStyle]} objects
   var others = Array.prototype.slice.call(arguments, 1);
 
   function indexOf(string, pattern, from, returnEnd) {
@@ -1504,8 +1484,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
       return {
         outer: CodeMirror.startState(outer),
         innerActive: null,
-        inner: null,
-        startingInner: false
+        inner: null
       };
     },
 
@@ -1513,8 +1492,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
       return {
         outer: CodeMirror.copyState(outer, state.outer),
         innerActive: state.innerActive,
-        inner: state.innerActive && CodeMirror.copyState(state.innerActive.mode, state.inner),
-        startingInner: state.startingInner
+        inner: state.innerActive && CodeMirror.copyState(state.innerActive.mode, state.inner)
       };
     },
 
@@ -1526,7 +1504,6 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
           var found = indexOf(oldContent, other.open, stream.pos);
           if (found == stream.pos) {
             if (!other.parseDelimiters) stream.match(other.open);
-            state.startingInner = !!other.parseDelimiters
             state.innerActive = other;
 
             // Get the outer indent, making sure to handle CodeMirror.Pass
@@ -1552,8 +1529,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
           state.innerActive = state.inner = null;
           return this.token(stream, state);
         }
-        var found = curInner.close && !state.startingInner ?
-            indexOf(oldContent, curInner.close, stream.pos, curInner.parseDelimiters) : -1;
+        var found = curInner.close ? indexOf(oldContent, curInner.close, stream.pos, curInner.parseDelimiters) : -1;
         if (found == stream.pos && !curInner.parseDelimiters) {
           stream.match(curInner.close);
           state.innerActive = state.inner = null;
@@ -1562,7 +1538,6 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
         if (found > -1) stream.string = oldContent.slice(0, found);
         var innerToken = curInner.mode.token(stream, state.inner);
         if (found > -1) stream.string = oldContent;
-        else if (stream.pos > stream.start) state.startingInner = false
 
         if (found == stream.pos && curInner.parseDelimiters)
           state.innerActive = state.inner = null;
@@ -1684,16 +1659,10 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
     var wrapping = cm.getOption("lineWrapping");
     var singleLineH = wrapping && cm.defaultTextHeight() * 1.5;
     var curLine = null, curLineObj = null;
-
     function getY(pos, top) {
       if (curLine != pos.line) {
-        curLine = pos.line
-        curLineObj = cm.getLineHandle(pos.line)
-        var visual = cm.getLineHandleVisualStart(curLineObj)
-        if (visual != curLineObj) {
-          curLine = cm.getLineNumber(visual)
-          curLineObj = visual
-        }
+        curLine = pos.line;
+        curLineObj = cm.getLineHandle(curLine);
       }
       if ((curLineObj.widgets && curLineObj.widgets.length) ||
           (wrapping && curLineObj.height > singleLineH))
@@ -2008,7 +1977,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
 // highlighted only if the selected text is a word. showToken, when enabled,
 // will cause the current token to be highlighted when nothing is selected.
 // delay is used to specify how much time to wait, in milliseconds, before
-// highlighting the matches. If annotateScrollbar is enabled, the occurrences
+// highlighting the matches. If annotateScrollbar is enabled, the occurences
 // will be highlighted on the scrollbar via the matchesonscrollbar addon.
 
 (function(mod) {
@@ -2554,7 +2523,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
     {name: "Clojure", mime: "text/x-clojure", mode: "clojure", ext: ["clj", "cljc", "cljx"]},
     {name: "ClojureScript", mime: "text/x-clojurescript", mode: "clojure", ext: ["cljs"]},
     {name: "Closure Stylesheets (GSS)", mime: "text/x-gss", mode: "css", ext: ["gss"]},
-    {name: "CMake", mime: "text/x-cmake", mode: "cmake", ext: ["cmake", "cmake.in"], file: /^CMakeLists\.txt$/},
+    {name: "CMake", mime: "text/x-cmake", mode: "cmake", ext: ["cmake", "cmake.in"], file: /^CMakeLists.txt$/},
     {name: "CoffeeScript", mimes: ["application/vnd.coffeescript", "text/coffeescript", "text/x-coffeescript"], mode: "coffeescript", ext: ["coffee"], alias: ["coffee", "coffee-script"]},
     {name: "Common Lisp", mime: "text/x-common-lisp", mode: "commonlisp", ext: ["cl", "lisp", "el"], alias: ["lisp"]},
     {name: "Cypher", mime: "application/x-cypher-query", mode: "cypher", ext: ["cyp", "cypher"]},
@@ -2574,7 +2543,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
     {name: "edn", mime: "application/edn", mode: "clojure", ext: ["edn"]},
     {name: "Eiffel", mime: "text/x-eiffel", mode: "eiffel", ext: ["e"]},
     {name: "Elm", mime: "text/x-elm", mode: "elm", ext: ["elm"]},
-    {name: "Embedded JavaScript", mime: "application/x-ejs", mode: "htmlembedded", ext: ["ejs"]},
+    {name: "Embedded Javascript", mime: "application/x-ejs", mode: "htmlembedded", ext: ["ejs"]},
     {name: "Embedded Ruby", mime: "application/x-erb", mode: "htmlembedded", ext: ["erb"]},
     {name: "Erlang", mime: "text/x-erlang", mode: "erlang", ext: ["erl"]},
     {name: "Esper", mime: "text/x-esper", mode: "sql"},
@@ -2585,7 +2554,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
     {name: "F#", mime: "text/x-fsharp", mode: "mllike", ext: ["fs"], alias: ["fsharp"]},
     {name: "Gas", mime: "text/x-gas", mode: "gas", ext: ["s"]},
     {name: "Gherkin", mime: "text/x-feature", mode: "gherkin", ext: ["feature"]},
-    {name: "GitHub Flavored Markdown", mime: "text/x-gfm", mode: "gfm", file: /^(readme|contributing|history)\.md$/i},
+    {name: "GitHub Flavored Markdown", mime: "text/x-gfm", mode: "gfm", file: /^(readme|contributing|history).md$/i},
     {name: "Go", mime: "text/x-go", mode: "go", ext: ["go"]},
     {name: "Groovy", mime: "text/x-groovy", mode: "groovy", ext: ["groovy", "gradle"], file: /^Jenkinsfile$/},
     {name: "HAML", mime: "text/x-haml", mode: "haml", ext: ["haml"]},
@@ -2699,8 +2668,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
     {name: "Z80", mime: "text/x-z80", mode: "z80", ext: ["z80"]},
     {name: "mscgen", mime: "text/x-mscgen", mode: "mscgen", ext: ["mscgen", "mscin", "msc"]},
     {name: "xu", mime: "text/x-xu", mode: "mscgen", ext: ["xu"]},
-    {name: "msgenny", mime: "text/x-msgenny", mode: "mscgen", ext: ["msgenny"]},
-    {name: "WebAssembly", mime: "text/webassembly", mode: "wast", ext: ["wat", "wast"]},
+    {name: "msgenny", mime: "text/x-msgenny", mode: "mscgen", ext: ["msgenny"]}
   ];
   // Ensure all modes have a mime property for backwards compatibility
   for (var i = 0; i < CodeMirror.modeInfo.length; i++) {

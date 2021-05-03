@@ -13,21 +13,18 @@
             @closed="beforeClose"
             @before-open="beforeOpen"
     >
-      <div class="fixed-header-modal">
+      <div class="modalC-content">
+          <div v-if="!importCSV">
+            <div class="update-field-header">
               <div class="topright">
                 <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalImportDatas')">
-                  <em class="fas fa-times"></em>
+                  <em class="fas fa-times-circle"></em>
                 </button>
               </div>
-                                <div class="update-field-header">
               <h2 class="update-title-header">
                  {{ImportDatasTable}}
               </h2>
-                                </div>
             </div>
-
-      <div class="modalC-content">
-          <div v-if="!importCSV">
             <div class="form-group">
               <label>{{Name}} :</label>
               <input v-model="form.label" type="text" maxlength="40" class="form__input field-general w-input" style="margin: 0" :class="{ 'is-invalid': errors.label}"/>
@@ -82,14 +79,14 @@
               </template>
         </vue-csv-import>
       </div>
-      <div class="d-flex justify-content-between mb-1">
-                <button type="button" class="bouton-sauvergarder-et-continuer w-retour"
-                        @click.prevent="goBack">
-          {{Retour}}
-        </button>
+      <div class="col-md-12 mb-1">
         <button type="button" class="bouton-sauvergarder-et-continuer"
            @click.prevent="saveDatas()">
           {{ Continuer }}
+        </button>
+        <button type="button" class="bouton-sauvergarder-et-continuer w-retour"
+           @click.prevent="goBack">
+          {{Retour}}
         </button>
       </div>
     </modal>

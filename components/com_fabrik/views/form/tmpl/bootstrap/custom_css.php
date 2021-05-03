@@ -128,11 +128,10 @@ echo <<<EOT
 }
 
 .view-form:not(.em-formRegistrationCenter) .fabrikGroup {
-    background: #fff;
+    background: #fafafa;
     margin-bottom: 20px;
-    border-radius: 5px !important;
+    border-radius: 0;
     padding: 20px;
-    margin-top: 20px;
 }
 
 .view-form.view-registration .fabrikGroup {
@@ -152,7 +151,7 @@ echo <<<EOT
 }
 
 .view-form.view-registration .size-100 .size-100 .fabrikGroup {
-    background: #fff;
+    background: #fafafa;
 }
 
 .view-checklist #attachment_list_mand .fieldset, .view-checklist #attachment_list_opt .fieldset {
@@ -556,18 +555,15 @@ form#member-profile .form-horizontal .control-label {
      display: flex !important;
     flex-direction: column;
     align-items: center;
-    background: #fff;
-    width: 60%;
+    background: #fafafa;
+    width: 59%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 150px;
+    margin-top: 50px;
     padding-bottom: 50px;
     margin-bottom: 50px;
 }
 
-  .view-registration .login.em-formRegistrationCenter .row-fluid {
-    background: #fff;
-  }
  .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .span4 .btn-group {
         width: 100% !important; 
 }
@@ -577,11 +573,13 @@ form#member-profile .form-horizontal .control-label {
 }
 
 .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .row-fluid .span4 button {
-        width: 100% !important;
-        height: 50px !important;
+        width: 100% !important; 
 }
 
 
+.view-registration .login.em-formRegistrationCenter .row-fluid {
+    background: #fafafa;
+}
 
   .view-registration form .row-fluid .plg-password span, .view-form.em-formRegistrationCenter form .row-fluid .plg-password span {
     color: #000; 
@@ -600,7 +598,7 @@ form#member-profile .form-horizontal .control-label {
     margin-right: auto;
 }
 .view-registration .login div.em-heading-registration  div.icon-title.registrationicon, .view-form .em-formRegistrationCenter div.em-heading-registration div.icon-title.registrationicon {
-      background-image: url(/media/com_emundus/images/register.svg);
+      background-image: url(/components/com_emundus_onboard/src/assets/images/register.svg);
       background-size: contain;
       background-repeat: no-repeat;
 }
@@ -629,7 +627,7 @@ button.register {
   border: none;
     margin-bottom: 0 !important;
     border-radius: 0;
-    background: #fff;
+    background: #fafafa;
     border-radius: 0;
     padding: 0px;
     box-shadow: none;
@@ -1211,43 +1209,6 @@ body.em-formRegistrationCenter  {
    display: inline; 
 }
 
-/* IMPORT CSV */ 
-
-.import-csv-page h1, .import-csv-page legend { 
-    color: #000 !important; 
-}
-
-.import-csv-page select { 
-   border: 2px solid #ccc!important;
-}
-
-/* RAPPRT ERREUR */ 
-
-.error-report-page .page-header h1, .error-report-page form fieldset legend { 
-    color: #000; 
-}
-
-.error-report-page  button.submit {
-    padding: 5px 30px !important;
-    font-weight: 500 !important;
-    border-radius: 25px !important;
-    border: 2px solid #16afe1; 
-    background: #16afe1; 
-    color: #fff; 
-}
-
-.error-report-page  button.submit:hover, 
-.error-report-page  button.submit:focus, 
-.error-report-page  button.submit:active, 
- {
-    border-radius: 25px; 
-    padding: 5px 30px; 
-    border: 2px solid #16afe 1!important; 
-    background: transparent; 
-    color: #16afe1 !important; 
-}
-
-
 /* AJOUT APRES MAJ */
 .view-form input[type='radio']  { 
     border: 1px solid #e0e0e5 !important;
@@ -1733,19 +1694,19 @@ a.btn-attach:active {
     display: flex !important;
     flex-direction: column;
     align-items: center;
-    background: #fff;
+    background: #fafafa;
     width: 60%;
     margin-left: auto !important;
     margin-right: auto !important;
     padding-bottom: 50px !important;
-    margin-top: 150px !important; 
+    margin-top: 50px !important; 
 }
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form {
     border: none;
     margin-bottom: 0 !important;
     border-radius: 0;
-    background: #fff;
+    background: #fafafa;
     border-radius: 0;
     padding: 0px !important;
     box-shadow: none;

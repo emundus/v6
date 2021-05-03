@@ -712,7 +712,16 @@ class FOFModel extends FOFUtilsObject
 		}
 		else
 		{
-			$default_limit = JFactory::getApplication()->get('list_limit', 20);
+			$app = JFactory::getApplication();
+
+			if (method_exists($app, 'getCfg'))
+			{
+				$default_limit = $app->getCfg('list_limit');
+			}
+			else
+			{
+				$default_limit = 20;
+			}
 
 			$limit = $this->getUserStateFromRequest($component . '.' . $view . '.limit', 'limit', $default_limit, 'int', $this->_savestate);
 			$limitstart = $this->getUserStateFromRequest($component . '.' . $view . '.limitstart', 'limitstart', 0, 'int', $this->_savestate);

@@ -69,20 +69,20 @@ jQuery(document).ready(function(){
 	wrapper1.appendChild(element1);
 	wrapper1.appendChild(element2);
 	wrapper1.classList.add("etiquette");
-
+	
 	var wrapper2 = document.createElement('div');
 	wrapper1.parentNode.insertBefore(wrapper2, wrapper1);
 	wrapper2.classList.add("informationStatistique");
 	wrapper2.innerHTML = "<a class='closeButtonWelcomeStat' onclick='deleteWelcomeStat()'></a><?php echo JText::_('TEXT_WELCOME_STAT'); ?>";
-
+	
 	jQuery('.g-content').has('.etiquette').attr('style', 'margin:auto!important');
 	jQuery('.g-content').has('.etiquette').attr('style', 'display:grid;grid-column-gap:15px;grid-row-gap:15px;grid-template-columns:repeat(3, 1fr);margin-bottom:15px!important;');
 	jQuery('.platform-content').attr('style', 'width:100%!important');
-	jQuery('.platform-content').has('.container-stat').attr('style', 'margin-bottom:50px;background-color:white;padding-bottom:1%;box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);');
+	jQuery('.platform-content').has('.container-stat').attr('style', 'margin-bottom:50px;background-color:white;padding-bottom:1%;box-shadow: 0px 0px 47px -13px rgba(163,163,163,1);');
 	jQuery('.etiquette').attr('style', 'grid-column-end:span 3;');
 	jQuery('.informationStatistique').attr('style', 'grid-column-end:span 3;');
-	jQuery('#g-container-main').attr('style', 'padding-left:5%!important;padding-right:5%!important');
-
+	jQuery('#g-container-main').attr('style', 'padding-left:5%!important;padding-right:5%!important;background-color:#fff');
+	
 	taillerEtiquette();
 });
 
@@ -103,16 +103,16 @@ jQuery(document).ready(function(){
 				if(elt[0] === "container-stat") {
 					if(u === 3)
 						u = 0;
-
+					
 					if(!elt[1].includes("doughnut") && !elt[1].includes("pie")) {
 						tab[i].style.gridColumnEnd = "span 2";
 						u = u + 2;
-
+						
 						if(i % 2)
 							o = -1;
 						else
 							o = 1;
-
+						
 						if(	(tab[i+o] != null &&
 							!tab[i+o].children[0].children[1].children[0].className.includes("container-stat doughnut") &&
 							!tab[i+o].children[0].children[1].children[0].className.includes("container-stat pie"))
@@ -135,7 +135,7 @@ jQuery(document).ready(function(){
 
 	// Array which keeps the numbers of the chosen stats modules
 	var tabNum = [];
-
+	
 	// Add or remove a number from the array
 	function exportNum(num) {
 		if (tabNum.indexOf(num) != -1) {
@@ -144,7 +144,7 @@ jQuery(document).ready(function(){
 		    tabNum.push(num);
         }
 	}
-
+	
 	// Request the stats modules to export
 	function getExport() {
 		Swal.mixin({
@@ -164,7 +164,7 @@ jQuery(document).ready(function(){
 			}
 		})
 	}
-
+	
 	// Create the images of the graphs and put them in the pdf which will download by itself
 	async function getPdf(tab) {
 		var s = document.createElement('a');
@@ -176,11 +176,11 @@ jQuery(document).ready(function(){
 				if (tab.indexOf(fusioncharts[cpt]["id"]) != -1) {
 					svg = fusioncharts[cpt].getSVGString();
 					blob = new Blob([svg], {type: 'image/svg+xml'});
-
+					
 					reader = new FileReader();
 
 					reader.readAsText(blob);
-
+					
 					const result = await new Promise((resolve) => {
 						reader.onload = function() {
 							resolve(reader.result)
@@ -193,7 +193,7 @@ jQuery(document).ready(function(){
 			}
 		}
 		tabNum = [];
-
+		
 		jQuery.ajax({
 			type : "POST",
 			url : "index.php?option=com_ajax&module=emundus_query_builder&method=convertPdf&format=json",
@@ -216,10 +216,10 @@ jQuery(document).ready(function(){
 			}
 		});
 	}
-
+	
 	jQuery(function () {
 		var premierItem = '';
-
+		
 		// Change the order of the stats modules
 		jQuery('#sortable').sortable({
 			cursor:"n-resize",
@@ -230,7 +230,7 @@ jQuery(document).ready(function(){
 			},
 			update: function() {
 				var s = jQuery(this).sortable('toArray');
-
+				
 				jQuery.ajax({
 					type : "POST",
 					url : "index.php?option=com_ajax&module=emundus_query_builder&method=changeOrderModule&format=json",
@@ -252,7 +252,7 @@ jQuery(document).ready(function(){
 			}
 		});
 	});
-
+	
 	// Display or not the statistics module manager
 	function openCloseGraphManager() {
 		if(document.getElementsByClassName('queryBuilder')[0].style.display === 'none') {
@@ -271,7 +271,7 @@ jQuery(document).ready(function(){
 			document.getElementsByClassName('btnExport')[0].style.display = "block";
 		}
 	}
-
+	
 	// Allows you to refresh the stats modules dynamically
 	function refreshModuleGraphQueryBuilder() {
 		jQuery.ajax({
@@ -304,7 +304,7 @@ jQuery(document).ready(function(){
 								window.eval(scripts[i].text);
 							}
 						}
-
+						
 						cpt0++;
 					}
 					taillerEtiquette();
@@ -314,7 +314,7 @@ jQuery(document).ready(function(){
 			}
 		});
 	}
-
+	
 	// Display or not the stat module creation form
 	function buttonCreateModule() {
 		var elt = document.getElementById("createModule");
@@ -339,7 +339,7 @@ jQuery(document).ready(function(){
 			button.style.float = "right";
 		}
 	}
-
+	
 	// Create user-made stat module
 	function createModule() {
 		if (document.getElementById("titleModule").value != "" && document.getElementById("typeModule").value != "" && document.getElementById("indicateurModule").value != "" && document.getElementById("axeXModule").value != "" && document.getElementById("axeYModule").value != "") {
@@ -376,7 +376,7 @@ jQuery(document).ready(function(){
 			document.getElementById('errorCreateModule').innerHTML = "<?= JText::_('ERROR_CREATE_MODULE'); ?>";
 		}
 	}
-
+	
 	// Display or not the chosen stat module
 	function changePublished(idModule) {
 		jQuery.ajax({
@@ -395,7 +395,7 @@ jQuery(document).ready(function(){
 			}
 		});
 	}
-
+	
 	// Modify the stat module chosen
 	function modifyModule(idModule, titleModule, typeModule) {
 		Swal.mixin({
@@ -455,10 +455,10 @@ jQuery(document).ready(function(){
 			}
 		})
 	}
-
+	
 	// Delete the stat module chosen
 	function deleteModule(idModule) {
-
+		
 		Swal.fire({
 			title: "<?= JText::_('ASK'); ?>",
 			text: "<?= JText::_('WARNING'); ?>",
