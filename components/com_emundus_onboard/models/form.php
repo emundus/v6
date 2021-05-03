@@ -768,7 +768,6 @@ class EmundusonboardModelform extends JModelList {
 				$db->setQuery($query);
 				$db->execute();
 				$newprofile = $db->insertid();
-
                 $this->createMenuType('menu-profile' . $newprofile,$data['label']);
 
                 $query->clear()
@@ -782,6 +781,8 @@ class EmundusonboardModelform extends JModelList {
 
 				// Create a first page
                 $label = array(
+                    //'fr' => $newprofile.' - Ma première page',
+                    //'en' => $newprofile.' - My first page'
                     'fr' => 'Ma première page',
                     'en' => 'My first page'
                 );
@@ -1087,9 +1088,10 @@ class EmundusonboardModelform extends JModelList {
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
-		$query->select('*')
-			->from($db->quoteName('#__emundus_setup_attachments'))
-			->where($db->quoteName('published') . ' = ' . 1)
+		$query->select(array('a.*', 'b.mandatory'))
+			->from($db->quoteName('#__emundus_setup_attachments','a'))
+            ->join('LEFT', $db->quoteName('#__emundus_setup_attachment_profiles', 'b') . ' ON ' . $db->quoteName('b.attachment_id') . ' = ' . $db->quoteName('a.id'))
+			->where($db->quoteName('a.published') . ' = ' . 1)
 			->order($db->quoteName('ordering'));
 
 		$db->setQuery($query);
@@ -1701,13 +1703,18 @@ class EmundusonboardModelform extends JModelList {
 
         try {
             foreach ($documents as $document) {
+
                 $query->update($db->quoteName('#__emundus_setup_attachment_profiles'))
                     ->set($db->quoteName('ordering') . ' = ' . (int)$document['ordering'])
                     ->where($db->quoteName('id') . ' = ' . (int)$document['id']);
                 $db->setQuery($query);
+
                 $results[] = $db->execute();
+                $query->clear();
             }
+
             return $results;
+
         } catch (Exception $e){
             JLog::add('component/com_emundus_onboard/models/form | Error cannot reorder documents : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;

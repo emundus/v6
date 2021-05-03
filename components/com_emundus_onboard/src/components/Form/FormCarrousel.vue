@@ -12,6 +12,7 @@
                 class="MenuFormItem"
                 @click="ChangeIndex(index)"
                 :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
+                v-html="value.value"
               >{{value.value}}</a>
             </li>
           </div>
@@ -57,6 +58,9 @@ export default {
     };
   },
   methods: {
+    splitProfileIdfromLabel(label){
+      return (label.split(/-(.+)/))[1];
+    },
     ChangeIndex(index) {
       this.indexHighlight = index;
       //document.cookie = 'page='+index+'; expires=Session; path=/'

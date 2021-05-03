@@ -138,6 +138,7 @@ class EmundusonboardModelfalang extends JModelList {
               $db->setQuery($query);
               return $db->execute();
           } else {
+
               return $this->insertFalang($textfr, $texten, $reference_id, $reference_table, $reference_field);
           }
       } catch(Exception $e) {

@@ -522,7 +522,6 @@ class EmundusonboardControllerform extends JControllerLegacy {
 
             $jinput = JFactory::getApplication()->input;
             $documents = $jinput->getRaw('documents');
-
             $m_form = $this->model;
             $documents = $m_form->reorderDocuments($documents);
 

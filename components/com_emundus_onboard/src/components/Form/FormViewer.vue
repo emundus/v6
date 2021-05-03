@@ -88,6 +88,9 @@
       };
     },
     methods: {
+      splitProfileIdfromLabel(label){
+        return (label.split(/-(.+)/))[1];
+      },
       formbuilder() {
         this.$emit("editPage");
       },

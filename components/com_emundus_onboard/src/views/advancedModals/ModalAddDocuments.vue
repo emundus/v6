@@ -30,6 +30,17 @@
         </div>
 
       <div class="modalC-content">
+        <div class="mb-1">
+
+          <a class="d-flex tool-icon" >
+            <div class="toggle">
+              <input type="checkbox" class="check" v-model="req" @click="updateRequireMandatory()"/>
+              <strong class="b switch"></strong>
+              <strong class="b track"></strong>
+            </div>
+            <span class="ml-10px" >{{Required}}</span>
+          </a>
+        </div>
         <div class="form-group">
           <label for="name">{{DocTemplate}} :</label>
           <select v-model="doc" class="dropdown-toggle" :disabled="Object.keys(models).length <= 0">
@@ -131,11 +142,13 @@ export default {
           'doc;docx;odt': false,
           'xls;xlsx;odf': false,
         },
+        mandatory: 0
       },
       translate: {
         name: false,
         description: false
       },
+      req:false,
       errors: {
         name: false,
         nbmax: false,
@@ -158,7 +171,9 @@ export default {
           title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS"),
           value: 'xls;xlsx;odf'
         },
+
       ],
+
       selectedTypes: [],
       models: [],
       createDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT"),
@@ -174,6 +189,7 @@ export default {
       MaxRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAXPERUSER_REQUIRED"),
       TypeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED_REQUIRED"),
       TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+      Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
     };
   },
   methods: {
@@ -204,13 +220,16 @@ export default {
       this.getModelsDocs();
     },
     createNewDocument() {
+
       this.errors = {
         name: false,
         nbmax: false,
         selectedTypes: false
       };
+
       if(this.form.name[this.langue] === ''){
         this.errors.name = true;
+
         return 0;
       }
       if(this.form.nbmax === '' || this.form.nbmax === 0){
@@ -223,11 +242,29 @@ export default {
       }
 
       if(this.translate.name === false){
-        this.form.name.en = this.form.name.fr;
+
+        if(this.manyLanguages ==0 && this.langue=="en"){
+
+          this.form.name.fr=this.form.name.en
+
+        } else  {
+
+          this.form.name.en = this.form.name.fr;
+
+        }
       }
 
       if(this.translate.description === false){
-        this.form.description.en = this.form.description.fr;
+
+        if(this.manyLanguages ==0 && this.langue=="en") {
+
+          this.form.description.fr = this.form.description.en;
+
+        }else {
+
+          this.form.description.en = this.form.description.fr;
+
+        }
       }
 
       let types = [];
@@ -246,11 +283,12 @@ export default {
 
       let url = 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument';
       if(this.doc != null) {
+
         url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
         params.did = this.doc;
       }
 
-      axios({
+     axios({
         method: "post",
         url: url,
         headers: {
@@ -258,8 +296,11 @@ export default {
         },
         data: qs.stringify(params)
       }).then((rep) => {
+
+        this.req=false;
         this.$emit("UpdateDocuments");
         this.$modal.hide('modalAddDocuments')
+
       });
     },
 
@@ -269,19 +310,64 @@ export default {
         url: "index.php?option=com_emundus_onboard&controller=form&task=getundocuments",
       }).then(response => {
         this.models = response.data.data;
+
         if(this.currentDoc != null){
           this.doc = this.currentDoc;
         }
       });
-    }
+    },
+    updateRequireMandatory(){
+
+      if(this.req==true) {
+        this.form.mandatory=0
+
+      }else {
+        this.form.mandatory=1
+
+      }
+      /*setTimeout(() => {
+        axios({
+          method: "post",
+          url:
+              "index.php?option=com_emundus_onboard&controller=formbuilder&task=changerequire",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            element: this.element
+          })
+        }).then(() => {
+          this.$emit("updateRequireEvent");
+        }).catch(e => {
+          this.$emit(
+              "show",
+              "foo-velocity",
+              "error",
+              this.updateFailed,
+              this.updating
+          );
+          console.log(e);
+        });
+      }, 300);*/
+    },
   },
 
   watch: {
     doc: function(val) {
       if(val != null) {
         const model = this.models.find(model => model.id == val);
+
         this.form.name = model.name;
         this.form.description = model.description;
+        this.form.mandatory=model.mandatory
+        //this.form.mandatory=1;
+        if(model.mandatory==1) {
+
+          this.req=true;
+
+        }else {
+          this.req=false;
+        }
         if (model.allowed_types.includes('pdf')) {
           this.form.selectedTypes.pdf = true;
         } else {
@@ -318,7 +404,8 @@ export default {
         };
       }
     }
-  }
+  },
+
 };
 </script>
 
