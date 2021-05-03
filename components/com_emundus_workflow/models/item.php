@@ -160,6 +160,7 @@ class EmundusworkflowModelitem extends JModelList
     public function deleteItem($data) {
         if(!empty($data)) {
             try {
+                /// step 1 --> delete item by id
                 $this->query->clear()
                     ->delete($this->db->quoteName("#__emundus_workflow_item"))
                     ->where($this->db->quoteName('#__emundus_workflow_item.id') . ' = ' . (int)$data['id']);
@@ -167,7 +168,9 @@ class EmundusworkflowModelitem extends JModelList
                 $this->db->setQuery($this->query);
                 $this->db->execute();
 
+                /// step 2 --> update workflow logs
                 $this->workflow_model->workflowLastActivity($data['workflow_id']);
+                $this->workflow_model->workflowLastActivity($data['workflow_id'], 'saved_at');
 
                 return (object)['message'=>true];
             }
@@ -390,10 +393,11 @@ class EmundusworkflowModelitem extends JModelList
                 }
 
                 $this->db->setQuery($this->query);
-
                 $this->db->execute();
 
                 $this->workflow_model->workflowLastActivity($data['workflow_id']);
+                $this->workflow_model->workflowLastActivity($data['workflow_id'], 'saved_at');
+
                 return (object)['message'=>true];
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/item | Cannot update params : ' . preg_replace("/[\r\n]/", " ", $this->query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
