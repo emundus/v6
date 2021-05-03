@@ -91,26 +91,43 @@ class EmundusworkflowModelstep extends JModelList {
             try {
                 $wid = $data['wid'];
 
-                // step 1 --> get all stepflows having id > current(id)
+                /// step 1 --> get the current ordering of this step
+                $this->query->clear()
+                    ->select('#__emundus_workflow_step.ordering')
+                    ->from($this->db->quoteName('#__emundus_workflow_step'))
+                    ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
+                $this->db->setQuery($this->query);
+                $_currentOrder = $this->db->loadResult();       /// current order
+
+                /// step 2 --> grab all steps from this workflow which have ordering > current_ordering
+
                 $this->query->clear()
                     ->select('#__emundus_workflow_step.*')
                     ->from($this->db->quoteName('#__emundus_workflow_step'))
                     ->where($this->db->quoteName('#__emundus_workflow_step.workflow_id') . '=' . $wid)
-                    ->andWhere($this->db->quoteName('#__emundus_workflow_step.id') . '>' . (int)$data['id']);
+                    ->andWhere($this->db->quoteName('#__emundus_workflow_step.ordering') . '>' . (int)$_currentOrder)
+                    ->order('#__emundus_workflow_step.ordering ASC');
                 $this->db->setQuery($this->query);
-                $_stepList = $this->db->loadObjectList();
+                $_stepList = $this->db->loadObjectList();   //// list of available steps
 
-                foreach($_stepList as $key => $value) {
-                    /// update the ordering of $value->id
-                    $this->query->clear()
-                        ->update($this->db->quoteName('#__emundus_workflow_step'))
-                        ->set($this->db->quoteName('#__emundus_workflow_step.ordering') . '=' . (int)($value->ordering - 1))
-                        ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$value->id);
-                    $this->db->setQuery($this->query);
-                    $this->db->execute();
+                //// if $_stepList --> empty --> deleted step == last step of workflow --> do nothing
+                if(!empty($_stepList)) {
+                    /// step 3 --> update new orders
+                    foreach ($_stepList as $key => $value) {
+                        /// update the ordering of $value->id
+                        $this->query->clear()
+                            ->update($this->db->quoteName('#__emundus_workflow_step'))
+                            ->set($this->db->quoteName('#__emundus_workflow_step.ordering') . '=' . (int)($value->ordering - 1))
+                            ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$value->id);
+                        $this->db->setQuery($this->query);
+                        $this->db->execute();
+                    }
+                }
+                else {
+                    //// do nothing
                 }
 
-                // step 2 --> delete stepflow
+                // step 4 --> delete stepflow
                 $this->query->clear()
                     ->delete($this->db->quoteName('#__emundus_workflow_step'))
                     ->where($this->query->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
@@ -118,7 +135,7 @@ class EmundusworkflowModelstep extends JModelList {
                 $this->db->setQuery($this->query);
                 $this->db->execute();
 
-                // step 3 --> update last saving time
+                // step 5 --> update last saving time
                 $this->workflow_model->workflowSavingTrigger($wid);
                 return (object)['message'=>$this->db->execute()];
             } catch (Exception $e) {
@@ -379,7 +396,16 @@ class EmundusworkflowModelstep extends JModelList {
                     $this->db->setQuery($this->query);
                     $this->db->execute();
                 }
-                return ['message'=>true];
+
+                /// reload the ordering /// ordering = index
+                $this->query->clear()
+                    ->select('#__emundus_workflow_step.id, #__emundus_workflow_step.ordering')
+                    ->from($this->db->quoteName('#__emundus_workflow_step'))
+                    ->where($this->db->quote('#__emundus_workflow_step.workflow_id') . '=' . (int)$wid)
+                    ->order('#__emundus_workflow_step.ordering ASC');
+                $this->db->setQuery($this->query);
+
+                return ['message'=>true, 'data' => $this->db->loadObjectList()];
             }
             catch(Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/step | Cannot update step ordering' . preg_replace("/[\r\n]/"," ",$this->query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
