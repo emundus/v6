@@ -230,7 +230,7 @@ export default {
             data: {
               id: this.element.id,
               step_label: this.stepLabel,
-              wid: this.$data.id,
+              workflow_id: this.$data.id,
               params: this.form,
               start_date: new Date(this.startDate).toISOString().slice(0, 19).replace('T', ' '),
               end_date: new Date(this.endDate).toISOString().slice(0, 19).replace('T', ' '),

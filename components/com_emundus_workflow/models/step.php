@@ -150,19 +150,6 @@ class EmundusworkflowModelstep extends JModelList {
     //// update step params --> input :: step_id + step_params
     public function updateStepParams($data) {
         if (!empty($data)) {
-            if (!isset($data['params'])) {
-                //// just update label
-                $this->query->clear()
-                    ->update($this->db->quoteName('#__emundus_workflow_step'))
-                    ->set($this->db->quoteName('#__emundus_workflow_step.step_label') . '=' . $this->db->quote($data['step_label']))
-                    ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
-
-                $this->db->setQuery($this->query);
-                $this->db->execute();
-
-                $this->workflow_model->workflowLastActivity($data['workflow_id']);
-
-            } else {
                 /// ************************************************************************************************************
                 $_string = "";
                 if (isset($data['params']['inputStatus'])) {
@@ -174,12 +161,11 @@ class EmundusworkflowModelstep extends JModelList {
                         } else {
                         }
                     }
-                } else {
-                }
+                } else {}
                 /// ************************************************************************************************************
 
                 try {
-                    $wid = $data['wid'];
+                    $wid = $data['workflow_id'];
                     unset($data['params']['id']);
 
                     //// case 1 --> change the step label
@@ -208,7 +194,7 @@ class EmundusworkflowModelstep extends JModelList {
                     return $e->getMessage();
                 }
             }
-        }
+        //}
         else {
             return false;
         }

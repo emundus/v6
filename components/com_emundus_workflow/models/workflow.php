@@ -64,7 +64,7 @@ class EmundusworkflowModelworkflow extends JModelList {
         }
     }
 
-    //// create workflow --> update the last_saved
+    //// create workflow --> update the created_at, saved_at, last_activity
     public function createWorkflow($data) {
         if(!empty($data)) {
             try {

@@ -16,7 +16,8 @@
           <th> {{ workflow.label }} </th>
           <th>{{ workflow.name }}</th>
           <th>{{ workflow.created_at }}</th>
-          <th>{{ workflow.updated_at }}</th>
+          <th>{{ workflow.saved_at }}</th>
+          <th>{{ workflow.last_activity }}</th>
           <th>
             <button @click="openWorkflowSpace(workflow.id)" class="edit-button">OUVRIR</button>
             <button @click="alertDeleteDisplay(workflow.id)" class="delete-button">SUPPRIMER</button>
@@ -50,7 +51,7 @@ export default {
     return {
       workflows: [],      /// all workflows ==> 1 array
       workflowMessage: '',
-      table_header: ['Workflow ID', 'Nom du workflow', 'Campagne Associeé', 'Dernier Mis-a-jour par', 'Créé à', 'Mis-a-jour ', 'Action'],     // use JText later
+      table_header: ['Workflow ID', 'Nom du workflow', 'Campagne Associeé', 'Dernier Mis-a-jour par', 'Créé à', 'Mis-a-jour', 'Logs' , 'Action'],     // use JText later
     }
   },
 
