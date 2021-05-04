@@ -275,34 +275,35 @@ export default {
     handleUp(e) {
       const target = e.target || e.srcElement;
 
-      // save workflow when mouse up --> drag and drop
-      this.scene.nodes.findIndex((item) => {
-        if (item.id === this.action.dragging) {
-          var _saveNode = {
-            id: item.id,
-            type: item.type,
-            axisX: item.x,
-            axisY: item.y,
-            style: item.background,
-            item_label: document.getElementById('label_' + item.id).innerText,
-          }
+      let nodeID = this.action.dragging;
 
-          axios({
-            method: 'post',
-            url: 'index.php?option=com_emundus_workflow&controller=item&task=saveworkflow',
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              data: _saveNode
-            })
-          }).then(response => {
-            console.log(response);
-          }).catch(error => {
-            console.log(error);
-          })
+      if(nodeID !== null) {
+        const _id = (element) => element.id == nodeID;
+        let _index = this.scene.nodes.findIndex(_id);
+
+        // x, y --> this.scene.nodes[_index].x or this.scene.nodes[_index].y
+        let data = {
+          id: nodeID,
+          axisX: this.scene.nodes[_index].x,
+          axisY: this.scene.nodes[_index].y,
+          workflow_id: this.$data.id,
         }
-      })
+        axios({
+          method: 'post',
+          url: "index.php?option=com_emundus_workflow&controller=item&task=saveitem",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            data: data,
+          })
+        }).then(response => {
+
+        }).catch(error => {
+          console.log(error);
+        })
+      }
+      else {}
 
       if (this.$el.contains(target)) {
         if (typeof target.className !== 'string' || target.className.indexOf('node-input') < 0) {

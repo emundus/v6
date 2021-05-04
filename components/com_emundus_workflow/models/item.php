@@ -168,9 +168,8 @@ class EmundusworkflowModelitem extends JModelList
                 $this->db->setQuery($this->query);
                 $this->db->execute();
 
-                /// step 2 --> update workflow logs
+                /// step 2 --> update workflow logs (last_activity)
                 $this->workflow_model->workflowLastActivity($data['workflow_id']);
-                $this->workflow_model->workflowLastActivity($data['workflow_id'], 'saved_at');
 
                 return (object)['message'=>true];
             }
