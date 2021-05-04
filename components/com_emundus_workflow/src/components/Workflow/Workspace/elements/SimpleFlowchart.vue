@@ -238,6 +238,7 @@ export default {
       this.$emit('nodeClick', id);
       this.mouse.lastX = e.pageX || e.clientX + document.documentElement.scrollLeft
       this.mouse.lastY = e.pageY || e.clientY + document.documentElement.scrollTop
+      e.preventDefault();
     },
     handleMove(e) {
       if (this.action.linking) {
@@ -265,6 +266,8 @@ export default {
         this.scene.centerX += diffX;
         this.scene.centerY += diffY;
 
+        e.preventDefault();
+
         // this.hasDragged = true
       }
     },
@@ -286,7 +289,7 @@ export default {
 
           axios({
             method: 'post',
-            url: 'index.php?option=com_emundus_workflow&controller=item&task=saveitem',
+            url: 'index.php?option=com_emundus_workflow&controller=item&task=saveworkflow',
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -321,7 +324,7 @@ export default {
     },
 
     handleDown(e) {
-      e.preventDefault();     /// prevent page loading
+
       const target = e.target || e.srcElement;
       // console.log('for scroll', target, e.keyCode, e.which)
       if ((target === this.$el || target.matches('svg, svg *')) && e.which === 1) {

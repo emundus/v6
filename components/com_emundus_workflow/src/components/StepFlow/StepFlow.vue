@@ -8,7 +8,7 @@
     </div>
 
     <b-button @click="createStep()" v-if="hideStep == false" variant="success" style="position: sticky">(+)</b-button>
-<!--    <div class="min-h-screen flex overflow-x-scroll py-12">-->
+    <!--    <div class="min-h-screen flex overflow-x-scroll py-12">-->
     <draggable :invertedSwapThreshold="0.4" :invertSwap="true" v-model="columns" :group="columns" class="flex" :sort="true">
       <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id"
            v-on:dblclick="openStep(column.id)"
@@ -16,12 +16,13 @@
            @dragstart="dragStart"
            @dragend="dragEnd"
       >
+
         <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
         <div style="color:red">{{ column.stateIn }}</div>
         <div style="color:blueviolet">{{ column.stateOut }}</div>
         <div style="color:blue"> {{ column.startDate }}</div>
         <div style="color:orange"> {{ column.endDate }}</div>
-        <div style="color:forestgreen"> Ordre {{ column.order }} </div>
+        <div style="color:forestgreen"> {{ column.order }} </div>
         <modal-config-step :ID="column.id" :element="column" @updateStep="updateStep" @deleteStep="deleteStep(column.id)"/>
         <!--        <div>{{ column.stateIn }}</div>-->
         <!--        <div>{{ column.stateOut }}</div>-->
@@ -30,17 +31,17 @@
       </div>
       <workflow-space v-for="column in columns" v-if="currentStep == column.id && hideWorkflow == false" :step="column" @returnBack="returnToStepFlow"
                       :draggable="false"
-                      ondragstart="return false"
-                      ondragend="return false"
-                      ondragenter="return false"
-                      ondragexit="return false"
-                      ondragover="return false"
-                      ondragleave="return false"
-                      ondrag="return false"
-                      ondrop="return false"
+                      ondragstart="return false;"
+                      ondragend="return false;"
+                      ondragenter="return false;"
+                      ondragexit="return false;"
+                      ondragover="return false;"
+                      ondragleave="return false;"
+                      ondrag="return false;"
+                      ondrop="return false;"
       />
     </draggable>
-<!--  </div>-->
+    <!--  </div>-->
   </div>
 </template>
 
@@ -85,6 +86,11 @@ export default {
   },
 
   methods: {
+    handleDragStart(e) {
+      e.preventDefault();
+      return false;
+    },
+
     dragStart: function(event) {
       const e = event.target.id;      // get the <div id> from selected step
       let id = e.split('step_')[1];   // get id
@@ -99,6 +105,15 @@ export default {
         // newIndex[elt.id] = this.columns.indexOf(elt);
         newIndex[this.columns.indexOf(elt)] = elt.id;
       });
+
+      var counter;
+      for(counter = 0; counter < newIndex.length; counter++) {
+        const _id = (element) => element.id == newIndex[counter];
+        var _index = this.columns.findIndex(_id);
+        this.columns[_index]['order'] = counter;
+        this.$forceUpdate();
+      }
+
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus_workflow&controller=step&task=updatestepordering',
@@ -111,13 +126,6 @@ export default {
         })
       }).then(response => {
         /// I think I should put this code snippet before axios -->
-        var counter;
-        for(counter = 0; counter < newIndex.length; counter++) {
-          const _id = (element) => element.id == newIndex[counter];
-          var _index = this.columns.findIndex(_id);
-          this.columns[_index]['order'] = counter;
-          this.$forceUpdate();
-        }
       }).catch(error => {
         console.log(error);
       })
@@ -221,30 +229,24 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        var _steps = response.data.data;
-
-        _steps.forEach(step => {
-          //// call to axios to get status of this step
-          var sid = step.id;
+        this.columns = response.data.data;
+        var steps = response.data.data; // get all steps
+        steps.forEach(elt => {
           axios({
             method: 'get',
             url: 'index.php?option=com_emundus_workflow&controller=step&task=getcurrentparams',
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
-            params: {sid},
+            params: {sid : elt.id},
             paramsSerializer: params => {
               return qs.stringify(params);
             }
           }).then(answer => {
-            const _id = (element) => element.id == sid;
+            const _id = (element) => element.id == elt.id;
             var _index = this.columns.findIndex(_id);
-
-            // this.columns[_index]['stateIn'] = answer.data.data.inputStatusNames;
-
             var _temp = answer.data.data.inputStatusNames;
             var _stateIn = [];
-
             _temp.forEach(elt => _stateIn.push(elt.value));
             this.columns[_index]['stateIn'] = _stateIn.toString();
             this.columns[_index]['stateOut'] = (answer.data.data.outputStatusNames)[0].value;
@@ -253,19 +255,14 @@ export default {
             this.columns[_index]['endDate'] = answer.data.data.endDate;
             this.columns[_index]['order'] = answer.data.data.ordering;
             this.$forceUpdate();
-          });
-
-          this.columns.push({
-            id: step.id,
           })
-          // this.stateIn = answer.data.data.inputStatus;
-          // this.stateOut = answer.data.data.outputStatus;
         })
       })
     },
 
     configStep: function (id) {
       this.$modal.show("stepModal" + id);
+      // document.getElementById("stepModal" + id).setAttribute('draggable',false);
     },
 
     getWorkflowFromURL: function () {

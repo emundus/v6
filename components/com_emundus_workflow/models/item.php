@@ -214,16 +214,27 @@ class EmundusworkflowModelitem extends JModelList
 
     //// save item by id
     public function saveItemById($data) {
-        if(!empty($data)) {
+        if(!empty($data) and !empty($data['id'])) {
             try {
-                //// step 1 --> save all item attributs
-                $this->query->clear()
-                    ->update($this->db->quoteName('#__emundus_workflow_item'))
-                    ->set($this->db->quoteName('#__emundus_workflow_item.axisX') . '=' . $data['axisX'] .
-                        ',' . $this->db->quoteName('#__emundus_workflow_item.axisY') . '=' . $data['axisY'] .
-                        ',' . $this->db->quoteName('#__emundus_workflow_item.item_label') . '=' . $this->db->quote($data['item_label']) .
-                        ',' . $this->db->quoteName('#__emundus_workflow_item.style') . '=' . $this->db->quote($data['style']))
-                    ->where($this->db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
+                /// case 1 --> save all attributs (first creating node)
+                if(!is_null($data['style'])) {
+                    //// step 1 --> save all item attributs
+                    $this->query->clear()
+                        ->update($this->db->quoteName('#__emundus_workflow_item'))
+                        ->set($this->db->quoteName('#__emundus_workflow_item.axisX') . '=' . $data['axisX'] .
+                            ',' . $this->db->quoteName('#__emundus_workflow_item.axisY') . '=' . $data['axisY'] .
+                            ',' . $this->db->quoteName('#__emundus_workflow_item.style') . '=' . $this->db->quote($data['style']))
+                        ->where($this->db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
+                }
+
+                /// case 2 --> another cases
+                else {
+                    $this->query->clear()
+                        ->update($this->db->quoteName('#__emundus_workflow_item'))
+                        ->set($this->db->quoteName('#__emundus_workflow_item.axisX') . '=' . $data['axisX'] .
+                            ',' . $this->db->quoteName('#__emundus_workflow_item.axisY') . '=' . $data['axisY'])
+                        ->where($this->db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['id']);
+                }
 
                 $this->db->setQuery($this->query);
                 $this->db->execute();
@@ -434,19 +445,19 @@ class EmundusworkflowModelitem extends JModelList
                 if ($mode == 'in' and isset($_exportStatus['in'])) {
                     $query2->clear()
                         ->select('#__emundus_setup_status.*')
-                        ->from($db->quoteName('#__emundus_setup_status'))
-                        ->where($db->quoteName('#__emundus_setup_status.step') . 'IN (' . $_exportStatus['in'] . ')');
-                    $db->setQuery($query2);
+                        ->from($this->db->quoteName('#__emundus_setup_status'))
+                        ->where($this->db->quoteName('#__emundus_setup_status.step') . 'IN (' . $_exportStatus['in'] . ')');
+                    $this->db->setQuery($query2);
 
-                    return $db->loadObjectList();
+                    return $this->db->loadObjectList();
                 } else if (isset($_exportStatus['out']) and $mode == 'out') {
                     $query2->clear()
                         ->select('#__emundus_setup_status.*')
-                        ->from($db->quoteName('#__emundus_setup_status'))
-                        ->where($db->quoteName('#__emundus_setup_status.step') . 'IN (' . $_exportStatus['out'] . ')');
-                    $db->setQuery($query2);
+                        ->from($this->db->quoteName('#__emundus_setup_status'))
+                        ->where($this->db->quoteName('#__emundus_setup_status.step') . 'IN (' . $_exportStatus['out'] . ')');
+                    $this->db->setQuery($query2);
 
-                    return $db->loadObjectList();
+                    return $this->db->loadObjectList();
                 }
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_workflow/models/item | Cannot get status by this item : ' . preg_replace("/[\r\n]/", " ", $query2->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus_workflow');
