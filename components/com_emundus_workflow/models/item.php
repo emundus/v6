@@ -255,7 +255,6 @@ class EmundusworkflowModelitem extends JModelList {
 
     //UPDATE PARAMS --> table [ jos_emundus_workflow_item ] // column [ params ]
     public function updateParamsByItemID($data) {
-
         if(!empty($data)) {
             $_string = "";
 
@@ -272,10 +271,12 @@ class EmundusworkflowModelitem extends JModelList {
             }
 
             $id = (int)$data['params']['id'];
+            $label = $data['params']['itemLabel'];
 
             unset($data['params']['id']);
             unset($data['params']['type']);
             unset($data['params']['label']);
+            unset($data['params']['itemLabel']);
             unset($data['params']['x']);
             unset($data['params']['y']);
             unset($data['params']['background']);
@@ -284,12 +285,14 @@ class EmundusworkflowModelitem extends JModelList {
                 if (isset($data['params']['color'])) {
                     $this->query->clear()
                         ->update($this->db->quoteName('#__emundus_workflow_item'))
+                        ->set($this->db->quoteName('#__emundus_workflow_item.item_label') . '=' . $this->db->quote($label))
                         ->set($this->db->quoteName('#__emundus_workflow_item.params') . '=' . $this->db->quote(json_encode($data['params'])))
                         ->set($this->db->quoteName('#__emundus_workflow_item.style') . '=' . $this->db->quote($data['params']['color']))
                         ->where($this->db->quoteName('#__emundus_workflow_item.id') . '=' . $id);
                 } else {
                     $this->query->clear()
                         ->update($this->db->quoteName('#__emundus_workflow_item'))
+                        ->set($this->db->quoteName('#__emundus_workflow_item.item_label') . '=' . $this->db->quote($label))
                         ->set($this->db->quoteName('#__emundus_workflow_item.params') . '=' . $this->db->quote(json_encode($data['params'])))
                         ->where($this->db->quoteName('#__emundus_workflow_item.id') . '=' . $id);
                 }
@@ -454,7 +457,8 @@ class EmundusworkflowModelitem extends JModelList {
                 $_exportData = array();
 
                 if ($_data->item_id == 2) {
-                    $_profileArray = array("profile" => array(), "notes" => array(), "color" => array());
+                    $_profileArray = array("profile" => array(), "notes" => array(), "color" => array(), 'label' => array());
+                    $_profileArray['label'] = $_data->item_label;
                     $_profileArray['profile'] = json_decode($_data->params)->formNameSelected;
                     $_profileArray['notes'] = json_decode($_data->params)->notes;
                     $_profileArray['color'] = json_decode($_data->params)->color;

@@ -10,7 +10,7 @@
     </div>
     <div class="node-main">
       <div v-text="type" class="node-type"></div>
-      <p contenteditable="true" class="node-label" :id="'label_'+id" v-text="label"/>
+      <p contenteditable="true" :id="'label_'+ id"> {{ this.$attrs.itemLabel }}
     </div>
     <div class="node-port node-output"
          @mousedown="outputMouseDown">
@@ -31,6 +31,7 @@ const qs = require('qs');
 export default {
   name: 'FlowchartNode',
   props: {
+    nodeLabel: String,
     params: Object,
     background: {
       type: String,
@@ -91,7 +92,9 @@ export default {
   },
 
   created() {
+    this.$attrs.itemLabel = this.$props.label;
     //this.getCurrentStatus(this.id);
+    // console.log(this.nodeLabel);
   },
 
   computed: {
@@ -259,7 +262,7 @@ export default {
   font-size: x-small;
   color: #0010ff;
   text-align: center;
-  margin: 0px 5px;
+  margin: 15px 0px;
   cursor: pointer;
 }
 

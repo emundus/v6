@@ -209,10 +209,10 @@ export default {
     //load step --> get all items and links of this step
     loadStep: async function () {
       let rawItems = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getallitemsbystep', {params: {data: this.step.id}}); //get all items
-      let rawLinks = await axios.get('index.php?option=com_emundus_workflow&controller=link&task=getalllinks', {params: {data: this.step.id}}); //get all links
+      //let rawLinks = await axios.get('index.php?option=com_emundus_workflow&controller=link&task=getalllinks', {params: {data: this.step.id}}); //get all links
 
       var items = rawItems.data.data;    //items : Array
-      var links = rawLinks.data.data;    //links: Array
+      //var links = rawLinks.data.data;    //links: Array
 
       items.forEach(element => {
         this.$data.scene.nodes.push({
@@ -225,13 +225,13 @@ export default {
         })
       });
 
-      links.forEach(element => {
-        this.$data.scene.links.push({
-          id: element.id,
-          from: element.parent,
-          to: element.child,
-        })
-      });
+      // links.forEach(element => {
+      //   this.$data.scene.links.push({
+      //     id: element.id,
+      //     from: element.parent,
+      //     to: element.child,
+      //   })
+      // });
     },
     //next step --> clone workflow = clone all items
 

@@ -3,7 +3,7 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
-    <modal :name="'elementModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen">
+    <modal :name="'elementModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
       <b-badge variant="warning"><h3>{{ this.$data.name }} Configuration</h3></b-badge>
       <br/>
       <br/>
@@ -53,6 +53,14 @@ export default {
   },
 
   methods: {
+    beforeClose: function() {
+      /// emit all params
+      let _emit = [];
+      _emit['id'] = this.$refs.forms.form.id;
+      _emit['label'] = this.$refs.forms.form.stepLabel;
+      this.$emit('emit', _emit);
+    },
+
     getElementByItem: function () {
       axios({
         method: 'get',

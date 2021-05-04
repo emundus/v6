@@ -4,7 +4,14 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
     <div class="row mb-3">
-      <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.form_name_title }}</label>
+      <label class="col-sm-6 col-form-label">{{ this.elementTitle.item_name_label }}</label>
+      <div class="col-xs-8">
+        <textarea :id="'step_label'+element.id" rows="3" v-model="form.itemLabel" placeholder="Nom de l'etape" style="width: 95%; height: 35px !important"></textarea>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label class="col-sm-6 col-form-label">{{ this.elementTitle.form_name_title }}</label>
       <div class="col-xs-8">
         <select v-model="form.formNameSelected" class="form-control">
           <b-form-select-option selected disabled>--Formulaire--</b-form-select-option>
@@ -12,32 +19,6 @@
         </select>
       </div>
     </div>
-
-    <!--    <div class="row mb-3">-->
-    <!--      <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.edited_status_title }}</label>-->
-    <!--      &lt;!&ndash;      <div class="col-xs-8">&ndash;&gt;-->
-    <!--      &lt;!&ndash;        <select v-model="form.editedStatusSelected" class="form-control-select" @change="updateOutStatus(form.editedStatusSelected)">&ndash;&gt;-->
-    <!--      &lt;!&ndash;          <b-form-select-option selected disabled>&#45;&#45;Statut d'édition&#45;&#45;</b-form-select-option>&ndash;&gt;-->
-    <!--      &lt;!&ndash;          <option v-for="(item, index) in this.$data.inStatus" :value="item.step" :disabled="item.disabled"> {{ item.value }}</option>&ndash;&gt;-->
-    <!--      &lt;!&ndash;        </select>&ndash;&gt;-->
-
-    <!--      <div v-for="item in this.$data.inStatus" v-if="!item.disabled">-->
-    <!--        <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]"/>-->
-    <!--        <label class="form-check-label" :for="item.step">{{item.value}}</label>-->
-    <!--      </div>-->
-    <!--      &lt;!&ndash;      </div>&ndash;&gt;-->
-
-    <!--    </div>-->
-
-    <!--    <div class="row mb-3">-->
-    <!--      <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.output_status_title }}</label>-->
-    <!--      <div class="col-xs-8">-->
-    <!--        <select v-model="form.outputStatus" class="form-control-select">-->
-    <!--          <b-form-select-option selected disabled>&#45;&#45;Statut de sortie&#45;&#45;</b-form-select-option>-->
-    <!--          <option v-for="(item, index) in this.$data.outStatus" :value="item.step" :disabled="item.disabled" v-if="!item.disabled"> {{ item.value }}</option>-->
-    <!--        </select>-->
-    <!--      </div>-->
-    <!--    </div>-->
 
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.notes_title }}</label>
@@ -62,6 +43,8 @@
 <script>
 import axios from 'axios';
 import Swal from "sweetalert2";
+import $ from 'jquery';     //using jquery
+
 const qs = require('qs');
 let _all = [];
 export default {
@@ -72,12 +55,14 @@ export default {
   data: function() {
     return {
       elementTitle: {
+        item_name_label: "Nom de cette étape",
         form_name_title: "Nom du formulaire",
         edited_status_title: "Statut d'édition",
         output_status_title: "Statut de sortie",
         notes_title: "Notes",
       },
       form: {
+        itemLabel: "",
         formNameSelected: '',
         inputStatus: [],
         outputStatus: '',
@@ -130,8 +115,6 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        // console.log(response);
-
         //match dataIn and dataOut
         if(response.data.dataIn !== null && response.data.dataOut !== null) {
           response.data.dataIn.forEach(elt => { this.checked[elt.step] = true; })
@@ -147,7 +130,6 @@ export default {
         }
 
         else {}
-
       }).catch(error => {
         console.log(error);
       })
@@ -222,10 +204,18 @@ export default {
         if(response.data.data !== null) {
           this.form.formNameSelected = (response.data.data).profile;
           this.form.notes = (response.data.data).notes;
+          this.form.itemLabel = (response.data.data).label;
         }
         else {}
       })
-    }
+    },
+
+    // setItemLabel: function() {
+    //   var _itemLabel = $(" #step_label " + element.id).text();
+    //   axios({
+    //
+    //   })
+    // }
 
   },
   created() {
