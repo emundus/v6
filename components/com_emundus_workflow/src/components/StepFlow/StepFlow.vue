@@ -15,6 +15,7 @@
            v-if="hideStep == false" style=""
            @dragstart="dragStart"
            @dragend="dragEnd"
+           @mousedown="handleDown"
       >
 
         <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
@@ -86,9 +87,11 @@ export default {
   },
 
   methods: {
-    handleDragStart(e) {
-      e.preventDefault();
-      return false;
+    handleDown(e) {
+      const target = e.target || e.srcElement;
+      if(target.className === 'vm--modal' || target.className === 'row mb-3') {
+        e.preventDefault();     /// prevent page loading
+      }
     },
 
     dragStart: function(event) {

@@ -259,9 +259,11 @@ export default {
       e.preventDefault();
     },
     handleMove(e) {
+
       if (this.action.linking) {
         [this.mouse.x, this.mouse.y] = getMousePosition(this.$el, e);
         [this.draggingLink.mx, this.draggingLink.my] = [this.mouse.x, this.mouse.y];
+        e.preventDefault();
       }
       if (this.action.dragging) {
         this.mouse.x = e.pageX || e.clientX + document.documentElement.scrollLeft
@@ -272,6 +274,7 @@ export default {
         this.mouse.lastX = this.mouse.x;
         this.mouse.lastY = this.mouse.y;
         this.moveSelectedNode(diffX, diffY);
+        e.preventDefault();
       }
       if (this.action.scrolling) {
         [this.mouse.x, this.mouse.y] = getMousePosition(this.$el, e);
@@ -350,6 +353,10 @@ export default {
     handleDown(e) {
 
       const target = e.target || e.srcElement;
+      if(target.className === 'vm--modal' || target.className === 'row mb-3') {
+        e.preventDefault();     /// prevent page loading
+      }
+
       // console.log('for scroll', target, e.keyCode, e.which)
       if ((target === this.$el || target.matches('svg, svg *')) && e.which === 1) {
         this.action.scrolling = true;
