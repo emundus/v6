@@ -10,7 +10,8 @@
     </div>
     <div class="node-main">
       <div v-text="type" class="node-type"></div>
-      <p contenteditable="true" :id="'label_'+ id"> {{ this.$attrs.itemLabel }}
+      <p :id="'label_'+ id" v-if="this.$attrs.itemLabel !== null || this.$attrs.itemLabel !== undefined" disabled="true"> {{ this.$attrs.itemLabel }}
+      <p :id="'label_'+ id" v-if="this.$attrs.itemLabel === null || this.$attrs.itemLabel === undefined" disabled="true"> {{ this.$props.label }}
     </div>
     <div class="node-port node-output"
          @mousedown="outputMouseDown">
@@ -92,9 +93,8 @@ export default {
   },
 
   created() {
-    this.$attrs.itemLabel = this.$props.label;
-    //this.getCurrentStatus(this.id);
-    // console.log(this.nodeLabel);
+    // console.log(this.$attrs.itemLabel);
+    // this.$attrs.itemLabel = this.$props.label || this.$attrs.itemLabel;
   },
 
   computed: {
