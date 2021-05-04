@@ -163,8 +163,8 @@ export default {
           //axios --> call to the api of create new link --> with params = {from,to,workflow_id}
           //workflow_id --> rewrite the function of get id
           var _links = {
-            from: newLink.from,
-            to: index,
+            parent: newLink.from,
+            child: index,
             workflow_id: this.getWorkflowIdFromURL(),
             link_label: '',
             step_id: this.step.id,
@@ -183,7 +183,7 @@ export default {
           //   if(answer.data.data == true) {
           axios({
             method: 'post',
-            url: 'index.php?option=com_emundus_workflow&controller=item&task=createlink',
+            url: 'index.php?option=com_emundus_workflow&controller=link&task=createlink',
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -191,7 +191,8 @@ export default {
               data: _links
             })
           }).then(response => {
-            newLink['id'] = response.data.data;
+            console.log(response);
+            newLink['id'] = response.data.data.data;
           }).catch(error => {
             console.log(error);
           })
@@ -461,13 +462,20 @@ export default {
 
     //delete link by id
     deleteLink: function(id) {
+      let data = {
+        id: id,
+        workflow_id: this.$data.id,
+      };
+
       axios({
         method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=item&task=deletelink',
+        url: 'index.php?option=com_emundus_workflow&controller=link&task=deletelink',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        data: qs.stringify({id})
+        data: qs.stringify({
+          data: data,
+        })
       }).then(response => {
       }).catch(error => {
         console.log(error);
