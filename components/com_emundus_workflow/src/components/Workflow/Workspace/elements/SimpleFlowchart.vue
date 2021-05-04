@@ -278,33 +278,38 @@ export default {
 
       let nodeID = this.action.dragging;
 
-      if(nodeID !== null) {
-        const _id = (element) => element.id == nodeID;
+      if (nodeID !== null && nodeID !== undefined) {
+        const _id = (element) => element.id === nodeID;
         let _index = this.scene.nodes.findIndex(_id);
 
-        // x, y --> this.scene.nodes[_index].x or this.scene.nodes[_index].y
-        let data = {
-          id: nodeID,
-          axisX: this.scene.nodes[_index].x,
-          axisY: this.scene.nodes[_index].y,
-          workflow_id: this.$data.id,
-        }
-        axios({
-          method: 'post',
-          url: "index.php?option=com_emundus_workflow&controller=item&task=saveitem",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
-            data: data,
-          })
-        }).then(response => {
+        if (_index === -1) {
+          /// do not find the bloc
+        } else {
+          let data = {
+            id: nodeID,
+            axisX: this.scene.nodes[_index].x,
+            axisY: this.scene.nodes[_index].y,
+            workflow_id: this.$data.id,
+          }
+          axios({
+            method: 'post',
+            url: "index.php?option=com_emundus_workflow&controller=item&task=saveitem",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              data: data,
+            })
+          }).then(response => {
 
-        }).catch(error => {
-          console.log(error);
-        })
+          }).catch(error => {
+            console.log(error);
+          })
+        }
       }
-      else {}
+      else {
+        // exit
+      }
 
       if (this.$el.contains(target)) {
         if (typeof target.className !== 'string' || target.className.indexOf('node-input') < 0) {
