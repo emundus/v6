@@ -338,6 +338,7 @@ export default {
         this.action.scrolling = true;
         [this.mouse.lastX, this.mouse.lastY] = getMousePosition(this.$el, e);
         this.action.selected = null; // deselectAll
+        e.preventDefault();
       }
       this.$emit('canvasClick', e);
     },
