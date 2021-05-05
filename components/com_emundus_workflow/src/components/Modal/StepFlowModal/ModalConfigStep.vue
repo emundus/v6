@@ -95,7 +95,7 @@
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.messageTitle }}</label>
         <tr>
-          <th><input type="checkbox" @click="showMessage=!showMessage">Oui</th>
+          <th><input type="checkbox" @click="showMessage=!showMessage" :checked="showMessage==true">Oui</th>
         </tr>
       </div>
 
@@ -199,6 +199,7 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
+        this.showMessage = false;
         this.form.id = this.ID;
         this.form.outputStatus = response.data.data.outputStatus;
         this.form.stepNotes = response.data.data.notes;
@@ -214,7 +215,7 @@ export default {
 
         this.stepParams = response.data.data.message;
 
-        if(response.data.data.message !== null || response.data.data.message !== undefined) {
+        if(response.data.data.message !== undefined) {
           this.showMessage = true;
         } else {
           this.showMessage = false;
