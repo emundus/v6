@@ -4,7 +4,7 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
     <div id="bounding" class="bounding">
-    <modal :name="'stepModal' + ID" :width="580" :height="700" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
+    <modal :name="'stepModal' + ID" :width="580" :height="1000" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
       <!--      please keep this code part, do not remove ||| option 1 : only one step in -->
 
 
@@ -88,14 +88,26 @@
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.notes }}</label>
         <div class="col-xs-8">
-          <textarea id="notes_form" rows="3" v-model="form.notes" placeholder="Informations supplementaires" style="margin: -5px; width: 102%"></textarea>
+          <textarea id="notes_form" rows="3" v-model="form.stepNotes" placeholder="Informations supplementaires" style="margin: -5px; width: 102%"></textarea>
         </div>
       </div>
+
+      <div class="row mb-3">
+        <label class="col-sm-6 col-form-label">{{ this.title.messageTitle }}</label>
+        <tr>
+          <th><input type="checkbox" @click="showMessage=!showMessage"/>Oui</th>
+        </tr>
+      </div>
+
+      <message-modal :element="form" v-if="showMessage"/>
+
+      <div class="row mb-3" v-if="!showMessage"/>
 
       <div class="row mb-3">
         <b-button variant="success" @click="updateParams()">Sauvegarder</b-button>
         <b-button variant="danger" @click="exitModal()">Quitter</b-button>
       </div>
+
     </modal>
     </div>
   </div>
@@ -108,6 +120,7 @@ import $ from 'jquery';
 import Calendar from 'v-calendar/lib/components/calendar.umd'
 import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 import { commonMixin } from "../../../mixins/common-mixin";
+import messageModal from "../WorkflowModal/element/messageModal";
 
 require('moment')().format('YYYY-MM-DD HH:mm:ss');
 
@@ -124,6 +137,7 @@ export default {
   components: {
     Calendar,
     DatePicker,
+    messageModal,
   },
 
   data: function() {
@@ -135,13 +149,14 @@ export default {
         startDateTitle: "Date debut",
         endDateTitle: "Date fin",
         notes: "Informations supplementaires",
+        messageTitle: "Voulez-vous envoyer un message?"
       },
       // use for form v-model
       form: {
         id: '',
         inputStatus: [],
         outputStatus: '',
-        notes: '',
+        stepNotes: '',
       },
 
       // use for date v-model
@@ -156,6 +171,8 @@ export default {
 
       inStatusSelected: [],
       stepLabel: '',
+
+      showMessage: false,
     }
   },
 
@@ -164,6 +181,11 @@ export default {
   },
 
   methods: {
+    showMesssageParams: function() {
+      this.showMessage = true;
+      console.log('show message params');
+    },
+
     getCurrentParams: function(sid) {
       axios({
         method: 'get',
@@ -176,10 +198,9 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        // console.log(response);
         this.form.id = this.ID;
         this.form.outputStatus = response.data.data.outputStatus;
-        this.form.notes = response.data.data.notes;
+        this.form.stepNotes = response.data.data.notes;
 
         this.startDate = response.data.data.startDate;
         this.endDate = response.data.data.endDate;
@@ -210,8 +231,6 @@ export default {
           _temp.forEach(elt => elt['disabled'] = false);
           this.inStatus = _temp;
         }
-
-        // console.log(this.inStatus);
         this.outStatus = response.data.dataOut;
       })
     },
@@ -271,7 +290,6 @@ export default {
       var _out = this.form.outputStatus;
 
       if(_in.length == 0 || _out === null) {
-        // console.log('--- delete ---');
         this.$emit('deleteStep', this.element.id);          // using emit to pass event
         this.$modal.hide("stepModal" + this.element.id);
       }
@@ -313,11 +331,6 @@ export default {
 .vm--modal {
   padding: 10px 30px !important;
 }
-
-/*.row {*/
-/*  margin-right:100px !important;*/
-/*  margin-left: 30px !important;*/
-/*}*/
 
 .select {
   max-width: 300px !important;

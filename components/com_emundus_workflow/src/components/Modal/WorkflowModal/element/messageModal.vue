@@ -10,15 +10,15 @@
       </div>
     </div>
 
-    <div class="row mb-3">
-      <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.input_status_title }}</label>
-      <div class="col-xs-8">
-        <select v-model="form.inputStatus" class="form-control-select">
-          <b-form-select-option selected disabled>--Statut--</b-form-select-option>
-          <option v-for="statu in this.$data.status" :value="statu.id"> {{ statu.value }}</option>
-        </select>
-      </div>
-    </div>
+<!--    <div class="row mb-3">-->
+<!--      <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.input_status_title }}</label>-->
+<!--      <div class="col-xs-8">-->
+<!--        <select v-model="form.inputStatus" class="form-control-select">-->
+<!--          <b-form-select-option selected disabled>&#45;&#45;Statut&#45;&#45;</b-form-select-option>-->
+<!--          <option v-for="statu in this.$data.status" :value="statu.id"> {{ statu.value }}</option>-->
+<!--        </select>-->
+<!--      </div>-->
+<!--    </div>-->
 
     <div class="row mb-3">
       <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.destination_title }}</label>
@@ -33,23 +33,10 @@
     <div class="row mb-3">
       <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.notes_title }}</label>
       <div class="col-xs-8">
-        <textarea v-model="form.notes" placeholder="Supplementaires informations" style="margin: -3px; width: 95%"/>
+        <textarea v-model="form.messagenotes" placeholder="Supplementaires informations" style="margin: -3px; width: 95%"/>
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-sm-6">
-        <label>Choisir couleur</label>
-      </div>
-
-      <div class="col-sm-4" style="padding-left: 0">
-        <v-input-colorpicker  v-model="form.color" style="width:140px"/>
-      </div>
-
-      <div class="col-sm-2" id="hex_color">
-        <p style="padding: 3px; margin:0px -15px" v-bind:style="{ color: this.form.color }">{{ this.form.color }}</p>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -77,7 +64,7 @@ export default {
         emailSelected: '',
         inputStatus: '',
         destinationSelected: '',
-        notes: '',
+        messagenotes: '',
         color: "#0f4c81",
       },
 
@@ -119,7 +106,6 @@ export default {
       axios.get('index.php?option=com_emundus_workflow&controller=common&task=getalldestinations')
           .then(response => {
             this.$data.destination = response.data.data;
-            console.log(response);
           })
           .catch(error => {
             console.log(error);
