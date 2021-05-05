@@ -11,7 +11,7 @@
                           @linkingStart="linkingStart"
                           @linkingStop="linkingStop"
                           @linkDelete="linkDelete"
-                          @emit="updateLabel"
+                          @updateLabel="updateLabel"
                           >
       {{ node.id }}
     </modal-config-element>
@@ -134,9 +134,9 @@ export default {
   },
   methods: {
     updateLabel(params) {
+      console.log(params);
       this.info = params;
       this.$forceUpdate();
-      console.log(params);
     },
 
     findNodeWithID(id) {

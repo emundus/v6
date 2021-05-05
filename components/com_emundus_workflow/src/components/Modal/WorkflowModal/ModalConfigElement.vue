@@ -57,8 +57,8 @@ export default {
       /// emit all params
       let _emit = [];
       _emit['id'] = this.$refs.forms.form.id;
-      _emit['label'] = this.$refs.forms.form.stepLabel;
-      this.$emit('emit', _emit);
+      _emit['label'] = this.$refs.forms.form.itemLabel;
+      this.$emit('updateLabel', _emit);
     },
 
     getElementByItem: function () {
