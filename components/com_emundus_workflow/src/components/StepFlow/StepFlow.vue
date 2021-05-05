@@ -89,7 +89,7 @@ export default {
   methods: {
     handleDown(e) {
       const target = e.target || e.srcElement;
-      if(target.className === 'vm--modal' || target.className === 'row mb-3') {
+      if(target.className === 'vm--modal') {
         e.preventDefault();     /// prevent page loading
       }
     },

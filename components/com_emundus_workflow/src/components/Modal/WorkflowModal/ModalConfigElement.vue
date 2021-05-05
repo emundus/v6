@@ -197,12 +197,12 @@ export default {
 <style>
 
 .vm--modal {
-  padding: 10px 25px !important;
+  padding: 10px 30px !important;
 }
 
-.row {
-  margin-right:100px !important;
-}
+/*.row {*/
+/*  margin-right:100px !important;*/
+/*}*/
 
 .select {
   max-width: 300px !important;

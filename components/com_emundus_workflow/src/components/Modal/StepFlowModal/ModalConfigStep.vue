@@ -1,8 +1,9 @@
 <template>
-  <div id="ModalConfigStep">
+  <div id="ModalConfigStep" class="ModalConfigStep">
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
+    <div id="bounding" class="bounding">
     <modal :name="'stepModal' + ID" :width="580" :height="700" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
       <!--      please keep this code part, do not remove ||| option 1 : only one step in -->
 
@@ -24,16 +25,16 @@
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.label }}</label>
         <div class="col-xs-8">
-          <textarea id="step_label" rows="3" v-model="stepLabel" placeholder="Nom de l'etape" style="width: 95%; height: 35px !important"></textarea>
+          <textarea class='notes' id="step_label" rows="3" v-model="stepLabel" placeholder="Nom de l'etape" style="width: 95%; height: 35px !important"></textarea>
         </div>
       </div>
 
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.inputStatusTitle }}</label>
-        <div v-for="item in this.$data.inStatus" v-if="!item.disabled">
-          <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]"/>
-          <label class="form-check-label" :id="'status'+ item.step" name=""> {{item.value}}</label>
-        </div>
+        <tr v-for="item in this.$data.inStatus" v-if="!item.disabled">
+          <th><input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]"/></th>
+          <th><label class="form-check-label" :id="'status'+ item.step" name=""> {{item.value}}</label></th>
+        </tr>
       </div>
 
       <!-- Step step out -->
@@ -96,6 +97,7 @@
         <b-button variant="danger" @click="exitModal()">Quitter</b-button>
       </div>
     </modal>
+    </div>
   </div>
 </template>
 
@@ -309,13 +311,13 @@ export default {
 
 <style>
 .vm--modal {
-  padding: 10px 25px !important;
+  padding: 10px 30px !important;
 }
 
-.row {
-  margin-right:100px !important;
-  margin-left: 30px !important;
-}
+/*.row {*/
+/*  margin-right:100px !important;*/
+/*  margin-left: 30px !important;*/
+/*}*/
 
 .select {
   max-width: 300px !important;

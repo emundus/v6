@@ -209,14 +209,6 @@ export default {
         else {}
       })
     },
-
-    // setItemLabel: function() {
-    //   var _itemLabel = $(" #step_label " + element.id).text();
-    //   axios({
-    //
-    //   })
-    // }
-
   },
   created() {
     this.getAllFormType();
