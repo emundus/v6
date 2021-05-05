@@ -755,10 +755,10 @@ class EmundusonboardModelform extends JModelList {
                 null
             );
 
-            if ($lastprofile->id == '999' || $lastprofile->id == '1000') {
-                array_unshift($columns , 'id');
-                array_unshift($values , 1001);
-            }
+//            if ($lastprofile->id == '999' || $lastprofile->id == '1000') {
+//                array_unshift($columns , 'id');
+//                array_unshift($values , 1001);
+//            }
             $query->clear()
                 ->insert($db->quoteName('#__emundus_setup_profiles'))
                 ->columns($db->quoteName($columns))
