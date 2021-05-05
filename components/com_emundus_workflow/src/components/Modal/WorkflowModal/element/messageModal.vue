@@ -10,16 +10,6 @@
       </div>
     </div>
 
-<!--    <div class="row mb-3">-->
-<!--      <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.input_status_title }}</label>-->
-<!--      <div class="col-xs-8">-->
-<!--        <select v-model="form.inputStatus" class="form-control-select">-->
-<!--          <b-form-select-option selected disabled>&#45;&#45;Statut&#45;&#45;</b-form-select-option>-->
-<!--          <option v-for="statu in this.$data.status" :value="statu.id"> {{ statu.value }}</option>-->
-<!--        </select>-->
-<!--      </div>-->
-<!--    </div>-->
-
     <div class="row mb-3">
       <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.destination_title }}</label>
       <div class="col-xs-8">
@@ -49,6 +39,7 @@ export default {
 
   props: {
     element: Object,
+    stepParams: Object,
   },
 
   data: function() {
@@ -76,9 +67,10 @@ export default {
 
   created() {
     this.getAllMessages();
-    this.getAllStatus();
     this.getAllDestinations();
     this.form = this.element;
+    this.form.emailSelected = this.$props.stepParams.email;
+    this.form.destinationSelected = this.$props.stepParams.destination;
   },
 
   methods: {
@@ -86,16 +78,6 @@ export default {
       axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallmessages')
           .then(response => {
             this.$data.emails = response.data.data;
-          })
-          .catch(error => {
-            console.log(error);
-          })
-    },
-
-    getAllStatus: function() {
-      axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus')
-          .then(response => {
-            this.$data.status = response.data.data;
           })
           .catch(error => {
             console.log(error);

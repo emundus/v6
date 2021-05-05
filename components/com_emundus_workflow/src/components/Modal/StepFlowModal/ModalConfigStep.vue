@@ -95,13 +95,13 @@
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.messageTitle }}</label>
         <tr>
-          <th><input type="checkbox" @click="showMessage=!showMessage"/>Oui</th>
+          <th><input type="checkbox" checked="true" @click="showMessage=!showMessage"/>Oui</th>
         </tr>
       </div>
 
-      <message-modal :element="form" v-if="showMessage"/>
+      <message-modal :element="form" :stepParams="stepParams" v-if="showMessage==true"/>
 
-      <div class="row mb-3" v-if="!showMessage"/>
+      <div class="row mb-3" v-if="showMessage==false"/>
 
       <div class="row mb-3">
         <b-button variant="success" @click="updateParams()">Sauvegarder</b-button>
@@ -142,6 +142,7 @@ export default {
 
   data: function() {
     return {
+      stepParams: Object,
       title: {
         label: "Nom de l'etape",
         inputStatusTitle: "Statut d'entre",
@@ -210,6 +211,12 @@ export default {
         });
 
         this.stepLabel = response.data.data.stepLabel;
+
+        this.stepParams = response.data.data.message;
+
+        if(response.data.data.message !== null || response.data.data.message !== undefined) {
+          this.showMessage = true;
+        }
       })
     },
 

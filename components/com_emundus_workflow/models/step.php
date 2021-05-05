@@ -256,7 +256,7 @@ class EmundusworkflowModelstep extends JModelList {
                 $_rawCurrentParams = $this->db->loadObject();       //get current params (raw info)
 
                 //// parse this raw info into array
-                $_exportArray = array('inputStatus' => array(), 'outputStatus' => array(), 'startDate' => array(), 'endDate' => array(), 'notes' => array(), 'stepLabel' => array(), 'ordering' => array());
+                $_exportArray = array();
 
                 $_exportArray['inputStatus'] = json_decode($_rawCurrentParams->params)->inputStatus;
                 $_exportArray['outputStatus'] = json_decode($_rawCurrentParams->params)->outputStatus;
@@ -271,6 +271,15 @@ class EmundusworkflowModelstep extends JModelList {
 
                 $_exportArray['inputStatusNames'] = ($this->getListStatusNameFromStep($_exportArray['inputStatus']));
                 $_exportArray['outputStatusNames'] = ($this->getListStatusNameFromStep($_exportArray['outputStatus']));
+
+                /// if message params exist --> grab them
+                if(!is_null(json_decode($_rawCurrentParams->params)->emailSelected) and !is_null(json_decode($_rawCurrentParams->params)->destinationSelected)
+                    and !empty(json_decode($_rawCurrentParams->params)->emailSelected) and !empty(json_decode($_rawCurrentParams->params)->destinationSelected)) {
+                    $_exportArray['message']['email'] = json_decode($_rawCurrentParams->params)->emailSelected;
+                    $_exportArray['message']['destination'] = json_decode($_rawCurrentParams->params)->destinationSelected;
+                }
+
+                else {}
 
                 return $_exportArray;
             }
