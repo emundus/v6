@@ -445,8 +445,6 @@ class EmundusControllerWebhook extends JControllerLegacy {
             return false;
         }
 
-        $query = $db->getQuery(true);
-
 		$query = $db->getQuery(true);
 
         $query->select('filename')
@@ -460,6 +458,8 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		catch (Exception $e){
 			JLog::add('An error occurring in sql request: '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
 		}
+
+        $query = $db->getQuery(true);
 
 		$query->select('COUNT(*) as nb_requete, is_downloaded')
             ->from($db->quoteName('#__emundus_files_request'))
