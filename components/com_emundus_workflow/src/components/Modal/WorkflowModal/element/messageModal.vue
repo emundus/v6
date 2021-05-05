@@ -3,8 +3,7 @@
     <div class="row mb-3">
       <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.email_model_title }}</label>
       <div class="col-xs-8">
-        <select v-model="form.emailSelected" class="form-control" id="email-selected">
-          <b-form-select-option selected disabled>--Message--</b-form-select-option>
+        <select v-model="form.emailSelected" class="form-control" id="email-selected" :disabled="isDisable">
           <option v-for = "model in this.$data.emails" :value="model.id"> {{ model.lbl }}</option>
         </select>
       </div>
@@ -13,8 +12,7 @@
     <div class="row mb-3">
       <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.destination_title }}</label>
       <div class="col-xs-8">
-        <select v-model="form.destinationSelected" class="form-control-select" id="destination-selected">
-          <b-form-select-option selected disabled>--Destination--</b-form-select-option>
+        <select v-model="form.destinationSelected" class="form-control-select" id="destination-selected" :disabled="isDisable">
           <option v-for="destination in this.$data.destination" :value="destination.id"> {{ destination.label }}</option>
         </select>
       </div>
@@ -23,7 +21,7 @@
     <div class="row mb-3">
       <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.notes_title }}</label>
       <div class="col-xs-8">
-        <textarea v-model="form.messagenotes" placeholder="Supplementaires informations" style="margin: -3px; width: 95%"/>
+        <textarea v-model="form.messageNotes" placeholder="Supplementaires informations" style="margin: -3px; width: 95%"/>
       </div>
     </div>
 
@@ -40,6 +38,7 @@ export default {
   props: {
     element: Object,
     stepParams: Object,
+    activateParams: Boolean,
   },
 
   data: function() {
@@ -55,17 +54,24 @@ export default {
         emailSelected: '',
         inputStatus: '',
         destinationSelected: '',
-        messagenotes: '',
+        messageNotes: '',
         color: "#0f4c81",
       },
 
       emails: [],
       status: [],
       destination: [],
+      isDisable: true,
     }
   },
 
   created() {
+
+    if(this.$props.activateParams === undefined) {
+      this.isDisable = true;
+    } else {
+      this.isDisable = false;
+    }
     this.getAllMessages();
     this.getAllDestinations();
     this.form = this.element;

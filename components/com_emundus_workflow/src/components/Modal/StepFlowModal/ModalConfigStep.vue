@@ -99,7 +99,7 @@
         </tr>
       </div>
 
-      <message-modal :element="form" :stepParams="stepParams" v-if="showMessage==true"/>
+      <message-modal :element="form" :stepParams="stepParams" :activateParams="showMessage" v-if="showMessage==true"/>
 
       <div class="row mb-3" v-if="showMessage==false"/>
 
