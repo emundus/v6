@@ -69,8 +69,10 @@ export default {
     this.getAllMessages();
     this.getAllDestinations();
     this.form = this.element;
-    this.form.emailSelected = this.$props.stepParams.email;
-    this.form.destinationSelected = this.$props.stepParams.destination;
+    if(this.$props.stepParams !== undefined) {
+      this.form.emailSelected = this.$props.stepParams.email;
+      this.form.destinationSelected = this.$props.stepParams.destination;
+    }
   },
 
   methods: {

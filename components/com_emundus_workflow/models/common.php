@@ -9,37 +9,32 @@ JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_workflow/mode
 class EmundusworkflowModelcommon extends JModelList {
     var $db = null;
     var $query = null;
-    var $session = null;
-    var $aid = null;
 
     public function __construct($config = array()) {
         parent::__construct($config);
         $this->db = JFactory::getDbo();
         $this->query = $this->db->getQuery(true);
-
-        $this->session = JFactory::getSession();
-        $this->aid = $this->session->get('emundusUser');
     }
 
-    //get all published forms --> use table [ jos_emundus_setup_profiles ] && published == 1
-    public function getAllFormsPublished() {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $query->clear()
-                ->select('*')
-                ->from($db->quoteName('#__emundus_setup_profiles'))
-                ->where($db->quoteName('#__emundus_setup_profiles.published = 1'));
-
-            $db->setQuery($query);
-
-            return $db->loadObjectList();
-        }
-        catch(Exception $e) {
-            return $e->getMessage();
-        }
-    }
+//    //get all published forms --> use table [ jos_emundus_setup_profiles ] && published == 1
+//    public function getAllFormsPublished() {
+//        $db = JFactory::getDbo();
+//        $query = $db->getQuery(true);
+//
+//        try {
+//            $query->clear()
+//                ->select('*')
+//                ->from($db->quoteName('#__emundus_setup_profiles'))
+//                ->where($db->quoteName('#__emundus_setup_profiles.published = 1'));
+//
+//            $db->setQuery($query);
+//
+//            return $db->loadObjectList();
+//        }
+//        catch(Exception $e) {
+//            return $e->getMessage();
+//        }
+//    }
 
 
     //get all status --> use table [ jos_emundus_setup_status ]
@@ -62,16 +57,28 @@ class EmundusworkflowModelcommon extends JModelList {
 
     //get all associated group --> use table [ jos_emundus_setup_groups ]
     public function getAllAssociatedGroup() {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
         try {
-            $query->clear()
+            $this->query->clear()
                 ->select('*')
-                ->from($db->quoteName('#__emundus_setup_groups'));
+                ->from($this->db->quoteName('#__emundus_setup_groups'));
 
-            $db->setQuery($query);
-            return $db->loadObjectList();
+            $this->db->setQuery($this->query);
+            return $this->db->loadObjectList();
+        }
+        catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    //get destination by id
+    public function getDestinationById($did) {
+        try {
+            $this->query->clear()
+                ->select('#__emundus_setup_groups.*')
+                ->from($this->db->quoteName('#__emundus_setup_groups'))
+                ->where($this->db->quoteName('#__emundus_setup_groups.id') . '=' . (int)$did);
+            $this->db->setQuery($this->query);
+            return $this->db->loadObject();
         }
         catch(Exception $e) {
             return $e->getMessage();

@@ -5,12 +5,15 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_workflow/models');
+JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_onboard/models');
 
 class EmundusworkflowModelstep extends JModelList {
     //// constructor
     var $db = null;
     var $query = null;
     var $workflow_model = null;
+    var $common_model = null;
+    var $email_model = null;        // reuse the com_emundus_onboard/models/email.php
 
     public function __construct($config = array()) {
         parent::__construct($config);
@@ -19,6 +22,8 @@ class EmundusworkflowModelstep extends JModelList {
         $this->query = $this->db->getQuery(true);
 
         $this->workflow_model = JModelLegacy::getInstance('workflow', 'EmundusworkflowModel');          /// get workflow_model
+        $this->common_model = JModelLegacy::getInstance('common', 'EmundusworkflowModel');              /// get common_model
+        $this->email_model = JModelLegacy::getInstance('email', 'EmundusonboardModel');                 /// get email_model
     }
 
     //// get all steps of workflow --> params ==> wid
@@ -277,6 +282,9 @@ class EmundusworkflowModelstep extends JModelList {
                     and !empty(json_decode($_rawCurrentParams->params)->emailSelected) and !empty(json_decode($_rawCurrentParams->params)->destinationSelected)) {
                     $_exportArray['message']['email'] = json_decode($_rawCurrentParams->params)->emailSelected;
                     $_exportArray['message']['destination'] = json_decode($_rawCurrentParams->params)->destinationSelected;
+
+                    $_exportArray['message']['emailLabel'] = ($this->email_model->getEmailById($_exportArray['message']['email']))->lbl;
+                    $_exportArray['message']['destinationLabel'] = ($this->common_model->getDestinationById($_exportArray['message']['destination']))->label;
                 }
 
                 else {}

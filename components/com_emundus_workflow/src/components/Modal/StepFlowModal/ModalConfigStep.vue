@@ -95,7 +95,7 @@
       <div class="row mb-3">
         <label class="col-sm-6 col-form-label">{{ this.title.messageTitle }}</label>
         <tr>
-          <th><input type="checkbox" checked="true" @click="showMessage=!showMessage"/>Oui</th>
+          <th><input type="checkbox" @click="showMessage=!showMessage">Oui</th>
         </tr>
       </div>
 
@@ -216,6 +216,8 @@ export default {
 
         if(response.data.data.message !== null || response.data.data.message !== undefined) {
           this.showMessage = true;
+        } else {
+          this.showMessage = false;
         }
       })
     },

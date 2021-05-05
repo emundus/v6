@@ -32,17 +32,7 @@
         <b-button @click="configStep(column.id)" variant="warning">Configurer</b-button>
         <b-button @click="deleteStep(column.id)" variant="danger" style="margin-left: 20px">(-)</b-button>
       </div>
-      <workflow-space v-for="column in columns" v-if="currentStep == column.id && hideWorkflow == false" :step="column" @returnBack="returnToStepFlow"
-                      :draggable="false"
-                      ondragstart="return false;"
-                      ondragend="return false;"
-                      ondragenter="return false;"
-                      ondragexit="return false;"
-                      ondragover="return false;"
-                      ondragleave="return false;"
-                      ondrag="return false;"
-                      ondrop="return false;"
-      />
+      <workflow-space v-for="column in columns" v-if="currentStep == column.id && hideWorkflow == false" :step="column" @returnBack="returnToStepFlow"/>
     </draggable>
     <!--  </div>-->
   </div>
@@ -261,6 +251,14 @@ export default {
             this.columns[_index]['startDate'] = answer.data.data.startDate;
             this.columns[_index]['endDate'] = answer.data.data.endDate;
             this.columns[_index]['order'] = answer.data.data.ordering;
+
+            if(answer.data.data.message === undefined) {
+              this.columns[_index]['emailTemplate'] = "";
+              this.columns[_index]['destination'] = "";
+            } else {
+              this.columns[_index]['emailTemplate'] = answer.data.data.message.emailLabel;
+              this.columns[_index]['destination'] = answer.data.data.message.destinationLabel;
+            }
             this.$forceUpdate();
           })
         })
@@ -269,7 +267,6 @@ export default {
 
     configStep: function (id) {
       this.$modal.show("stepModal" + id);
-      // document.getElementById("stepModal" + id).setAttribute('draggable',false);
     },
 
     getWorkflowFromURL: function () {
