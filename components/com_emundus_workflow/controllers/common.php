@@ -79,7 +79,7 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
         }
 
         else {
-            $_receivers = $this->_common_model->getAllAssociatedGroup();
+            $_receivers = $this->_common_model->getAllDestinations();
 
             if (count($_receivers) > 0) {
                 $tab = array('status' => 1, 'msg' => JText::_("GET_DESTINATIONS_SUCCESSFULLY"), 'data' => $_receivers);
