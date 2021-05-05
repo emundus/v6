@@ -24,6 +24,8 @@
         <div style="color:blue"> {{ column.startDate }}</div>
         <div style="color:orange"> {{ column.endDate }}</div>
         <div style="color:forestgreen"> {{ column.order }} </div>
+        <div style="color:lightseagreen"> {{ column.emailTemplate }} </div>
+        <div style="color:midnightblue"> {{ column.destination }} </div>
         <modal-config-step :ID="column.id" :element="column" @updateStep="updateStep" @deleteStep="deleteStep(column.id)"/>
         <!--        <div>{{ column.stateIn }}</div>-->
         <!--        <div>{{ column.stateOut }}</div>-->
@@ -149,6 +151,8 @@ export default {
       this.columns[_index]['title'] = result['label'];
       this.columns[_index]['startDate'] = result['startDate'];
       this.columns[_index]['endDate'] = result['endDate'];
+      this.columns[_index]['emailTemplate'] = result['email'];
+      this.columns[_index]['destination'] = result['destination'];
       this.$forceUpdate();
 
       //// forceupdate --> call api to update status in database --> checkin if status (after) and status (before) are the same --> do nothing /// otherwise, call to axios

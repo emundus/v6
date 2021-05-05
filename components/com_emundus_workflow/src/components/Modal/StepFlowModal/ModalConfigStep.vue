@@ -328,6 +328,15 @@ export default {
       _emit['id'] = this.form.id;
 
       _emit['label'] = $("#step_label").val();      // pass label to parent component (stepflow)
+
+      if( $( "#email-selected option:selected" ).text() !== "" || $( "#email-selected option:selected" ).text() !== undefined || $( "#email-selected option:selected" ).text() !== null) {
+        _emit['email'] = $( "#email-selected option:selected" ).text();
+      }
+
+      if( $( "#destination-selected option:selected" ).text() !== "" || $( "#destination-selected option:selected" ).text() !== undefined || $( "#destination-selected option:selected" ).text() !== null) {
+        _emit['destination'] = $( "#destination-selected option:selected" ).text();
+      }
+
       this.$emit('updateStep', _emit);
     }
   },
