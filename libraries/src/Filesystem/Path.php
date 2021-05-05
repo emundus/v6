@@ -350,7 +350,7 @@ class Path
 	 *
 	 * @return  string  The resolved path
 	 *
-	 * @since   3.9.25
+	 * @since   1.6.0
 	 */
 	public static function resolve($path)
 	{

@@ -2000,10 +2000,6 @@ class EmundusModelUsers extends JModelList {
 
 		$config = JFactory::getConfig();
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-
-        $m_emails = new EmundusModelEmails();
-
 		// Load the com_users language tags in order to call the Joomla user JText.
 		$language =& JFactory::getLanguage();
 		$extension = 'com_users';
@@ -2090,10 +2086,10 @@ class EmundusModelUsers extends JModelList {
 		$mode = $config->get('force_ssl', 0) == 2 ? 1 : (-1);
 		$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token;
 
-        $mailer = JFactory::getMailer();
-
 		// Put together the email template data.
 		$data = $user->getProperties();
+		$data['fromname'] = $config->get('fromname');
+		$data['mailfrom'] = $config->get('mailfrom');
 		$data['sitename'] = $config->get('sitename');
 		$data['link_text'] = JRoute::_($link, false, $mode);
 		$data['link_html'] = '<a href='.JRoute::_($link, true, $mode).'> '.JRoute::_($link, true, $mode).'</a>';
@@ -2103,21 +2099,12 @@ class EmundusModelUsers extends JModelList {
 		$subject = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $data['sitename']);
 		$body = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_BODY', $data['sitename'], $data['token'], $data['link_html']);
 
-        $post = [
-            'USER_NAME' => $user->name,
-            'SITE_URL' => JURI::base(),
-            'USER_EMAIL' => $user->email
-        ];
-
-        $tags = $m_emails->setTags($user->id, $post);
-
-        $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
-
 		// Get and apply the template.
 		$query->clear()
 			->select($db->quoteName('Template'))
 			->from($db->quoteName('#__emundus_email_templates'))
 			->where($db->quoteName('id').' = 1');
+
 		$db->setQuery($query);
 
 		try {
@@ -2129,24 +2116,9 @@ class EmundusModelUsers extends JModelList {
 		}
 
         $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/", "/\[SITE_NAME\]/"], [$subject, $body, $data['sitename']], $template);
-        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
-
-        // Set sender
-        $sender = [
-            $config->get('mailfrom'),
-            $config->get('fromname')
-        ];
-
-        $mailer->setSender($sender);
-        $mailer->addReplyTo($config->get('mailfrom'), $config->get('fromname'));
-        $mailer->addRecipient($user->email);
-        $mailer->setSubject($subject);
-        $mailer->isHTML(true);
-        $mailer->Encoding = 'base64';
-        $mailer->setBody($body);
 
 		// Send the password reset request email.
-		$send = $mailer->Send();
+		$send = JFactory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $user->email, $subject, $body, true);
 
 		// Check for an error.
 		if ($send !== true) {

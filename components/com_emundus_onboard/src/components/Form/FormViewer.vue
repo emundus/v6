@@ -5,14 +5,9 @@
             :class="object_json.show_page_heading.class"
             v-html="object_json.show_page_heading.page_heading"
     />
-    <div class="d-flex justify-content-between">
-      <h2 v-if="object_json.show_title" class="page_header" v-html="object_json.show_title.value" />
-      <a @click="formbuilder" class="cta-block pointer">
-        <em class="fas fa-pen"></em>
-      </a>
-    </div>
+    <h2 v-if="object_json.show_title" class="page_header" v-html="object_json.show_title.value" />
 
-    <p v-if="object_json.intro_value" class="introP" style="margin-top: 2em" v-html="object_json.intro_value" />
+    <p v-if="object_json.intro_value" class="introP" v-html="object_json.intro_value" />
 
     <form method="post" object_json.attribs class="form-page">
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>
@@ -56,7 +51,7 @@
       <div v-if="object_json.pluginbottom" v-html="object_json.pluginbottom"></div>
     </form>
     <div class="loading-form" v-if="submitted">
-      <Ring-Loader :color="'#12DB42'" />
+      <Ring-Loader :color="'#de6339'" />
     </div>
   </div>
 </template>
@@ -88,10 +83,6 @@
       };
     },
     methods: {
-      formbuilder() {
-        this.$emit("editPage");
-      },
-
       getDataObject: _.debounce(function() {
         this.submitted = true;
         let ellink = this.link.link.replace("fabrik","emundus_onboard");

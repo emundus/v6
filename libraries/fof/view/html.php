@@ -135,7 +135,7 @@ class FOFViewHtml extends FOFViewRaw
 
 		// Set the document title
 		$title = $params->get('page_title', '');
-		$sitename = $app->get('sitename');
+		$sitename = $app->getCfg('sitename');
 
 		if ($title == $sitename)
 		{
@@ -146,13 +146,13 @@ class FOFViewHtml extends FOFViewRaw
 		{
 			$title = $sitename;
 		}
-		elseif ($app->get('sitename_pagetitles', 0) == 1)
+		elseif ($app->getCfg('sitename_pagetitles', 0) == 1)
 		{
-			$title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+			$title = JText::sprintf('JPAGETITLE', $app->getCfg('sitename'), $title);
 		}
-		elseif ($app->get('sitename_pagetitles', 0) == 2)
+		elseif ($app->getCfg('sitename_pagetitles', 0) == 2)
 		{
-			$title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+			$title = JText::sprintf('JPAGETITLE', $title, $app->getCfg('sitename'));
 		}
 
 		$document->setTitle($title);

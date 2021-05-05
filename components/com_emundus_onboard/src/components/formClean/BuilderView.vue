@@ -7,10 +7,10 @@
       :class="object_json.show_page_heading.class"
       v-html="object_json.show_page_heading.page_heading"
     />
-    <div class="d-flex header-form-page mb-1" v-if="eval == 0 && !updatePage">
-      <h2 v-if="object_json.show_title" class="page_header mr-1" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
-      <span @click="$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="Edit" class="cta-block pointer" style="font-size: 16px">
-        <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
+    <div class="d-flex" v-if="eval == 0 && !updatePage">
+      <h2 v-if="object_json.show_title" class="page_header" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
+      <span @click="$modal.show('modalSide' + object.rgt)" :title="Edit">
+        <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
       </span>
     </div>
     <div style="width: max-content;margin-left: 20px" v-show="updatePage && indexPage == object_json.id">
@@ -29,7 +29,6 @@
     <p v-if="eval == 0 && !updateIntroPage" class="introP" v-html="object_json.intro_value" @click="enableUpdatingPageIntro(object_json)" />
     <div style="width: max-content;margin-left: 20px" v-show="updateIntroPage && indexPage == object_json.id">
       <div class="input-can-translate" style="margin-top: 10px">
-<!--        <editor :height="'10em'" :text="object_json.intro['fr']" :lang="actualLanguage" :enable_variables="false" :id="'editor_fr'" v-model="object_json.intro['fr']" style="max-height: 180px;max-width: 50vw;"></editor>-->
         <textarea v-if="object_json.intro" v-model="object_json.intro[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.intro_page ? '' : 'mb-1'" :id="'update_intro_' + object_json.id"/>
         <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.intro_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPageIntro(object_json.id)"></button>
         <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.intro_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
@@ -41,7 +40,7 @@
       <translation v-if="object_json.intro"  :label="object_json.intro" :actualLanguage="actualLanguage" v-if="translate.intro_page"></translation>
     </div>
 
-    <form method="post" v-on:submit.prevent object_json.attribs class="form-page" :id="'form_' + object_json.id" :style="eval == 1 ? 'margin-top: 30px' : ''">
+    <form method="post" v-on:submit.prevent object_json.attribs class="form-page">
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>
       <draggable
               handle=".handle"
@@ -64,21 +63,21 @@
                     class="legend ViewerLegend">
                     {{group.group_showLegend}}
                   </legend>
-                  <a @click="enableUpdatingGroup(group)" style="margin-left: 1em;font-size: 16px" :title="Edit" class="cta-block pointer">
-                    <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
+                  <a @click="enableUpdatingGroup(group)" style="margin-left: 1em" :title="Edit">
+                    <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
                   </a>
-                  <a :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px pointer" :title="RepeatedGroup" @click="enableRepatedGroup(group)">
+                  <a v-if="group.repeat_group" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px pointer" :title="RepeatedGroup" @click="enableRepatedGroup(group)">
                     <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
                   </a>
                 </div>
-<!--                <div>
+                <div>
                   <div v-show="!openGroup[group.group_id]">
                     <em class="fas fa-chevron-right"></em>
                   </div>
                   <div v-show="openGroup[group.group_id]">
                     <em class="fas fa-chevron-down"></em>
                   </div>
-                </div>-->
+                </div>
               </div>
               <div style="width: max-content" v-show="updateGroup && indexGroup == group.group_id">
                 <div class="input-can-translate">
@@ -100,10 +99,6 @@
               </div>
               <div v-if="group.group_intro" class="groupintro">{{group.group_intro}}</div>
 
-              <template v-if="typeof group.elts !== 'undefined'">
-                <div v-if="group.elts.length == 0" class="no-elements-tip">{{ NoElementsTips }}</div>
-              </template>
-
               <div class="elements-block" v-show="openGroup[group.group_id]">
                 <draggable
                         handle=".handle"
@@ -118,7 +113,8 @@
                        v-show="element.hidden === false"
                        @mouseover="enableActionBar(element.id)"
                        @mouseleave="disableActionBar()"
-                       class="builder-item-element">
+                       class="builder-item-element"
+                       :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id}">
                     <modalEditElement
                             :ID="element.id"
                             :gid="element.group_id"
@@ -126,10 +122,6 @@
                             :manyLanguages="manyLanguages"
                             :actualLanguage="actualLanguage"
                             @reloadElement="reloadElement(element)"
-                            @publishUnpublishEvent="publishUnpublishEvent(element)"
-                            @updateRequireEvent="updateRequireEvent(element)"
-                            @modalClosed="$emit('modalClosed')"
-                            @show="show"
                             :id="element.id"
                             :key="keyElements['element' + element.id]"
                     />
@@ -140,15 +132,17 @@
                             :id="element.id"
                             :prid="prid"
                             @reloadElement="reloadElement(element)"
-                            @modalClosed="$emit('modalClosed')"
                             :key="keyElements['element' + element.id]"
                     />
-                    <div class="d-flex builder-item-element__properties handle" :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id}">
+                    <div class="d-flex builder-item-element__properties">
+                      <span :class="element.publish ? 'icon-handle' : 'icon-handle-unpublished'" v-show="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel">
+                        <em class="fas fa-grip-vertical handle"></em>
+                      </span>
                       <div class="w-100">
-                        <div class="d-flex" style="align-items: baseline" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''">
-                          <span v-if="element.label_value" @click="enableLabelInput(element.id)" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
-                          <a @click="enableLabelInput(element.id)" :style="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel ? 'opacity: 1' : 'opacity: 0'" :title="Edit" class="cta-block pointer" style="font-size: 16px">
-                            <em class="fas fa-pen ml-10px" data-toggle="tooltip" data-placement="top"></em>
+                        <div class="d-flex" style="align-items: baseline">
+                          <span v-if="element.label_value" @click="enableLabelInput(element.id)" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
+                          <a @click="enableLabelInput(element.id)" :style="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel ? 'opacity: 1' : 'opacity: 0'" :title="Edit">
+                            <em class="fas fa-pencil-alt ml-10px" data-toggle="tooltip" data-placement="top"></em>
                           </a>
                         </div>
                         <div class="input-can-translate" v-show="clickUpdatingLabel && indexHighlight == element.id">
@@ -176,28 +170,32 @@
                         </span>
                         <span v-if="element.tipBelow" v-html="element.tipBelow"></span>
                       </div>
-                      <div class="actions-item-bar" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
-                        <a class="d-flex mr-2 mb-1" v-if="element.plugin != 'calc'" @click="openParameters(element)" :title="Settings">
-                          <em class="fas fa-cog settings-elt"></em>
-                        </a>
-                        <!--                      <a class="d-flex mr-2" v-if="element.plugin != 'calc'" @click="openDuplicate(element)">
-                                                <em class="fas fa-copy"></em>
-                                                <span class="ml-10px">{{Duplicate}}</span>
-                                              </a>-->
-                        <a class="d-flex mr-2" style="color: red" @click="deleteElement(element,index)" v-if="files == 0" :title="Delete">
-                          <em class="fas fa-trash-alt delete-icon-elt"></em>
-                        </a>
-                        <a class="d-flex mr-2 mt-1" target="_blank" :href="'/administrator/index.php?option=com_fabrik&view=element&layout=edit&id=' + element.id" v-if="sysaccess">
-                          <em class="fas fa-link settings-elt"></em>
-                        </a>
-                      </div>
-                      <a class="d-flex mr-2" v-if="element.plugin != 'display'" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
+                    </div>
+                    <div class="actions-item-bar d-flex" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
+                      <a class="d-flex mr-2 text-orange" @click="publishUnpublishElement(element)">
+                        <em :class="[element.publish ? 'fa-eye-slash' : 'fa-eye','far']" :id="'publish_icon_' + element.id"></em>
+                        <span class="ml-10px" v-if="element.publish">{{Unpublish}}</span>
+                        <span class="ml-10px" v-if="!element.publish">{{Publish}}</span>
+                      </a>
+                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'display'">
                         <div class="toggle">
                           <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement(element)"/>
                           <strong class="b switch"></strong>
                           <strong class="b track"></strong>
                         </div>
-                        <span class="ml-10px" style="color:black">{{Required}}</span>
+                        <span class="ml-10px">{{Required}}</span>
+                      </a>
+                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'calc'" @click="openParameters(element)">
+                        <em class="fas fa-cog"></em>
+                        <span class="ml-10px">{{Settings}}</span>
+                      </a>
+                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'calc'" @click="openDuplicate(element)">
+                        <em class="fas fa-copy"></em>
+                        <span class="ml-10px">{{Duplicate}}</span>
+                      </a>
+                      <a class="d-flex mr-2" style="color: black" @click="deleteElement(element,index)" v-if="files == 0">
+                        <em class="fas fa-trash-alt"></em>
+                        <span class="ml-10px">{{Delete}}</span>
                       </a>
                     </div>
                   </div>
@@ -228,7 +226,6 @@ const qs = require("qs");
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
 import Swal from "sweetalert2";
-import Editor from "../editor";
 
 export default {
   name: "BuilderViewer",
@@ -246,7 +243,6 @@ export default {
     manyLanguages: Number
   },
   components: {
-    Editor,
     datePicker,
     draggable,
     modalEditElement,
@@ -256,7 +252,6 @@ export default {
   data() {
     return {
       object_json: "",
-      sysaccess: false,
 
       // Page trigger
       updatePage: false,
@@ -310,7 +305,6 @@ export default {
       RepeatGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP"),
       RepeatedGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEATED_GROUP"),
       Duplicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_DUPLICATE"),
-      NoElementsTips: Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS"),
     };
   },
   methods: {
@@ -365,7 +359,7 @@ export default {
         axios({
           method: "post",
           url:
-              "index.php?option=com_emundus_onboard&controller=formbuilder&task=changerequire",
+                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=changerequire",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -373,53 +367,79 @@ export default {
             element: element
           })
         }).then(() => {
-          this.updateRequireEvent(element);
+          axios({
+            method: "get",
+            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+            params: {
+              element: element.id,
+              gid: element.group_id
+            },
+            paramsSerializer: params => {
+              return qs.stringify(params);
+            }
+          }).then(response => {
+            element.label_value = response.data.label_value;
+            this.$emit(
+                    "show",
+                    "foo-velocity",
+                    "success",
+                    this.updateSuccess,
+                    this.update
+            );
+          });
         }).catch(e => {
           this.$emit(
-              "show",
-              "foo-velocity",
-              "error",
-              this.updateFailed,
-              this.updating
+                  "show",
+                  "foo-velocity",
+                  "error",
+                  this.updateFailed,
+                  this.updating
           );
           console.log(e);
         });
       }, 300);
     },
 
-
-    updateRequireEvent(element) {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
-        params: {
-          element: element.id,
-          gid: element.group_id
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        element.label_value = response.data.label_value;
-        this.$emit(
-            "show",
-            "foo-velocity",
-            "success",
-            this.updateSuccess,
-            this.update
-        );
-      });
-    },
-
-    publishUnpublishEvent(element) {
-      element.publish = !element.publish;
-      if(element.publish){
-        document.getElementById('publish_icon_' + element.id).classList.remove('fa-eye');
-        document.getElementById('publish_icon_' + element.id).classList.add('fa-eye-slash');
-      } else {
-        document.getElementById('publish_icon_' + element.id).classList.add('fa-eye');
-        document.getElementById('publish_icon_' + element.id).classList.remove('fa-eye-slash');
+    publishUnpublishElement(element) {
+      if(this.clickUpdatingLabel) {
+        this.updateLabelElement(element);
       }
+      axios({
+        method: "post",
+        url:
+                "index.php?option=com_emundus_onboard&controller=formbuilder&task=publishunpublishelement",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          element: element.id,
+        })
+      }).then(response => {
+        element.publish = !element.publish;
+        if(element.publish){
+          document.getElementById('publish_icon_' + element.id).classList.remove('fa-eye');
+          document.getElementById('publish_icon_' + element.id).classList.add('fa-eye-slash');
+        } else {
+          document.getElementById('publish_icon_' + element.id).classList.add('fa-eye');
+          document.getElementById('publish_icon_' + element.id).classList.remove('fa-eye-slash');
+        }
+        this.$emit(
+                "show",
+                "foo-velocity",
+                "success",
+                this.updateSuccess,
+                this.update
+        );
+      }).catch(e => {
+        this.$emit(
+                "show",
+                "foo-velocity",
+                "error",
+                this.updateFailed,
+                this.updating
+        );
+        console.log(e);
+      });
     },
 
     deleteElement(element,index) {
@@ -469,7 +489,6 @@ export default {
       if(this.clickUpdatingLabel) {
         this.updateLabelElement(element);
       }
-      this.$emit('modalOpen')
       this.$modal.show('modalDuplicateElement' + element.id)
     },
 
@@ -478,7 +497,6 @@ export default {
         this.updateLabelElement(element);
       }
       this.repeat = false;
-      this.$emit('modalOpen')
       this.$modal.show('modalEditElement' + element.id)
     },
 
@@ -1128,25 +1146,9 @@ export default {
       });
     },
     //
-
-    getAccess(){
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=getAccess",
-      }).then(response => {
-        this.sysaccess = response.data.access;
-      });
-    },
-
-    show(group, type, text, title) {
-      this.$emit("show", group, type, text, title);
-    },
   },
   created() {
-    if(!_.isEmpty(this.object.object)) {
-      this.getDataObject();
-      this.getAccess();
-    }
+    this.getDataObject();
   },
   watch: {
     object: function() {
@@ -1167,7 +1169,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../../assets/css/variables";
+@import "../../assets/variables";
 
   .hidden {
     display: none;
@@ -1189,11 +1191,14 @@ export default {
   }
   .switch{
     width: 13px;
-    background-color: #12db42;
+    background-color: #de6339;
   }
   .check:checked ~ .switch{
     left: 15px;
     background-color: #fff;
+  }
+  .check:checked ~ .track{
+    box-shadow: inset 0 0 0 20px #de6339;
   }
   .dropdown-toggle-plugin{
     width: 30%;
@@ -1204,26 +1209,34 @@ export default {
     color: #cecece;
     position: absolute;
     cursor: grab;
-    left: auto;
-    right: 50px;
-    width: 100%;
-    height: 100%;
+    left: 4em;
+    margin-bottom: 0;
   }
   .icon-handle-group{
     color: #cecece;
     position: absolute;
     cursor: grab;
-    left: 15px;
+    left: 1em;
+    margin-bottom: 0;
   }
   .icon-handle-unpublished{
     color: #cecece;
     position: absolute;
     cursor: grab;
-    margin-bottom: 30px;
-    right: 50px;
+    left: 1em;
+    margin-bottom: 10px;
   }
   .hidden{
     display: none;
+  }
+  .active-repeat{
+    background: #de6339;
+    color: white !important;
+  }
+  .group-repeat-icon{
+    padding: 5px;
+    border-radius: 5px;
+    color: #1b1f3c;
   }
   .translate-icon-selected{
     top: -5px;

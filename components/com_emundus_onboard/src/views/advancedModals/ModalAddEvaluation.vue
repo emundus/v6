@@ -13,19 +13,17 @@
       @closed="beforeClose"
       @before-open="beforeOpen"
     >
-      <div class="fixed-header-modal">
+      <div class="modalC-content">
+        <div class="update-field-header">
           <div class="topright">
             <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddEvaluation')">
-              <em class="fas fa-times"></em>
+              <em class="fas fa-times-circle"></em>
             </button>
           </div>
-                        <div class="update-field-header">
           <h2 class="update-title-header">
              {{addGrid}}
           </h2>
-                        </div>
         </div>
-      <div class="modalC-content">
         <div class="form-group">
           <label>{{ChooseExistingGridModel}} :</label>
           <select v-model="model_id" class="dropdown-toggle">
@@ -81,18 +79,18 @@
           <label class="ml-10px">{{SaveAsTemplate}} :</label>
         </div>
       </div>
-      <div class="d-flex justify-content-between mb-1">
-                <button type="button"
-                        class="bouton-sauvergarder-et-continuer w-retour"
-                        @click.prevent="$modal.hide('modalAddEvaluation')"
-                >{{Retour}}</button>
+      <div class="col-md-12 mb-1">
         <button type="button"
                 class="bouton-sauvergarder-et-continuer"
                 @click.prevent="createGrid()"
         >{{ Continuer }}</button>
+        <button type="button"
+                class="bouton-sauvergarder-et-continuer w-retour"
+                @click.prevent="$modal.hide('modalAddEvaluation')"
+        >{{Retour}}</button>
       </div>
       <div class="loading-form" style="top: 10vh" v-if="submitted">
-        <Ring-Loader :color="'#12DB42'" />
+        <Ring-Loader :color="'#de6339'" />
       </div>
     </modal>
   </span>

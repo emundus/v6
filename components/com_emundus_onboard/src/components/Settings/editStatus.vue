@@ -1,13 +1,7 @@
 <template>
     <div class="container-evaluation">
-      <a @click="pushStatus" class="bouton-ajouter-green bouton-ajouter pointer mb-1" style="width: max-content">
-        <div class="add-button-div">
-          <em class="fas fa-plus mr-1"></em>
-          {{ addStatus }}
-        </div>
-      </a>
         <div v-for="(statu, index) in status" class="status-item" :id="'step_' + statu.step">
-            <div class="status-field">
+            <div :style="{background: statu.class}" class="status-field">
                 <div style="width: 100%">
                     <input type="text" v-model="statu.label[actualLanguage]">
                     <translation :label="statu.label" :actualLanguage="actualLanguage" v-if="statu.translate"></translation>
@@ -23,7 +17,7 @@
                         <input type="text" v-model="statu.value.en" v-if="statu.translate">
                     </transition>-->
                 </div>
-                <button class="translate-icon" v-if="manyLanguages !== '0'" v-bind:class="{'translate-icon-selected': statu.translate}" type="button" @click="statu.translate = !statu.translate; $forceUpdate()"></button>
+                <button class="translate-icon" style="height: 10%;margin-top: 10px;" v-if="manyLanguages !== '0'" v-bind:class="{'translate-icon-selected': statu.translate}" type="button" @click="statu.translate = !statu.translate; $forceUpdate()"></button>
                 <input type="hidden" :class="'label-' + statu.class">
             </div>
             <v-swatches
@@ -35,8 +29,9 @@
                     popover-x="left"
                     popover-y="top"
             ></v-swatches>
-          <button type="button" :title="Delete" v-if="statu.edit == 1 && statu.step != 0 && statu.step != 1" @click="removeStatus(statu,index)" class="remove-tag"><i class="fas fa-times"></i></button>
+          <button type="button" v-if="statu.step != 0 && statu.step != 1" @click="removeStatus(statu,index)" class="remove-tag"><i class="fas fa-trash"></i></button>
         </div>
+        <a @click="pushStatus" class="bouton-sauvergarder-et-continuer-3 create-tag">{{ addStatus }}</a>
     </div>
 </template>
 
@@ -72,7 +67,6 @@
                 ],
                 TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
                 addStatus: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_STATUS"),
-                Delete: Joomla.JText._("COM_EMUNDUS_ONBOARD_DELETE_STATUS"),
             };
         },
 
@@ -146,27 +140,26 @@
         }
     };
 </script>
-<style scoped>
+<style>
+    .status-item{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1em;
+    }
+    .status-field{
+        padding: 5px;
+        border-radius: 5px;
+        width: 100%;
+        margin-right: 1em;
+        display: flex;
+    }
     .translate-block{
         display: flex;
         margin: 10px;
         color: white
     }
     .translate-icon-selected{
-      margin-top: 10px;
-      height: max-content;
+      top: 0;
     }
-    .bouton-sauvergarder-et-continuer{
-      justify-content: center;
-        right: 10%;
-        margin-bottom: 14px;
-    }
-    .create-tag{
-      width: max-content;
-      margin-bottom: 20px;
-    }
-    .loading-form-save{
-      right: 21%;
-    }
-
 </style>

@@ -20,35 +20,35 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
 
 ?>
 <div class="ui attached segment">
-  <p><?= ($show_programme==1)?'<b>'.$user->campaign_name.'</b> '.@$renew:''; ?></p>
-  <?= ($show_deadline==1) ? '<p align="right">'.JText::_('MOD_EMUNDUSFLOW_DEADLINE').' : <b>'.$deadline->format(JText::_('DATE_FORMAT_LC2')).'</b> '.$offset.'</p>':''; ?>
+  <p><?php echo ($show_programme==1)?'<b>'.$user->campaign_name.'</b> '.@$renew:''; ?></p>
+  <?php echo ($show_deadline==1)?'<p align="right">'.JText::_('MOD_EMUNDUSFLOW_DEADLINE').' : <b>'.$deadline->format(JText::_('DATE_FORMAT_LC2')).'</b> '.$offset.'</p>':''; ?>
 </div>
 <div class="ui tablet stackable bottom attached steps">
-  <?php if($show_back_button == 1): ?>
+  <?php if($show_back_button == 1){ ?>
     <div class="step">
-        <a href="<?= $home_link; ?>" title="<?=  JText::_('RETURN'); ?>">
-            <i class="large arrow left outline icon"></i> <?=  JText::_('RETURN'); ?>
+        <a href="<?= $home_link; ?>" title="<?php echo  JText::_('RETURN'); ?>">
+            <i class="large arrow left outline icon"></i> <?php echo  JText::_('RETURN'); ?>
         </a>
     </div>
-   <?php endif; ?>
-<?php if ($show_form_step == 1 && $form_list): ?>
+   <?php } ?>
+<?php if($show_form_step == 1){ ?>
   <div class="<?php echo ($view=="form")?"active":""; ?> <?php echo $step_form; ?> step">
     <i class="large text file outline icon"></i>
     <div class="content">
       <div class="description"><?php echo JText::sprintf('FORM_FILLED', $forms); ?></div>
     </div>
   </div>
-<?php endif; ?>
-    <?php if ($show_document_step == 1 && $attachment_list): ?>
-  <div class="<?= ($view=="checklist")?"active":""; ?> <?= $step_attachment; ?> step">
+<?php } ?>
+    <?php if($show_document_step == 1){ ?>
+  <div class="<?php echo ($view=="checklist")?"active":""; ?> <?php echo $step_attachment; ?> step">
     <i class="large attach outline icon"></i>
     <div class="content">
-      <div class="description"><?= JText::sprintf('ATTACHMENT_SENT', $attachments); ?></div>
+      <div class="description"><?php echo JText::sprintf('ATTACHMENT_SENT', $attachments); ?></div>
     </div>
   </div>
-    <?php endif; ?>
-<?php if ($application_fee == 1): ?>
-  <div class="<?= ($option=="com_hikashop")?"active":""; ?> <?= $step_paiement; ?> step">
+    <?php } ?>
+<?php if ($application_fee == 1) { ?>
+  <div class="<?php echo ($option=="com_hikashop")?"active":""; ?> <?php echo $step_paiement; ?> step">
     <?php if ($paid == false && !empty($sentOrder) && !$orderCancelled): ?>
       <?php if ($sentOrder->order_payment_method == 'paybox') :?>
         <i class="large credit card alternative icon"></i>
@@ -80,7 +80,7 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
       </div>
     </div>
   </div>
-<?php endif; ?>
+<?php } ?>
 <?php if($show_status == 1){ ?>
   <div class="<?php echo $sent>0?'completed':''; ?> step">
     <i class="large time outline icon"></i>

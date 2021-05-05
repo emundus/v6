@@ -48,7 +48,7 @@ abstract class FeedParser
 	 * The InputFilter
 	 *
 	 * @var    InputFilter
-	 * @since  3.9.25
+	 * @since  __DEPLOY_VERSION__
 	 */
 	protected $inputFilter;
 

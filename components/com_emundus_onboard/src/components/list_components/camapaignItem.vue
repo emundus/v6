@@ -1,6 +1,6 @@
 <template class="campaign-item">
-  <div class="main-column-block">
-    <div class="column-block w-100">
+  <div class="main-column-block w-row max900">
+    <div class="column-block w-col w-col-11">
       <div class="block-dash" :class="isPublished ? '' : isFinish ? 'passee' : 'unpublishedBlock'">
         <div class="column-blocks w-row">
           <div class="column-inner-block w-col w-col-8 pl-30px">
@@ -10,13 +10,10 @@
                    v-on:click="selectItem(data.id)"
                    :class="{ active: isActive }">
                 </a>
-                <h2 class="nom-campagne-block">{{ data.label }}</h2>
-              </div>
-              <div :class="isPublished ? 'publishedTag' : isFinish ? 'passeeTag' : 'unpublishedTag'">
-                {{ isPublished ? publishedTag : isFinish ? passeeTag : unpublishedTag }}
+                <h1 class="nom-campagne-block white">{{ data.label }}</h1>
               </div>
             </div>
-            <div class="date-menu">
+            <div class="date-menu orange">
               {{
                 data.end_date != null && data.end_date != "0000-00-00 00:00:00" ? From : Since + " "
               }}
@@ -27,20 +24,12 @@
                   : ""
               }}
             </div>
-            <p class="description-block" v-html="data.short_description"></p>
-            <div class="stats-block">
-              <div class="nb-dossier" style="margin-left: 35px">
-                <div>{{ data.nb_files }} <span v-if="data.nb_files > 1">{{ Files }}</span><span v-else>{{ File }}</span></div>
-              </div>
-              <a
-                  @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + data.id + '&index=0')"
-                  class="cta-block pointer"
-                  :title="AdvancedSettings">
-                <em class="fas fa-pen"></em>
-              </a>
-            </div>
+            <p class="description-block white">{{ data.short_description }}</p>
           </div>
-          <!--<div class="column-inner-block-2 w-clearfix w-col w-col-4">
+          <div class="column-inner-block-2 w-clearfix w-col w-col-4">
+            <div :class="isPublished ? 'publishedTag' : isFinish ? 'passeeTag' : 'unpublishedTag'">
+              {{ isPublished ? publishedTag : isFinish ? passeeTag : unpublishedTag }}
+            </div>
             <div class="stats-block mb-1">
               <label class="mb-0">{{Program}} : </label>
               <a class="button-programme pointer"
@@ -49,9 +38,19 @@
                 {{ data.program_label }}
               </a>
             </div>
-
+            <div class="stats-block">
+              <label class="mb-0">{{FilesCount}} : </label>
+              <div class="nb-dossier">
+                <div>{{ data.nb_files }}</div>
+              </div>
+            </div>
             <div class="container-gerer-modifier-visualiser">
-
+              <a
+                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + data.id + '&index=0')"
+                 class="cta-block pointer"
+                 :title="AdvancedSettings">
+                <em class="fas fa-cog"></em>
+              </a>
               <a
                  @click="redirectJRoute('index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=' + data.id)"
                  class="cta-block ml-10px pointer"
@@ -59,7 +58,7 @@
                 <em class="fas fa-edit"></em>
               </a>
             </div>
-          </div>-->
+          </div>
         </div>
       </div>
     </div>
@@ -92,8 +91,7 @@ export default {
       Since: Joomla.JText._("COM_EMUNDUS_ONBOARD_SINCE"),
       AdvancedSettings: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADVANCED_SETTINGS"),
       Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOSSIERS_PROGRAM"),
-      Files: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES"),
-      File: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE")
+      FilesCount: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOSSIERS_COUNT")
     };
   },
 
@@ -140,14 +138,25 @@ export default {
 };
 </script>
 <style scoped>
+a.button-programme:hover {
+  color: white;
+  background: #de6339;
+  cursor: pointer;
+}
+
+div.nb-dossier div:hover {
+  cursor: default;
+}
+
+.nom-campagne-block {
+  width: 75%;
+}
   .w-row{
     margin-bottom: 0 !important;
   }
-  h2 {
-    color: #000;
-    font-size: 24px;
-    font-weight: 700;
+
+  .description-block{
+    max-height: 160px;
+    overflow: hidden;
   }
-
-
 </style>

@@ -98,7 +98,6 @@
     dfn: s,
     dir: s,
     div: s,
-    dialog: { attrs: { open: null } },
     dl: s,
     dt: s,
     em: s,
