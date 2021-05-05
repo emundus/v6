@@ -90,15 +90,15 @@ export default {
             console.log(error);
           })
     },
-    getAllStatus: function() {
-      axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus')
-          .then(response => {
-            this.$data.status = response.data.data;
-          })
-          .catch(error => {
-            console.log(error);
-          })
-    },
+    // getAllStatus: function() {
+    //   axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus')
+    //       .then(response => {
+    //         this.$data.status = response.data.data;
+    //       })
+    //       .catch(error => {
+    //         console.log(error);
+    //       })
+    // },
     getWorkflowIdFromURL: function () {
       return window.location.href.split('id=')[1];
     },
@@ -135,59 +135,59 @@ export default {
       })
     },
 
-    getAvailableInStatus: async function(data) {
-      var _rawA2 = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getavailableinputstatus', { params: { data : data }});
-      var _rawAll = await axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus');
+    // getAvailableInStatus: async function(data) {
+    //   var _rawA2 = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getavailableinputstatus', { params: { data : data }});
+    //   var _rawAll = await axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus');
+    //
+    //   var _a2 = _rawA2.data.data;
+    //   var _all = _rawAll.data.data;
+    //
+    //   let _idiff = _all.filter(({ step: id1 }) => !_a2.some(({ step: id2 }) => id2 === id1));
+    //   let _iintersect = _all.filter(item1 => _a2.some(item2 => item1.step === item2.step));
+    //
+    //   if(_idiff.length !== 0 && _iintersect.length !== 0) {
+    //     _idiff.forEach(elt => elt['disabled'] = true);
+    //     _iintersect.forEach(elt => elt['disabled'] = false);
+    //     var _merge1 = _idiff.concat(_iintersect);
+    //   }
+    //
+    //   else {
+    //     if(_idiff.length !== 0 && _iintersect.length == 0) {
+    //       _all.forEach(elt => elt['disabled'] = true);
+    //       var _merge1 = _all;
+    //     }
+    //     else {
+    //       _all.forEach(elt => elt['disabled'] = false);
+    //       var _merge1 = _all;
+    //     }
+    //   }
+    //
+    //   this.$data.inStatus = _merge1;
+    // },
 
-      var _a2 = _rawA2.data.data;
-      var _all = _rawAll.data.data;
-
-      let _idiff = _all.filter(({ step: id1 }) => !_a2.some(({ step: id2 }) => id2 === id1));
-      let _iintersect = _all.filter(item1 => _a2.some(item2 => item1.step === item2.step));
-
-      if(_idiff.length !== 0 && _iintersect.length !== 0) {
-        _idiff.forEach(elt => elt['disabled'] = true);
-        _iintersect.forEach(elt => elt['disabled'] = false);
-        var _merge1 = _idiff.concat(_iintersect);
-      }
-
-      else {
-        if(_idiff.length !== 0 && _iintersect.length == 0) {
-          _all.forEach(elt => elt['disabled'] = true);
-          var _merge1 = _all;
-        }
-        else {
-          _all.forEach(elt => elt['disabled'] = false);
-          var _merge1 = _all;
-        }
-      }
-
-      this.$data.inStatus = _merge1;
-    },
-
-    getAvailableOutStatus: async function(data) {
-      var _rawB2 = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getavailableoutputstatus', { params: { data : data }});
-      var _rawAll = await axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus');
-
-      var _b2 = _rawB2.data.data;
-      var _all = _rawAll.data.data;
-
-      let _odiff = _all.filter(({ step: id1 }) => !_b2.some(({ step: id2 }) => id2 === id1));
-      let _ointersect = _all.filter(item1 => _b2.some(item2 => item1.step === item2.step));
-
-      if(_odiff.length !== 0 && _ointersect.length !== 0) {
-        _odiff.forEach(elt => elt['disabled'] = true);
-        _ointersect.forEach(elt => elt['disabled'] = false);
-        var _merge2 = _odiff.concat(_ointersect);
-      }
-
-      else {
-        _all.forEach(elt => elt['disabled'] = false);
-        var _merge2 = _all;
-      }
-
-      this.$data.outStatus = _merge2;
-    },
+    // getAvailableOutStatus: async function(data) {
+    //   var _rawB2 = await axios.get('index.php?option=com_emundus_workflow&controller=item&task=getavailableoutputstatus', { params: { data : data }});
+    //   var _rawAll = await axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus');
+    //
+    //   var _b2 = _rawB2.data.data;
+    //   var _all = _rawAll.data.data;
+    //
+    //   let _odiff = _all.filter(({ step: id1 }) => !_b2.some(({ step: id2 }) => id2 === id1));
+    //   let _ointersect = _all.filter(item1 => _b2.some(item2 => item1.step === item2.step));
+    //
+    //   if(_odiff.length !== 0 && _ointersect.length !== 0) {
+    //     _odiff.forEach(elt => elt['disabled'] = true);
+    //     _ointersect.forEach(elt => elt['disabled'] = false);
+    //     var _merge2 = _odiff.concat(_ointersect);
+    //   }
+    //
+    //   else {
+    //     _all.forEach(elt => elt['disabled'] = false);
+    //     var _merge2 = _all;
+    //   }
+    //
+    //   this.$data.outStatus = _merge2;
+    // },
 
     getNonStatusParams: function(id) {
       axios({

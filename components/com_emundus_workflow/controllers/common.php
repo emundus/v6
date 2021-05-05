@@ -9,13 +9,8 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
     var $_common_model = null;
 
     var $_published_profile_model = null;
-    var $_published_profile = null;
-
     var $_status_model = null;
-    var $_status = null;
-
     var $_message_model = null;
-    var $_message = null;
 
     public function __construct($config = array()) {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
@@ -30,10 +25,6 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
         $this->_published_profile_model = JModelLegacy::getInstance('form', 'EmundusonboardModel');
         $this->_status_model = JModelLegacy::getInstance('settings', 'EmundusonboardModel');
         $this->_message_model = JModelLegacy::getInstance('email', 'EmundusonboardModel');
-
-        $this->_published_profile = $this->_published_profile_model->getAllFormsPublished();
-        $this->_status = $this->_status_model->getStatus();
-        $this->_message = $this->_message_model->getAllEmails(null,null,null,null,null);
     }
 
     // get all published forms
@@ -45,19 +36,19 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
         }
 
         else {
-            if ($this->_published_profile) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_PUBLISHED_PROFILE_SUCCESSFULLY"), 'data' => $this->_published_profile);
+            $_publishedForms = $this->_published_profile_model->getAllFormsPublished();
+            if ($_publishedForms) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_PUBLISHED_PROFILE_SUCCESSFULLY"), 'data' => $_publishedForms);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_("GET_PUBLISHED_PROFILE_FAILED"), 'data' => $this->_published_profile);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_PUBLISHED_PROFILE_FAILED"), 'data' => $_publishedForms);
             }
         }
         echo json_encode((object)$tab);
         exit;
     }
 
-    // get all status [BRICE]
-    public function getallstatusBrice() {
+    public function getallstatus() {
         $user = JFactory::getUser();
 
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -66,11 +57,12 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
         }
 
         else {
-            if (count($this->_status) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_STATUS_SUCCESSFULLY"), 'data' => $this->_status);
+            $_status = $this->_status_model->getStatus();
+            if (count($_status) > 0) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_STATUS_SUCCESSFULLY"), 'data' => $_status);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_("GET_ALL_STATUS_FAILED"), 'data' => $this->_status);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_ALL_STATUS_FAILED"), 'data' => $_status);
             }
         }
 
@@ -109,30 +101,12 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
         }
 
         else {
-            if (count($this->_message) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_MESSAGE_TEMPLATE_SUCCESSFULLY"), 'data' => $this->_message);
+            $_messages = $this->_message_model->getAllEmails(null,null,null,null,null);
+            if (count($_messages) > 0) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_MESSAGE_TEMPLATE_SUCCESSFULLY"), 'data' => $_messages);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_("GET_MESSAGE_TEMPLATE_FAILED"), 'data' => $this->_message);
-            }
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-
-    //get all status [DUY]
-    public function getallstatus() {
-        $user = JFactory::getUser();
-
-        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $_status = $this->_common_model->getAllStatus();
-
-            if (count($_status) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_STATUS_SUCCESSFULLY"), 'data' => $_status);
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_("GET_ALL_STATUS_FAILED"), 'data' => $_status);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_MESSAGE_TEMPLATE_FAILED"), 'data' => $_messages);
             }
         }
         echo json_encode((object)$tab);
