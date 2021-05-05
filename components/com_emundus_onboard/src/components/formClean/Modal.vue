@@ -57,6 +57,7 @@
           <radiobtnF v-if="plugin == 'radiobutton'" :element="element" @subOptions="subOptions"></radiobtnF>
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
           <displayF v-if="plugin =='display'" :element="element"></displayF>
+          <fileF v-if="plugin =='emundus_fileupload'" :element="element" :prid="profileId"></fileF>
         </div>
       </div>
       <div class="d-flex justify-content-between mb-1">
@@ -86,11 +87,14 @@
   import radiobtnF from "./Plugin/radiobtn";
   import textareaF from "./Plugin/textarea";
   import displayF from "./Plugin/display";
+  import fileF from "./Plugin/fileupload"
+
+
   const qs = require("qs");
 
   export default {
     name: "modalEditElement",
-    props: { ID: Number, gid: Number, files: Number, manyLanguages: Number, actualLanguage: String },
+    props: { ID: Number, gid: Number, files: Number, manyLanguages: Number, actualLanguage: String, profileId:Number },
     components: {
       fieldF,
       birthdayF,
@@ -98,7 +102,8 @@
       dropdownF,
       radiobtnF,
       textareaF,
-      displayF
+      displayF,
+      fileF
     },
     data() {
       return {
@@ -145,6 +150,10 @@
             value: 'display',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
+          fileupload: {
+            value: 'emundus_fileupload',
+            name:  Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FILE")
+          }
         },
         databases: [],
         // Translations

@@ -59,10 +59,14 @@
         />
     </div>
     <div class="row" v-if="indexHighlight != -1">
-      <div class="sidebar-formbuilder" :style="actions_menu ? 'width: 15%' : ''">
+      <div class="sidebar-formbuilder" :style="actions_menu ? 'width: 250px' : ''">
         <transition name="move-right">
           <div class="actions-menu menu-block">
-            <button class="g-menu-item g-standard burger-button"><img src="/images/emundus/menus/menu.png" @click="enableActionsMenu" style="width: 30px" alt="Menu"></button>
+<!--            <button class="g-menu-item g-standard burger-button"><img src="/images/emundus/menus/menu.png" @click="enableActionsMenu" style="width: 30px" alt="Menu"></button>-->
+            <a class="d-flex back-button-action pointer" style="padding: 0 15px" :title="Back">
+              {{ BuildYourForm }}
+            </a>
+            <hr style="width: 80%;margin: 10px auto;">
             <div>
               <div class="action-links">
                   <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="addMenu">
@@ -121,7 +125,7 @@
       <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
         <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-offset-2 col-md-6' : 'col-md-8'">
           <div class="d-flex" v-show="!updateFormLabel">
-            <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="profileLabel">{{profileLabel}}</h2>
+            <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="profileLabel">{{profileLabel}}  </h2>
             <a @click="enableUpdatingForm" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
               <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
             </a>
@@ -201,12 +205,12 @@
                 <a @click="changeGroup(index,value.rgt);menuHighlight = 0"
                    class="MenuFormItem"
                    :title="value.label"
-                   :class="indexHighlight == index && menuHighlight === 0 ? 'MenuFormItem_current' : ''">
-                  {{value.label}}
+                   :class="indexHighlight == index && menuHighlight === 0 ? 'MenuFormItem_current' : ''" >
+                    {{value.label}}
                 </a>
               </li>
             </draggable>
-            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 30px" :title="addMenu">{{addMenu}}</button>
+            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 30px" :title="addMenuAction">{{addMenuAction}}</button>
           </div>
           <div class="form-pages">
             <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><em class="far fa-folder-open mr-1" :alt="Documents"></em>{{ Documents }}</h4>
@@ -216,13 +220,13 @@
                 :class="'draggables-list'"
                 @end="reorderingDocuments"
             >
-              <li v-for="(doc, index) in documentsList" :key="index" class="MenuForm" @mouseover="enableGrabDocuments(index)" @mouseleave="disableGrabDocuments()">
+              <li v-for="(doc, index) in documentsList" :key="index" class="MenuForm" @mouseover="enableGrabDocuments(index)" @mouseleave="disableGrabDocuments()" v-if="doc.displayed==1">
                   <span class="icon-handle" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
                     <em class="fas fa-grip-vertical handle"></em>
                   </span>
                 <a class="MenuFormItem"
                    :title="doc.label">
-                  {{doc.label}}
+                  {{doc.label}}<span v-if="doc.mandatory == 1" style="color: red">*</span>
                 </a>
                 <a class="cta-block pointer" @click="removeDocument(index,doc.id)" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
                   <i class="fas fa-times" style="width: 15px;height: 15px;"></i>
@@ -233,6 +237,7 @@
               </li>
             </draggable>
             <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalAddDocuments');optionsModal = true" style="margin-left: 30px" :title="AddNewDocument">{{AddNewDocument}}</button>
+
           </div>
           <div class="form-pages" style="padding-top: 20px" v-if="submittionPages">
             <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><img src="/images/emundus/menus/confirmation.png" class="mr-1" :alt="SubmitPage">{{SubmitPage}}</h4>
@@ -306,7 +311,7 @@
     data() {
       return {
         // UX variables
-        actions_menu: false,
+        actions_menu: true,
         optionsModal: false,
         UpdateUx: false,
         menuHighlight: 0,
@@ -404,8 +409,33 @@
             icon: 'fas fa-paragraph',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
+          /*fileupload: {
+            id: 7,
+            value: 'emundus_fileupload',
+            icon: 'fas fa-file-upload',
+            //name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FILE")
+          },*/
+        },
+        //create document when choosing plugin emundunsFileupload plugin
+        docForm: {
+          name: {
+            fr: 'Autres document',
+            en: 'Other documents'
+          },
+          description: {
+            fr: '',
+            en: ''
+          },
+          nbmax: 5,
+          selectedTypes: {
+            pdf: true,
+            jpg: true,
+            jpeg:true
+          },
         },
         addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
+        addMenuAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU_ACTION"),
         addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
         addItem: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
         Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS"),
@@ -425,10 +455,15 @@
         updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
         updateFailed: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
         ExitFormbuilder: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EXIT_FORMBUILDER"),
+        BuildYourForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_BUILD_YOUR_FORM"),
       };
     },
 
     methods: {
+      slpitProfileIdfromLabel(label){
+        return (label.split(/-(.+)/))[1];
+      },
+
       createElement(gid,plugin,order) {
         let list = this.formObjectArray;
         if(this.menuHighlight === 1){
@@ -436,18 +471,91 @@
         }
         if(!_.isEmpty(list[this.indexHighlight].object.Groups)){
           this.loading = true;
+
+          if (plugin=="emundus_fileupload"){
+
+            let types = [];
+            Object.keys(this.docForm.selectedTypes).forEach(key => {
+              if(this.docForm.selectedTypes[key] == true){
+                types.push(key);
+              }
+            });
+
+            let params = {
+              document: this.docForm,
+              types: types,
+              cid: this.cid,
+              pid: this.prid,
+              did: 20
+            }
+              this.createElementEMundusFileUpload(params,gid,plugin,order);
+          } else {
+
+            axios({
+              method: "post",
+              url:
+                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                gid: gid,
+                plugin: plugin
+              })
+            }).then((result) => {
+
+              axios({
+                method: "get",
+                url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+                params: {
+                  element: result.data.scalar,
+                  gid: gid
+                },
+                paramsSerializer: params => {
+                  return qs.stringify(params);
+                }
+              }).then(response => {
+                    console.log("none emundus file upload");
+                    console.log(response);
+
+                this.menuHighlightCustumisation(response,gid,order);
+
+                this.loading = false;
+              });
+            });
+
+          }
+
+
+        }
+
+      },
+
+      createElementEMundusFileUpload(params,gid,plugin,order){
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify(params)
+        }).then((rep) => {
+
+          this.$emit("UpdateDocuments");
           axios({
             method: "post",
             url:
-                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
+                "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
             data: qs.stringify({
               gid: gid,
-              plugin: plugin
+              plugin: plugin,
+              attachementId: rep.data.data
             })
           }).then((result) => {
+
             axios({
               method: "get",
               url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
@@ -459,24 +567,32 @@
                 return qs.stringify(params);
               }
             }).then(response => {
-              if(this.menuHighlight === 0) {
-                this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid], 'elements[element' + response.data.id + ']', response.data)
-                this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts.splice(order, 0, response.data);
-                this.$refs.builder.updateOrder(gid, this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts);
-                this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
-                this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
-                this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
-              } else {
-                this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
-                this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
-                this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
-                this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
-                this.$refs.builder_submit.$refs.builder_viewer.enableActionBar(response.data.id);
-                this.$refs.builder_submit.$refs.builder_viewer.enableLabelInput(response.data.id);
-              }
+
+             this.menuHighlightCustumisation(response,gid,order);
+             this.getDocuments();
               this.loading = false;
             });
           });
+
+        });
+      },
+
+      menuHighlightCustumisation(response,gid,order){
+
+        if(this.menuHighlight === 0) {
+          this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid], 'elements[element' + response.data.id + ']', response.data)
+          this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts.splice(order, 0, response.data);
+          this.$refs.builder.updateOrder(gid, this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts);
+          this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+          this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
+          this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
+        } else {
+          this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
+          this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
+          this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
+          this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+          this.$refs.builder_submit.$refs.builder_viewer.enableActionBar(response.data.id);
+          this.$refs.builder_submit.$refs.builder_viewer.enableLabelInput(response.data.id);
         }
       },
       addingNewElement: function(evt) {
@@ -487,10 +603,12 @@
           document.getElementsByClassName('no-elements-tip')[0].style.border = '2px dashed #c3c3ce';
           document.getElementsByClassName('no-elements-tip')[0].innerHTML = Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS");
         }
-        let plugin = evt.clone.id.split('_')[1];
+        let plugin = evt.clone.id.split(/_(.+)/)[1];
         let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
         if(typeof gid != 'undefined'){
+
           this.createElement(gid, plugin, evt.newIndex);
+
         }
       },
       addingNewElementByDblClick: _.debounce(function(plugin) {
@@ -548,6 +666,7 @@
 
       // Update component dynamically
       UpdateName(index, label) {
+
         this.formObjectArray[index].object.show_title.value = label;
       },
       UpdateIntro(index, intro) {
@@ -747,7 +866,7 @@
         await axios.get(ellink + "&format=vue_jsonclean")
             .then(response => {
               this.formObjectArray[index].object = response.data;
-              console.log(response.data)
+             // console.log(response.data)
               /*this.formObjectArray.push({
                 object: response.data,
                 rgt: this.formList[index].rgt,
@@ -868,7 +987,9 @@
              return qs.stringify(params);
           }
         }).then(response => {
+
           this.documentsList = response.data.data;
+
         });
       },
 
@@ -1061,6 +1182,7 @@
         this.documentsList.forEach((doc, index) => {
           doc.ordering = index;
         });
+
         axios({
           method: "post",
           url: "index.php?option=com_emundus_onboard&controller=form&task=reorderDocuments",
@@ -1069,6 +1191,7 @@
           },
           data: qs.stringify({
             documents: this.documentsList,
+
           })
         });
       },
@@ -1104,10 +1227,8 @@
         this.grab = false;
       },
       enableGrabDocuments(index){
-        if(this.documentsList.length !== 1){
-          this.indexGrabDocuments = index;
-          this.grabDocs = true;
-        }
+        this.indexGrabDocuments = index;
+        this.grabDocs = true;
       },
       disableGrabDocuments(){
         this.indexGrabDocuments = 0;
@@ -1139,8 +1260,8 @@
       //
     },
     created() {
-      jQuery("#g-navigation .g-main-nav .tchooz-vertical-toplevel > li").css("transform", "translateX(-100px)");
-      jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)");
+      //jQuery("#g-navigation .g-main-nav .tchooz-vertical-toplevel > li").css("transform", "translateX(-100px)");
+      //jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)");
       //this.indexHighlight = 0;
       this.getForms();
       this.getDocuments();
@@ -1217,6 +1338,9 @@
   .fa-sync{
     transition: all 1s ease-in-out;
   }
+  #header-b{
+    background: #f8f8f8;
+  }
   @media all and (min-width: 1660px) {
     .col-lg-offset-1 {
       margin-left: 13.333%;
@@ -1239,7 +1363,7 @@
 
   @media all and (min-width: 1280px) and (max-width: 1660px)  {
     .col-lg-offset-1{
-      margin-left: 15%;
+      margin-left: 23%;
     }
   }
 
@@ -1259,9 +1383,5 @@
       order: 3;
       margin-left: 25px;
     }
-  }
-
-  .action-label{
-    display: none;
   }
 </style>

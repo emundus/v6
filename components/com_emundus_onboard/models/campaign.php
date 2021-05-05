@@ -462,10 +462,19 @@ class EmundusonboardModelcampaign extends JModelList
                     $limit_status = $data['limit_status'];
                     array_splice($data, $i, 1);
                 }
+                if ($key == 'profile_id') {
+                    $query->select('id')
+                        ->from($db->quoteName('#__emundus_setup_profiles'))
+                        ->where($db->quoteName('published') . ' = 1')
+                        ->andWhere($db->quoteName('status') . ' = 1');
+                    $db->setQuery($query);
+                    $data['profile_id'] = $db->loadResult();
+                }
                 $i++;
             }
 
-            $query->insert($db->quoteName('#__emundus_setup_campaigns'))
+            $query->clear()
+                ->insert($db->quoteName('#__emundus_setup_campaigns'))
                 ->columns($db->quoteName(array_keys($data)))
                 ->values(implode(',', $db->Quote(array_values($data))));
 
@@ -804,7 +813,6 @@ class EmundusonboardModelcampaign extends JModelList
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
         $types = implode(";", array_values($types));
-
         $query
             ->insert($db->quoteName('#__emundus_setup_attachments'));
         $query
@@ -819,7 +827,6 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query);
             $db->execute();
             $newdocument = $db->insertid();
-
             $falang->insertFalang($document['name']['fr'],$document['name']['en'],$newdocument,'emundus_setup_attachments','value');
             $falang->insertFalang($document['description']['fr'],$document['description']['en'],$newdocument,'emundus_setup_attachments','description');
 
@@ -830,7 +837,6 @@ class EmundusonboardModelcampaign extends JModelList
                 ->where($db->quoteName('id') . ' = ' . $db->quote($newdocument));
             $db->setQuery($query);
             $db->execute();
-
             $query->clear()
                 ->select('max(ordering)')
                 ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
@@ -842,10 +848,11 @@ class EmundusonboardModelcampaign extends JModelList
                 ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
             $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
                 ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($newdocument))
-                ->set($db->quoteName('mandatory') . ' = ' . $db->quote(0))
+                ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
                 ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
             $db->setQuery($query);
-            return $db->execute();
+            $db->execute();
+            return $newdocument;
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/campaign | Cannot create a document : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return $e->getMessage();
@@ -873,8 +880,16 @@ class EmundusonboardModelcampaign extends JModelList
             ->where($db->quoteName('id') . ' = ' . $db->quote($did));
 
         try{
+
             $db->setQuery($query);
             $db->execute();
+            $query->clear()
+                ->update($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
+                ->where($db->quoteName('attachment_id') . ' = ' . $db->quote($did));
+            $db->setQuery($query);
+            $db->execute();
+
 
             $falang->updateFalang($document['name']['fr'],$document['name']['en'],$did,'emundus_setup_attachments','value');
             $falang->updateFalang($document['description']['fr'],$document['description']['en'],$did,'emundus_setup_attachments','description');
@@ -888,21 +903,33 @@ class EmundusonboardModelcampaign extends JModelList
             $assignations = $db->loadResult();
 
             if(empty($assignations)) {
+
                 $query->clear()
                     ->select('max(ordering)')
                     ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
                     ->where($db->quoteName('profile_id') . ' = ' . $db->quote($pid));
                 $db->setQuery($query);
                 $ordering = $db->loadResult();
+                if ($did !==20){
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
+                    $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
+                        ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
+                        ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
+                        ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
+                    $db->setQuery($query);
+                } else {
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
+                    $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
+                        ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
+                        ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
+                        ->set($db->quoteName('displayed') . ' = '. 0)
+                        ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
+                }
 
-                $query->clear()
-                    ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
-                $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
-                    ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
-                    ->set($db->quoteName('mandatory') . ' = ' . $db->quote(0))
-                    ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
-                $db->setQuery($query);
                 $db->execute();
+
             }
             return true;
         } catch (Exception $e) {
@@ -1099,6 +1126,7 @@ class EmundusonboardModelcampaign extends JModelList
                     ->set($db->quoteName('content') . ' = ' . $db->quote($newcontent))
                     ->where($db->quoteName('id') . '=' .  $db->quote($form_module->id));
                 $db->setQuery($query);
+
                 return $db->execute();
             } else {
                 return true;

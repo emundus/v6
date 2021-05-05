@@ -30,11 +30,11 @@ class EmundusonboardModelformbuilder extends JModelList {
     }
 
     public function replaceAccents($value){
-        $unwanted_array = array(    'Š'=>'S', 'š'=>'s', 'Ž'=>'Z', 'ž'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
+        $unwanted_array = array('Š'=>'S', 'š'=>'s', 'Ž'=>'Z', 'ž'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
             'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U',
             'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss', 'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c',
             'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o',
-            'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y', '!'=>'', '?'=>'', '*'=>'', '%'=>'y', '-'=>'', '^'=>'', '€'=>'', '+'=>'', '='=>'',
+            'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y', '!'=>'', '?'=>'', '*'=>'', '%'=>'y', '^'=>'', '€'=>'', '+'=>'', '='=>'',
             ';'=>'', ','=>'', '&'=>'', '@'=>'', '#'=>'', '`'=>'', '¨'=>'', '§'=>'', '"'=>'', '\''=>'', '\\'=>'', '/'=>'', '('=>'', ')'=>'', '['=>'', ']'=>'' );
         return strtr($value, $unwanted_array);
     }
@@ -230,7 +230,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->insert($db->quoteName('#__menu'));
             $query->set($db->quoteName('menutype') . ' = ' . $db->quote($menu['menutype']))
                 ->set($db->quoteName('title') . ' = ' . $db->quote('FORM_' . $menu['profile_id'] . '_' . $menu['form_id']))
-                ->set($db->quoteName('alias') . ' = ' . $db->quote('form-' . $menu['form_id'] . '-' . str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr']))))
+                ->set($db->quoteName('alias') . ' = ' . $db->quote('form-' . $menu['form_id'] . '-' . preg_replace('/\s+/', '-', $this->replaceAccents(strtolower($label['fr'])))))
                 ->set($db->quoteName('path') . ' = ' . $db->quote($menu['path']))
                 ->set($db->quoteName('link') . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $menu['form_id']))
                 ->set($db->quoteName('type') . ' = ' . $db->quote('component'))
@@ -339,7 +339,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         return $params;
     }
 
-    function prepareElementParameters($plugin) {
+    function prepareElementParameters($plugin,$attachementId) {
         $params = array(
             'bootstrap_class' => 'input-xlarge',
             'show_in_rss_feed' => 0,
@@ -395,10 +395,10 @@ class EmundusonboardModelformbuilder extends JModelList {
             $params['notempty-validation_condition'] = array();
         }
 
-        return $this->updateElementParams($plugin,null,$params);
+        return $this->updateElementParams($plugin,null,$params,$attachementId);
     }
 
-    function updateElementParams($plugin, $oldplugin, $params){
+    function updateElementParams($plugin, $oldplugin, $params,$attachementId = null){
         try {
             // Reset params
             if ($oldplugin != null) {
@@ -683,6 +683,11 @@ class EmundusonboardModelformbuilder extends JModelList {
                 case 'display':
                     $params['display_showlabel'] = 1;
                     $params['store_in_db'] = 0;
+                    break;
+                case 'emundus_fileupload':
+                    $params['size']=10485760;
+                    $params['attachmentId']=$attachementId;
+                    $params['can_submit_encrypted']=2;
                     break;
                 default:
                     break;
@@ -1048,7 +1053,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 'menutype' => $profile->menutype,
                 'profile_id' => $prid,
                 'form_id' => $formid,
-                'path' => $menu_parent->path . '/' . str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr'])) . '-' . $formid,
+                'path' => $menu_parent->path . '/' . preg_replace('/\s+/', '-', $this->replaceAccents(strtolower($label['fr']))) . '-form-' . $formid,
                 'parent_id' => $menu_parent->id,
                 'level' => 2,
                 'lft' => array_values($lfts)[strval(sizeof($lfts) - 1)] + 2,
@@ -1205,7 +1210,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 'menutype' => $profile->menutype,
                 'profile_id' => $prid,
                 'form_id' => $formid,
-                'path' => str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr'])) . '-form-' . $formid,
+                'path' => preg_replace('/\s+/', '-', $this->replaceAccents(strtolower($label['fr']))) . '-form-' . $formid,
                 'parent_id' => 1,
                 'level' => 1,
                 'lft' => 110,
@@ -1507,10 +1512,11 @@ class EmundusonboardModelformbuilder extends JModelList {
      *
      * @param $gid
      * @param $plugin
+     * @param $attachementId
      * @param int $evaluation
      * @return mixed
      */
-    function createSimpleElement($gid,$plugin,$evaluation = 0) {
+    function createSimpleElement($gid,$plugin,$attachementId = null,$evaluation = 0) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -1523,16 +1529,20 @@ class EmundusonboardModelformbuilder extends JModelList {
         $default = '';
         //
 
+
+
         if ($plugin === 'birthday') {
             $dbtype = 'DATE';
         } elseif ($plugin === 'textarea') {
             $dbtype = 'TEXT';
         } elseif ($plugin === 'display') {
             $default = 'Ajoutez du texte personnalisé pour vos candidats';
-        }
+        } /*elseif ($plugin === 'fileupload'){
+            $dbtype='FILEUPLOAD';
+        }*/
 
         // Prepare parameters
-        $params = $this->prepareElementParameters($plugin);
+        $params = $this->prepareElementParameters($plugin,$attachementId);
         //
 
         $query->clear()
@@ -1611,6 +1621,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
             $db->setQuery($query);
             $dbtable = $db->loadObject()->dbtable;
+            //echo $dbtable;
             $formid = $db->loadObject()->formid;
 
             if ($evaluation) {
@@ -2958,7 +2969,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             // Create parent_id element
             $query = $db->getQuery(true);
-            $params = $this->prepareElementParameters('field');
+            $params = $this->prepareElementParameters('field',0);
             $params['validations'] = array();
 
             $query->clear()
@@ -3219,6 +3230,26 @@ class EmundusonboardModelformbuilder extends JModelList {
             return $db->execute();
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot delete testing file ' . $fnum . ' of the user ' . $uid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function retriveElementFormAssociatedDoc($gid,$docid) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+
+            $query->select('*')
+
+                ->from($db->quoteName('#__emundus_setup_attachments'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($docid));
+
+            $db->setQuery($query);
+
+            return $db->loadObject();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot get ordering of group ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
