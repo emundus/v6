@@ -714,25 +714,25 @@ class EmundusonboardModelformbuilder extends JModelList {
         unset($params['multiple']);
         unset($params['sub_options']);
 
-        $params['join_conn_id'] = 1;
+        $params['join_conn_id'] = '1';
         $params['database_join_where_sql'] = '';
-        $params['database_join_where_access'] = 1;
-        $params['database_join_where_when'] = 3;
-        $params['databasejoin_where_ajax'] = 0;
+        $params['database_join_where_access'] = '1';
+        $params['database_join_where_when'] = '3';
+        $params['databasejoin_where_ajax'] = '0';
         $params['database_join_filter_where_sql'] = '';
-        $params['database_join_show_please_select'] = 1;
+        $params['database_join_show_please_select'] = '1';
         $params['database_join_noselectionvalue'] = '';
         $params['database_join_noselectionlabel'] = '';
-        $params['databasejoin_popupform'] = 41;
-        $params['fabrikdatabasejoin_frontend_add'] = 0;
+        $params['databasejoin_popupform'] = '41';
+        $params['fabrikdatabasejoin_frontend_add'] = '0';
         $params['join_popupwidth'] = '';
-        $params['databasejoin_readonly_link'] = 0;
-        $params['fabrikdatabasejoin_frontend_select'] = 0;
-        $params['dbjoin_options_per_row'] = 3;
-        $params['dbjoin_multiselect_max'] = 0;
-        $params['dbjoin_multilist_size'] = 6;
-        $params['dbjoin_autocomplete_size'] = 20;
-        $params['dbjoin_autocomplete_rows'] = 10;
+        $params['databasejoin_readonly_link'] = '0';
+        $params['fabrikdatabasejoin_frontend_select'] = '0';
+        $params['dbjoin_options_per_row'] = '3';
+        $params['dbjoin_multiselect_max'] = '0';
+        $params['dbjoin_multilist_size'] = '6';
+        $params['dbjoin_autocomplete_size'] = '20';
+        $params['dbjoin_autocomplete_rows'] = '10';
         $params['dabase_join_label_eval'] = '';
         $params['join_desc_column'] = '';
         $params['dbjoin_autocomplete_how'] = 'contains';
@@ -1889,7 +1889,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
 
             // Filter by plugin
-            if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown') {
+            if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown' || $element['plugin'] === 'databasejoin') {
                 $old_params = json_decode($db_element->params, true);
 
                 if (isset($element['params']['join_db_name'])) {
