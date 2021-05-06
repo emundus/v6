@@ -377,6 +377,7 @@ export default {
 <style>
 .vm--modal {
   padding: 10px 30px !important;
+  overflow-y: scroll !important;
 }
 
 .select {

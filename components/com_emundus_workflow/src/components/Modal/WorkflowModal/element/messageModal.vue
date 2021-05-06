@@ -15,10 +15,14 @@
       <div class="col-xs-8">
         <select v-model="form.destinationSelected" class="form-control-select" id="destination-selected">
           <option selected disabled>---Destination---</option>
-          <option v-for="destination in this.$data.destination" :value="destination.id" :disabled="isDisable"> {{ destination.label }}</option>
+          <option v-for="destination in this.$data.destination" :value="destination.id" :disabled="isDisable" @click="showOtherUser=false"> {{ destination.label }}</option>
+          <option @click="showOtherUser=!showOtherUser"> Choisir un utilisateur</option>
         </select>
       </div>
     </div>
+
+    <div v-if="showOtherUser==true"> Other users </div>
+    <div v-if="showOtherUser==false"></div>
 
     <div class="row mb-3">
       <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.notes_title }}</label>
@@ -63,6 +67,7 @@ export default {
       status: [],
       destination: [],
       isDisable: true,
+      showOtherUser: false,
     }
   },
 

@@ -1,9 +1,7 @@
 <template>
   <div id="colorPicker">
     <input id='picker' type="color" :value="colorParam.color" @input="handleChange()" style=""/>
-
-    <span id='labelColor_undefined' style="margin-left: 5vh; font-weight: bold; color: #f5f5f5" v-if="colorParam.color === undefined">{{ hotColor }} </span>
-    <span id='labelColor' v-model="colorParam.color" style="margin-left: 5vh; font-weight: bold" v-bind:style="{ color : colorParam.color }" v-if="colorParam.color !== undefined"> {{ colorParam.color }} </span>
+    <span id='labelColor' v-model="colorParam.color" style="margin-left: 5vh; font-weight: bold" v-bind:style="{ color : colorParam.color }"> {{ colorParam.color }} </span>
 
   </div>
 </template>
@@ -29,6 +27,8 @@ export default {
   },
 
   created() {
+    /// first time or unset --> this.colorParam.color === undefined
+
     if(this.colorParam.color === undefined) {
       this.colorParam.color = '#f5f5f5';
     }
