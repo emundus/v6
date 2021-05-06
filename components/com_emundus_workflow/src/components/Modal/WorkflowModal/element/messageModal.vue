@@ -143,25 +143,26 @@ export default {
     },
 
     createTrigger: function() {
-      let trigger = {
-        step: this.element.outputStatus,               /// output status of this step
-        email_id: this.element.emailSelected,          /// email template of this step
-        to_current_user: this.form.triggerSelected == 'to_current_user' ? 1 : 0,                    /// 1 si trigger.current_user est choisie --> sinon 0
-        to_applicant: this.form.triggerSelected == 'to_applicant' ? 1 : 0,                           //// 1
-        selectedUser: null,
-      };
+      const selectedUserList = [];
 
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus_onboard&controller=email&task=createtrigger',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-      }).then(response => {
-        console.log(response);
-      }).catch(error => {
-        console.log(error);
-      })
+      if(this.showOtherUser === true) {
+        this.userIdList.forEach(id => {
+          if(document.getElementById('check' + id).checked === true) {
+            /// push
+            selectedUserList.push(document.getElementById('check' + id).value);
+          } else {}
+        })
+      }
+
+      console.log(selectedUserList);
+
+      let trigger = {
+        step: this.element.outputStatus,
+        email_id: this.form.emailSelected,
+        selectedUser: selectedUserList.length === 0 ? this.form.destinationSelected :  selectedUserList,
+      }
+
+      console.log(trigger);
     },
 
     getAllMessages: function() {
