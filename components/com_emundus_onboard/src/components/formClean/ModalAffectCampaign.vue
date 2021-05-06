@@ -2,28 +2,32 @@
   <!-- modalC -->
   <span :id="'modalAffectCampaign'">
     <modal
-      :name="'modalAffectCampaign'"
-      height="auto"
-      transition="nice-modal-fade"
-      :min-width="200"
-      :min-height="200"
-      :delay="100"
-      :adaptive="true"
-      :clickToClose="false"
-      @closed="beforeClose"
-      @before-open="beforeOpen"
+        :name="'modalAffectCampaign'"
+        height="auto"
+        transition="nice-modal-fade"
+        :min-width="200"
+        :min-height="200"
+        :delay="100"
+        :adaptive="true"
+        :clickToClose="false"
+        @closed="beforeClose"
+        @before-open="beforeOpen"
     >
-      <div class="modalC-content">
+
+      <div class="fixed-header-modal">
+        <div class="topright">
+          <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAffectCampaign')">
+            <em class="fas fa-times-circle"></em>
+          </button>
+        </div>
         <div class="update-field-header">
-          <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAffectCampaign')">
-              <em class="fas fa-times-circle"></em>
-            </button>
-          </div>
           <h2 class="update-title-header">
-             {{affectCampaigns}}
+            {{affectCampaigns}}
           </h2>
         </div>
+      </div>
+
+      <div class="modalC-content">
         <p v-if="campaigns.length === 0" class="mt-1 mb-1">{{campaignsEmpty}}</p>
         <div class="wrap">
           <div class="search">
@@ -40,16 +44,18 @@
             </div>
         </div>
       </div>
-      <div class="col-md-12 mb-1">
-        <a
-          class="bouton-sauvergarder-et-continuer-3"
-          @click.prevent="affectToForm"
-        >{{ Continuer }}</a>
-        <a v-if="!testing"
-          class="bouton-sauvergarder-et-continuer-3"
-          style="margin-right: 20px"
-          @click.prevent="goAddCampaign"
-        >{{addCampaign}}</a>
+      <div class="d-flex justify-content-between mb-1">
+        <button type="button"
+                class="bouton-sauvergarder-et-continuer w-retour"
+            @click.prevent="affectToForm">
+          {{ Continuer }}
+        </button>
+        <button v-if="!testing"
+            type="button"
+            class="bouton-sauvergarder-et-continuer"
+           @click.prevent="goAddCampaign">
+          {{addCampaign}}
+        </button>
       </div>
     </modal>
   </span>
@@ -132,15 +138,15 @@ export default {
     },
     getCampaigns() {
       axios.get("index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignstoaffect")
-              .then(response => {
-                this.campaigns = response.data.data;
-              });
+          .then(response => {
+            this.campaigns = response.data.data;
+          });
     },
     searchCampaignByTerm() {
       axios.get("index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignstoaffectbyterm&term=" + this.searchTerm)
-              .then(response => {
-                this.campaigns = response.data.data;
-              });
+          .then(response => {
+            this.campaigns = response.data.data;
+          });
     },
     redirectJRoute(link) {
       axios({
@@ -162,7 +168,6 @@ export default {
 
 <style scoped>
 .modalC-content {
-  height: 100%;
   box-sizing: border-box;
   padding: 10px;
   font-size: 15px;
@@ -175,15 +180,15 @@ export default {
 .btnCloseModal {
   background-color: inherit;
 }
-  .update-field-header{
-    margin-bottom: 1em;
-  }
+.update-field-header{
+  margin-bottom: 1em;
+}
 
-  .update-title-header{
-    margin-top: 0;
-    display: flex;
-    align-items: center;
-  }
+.update-title-header{
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+}
 
 .user-item{
   display: flex;
@@ -194,9 +199,9 @@ export default {
   margin-bottom: 1em;
 }
 
-  .bigbox{
-    height: 30px !important;
-    width: 30px !important;
-    cursor: pointer;
-  }
+.bigbox{
+  height: 30px !important;
+  width: 30px !important;
+  cursor: pointer;
+}
 </style>
