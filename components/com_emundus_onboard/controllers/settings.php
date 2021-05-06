@@ -779,8 +779,9 @@ class EmundusonboardControllersettings extends JControllerLegacy {
 
                 /* Clean sitename for folder */
                 $m_formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
-                $sitename = $m_formbuilder->replaceAccents($config->get('sitename'));
-                $sitename = strtolower(str_replace(array('\\','=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%'),'_',$sitename));
+
+                $sitename = strtolower(str_replace(array('\\','=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%'),'_',$config->get('sitename')));
+                $sitename = $m_formbuilder->replaceAccents($sitename);
 
 
                 $path = $file["name"];
