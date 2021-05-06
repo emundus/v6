@@ -35,7 +35,6 @@
             <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]"/>
             <label class="form-check-label" :id="'status'+ item.step" name=""> {{item.value}}</label>
           </div>
-
         </div>
 
         <!-- Step step out -->
@@ -100,7 +99,7 @@
           </tr>
         </div>
 
-      <message-modal :element="form" :stepParams="stepParams" :activateParams="showMessage" v-if="showMessage==true"/>
+      <message-modal :element="form" :stepParams="messageParams" :activateParams="showMessage" v-if="showMessage==true"/>
 
         <div class="row mb-3" v-if="showMessage==false"/>
 

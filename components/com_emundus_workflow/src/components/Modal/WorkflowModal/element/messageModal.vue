@@ -21,7 +21,14 @@
       </div>
     </div>
 
-    <div v-if="showOtherUser==true"> Other users </div>
+    <div class="row mb-3" v-if="showOtherUser==true">
+      <div v-for="user in this.userList">
+        <input type="checkbox" :id="user.id" :value="user.id" v-model="checked[user.id]"/>
+        <label class="form-check-label" :id="'userName_'+ user.id"> {{ user.firstname }} {{ user.lastname }}</label>
+        <label class="form-check-label" :id="'userEmail_'+ user.email"> {{ '[' + user.email + ']'}}</label>
+      </div>
+    </div>
+
     <div v-if="showOtherUser==false"></div>
 
     <div class="row mb-3">
@@ -68,6 +75,9 @@ export default {
       destination: [],
       isDisable: true,
       showOtherUser: false,
+
+      userList: [],
+      checked: [],
     }
   },
 
@@ -85,6 +95,7 @@ export default {
       this.form.emailSelected = this.$props.stepParams.email;
       this.form.destinationSelected = this.$props.stepParams.destination;
     }
+    this.getAllUsers();
   },
 
   methods: {
@@ -106,6 +117,14 @@ export default {
           .catch(error => {
             console.log(error);
           })
+    },
+
+    getAllUsers: function() {
+      axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallusers')
+          .then(response => {
+            this.userList = response.data.data;
+          })
+          .catch(error =>{console.log(error);})
     },
   }
 }

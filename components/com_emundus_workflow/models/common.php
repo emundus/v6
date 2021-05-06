@@ -46,18 +46,16 @@ class EmundusworkflowModelcommon extends JModelList {
         }
     }
 
-    //get all messages --> use table
-    public function getAllMessages() {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
+    /// get all users --> for testing (remove it when finishing)
+    public function getAllUsers() {
         try {
-            $query->clear()
-                ->select('*')
-                ->from($db->quoteName('#__emundus_setup_emails'));
+            $this->query->clear()
+                ->select('#__emundus_users.*, #__users.*')
+                ->from($this->db->quoteName('#__emundus_users'))
+                ->leftJoin($this->db->quoteName('#__users') . ' ON ' . $this->db->quoteName('#__emundus_users.user_id') . '=' . $this->db->quoteName('#__users.id'));
 
-            $db->setQuery($query);
-            return $db->loadObjectList();
+            $this->db->setQuery($this->query);
+            return $this->db->loadObjectList();
         }
         catch(Exception $e) {
             return $e->getMessage();
