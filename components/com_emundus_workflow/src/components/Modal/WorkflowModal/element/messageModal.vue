@@ -25,7 +25,7 @@
     <div class="row mb-3" v-if="showOtherUser==true">
       <input type="checkbox" id="selectAll_" v-if="showOtherUser==true" @click="handleSelect"> {{ selectAllTitle }}
       <div v-for="user in this.userList" v-if="showOtherUser==true">
-        <input type="checkbox" :id="user.id" :value="user.id" v-model="userChecked[user.id]"/>
+        <input type="checkbox" :id="'check' + user.id" :value="user.id" v-model="userChecked[user.id]"/>
         <label class="form-check-label" :id="'userName_' + user.id"> {{ user.firstname }} {{ user.lastname }}</label>
         <label class="form-check-label" :id="'userEmail_' + user.id"> {{ '[' + user.email + ']'}}</label>
       </div>
@@ -101,6 +101,8 @@ export default {
 
       TO_CURRENT_USER: 'Current User',
       TO_APPLICANT: 'Applicant',
+
+      userIdList: [],
     }
   },
 
@@ -129,20 +131,34 @@ export default {
 
   methods: {
     handleSelect: function() {
-      var checkboxes = document.getElementById('userName_');
-      console.log(checkboxes);        //// checkbox + id
+      this.selectAll=!this.selectAll;
 
+      this.userIdList.forEach(elt => {
+        if(this.selectAll == true) {
+          document.getElementById('check' + elt).checked = true;
+        } else {
+          document.getElementById('check' + elt).checked = false;
+        }
+      })
     },
 
     createTrigger: function() {
+      let trigger = {
+        step: this.element.outputStatus,               /// output status of this step
+        email_id: this.element.emailSelected,          /// email template of this step
+        to_current_user: this.form.triggerSelected == 'to_current_user' ? 1 : 0,                    /// 1 si trigger.current_user est choisie --> sinon 0
+        to_applicant: this.form.triggerSelected == 'to_applicant' ? 1 : 0,                           //// 1
+        selectedUser: null,
+      };
+
       axios({
         method: 'post',
-        url: '',      /// create trigger --> to applicant / to current user
+        url: 'index.php?option=com_emundus_onboard&controller=email&task=createtrigger',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
       }).then(response => {
-
+        console.log(response);
       }).catch(error => {
         console.log(error);
       })
@@ -172,6 +188,7 @@ export default {
       axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallusers')
           .then(response => {
             this.userList = response.data.data;
+            response.data.data.forEach(elt => this.userIdList.push(elt.id));
           })
           .catch(error =>{console.log(error);})
     },
