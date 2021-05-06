@@ -154,15 +154,28 @@ export default {
         })
       }
 
-      console.log(selectedUserList);
-
       let trigger = {
-        step: this.element.outputStatus,
-        email_id: this.form.emailSelected,
-        selectedUser: selectedUserList.length === 0 ? this.form.destinationSelected :  selectedUserList,
+        status: this.element.outputStatus,
+        model: this.form.emailSelected,
+        //selectedUser: selectedUserList.length === 0 ? this.form.destinationSelected :  selectedUserList,
+        action_status: this.form.triggerSelected === 'to_applicant' ? 'to_applicant' : this.form.triggerSelected === 'to_current_user' ? 'to_current_user' : '' || '',
       }
 
-      console.log(trigger);
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_onboard&controller=email&task=createtrigger',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          trigger: trigger,
+          users: selectedUserList.length === 0 ? this.form.destinationSelected :  selectedUserList,
+        })
+      }).then(response => {
+
+      }).catch(error => {
+        console.log(error);
+      })
     },
 
     getAllMessages: function() {

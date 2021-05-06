@@ -99,7 +99,7 @@
           </tr>
         </div>
 
-      <message-modal :element="form" :stepParams="messageParams" :activateParams="showMessage" v-if="showMessage==true"/>
+      <message-modal :element="form" :stepParams="messageParams" :activateParams="showMessage" v-if="showMessage==true" ref="message"/>
 
         <div class="row mb-3" v-if="showMessage==false"/>
 
@@ -292,6 +292,7 @@ export default {
             }
           })
         }).then(response => {
+          this.$refs.message.createTrigger();         /// create trigger
           Swal.fire({
             icon: 'success',
             title: 'Congrat',
