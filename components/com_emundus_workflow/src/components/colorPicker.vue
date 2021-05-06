@@ -1,7 +1,9 @@
 <template>
   <div id="colorPicker">
-    <input id='picker' type="color" :value="colorParam.color" @input="handleChange()" style=""/>
-    <span id='labelColor' v-model="colorParam.color" style="margin-left: 5vh; font-weight: bold" v-bind:style="{ color : colorParam.color }"> {{ colorParam.color }} </span>
+    <input id='picker' type="color" :value="colorParam.color" @input="handleChange()" style="" v-if="showColor == true"/>
+    <input type="color" :value="colorParam.color" @click="showColor=!showColor" @input="handleChange()" style="" v-if="showColor == false"/>
+
+    <span id='labelColor' v-model="colorParam.color" style="margin-left: 5vh; font-weight: bold" v-bind:style="{ color : colorParam.color }"> {{ colorParam.color || '#ffffff'}} </span>
 
   </div>
 </template>
@@ -19,7 +21,7 @@ export default {
 
   data: function() {
     return {
-      hotColor: '#f5f5f5',
+      showColor: false,
       form: {
         setColor: '',
       },
@@ -28,17 +30,21 @@ export default {
 
   created() {
     /// first time or unset --> this.colorParam.color === undefined
-
     if(this.colorParam.color === undefined) {
-      this.colorParam.color = '#f5f5f5';
+      this.showColor = false;
+      this.colorParam.color = '#ffffff';
     }
-
+    else {
+      this.form.setColor = this.colorParam.color;
+      this.showColor = true;
+    }
     this.form = this.element;
-    this.form.setColor = this.colorParam.color;
+
   },
 
   methods: {
     handleChange: function() {
+      // this.showColor = true;
       this.form.setColor = $(" #picker ").val();
       this.colorParam.color = $(" #picker ").val();
     }
