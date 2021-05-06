@@ -756,6 +756,8 @@ class EmundusonboardModelcampaign extends JModelList
 
         // Get affected programs
         $user = JFactory::getUser();
+
+
         $programs = $this->model_program->getUserPrograms($user->id);
         //
 
@@ -768,6 +770,7 @@ class EmundusonboardModelcampaign extends JModelList
         try {
             $db->setQuery($query);
             return $db->loadObjectList();
+
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/campaign | Error getting campaigns without setup_profiles associated: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
@@ -782,6 +785,7 @@ class EmundusonboardModelcampaign extends JModelList
 
         // Get affected programs
         $user = JFactory::getUser();
+
         $programs = $this->model_program->getUserPrograms($user->id);
         //
 
@@ -795,6 +799,7 @@ class EmundusonboardModelcampaign extends JModelList
             ->andWhere($db->quoteName('training') . ' IN (' . implode(',',$db->quote($programs)) . ')');
 
         try {
+
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e) {
@@ -859,82 +864,115 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    public function updateDocument($document,$types,$did,$pid) {
+    public function isDocumentAssignToProfileVerification($did,$pid){
         $db = $this->getDbo();
         $query = $db->getQuery(true);
+        $query->clear()
+            ->select('count(id)')
+            ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+            ->where($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
+            ->andWhere($db->quoteName('attachment_id') . ' = ' . $db->quote($did));
+        $db->setQuery($query);
 
-        $lang = JFactory::getLanguage();
-        $actualLanguage = substr($lang->getTag(), 0 , 2);
+        $assignations = $db->loadResult();
+        if (empty($assignations)){
+            return false;
+        } else {
+            return true;
+        }
 
-        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
-
-        $types = implode(";", array_values($types));
-
-        $query
-            ->update($db->quoteName('#__emundus_setup_attachments'));
-        $query
-            ->set($db->quoteName('value') . ' = ' . $db->quote($document['name'][$actualLanguage]))
-            ->set($db->quoteName('description') . ' = ' . $db->quote($document['description'][$actualLanguage]))
-            ->set($db->quoteName('allowed_types') . ' = ' . $db->quote($types))
-            ->set($db->quoteName('nbmax') . ' = ' . $db->quote($document['nbmax']))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($did));
-
-        try{
-
-            $db->setQuery($query);
-            $db->execute();
-            $query->clear()
-                ->update($db->quoteName('#__emundus_setup_attachment_profiles'))
-                ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
-                ->where($db->quoteName('attachment_id') . ' = ' . $db->quote($did));
-            $db->setQuery($query);
-            $db->execute();
+    }
 
 
-            $falang->updateFalang($document['name']['fr'],$document['name']['en'],$did,'emundus_setup_attachments','value');
-            $falang->updateFalang($document['description']['fr'],$document['description']['en'],$did,'emundus_setup_attachments','description');
 
-            $query->clear()
-                ->select('count(id)')
-                ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
-                ->where($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
-                ->andWhere($db->quoteName('attachment_id') . ' = ' . $db->quote($did));
-            $db->setQuery($query);
-            $assignations = $db->loadResult();
+    public function updateDocument($document,$types,$did,$pid,$isModeleAndUpdate)
+    {
+        if ($isModeleAndUpdate==true){
 
-            if(empty($assignations)) {
+            if($this->isDocumentAssignToProfileVerification($did, $pid) ==true){
+                return $this->createDocument($document,$types,"",$pid);
+            }
 
-                $query->clear()
-                    ->select('max(ordering)')
-                    ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
-                    ->where($db->quoteName('profile_id') . ' = ' . $db->quote($pid));
+        }else {
+
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $lang = JFactory::getLanguage();
+            $actualLanguage = substr($lang->getTag(), 0, 2);
+
+            $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+
+            $types = implode(";", array_values($types));
+
+            $query
+                ->update($db->quoteName('#__emundus_setup_attachments'));
+            $query
+                ->set($db->quoteName('value') . ' = ' . $db->quote($document['name'][$actualLanguage]))
+                ->set($db->quoteName('description') . ' = ' . $db->quote($document['description'][$actualLanguage]))
+                ->set($db->quoteName('allowed_types') . ' = ' . $db->quote($types))
+                ->set($db->quoteName('nbmax') . ' = ' . $db->quote($document['nbmax']))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($did));
+
+            try {
+
                 $db->setQuery($query);
-                $ordering = $db->loadResult();
-                if ($did !==20){
-                    $query->clear()
-                        ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
-                    $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
-                        ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
-                        ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
-                        ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
-                    $db->setQuery($query);
-                } else {
-                    $query->clear()
-                        ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
-                    $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
-                        ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
-                        ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
-                        ->set($db->quoteName('displayed') . ' = '. 0)
-                        ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
-                }
-
+                $db->execute();
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_setup_attachment_profiles'))
+                    ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
+                    ->where($db->quoteName('attachment_id') . ' = ' . $db->quote($did));
+                $db->setQuery($query);
                 $db->execute();
 
+
+                $falang->updateFalang($document['name']['fr'], $document['name']['en'], $did, 'emundus_setup_attachments', 'value');
+                $falang->updateFalang($document['description']['fr'], $document['description']['en'], $did, 'emundus_setup_attachments', 'description');
+
+                $query->clear()
+                    ->select('count(id)')
+                    ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+                    ->where($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
+                    ->andWhere($db->quoteName('attachment_id') . ' = ' . $db->quote($did));
+                $db->setQuery($query);
+                $assignations = $db->loadResult();
+
+
+                if (empty($assignations)) {
+
+                    $query->clear()
+                        ->select('max(ordering)')
+                        ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+                        ->where($db->quoteName('profile_id') . ' = ' . $db->quote($pid));
+                    $db->setQuery($query);
+                    $ordering = $db->loadResult();
+                    if ($did !== 20) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
+                        $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
+                            ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
+                            ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
+                            ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
+                        $db->setQuery($query);
+                    } else {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
+                        $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
+                            ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
+                            ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
+                            ->set($db->quoteName('displayed') . ' = ' . 0)
+                            ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
+                    }
+
+                    $db->execute();
+
+                }
+                return true;
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus_onboard/models/campaign | Cannot update a document ' . $did . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+                return $e->getMessage();
             }
-            return true;
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/campaign | Cannot update a document ' . $did . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return $e->getMessage();
+
         }
     }
 

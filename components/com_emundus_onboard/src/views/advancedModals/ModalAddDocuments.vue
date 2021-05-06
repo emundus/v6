@@ -20,10 +20,10 @@
             </button>
           </div>
                 <div class="update-field-header">
-            <h2 class="update-title-header" v-if="doc == null">
+            <h2 class="update-title-header" v-if="currentDoc ==null">
                {{createDocument}}
             </h2>
-            <h2 class="update-title-header" v-if="doc != null">
+            <h2 class="update-title-header" v-if="currentDoc != null">
                {{editDocument}}
             </h2>
                 </div>
@@ -41,11 +41,11 @@
             <span class="ml-10px" >{{Required}}</span>
           </a>
         </div>
-        <div class="form-group">
-          <label for="name">{{DocTemplate}} :</label>
-          <select v-model="doc" class="dropdown-toggle" :disabled="Object.keys(models).length <= 0">
+        <div class="form-group" v-if="currentDoc ==null">
+          <label for="modelName">{{DocTemplate}} :</label>
+          <select v-model="doc" class="dropdown-toggle" :disabled="Object.keys(models).length <= 0" >
             <option :value="null"></option>
-            <option v-for="(model, index) in models" :value="model.id">{{model.name[langue]}}</option>
+            <option v-for="(modelT, index) in models" :value="modelT.id">{{modelT.name[langue]}}  ({{modelT.allowed_types}})</option>
           </select>
         </div>
         <div class="form-group">
@@ -126,6 +126,7 @@ export default {
   data() {
     return {
       doc: null,
+      model:null,
       form: {
         name: {
           fr: '',
@@ -213,6 +214,7 @@ export default {
       };
 
       this.doc = null;
+      this.currentDoc=null;
 
       this.$emit("modalClosed");
     },
@@ -247,7 +249,11 @@ export default {
 
           this.form.name.fr=this.form.name.en
 
-        } else  {
+
+        }
+        if (this.manyLanguages ==0 && this.langue=="fr"){
+
+
 
           this.form.name.en = this.form.name.fr;
 
@@ -279,13 +285,50 @@ export default {
         types: types,
         cid: this.cid,
         pid: this.pid,
+        isModeleAndUpdate:false
       }
 
+      if (
+
+        this.form.name[this.langue] != this.model.value && this.currentDoc==null) {
+        params.isModeleAndUpdate=true;
+
+      }
+
+      let y =[];
+      if (this.model.allowed_types.includes('pdf')) {
+        y.push('pdf');
+      }
+      if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
+        y.push('jpg;png;gif')
+      }
+      if (this.model.allowed_types.includes('xls') || this.model.allowed_types.includes('xlsx') || this.model.allowed_types.includes('odf')) {
+       y.push('xls;xlsx;odf')
+      }
+
+      let diffenceBetweenNewType = y.filter(x=> !types.includes(x));
+
+
+      if (diffenceBetweenNewType.length>0 && this.currentDoc==null){
+        params.isModeleAndUpdate=true;
+      }
+
+
+
       let url = 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument';
-      if(this.doc != null) {
+
+      if (this.form.name[this.langue] === this.model.value && this.doc!=null) {
+        url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
+        params.did = this.doc;
+
+      }
+      if(this.currentDoc != null ) {
 
         url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
         params.did = this.doc;
+
+
+
       }
 
      axios({
@@ -310,6 +353,7 @@ export default {
         url: "index.php?option=com_emundus_onboard&controller=form&task=getundocuments",
       }).then(response => {
         this.models = response.data.data;
+
 
         if(this.currentDoc != null){
           this.doc = this.currentDoc;
@@ -354,36 +398,38 @@ export default {
 
   watch: {
     doc: function(val) {
-      if(val != null) {
-        const model = this.models.find(model => model.id == val);
 
-        this.form.name = model.name;
-        this.form.description = model.description;
-        this.form.mandatory=model.mandatory
+
+      if(val != null) {
+        this.model = this.models.find(model => model.id == val);
+
+        this.form.name = this.model.name;
+        this.form.description = this.model.description;
+        this.form.mandatory=this.model.mandatory
         //this.form.mandatory=1;
-        if(model.mandatory==1) {
+        if(this.model.mandatory==1) {
 
           this.req=true;
 
         }else {
           this.req=false;
         }
-        if (model.allowed_types.includes('pdf')) {
+        if (this.model.allowed_types.includes('pdf')) {
           this.form.selectedTypes.pdf = true;
         } else {
           this.form.selectedTypes.pdf = false;
         }
-        if (model.allowed_types.includes('jpg') || model.allowed_types.includes('png') || model.allowed_types.includes('gif')) {
+        if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
           this.form.selectedTypes['jpg;png;gif'] = true;
         } else {
           this.form.selectedTypes['jpg;png;gif'] = false;
         }
-        if (model.allowed_types.includes('xls') || model.allowed_types.includes('xlsx') || model.allowed_types.includes('odf')) {
+        if (this.model.allowed_types.includes('xls') || this.model.allowed_types.includes('xlsx') || this.model.allowed_types.includes('odf')) {
           this.form.selectedTypes['xls;xlsx;odf'] = true;
         } else {
           this.form.selectedTypes['xls;xlsx;odf'] = false;
         }
-        this.form.nbmax = model.nbmax;
+        this.form.nbmax = this.model.nbmax;
       } else {
         this.form = {
           name: {
@@ -403,7 +449,8 @@ export default {
           },
         };
       }
-    }
+    },
+
   },
 
 };

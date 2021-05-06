@@ -1088,7 +1088,7 @@ class EmundusonboardModelform extends JModelList {
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
-		$query->select(array('a.*', 'b.mandatory'))
+		$query->select(array(' DISTINCT a.*', 'b.mandatory'))
 			->from($db->quoteName('#__emundus_setup_attachments','a'))
             ->join('LEFT', $db->quoteName('#__emundus_setup_attachment_profiles', 'b') . ' ON ' . $db->quoteName('b.attachment_id') . ' = ' . $db->quoteName('a.id'))
 			->where($db->quoteName('a.published') . ' = ' . 1)
@@ -1100,12 +1100,16 @@ class EmundusonboardModelform extends JModelList {
 			$db->setQuery($query);
 			$undocuments = $db->loadObjectList();
 
+
 			foreach ($undocuments as $undocument){
 			    if(strpos($undocument->lbl, '_em') === 0){
                     $undocument->can_be_deleted = true;
                 } else {
                     $undocument->can_be_deleted = false;
                 }
+			    /*echo '<pre>';
+			    print_r($undocument);
+			    echo '</pre>';*/
 
                 $f_values = $falang->getFalang($undocument->id,'emundus_setup_attachments','value');
 			    $undocument->name = new stdClass;

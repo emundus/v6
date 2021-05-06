@@ -137,9 +137,11 @@ export default {
               });
     },
     searchCampaignByTerm() {
+      //console.log("searching campaign by theme");
       axios.get("index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignstoaffectbyterm&term=" + this.searchTerm)
               .then(response => {
                 this.campaigns = response.data.data;
+                //console.log(response.data);
               });
     },
     redirectJRoute(link) {
