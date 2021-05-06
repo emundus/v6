@@ -21,15 +21,28 @@
       </div>
     </div>
 
+<!--    v-if showOtheruser == true -->
     <div class="row mb-3" v-if="showOtherUser==true">
-      <div v-for="user in this.userList">
-        <input type="checkbox" :id="user.id" :value="user.id" v-model="checked[user.id]"/>
-        <label class="form-check-label" :id="'userName_'+ user.id"> {{ user.firstname }} {{ user.lastname }}</label>
-        <label class="form-check-label" :id="'userEmail_'+ user.email"> {{ '[' + user.email + ']'}}</label>
+      <input type="checkbox" id="selectAll_" v-if="showOtherUser==true" @click="handleSelect"> {{ selectAllTitle }}
+      <div v-for="user in this.userList" v-if="showOtherUser==true">
+        <input type="checkbox" :id="user.id" :value="user.id" v-model="userChecked[user.id]"/>
+        <label class="form-check-label" :id="'userName_' + user.id"> {{ user.firstname }} {{ user.lastname }}</label>
+        <label class="form-check-label" :id="'userEmail_' + user.id"> {{ '[' + user.email + ']'}}</label>
       </div>
     </div>
 
     <div v-if="showOtherUser==false"></div>
+
+    <!--  TRIGGER PART -->
+    <div class="row mb-3">
+      <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.trigger_title }}</label>
+      <div class="col-xs-8">
+        <select v-model="form.triggerSelected" class="form-control-select" id="trigger-selected">
+          <option value="to_current_user">{{ TO_CURRENT_USER }}</option>
+          <option value="to_applicant">{{ TO_APPLICANT }}</option>
+        </select>
+      </div>
+    </div>
 
     <div class="row mb-3">
       <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.notes_title }}</label>
@@ -37,7 +50,6 @@
         <textarea v-model="form.messageNotes" placeholder="Supplementaires informations" style="margin: -3px; width: 95%"/>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -61,6 +73,7 @@ export default {
         input_status_title: "Statut d'entrée",
         destination_title: "Destinataire",
         notes_title: "Notes",
+        trigger_title: "Trigger",
       },
 
       form: {
@@ -68,6 +81,8 @@ export default {
           inputStatus: '',
           destinationSelected: '',
           messageNotes: '',
+          usersSelected: [],
+          triggerSelected: [],
       },
 
       emails: [],
@@ -77,7 +92,15 @@ export default {
       showOtherUser: false,
 
       userList: [],
-      checked: [],
+
+      userChecked: [],
+      triggerChecked: [],
+
+      selectAllTitle: "Choisir tous",
+      selectAll: false,
+
+      TO_CURRENT_USER: 'Current User',
+      TO_APPLICANT: 'Applicant',
     }
   },
 
@@ -94,11 +117,37 @@ export default {
     if(this.$props.stepParams !== undefined) {
       this.form.emailSelected = this.$props.stepParams.email;
       this.form.destinationSelected = this.$props.stepParams.destination;
+
+      if(this.$props.stepParams.destination === 'Choisir un utilisateur') {
+        this.showOtherUser = true;
+      }
     }
     this.getAllUsers();
+    this.form.usersSelected = this.userChecked;
+    this.form.triggerSelected = this.triggerChecked;
   },
 
   methods: {
+    handleSelect: function() {
+      var checkboxes = document.getElementById('userName_');
+      console.log(checkboxes);        //// checkbox + id
+
+    },
+
+    createTrigger: function() {
+      axios({
+        method: 'post',
+        url: '',      /// create trigger --> to applicant / to current user
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+      }).then(response => {
+
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
     getAllMessages: function() {
       axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallmessages')
           .then(response => {

@@ -3,7 +3,7 @@
     <input id='picker' type="color" :value="colorParam.color" @input="handleChange()" style="" v-if="showColor == true"/>
     <input type="color" :value="colorParam.color" @click="showColor=!showColor" @input="handleChange()" style="" v-if="showColor == false"/>
 
-    <span id='labelColor' v-model="colorParam.color" style="margin-left: 5vh; font-weight: bold" v-bind:style="{ color : colorParam.color }"> {{ colorParam.color || '#ffffff'}} </span>
+    <span id='labelColor' v-model="colorParam.color" style="margin-left: 5vh; font-weight: bold" v-bind:style="{ color : colorParam.color }"> {{ colorParam.color || '#000000'}} </span>
 
   </div>
 </template>
@@ -32,7 +32,7 @@ export default {
     /// first time or unset --> this.colorParam.color === undefined
     if(this.colorParam.color === undefined) {
       this.showColor = false;
-      this.colorParam.color = '#ffffff';
+      // this.colorParam.color = '#ffffff';
     }
     else {
       this.form.setColor = this.colorParam.color;
