@@ -4,111 +4,119 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
     <div id="bounding" class="bounding">
-    <modal :name="'stepModal' + ID" :width="580" :height="1000" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
-      <!--      please keep this code part, do not remove ||| option 1 : only one step in -->
+      <modal :name="'stepModal' + ID" :width="580" :height="3000" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
+        <!--      please keep this code part, do not remove ||| option 1 : only one step in -->
 
 
-      <!--      &lt;!&ndash;  Set step in   &ndash;&gt;-->
-      <!--      <div class="row mb-3">-->
-      <!--        <label class="col-sm-6 col-form-label">{{ this.title.inputStatusTitle }}</label>-->
-      <!--        <div class="col-xs-8">-->
-      <!--          <select v-model="form.inputStatus" class="form-control-select" id="instatus-selected">-->
-      <!--            <b-form-select-option selected disabled>&#45;&#45; Statut d'entre de l'etape &#45;&#45;</b-form-select-option>-->
-      <!--            <option v-for="instatus in this.inStatus" :value="instatus.step"> {{ instatus.value }}</option>-->
-      <!--          </select>-->
-      <!--        </div>-->
-      <!--      </div>-->
+        <!--      &lt;!&ndash;  Set step in   &ndash;&gt;-->
+        <!--      <div class="row mb-3">-->
+        <!--        <label class="col-sm-6 col-form-label">{{ this.title.inputStatusTitle }}</label>-->
+        <!--        <div class="col-xs-8">-->
+        <!--          <select v-model="form.inputStatus" class="form-control-select" id="instatus-selected">-->
+        <!--            <b-form-select-option selected disabled>&#45;&#45; Statut d'entre de l'etape &#45;&#45;</b-form-select-option>-->
+        <!--            <option v-for="instatus in this.inStatus" :value="instatus.step"> {{ instatus.value }}</option>-->
+        <!--          </select>-->
+        <!--        </div>-->
+        <!--      </div>-->
 
 
-      <!--&lt;!&ndash;    option 2 : multiple step in &ndash;&gt;-->
+        <!--&lt;!&ndash;    option 2 : multiple step in &ndash;&gt;-->
 
-      <div class="row mb-3">
-        <label class="col-sm-6 col-form-label">{{ this.title.label }}</label>
-        <div class="col-xs-8">
-          <textarea class='notes' id="step_label" rows="3" v-model="stepLabel" placeholder="Nom de l'etape" style="width: 95%; height: 35px !important"></textarea>
+        <div class="row mb-3">
+          <label class="col-sm-6 col-form-label">{{ this.title.label }}</label>
+          <div class="col-xs-8">
+            <textarea class='notes' id="step_label" rows="3" v-model="stepLabel" placeholder="Nom de l'etape" style="width: 95%; height: 35px !important"></textarea>
+          </div>
         </div>
-      </div>
 
-      <div class="row mb-3">
-        <label class="col-sm-6 col-form-label">{{ this.title.inputStatusTitle }}</label>
-        <tr v-for="item in this.$data.inStatus" v-if="!item.disabled">
-          <th><input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]"/></th>
-          <th><label class="form-check-label" :id="'status'+ item.step" name=""> {{item.value}}</label></th>
-        </tr>
-      </div>
-
-      <!-- Step step out -->
-      <div class="row mb-3">
-        <label class="col-sm-6 col-form-label">{{ this.title.outputStatusTitle }}</label>
-        <div class="col-xs-8">
-          <select v-model="form.outputStatus" class="form-control-select" id="outstatus-selected">
-            <b-form-select-option selected disabled>-- Statut sortie de l'etape --</b-form-select-option>
-            <option v-for="outstatus in this.outStatus" :value="outstatus.step"> {{ outstatus.value }}</option>
-          </select>
-        </div>
-      </div>
-
-      <!--       Step start date >>> add datetime picker -->
-      <div class="row mb-3">
-        <label class="col-sm-6 col-form-label">{{ this.title.startDateTitle }}</label>
-        <div class="col-xs-8">
-          <date-picker v-model="startDate" mode="dateTime" is24hr>
-            <template v-slot="{ inputValue, inputEvents }">
-              <input
-                  class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
-                  :value="inputValue"
-                  v-on="inputEvents"
-                  :id="'start_date_' + ID"
-              />
-            </template>
-          </date-picker>
+        <div class="row mb-3">
+          <label class="col-sm-6 col-form-label">{{ this.title.inputStatusTitle }}</label>
+          <div v-for="item in this.$data.inStatus" v-if="!item.disabled">
+            <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]"/>
+            <label class="form-check-label" :id="'status'+ item.step" name=""> {{item.value}}</label>
+          </div>
 
         </div>
-      </div>
 
-      <!-- Step end date >>> add datetime picker -->
-      <div class="row mb-3">
-        <label class="col-sm-6 col-form-label">{{ this.title.endDateTitle }}</label>
-        <div class="col-xs-8">
-          <date-picker v-model="endDate" mode="dateTime" is24hr>
-            <template v-slot="{ inputValue, inputEvents }">
-              <input
-                  class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
-                  :value="inputValue"
-                  v-on="inputEvents"
-                  :id="'end_date_' + ID"
-              />
-            </template>
-          </date-picker>
-
+        <!-- Step step out -->
+        <div class="row mb-3">
+          <label class="col-sm-6 col-form-label">{{ this.title.outputStatusTitle }}</label>
+          <div class="col-xs-8">
+            <select v-model="form.outputStatus" class="form-control-select" id="outstatus-selected">
+              <option selected disabled>---Sortie---</option>
+              <option v-for="outstatus in this.outStatus" :value="outstatus.step"> {{ outstatus.value }}</option>
+            </select>
+          </div>
         </div>
-      </div>
 
-      <!-- Supplementary information -->
-      <div class="row mb-3">
-        <label class="col-sm-6 col-form-label">{{ this.title.notes }}</label>
-        <div class="col-xs-8">
-          <textarea id="notes_form" rows="3" v-model="form.stepNotes" placeholder="Informations supplementaires" style="margin: -5px; width: 102%"></textarea>
+        <!--       Step start date >>> add datetime picker -->
+        <div class="row mb-3">
+          <label class="col-sm-6 col-form-label">{{ this.title.startDateTitle }}</label>
+          <div class="col-xs-8">
+            <date-picker v-model="startDate" mode="dateTime" is24hr>
+              <template v-slot="{ inputValue, inputEvents }">
+                <input
+                    class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
+                    :value="inputValue"
+                    v-on="inputEvents"
+                    :id="'start_date_' + ID"
+                />
+              </template>
+            </date-picker>
+
+          </div>
         </div>
-      </div>
 
-      <div class="row mb-3">
-        <label class="col-sm-6 col-form-label">{{ this.title.messageTitle }}</label>
-        <tr>
-          <th><input type="checkbox" @click="showMessage=!showMessage" :checked="showMessage==true">Oui</th>
-        </tr>
-      </div>
+        <!-- Step end date >>> add datetime picker -->
+        <div class="row mb-3">
+          <label class="col-sm-6 col-form-label">{{ this.title.endDateTitle }}</label>
+          <div class="col-xs-8">
+            <date-picker v-model="endDate" mode="dateTime" is24hr>
+              <template v-slot="{ inputValue, inputEvents }">
+                <input
+                    class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
+                    :value="inputValue"
+                    v-on="inputEvents"
+                    :id="'end_date_' + ID"
+                />
+              </template>
+            </date-picker>
+
+          </div>
+        </div>
+
+        <!-- Supplementary information -->
+        <div class="row mb-3">
+          <label class="col-sm-6 col-form-label">{{ this.title.notes }}</label>
+          <div class="col-xs-8">
+            <textarea id="notes_form" rows="3" v-model="form.stepNotes" placeholder="Informations supplementaires" style="margin: -5px; width: 102%"></textarea>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-sm-6 col-form-label">{{ this.title.messageTitle }}</label>
+          <tr>
+            <th><input type="checkbox" @click="showMessage=!showMessage" :checked="showMessage==true">Oui</th>
+          </tr>
+        </div>
 
       <message-modal :element="form" :stepParams="stepParams" :activateParams="showMessage" v-if="showMessage==true"/>
 
-      <div class="row mb-3" v-if="showMessage==false"/>
+        <div class="row mb-3" v-if="showMessage==false"/>
 
-      <div class="row mb-3">
-        <b-button variant="success" @click="updateParams()">Sauvegarder</b-button>
-        <b-button variant="danger" @click="exitModal()">Quitter</b-button>
-      </div>
+        <div class="row mb-3">
+          <label class="col-sm-6 col-form-label">{{ this.title.colorTitle }}</label>
+          <div class="col-xs-8">
+            <color-picker :element="form"/>
+          </div>
+        </div>
 
-    </modal>
+        <div class="row mb-3">
+          <b-button variant="success" @click="updateParams()">Sauvegarder</b-button>
+          <b-button variant="danger" @click="exitModal()">Quitter</b-button>
+        </div>
+
+      </modal>
     </div>
   </div>
 </template>
@@ -121,6 +129,7 @@ import Calendar from 'v-calendar/lib/components/calendar.umd'
 import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 import { commonMixin } from "../../../mixins/common-mixin";
 import messageModal from "../WorkflowModal/element/messageModal";
+import colorPicker from "../../colorPicker";
 
 require('moment')().format('YYYY-MM-DD HH:mm:ss');
 
@@ -138,6 +147,7 @@ export default {
     Calendar,
     DatePicker,
     messageModal,
+    colorPicker,
   },
 
   data: function() {
@@ -150,7 +160,8 @@ export default {
         startDateTitle: "Date debut",
         endDateTitle: "Date fin",
         notes: "Informations supplementaires",
-        messageTitle: "Voulez-vous envoyer un message?"
+        messageTitle: "Voulez-vous envoyer un message?",
+        colorTitle: "Palette de couleur",
       },
       // use for form v-model
       form: {
@@ -248,6 +259,18 @@ export default {
 
     updateParams: function() {
       // params :: this.form
+      console.log(this.showMessage);
+      console.log(this.stepParams);
+
+      if(this.showMessage == false && Object.keys(this.stepParams).length > 0) {
+        delete this.form.emailSelected;
+        delete this.form.destinationSelected;
+        delete this.form.messageNotes;
+      }
+
+      else {
+        // .... do nothing
+      }
 
       if(this.form.inputStatus !== null && this.form.outputStatus !== null
           && this.startDate !== null && this.endDate !== null
@@ -332,6 +355,9 @@ export default {
       _emit['id'] = this.form.id;
 
       _emit['label'] = $("#step_label").val();      // pass label to parent component (stepflow)
+
+      // get the color
+      _emit['color'] = $("#labelColor").text();
 
       if( $( "#email-selected option:selected" ).text() !== "" || $( "#email-selected option:selected" ).text() !== undefined || $( "#email-selected option:selected" ).text() !== null) {
         _emit['email'] = $( "#email-selected option:selected" ).text();

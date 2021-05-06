@@ -3,8 +3,9 @@
     <div class="row mb-3">
       <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.email_model_title }}</label>
       <div class="col-xs-8">
-        <select v-model="form.emailSelected" class="form-control" id="email-selected" :disabled="isDisable">
-          <option v-for = "model in this.$data.emails" :value="model.id"> {{ model.lbl }}</option>
+        <select v-model="form.emailSelected" class="form-control-select" id="email-selected">
+          <option selected disabled>---Email---</option>
+          <option v-for = "model in this.$data.emails" :value="model.id" :disabled="isDisable"> {{ model.lbl }}</option>
         </select>
       </div>
     </div>
@@ -12,8 +13,9 @@
     <div class="row mb-3">
       <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.destination_title }}</label>
       <div class="col-xs-8">
-        <select v-model="form.destinationSelected" class="form-control-select" id="destination-selected" :disabled="isDisable">
-          <option v-for="destination in this.$data.destination" :value="destination.id"> {{ destination.label }}</option>
+        <select v-model="form.destinationSelected" class="form-control-select" id="destination-selected">
+          <option selected disabled>---Destination---</option>
+          <option v-for="destination in this.$data.destination" :value="destination.id" :disabled="isDisable"> {{ destination.label }}</option>
         </select>
       </div>
     </div>
@@ -51,11 +53,10 @@ export default {
       },
 
       form: {
-        emailSelected: '',
-        inputStatus: '',
-        destinationSelected: '',
-        messageNotes: '',
-        color: "#0f4c81",
+          emailSelected: '',
+          inputStatus: '',
+          destinationSelected: '',
+          messageNotes: '',
       },
 
       emails: [],

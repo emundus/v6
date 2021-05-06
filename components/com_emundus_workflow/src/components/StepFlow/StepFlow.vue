@@ -143,6 +143,7 @@ export default {
       this.columns[_index]['endDate'] = result['endDate'];
       this.columns[_index]['emailTemplate'] = result['email'];
       this.columns[_index]['destination'] = result['destination'];
+      this.columns[_index]['style'] = result['color'];
       this.$forceUpdate();
 
       //// forceupdate --> call api to update status in database --> checkin if status (after) and status (before) are the same --> do nothing /// otherwise, call to axios

@@ -13,8 +13,8 @@
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.elementTitle.form_name_title }}</label>
       <div class="col-xs-8">
-        <select v-model="form.formNameSelected" class="form-control">
-          <b-form-select-option selected disabled>--Formulaire--</b-form-select-option>
+        <select v-model="form.formNameSelected" class="form-control-select">
+          <option selected disabled>---Formulaire---</option>
           <option v-for="form in this.$data.forms" :value="form.id"> {{ form.label }}</option>
         </select>
       </div>

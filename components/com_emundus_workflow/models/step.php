@@ -270,6 +270,7 @@ class EmundusworkflowModelstep extends JModelList {
                 $_exportArray['notes'] = json_decode($_rawCurrentParams->params)->notes;
                 $_exportArray['stepLabel'] = $_rawCurrentParams->step_label;
                 $_exportArray['ordering'] = $_rawCurrentParams->ordering;
+                $_exportArray['color'] = json_decode($_rawCurrentParams->params)->setColor;
 
 //                $_exportArray['inputStatusName'] = ($this->getStatusAttributsFromStep($_exportArray['inputStatus']))->value;
 //                $_exportArray['outputStatusName'] = ($this->getStatusAttributsFromStep($_exportArray['outputStatus']))->value;
