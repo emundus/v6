@@ -273,19 +273,20 @@ class EmundusonboardModelformbuilder extends JModelList {
 
     function prepareSubmittionPlugin($params) {
         $params['applicationsent_status'] = "0";
+        $params['emundusconfirmpost_status'] = "1";
         $params['admission'] = "0";
         $params['ajax_validations'] = "0";
         $params['only_process_curl'] = array(
             2 => "onBeforeLoad"
         );
         $params['form_php_file'] = array(
-            2 => "-1"
+            2 => "emundus-isApplicationCompleted.php"
         );
         $params['form_php_require_once'] = array(
             2 => "0"
         );
         $params['thanks_message'] = array(
-            3 => "Félicitations, votre dossier a bien été envoyé."
+            3 => "Félicitations, votre dossier a bien été envoyée."
         );
         $params['save_insession'] = array(
             3 => "0"
@@ -315,6 +316,10 @@ class EmundusonboardModelformbuilder extends JModelList {
             3 => ""
         );
         $params['plugins'] = array("emundusisapplicationsent", "emundusconfirmpost", "php", "redirect");
+        $params['plugin_description'] = array("isSent", "Confirm", "isComplete", "redirect");
+        $params['plugin_state'] = array("1", "1", "1", "1");
+        $params['plugin_locations'] = array("both", "both", "both", "both");
+        $params['plugin_events'] = array("both", "both", "both", "both");
 
         return $params;
     }
