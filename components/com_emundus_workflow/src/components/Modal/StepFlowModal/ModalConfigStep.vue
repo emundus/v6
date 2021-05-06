@@ -107,7 +107,7 @@
         <div class="row mb-3">
           <label class="col-sm-6 col-form-label">{{ this.title.colorTitle }}</label>
           <div class="col-xs-8">
-            <color-picker :element="form"/>
+            <color-picker :element="form" :colorParam="colorParams"/>
           </div>
         </div>
 
@@ -152,7 +152,8 @@ export default {
 
   data: function() {
     return {
-      stepParams: Object,
+      messageParams: Object,
+      colorParams: Object,
       title: {
         label: "Nom de l'etape",
         inputStatusTitle: "Statut d'entre",
@@ -224,14 +225,16 @@ export default {
 
         this.stepLabel = response.data.data.stepLabel;
 
-        this.stepParams = response.data.data.message;
+        this.messageParams = response.data.data.message;
 
         if(response.data.data.message !== undefined) {
           this.showMessage = true;
         } else {
           this.showMessage = false;
+          this.messageParams = {};
         }
-        console.log('');
+
+        this.colorParams = response.data.data;      // using this data to pass to child
       })
     },
 
@@ -259,10 +262,8 @@ export default {
 
     updateParams: function() {
       // params :: this.form
-      console.log(this.showMessage);
-      console.log(this.stepParams);
-
-      if(this.showMessage == false && Object.keys(this.stepParams).length > 0) {
+      if(this.showMessage == false && this.messageParams !== undefined && Object.keys(this.messageParams).length > 0) {
+        /// this way is not efficient (reason : hardcode) --> replace by all DOM children of message modal (backlog)
         delete this.form.emailSelected;
         delete this.form.destinationSelected;
         delete this.form.messageNotes;

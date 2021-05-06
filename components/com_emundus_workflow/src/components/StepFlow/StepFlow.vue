@@ -16,6 +16,7 @@
            @dragstart="dragStart"
            @dragend="dragEnd"
            @mousedown="handleDown"
+           v-bind:style="{ backgroundColor : column.style }"
       >
 
         <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
@@ -252,6 +253,7 @@ export default {
             this.columns[_index]['startDate'] = answer.data.data.startDate;
             this.columns[_index]['endDate'] = answer.data.data.endDate;
             this.columns[_index]['order'] = answer.data.data.ordering;
+            this.columns[_index]['style'] = answer.data.data.color;
 
             if(answer.data.data.message === undefined) {
               this.columns[_index]['emailTemplate'] = "";
