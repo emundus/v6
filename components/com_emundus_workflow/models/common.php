@@ -31,18 +31,32 @@ class EmundusworkflowModelcommon extends JModelList {
         }
     }
 
-    //get destination by id
-    public function getDestinationById($did) {
-        try {
-            $this->query->clear()
-                ->select('#__emundus_setup_groups.*')
-                ->from($this->db->quoteName('#__emundus_setup_groups'))
-                ->where($this->db->quoteName('#__emundus_setup_groups.id') . '=' . (int)$did);
-            $this->db->setQuery($this->query);
-            return $this->db->loadObject();
+    // get destinations by (list) of id
+    public function getDestinationsByIds($data) {
+        if(!empty($data)) {
+            try {
+                if(count(explode(',', $data)) == 1) {
+                    $this->query->clear()
+                        ->select('#__emundus_setup_groups.*')
+                        ->from($this->db->quoteName('#__emundus_setup_groups'))
+                        ->where($this->db->quoteName('#__emundus_setup_groups.id') . '=' . (int)$data);
+                    $this->db->setQuery($this->query);
+                    return $this->db->loadObject();
+                } else {
+                    $this->query->clear()
+                        ->select('#__users.*')
+                        ->from($this->db->quoteName('#__users'))
+                        ->where($this->db->quoteName('#__users.id') . 'IN (' . $data . ')');
+                    $this->db->setQuery($this->query);
+                    return $this->db->loadObjectList();
+                }
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
         }
-        catch(Exception $e) {
-            return $e->getMessage();
+        else {
+            return false;
         }
     }
 
@@ -59,6 +73,21 @@ class EmundusworkflowModelcommon extends JModelList {
         }
         catch(Exception $e) {
             return $e->getMessage();
+        }
+    }
+
+    /// create new trigger (jos_emundus_setup_emails_trigger_repeat_campaign_id))
+    public function createEmailTriggerForCampaign($trigger) {
+        if(!empty($trigger)) {
+            try {
+                //// main scripts here
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
         }
     }
 }

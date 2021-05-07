@@ -304,12 +304,16 @@ class EmundusworkflowModelstep extends JModelList {
                     $_exportArray['message']['usersSelected'] = $usersSelected;
 
                     $_exportArray['message']['emailLabel'] = ($this->email_model->getEmailById($_exportArray['message']['email']))->lbl;
-                    $_exportArray['message']['destinationLabel'] = ($this->common_model->getDestinationById($_exportArray['message']['destination']))->label;            /// here I will get the destination(s) label
+                    $_exportArray['message']['destinationLabel'] = ($this->common_model->getDestinationsByIds($_exportArray['message']['destination']))->label;            /// here I will get the destination(s) label
+                    ///
+
+                    count(explode(',', $_exportArray['message']['usersSelected'])) > 1 ? $_exportArray['message']['usersSelected'] = $this->common_model->getDestinationsByIds($_exportArray['message']['usersSelected']) : null;
                 }
 
-                else {}
+                else {
 
-                var_dump($_exportArray['message']['usersSelected']);die;
+                }
+
                 return $_exportArray;
             }
             catch(Exception $e) {
