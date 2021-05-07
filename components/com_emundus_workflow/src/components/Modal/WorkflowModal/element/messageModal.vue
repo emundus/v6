@@ -15,7 +15,7 @@
       <div class="col-xs-8">
         <select v-model="form.destinationSelected" class="form-control-select" id="destination-selected">
           <option selected disabled>---Destination---</option>
-          <option v-for="destination in this.$data.destination" :value="destination.id" :disabled="isDisable" @click="showOtherUser=false"> {{ destination.label }}</option>
+          <option v-for="destination in this.$data.destination" :value="destination.id" :disabled="isDisable" @click="handleOtherClick"> {{ destination.label }}</option>
           <option @click="handleClick" :value="'other'"> Choisir un utilisateur</option>
         </select>
       </div>
@@ -143,14 +143,17 @@ export default {
   },
 
   methods: {
-    handleClick: function() {
-      // this.showOtherUser=!this.showOtherUser;
+    handleOtherClick: function() {
+      this.showOtherUser = false;
+      this.form.usersSelected = null;
+    },
 
+    handleClick: function() {
       if(this.showOtherUser === true) {
         /// set variables
         this.form.usersSelected = this.userChecked;
       } else {
-        this.form.usersSelected = undefined;
+
       }
 
       this.showOtherUser=!this.showOtherUser;
