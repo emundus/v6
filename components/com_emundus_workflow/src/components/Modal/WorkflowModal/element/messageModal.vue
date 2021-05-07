@@ -16,7 +16,7 @@
         <select v-model="form.destinationSelected" class="form-control-select" id="destination-selected">
           <option selected disabled>---Destination---</option>
           <option v-for="destination in this.$data.destination" :value="destination.id" :disabled="isDisable" @click="showOtherUser=false"> {{ destination.label }}</option>
-          <option @click="showOtherUser=!showOtherUser"> Choisir un utilisateur</option>
+          <option @click="showOtherUser=!showOtherUser" :value="'other'"> Choisir un utilisateur</option>
         </select>
       </div>
     </div>
@@ -55,6 +55,7 @@
 
 <script>
 import axios from 'axios';
+import $ from 'jquery';
 const qs = require('qs');
 
 export default {
@@ -120,6 +121,7 @@ export default {
       this.form.emailSelected = this.$props.stepParams.email;
       this.form.destinationSelected = this.$props.stepParams.destination;
 
+      ////
       if(this.$props.stepParams.destination === 'Choisir un utilisateur') {
         this.showOtherUser = true;
       }
@@ -145,7 +147,10 @@ export default {
     createTrigger: function() {
       const selectedUserList = [];
 
-      if(this.showOtherUser === true) {
+      var selectedIndex = $("#destination-selected option:selected").index();           /// get index of selected option
+      var selectedValue = $("#destination-selected option").eq(selectedIndex).val();    /// get the value of selected option
+
+      if(this.showOtherUser === true && selectedValue === 'other') {
         this.userIdList.forEach(id => {
           if(document.getElementById('check' + id).checked === true) {
             /// push
