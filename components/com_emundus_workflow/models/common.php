@@ -60,6 +60,26 @@ class EmundusworkflowModelcommon extends JModelList {
         }
     }
 
+    /// get destination from (id)
+    public function getDestinationById($id) {
+        if(!empty($id)) {
+            try {
+                $this->query->clear()
+                    ->select('#__users.*')
+                    ->from($this->db->quoteName('#__users'))
+                    ->where($this->db->quoteName('#__users.id') . '=' . (int)$id);
+                $this->db->setQuery($this->query);
+                return $this->db->loadObjectList();
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
     /// get all users --> for testing (remove it when finishing)
     public function getAllUsers() {
         try {
@@ -78,10 +98,12 @@ class EmundusworkflowModelcommon extends JModelList {
 
     /// create new trigger (jos_emundus_setup_emails_trigger_repeat_campaign_id))
     public function createEmailTriggerForCampaign($trigger, $users) {
-        if(!empty($trigger)) {
+        if(!empty($trigger) and !empty($users)) {
             try {
                 $trigger['user'] = JFactory::getUser()->id;
                 $trigger['date_time'] = date('Y-m-d H:i:s');
+
+                //// step 1 --> emundus_setup_emails_trigger
                 $this->query->clear()
                     ->insert($this->db->quoteName('#__emundus_setup_emails_trigger'))
                     ->columns($this->db->quoteName(array_keys($trigger)))
@@ -89,7 +111,11 @@ class EmundusworkflowModelcommon extends JModelList {
 
                 $this->db->setQuery($this->query);
                 $this->db->execute();
-                return $this->db->insertid();
+                $_triggerId = $this->db->insertid();
+
+                /// step 2 --> emundus_setup_emails_trigger_campaign_id
+                /// step 3 --> emundus_setup_emails_trigger_user_id
+
             }
             catch(Exception $e) {
                 return $e->getMessage();

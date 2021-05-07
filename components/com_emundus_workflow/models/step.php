@@ -315,7 +315,7 @@ class EmundusworkflowModelstep extends JModelList {
                     else {
                         count(explode(',', $_exportArray['message']['usersSelected'])) > 1
                             ? $_exportArray['message']['usersSelected'] = $this->common_model->getDestinationsByIds($_exportArray['message']['usersSelected'])
-                            : $_exportArray['message']['usersSelected'] = $usersSelected;
+                            : $_exportArray['message']['usersSelected'] = $this->common_model->getDestinationById($usersSelected);
                     }
                 }
 
