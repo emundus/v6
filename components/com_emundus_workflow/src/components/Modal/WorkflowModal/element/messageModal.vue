@@ -16,7 +16,7 @@
         <select v-model="form.destinationSelected" class="form-control-select" id="destination-selected">
           <option selected disabled>---Destination---</option>
           <option v-for="destination in this.$data.destination" :value="destination.id" :disabled="isDisable" @click="showOtherUser=false"> {{ destination.label }}</option>
-          <option @click="showOtherUser=!showOtherUser" :value="'other'"> Choisir un utilisateur</option>
+          <option @click="handleClick" :value="'other'"> Choisir un utilisateur</option>
         </select>
       </div>
     </div>
@@ -128,9 +128,13 @@ export default {
 
         /// iterate this.$props.stepParams.usersSelected
         var _temp = this.$props.stepParams.usersSelected;
-        _temp.forEach(elt => {
-          this.userChecked[elt.id] = true;
-        })
+        if(_temp instanceof Array === false) {
+          this.userChecked[_temp] = true;
+        } else {
+          _temp.forEach(elt => {
+            this.userChecked[elt.id] = true;
+          })
+        }
       } else {
         this.showOtherUser = false;
       }
@@ -141,6 +145,15 @@ export default {
   },
 
   methods: {
+    handleClick: function() {
+      this.showOtherUser=!this.showOtherUser;
+
+      if(this.showOtherUser === false) {
+        /// remove all checks
+        this.userIdList.forEach(elt => {document.getElementById('check' + elt).checked = false;});
+      } else {}
+    },
+
     handleSelect: function() {
       this.selectAll=!this.selectAll;
 
@@ -163,7 +176,7 @@ export default {
         this.userIdList.forEach(id => {
           if(document.getElementById('check' + id).checked === true) {
             /// push
-            selectedUserList.push(document.getElementById('check' + id).value);
+            selectedUserList.push(document.getElementById('check' + id).value);   /// using jquery here
           } else {}
         })
       }
