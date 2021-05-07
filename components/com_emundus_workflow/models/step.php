@@ -170,7 +170,7 @@ class EmundusworkflowModelstep extends JModelList {
 
                 $_uString = "";
                 //// in case of destinationSelected === other --> usersSelected is a K-V array
-                if($data['params']['destinationSelected'] === 'other' && isset($data['params']['usersSelected'])) {
+                if($data['params']['destinationSelected'] === 'other' && !empty($data['params']['usersSelected'])) {
                     foreach($data['params']['usersSelected'] as $key => $value) {
                         if($value == "true") {
                             $_uString .= (string)$key . ",";
@@ -290,9 +290,6 @@ class EmundusworkflowModelstep extends JModelList {
                 $_exportArray['ordering'] = $_rawCurrentParams->ordering;
                 $_exportArray['color'] = json_decode($_rawCurrentParams->params)->setColor;
 
-//                $_exportArray['inputStatusName'] = ($this->getStatusAttributsFromStep($_exportArray['inputStatus']))->value;
-//                $_exportArray['outputStatusName'] = ($this->getStatusAttributsFromStep($_exportArray['outputStatus']))->value;
-
                 $_exportArray['inputStatusNames'] = ($this->getListStatusNameFromStep($_exportArray['inputStatus']));
                 $_exportArray['outputStatusNames'] = ($this->getListStatusNameFromStep($_exportArray['outputStatus']));
 
@@ -307,14 +304,22 @@ class EmundusworkflowModelstep extends JModelList {
                     $_exportArray['message']['destinationLabel'] = ($this->common_model->getDestinationsByIds($_exportArray['message']['destination']))->label;            /// here I will get the destination(s) label
 
                     /// condition --> here
-                    $_exportArray['message']['destinationLabel'] === null ? $_exportArray['message']['destinationLabel'] = $_exportArray['message']['destination'] : $_exportArray['message']['destinationLabel'] = $this->common_model->getDestinationsByIds($_exportArray['message']['destination'])->label;
+                    $_exportArray['message']['destinationLabel'] === null
+                        ? $_exportArray['message']['destinationLabel'] = $_exportArray['message']['destination']
+                        : $_exportArray['message']['destinationLabel'] = $this->common_model->getDestinationsByIds($_exportArray['message']['destination'])->label;
 
-                    count(explode(',', $_exportArray['message']['usersSelected'])) > 1 ? $_exportArray['message']['usersSelected'] = $this->common_model->getDestinationsByIds($_exportArray['message']['usersSelected']) : $usersSelected;
+
+                    if(empty($_exportArray['message']['usersSelected'])) {
+                        $_exportArray['message']['usersSelected'] = null;
+                    }
+                    else {
+                        count(explode(',', $_exportArray['message']['usersSelected'])) > 1
+                            ? $_exportArray['message']['usersSelected'] = $this->common_model->getDestinationsByIds($_exportArray['message']['usersSelected'])
+                            : $_exportArray['message']['usersSelected'] = $usersSelected;
+                    }
                 }
 
-                else {
-
-                }
+                else { }
 
                 return $_exportArray;
             }
