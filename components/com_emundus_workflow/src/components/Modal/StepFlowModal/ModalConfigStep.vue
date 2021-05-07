@@ -376,6 +376,21 @@ export default {
         _emit['destination'] = $( "#destination-selected option:selected" ).text();
       }
 
+      /// get the selectedIndex, selectedValue -->
+      var selectedIndex = $("#destination-selected option:selected").index();
+      var selectedValue = $("#destination-selected option").eq(selectedIndex).val();
+      var _users= [];
+
+      if(selectedValue === 'other' && this.form.usersSelected !== undefined) {
+        /// grab all other users
+        for(i = 0; i <= this.form.usersSelected.length; i++) {
+          if(this.form.usersSelected[i] === true) {
+            _users.push(document.getElementById('userName_' + i).innerText);
+          }
+        }
+        _emit['users'] = _users.toString();
+      }
+
       this.$emit('updateStep', _emit);
     }
   },

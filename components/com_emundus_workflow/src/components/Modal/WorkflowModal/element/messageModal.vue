@@ -122,7 +122,6 @@ export default {
       this.form.emailSelected = this.$props.stepParams.email;
       this.form.destinationSelected = this.$props.stepParams.destination;
 
-      //// how to avoid hard-coding here? --> handle this code snippet
       if(this.selectOtherUsers == true) {
         this.showOtherUser = true;
 
