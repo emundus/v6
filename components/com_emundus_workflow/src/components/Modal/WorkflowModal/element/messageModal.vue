@@ -65,6 +65,7 @@ export default {
     element: Object,
     stepParams: Object,
     activateParams: Boolean,
+    selectOtherUsers: Boolean,
   },
 
   data: function() {
@@ -121,13 +122,17 @@ export default {
       this.form.emailSelected = this.$props.stepParams.email;
       this.form.destinationSelected = this.$props.stepParams.destination;
 
-      ////
-      if(this.$props.stepParams.destination === 'Choisir un utilisateur') {
+      console.log(this.selectOtherUsers);
+
+      //// how to avoid hard-coding here? --> handle this code snippet
+      if(this.$props.stepParams.destination === 'other') {
         this.showOtherUser = true;
+        this.form.usersSelected = this.userChecked;
+      } else {
+
       }
     }
     this.getAllUsers();
-    this.form.usersSelected = this.userChecked;
     this.form.triggerSelected = this.triggerChecked;
   },
 
@@ -137,9 +142,9 @@ export default {
 
       this.userIdList.forEach(elt => {
         if(this.selectAll == true) {
-          document.getElementById('check' + elt).checked = true;
+          document.getElementById('check' + elt).checked = true;          /// using jquery here
         } else {
-          document.getElementById('check' + elt).checked = false;
+          document.getElementById('check' + elt).checked = false;         /// using jquery here
         }
       })
     },

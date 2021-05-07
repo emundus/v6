@@ -99,7 +99,7 @@
           </tr>
         </div>
 
-      <message-modal :element="form" :stepParams="messageParams" :activateParams="showMessage" v-if="showMessage==true" ref="message"/>
+      <message-modal :element="form" :stepParams="messageParams" :activateParams="showMessage" :selectOtherUsers="selectUsers" v-if="showMessage==true" ref="message"/>
 
         <div class="row mb-3" v-if="showMessage==false"/>
 
@@ -185,6 +185,7 @@ export default {
       stepLabel: '',
 
       showMessage: false,
+      selectUsers: false,
     }
   },
 
@@ -228,6 +229,13 @@ export default {
 
         if(response.data.data.message !== undefined) {
           this.showMessage = true;
+
+          if(response.data.data.message.usersSelected !== null) {
+            this.selectUsers = true;
+          }
+          else {
+            this.selectUsers = false;
+          }
         } else {
           this.showMessage = false;
           this.messageParams = {};

@@ -276,7 +276,7 @@ class EmundusworkflowModelstep extends JModelList {
                 $_rawCurrentParams = $this->db->loadObject();       //get current params (raw info)
 
                 //// here, I use ternary operator to get the list of users -> if exist --> return it, otherwise, return destination
-                $usersSelected = json_decode($_rawCurrentParams->params)->usersSelected ? json_decode($_rawCurrentParams->params)->usersSelected : json_decode($_rawCurrentParams->params)->destinationSelected;
+                $usersSelected = json_decode($_rawCurrentParams->params)->usersSelected ? json_decode($_rawCurrentParams->params)->usersSelected : null;
 
                 //// parse this raw info into array
                 $_exportArray = array();
@@ -307,7 +307,7 @@ class EmundusworkflowModelstep extends JModelList {
                     $_exportArray['message']['destinationLabel'] = ($this->common_model->getDestinationsByIds($_exportArray['message']['destination']))->label;            /// here I will get the destination(s) label
                     ///
 
-                    count(explode(',', $_exportArray['message']['usersSelected'])) > 1 ? $_exportArray['message']['usersSelected'] = $this->common_model->getDestinationsByIds($_exportArray['message']['usersSelected']) : null;
+                    count(explode(',', $_exportArray['message']['usersSelected'])) > 1 ? $_exportArray['message']['usersSelected'] = $this->common_model->getDestinationsByIds($_exportArray['message']['usersSelected']) : $usersSelected;
                 }
 
                 else {
