@@ -144,20 +144,23 @@ export default {
 
   methods: {
     handleClick: function() {
-      this.showOtherUser=!this.showOtherUser;
+      // this.showOtherUser=!this.showOtherUser;
 
       if(this.showOtherUser === true) {
         /// set variables
         this.form.usersSelected = this.userChecked;
       } else {
-        /// do nothing
+        this.form.usersSelected = undefined;
       }
+
+      this.showOtherUser=!this.showOtherUser;
     },
 
     handleClickUser: function(id) {
-      this.showOtherUser = true;  // <-- I think this line is not necessary
-      this.userChecked[id] = true;
-      this.form.usersSelected = this.userChecked;
+      if(this.showOtherUser === true) {
+        this.userChecked[id] = true;
+        this.form.usersSelected = this.userChecked;
+      } else {}
     },
 
     handleSelect: function() {

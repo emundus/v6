@@ -170,7 +170,7 @@ class EmundusworkflowModelstep extends JModelList {
 
                 $_uString = "";
                 //// in case of destinationSelected === other --> usersSelected is a K-V array
-                if($data['params']['destinationSelected'] == 'other' && isset($data['params']['usersSelected'])) {
+                if($data['params']['destinationSelected'] === 'other' && isset($data['params']['usersSelected'])) {
                     foreach($data['params']['usersSelected'] as $key => $value) {
                         if($value == "true") {
                             $_uString .= (string)$key . ",";

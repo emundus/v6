@@ -28,7 +28,7 @@
         <div style="color:lightseagreen"> {{ column.emailTemplate }} </div>
         <div style="color:midnightblue"> {{ column.destination }} </div>
         <div style="color:darkolivegreen"> {{ column.users }}</div>
-        <modal-config-step :ID="column.id" :element="column" @updateStep="updateStep" @deleteStep="deleteStep(column.id)"/>
+        <modal-config-step :ID="column.id" :element="column" @updateStep="updateStep" @deleteStep="deleteStep(column.id)" ref="stepModal"/>
         <!--        <div>{{ column.stateIn }}</div>-->
         <!--        <div>{{ column.stateOut }}</div>-->
         <b-button @click="configStep(column.id)" variant="warning">Configurer</b-button>
@@ -267,8 +267,14 @@ export default {
               this.columns[_index]['destination'] = answer.data.data.message.destinationLabel;
 
               if(answer.data.data.message.destinationLabel === 'other') {
-                answer.data.data.message.usersSelected.forEach(elt => _userName.push(elt.name));
-                this.columns[_index]['users'] = _userName.toString();
+                var _temp = answer.data.data.message.usersSelected;
+                if(_temp instanceof Array === true) {
+                  _temp.forEach(elt => _userName.push(elt.name));
+                  this.columns[_index]['users'] = _userName.toString();
+                } else {
+                  console.log(_temp);
+                  this.columns[_index]['users'] = _temp.toString();
+                }
               }
             }
             this.$forceUpdate();
