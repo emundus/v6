@@ -146,6 +146,11 @@ export default {
     handleOtherClick: function() {
       this.showOtherUser = false;
       this.form.usersSelected = null;
+      // uncheck all options
+      this.userIdList.forEach(elt => {
+        this.userChecked[elt] = false;
+        document.getElementById('check' + elt).checked = false;
+      });
     },
 
     handleClick: function() {
