@@ -194,14 +194,15 @@ export default {
       }
 
       let trigger = {
-        status: this.element.outputStatus,
-        model: this.form.emailSelected,
-        action_status: this.form.triggerSelected === 'to_applicant' ? 'to_applicant' : this.form.triggerSelected === 'to_current_user' ? 'to_current_user' : '' || '',
+        step: this.element.outputStatus,
+        email_id: this.form.emailSelected,
+        to_current_user: this.form.triggerSelected === 'to_current_user' ? 1 : 0,
+        to_applicant: this.form.triggerSelected === 'to_applicant' ? 1 : 0,
       }
 
       axios({
         method: 'post',
-        url: 'index.php?option=com_emundus_onboard&controller=email&task=createtrigger',
+        url: 'index.php?option=com_emundus_workflow&controller=common&task=createtrigger',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },

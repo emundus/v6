@@ -134,4 +134,30 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    // create trigger
+    public function createtrigger() {
+        $user = JFactory::getUser();
+
+        if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
+        }
+
+        else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('trigger');
+            $users = $jinput->getRaw('users');
+
+            $_triggers = $this->_common_model->createEmailTriggerForCampaign($data,$users);
+
+            if ($_triggers) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_USERS"), 'data' => $_triggers);
+            }
+            else {
+                $tab = array('status' => 0, 'msg' => JText::_("GET_ALL_USERS_FAILED"), 'data' => $_triggers);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 }

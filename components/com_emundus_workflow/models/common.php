@@ -77,10 +77,19 @@ class EmundusworkflowModelcommon extends JModelList {
     }
 
     /// create new trigger (jos_emundus_setup_emails_trigger_repeat_campaign_id))
-    public function createEmailTriggerForCampaign($trigger) {
+    public function createEmailTriggerForCampaign($trigger, $users) {
         if(!empty($trigger)) {
             try {
-                //// main scripts here
+                $trigger['user'] = JFactory::getUser()->id;
+                $trigger['date_time'] = date('Y-m-d H:i:s');
+                $this->query->clear()
+                    ->insert($this->db->quoteName('#__emundus_setup_emails_trigger'))
+                    ->columns($this->db->quoteName(array_keys($trigger)))
+                    ->values(implode(',', $this->db->quote(array_values($trigger))));
+
+                $this->db->setQuery($this->query);
+                $this->db->execute();
+                return $this->db->insertid();
             }
             catch(Exception $e) {
                 return $e->getMessage();
