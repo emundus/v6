@@ -25,7 +25,7 @@
     <div class="row mb-3" v-if="showOtherUser==true">
       <input type="checkbox" id="selectAll_" v-if="showOtherUser==true" @click="handleSelect"> {{ selectAllTitle }}
       <div v-for="user in this.userList" v-if="showOtherUser==true">
-        <input type="checkbox" :id="'check' + user.id" :value="user.id" v-model="userChecked[user.id]"/>
+        <input type="checkbox" :id="'check' + user.id" :value="user.id" v-model="userChecked[user.id]" @click="handleClickUser(user.id)"/>
         <label class="form-check-label" :id="'userName_' + user.id"> {{ user.firstname }} {{ user.lastname }}</label>
         <label class="form-check-label" :id="'userEmail_' + user.id"> {{ '[' + user.email + ']'}}</label>
       </div>
@@ -154,13 +154,22 @@ export default {
       }
     },
 
+    handleClickUser: function(id) {
+      this.showOtherUser = true;  // <-- I think this line is not necessary
+      this.userChecked[id] = true;
+      this.form.usersSelected = this.userChecked;
+    },
+
     handleSelect: function() {
       this.selectAll=!this.selectAll;
 
       this.userIdList.forEach(elt => {
         if(this.selectAll == true) {
           document.getElementById('check' + elt).checked = true;          /// using jquery here
+          this.userChecked[elt] = true;
+          this.form.usersSelected = this.userChecked;
         } else {
+          this.userChecked[elt] = false;
           document.getElementById('check' + elt).checked = false;         /// using jquery here
         }
       })
