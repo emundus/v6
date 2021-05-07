@@ -245,6 +245,7 @@ export default {
               return qs.stringify(params);
             }
           }).then(answer => {
+            var _userName = [];
             const _id = (element) => element.id == elt.id;
             var _index = this.columns.findIndex(_id);
             var _temp = answer.data.data.inputStatusNames;
@@ -264,6 +265,11 @@ export default {
             } else {
               this.columns[_index]['emailTemplate'] = answer.data.data.message.emailLabel;
               this.columns[_index]['destination'] = answer.data.data.message.destinationLabel;
+
+              if(answer.data.data.message.destinationLabel === 'other') {
+                answer.data.data.message.usersSelected.forEach(elt => _userName.push(elt.name));
+                this.columns[_index]['users'] = _userName.toString();
+              }
             }
             this.$forceUpdate();
           })
