@@ -266,16 +266,10 @@ export default {
               this.columns[_index]['emailTemplate'] = answer.data.data.message.emailLabel;
               this.columns[_index]['destination'] = answer.data.data.message.destinationLabel;
 
-              if(answer.data.data.message.destinationLabel === 'other') {
-                var _temp = answer.data.data.message.usersSelected;
-                if(_temp instanceof Array === true) {
-                  _temp.forEach(elt => _userName.push(elt.name));
-                  this.columns[_index]['users'] = _userName.toString();
-                } else {
-                  console.log(_temp);
-                  this.columns[_index]['users'] = _temp.toString();
-                }
-              }
+              console.log(answer.data.data.message);
+              var _temp1 = answer.data.data.message.usersSelected;
+              _temp1.forEach(elt => _userName.push(elt.name));
+              this.columns[_index]['users'] = _userName.toString();
             }
             this.$forceUpdate();
           })
