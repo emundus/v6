@@ -122,17 +122,21 @@ export default {
       this.form.emailSelected = this.$props.stepParams.email;
       this.form.destinationSelected = this.$props.stepParams.destination;
 
-      console.log(this.selectOtherUsers);
-
       //// how to avoid hard-coding here? --> handle this code snippet
-      if(this.$props.stepParams.destination === 'other') {
+      if(this.selectOtherUsers == true) {
         this.showOtherUser = true;
-        this.form.usersSelected = this.userChecked;
-      } else {
 
+        /// iterate this.$props.stepParams.usersSelected
+        var _temp = this.$props.stepParams.usersSelected;
+        _temp.forEach(elt => {
+          this.userChecked[elt.id] = true;
+        })
+      } else {
+        this.showOtherUser = false;
       }
     }
     this.getAllUsers();
+    this.form.usersSelected = this.userChecked;
     this.form.triggerSelected = this.triggerChecked;
   },
 
