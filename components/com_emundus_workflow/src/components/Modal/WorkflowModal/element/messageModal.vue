@@ -140,7 +140,6 @@ export default {
       }
     }
     this.getAllUsers();
-    this.form.usersSelected = this.userChecked;
     this.form.triggerSelected = this.triggerChecked;
   },
 
@@ -148,10 +147,12 @@ export default {
     handleClick: function() {
       this.showOtherUser=!this.showOtherUser;
 
-      if(this.showOtherUser === false) {
-        /// remove all checks
-        this.userIdList.forEach(elt => {document.getElementById('check' + elt).checked = false;});
-      } else {}
+      if(this.showOtherUser === true) {
+        /// set variables
+        this.form.usersSelected = this.userChecked;
+      } else {
+        /// do nothing
+      }
     },
 
     handleSelect: function() {
