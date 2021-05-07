@@ -15,9 +15,9 @@
            v-if="hideStep == false" style=""
            @dragstart="dragStart"
            @dragend="dragEnd"
-           @mousedown="handleDown"
-           v-bind:style="{ backgroundColor : column.style }"
-      >
+           @mousedown="handleDown">
+<!--           v-bind:style="{ backgroundColor : column.style }"-->
+<!--      >-->
 
         <div contenteditable="true" class="editable-step-label" :id="'step_label_' + column.id" v-on:keyup.enter="setStepLabel(column.id)" style="background: #a8bb4a">{{ column.title }}</div>
         <div style="color:red">{{ column.stateIn }}</div>

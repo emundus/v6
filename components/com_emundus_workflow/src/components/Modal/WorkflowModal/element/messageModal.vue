@@ -157,7 +157,6 @@ export default {
       let trigger = {
         status: this.element.outputStatus,
         model: this.form.emailSelected,
-        //selectedUser: selectedUserList.length === 0 ? this.form.destinationSelected :  selectedUserList,
         action_status: this.form.triggerSelected === 'to_applicant' ? 'to_applicant' : this.form.triggerSelected === 'to_current_user' ? 'to_current_user' : '' || '',
       }
 

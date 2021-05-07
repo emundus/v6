@@ -1,9 +1,23 @@
+import axios from 'axios';
+
 export const commonMixin = {
     data: function() {
-        return { id: '',}
+        return {
+            id: '',
+        }
     },
 
-    created() { this.id = window.location.href.split('id=')[1]; },
+    created() {
+        this.id = this.getURLParams('id');
+    },
+
+    methods: {
+        getURLParams: function(_param) {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            return urlParams.get(_param);
+        },
+    }
 }
 
 export default commonMixin
