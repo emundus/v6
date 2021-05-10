@@ -10,9 +10,7 @@
     <b-button @click="createStep()" v-if="hideStep == false" variant="success" style="position: sticky">(+)</b-button>
     <!--    <div class="min-h-screen flex overflow-x-scroll py-12">-->
     <draggable :invertedSwapThreshold="0.4" :invertSwap="true" v-model="columns" :group="columns" class="flex" :sort="true">
-      <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id"
-           v-on:dblclick="openStep(column.id)"
-           v-if="hideStep == false" style=""
+      <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id" v-if="hideStep == false" style=""
            @dragstart="dragStart"
            @dragend="dragEnd"
            @mousedown="handleDown">
@@ -29,10 +27,17 @@
         <div style="color:midnightblue"> {{ column.destination }} </div>
         <div style="color:darkolivegreen"> {{ column.users }}</div>
         <modal-config-step :ID="column.id" :element="column" @updateStep="updateStep" @deleteStep="deleteStep(column.id)" ref="stepModal"/>
-        <!--        <div>{{ column.stateIn }}</div>-->
-        <!--        <div>{{ column.stateOut }}</div>-->
         <b-button @click="configStep(column.id)" variant="warning">Configurer</b-button>
         <b-button @click="deleteStep(column.id)" variant="danger" style="margin-left: 20px">(-)</b-button>
+        <b-button @click="openStep(column.id)" variant="primary" style="margin-left: 20px">Ouvrir </b-button>
+        <hr/>
+        <div style="position: sticky"> <b-button variant="info" @click="createMessageDiv()">(+)</b-button> </div>
+
+        <div class="message-block" v-for="message in messages">
+          <div> {{ message.title }} <b-button variant="warning" @click="deleteMessageDiv(message.id)">x</b-button> </div>
+          <div> {{ message.params }} </div>
+        </div>
+
       </div>
       <workflow-space v-for="column in columns" v-if="currentStep == column.id && hideWorkflow == false" :step="column" @returnBack="returnToStepFlow"/>
     </draggable>
@@ -72,12 +77,16 @@ export default {
       workflowLabel: '',
       hideWorkflow: false,
       loading: false,
+
+      messages: [],
+      show: false,
     };
   },
 
   created() {
     this.getWorkflowFromURL();    //// get workflow name from url
     this.getAllSteps(); //// get all steps by workflow
+    this.getMessageElementsToStep();
   },
 
   methods: {
@@ -344,6 +353,75 @@ export default {
         console.log(error);
       })
     },
+
+    createMessageDiv: function() {
+      let data = {
+        title: 'test',
+        params: '',
+        parent_type: 'step',
+        element_type: 'message',
+      };
+
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=common&task=createelement',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          data: data
+        })
+      }).then(response => {
+        this.messages.push ({
+          id: response.data.data,
+          title: 'Message' + response.data.data,
+          params: 'Params',
+        })
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
+    deleteMessageDiv: function(id) {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=common&task=deleteelement',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          data: id
+        })
+      }).then(response => {
+        console.log(response);
+        this.messages = this.messages.filter((message) => {
+          return message.id !== id; // remove step
+        })
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
+    getMessageElementsToStep: function() {
+      let data = {
+        parent_type: 'step',
+        element_type: 'message',
+      }
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=common&task=getelementsbytype',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          data: data
+        })
+      }).then(response => {
+        this.messages = response.data.data;
+      }).catch(error => {
+        console.log(error);
+      })
+    }
   }
 };
 </script>
@@ -386,6 +464,7 @@ export default {
   background-color: #fff;;
   /*background-image: radial-gradient(circle, black 1px, rgba(0, 0, 0, 0) 1px);*/
   background-size: 2em 2em;
+  overflow-y: scroll;
 }
 /*.bg-gray-100:active {*/
 /*  animation-name: shake; animation-duration: 0.07s; animation-iteration-count: infinite; animation-direction: alternate;*/
@@ -476,5 +555,26 @@ export default {
   to {
     transform: rotate(4deg);
   }
+}
+
+.message-block {
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px 0 rgba(0,0,0,.06);
+  padding-bottom: 1.25rem;
+  padding-top: .75rem;
+  padding-left: .75rem;
+  padding-right: .75rem;
+  margin-top: .75rem;
+  border-width: 1px;
+  border-radius: .25rem;
+  --border-opacity: 1;
+  border-color: rgba(255,255,255,var(--border-opacity));
+  overflow-y: scroll;
+}
+
+.remove-message {
+  font-size: xx-small;
+  right: 85vh !important;
+  top: 45vh !important;
+  position: fixed !important;
 }
 </style>

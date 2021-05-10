@@ -114,10 +114,93 @@ class EmundusworkflowModelcommon extends JModelList {
                 $_triggerId = $this->db->insertid();
 
                 /// step 2 --> emundus_setup_emails_trigger_campaign_id
+                $this->query->clear()
+                    ->insert($this->db->quoteName('#__emundus_setup_emails_trigger_campaign_id'))
+                    ->set($this->db->quoteName('#__emundus_setup_emails_trigger_campaign_id.parent_id') . '=' . $_triggerId)
+                    ->set($this->db->quoteName('#____emundus_setup_emails_trigger_campaign_id.campaign_id') . '=' . 111);
                 /// step 3 --> emundus_setup_emails_trigger_user_id
 
             }
             catch(Exception $e) {
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    /// create HTML element
+    public function createElement($data) {
+        if(!empty($data)) {
+            try {
+                $this->query->clear()
+                    ->insert($this->db->quoteName('#__emundus_workflow_html_element'))
+                    ->columns($this->db->quoteName(array_keys($data)))
+                    ->values(implode(',', $this->db->quote(array_values($data))));
+
+                $this->db->setQuery($this->query);
+                $this->db->execute();
+                return $this->db->insertid();
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /// remove HTML element by id
+    public function deleteElement($data) {
+        if(!empty($data)) {
+            try {
+                $this->query->clear()
+                    ->delete($this->db->quoteName('#__emundus_workflow_html_element'))
+                    ->where($this->db->quoteName('#__emundus_workflow_html_element.id') . '=' . (int)$data['id']);
+                $this->db->setQuery($this->query);
+                return $this->db->execute();
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /// get HTML element by id
+    public function getElementById($data) {
+    }
+
+    /// get all HTMl elements
+    public function getAllElements() {
+        try {
+            $this->query->clear()
+                ->select('#__emundus_workflow_html_element.*')
+                ->from($this->db->quoteName('#__emundus_workflow_html_element'));
+
+            $this->db->setQuery($this->query);
+            return $this->db->loadObjectList();
+        }
+        catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /// get all HTML elements by parent type
+    public function getElementsByType($data) {
+        if(!empty($data)) {
+            try {
+                $this->query->clear()
+                    ->select('#__emundus_workflow_html_element.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_html_element'))
+                    ->where($this->db->quoteName('#__emundus_workflow_html_element.parent_type') . '=' . $this->db->quote($data['parent_type']))
+                    ->andWhere($this->db->quoteName('#__emundus_workflow_html_element.element_type') . '=' . $this->db->quote($data['element_type']));
+
+                $this->db->setQuery($this->query);
+                return $this->db->loadObjectList();
+            } catch(Exception $e) {
                 return $e->getMessage();
             }
         }

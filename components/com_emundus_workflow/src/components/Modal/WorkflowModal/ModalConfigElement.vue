@@ -4,7 +4,7 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
     <modal :name="'elementModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
-      <b-badge variant="warning"><h3>{{ this.$data.name }} Configuration</h3></b-badge>
+      <b-badge variant="warning"><h3 style="color:white !important">{{ this.$data.name }} Configuration</h3></b-badge>
       <br/>
       <br/>
       <b-nav tabs>
