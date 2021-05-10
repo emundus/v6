@@ -754,18 +754,18 @@ class EmundusonboardModelcampaign extends JModelList
 
     public function getCampaignsToAffect() {
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
 
-        $date = new Date();
-
-        // Get affected programs
-        $user = JFactory::getUser();
-        $programs = $this->model_program->getUserPrograms($user->id);
+        // Get campaigns that don't have applicant files
+        $query = 'select sc.id,sc.label 
+                  from jos_emundus_setup_campaigns as sc
+                  where (
+                    select count(cc.id)
+                    from jos_emundus_campaign_candidature as cc
+                    left join jos_emundus_users as u on u.id = cc.applicant_id
+                    where cc.campaign_id = sc.id
+                    and u.profile NOT IN (2,4,5,6)
+                  ) = 0';
         //
-
-        $query->select('id,label')
-            ->from($db->quoteName('#__emundus_setup_campaigns'))
-            ->where($db->quoteName('training') . ' IN (' . implode(',',$db->quote($programs)) . ')');
 
         try {
             $db->setQuery($query);
