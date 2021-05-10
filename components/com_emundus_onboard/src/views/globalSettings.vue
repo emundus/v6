@@ -15,7 +15,7 @@
         </transition>
       </div>-->
 
-      <div class="col-md-10 col-md-offset-1 p-1" style="padding-left: 2em !important;">
+      <div class="col-md-12 p-1" style="padding-left: 2em !important;">
         <!--- start Menu --->
         <div class="d-flex" >
           <ul class="nav nav-tabs topnav">
