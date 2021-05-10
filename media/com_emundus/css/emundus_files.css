@@ -2203,7 +2203,7 @@ div#em-assoc-files .panel > .panel-heading {
 .g-back-office-emundus-tableau button#search:focus ,  .g-back-office-emundus-tableau button#clear-search:focus, .g-back-office-emundus-tableau button#save-filter:focus , .g-back-office-emundus-tableau button#add-filter:focus,  .g-back-office-emundus-tableau input#search:focus ,  .g-back-office-emundus-tableau input#clear-search:focus, .g-back-office-emundus-tableau input#save-filter:focus , .g-back-office-emundus-tableau input#add-filter:focus  {
     box-shadow: none !important;
     text-shadow: none;
-    color: #ffffff !important;
+    /*color: #ffffff !important;*/
 }
 
 .g-back-office-emundus-tableau button#showhide,  .g-back-office-emundus-tableau input#showhide {
