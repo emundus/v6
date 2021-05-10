@@ -122,7 +122,26 @@ class EmundusworkflowModelcommon extends JModelList {
                 $this->db->execute();
 
                 /// step 3 --> emundus_setup_emails_trigger_user_id
-                var_dump($users);die;
+                if(is_array($users)) {
+                    foreach($users as $key=>$value) {
+                        /// sql scripts to insert trigger for many users
+                        $this->query->clear()
+                            ->insert($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id'))
+                            ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.parent_id') . '=' . $_triggerId)
+                            ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.user_id') . '=' . $this->db->quote($value));
+                        $this->db->setQuery($this->query);
+                        $this->db->execute();
+                    }
+                }
+                else {
+                        /// sql scripts to insert trigger for single user
+                    $this->query->clear()
+                        ->insert($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id'))
+                        ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.parent_id') . '=' . $_triggerId)
+                        ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.user_id') . '=' . $this->db->quote($users));
+                    $this->db->setQuery($this->query);
+                    $this->db->execute();
+                }
             }
             catch(Exception $e) {
                 return $e->getMessage();
