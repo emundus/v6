@@ -42,14 +42,18 @@ if ($s == '') {
 				<label class="control-label" for="lname"><?= JText::_('LASTNAME_FORM'); ?></label>
 				<input type="text" class="form-control" id="lname" name = "lastname" <?= ($this->edit == 1)?'value="'.$this->user['lastname'].'"':''; ?>/>
 			</div>
-			<div class="form-group em-addUser-detail-info-id">
-				<label class="control-label" for="login"><?= JText::_('LOGIN_FORM'); ?></label>
-				<input type="text" class="form-control"  id="login" name="login" <?= ($this->edit == 1)?'value="'.$this->user['login'].'"':''; ?> />
-			</div>
 			<div class="form-group em-addUser-detail-info-mail">
 				<label class="control-label" for="mail"><?= JText::_('EMAIL_FORM'); ?></label>
 				<input type="text" class="form-control" id="mail" name="email" <?= $this->edit == 1?'value="'.$this->user['email'].'"':''; ?>/>
 			</div>
+            <div class="form-group em-addUser-detail-info-same-login">
+                <input type="checkbox" id="same_login_email" name="same_login_email" <?= ($this->user['email'] == $this->user['login'])?"checked":''; ?> style="margin-bottom: 5px; width: 20px !important">
+                <label for="same_login_email"><?= JText::_('LOGIN_SAME_EMAIL'); ?></label>
+            </div>
+            <div class="form-group em-addUser-detail-info-id" id="login_field">
+                <label class="control-label" for="login"><?= JText::_('LOGIN_FORM'); ?></label>
+                <input type="text" class="form-control"  id="login" name="login" <?= ($this->edit == 1)?'value="'.$this->user['login'].'"':''; ?> />
+            </div>
 		</div>
 	</fieldset>
 	<fieldset class="em-addUser-profil">
@@ -104,9 +108,9 @@ if ($s == '') {
 				<?php endforeach;?>
 			</select>
 		</div>
-		<input type="checkbox" id="news" name="news" <?= (($this->edit == 1) && ($this->user['newsletter']== '"1"'))?"checked":''; ?> style="margin-bottom: 5px; width: 20px !important">
-		<label for="news"><?= JText::_('NEWSLETTER'); ?></label>
-		
+		<!--<input type="checkbox" id="news" name="news" <?/*= (($this->edit == 1) && ($this->user['newsletter']== '"1"'))?"checked":''; */?> style="margin-bottom: 5px; width: 20px !important">
+		<label for="news"><?/*= JText::_('NEWSLETTER'); */?></label>-->
+
 		<!-- LDAP registration will go inside the div -->
 		<div id="ldap-form" class="em-addUser-searchLdap" style="display : none;">
 			<div id="ldap-errors"></div>
@@ -135,7 +139,25 @@ if ($s == '') {
 				$('.em-hidden-appli-fields').hide();
 			}
 		}
-		
+
+        let loginField = $('#login_field');
+
+        let sameLogin = $('#same_login_email');
+		if(sameLogin.is(':checked')){
+            loginField.hide();
+        }
+
+        $(document).on('change', '#same_login_email', function() {
+            let loginField = $('#login_field');
+            if ($(this).is(':checked')) {
+                loginField.hide();
+                $('#login').val($('#mail').val());
+            } else {
+                loginField.show();
+                $('#login').val('');
+            }
+        });
+
 
 		$(document).on('change', '#ldap', function() {
 			if ($(this).is(':checked')) {
@@ -385,5 +407,11 @@ if ($s == '') {
 				$(this).siblings('.help-block').remove();
 			}
 		});
+
+        $(document).on('keyup', '#mail', function() {
+            if($('#same_login_email').is(':checked')){
+                $('#login').val($('#mail').val());
+            }
+        });
 	})
 </script>

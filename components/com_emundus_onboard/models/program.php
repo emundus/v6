@@ -1244,7 +1244,7 @@ class EmundusonboardModelprogram extends JModelList {
                         $dbnull = 'NULL';
                         //
 
-                        $newelement = $element->copyRow($element->element->id, 'Copy of %s', $newgroupid);
+                        $newelement = $element->copyRow($element->element->id, '%s', $newgroupid);
                         //add to array
                         $newElementArray[] =$newelement->id;
 
