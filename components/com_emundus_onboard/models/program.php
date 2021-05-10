@@ -1441,7 +1441,7 @@ class EmundusonboardModelprogram extends JModelList {
             $db->execute();
             //
 
-            $formbuilder->createHiddenGroup($formid);
+            $formbuilder->createHiddenGroup($formid,1);
             $group = $formbuilder->createGroup($label,$formid);
 
             // Link groups to program
@@ -1463,6 +1463,31 @@ class EmundusonboardModelprogram extends JModelList {
             return true;
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/program | Cannot create a grid in the program' . $pid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function deleteGrid($grid,$pid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update($db->quoteName('#__emundus_setup_programmes'))
+            ->set($db->quoteName('fabrik_group_id') . ' = NULL')
+            ->where($db->quoteName('id') . ' = ' . $pid);
+
+        try {
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__fabrik_forms'))
+                ->set($db->quoteName('published') . ' = 0')
+                ->where($db->quoteName('id') . ' = ' . $grid);
+
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/program | Error at delete the grid ' . $grid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }

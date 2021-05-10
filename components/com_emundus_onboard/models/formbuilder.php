@@ -1318,7 +1318,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
     }
 
-    function createHiddenGroup($formid) {
+    function createHiddenGroup($formid,$eval = 0) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -1329,10 +1329,14 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
         $form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
-        $form->setId(287);
+        if($eval) {
+            $form->setId(270);
+            $elementstoduplicate = [6040, 6041, 6042, 6044, 6045];
+        } else {
+            $form->setId(287);
+            $elementstoduplicate = [6473, 6489, 6490, 6491];
+        }
         $groups	= $form->getGroups();
-
-        $elementstoduplicate = [6473,6489,6490,6491];
 
         try {
             $hiddengroup = $this->createGroup($label, $formid, -1);
