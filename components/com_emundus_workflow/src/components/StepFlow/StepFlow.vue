@@ -30,8 +30,10 @@
         <hr/>
         <div style="position: sticky"> <b-button variant="info" @click="createMessageDiv(column.id)">(+)</b-button> </div>
         <div class="message-block" v-for="message in messages" :id="'message_zone' + column.id" v-if="column.id === message.parent_id">
-          {{ message.title }}
-<!--          <div> {{ message.title }} <b-button variant="warning" @click="deleteMessageDiv(message.id)">x</b-button> </div>-->
+          <div>
+            {{ message.title }}
+            <b-button variant="warning" @click="deleteMessageDiv(message.id)">x</b-button>
+          </div>
         </div>
 
       </div>
@@ -74,7 +76,7 @@ export default {
       hideWorkflow: false,
       loading: false,
 
-      messages: [[]],
+      messages: [],
       show: false,
     };
   },
@@ -374,10 +376,9 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
-          data: id
+          id: id
         })
       }).then(response => {
-        console.log(response);
         this.messages = this.messages.filter((message) => {
           return message.id !== id; // remove step
         })

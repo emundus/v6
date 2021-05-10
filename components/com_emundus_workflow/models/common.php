@@ -153,12 +153,12 @@ class EmundusworkflowModelcommon extends JModelList {
     }
 
     /// remove HTML element by id
-    public function deleteElement($data) {
-        if(!empty($data)) {
+    public function deleteElement($id) {
+        if(!empty($id)) {
             try {
                 $this->query->clear()
                     ->delete($this->db->quoteName('#__emundus_workflow_html_element'))
-                    ->where($this->db->quoteName('#__emundus_workflow_html_element.id') . '=' . (int)$data['id']);
+                    ->where($this->db->quoteName('#__emundus_workflow_html_element.id') . '=' . $id);
                 $this->db->setQuery($this->query);
                 return $this->db->execute();
             }
