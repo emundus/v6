@@ -77,6 +77,7 @@ export default {
       loading: false,
 
       messages: [],
+      stepList: [],
       show: false,
     };
   },
@@ -84,6 +85,7 @@ export default {
   created() {
     this.getWorkflowFromURL();    //// get workflow name from url
     this.getAllSteps(); //// get all steps by workflow
+    this.getMessagesDiv();
   },
 
   methods: {
@@ -239,6 +241,7 @@ export default {
       }).then(response => {
         this.columns = response.data.data;
         var steps = response.data.data; // get all steps
+        this.stepList = steps;
         steps.forEach(elt => {
           axios({
             method: 'get',
@@ -385,6 +388,28 @@ export default {
       }).catch(error => {
         console.log(error);
       })
+    },
+
+    getMessagesDiv: function() {
+        let data = {
+          parent_type: 'step',
+          element_type: 'message',
+        }
+
+        axios({
+          method: 'post',
+          url: 'index.php?option=com_emundus_workflow&controller=common&task=getelementsbytype',
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            data: data
+          })
+        }).then(response => {
+          this.messages = response.data.data;
+        }).catch(error => {
+          console.log(error);
+        })
     },
   }
 };

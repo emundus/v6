@@ -240,7 +240,7 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_elements = $this->_common_model->getElementsByType($data);
+            $_elements = $this->_common_model->getElementsByParentType($data);
 
             if ($_elements) {
                 $tab = array('status' => 1, 'msg' => JText::_("GET_ELEMENTS_BY_TYPE_SUCCESSFULLY"), 'data' => $_elements);
