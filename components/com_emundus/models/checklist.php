@@ -41,22 +41,21 @@ class EmundusModelChecklist extends JModelList
 		} else {
 			$this->_user = JFactory::getSession()->get('emundusUser');
 		}
-		//echo $this->_user->usertype;
 	}
 
-	function getGreeting(){
+	function getGreeting() {
 		$query = 'SELECT id, title, text FROM #__emundus_setup_checklist WHERE page = "checklist" ';
-		$note = 0;//$this->getResult();
-		if($note && is_numeric($note) && $note>1) $this->_need = $note;
+		$note = 0;
+		if ($note && is_numeric($note) && $note>1) {
+            $this->_need = $note;
+        }
 		$query .= 'AND (whenneed = '.$this->_need . ' OR whenneed='.$this->_user->status.')';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObject();
 	}
 
-	function getInstructions()
-	{
+	function getInstructions() {
 		$query = 'SELECT id, title, text FROM #__emundus_setup_checklist WHERE page = "instructions"';
-		//$query.= $this->_need?'1':'0';
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObject();
 	}
@@ -152,7 +151,9 @@ class EmundusModelChecklist extends JModelList
 	function getApplicant(){
 		$query = 'SELECT profile FROM #__emundus_users WHERE user_id = '.$this->_user->id;
 		$this->_db->setQuery( $query );
-		if($this->_db->loadResult() == 8) return false;
+		if ($this->_db->loadResult() == 8) {
+            return false;
+        }
 		return true;
 	}
 
@@ -188,11 +189,13 @@ class EmundusModelChecklist extends JModelList
 
 		$db = JFactory::getDBO();
 
-		if (!isset($student) && empty($student))
-			$student = JFactory::getSession()->get('emundusUser');
+		if (!isset($student) && empty($student)) {
+            $student = JFactory::getSession()->get('emundusUser');
+        }
 
-		if ($status > 1)
-			$status = 1;
+		if ($status > 1) {
+            $status = 1;
+        }
 
 		$query = 'UPDATE #__emundus_uploads SET can_be_deleted = '.$status.' WHERE user_id = '.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 		$db->setQuery($query);
@@ -211,9 +214,7 @@ class EmundusModelChecklist extends JModelList
      * @param array $fnumInfos infos from fnum
      * @return string
      */
-	function setAttachmentName($file, $lbl, $fnumInfos) {
-
-		//$filename = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($user->lastname.'_'.$user->firstname,ENT_NOQUOTES,'UTF-8'))));
+	function setAttachmentName(string $file, string $lbl, array $fnumInfos): string {
 
 		$file_array = explode(".", $file);
 
@@ -226,9 +227,8 @@ class EmundusModelChecklist extends JModelList
 			$m_emails = new EmundusModelEmails;
 
 			$tags = $m_emails->setTags($fnumInfos['applicant_id'], null, $fnumInfos['fnum']);
-			$application_form_name = '[APPLICANT_NAME]';
-			$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
-			//$application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
+			$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $applicant_file_name);
+			$application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnumInfos['fnum']));
 
 			// Format filename
 			$application_form_name = $m_emails->stripAccents($application_form_name);
@@ -244,4 +244,4 @@ class EmundusModelChecklist extends JModelList
 		return $filename;
 	}
 }
-?>
+
