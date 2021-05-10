@@ -52,9 +52,9 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 
         $reminder_mail_id = $params->get('reminder_mail_id', '15');
         $reminder_programme_code = $params->get('reminder_programme_code', '');
-        $reminder_days = $params->get('reminder_days', '30');
         $reminder_choice = $params->get('reminder_option', '1');
         $reminder_deadline = $params->get('reminder_deadline', '30, 15, 7, 1, 0');
+        $reminder_days = $params->get('reminder_days', '30');
 
         $status_for_send = $params->get('reminder_status', '');
         if ($status_for_send === "") {
@@ -64,22 +64,27 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
         $this->log = '';
 
         // Get list of applicants to notify
-        $db = FabrikWorker::getDbo();
-        if($reminder_choice == 1){
-            $query = 'SELECT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, esc.start_date, esc.end_date, esc.label, DATEDIFF( esc.end_date , now()) as left_days
+        $db = JFactory::getDbo();
+        $query = 'SELECT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, esc.start_date, esc.end_date, esc.label, DATEDIFF( esc.end_date , now()) as left_days
 					FROM #__emundus_campaign_candidature as ecc
 					LEFT JOIN #__users as u ON u.id=ecc.applicant_id
 					LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
 					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
-					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DATEDIFF( esc.end_date , now()) IN ('.$reminder_deadline.')';
-        }
-        else{
-            $query = 'SELECT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, esc.start_date, esc.end_date, esc.label, DAY(now()) as dayOfMonth
-					FROM #__emundus_campaign_candidature as ecc
-					LEFT JOIN #__users as u ON u.id=ecc.applicant_id
-					LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
-					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
-					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DAY(now()) IN ('.$reminder_deadline.') AND esc.end_date > NOW()';
+					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') ';
+
+        switch ($reminder_choice) {
+            default:
+            case 1:
+                $query .= ' AND DATEDIFF( esc.end_date , now()) IN ('.$reminder_deadline.') ';
+                break;
+
+            case 0:
+                $query .= ' AND DAY(now()) IN ('.$reminder_deadline.') AND esc.end_date > NOW() ';
+                break;
+
+            case 2:
+                $query .= ' AND DATEDIFF( now(), ecc.date_time) % '.$reminder_days . ' = 0 AND esc.end_date > NOW() ';
+                break;
         }
 
         if (!empty($reminder_programme_code)) {
