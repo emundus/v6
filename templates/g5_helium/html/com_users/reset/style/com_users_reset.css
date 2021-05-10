@@ -33,7 +33,7 @@ form#user-registration.form-validate.form-horizontal.well,
 form#user-registration.form-validate.form-horizontal.well,
 .view-reset .reset-confirm form.form-validate.form-horizontal.well,
 .view-reset .reset-complete form.form-validate.form-horizontal.well {
-    background: #fafafa;
+    background: #fff;
     border: none;
     margin-top: 20px !important;
 }
@@ -179,7 +179,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     .view-reset .reset-complete .form-validate.form-horizontal.well {
         width: 90% !important;
     }
-    
+
     .view-reset #g-navigation .g-container {
         height: auto !important;
     }

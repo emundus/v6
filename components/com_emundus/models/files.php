@@ -2578,7 +2578,15 @@ if (JFactory::getUser()->id == 63)
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $eval_can_see_eval = $eMConfig->get('evaluators_can_see_other_eval', 0);
 
-            if (!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id) && (!empty($current_user->fnums) && !empty(array_diff($fnums, array_keys($current_user->fnums)))) || ((@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)) && $eval_can_see_eval == 0)) {
+            $eval_query = $db->getQuery(true);
+            $eval_query->select('id')
+                    ->from($db->quoteName('#__emundus_evaluations'))
+                    ->where($db->quoteName('fnum') . ' IN (' . implode('","', $fnums) . ')')
+                    ->andWhere($db->quoteName('user') . ' = ' . JFactory::getUser()->id);
+            $db->setQuery($eval_query);
+            $eval = $db->loadResult();
+
+            if (!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id) && (!empty($current_user->fnums) && !empty(array_diff($fnums, array_keys($current_user->fnums)))) || ((@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)) && $eval_can_see_eval == 0) && $eval) {
                 $query .= ' AND jos_emundus_evaluations.user = '.JFactory::getUser()->id;
             }
 

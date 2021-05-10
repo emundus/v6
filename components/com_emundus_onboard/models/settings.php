@@ -995,7 +995,7 @@ class EmundusonboardModelsettings extends JModelList {
         $user = JFactory::getUser();
         $form_module = null;
 
-        $html = '<li class="col-md-6 em-print-button" id="' . explode('.',$file)[0] . '" style="margin-bottom: 10px"><a id="print" style="border-radius: 4px;text-decoration: unset" href="' . $dir . $file . '" download="">' . $filename . '</a></li>';
+        $html = '<li class="col-md-6 em-print-button" id="' . explode('.',$file)[0] . '" style="margin-bottom: 10px"><a id="print" style="border-radius: 4px;text-decoration: unset" href="' . $dir . $file . '" download=""><i class="fas fa-arrow-circle-down"></i>' . $filename . '</a></li>';
 
         try {
             $query->select('*')

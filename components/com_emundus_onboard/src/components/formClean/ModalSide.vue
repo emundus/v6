@@ -284,7 +284,7 @@ export default {
           //this.label.fr = (response.data.fr.split('_'))[1];
          // this.label.en = (response.data.en.split('_'))[1];
           this.label.fr=response.data.fr
-          this.label.en=response.data;en
+          this.label.en=response.data.en
         })
         .catch(function(response) {
           console.log(response);

@@ -544,6 +544,25 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
         exit;
     }
 
+    public function deletegrid() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $m_prog = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $grid = $jinput->getInt('grid');
+            $pid = $jinput->getInt('pid');
+
+            $changeresponse = $m_prog->deleteGrid($grid,$pid);
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
+
     public function affectgrouptoprogram() {
         $user = JFactory::getUser();
 

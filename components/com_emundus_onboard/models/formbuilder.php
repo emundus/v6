@@ -273,19 +273,20 @@ class EmundusonboardModelformbuilder extends JModelList {
 
     function prepareSubmittionPlugin($params) {
         $params['applicationsent_status'] = "0";
+        $params['emundusconfirmpost_status'] = "1";
         $params['admission'] = "0";
         $params['ajax_validations'] = "0";
         $params['only_process_curl'] = array(
             2 => "onBeforeLoad"
         );
         $params['form_php_file'] = array(
-            2 => "-1"
+            2 => "emundus-isApplicationCompleted.php"
         );
         $params['form_php_require_once'] = array(
             2 => "0"
         );
         $params['thanks_message'] = array(
-            3 => "Félicitations, votre dossier a bien été envoyé."
+            3 => "Félicitations, votre dossier a bien été envoyée."
         );
         $params['save_insession'] = array(
             3 => "0"
@@ -315,6 +316,10 @@ class EmundusonboardModelformbuilder extends JModelList {
             3 => ""
         );
         $params['plugins'] = array("emundusisapplicationsent", "emundusconfirmpost", "php", "redirect");
+        $params['plugin_description'] = array("isSent", "Confirm", "isComplete", "redirect");
+        $params['plugin_state'] = array("1", "1", "1", "1");
+        $params['plugin_locations'] = array("both", "both", "both", "both");
+        $params['plugin_events'] = array("both", "both", "both", "both");
 
         return $params;
     }
@@ -709,25 +714,25 @@ class EmundusonboardModelformbuilder extends JModelList {
         unset($params['multiple']);
         unset($params['sub_options']);
 
-        $params['join_conn_id'] = 1;
+        $params['join_conn_id'] = '1';
         $params['database_join_where_sql'] = '';
-        $params['database_join_where_access'] = 1;
-        $params['database_join_where_when'] = 3;
-        $params['databasejoin_where_ajax'] = 0;
+        $params['database_join_where_access'] = '1';
+        $params['database_join_where_when'] = '3';
+        $params['databasejoin_where_ajax'] = '0';
         $params['database_join_filter_where_sql'] = '';
-        $params['database_join_show_please_select'] = 1;
+        $params['database_join_show_please_select'] = '1';
         $params['database_join_noselectionvalue'] = '';
         $params['database_join_noselectionlabel'] = '';
-        $params['databasejoin_popupform'] = 41;
-        $params['fabrikdatabasejoin_frontend_add'] = 0;
+        $params['databasejoin_popupform'] = '41';
+        $params['fabrikdatabasejoin_frontend_add'] = '0';
         $params['join_popupwidth'] = '';
-        $params['databasejoin_readonly_link'] = 0;
-        $params['fabrikdatabasejoin_frontend_select'] = 0;
-        $params['dbjoin_options_per_row'] = 3;
-        $params['dbjoin_multiselect_max'] = 0;
-        $params['dbjoin_multilist_size'] = 6;
-        $params['dbjoin_autocomplete_size'] = 20;
-        $params['dbjoin_autocomplete_rows'] = 10;
+        $params['databasejoin_readonly_link'] = '0';
+        $params['fabrikdatabasejoin_frontend_select'] = '0';
+        $params['dbjoin_options_per_row'] = '3';
+        $params['dbjoin_multiselect_max'] = '0';
+        $params['dbjoin_multilist_size'] = '6';
+        $params['dbjoin_autocomplete_size'] = '20';
+        $params['dbjoin_autocomplete_rows'] = '10';
         $params['dabase_join_label_eval'] = '';
         $params['join_desc_column'] = '';
         $params['dbjoin_autocomplete_how'] = 'contains';
@@ -1313,7 +1318,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
     }
 
-    function createHiddenGroup($formid) {
+    function createHiddenGroup($formid,$eval = 0) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -1324,10 +1329,14 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
         $form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
-        $form->setId(287);
+        if($eval) {
+            $form->setId(270);
+            $elementstoduplicate = [6040, 6041, 6042, 6044, 6045];
+        } else {
+            $form->setId(287);
+            $elementstoduplicate = [6473, 6489, 6490, 6491];
+        }
         $groups	= $form->getGroups();
-
-        $elementstoduplicate = [6473,6489,6490,6491];
 
         try {
             $hiddengroup = $this->createGroup($label, $formid, -1);
@@ -1884,7 +1893,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
 
             // Filter by plugin
-            if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown') {
+            if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown' || $element['plugin'] === 'databasejoin') {
                 $old_params = json_decode($db_element->params, true);
 
                 if (isset($element['params']['join_db_name'])) {

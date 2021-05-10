@@ -3,14 +3,16 @@
     <ModalAddEvaluation
             :prog="this.prog"
             :grid="this.grid"
-            @updateGrid="getEvaluationGridByProgram"
+            @updateGrid="getEvaluationGridByProgram(1)"
     />
     <div class="container-evaluation">
       <div class="text-center" v-if="grid == null">
-        <button class="bouton-sauvergarder-et-continuer" style="float: none" type="button" @click="$modal.show('modalAddEvaluation')">{{addGrid}}</button>
+        <button class="bouton-sauvergarder-et-continuer" style="float: none" type="button" @click="$modal.show('modalAddEvaluation')">{{translations.addGrid}}</button>
       </div>
-      <div class="text-center" v-if="grid != null">
-        <button class="bouton-sauvergarder-et-continuer" style="float: none" type="button" @click="evaluationBuilder">Modifier la grille</button>
+      <div class="d-flex" v-if="grid != null">
+        <button class="bouton-sauvergarder-et-continuer mr-1" style="float: none" type="button" @click="evaluationBuilder">{{translations.editGrid}}</button>
+        <button class="bouton-sauvergarder-et-continuer w-delete" style="float: none" type="button" @click="deleteGrid">
+          {{ translations.deleteGrid }}</button>
       </div>
       <FormViewerEvaluation :link="link" :prog="prog" :key="viewer" v-if="grid != null"/>
     </div>
@@ -22,6 +24,7 @@ import { Datetime } from "vue-datetime";
 import axios from "axios";
 import FormViewerEvaluation from "../../components/Form/FormViewerEvaluation";
 import ModalAddEvaluation from "../advancedModals/ModalAddEvaluation";
+import Swal from "sweetalert2";
 
 const qs = require("qs");
 
@@ -47,18 +50,25 @@ export default {
       visibility: null,
       viewer: 0,
       grid: null,
-      addGrid: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGRID"),
+      translations:{
+        addGrid: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGRID"),
+        editGrid: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EDITGRID"),
+        deleteGrid: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGRID"),
+      },
     };
   },
 
   methods: {
-    getEvaluationGridByProgram(){
+    getEvaluationGridByProgram(redirect){
       axios.get("index.php?option=com_emundus_onboard&controller=program&task=getevaluationgrid&pid=" + this.prog)
               .then(response => {
                 this.grid = response.data.data;
                 if(this.grid != null) {
                   this.link.link = 'index.php?option=com_fabrik&view=form&formid=' + response.data.data;
                   this.viewer++;
+                  if(redirect){
+                    this.evaluationBuilder();
+                  }
                 }
               });
     },
@@ -68,6 +78,41 @@ export default {
               this.prog +
               '&evaluation=' +
               this.grid);
+    },
+
+    deleteGrid() {
+      Swal.fire({
+        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGRID"),
+        text: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGRID_QUESTION"),
+        type: "warning",
+        showCancelButton: true
+      }).then(result => {
+        if (result.value) {
+          axios({
+            method: "post",
+            url:
+                "index.php?option=com_emundus_onboard&controller=program&task=deletegrid",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              grid: this.grid,
+              pid: this.prog,
+            })
+          }).then(() => {
+            Swal.fire({
+              title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_GRIDDELETED"),
+              type: "success",
+              showConfirmButton: false,
+              timer: 2000
+            }).then(() => {
+              this.getEvaluationGridByProgram(0);
+            });
+          }).catch(e => {
+            console.log(e);
+          });
+        }
+      });
     },
 
     redirectJRoute(link) {
@@ -87,7 +132,7 @@ export default {
   },
 
   created() {
-    this.getEvaluationGridByProgram();
+    this.getEvaluationGridByProgram(0);
   }
 };
 </script>
