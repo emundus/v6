@@ -29,10 +29,15 @@
         <b-button @click="openStep(column.id)" variant="primary" style="margin-left: 20px">Ouvrir </b-button>
         <hr/>
         <div style="position: sticky"> <b-button variant="info" @click="createMessageDiv(column.id)">(+)</b-button> </div>
-        <div class="message-block" v-for="message in messages" :id="'message_zone' + column.id" v-if="column.id === message.parent_id">
+        <div class="message-block" v-for="message in messages" :id="'message_zone' + message.id" v-if="column.id === message.parent_id">
           <div>
             {{ message.title }}
-            <b-button variant="warning" @click="deleteMessageDiv(message.id)">x</b-button>
+            <b-button @click="openDiv(message.id)" variant="Dark" :id="'button_' + message.id">Trigger</b-button>
+            <b-button :id="'button_' + message.id" variant="warning" @click="deleteMessageDiv(message.id)">x</b-button>
+
+            <message-modal v-for="params in stepParams" v-if="showDiv===true && currentDiv === message.id && params.id === column.id" :element="form" :stepParams="params"> candidature </message-modal>
+            <div v-if="showDiv===false"> Show trigger params </div>
+
           </div>
         </div>
 
@@ -57,11 +62,13 @@ import workflowDashboard from "../Workflow/Dashboard/WorkflowDashboard"; /// usi
 import draggable from 'vuedraggable';
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 
+import messageModal from "../Modal/WorkflowModal/element/messageModal";
+
 export default {
   name: "stepflow",
   mixins: [commonMixin],
 
-  components: {ModalConfigStep, SimpleFlowchart, WorkflowSpace, draggable, PulseLoader},
+  components: {ModalConfigStep, SimpleFlowchart, WorkflowSpace, draggable, PulseLoader, messageModal},
 
   props: {},
 
@@ -79,6 +86,13 @@ export default {
       messages: [],
       stepList: [],
       show: false,
+
+      showDiv: false,
+      hideDiv: true,
+      currentDiv: '',
+
+      form: {},
+      stepParams: Object,
     };
   },
 
@@ -167,6 +181,11 @@ export default {
       this.hideWorkflow = false;
     },
 
+    openDiv: function(id) {
+      this.currentDiv = id;
+      this.showDiv =!this.showDiv;
+    },
+
     createStep: function () {
       let _data = {
         workflow_id: this.$data.id,
@@ -240,6 +259,7 @@ export default {
         }
       }).then(response => {
         this.columns = response.data.data;
+        this.stepParams = response.data.data;
         var steps = response.data.data; // get all steps
         this.stepList = steps;
         steps.forEach(elt => {
@@ -267,6 +287,7 @@ export default {
             this.columns[_index]['endDate'] = answer.data.data.endDate;
             this.columns[_index]['order'] = answer.data.data.ordering;
             this.columns[_index]['style'] = answer.data.data.color;
+            this.columns[_index]['outputStatus'] = answer.data.data.outputStatus;
             this.$forceUpdate();
           })
         })

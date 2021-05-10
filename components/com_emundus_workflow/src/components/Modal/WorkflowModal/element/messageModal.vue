@@ -50,6 +50,11 @@
         <textarea v-model="form.messageNotes" placeholder="Supplementaires informations" style="margin: -3px; width: 95%"/>
       </div>
     </div>
+
+    <div class="row mb-3">
+      <b-button variant="success" @click="createTrigger()">Sauvegarder</b-button>
+      <b-button variant="danger">Quitter</b-button>
+    </div>
   </div>
 </template>
 
@@ -109,7 +114,7 @@ export default {
   },
 
   created() {
-
+    console.log(this.stepParams);
     if(this.$props.activateParams === undefined) {
       this.isDisable = true;
     } else {
