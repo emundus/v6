@@ -1107,9 +1107,6 @@ class EmundusonboardModelform extends JModelList {
                 } else {
                     $undocument->can_be_deleted = false;
                 }
-			    /*echo '<pre>';
-			    print_r($undocument);
-			    echo '</pre>';*/
 
                 $f_values = $falang->getFalang($undocument->id,'emundus_setup_attachments','value');
 			    $undocument->name = new stdClass;

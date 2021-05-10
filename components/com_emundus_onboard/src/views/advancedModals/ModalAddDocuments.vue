@@ -21,10 +21,10 @@
           </div>
                 <div class="update-field-header">
             <h2 class="update-title-header" v-if="currentDoc ==null">
-               {{createDocument}}
+               {{ createDocument }}
             </h2>
             <h2 class="update-title-header" v-if="currentDoc != null">
-               {{editDocument}}
+               {{ editDocument }}
             </h2>
                 </div>
         </div>
@@ -32,60 +32,67 @@
       <div class="modalC-content">
         <div class="mb-1">
 
-          <a class="d-flex tool-icon" >
+          <a class="d-flex tool-icon">
             <div class="toggle">
               <input type="checkbox" class="check" v-model="req" @click="updateRequireMandatory()"/>
               <strong class="b switch"></strong>
               <strong class="b track"></strong>
             </div>
-            <span class="ml-10px" >{{Required}}</span>
+            <span class="ml-10px">{{ Required }}</span>
           </a>
         </div>
         <div class="form-group" v-if="currentDoc ==null">
-          <label for="modelName">{{DocTemplate}} :</label>
-          <select v-model="doc" class="dropdown-toggle" :disabled="Object.keys(models).length <= 0" >
+          <label for="modelName">{{ DocTemplate }} :</label>
+          <select v-model="doc" class="dropdown-toggle" :disabled="Object.keys(models).length <= 0">
             <option :value="null"></option>
-            <option v-for="(modelT, index) in models" :value="modelT.id">{{modelT.name[langue]}}  ({{modelT.allowed_types}})</option>
+            <option v-for="(modelT, index) in models"
+                    :value="modelT.id">{{ modelT.name[langue] }}  ({{ modelT.allowed_types }})</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="name">{{Name}}* :</label>
+          <label for="name">{{ Name }}* :</label>
           <div class="input-can-translate">
-            <input type="text" maxlength="100" class="form__input field-general w-input mb-0" v-model="form.name[langue]" id="name" :class="{ 'is-invalid': errors.name}" />
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.name}" v-if="manyLanguages !== '0'" type="button" @click="translate.name = !translate.name"></button>
+            <input type="text" maxlength="100" class="form__input field-general w-input mb-0"
+                   v-model="form.name[langue]" id="name" :class="{ 'is-invalid': errors.name}"/>
+            <button class="translate-icon" :class="{'translate-icon-selected': translate.name}"
+                    v-if="manyLanguages !== '0'" type="button" @click="translate.name = !translate.name"></button>
           </div>
           <translation :label="form.name" :actualLanguage="langue" v-if="translate.name"></translation>
           <p v-if="errors.name" class="error col-md-12 mb-2">
-            <span class="error">{{NameRequired}}</span>
+            <span class="error">{{ NameRequired }}</span>
           </p>
         </div>
         <div class="form-group">
-          <label for="description">{{Description}} :</label>
+          <label for="description">{{ Description }} :</label>
           <div class="input-can-translate">
-            <textarea type="text" class="form__input field-general w-input mb-0" v-model="form.description[langue]" id="description" />
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.description}" v-if="manyLanguages !== '0'" type="button" @click="translate.description = !translate.description"></button>
+            <textarea type="text" class="form__input field-general w-input mb-0" v-model="form.description[langue]"
+                      id="description"/>
+            <button class="translate-icon" :class="{'translate-icon-selected': translate.description}"
+                    v-if="manyLanguages !== '0'" type="button"
+                    @click="translate.description = !translate.description"></button>
           </div>
           <translation :label="form.description" :actualLanguage="langue" v-if="translate.description"></translation>
         </div>
         <div class="form-group">
-          <label for="nbmax">{{MaxPerUser}}* :</label>
-          <input type="number" min="1" class="form__input field-general w-input" v-model="form.nbmax" id="nbmax" :class="{ 'is-invalid': errors.nbmax}" />
+          <label for="nbmax">{{ MaxPerUser }}* :</label>
+          <input type="number" min="1" class="form__input field-general w-input" v-model="form.nbmax" id="nbmax"
+                 :class="{ 'is-invalid': errors.nbmax}"/>
           <p v-if="errors.nbmax" class="error col-md-12 mb-2">
-            <span class="error">{{MaxRequired}}</span>
+            <span class="error">{{ MaxRequired }}</span>
           </p>
         </div>
         <div class="form-group">
-          <label for="nbmax" :class="{ 'is-invalid': errors.selectedTypes}">{{FileType}}* :</label>
+          <label for="nbmax" :class="{ 'is-invalid': errors.selectedTypes}">{{ FileType }}* :</label>
           <div class="users-block" :class="{ 'is-invalid': errors.selectedUsers}">
             <div v-for="(type, index) in types" :key="index" class="user-item">
               <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type.value]">
               <div class="ml-10px">
-                  <p>{{type.title}} ({{type.value}})</p>
+                  <p>{{ type.title }} ({{ type.value }})</p>
               </div>
             </div>
           </div>
           <p v-if="errors.selectedTypes" class="error col-md-12 mb-2">
-            <span class="error">{{TypeRequired}}</span>
+            <span class="error">{{ TypeRequired }}</span>
           </p>
         </div>
       </div>
@@ -93,11 +100,11 @@
         <button
             type="button"
             class="bouton-sauvergarder-et-continuer w-retour"
-                @click.prevent="$modal.hide('modalAddDocuments')">
-          {{Retour}}
+            @click.prevent="$modal.hide('modalAddDocuments')">
+          {{ Retour }}
         </button>
         <button type="button"
-            class="bouton-sauvergarder-et-continuer"
+                class="bouton-sauvergarder-et-continuer"
                 @click.prevent="createNewDocument()">
           {{ Continuer }}
         </button>
@@ -108,6 +115,7 @@
 
 <script>
 import axios from "axios";
+
 const qs = require("qs");
 import Translation from "@/components/translation"
 
@@ -126,7 +134,7 @@ export default {
   data() {
     return {
       doc: null,
-      model:null,
+      model: null,
       form: {
         name: {
           fr: '',
@@ -149,7 +157,7 @@ export default {
         name: false,
         description: false
       },
-      req:false,
+      req: false,
       errors: {
         name: false,
         nbmax: false,
@@ -214,7 +222,7 @@ export default {
       };
 
       this.doc = null;
-      this.currentDoc=null;
+      this.currentDoc = null;
 
       this.$emit("modalClosed");
     },
@@ -229,30 +237,29 @@ export default {
         selectedTypes: false
       };
 
-      if(this.form.name[this.langue] === ''){
+      if (this.form.name[this.langue] === '') {
         this.errors.name = true;
 
         return 0;
       }
-      if(this.form.nbmax === '' || this.form.nbmax === 0){
+      if (this.form.nbmax === '' || this.form.nbmax === 0) {
         this.errors.nbmax = true;
         return 0;
       }
-      if(Object.values(this.form.selectedTypes).every((val, i) => val === false )){
+      if (Object.values(this.form.selectedTypes).every((val, i) => val === false)) {
         this.errors.selectedTypes = true;
         return 0;
       }
 
-      if(this.translate.name === false){
+      if (this.translate.name === false) {
 
-        if(this.manyLanguages ==0 && this.langue=="en"){
+        if (this.manyLanguages == 0 && this.langue == "en") {
 
-          this.form.name.fr=this.form.name.en
+          this.form.name.fr = this.form.name.en
 
 
         }
-        if (this.manyLanguages ==0 && this.langue=="fr"){
-
+        if (this.manyLanguages == 0 && this.langue == "fr") {
 
 
           this.form.name.en = this.form.name.fr;
@@ -260,13 +267,13 @@ export default {
         }
       }
 
-      if(this.translate.description === false){
+      if (this.translate.description === false) {
 
-        if(this.manyLanguages ==0 && this.langue=="en") {
+        if (this.manyLanguages == 0 && this.langue == "en") {
 
           this.form.description.fr = this.form.description.en;
 
-        }else {
+        } else {
 
           this.form.description.en = this.form.description.fr;
 
@@ -275,7 +282,7 @@ export default {
 
       let types = [];
       Object.keys(this.form.selectedTypes).forEach(key => {
-        if(this.form.selectedTypes[key] == true){
+        if (this.form.selectedTypes[key] == true) {
           types.push(key);
         }
       });
@@ -285,17 +292,17 @@ export default {
         types: types,
         cid: this.cid,
         pid: this.pid,
-        isModeleAndUpdate:false
+        isModeleAndUpdate: false
       }
 
       if (
 
-        this.form.name[this.langue] != this.model.value && this.currentDoc==null) {
-        params.isModeleAndUpdate=true;
+          this.form.name[this.langue] != this.model.value && this.currentDoc == null) {
+        params.isModeleAndUpdate = true;
 
       }
 
-      let y =[];
+      let y = [];
       if (this.model.allowed_types.includes('pdf')) {
         y.push('pdf');
       }
@@ -303,51 +310,50 @@ export default {
         y.push('jpg;png;gif')
       }
       if (this.model.allowed_types.includes('xls') || this.model.allowed_types.includes('xlsx') || this.model.allowed_types.includes('odf')) {
-       y.push('xls;xlsx;odf')
+        y.push('xls;xlsx;odf')
       }
 
-      let diffenceBetweenNewType = y.filter(x=> !types.includes(x));
+      let diffenceBetweenNewType = y.filter(x => !types.includes(x));
 
 
-      if (diffenceBetweenNewType.length>0 && this.currentDoc==null){
-        params.isModeleAndUpdate=true;
+      if (diffenceBetweenNewType.length > 0 && this.currentDoc == null) {
+        params.isModeleAndUpdate = true;
       }
-
 
 
       let url = 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument';
 
-      if (this.form.name[this.langue] === this.model.value && this.doc!=null) {
+      if (this.form.name[this.langue] === this.model.value && this.doc != null) {
         url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
+
         params.did = this.doc;
 
       }
-      if(this.currentDoc != null ) {
+      if (this.currentDoc != null) {
 
         url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
         params.did = this.doc;
 
 
-
       }
 
-     axios({
-        method: "post",
-        url: url,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify(params)
-      }).then((rep) => {
+      axios({
+          method: "post",
+          url: url,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify(params)
+        }).then((rep) => {
 
-        this.req=false;
-        this.$emit("UpdateDocuments");
-        this.$modal.hide('modalAddDocuments')
+          this.req=false;
+          this.$emit("UpdateDocuments");
+          this.$modal.hide('modalAddDocuments')
 
-      });
+        });
     },
 
-    getModelsDocs(){
+    getModelsDocs() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus_onboard&controller=form&task=getundocuments",
@@ -355,18 +361,18 @@ export default {
         this.models = response.data.data;
 
 
-        if(this.currentDoc != null){
+        if (this.currentDoc != null) {
           this.doc = this.currentDoc;
         }
       });
     },
-    updateRequireMandatory(){
+    updateRequireMandatory() {
 
-      if(this.req==true) {
-        this.form.mandatory=0
+      if (this.req == true) {
+        this.form.mandatory = 0
 
-      }else {
-        this.form.mandatory=1
+      } else {
+        this.form.mandatory = 1
 
       }
       /*setTimeout(() => {
@@ -397,22 +403,22 @@ export default {
   },
 
   watch: {
-    doc: function(val) {
+    doc: function (val) {
 
 
-      if(val != null) {
+      if (val != null) {
         this.model = this.models.find(model => model.id == val);
 
         this.form.name = this.model.name;
         this.form.description = this.model.description;
-        this.form.mandatory=this.model.mandatory
+        this.form.mandatory = this.model.mandatory
         //this.form.mandatory=1;
-        if(this.model.mandatory==1) {
+        if (this.model.mandatory == 1) {
 
-          this.req=true;
+          this.req = true;
 
-        }else {
-          this.req=false;
+        } else {
+          this.req = false;
         }
         if (this.model.allowed_types.includes('pdf')) {
           this.form.selectedTypes.pdf = true;
@@ -457,29 +463,29 @@ export default {
 </script>
 
 <style scoped>
-.require{
+.require {
   margin-bottom: 10px !important;
 }
 
-.inputF{
+.inputF {
   margin: 0 0 10px 0 !important;
 }
 
-.d-flex{
+.d-flex {
   display: flex;
   align-items: center;
 }
 
-.dropdown-custom{
+.dropdown-custom {
   height: 35px;
 }
 
-.users-block{
+.users-block {
   height: 15em;
   overflow: scroll;
 }
 
-.user-item{
+.user-item {
   display: flex;
   padding: 10px;
   background-color: #f0f0f0;
@@ -488,19 +494,19 @@ export default {
   margin-bottom: 1em;
 }
 
-.bigbox{
+.bigbox {
   height: 30px !important;
   width: 30px !important;
   cursor: pointer;
 }
 
-.btnPreview{
+.btnPreview {
   margin-bottom: 10px;
   position: relative;
   background: transparent;
 }
 
-.select-all{
+.select-all {
   display: flex;
   align-items: end;
   margin-bottom: 1em;

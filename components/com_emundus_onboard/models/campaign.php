@@ -887,13 +887,19 @@ class EmundusonboardModelcampaign extends JModelList
 
     public function updateDocument($document,$types,$did,$pid,$isModeleAndUpdate)
     {
-        if ($isModeleAndUpdate==true){
+
+        if ($isModeleAndUpdate == 'true'){
 
             if($this->isDocumentAssignToProfileVerification($did, $pid) ==true){
+
+
                 return $this->createDocument($document,$types,"",$pid);
             }
 
         }else {
+
+
+
 
             $db = $this->getDbo();
             $query = $db->getQuery(true);
@@ -921,9 +927,11 @@ class EmundusonboardModelcampaign extends JModelList
                 $query->clear()
                     ->update($db->quoteName('#__emundus_setup_attachment_profiles'))
                     ->set($db->quoteName('mandatory') . ' = ' . $db->quote($document['mandatory']))
-                    ->where($db->quoteName('attachment_id') . ' = ' . $db->quote($did));
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($did));
+
                 $db->setQuery($query);
                 $db->execute();
+
 
 
                 $falang->updateFalang($document['name']['fr'], $document['name']['en'], $did, 'emundus_setup_attachments', 'value');

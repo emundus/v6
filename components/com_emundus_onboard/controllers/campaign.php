@@ -512,7 +512,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $document = $jinput->getRaw('document');
             $types = $jinput->getRaw('types');
-            $isModeleAndUpdate=$jinput->getBool('isModeleAndUpdate');
+            $isModeleAndUpdate=$jinput->get('isModeleAndUpdate');
             $did = $jinput->getInt('did');
             $cid = $jinput->getInt('cid');
             $pid = $jinput->getInt('pid');
