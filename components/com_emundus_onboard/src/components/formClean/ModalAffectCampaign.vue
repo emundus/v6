@@ -22,16 +22,16 @@
         </div>
         <div class="update-field-header">
           <h2 class="update-title-header">
-            {{affectCampaigns}}
+            {{translations.affectCampaigns}}
           </h2>
         </div>
       </div>
 
       <div class="modalC-content">
-        <p v-if="campaigns.length === 0" class="mt-1 mb-1">{{campaignsEmpty}}</p>
+        <p v-if="campaigns.length === 0" class="mt-1 mb-1">{{translations.campaignsEmpty}}</p>
         <div class="wrap">
           <div class="search">
-            <input type="text" class="searchTerm" :placeholder="Search" v-model="searchTerm" @keyup="searchCampaignByTerm">
+            <input type="text" class="searchTerm" :placeholder="translations.Search" v-model="searchTerm" @keyup="searchCampaignByTerm">
             <button type="button" class="searchButton" @click="searchCampaignByTerm">
               <em class="fas fa-search"></em>
             </button>
@@ -50,15 +50,20 @@
         <button type="button"
                 class="bouton-sauvergarder-et-continuer w-retour"
             @click.prevent="affectToForm">
-          {{ Continuer }}
+          {{ translations.Continuer }}
         </button>
         <button v-if="!testing"
             type="button"
             class="bouton-sauvergarder-et-continuer"
            @click.prevent="goAddCampaign">
-          {{addCampaign}}
+          {{translations.addCampaign}}
         </button>
       </div>
+      <button type="button"
+              class="bouton-sauvergarder-et-continuer w-retour"
+              @click.prevent="redirectJRoute('index.php?option=com_emundus_onboard&view=form')">
+          {{ translations.BackWithoutAssociation }}
+        </button>
     </modal>
   </span>
 </template>
@@ -75,11 +80,13 @@ export default {
       campaigns: [],
       affectedCampaigns: [],
       searchTerm: '',
-      Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-      affectCampaigns: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_AFFECTCAMPAIGNS"),
-      campaignsEmpty: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_CAMPAIGNSEMPTY"),
-      addCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
+      translations:{
+        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+        affectCampaigns: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_AFFECTCAMPAIGNS"),
+        campaignsEmpty: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_CAMPAIGNSEMPTY"),
+        addCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
+        BackWithoutAssociation: Joomla.JText._("COM_EMUNDUS_ONBOARD_BACK_WITHOUT_ASSOCIATION"),
+      }
     };
   },
   methods: {
