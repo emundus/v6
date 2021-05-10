@@ -870,6 +870,9 @@ div#em-modal-actions .panel-heading h5 {
 
 #em_filters .chosen-container-single .chosen-single span {
     margin-top: -3.5px;
+    font-style: italic;
+    opacity: 0.4;
+    font-size: 15px;
 }
 
 #em-files-filters td,
