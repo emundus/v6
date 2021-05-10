@@ -160,4 +160,97 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    /// create new html element
+    public function createelement() {
+        $user = JFactory::getUser();
+        if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
+        }
+
+        else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('data');
+
+            $_element = $this->_common_model->createElement($data);
+
+            if ($_element) {
+                $tab = array('status' => 1, 'msg' => JText::_("CREATE_ELEMENT_SUCCESSFULLY"), 'data' => $_element);
+            }
+            else {
+                $tab = array('status' => 0, 'msg' => JText::_("CREATE_ELEMENT_FAILED"), 'data' => $_element);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    /// remove html element
+    public function deleteelement() {
+        $user = JFactory::getUser();
+        if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
+        }
+
+        else {
+            $jinput = JFactory::getApplication()->input;
+            $id = $jinput->getRaw('id');
+
+            $_element = $this->_common_model->deleteElement($id);
+
+            if ($_element) {
+                $tab = array('status' => 1, 'msg' => JText::_("DELETE_ELEMENT_SUCCESSFULLY"), 'data' => $_element);
+            }
+            else {
+                $tab = array('status' => 0, 'msg' => JText::_("DELETE_ELEMENT_FAILED"), 'data' => $_element);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    /// get all html elements
+    public function getallelements() {
+        $user = JFactory::getUser();
+        if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
+        }
+        else {
+            $jinput = JFactory::getApplication()->input;
+
+            $_elements = $this->_common_model->getAllElements();
+
+            if ($_elements) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_ELEMENTS_SUCCESSFULLY"), 'data' => $_elements);
+            }
+            else {
+                $tab = array('status' => 0, 'msg' => JText::_("GET_ALL_ELEMENTS_FAILED"), 'data' => $_elements);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    /// get all html elements by parent type
+    public function getelementsbytype() {
+        $user = JFactory::getUser();
+        if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
+        }
+        else {
+            $jinput = JFactory::getApplication()->input;
+            $type = $jinput->getRaw('data');
+
+            $_elements = $this->_common_model->getElementsByType($type);
+
+            if ($_elements) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_ELEMENTS_BY_TYPE_SUCCESSFULLY"), 'data' => $_elements);
+            }
+            else {
+                $tab = array('status' => 0, 'msg' => JText::_("GET_ELEMENTS_BY_TYPE_FAILED"), 'data' => $_elements);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 }
