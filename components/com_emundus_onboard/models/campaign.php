@@ -469,6 +469,10 @@ class EmundusonboardModelcampaign extends JModelList
                         ->andWhere($db->quoteName('status') . ' = 1');
                     $db->setQuery($query);
                     $data['profile_id'] = $db->loadResult();
+                    if(empty($data['profile_id'])){
+                        unset($data['profile_id']);
+                        $data['published'] = 0;
+                    }
                 }
                 $i++;
             }
@@ -761,9 +765,7 @@ class EmundusonboardModelcampaign extends JModelList
 
         $query->select('id,label')
             ->from($db->quoteName('#__emundus_setup_campaigns'))
-            ->where($db->quoteName('profile_id') . ' IS NULL')
-            ->andWhere($db->quoteName('end_date') . ' >= ' . $db->quote($date))
-            ->andWhere($db->quoteName('training') . ' IN (' . implode(',',$db->quote($programs)) . ')');
+            ->where($db->quoteName('training') . ' IN (' . implode(',',$db->quote($programs)) . ')');
 
         try {
             $db->setQuery($query);

@@ -37,11 +37,13 @@
             </button>
           </div>
         </div>
-        <div v-for="(campaign, index) in campaigns" :key="index" class="user-item">
-            <input type="checkbox" class="form-check-input bigbox" v-model="affectedCampaigns[campaign.id]">
-            <div class="ml-10px">
-                <p>{{campaign.label}}</p>
-            </div>
+        <div class="campaigns-list">
+          <div v-for="(campaign, index) in campaigns" :key="index" class="user-item">
+              <input type="checkbox" class="form-check-input bigbox" v-model="affectedCampaigns[campaign.id]">
+              <div class="ml-10px">
+                  <p>{{campaign.label}}</p>
+              </div>
+          </div>
         </div>
       </div>
       <div class="d-flex justify-content-between mb-1">
@@ -203,5 +205,15 @@ export default {
   height: 30px !important;
   width: 30px !important;
   cursor: pointer;
+}
+
+.campaigns-list{
+  max-height: 50vh;
+  margin-top: 15%;
+}
+
+.wrap{
+  position: fixed;
+  width: 22%;
 }
 </style>
