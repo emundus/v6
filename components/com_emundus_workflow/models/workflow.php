@@ -92,8 +92,9 @@ class EmundusworkflowModelworkflow extends JModelList {
         if(!empty($wid)) {
             try {
                 $this->query->clear()
-                    ->select('*')
+                    ->select('*, #__emundus_setup_campaigns.id')
                     ->from($this->db->quoteName('#__emundus_workflow'))
+                    ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns') . 'ON' . $this->db->quoteName('#__emundus_workflow.campaign_id') . '=' . $this->db->quoteName('#__emundus_setup_campaigns.id'))
                     ->where($this->db->quoteName('#__emundus_workflow.id') . ' = ' . (int)$wid);
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();

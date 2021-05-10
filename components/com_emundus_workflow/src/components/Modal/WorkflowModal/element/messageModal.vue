@@ -114,7 +114,6 @@ export default {
   },
 
   created() {
-    console.log(this.stepParams);
     if(this.$props.activateParams === undefined) {
       this.isDisable = true;
     } else {
@@ -207,7 +206,7 @@ export default {
       }
 
       let trigger = {
-        step: this.element.outputStatus,
+        step: this.stepParams.outputStatus,
         email_id: this.form.emailSelected,
         to_current_user: this.form.triggerSelected === 'to_current_user' ? 1 : 0,
         to_applicant: this.form.triggerSelected === 'to_applicant' ? 1 : 0,
