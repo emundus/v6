@@ -23,19 +23,15 @@
         <div style="color:blue"> {{ column.startDate }}</div>
         <div style="color:orange"> {{ column.endDate }}</div>
         <div style="color:forestgreen"> {{ column.order }} </div>
-        <div style="color:lightseagreen"> {{ column.emailTemplate }} </div>
-        <div style="color:midnightblue"> {{ column.destination }} </div>
-        <div style="color:darkolivegreen"> {{ column.users }}</div>
         <modal-config-step :ID="column.id" :element="column" @updateStep="updateStep" @deleteStep="deleteStep(column.id)" ref="stepModal"/>
         <b-button @click="configStep(column.id)" variant="warning">Configurer</b-button>
         <b-button @click="deleteStep(column.id)" variant="danger" style="margin-left: 20px">(-)</b-button>
         <b-button @click="openStep(column.id)" variant="primary" style="margin-left: 20px">Ouvrir </b-button>
         <hr/>
-        <div style="position: sticky"> <b-button variant="info" @click="createMessageDiv()">(+)</b-button> </div>
-
-        <div class="message-block" v-for="message in messages">
-          <div> {{ message.title }} <b-button variant="warning" @click="deleteMessageDiv(message.id)">x</b-button> </div>
-          <div> {{ message.params }} </div>
+        <div style="position: sticky"> <b-button variant="info" @click="createMessageDiv(column.id)">(+)</b-button> </div>
+        <div class="message-block" v-for="message in messages" :id="'message_zone' + column.id" v-if="column.id === message.parent_id">
+          {{ message.title }}
+<!--          <div> {{ message.title }} <b-button variant="warning" @click="deleteMessageDiv(message.id)">x</b-button> </div>-->
         </div>
 
       </div>
@@ -78,7 +74,7 @@ export default {
       hideWorkflow: false,
       loading: false,
 
-      messages: [],
+      messages: [[]],
       show: false,
     };
   },
@@ -86,7 +82,6 @@ export default {
   created() {
     this.getWorkflowFromURL();    //// get workflow name from url
     this.getAllSteps(); //// get all steps by workflow
-    this.getMessageElementsToStep();
   },
 
   methods: {
@@ -267,19 +262,6 @@ export default {
             this.columns[_index]['endDate'] = answer.data.data.endDate;
             this.columns[_index]['order'] = answer.data.data.ordering;
             this.columns[_index]['style'] = answer.data.data.color;
-
-            if(answer.data.data.message === undefined) {
-              this.columns[_index]['emailTemplate'] = "";
-              this.columns[_index]['destination'] = "";
-            } else {
-              this.columns[_index]['emailTemplate'] = answer.data.data.message.emailLabel;
-              this.columns[_index]['destination'] = answer.data.data.message.destinationLabel;
-
-              console.log(answer.data.data.message);
-              var _temp1 = answer.data.data.message.usersSelected;
-              _temp1.forEach(elt => _userName.push(elt.name));
-              this.columns[_index]['users'] = _userName.toString();
-            }
             this.$forceUpdate();
           })
         })
@@ -354,11 +336,12 @@ export default {
       })
     },
 
-    createMessageDiv: function() {
+    createMessageDiv: function(parent_id) {
       let data = {
         title: 'test',
         params: '',
         parent_type: 'step',
+        parent_id: parent_id,
         element_type: 'message',
       };
 
@@ -372,11 +355,12 @@ export default {
           data: data
         })
       }).then(response => {
-        this.messages.push ({
-          id: response.data.data,
-          title: 'Message' + response.data.data,
-          params: 'Params',
-        })
+        let parent_id = response.data.data.parent_id;
+        this.messages.push({
+          parent_id: parent_id,
+          id: response.data.data.id,
+          title: 'Message' + response.data.data.id,
+        });
       }).catch(error => {
         console.log(error);
       })
@@ -401,27 +385,6 @@ export default {
         console.log(error);
       })
     },
-
-    getMessageElementsToStep: function() {
-      let data = {
-        parent_type: 'step',
-        element_type: 'message',
-      }
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=common&task=getelementsbytype',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          data: data
-        })
-      }).then(response => {
-        this.messages = response.data.data;
-      }).catch(error => {
-        console.log(error);
-      })
-    }
   }
 };
 </script>
