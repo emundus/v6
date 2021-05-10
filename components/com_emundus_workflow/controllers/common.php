@@ -147,8 +147,9 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('trigger');
             $users = $jinput->getRaw('users');
+            $campaign = $jinput->getRaw('campaign_id');
 
-            $_triggers = $this->_common_model->createEmailTriggerForCampaign($data,$users);
+            $_triggers = $this->_common_model->createEmailTriggerForCampaign($data,$users,$campaign);
 
             if ($_triggers) {
                 $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_USERS"), 'data' => $_triggers);

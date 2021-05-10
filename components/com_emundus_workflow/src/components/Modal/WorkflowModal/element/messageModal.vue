@@ -69,6 +69,7 @@ export default {
   props: {
     element: Object,
     stepParams: Object,
+    campaignID: String,
     activateParams: Boolean,
     selectOtherUsers: Boolean,
   },
@@ -221,6 +222,7 @@ export default {
         data: qs.stringify({
           trigger: trigger,
           users: selectedUserList.length === 0 ? this.form.destinationSelected :  selectedUserList,
+          campaign_id: this.campaignID,
         })
       }).then(response => {
 

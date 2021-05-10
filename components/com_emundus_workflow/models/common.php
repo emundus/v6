@@ -97,7 +97,7 @@ class EmundusworkflowModelcommon extends JModelList {
     }
 
     /// create new trigger (jos_emundus_setup_emails_trigger_repeat_campaign_id))
-    public function createEmailTriggerForCampaign($trigger, $users) {
+    public function createEmailTriggerForCampaign($trigger, $users, $campaign) {
         if(!empty($trigger) and !empty($users)) {
             try {
                 $trigger['user'] = JFactory::getUser()->id;
@@ -115,11 +115,14 @@ class EmundusworkflowModelcommon extends JModelList {
 
                 /// step 2 --> emundus_setup_emails_trigger_campaign_id
                 $this->query->clear()
-                    ->insert($this->db->quoteName('#__emundus_setup_emails_trigger_campaign_id'))
-                    ->set($this->db->quoteName('#__emundus_setup_emails_trigger_campaign_id.parent_id') . '=' . $_triggerId)
-                    ->set($this->db->quoteName('#____emundus_setup_emails_trigger_campaign_id.campaign_id') . '=' . 111);
-                /// step 3 --> emundus_setup_emails_trigger_user_id
+                    ->insert($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id'))
+                    ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id.parent_id') . '=' . $_triggerId)
+                    ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id.campaign_id') . '=' . $campaign);
+                $this->db->setQuery($this->query);
+                $this->db->execute();
 
+                /// step 3 --> emundus_setup_emails_trigger_user_id
+                var_dump($users);die;
             }
             catch(Exception $e) {
                 return $e->getMessage();

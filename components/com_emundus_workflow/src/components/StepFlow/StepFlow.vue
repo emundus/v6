@@ -35,7 +35,7 @@
             <b-button @click="openDiv(message.id)" variant="Dark" :id="'button_' + message.id">Trigger</b-button>
             <b-button :id="'button_' + message.id" variant="warning" @click="deleteMessageDiv(message.id)">x</b-button>
 
-            <message-modal v-for="params in stepParams" v-if="showDiv===true && currentDiv === message.id && params.id === column.id" :element="form" :stepParams="params"> candidature </message-modal>
+            <message-modal v-for="params in stepParams" v-if="showDiv===true && currentDiv === message.id && params.id === column.id" :element="form" :stepParams="params" :campaignID="campaignID"> candidature </message-modal>
             <div v-if="showDiv===false"> Show trigger params </div>
 
           </div>
@@ -82,6 +82,7 @@ export default {
       workflowLabel: '',
       hideWorkflow: false,
       loading: false,
+      campaignID: '',
 
       messages: [],
       stepList: [],
@@ -310,6 +311,7 @@ export default {
         })
       }).then(response => {
         this.workflowLabel = ((response.data.data)[0]).workflow_name;
+        this.campaignID = ((response.data.data)[0]).campaign_id;
       }).catch(error => {
         console.log(error);
       })
