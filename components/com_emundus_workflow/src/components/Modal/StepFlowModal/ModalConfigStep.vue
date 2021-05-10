@@ -92,16 +92,16 @@
           </div>
         </div>
 
-        <div class="row mb-3">
-          <label class="col-sm-6 col-form-label">{{ this.title.messageTitle }}</label>
-          <tr>
-            <th><input type="checkbox" @click="showMessage=!showMessage" :checked="showMessage==true">Oui</th>
-          </tr>
-        </div>
+<!--        <div class="row mb-3">-->
+<!--          <label class="col-sm-6 col-form-label">{{ this.title.messageTitle }}</label>-->
+<!--          <tr>-->
+<!--            <th><input type="checkbox" @click="showMessage=!showMessage" :checked="showMessage==true">Oui</th>-->
+<!--          </tr>-->
+<!--        </div>-->
 
-      <message-modal :element="form" :stepParams="messageParams" :activateParams="showMessage" :selectOtherUsers="selectUsers" v-if="showMessage==true" ref="message"/>
+<!--      <message-modal :element="form" :stepParams="messageParams" :activateParams="showMessage" :selectOtherUsers="selectUsers" v-if="showMessage==true" ref="message"/>-->
 
-        <div class="row mb-3" v-if="showMessage==false"/>
+<!--        <div class="row mb-3" v-if="showMessage==false"/>-->
 
         <div class="row mb-3">
           <label class="col-sm-6 col-form-label">{{ this.title.colorTitle }}</label>

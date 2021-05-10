@@ -141,7 +141,8 @@ class EmundusworkflowModelcommon extends JModelList {
 
                 $this->db->setQuery($this->query);
                 $this->db->execute();
-                return $this->db->insertid();
+                $_newID = $this->db->insertid();
+                return array('id' => $_newID, 'parent_id' => $data['parent_id']);
             }
             catch(Exception $e) {
                 return $e->getMessage();
