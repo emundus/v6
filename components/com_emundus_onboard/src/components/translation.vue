@@ -3,7 +3,7 @@
     <transition :name="'slide-down'" type="transition">
       <div class="inlineflex" style="margin: 25px">
         <label class="translate-label">{{TranslateIn}}</label>
-        <select v-model="currentLangTranslation" class="dropdown-toggle ml-10px" style="max-width: 40%;">
+        <select v-model="currentLangTranslation" class="dropdown-toggle ml-10px">
           <option v-for="language in languages" :value="language.sef">{{language.title_native}}</option>
         </select>
       </div>

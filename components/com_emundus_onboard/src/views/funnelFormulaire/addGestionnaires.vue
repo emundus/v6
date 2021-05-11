@@ -18,7 +18,12 @@
                 :groupProfile="'evaluator'"
                 @Updateevaluator="getEvaluatorsInGroup()"
         />
-        <button type="button" @click="$modal.show('modalAddUser')" class="bouton-sauvergarder-et-continuer-3 create-user">{{ addUser }}</button>
+        <a @click="$modal.show('modalAddUser')" class="bouton-ajouter bouton-ajouter-green pointer" style="width: max-content">
+          <div class="add-button-div">
+            <em class="fas fa-plus mr-1"></em>
+            {{ addUser }}
+          </div>
+        </a>
         <div class="choices-buttons" v-if="coordinatorAccess != 0">
             <h2 style="margin-bottom: 0">{{ Administrators }}</h2>
             <button type="button" @click="$modal.show('modalAffectmanager')" class="bouton-sauvergarder-et-continuer">{{ affectUsers }}</button>

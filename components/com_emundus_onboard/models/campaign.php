@@ -815,7 +815,6 @@ class EmundusonboardModelcampaign extends JModelList
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
         $types = implode(";", array_values($types));
-
         $query
             ->insert($db->quoteName('#__emundus_setup_attachments'));
         $query
@@ -840,7 +839,6 @@ class EmundusonboardModelcampaign extends JModelList
                 ->where($db->quoteName('id') . ' = ' . $db->quote($newdocument));
             $db->setQuery($query);
             $db->execute();
-
             $query->clear()
                 ->select('max(ordering)')
                 ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
@@ -1130,6 +1128,7 @@ class EmundusonboardModelcampaign extends JModelList
                     ->set($db->quoteName('content') . ' = ' . $db->quote($newcontent))
                     ->where($db->quoteName('id') . '=' .  $db->quote($form_module->id));
                 $db->setQuery($query);
+
                 return $db->execute();
             } else {
                 return true;

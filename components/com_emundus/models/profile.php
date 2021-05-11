@@ -66,7 +66,7 @@ class EmundusModelProfile extends JModelList {
 
     function getUserProfiles($uid) {
         $db = JFactory::getDBO();
-        $query = 'SELECT DISTINCT esp.id , esp.label
+        $query = 'SELECT DISTINCT esp.id , esp.label, esp.published, esp.status
 		FROM #__emundus_setup_profiles esp
 		LEFT JOIN #__emundus_users_profiles eup on eup.profile_id = esp.id
 		WHERE eup.user_id = '.$uid;
@@ -218,18 +218,27 @@ class EmundusModelProfile extends JModelList {
         }
     }
 
-    function getAttachments($p) {
-        $query = 'SELECT attachment.*, profile.id AS selected, profile.displayed, profile.mandatory, profile.bank_needed
-					FROM #__emundus_setup_attachments AS attachment
-					LEFT JOIN #__emundus_setup_attachment_profiles AS profile ON profile.attachment_id = attachment.id AND profile.profile_id='.(int)$p.'
-					WHERE attachment.published=1
-					ORDER BY attachment.ordering';
+    function getAttachments($p, $mandatory = false) {
+        $query = $this->_db->getQuery(true);
+
+        $query
+            ->select(['attachment.*', $this->_db->quoteName('profile.id', 'selected'), $this->_db->quoteName('profile.mandatory'), $this->_db->quoteName('profile.bank_needed')])
+            ->from($this->_db->quoteName('#__emundus_setup_attachments', 'attachment'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles','profile').' ON '.$this->_db->quoteName('profile.attachment_id').' = '.$this->_db->quoteName('attachment.id') . ' AND ' . $this->_db->quoteName('profile.profile_id').' = '. (int)$p)
+            ->where($this->_db->quoteName('attachment.published') . ' = 1')
+            ->order($this->_db->quoteName('attachment.ordering'));
+
+        if ($mandatory) {
+            $query
+                ->andWhere($this->_db->quoteName('profile.mandatory') . ' = 1');
+        }
+
+        $this->_db->setQuery($query);
 
         try {
-            $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
         } catch(Exception $e) {
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+            JLog::add(' Error getting list  of attachments by profile at model/profile in query  -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             JError::raiseError(500, $e->getMessage());
         }
     }
