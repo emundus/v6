@@ -450,6 +450,27 @@ export default {
           })
         }).then(response => {
           this.messages = response.data.data;
+          let mess = response.data.data;
+
+          mess.forEach(element => {
+            axios({
+              method: 'post',
+              url: 'index.php?option=com_emundus_workflow&controller=common&task=getelementbyid',
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                data : {id: element.id, mode: 'email',}
+              })
+            }).then(answer => {
+              let _index = this.messages.findIndex((elt) => elt.id === element.id);
+              this.messages[_index]['messageTemplate'] = answer.data.data.parsedParams.emailSelectedName;
+              this.messages[_index]['messageDestination'] = answer.data.data.parsedParams.destinationSelectedName;
+              this.$forceUpdate();
+            }).catch(logs => {
+              console.log(logs);
+            })
+          })
         }).catch(error => {
           console.log(error);
         })

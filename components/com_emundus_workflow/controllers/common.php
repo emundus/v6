@@ -314,7 +314,7 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
         }
         else {
             $jinput = JFactory::getApplication()->input;
-            $data = $jinput->getRaw('id');
+            $data = $jinput->getRaw('data');
 
             $_element = $this->_common_model->getElementById($data);
 

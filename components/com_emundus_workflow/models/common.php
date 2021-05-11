@@ -334,13 +334,102 @@ class EmundusworkflowModelcommon extends JModelList {
     }
 
     /// get element by id
-    public function getElementById($id) {
-        if(!empty($id)) {
+    public function getElementById($data) {
+        if(!empty($data)) {
             try {
                 $this->query->clear()
                     ->select('#__emundus_workflow_html_element.*')
                     ->from($this->db->quoteName('#__emundus_workflow_html_element'))
-                    ->where($this->db->quoteName('#__emundus_workflow_html_element.id') . '=' . (int)$id);
+                    ->where($this->db->quoteName('#__emundus_workflow_html_element.id') . '=' . $this->db->quote($data['id']));
+                $this->db->setQuery($this->query);
+                $_param = array();
+                $_result = $this->db->loadObject();
+
+                /// parse params if email --> new function
+                if($data['mode'] === 'email') {
+                    $_element_params = $this->db->loadObject()->params;
+                    $_param['emailSelected'] = json_decode($_element_params)->emailSelected;
+                    $_param['emailSelectedName'] = $this->getEmailNameById($_param['emailSelected'])->lbl;
+
+                    $_param['destinationSelected'] = json_decode($_element_params)->destinationSelected;
+                    $_param['destinationSelectedName'] = $this->getDestinationNameByListId($_param['destinationSelected']) === 'other' ? 'other' : $this->getDestinationNameByListId($_param['destinationSelected'])->label;
+
+                    $_param['messageNotes'] = json_decode($_element_params)->messageNotes;
+
+                    $_param['usersSelected'] = json_decode($_element_params)->usersSelected;
+                    $_param['userSelectedName'] = $this->getUserNameByListId($_param['usersSelected']);
+
+                    $_param['triggerSelected'] = json_decode($_element_params)->triggerSelected;
+                } else {
+
+                }
+
+                return array('data'=>$_result, 'parsedParams'=>$_param);
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    /*
+     * IN THIS SECTION, YOU WILL FIND ALL METHODS TO HANDLE WITH MESSAGE
+     * */
+    public function getEmailNameById($eid) {
+        if(!empty($eid)) {
+            try {
+                $this->query->clear()
+                    ->select('#__emundus_setup_emails.*')
+                    ->from($this->db->quoteName('#__emundus_setup_emails'))
+                    ->where($this->db->quoteName('#__emundus_setup_emails.id') . '=' . $eid);
+
+                $this->db->setQuery($this->query);
+                return $this->db->loadObject();
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    public function getDestinationNameByListId($did) {
+        if(!empty($did)) {
+            try {
+                if($did === 'other') {
+                    return 'other';
+                } else {
+                    $this->query->clear()
+                        ->select('#__emundus_setup_groups.*')
+                        ->from($this->db->quoteName('#__emundus_setup_groups'))
+                        ->where($this->db->quoteName('#__emundus_setup_groups.id') . '=' . $did);
+
+                    $this->db->setQuery($this->query);
+                    return $this->db->loadObject();
+                }
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    public function getUserNameByListId($ulist) {
+        if(!empty($ulist)) {
+            try {
+                $this->query->clear()
+                    ->select('#__users.*')
+                    ->from($this->db->quoteName('#__users'))
+                    ->where($this->db->quoteName('#__users.id') . 'IN (' . $ulist . ')');
+
                 $this->db->setQuery($this->query);
                 return $this->db->loadObject();
             }
