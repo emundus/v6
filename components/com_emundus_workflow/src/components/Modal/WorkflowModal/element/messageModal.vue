@@ -215,12 +215,12 @@ export default {
         let _users= [];
 
         if(selectedValue === 'other' && this.form.usersSelected !== undefined) {
-          /// grab all other users
-          for(i = 0; i <= this.form.usersSelected.length; i++) {
-            if(this.form.usersSelected[i] === true) {
-              _users.push(document.getElementById('userName_' + i).innerText);
-            }
-          }
+          let user_selected_split = (this.form.usersSelected).split(',');
+
+          user_selected_split.forEach(user => {
+              _users.push(document.getElementById('userName_' + user).innerText);
+          })
+
           triggerParams['messageDestinationList'] = _users.toString();
         }
 
