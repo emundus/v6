@@ -110,6 +110,7 @@ export default {
       TO_APPLICANT: 'Applicant',
 
       userIdList: [],
+      users_selected: '',
     }
   },
 
@@ -144,7 +145,6 @@ export default {
     // }
     this.getAllUsers();
     this.getMessageParams(this.messageParams.id);
-    //this.form.triggerSelected = this.triggerChecked;
   },
 
   methods: {
@@ -258,6 +258,18 @@ export default {
         this.form.emailSelected = JSON.parse(json_params).emailSelected;
         this.form.destinationSelected = JSON.parse(json_params).destinationSelected;
         this.form.triggerSelected = JSON.parse(json_params).triggerSelected;
+        this.users_selected = JSON.parse(json_params).usersSelected;
+
+        if(this.form.destinationSelected === 'other') {
+          this.showOtherUser = true;
+          let users_selected = this.users_selected.split(',');
+          users_selected.forEach(user => {
+            this.userChecked[user] = true;
+          })
+        } else {
+          this.showOtherUser = false;
+          /// do nothing here ...
+        }
       }).catch(error => {
         console.log(error);
       })
