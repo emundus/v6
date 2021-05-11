@@ -503,7 +503,6 @@ export default {
       this.programForm = this.programs.find(program => program.code == this.form.training);
       this.editorKey++;
     },
-
     updateCode() {
       if(this.programForm.label !== ''){
         this.programForm.code = this.programForm.label.toUpperCase().replace(/[^a-zA-Z0-9]/g,'_').substring(0,10) + '_00';

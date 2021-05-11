@@ -44,6 +44,7 @@ $showcampaign=$params->get('mod_em_campaign_param_showcampaign');
 $showprogramme=$params->get('mod_em_campaign_param_showprogramme');
 $redirect_url=$params->get('mod_em_campaign_link', 'registration');
 $program_code=$params->get('mod_em_program_code');
+$modules_tabs = $params->get('mod_em_campaign_modules_tab');
 $offset = JFactory::getConfig()->get('offset');
 $sef = JFactory::getConfig()->get('sef');
 
@@ -119,6 +120,7 @@ $currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teach
 $pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
 $futurCampaign      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
 $allCampaign        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
+$faq_articles                = $helper->getFaq();
 
 $now = $helper->now;
 

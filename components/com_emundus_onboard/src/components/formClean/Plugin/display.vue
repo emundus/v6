@@ -3,7 +3,7 @@
     <div class="row rowmodal">
       <div class="form-group">
         <label>{{Text}} :</label>
-        <editor :text="element.default" :lang="'fr'" :enable_variables="false" :id="'element_' + element.id" v-model="element.default"></editor>
+        <editor :height="'30em'" :text="element.default" :lang="'fr'" :enable_variables="false" :id="'element_' + element.id" v-model="element.default"></editor>
       </div>
     </div>
   </div>

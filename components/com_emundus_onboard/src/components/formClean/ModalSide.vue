@@ -4,31 +4,27 @@
     <modal
       :name="'modalSide' + ID"
       height="auto"
-      transition="nice-modal-fade"
+      transition="little-move-left"
       :min-width="200"
       :min-height="200"
       :delay="100"
       :adaptive="true"
-      :clickToClose="false"
+      :clickToClose="true"
       @closed="beforeClose"
-      @before-open="beforeOpen"
-    >
-      <div class="modalC-content">
-        <div class="update-field-header">
-          <div class="topright">
-            <button
-              type="button"
-              class="btnCloseModal"
-              @click.prevent="$modal.hide('modalSide' + ID)"
-            >
-              <em class="fas fa-times-circle"></em>
+      @before-open="beforeOpen">
+      <div class="fixed-header-modal">
+        <div class="topright">
+            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalSide' + ID)">
+              <em class="fas fa-times"></em>
             </button>
           </div>
-
+        <div class="update-field-header">
           <h2 class="update-title-header">
              {{editMenu}}
           </h2>
         </div>
+      </div>
+      <div class="modalC-content">
 
         <div class="form-group" :class="{ 'mb-0': translate.label}">
             <label>{{Name}} :</label>
@@ -51,25 +47,31 @@
           <translation :label="intro" :actualLanguage="actualLanguage" v-if="translate.intro"></translation>
         </div>
 
-        <div class="col-md-12 d-flex mb-1" style="align-items: center">
+        <div class="form-group d-flex mb-1" id="template_checkbox" style="align-items: center">
           <input type="checkbox" v-model="template">
           <label class="ml-10px mb-0">{{SaveAsTemplate}}</label>
         </div>
 
-        <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-between mb-1">
           <button
-            class="bouton-sauvergarder-et-continuer"
-            @click.prevent="$modal.hide('modalSide' + ID) & UpdateParams()"
-          >{{Continuer}}</button>
+              class="bouton-sauvergarder-et-continuer w-retour"
+              @click.prevent="$modal.hide('modalSide' + ID)">
+            {{Retour}}
+          </button>
+          <div class="d-flex">
+          <button
+              class="bouton-sauvergarder-et-continuer"
+              @click.prevent="$modal.hide('modalSide' + ID) & UpdateParams()">
+            {{Continuer}}
+          </button>
+          </div>
+        </div>
+        <div class="form-group d-flex mb-1">
           <button class="bouton-sauvergarder-et-continuer w-delete"
-             @click.prevent="deleteMenu()"
-             v-if="menus.length > 1 && files == 0">
+                  @click.prevent="deleteMenu()"
+                  v-if="menus.length > 1 && files == 0">
             {{Delete}}
           </button>
-          <button
-            class="bouton-sauvergarder-et-continuer w-retour"
-            @click.prevent="$modal.hide('modalSide' + ID)"
-          >{{Retour}}</button>
         </div>
       </div>
     </modal>
@@ -155,6 +157,7 @@ export default {
         );
         this.changes = false;
       }
+      this.$emit("modalClosed");
     },
     beforeOpen(event) {
       this.initialisation();
@@ -301,4 +304,7 @@ export default {
 </script>
 
 <style scoped>
+#template_checkbox input{
+  margin: 0 !important;
+}
 </style>

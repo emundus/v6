@@ -197,8 +197,10 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         	$m_settings = $this->model;
 	        $jinput = JFactory::getApplication()->input;
 	        $content = $jinput->getRaw('content');
+	        $label = $jinput->getString('label');
+	        $color = $jinput->getString('color');
 
-            $changeresponse = $m_settings->updateHomepage($content);
+            $changeresponse = $m_settings->updateHomepage($content,$label,$color);
         }
         echo json_encode((object)$changeresponse);
         exit;
@@ -307,6 +309,141 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         }
     }
 
+    public function updateicon() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $image = $jinput->files->get('file');
+
+            if(isset($image)) {
+                $target_dir = "images/custom/";
+                unlink($target_dir . 'favicon.png');
+
+                $target_file = $target_dir . basename('favicon.png');
+
+                if (move_uploaded_file($image["tmp_name"], $target_file)) {
+                    $tab = array('status' => 1, 'msg' => JText::_('ICON_UPDATED'));
+                } else {
+                    $tab = array('status' => 0, 'msg' => JText::_('ICON_NOT_UPDATED'));
+                }
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ICON_NOT_UPDATED'));
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+    }
+
+    public function removeicon(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $target_dir = "images/custom/";
+            unlink($target_dir . 'favicon.png');
+
+            $tab = array('status' => 1, 'msg' => JText::_('ICON_REMOVED'));
+
+            echo json_encode((object)$tab);
+            exit;
+        }
+    }
+
+    public function updatehomebackground() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $image = $jinput->files->get('file');
+
+            if(isset($image)) {
+                $target_dir = "images/custom/";
+                unlink($target_dir . 'home_background.png');
+
+                $target_file = $target_dir . basename('home_background.png');
+
+                if (move_uploaded_file($image["tmp_name"], $target_file)) {
+                    $tab = array('status' => 1, 'msg' => JText::_('BACKGROUND_UPDATED'));
+                } else {
+                    $tab = array('status' => 0, 'msg' => JText::_('BACKGROUND_NOT_UPDATED'));
+                }
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('BACKGROUND_NOT_UPDATED'));
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+    }
+
+    public function getbackgroundoption(){
+        $user = JFactory::getUser();
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            try {
+                $query->select('published,content')
+                    ->from($db->quoteName('#__modules'))
+                    ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_custom'))
+                    ->andWhere($db->quoteName('title') . ' LIKE ' . $db->quote('Homepage background'));
+
+                $db->setQuery($query);
+                $module = $db->loadObject();
+                $published = $module->published;
+                $content = $module->content;
+
+                $tab = array('status' => 0, 'msg' => 'success', 'data' => $published, 'content' => $content);
+            } catch (Exception $e) {
+                $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function updatebackgroundmodule() {
+        $user = JFactory::getUser();
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $jinput = JFactory::getApplication()->input;
+            $published = $jinput->getInt('published');
+
+            try {
+                $query->update($db->quoteName('#__modules'))
+                    ->set($db->quoteName('published') . ' = ' . $db->quote($published))
+                    ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_custom'))
+                    ->andWhere($db->quoteName('title') . ' LIKE ' . $db->quote('Homepage background'));
+
+                $db->setQuery($query);
+                $state = $db->execute();
+
+                $tab = array('status' => 0, 'msg' => 'success', 'data' => $state);
+            } catch (Exception $e) {
+                $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function getappcolors(){
         $user = JFactory::getUser();
 
@@ -332,17 +469,16 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             $tab = array('status' => '0', 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
-            $type = $jinput->post->getString('type');
-            $color = $jinput->post->getString('color');
+            $preset = $jinput->post->getRaw('preset');
 
             $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
-            if($type == 'primary'){
-                $yaml['base']['primary-color'] = $color;
-                $yaml['accent']['color-1'] = $color;
-            } else {
-                $yaml['base']['secondary-color'] = $color;
-                $yaml['accent']['color-2'] = $color;
-            }
+
+            $yaml['base']['primary-color'] = $preset['primary'];
+            $yaml['accent']['color-1'] = $preset['primary'];
+            $yaml['base']['secondary-color'] = $preset['secondary'];
+            $yaml['accent']['color-2'] = $preset['secondary'];
+            $yaml['link']['regular'] = $preset['secondary'];
+            $yaml['link']['hover'] = $preset['secondary'];
 
             $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml, 5);
 
@@ -709,11 +845,55 @@ class EmundusonboardControllersettings extends JControllerLegacy {
 
             // Save user data
             if (!$table->store()) {
-                JLog::add('Error saving params : '.$table->getError(), JLog::ERROR, 'mod_emundus.saas');
+                JLog::add('Error saving params : '.$table->getError(), JLog::ERROR, 'com_emundus');
                 echo json_encode(array('status' => true));
             }
 
             echo json_encode(array('status' => true));
+        }
+        exit;
+    }
+
+    public function getemundusparams(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        } else {
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+
+            echo json_encode(array('config' => $eMConfig));
+        }
+        exit;
+    }
+
+    public function updateemundusparam(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $param = $jinput->getString('param');
+            $value = $jinput->getInt('value');
+
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $eMConfig->set($param, $value);
+
+            $componentid = JComponentHelper::getComponent('com_emundus')->id;
+            $db = JFactory::getDBO();
+
+            $query = "UPDATE #__extensions SET params = ".$db->Quote($eMConfig->toString())." WHERE extension_id = ".$componentid;
+
+            try {
+                $db->setQuery($query);
+                $status = $db->execute();
+            } catch (Exception $e) {
+                JLog::add('Error set param '.$param, JLog::ERROR, 'com_emundus');
+            }
+            echo json_encode(array('status' => $status));
         }
         exit;
     }

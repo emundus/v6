@@ -24,6 +24,7 @@ jimport('joomla.application.component.controller');
 class EmundusonboardControllercampaign extends JControllerLegacy {
 
     var $model = null;
+
     public function __construct($config = array()) {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         parent::__construct($config);
@@ -486,6 +487,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             $types = $jinput->getRaw('types');
             $cid = $jinput->getInt('cid');
             $pid = $jinput->getInt('pid');
+
             $m_camp = $this->model;
 
             $result = $m_camp->createDocument($document,$types,$cid,$pid);
@@ -563,7 +565,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         }
         echo json_encode((object)$tab);
         exit;
-    }
+        }
 
     public function getdocumentsdropfiles() {
         $user = JFactory::getUser();
