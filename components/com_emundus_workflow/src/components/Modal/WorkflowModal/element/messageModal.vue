@@ -152,12 +152,12 @@ export default {
 
       this.userIdList.forEach(elt => {
         if(this.selectAll == true) {
-          $('#check' + elt).prop('checked', true);
+          document.getElementById('check' + elt).checked = true;
           this.userChecked[elt] = true;
           this.form.usersSelected = this.userChecked;
         } else {
           this.userChecked[elt] = false;
-          $('#check' + elt).prop('checked', false);
+          document.getElementById('check' + elt).checked = false;
         }
       })
     },
@@ -174,6 +174,7 @@ export default {
             selectedUserList.push(document.getElementById('check' + id).value);   /// using jquery here
           } else {}
         })
+        this.form.usersSelected = selectedUserList.toString();
       }
 
       let trigger = {
@@ -261,11 +262,11 @@ export default {
         this.form.emailSelected = JSON.parse(json_params).emailSelected;
         this.form.destinationSelected = JSON.parse(json_params).destinationSelected;
         this.form.triggerSelected = JSON.parse(json_params).triggerSelected;
-        this.users_selected = JSON.parse(json_params).usersSelected;
 
         if(this.form.destinationSelected === 'other') {
+          var raw_users = JSON.parse(json_params).usersSelected;
           this.showOtherUser = true;
-          let users_selected = this.users_selected.split(',');
+          let users_selected = raw_users.split(',');
           users_selected.forEach(user => {
             this.userChecked[user] = true;
           })

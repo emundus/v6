@@ -32,6 +32,7 @@
         <div class="message-block" v-for="message in messages" :id="'message_zone' + message.id" v-if="column.id === message.parent_id">
           <div>
             {{ message.title }}
+
             <b-button @click="openDiv(message.id)" variant="Dark" :id="'button_' + message.id">Trigger</b-button>
             <b-button :id="'button_' + message.id" variant="warning" @click="deleteMessageDiv(message.id)">x</b-button>
 
@@ -41,7 +42,10 @@
                            @updateMessageBlock="updateMessageBlock"
             />
 
-            <div v-if="showDiv===false"> Show trigger params </div>
+            <div v-if="showDiv===false" style="color:forestgreen"> {{ message.messageTemplate }} </div>
+            <div v-if="showDiv===false" style="color:lightseagreen"> {{ message.messageDestination }} </div>
+            <div v-if="showDiv===false" style="color:midnightblue"> {{ message.messageDestinationList }} </div>
+            <div v-if="showDiv===false" style="color:darkgoldenrod"> {{ message.trigger }} </div>
 
           </div>
         </div>
@@ -110,7 +114,14 @@ export default {
 
   methods: {
     updateMessageBlock(trigger) {
-      console.log(trigger);
+      /// find index of message block --> based on trigger['messageDivId']
+      let _index = this.messages.findIndex(message=>message.id === trigger['messageDivId']);
+      this.messages[_index]['messageTemplate'] = trigger['messageTemplate'];
+      this.messages[_index]['messageDestination'] = trigger['messageDestination'];
+      this.messages[_index]['messageDestinationList'] = trigger['messageDestinationList'];
+      this.messages[_index]['trigger'] = trigger['trigger'];
+      this.showDiv=false;
+      this.$forceUpdate();
     },
 
     handleDown(e) {
