@@ -192,10 +192,6 @@ class EmundusworkflowModelcommon extends JModelList {
         }
     }
 
-    /// get HTML element by id
-    public function getElementById($data) {
-    }
-
     /// get all HTMl elements
     public function getAllElements() {
         try {
@@ -219,7 +215,8 @@ class EmundusworkflowModelcommon extends JModelList {
                     ->select('#__emundus_workflow_html_element.*')
                     ->from($this->db->quoteName('#__emundus_workflow_html_element'))
                     ->where($this->db->quoteName('#__emundus_workflow_html_element.parent_type') . '=' . $this->db->quote($data['parent_type']))
-                    ->andWhere($this->db->quoteName('#__emundus_workflow_html_element.element_type') . '=' . $this->db->quote($data['element_type']));
+                    ->andWhere($this->db->quoteName('#__emundus_workflow_html_element.element_type') . '=' . $this->db->quote($data['element_type']))
+                    ->andWhere($this->db->quoteName('#__emundus_workflow_html_element.workflow_id') . '=' . $this->db->quote($data['workflow_id']));
 
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
