@@ -67,7 +67,7 @@ export default {
   name: "messageModal",
 
   props: {
-    element: Object,
+    messageParams: Object,
     stepParams: Object,
     campaignID: String,
     activateParams: Boolean,
@@ -115,36 +115,36 @@ export default {
   },
 
   created() {
-    if(this.$props.activateParams === undefined) {
-      this.isDisable = true;
-    } else {
-      this.isDisable = false;
-    }
+    // if(this.$props.activateParams === undefined) {
+    //   this.isDisable = true;
+    // } else {
+    //   this.isDisable = false;
+    // }
     this.getAllMessages();
     this.getAllDestinations();
-    this.form = this.element;
-    if(this.$props.stepParams !== undefined) {
-      this.form.emailSelected = this.$props.stepParams.email;
-      this.form.destinationSelected = this.$props.stepParams.destination;
-
-      if(this.selectOtherUsers == true) {
-        this.showOtherUser = true;
-
-        /// iterate this.$props.stepParams.usersSelected
-        var _temp = this.$props.stepParams.usersSelected;
-        if(_temp instanceof Array === false) {
-          this.userChecked[_temp] = true;
-        } else {
-          _temp.forEach(elt => {
-            this.userChecked[elt.id] = true;
-          })
-        }
-      } else {
-        this.showOtherUser = false;
-      }
-    }
+    //this.form = this.element;
+    // if(this.$props.stepParams !== undefined) {
+    //   this.form.emailSelected = this.$props.stepParams.email;
+    //   this.form.destinationSelected = this.$props.stepParams.destination;
+    //
+    //   if(this.selectOtherUsers == true) {
+    //     this.showOtherUser = true;
+    //
+    //     /// iterate this.$props.stepParams.usersSelected
+    //     var _temp = this.$props.stepParams.usersSelected;
+    //     if(_temp instanceof Array === false) {
+    //       this.userChecked[_temp] = true;
+    //     } else {
+    //       _temp.forEach(elt => {
+    //         this.userChecked[elt.id] = true;
+    //       })
+    //     }
+    //   } else {
+    //     this.showOtherUser = false;
+    //   }
+    // }
     this.getAllUsers();
-    this.form.triggerSelected = this.triggerChecked;
+    //this.form.triggerSelected = this.triggerChecked;
   },
 
   methods: {
@@ -192,6 +192,7 @@ export default {
     },
 
     createTrigger: function() {
+
       const selectedUserList = [];
 
       var selectedIndex = $("#destination-selected option:selected").index();           /// get index of selected option

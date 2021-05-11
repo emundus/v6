@@ -35,7 +35,11 @@
             <b-button @click="openDiv(message.id)" variant="Dark" :id="'button_' + message.id">Trigger</b-button>
             <b-button :id="'button_' + message.id" variant="warning" @click="deleteMessageDiv(message.id)">x</b-button>
 
-            <message-modal v-for="params in stepParams" v-if="showDiv===true && currentDiv === message.id && params.id === column.id" :element="form" :stepParams="params" :campaignID="campaignID"> candidature </message-modal>
+            <message-modal v-for="params in stepParams" v-if="showDiv===true && currentDiv === message.id && params.id === column.id"
+                           :messageParams="message"
+                           :stepParams="params"
+                           :campaignID="campaignID"/>
+
             <div v-if="showDiv===false"> Show trigger params </div>
 
           </div>
@@ -366,11 +370,11 @@ export default {
 
     createMessageDiv: function(parent_id) {
       let data = {
-        title: 'test',
-        params: '',
+        title: Math.random().toString(36).substring(2,7),       /// random title --> fix it later with hot-updating
         parent_type: 'step',
         parent_id: parent_id,
         element_type: 'message',
+        workflow_id: this.$data.id,   /// using mixin to get workflow id
       };
 
       axios({
@@ -387,7 +391,7 @@ export default {
         this.messages.push({
           parent_id: parent_id,
           id: response.data.data.id,
-          title: 'Message' + response.data.data.id,
+          title: data.title,            /// random title --> fix it later with hot-updating
         });
       }).catch(error => {
         console.log(error);
