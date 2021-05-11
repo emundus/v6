@@ -150,8 +150,31 @@ class EmundusworkflowModelcommon extends JModelList {
     }
 
     /// update email trigger by campaign id
-    public function updateEmailTriggerForCampaign($data) {
+    public function updateEmailTriggerForCampaign($trigger, $users) {
+        //// step 1 --> update table trigger (trigger, campaign_id)
+        /// step 2 --> remove all records with parent_id === trigger_id
+        if(!empty($trigger) and !empty($users)) {
+            try {
+                $this->query->clear()
+                    ->update($this->db->quoteName('#__emundus_setup_emails_trigger'))
+                    ->set($this->db->quoteName('#__emundus_setup_emails_trigger.user') . '=' . $this->db->quote(JFactory::getUser()->id))
+                    ->set($this->db->quoteName('#__emundus_setup_emails_trigger.date_time') . '=' . $this->db->quote(date('Y-m-d H:i:s')))
+                    ->set($this->db->quoteName('#__emundus_setup_emails_trigger.step') . '=' . $this->db->quote($trigger['step']))
+                    ->set($this->db->quoteName('#__emundus_setup_emails_trigger.email_id') . '=' . $this->db->quote($trigger['email_id']))
+                    ->set($this->db->quoteName('#__emundus_setup_emails_trigger.to_current_user') . '=' . $this->db->quote($trigger['to_current_user']))
+                    ->set($this->db->quoteName('#__emundus_setup_emails_trigger.to_applicant') . '=' . $this->db->quote($trigger['to_applicant']))
+                    ->where($this->db->quoteName('#__emundus_setup_emails_trigger.id') . '=' . $this->db->quote($trigger['id']));
 
+                $this->db->setQuery($this->query);
+                return $this->db->execute();
+            }
+            catch(Exception $e) {
+
+            }
+        }
+        else {
+            return false;
+        }
     }
 
     /// create HTML element

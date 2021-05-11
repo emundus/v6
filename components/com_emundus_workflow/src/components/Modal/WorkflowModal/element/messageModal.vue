@@ -204,6 +204,7 @@ export default {
       }
 
       let trigger = {
+        id: this.messageParams.triggerId,
         step: this.stepParams.outputStatus,
         email_id: this.form.emailSelected,
         to_current_user: this.form.triggerSelected === 'to_current_user' ? 1 : 0,
@@ -231,14 +232,13 @@ export default {
 
       axios({
         method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=common&task=createtrigger',
+        url: 'index.php?option=com_emundus_workflow&controller=common&task=updatetrigger',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
           trigger: trigger,
           users: selectedUserList.length === 0 ? this.form.destinationSelected :  selectedUserList,
-          campaign_id: this.stepParams.campaignId,
         })
       }).then(response => {})
         .catch(error => { console.log(error); })
