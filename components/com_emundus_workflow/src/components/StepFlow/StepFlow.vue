@@ -103,8 +103,8 @@ export default {
 
   created() {
     this.getWorkflowFromURL();    //// get workflow name from url
-    this.getAllSteps(); //// get all steps by workflow
-    this.getMessagesDiv();
+    this.getAllSteps();           //// get all steps by workflow
+    this.getMessagesDiv();        //// get all message divs
   },
 
   methods: {
@@ -176,8 +176,6 @@ export default {
       this.columns[_index]['style'] = result['color'];
       this.columns[_index]['users'] = result['users'];
       this.$forceUpdate();
-
-      //// forceupdate --> call api to update status in database --> checkin if status (after) and status (before) are the same --> do nothing /// otherwise, call to axios
     },
 
     openStep: function (id) {
@@ -421,6 +419,7 @@ export default {
         let data = {
           parent_type: 'step',
           element_type: 'message',
+          workflow_id: this.$data.id,
         }
 
         axios({
