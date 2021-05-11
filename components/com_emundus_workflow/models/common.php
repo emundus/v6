@@ -197,7 +197,7 @@ class EmundusworkflowModelcommon extends JModelList {
                     $this->db->execute();
                 }
 
-                return 'done';
+                return array('data'=>true);
             }
             catch(Exception $e) {
 
@@ -325,6 +325,26 @@ class EmundusworkflowModelcommon extends JModelList {
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
             } catch(Exception $e) {
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    /// get element by id
+    public function getElementById($id) {
+        if(!empty($id)) {
+            try {
+                $this->query->clear()
+                    ->select('#__emundus_workflow_html_element.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_html_element'))
+                    ->where($this->db->quoteName('#__emundus_workflow_html_element.id') . '=' . (int)$id);
+                $this->db->setQuery($this->query);
+                return $this->db->loadObject();
+            }
+            catch(Exception $e) {
                 return $e->getMessage();
             }
         }

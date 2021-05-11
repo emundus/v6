@@ -305,4 +305,27 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    /// get element by id
+    public function getelementbyid() {
+        $user = JFactory::getUser();
+        if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
+        }
+        else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('id');
+
+            $_element = $this->_common_model->getElementById($data);
+
+            if ($_element) {
+                $tab = array('status' => 1, 'msg' => JText::_("GET_ELEMENT_BY_ID_SUCCESFULLY"), 'data' => $_element);
+            }
+            else {
+                $tab = array('status' => 0, 'msg' => JText::_("GET_ELEMENT_BY_ID_FAILED"), 'data' => $_element);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 }

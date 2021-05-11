@@ -143,6 +143,7 @@ export default {
     //   }
     // }
     this.getAllUsers();
+    this.getMessageParams(this.messageParams.id);
     //this.form.triggerSelected = this.triggerChecked;
   },
 
@@ -188,9 +189,7 @@ export default {
     },
 
     updateTrigger: function() {
-
       const selectedUserList = [];
-
       var selectedIndex = $("#destination-selected option:selected").index();           /// get index of selected option
       var selectedValue = $("#destination-selected option").eq(selectedIndex).val();    /// get the value of selected option
 
@@ -242,6 +241,26 @@ export default {
         })
       }).then(response => {})
         .catch(error => { console.log(error); })
+    },
+
+    getMessageParams: function(id) {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=common&task=getelementbyid',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          id: id,      /// id of this message block
+        })
+      }).then(response => {
+        let json_params = response.data.data.params;
+        this.form.emailSelected = JSON.parse(json_params).emailSelected;
+        this.form.destinationSelected = JSON.parse(json_params).destinationSelected;
+        this.form.triggerSelected = JSON.parse(json_params).triggerSelected;
+      }).catch(error => {
+        console.log(error);
+      })
     },
 
     getAllMessages: function() {
