@@ -115,34 +115,8 @@ export default {
   },
 
   created() {
-    // if(this.$props.activateParams === undefined) {
-    //   this.isDisable = true;
-    // } else {
-    //   this.isDisable = false;
-    // }
     this.getAllMessages();
     this.getAllDestinations();
-    //this.form = this.element;
-    // if(this.$props.stepParams !== undefined) {
-    //   this.form.emailSelected = this.$props.stepParams.email;
-    //   this.form.destinationSelected = this.$props.stepParams.destination;
-    //
-    //   if(this.selectOtherUsers == true) {
-    //     this.showOtherUser = true;
-    //
-    //     /// iterate this.$props.stepParams.usersSelected
-    //     var _temp = this.$props.stepParams.usersSelected;
-    //     if(_temp instanceof Array === false) {
-    //       this.userChecked[_temp] = true;
-    //     } else {
-    //       _temp.forEach(elt => {
-    //         this.userChecked[elt.id] = true;
-    //       })
-    //     }
-    //   } else {
-    //     this.showOtherUser = false;
-    //   }
-    // }
     this.getAllUsers();
     this.getMessageParams(this.messageParams.id);
   },
@@ -154,7 +128,7 @@ export default {
       // uncheck all options
       this.userIdList.forEach(elt => {
         this.userChecked[elt] = false;
-        document.getElementById('check' + elt).checked = false;         /// replace by jquery
+        $('#check' + elt).prop('checked', false);
       });
     },
 
@@ -178,12 +152,12 @@ export default {
 
       this.userIdList.forEach(elt => {
         if(this.selectAll == true) {
-          document.getElementById('check' + elt).checked = true;          /// using jquery here
+          $('#check' + elt).prop('checked', true);
           this.userChecked[elt] = true;
           this.form.usersSelected = this.userChecked;
         } else {
           this.userChecked[elt] = false;
-          document.getElementById('check' + elt).checked = false;         /// using jquery here
+          $('#check' + elt).prop('checked', false);
         }
       })
     },
