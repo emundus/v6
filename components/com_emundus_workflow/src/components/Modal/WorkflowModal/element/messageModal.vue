@@ -200,7 +200,36 @@ export default {
         })
       }).then(response => {
         /// after updating --> emit to parent component all updated values --> how to do???
-        this.$emit('updateMessageBlock', response);
+        let triggerParams = [];
+        if( $( "#email-selected option:selected" ).text() !== "" || $( "#email-selected option:selected" ).text() !== undefined || $( "#email-selected option:selected" ).text() !== null) {
+          triggerParams['messageTemplate'] = $("#email-selected option:selected").text();
+        }
+        if( $( "#destination-selected option:selected" ).text() !== "" || $( "#destination-selected option:selected" ).text() !== undefined || $( "#destination-selected option:selected" ).text() !== null) {
+          triggerParams['messageDestination'] = $("#destination-selected option:selected").text();
+        }
+
+        /// get the selectedIndex, selectedValue -->
+        let selectedIndex = $("#destination-selected option:selected").index();
+        let selectedValue = $("#destination-selected option").eq(selectedIndex).val();
+        let _users= [];
+
+        if(selectedValue === 'other' && this.form.usersSelected !== undefined) {
+          /// grab all other users
+          for(i = 0; i <= this.form.usersSelected.length; i++) {
+            if(this.form.usersSelected[i] === true) {
+              _users.push(document.getElementById('userName_' + i).innerText);
+            }
+          }
+          triggerParams['messageDestinationList'] = _users.toString();
+        }
+
+        if( $( "#trigger-selected option:selected" ).text() !== "" || $( "#trigger-selected option:selected" ).text() !== undefined || $( "#trigger-selected option:selected" ).text() !== null) {
+          triggerParams['trigger'] = $("#trigger-selected option:selected").text();
+        }
+
+        triggerParams['messageDivId'] = this.messageParams.id;
+        this.$emit('updateMessageBlock', triggerParams);
+
       }).catch(error => { console.log(error); })
 
       axios({
