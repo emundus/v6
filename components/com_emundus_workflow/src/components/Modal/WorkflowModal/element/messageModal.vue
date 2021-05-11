@@ -153,7 +153,7 @@ export default {
       // uncheck all options
       this.userIdList.forEach(elt => {
         this.userChecked[elt] = false;
-        document.getElementById('check' + elt).checked = false;
+        document.getElementById('check' + elt).checked = false;         /// replace by jquery
       });
     },
 
@@ -224,8 +224,10 @@ export default {
         data: qs.stringify({
           data: message_div,
         })
-      }).then(response => {})
-          .catch(error => { console.log(error); })
+      }).then(response => {
+        /// after updating --> emit to parent component all updated values --> how to do???
+        this.$emit('updateTrigger', response);
+      }).catch(error => { console.log(error); })
 
       axios({
         method: 'post',
@@ -243,23 +245,11 @@ export default {
     },
 
     getAllMessages: function() {
-      axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallmessages')
-          .then(response => {
-            this.$data.emails = response.data.data;
-          })
-          .catch(error => {
-            console.log(error);
-          })
+      axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallmessages').then(response => {this.$data.emails = response.data.data;}).catch(error => {console.log(error);})
     },
 
     getAllDestinations: function() {
-      axios.get('index.php?option=com_emundus_workflow&controller=common&task=getalldestinations')
-          .then(response => {
-            this.$data.destination = response.data.data;
-          })
-          .catch(error => {
-            console.log(error);
-          })
+      axios.get('index.php?option=com_emundus_workflow&controller=common&task=getalldestinations').then(response => {this.$data.destination = response.data.data;}).catch(error => {console.log(error);})
     },
 
     getAllUsers: function() {

@@ -92,17 +92,6 @@
           </div>
         </div>
 
-<!--        <div class="row mb-3">-->
-<!--          <label class="col-sm-6 col-form-label">{{ this.title.messageTitle }}</label>-->
-<!--          <tr>-->
-<!--            <th><input type="checkbox" @click="showMessage=!showMessage" :checked="showMessage==true">Oui</th>-->
-<!--          </tr>-->
-<!--        </div>-->
-
-<!--      <message-modal :element="form" :stepParams="messageParams" :activateParams="showMessage" :selectOtherUsers="selectUsers" v-if="showMessage==true" ref="message"/>-->
-
-<!--        <div class="row mb-3" v-if="showMessage==false"/>-->
-
         <div class="row mb-3">
           <label class="col-sm-6 col-form-label">{{ this.title.colorTitle }}</label>
           <div class="col-xs-8">
@@ -115,7 +104,6 @@
           <b-button variant="danger" @click="exitModal()">Quitter</b-button>
         </div>
 
-      </modal>
     </div>
   </div>
 </template>
@@ -160,7 +148,6 @@ export default {
         startDateTitle: "Date debut",
         endDateTitle: "Date fin",
         notes: "Informations supplementaires",
-        messageTitle: "Voulez-vous envoyer un message?",
         colorTitle: "Palette de couleur",
       },
       // use for form v-model
@@ -183,9 +170,6 @@ export default {
 
       inStatusSelected: [],
       stepLabel: '',
-
-      showMessage: false,
-      selectUsers: false,
     }
   },
 
@@ -194,11 +178,6 @@ export default {
   },
 
   methods: {
-    showMesssageParams: function() {
-      this.showMessage = true;
-      console.log('show message params');
-    },
-
     getCurrentParams: function(sid) {
       axios({
         method: 'get',
@@ -224,22 +203,6 @@ export default {
         });
 
         this.stepLabel = response.data.data.stepLabel;
-
-        this.messageParams = response.data.data.message;
-
-        if(response.data.data.message !== undefined) {
-          this.showMessage = true;
-
-          if(response.data.data.message.usersSelected !== null) {
-            this.selectUsers = true;
-          }
-          else {
-            this.selectUsers = false;
-          }
-        } else {
-          this.showMessage = false;
-          this.messageParams = {};
-        }
 
         this.colorParams = response.data.data;      // using this data to pass to child
       })
@@ -269,17 +232,6 @@ export default {
 
     updateParams: function() {
       // params :: this.form
-      if(this.showMessage == false && this.messageParams !== undefined && Object.keys(this.messageParams).length > 0) {
-        /// this way is not efficient (reason : hardcode) --> replace by all DOM children of message modal (backlog)
-        delete this.form.emailSelected;
-        delete this.form.destinationSelected;
-        delete this.form.messageNotes;
-      }
-
-      else {
-        // .... do nothing
-      }
-
       if(this.form.inputStatus !== null && this.form.outputStatus !== null
           && this.startDate !== null && this.endDate !== null
           && new Date(this.startDate).toISOString().slice(0, 19).replace('T', ' ') <= new Date(this.endDate).toISOString().slice(0, 19).replace('T', ' ')) {
@@ -300,7 +252,6 @@ export default {
             }
           })
         }).then(response => {
-          this.$refs.message.createTrigger();         /// create trigger
           Swal.fire({
             icon: 'success',
             title: 'Congrat',
@@ -309,7 +260,7 @@ export default {
             confirmButtonColor: '#28a745',
           }).then(result => {
             if(result.isConfirmed) {
-              //this.$modal.hide("stepModal" + this.element.id);
+              this.$modal.hide("stepModal" + this.element.id);
             }
             // this.inStatusSelected = $( "#instatus-selected option:selected" ).text();
           })
@@ -367,29 +318,6 @@ export default {
 
       // get the color
       _emit['color'] = $("#labelColor").text();
-
-      if( $( "#email-selected option:selected" ).text() !== "" || $( "#email-selected option:selected" ).text() !== undefined || $( "#email-selected option:selected" ).text() !== null) {
-        _emit['email'] = $( "#email-selected option:selected" ).text();
-      }
-
-      if( $( "#destination-selected option:selected" ).text() !== "" || $( "#destination-selected option:selected" ).text() !== undefined || $( "#destination-selected option:selected" ).text() !== null) {
-        _emit['destination'] = $( "#destination-selected option:selected" ).text();
-      }
-
-      /// get the selectedIndex, selectedValue -->
-      var selectedIndex = $("#destination-selected option:selected").index();
-      var selectedValue = $("#destination-selected option").eq(selectedIndex).val();
-      var _users= [];
-
-      if(selectedValue === 'other' && this.form.usersSelected !== undefined) {
-        /// grab all other users
-        for(i = 0; i <= this.form.usersSelected.length; i++) {
-          if(this.form.usersSelected[i] === true) {
-            _users.push(document.getElementById('userName_' + i).innerText);
-          }
-        }
-        _emit['users'] = _users.toString();
-      }
 
       this.$emit('updateStep', _emit);
     }

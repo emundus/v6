@@ -38,6 +38,7 @@
             <message-modal v-for="params in stepParams" v-if="showDiv===true && currentDiv === message.id && params.id === column.id"
                            :messageParams="message"
                            :stepParams="params"
+                           @updateTrigger="updateTrigger"
             />
 
             <div v-if="showDiv===false"> Show trigger params </div>
@@ -108,6 +109,10 @@ export default {
   },
 
   methods: {
+    updateTrigger(trigger) {
+      console.log(trigger);
+    },
+
     handleDown(e) {
       const target = e.target || e.srcElement;
       if(target.className === 'vm--modal') {
