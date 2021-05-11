@@ -259,6 +259,31 @@ class EmundusonboardControllerform extends JControllerLegacy {
         exit;
     }
 
+    public function updateformlabel() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $jinput = JFactory::getApplication()->input;
+            $prid = $jinput->getInt('prid');
+            $label = $jinput->getString('label');
+            $m_form = $this->model;
+
+            $result = $m_form->updateFormLabel($prid, $label);
+
+            if ($result) {
+                $tab = array('status' => 1, 'msg' => JText::_('FORM_UPDATED'), 'data' => $result);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('FORM_NOT_UPDATED'), 'data' => $result);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
 
     public function getformbyid() {
         $user = JFactory::getUser();
@@ -331,28 +356,54 @@ class EmundusonboardControllerform extends JControllerLegacy {
         exit;
     }
 
+    public function updatemandatory() {
+        $user = JFactory::getUser();
 
-    public function updatedocuments() {
-	    $user = JFactory::getUser();
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
 
-	    if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-		    $result = 0;
-		    $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-	    } else {
+            $jinput = JFactory::getApplication()->input;
+            $did = $jinput->getInt('did');
+            $prid = $jinput->getInt('prid');
+            $cid = $jinput->getInt('cid');
+            $m_form = $this->model;
 
-		    $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->getRaw('body');
-	        $prid = $jinput->getInt('prid');
-	        $cid = $jinput->getInt('cid');
-	        $m_form = $this->model;
+            $documents = $m_form->updateMandatory($did,$prid,$cid);
 
-	        $documents = $m_form->updateDocuments($data, $prid, $cid);
+            if ($documents) {
+                $tab = array('status' => 1, 'msg' => JText::_('DOCUMENTS_UPDATED'), 'data' => $documents);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
+            }
+        }
 
-	        if ($documents) {
-	            $tab = array('status' => 1, 'msg' => JText::_('DOCUMENTS_UPDATED'), 'data' => $documents);
-	        } else {
-	            $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
-	        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function adddocument() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $jinput = JFactory::getApplication()->input;
+            $did = $jinput->getInt('did');
+            $prid = $jinput->getInt('prid');
+            $cid = $jinput->getInt('cid');
+            $m_form = $this->model;
+
+            $documents = $m_form->addDocument($did, $prid, $cid);
+
+            if ($documents) {
+                $tab = array('status' => 1, 'msg' => JText::_('DOCUMENTS_UPDATED'), 'data' => $documents);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
+            }
         }
 
         echo json_encode((object)$tab);
@@ -431,6 +482,77 @@ class EmundusonboardControllerform extends JControllerLegacy {
                 $tab = array('status' => 1, 'msg' => 'worked', 'data' => $form);
             } else {
                 $tab = array('status' => 0, 'msg' => 'Doesn t worked', 'data' => $form);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getDocuments() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $jinput = JFactory::getApplication()->input;
+            $profile_id = $jinput->getInt('pid');
+
+            $m_form = $this->model;
+            $documents = $m_form->getDocumentsByProfile($profile_id);
+
+            if (!empty($documents)) {
+                $tab = array('status' => 1, 'msg' => 'worked', 'data' => $documents);
+            } else {
+                $tab = array('status' => 0, 'msg' => 'Doesn t worked', 'data' => $documents);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function reorderDocuments() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $jinput = JFactory::getApplication()->input;
+            $documents = $jinput->getRaw('documents');
+            $m_form = $this->model;
+            $documents = $m_form->reorderDocuments($documents);
+
+            if (!empty($documents)) {
+                $tab = array('status' => 1, 'msg' => 'worked', 'data' => $documents);
+            } else {
+                $tab = array('status' => 0, 'msg' => 'Doesn t worked', 'data' => $documents);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function removeDocumentFromProfile() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $jinput = JFactory::getApplication()->input;
+            $did = $jinput->getInt('did');
+
+            $m_form = $this->model;
+            $result = $m_form->removeDocumentFromProfile($did);
+
+            if (!empty($result)) {
+                $tab = array('status' => 1, 'msg' => 'worked', 'data' => $result);
+            } else {
+                $tab = array('status' => 0, 'msg' => 'Doesn t worked', 'data' => $result);
             }
         }
         echo json_encode((object)$tab);
@@ -555,6 +677,18 @@ class EmundusonboardControllerform extends JControllerLegacy {
             $submittionpage = $m_form->getSubmittionPage($prid);
         }
         echo json_encode((object)$submittionpage);
+        exit;
+    }
+
+    public function getAccess(){
+        $user = JFactory::getUser();
+
+        if (EmundusonboardHelperAccess::asAdministratorAccessLevel($user->id)) {
+            $response = array('status' => 1, 'msg' => JText::_("ACCESS_SYSADMIN"), 'access' => true);
+        } else {
+            $response = array('status' => 0, 'msg' => JText::_("ACCESS_REFUSED"), 'access' => false);
+        }
+        echo json_encode((object)$response);
         exit;
     }
 }

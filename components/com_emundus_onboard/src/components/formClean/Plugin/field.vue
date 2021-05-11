@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "fieldF",
   props: { element: Object, files: Number },
@@ -71,7 +73,9 @@ export default {
       tipData: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_HINT"),
     };
   },
-  methods: {},
+  methods: {
+
+  },
   created(){
     this.msg =
             '<p style="color: white">' + this.placeholderHelp + '</p>' +

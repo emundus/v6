@@ -603,14 +603,10 @@ class EmundusModelApplication extends JModelList {
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 WHERE profiles.campaign_id = ' . intval($profile_by_status["campaign_id"]) . ' AND profiles.displayed = 1';
 
-                /*if (!empty($profile_id)) {
-                    $query .= ' AND profile_id = ' . $profile_id;
-                }*/
-
                 $this->_db->setQuery($query);
                 $attachments = $this->_db->loadResult();
 
-                if (intval($attachments) != 0) {
+                if (intval($attachments) == 0) {
                     $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($f) . '

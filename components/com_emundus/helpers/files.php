@@ -1058,7 +1058,7 @@ class EmundusHelperFiles
                         <label for="select_filter" class="control-label em-user-personal-filter-label">'.JText::_('SELECT_FILTER').'</label>
                         <div class="em_select_filter_rapid_search">
                             <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" > 
-                                <option value="0" selected="true" >'.JText::_('CHOOSE_FILTER').'</option>';
+                                <option value="0" selected="true" style="font-style: italic;">'.JText::_('CHOOSE_FILTER').'</option>';
         if (!empty($research_filters)) {
             foreach ($research_filters as $filter) {
                 if ($select_id == $filter->id) {
