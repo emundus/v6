@@ -85,7 +85,6 @@ export default {
 
       form: {
           emailSelected: '',
-          inputStatus: '',
           destinationSelected: '',
           messageNotes: '',
           usersSelected: [],
@@ -248,6 +247,10 @@ export default {
     },
 
     getMessageParams: function(id) {
+      let data = {
+        id: id,
+        mode: null,
+      }
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus_workflow&controller=common&task=getelementbyid',
@@ -255,10 +258,10 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
-          id: id,      /// id of this message block
+          data: data,      /// id of this message block
         })
       }).then(response => {
-        let json_params = response.data.data.params;
+        let json_params = response.data.data.data.params;
         this.form.emailSelected = JSON.parse(json_params).emailSelected;
         this.form.destinationSelected = JSON.parse(json_params).destinationSelected;
         this.form.triggerSelected = JSON.parse(json_params).triggerSelected;
