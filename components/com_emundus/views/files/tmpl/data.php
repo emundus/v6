@@ -113,7 +113,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                                     <?php if ($anonymize_data) :?>
                                                         <div class="em_list_fnum"><?= $value->val; ?></div>
                                                     <?php else :?>
-                                                        <span class="em_list_text" title="<?= $value->val; ?>"> <strong> <?= $value->user->name; ?></strong></span>
+                                                       <span class="em_list_text" title="<?= $value->val; ?>"> <strong> <?= $value->user->name; ?></strong></span>
                                                         <div class="em_list_email"><?= $value->user->email; ?></div>
                                                         <div class="em_list_email"><?= $value->user->id; ?></div>
                                                     <?php endif; ?>

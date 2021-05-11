@@ -7,7 +7,7 @@
  */
 ?>
 <form action = "index.php?option=com_emundus&controller=users&task=addgroup" id="em-add-group" class="em-add-group" role="form" method="post">
-	<?php 
+	<?php
 	if(count($this->groups) == 0)
 		echo JText::_('COM_EMUNDUS_NO_GROUP');
 	else {
@@ -87,6 +87,18 @@
 			</fieldset>
 		<?php endforeach;?>
 	<?php };?>
+
+    <?php
+echo '<script type="text/javascript">
+	$(document).ready(function() {
+	    $("#can-val").hide();
+	});
+	
+	$(document).on("click", ".close", function() {
+	    $("#can-val").show();
+	});
+</script>'
+    ?>
 
 </form>
 

@@ -7,143 +7,142 @@
             position="bottom left"
             :classes="'vue-notification-custom'"
     />
-    <ModalAffectCampaign
-            :prid="prid"
-            :testing="testing"
-    />
-    <ModalTestingForm
-        v-if="formObjectArray[indexHighlight]"
-        :profileId="prid"
-        :actualLanguage="actualLanguage"
-        :campaigns="campaignsAffected"
-        :currentForm="formObjectArray[indexHighlight].object.id"
-        :currentMenu="formObjectArray[indexHighlight].object.menu_id"
-        @testForm="testForm"
-    />
-    <ModalMenu
-            :profileId="prid"
-            :actualLanguage="actualLanguage"
-            :manyLanguages="manyLanguages"
-            @AddMenu="pushMenu"
-    />
-    <ModalSide
-            v-for="(value, index) in formObjectArray"
-            :key="index"
-            v-show="formObjectArray[indexHighlight]"
-            :ID="value.rgt"
-            :element="value.object"
-            :link="formObjectArray[indexHighlight].link"
-            :menus="formObjectArray"
-            :index="index"
-            :files="files"
-            :actualLanguage="actualLanguage"
-            :manyLanguages="manyLanguages"
-            @show="show"
-            @UpdateUx="UpdateUXT"
-            @UpdateName="UpdateName"
-            @UpdateIntro="UpdateIntro"
-            @UpdateVue="updateFormObjectAndComponent"
-            @removeMenu="removeMenu"
-    />
-    <div class="row form-builder">
-      <div class="sidebar-formbuilder">
-        <div class="heading-block">
-          <h1 class="form-title" style="padding: 0; margin: 0">{{profileLabel}}</h1>
-          <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit">
-            <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
-          </a>
-        </div>
-        <transition name="little-move-right">
-          <div v-if="!actions_menu">
-            <button class="actions-button" type="button" @click="actions_menu = true">
-              {{Actions}}
-              <em class="fas fa-plus-circle"></em>
-            </button>
-          </div>
-        </transition>
+    <div v-if="indexHighlight != -1">
+      <ModalAffectCampaign
+              :prid="prid"
+              :testing="testing"
+      />
+      <ModalTestingForm
+          v-if="formObjectArray[indexHighlight]"
+          :profileId="prid"
+          :actualLanguage="actualLanguage"
+          :campaigns="campaignsAffected"
+          :currentForm="formObjectArray[indexHighlight].object.id"
+          :currentMenu="formObjectArray[indexHighlight].object.menu_id"
+          @testForm="testForm"
+          @modalClosed="optionsModal = false"
+      />
+      <ModalMenu
+              :profileId="prid"
+              :actualLanguage="actualLanguage"
+              :manyLanguages="manyLanguages"
+              @AddMenu="pushMenu"
+              @modalClosed="optionsModal = false"
+      />
+      <ModalSide
+              v-for="(value, index) in formObjectArray"
+              :key="index"
+              v-show="formObjectArray[indexHighlight]"
+              :ID="value.rgt"
+              :element="value.object"
+              :link="formObjectArray[indexHighlight].link"
+              :menus="formObjectArray"
+              :index="index"
+              :files="files"
+              :actualLanguage="actualLanguage"
+              :manyLanguages="manyLanguages"
+              @show="show"
+              @UpdateUx="UpdateUXT"
+              @UpdateName="UpdateName"
+              @UpdateIntro="UpdateIntro"
+              @UpdateVue="updateFormObjectAndComponent"
+              @removeMenu="removeMenu"
+              @modalClosed="optionsModal = false"
+      />
+      <ModalAddDocuments
+          :pid="prid"
+          :currentDoc="currentDoc"
+          :langue="actualLanguage"
+          :manyLanguages="manyLanguages"
+          @modalClosed="optionsModal = false"
+          @UpdateDocuments="getDocuments"
+        />
+    </div>
+    <div class="row" v-if="indexHighlight != -1">
+      <div class="sidebar-formbuilder" :style="actions_menu ? 'width: 250px' : ''">
         <transition name="move-right">
-          <div class="actions-menu menu-block" v-if="actions_menu">
+          <div class="actions-menu menu-block">
+<!--            <button class="g-menu-item g-standard burger-button"><img src="/images/emundus/menus/menu.png" @click="enableActionsMenu" style="width: 30px" alt="Menu"></button>-->
+            <a class="d-flex back-button-action pointer" style="padding: 0 15px" :title="Back">
+              {{ BuildYourForm }}
+            </a>
+            <hr style="width: 80%;margin: 10px auto;">
             <div>
-              <div class="heading-actions">
-                <label class="form-title" style="padding: 0; margin: 0">{{Actions}}</label>
-                <button type="button" class="btnCloseModal" @click="actions_menu = false">
-                  <em class="fas fa-times-circle pointer" ></em>
-                </button>
-              </div>
               <div class="action-links">
-                  <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')">
-                    <em class="add-page-icon col-md-offset-1 col-sm-offset-1"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{addMenu}}</label>
+                  <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="addMenu">
+                    <em class="add-page-icon"></em>
+                    <label class="action-label col-md-offset-1 col-sm-offset-1">{{addMenu}}</label>
                   </a>
-                  <a class="d-flex action-link" @click="createGroup()">
-                    <em class="add-group-icon col-md-offset-1 col-sm-offset-1"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{addGroup}}</label>
+                  <a class="d-flex action-link" @click="createGroup()" :title="addGroup">
+                    <em class="add-group-icon"></em>
+                    <label class="action-label col-md-offset-1 col-sm-offset-1">{{addGroup}}</label>
                   </a>
-                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements">
-                    <em class="add-element-icon col-md-offset-1 col-sm-offset-1"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
+                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements" :title="addItem">
+                    <em class="add-element-icon"></em>
+                    <label class="action-label col-md-offset-1 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
                   </a>
-                <transition :name="'slide-down'" type="transition">
-                  <draggable
-                          v-model="plugins"
-                          v-bind="dragOptions"
-                          v-if="addingElement"
-                          handle=".handle"
-                          @start="dragging = true;draggingIndex = index"
-                          @end="addingNewElement($event)"
-                          drag-class="plugin-drag"
-                          chosen-class="plugin-chosen"
-                          ghost-class="plugin-ghost"
-                          style="padding-bottom: 2em">
-                      <div class="d-flex plugin-link col-md-offset-3 col-sm-offset-2 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
-                        <em :class="plugin.icon"></em>
-                        <span class="ml-10px">{{plugin.name}}</span>
-                      </div>
-                  </draggable>
+<!--                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="testForm" :title="testingForm">
+                    <em class="far fa-play-circle" style="font-size: 22px"></em>
+                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{testingForm}}</label>
+                  </a>-->
+                <transition :name="'slide-right'" type="transition">
+                  <div class="plugins-list" v-if="addingElement">
+                    <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingElement = !addingElement" :title="Back">
+                      <em class="fas fa-arrow-left mr-1"></em>
+                      {{ Back }}
+                    </a>
+                    <hr style="width: 80%;margin: 10px auto;">
+                    <draggable
+                            v-model="plugins"
+                            v-bind="dragOptions"
+                            handle=".handle"
+                            @start="startDragging();dragging = true;draggingIndex = index"
+                            @end="addingNewElement($event)"
+                            drag-class="plugin-drag"
+                            chosen-class="plugin-chosen"
+                            ghost-class="plugin-ghost"
+                            style="padding-bottom: 2em;margin-top: 10%">
+                        <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
+                          <em :class="plugin.icon"></em>
+                          <span class="ml-10px">{{plugin.name}}</span>
+                        </div>
+                    </draggable>
+                  </div>
                 </transition>
               </div>
             </div>
-            <a class="send-form-button" @click="sendForm">
+            <!--<a class="send-form-button" @click="sendForm">
               <label style="cursor: pointer" class="mb-0">{{sendFormButton}}</label>
               <em class="fas fa-paper-plane" style="font-size: 20px"></em>
             </a>
             <a class="send-form-button test-form-button" style="margin-top: 1em" @click="testForm">
               <label style="cursor: pointer">{{testingForm}}</label>
               <em class="fas fa-vial" style="font-size: 20px"></em>
-            </a>
+            </a>-->
           </div>
         </transition>
       </div>
-      <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : 'col-md-10 col-md-offset-2 col-sm-11 col-sm-offset-1'" class="menu-block">
-        <ul class="form-section">
-          <li>
-            <a :class="menuHighlight === 0 ? 'form-section__current' : ''" @click="menuHighlight = 0;indexHighlight = 0">{{FormPage}}</a>
-          </li>
-          <li>
-            <a :class="menuHighlight === 1 ? 'form-section__current' : ''" @click="menuHighlight = 1;indexHighlight = 0">{{SubmitPage}}</a>
-          </li>
-        </ul>
-        <div v-if="menuHighlight === 0">
-          <ul class="menus-row">
-            <draggable
-                    handle=".handle"
-                    v-model="formObjectArray"
-                    :class="'draggables-list'"
-                    @end="SomethingChange"
-            >
-              <li v-for="(value, index) in formObjectArray" :key="index" class="MenuForm" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
-                <span class="icon-handle" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
-                  <em class="fas fa-grip-vertical handle"></em>
-                </span>
-                <a @click="changeGroup(index,value.rgt)"
-                   class="MenuFormItem"
-                   :class="indexHighlight == index ? 'MenuFormItem_current' : ''">
-                  {{value.object.show_title.value}}
+      <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
+        <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-offset-2 col-md-6' : 'col-md-8'">
+          <div class="d-flex" v-show="!updateFormLabel">
+            <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="profileLabel">{{profileLabel}}</h2>
+            <a @click="enableUpdatingForm" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
+              <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
+            </a>
+          </div>
+          <div style="width: max-content;margin-left: 20px" v-show="updateFormLabel">
+            <div class="input-can-translate">
+              <input v-model="profileLabel" class="form__input field-general w-input" style="width: 400px;" @keyup.enter="updateLabelForm()" :id="'update_label_form_' + prid"/>
+              <div class="d-flex actions-update-label ml-10px">
+                <a @click="updateLabelForm()" :title="Validate">
+                  <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
                 </a>
-              </li>
-            </draggable>
-          </ul>
-          <div class="col-md-12 form-viewer-builder">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="menuHighlight === 0" class="form-builder">
+          <div class="form-viewer-builder" :class="[addingElement || actions_menu ? 'col-sm-offset-5 col-md-offset-4 col-lg-offset-1 col-sm-7 col-md-6' : 'col-md-8',optionsModal ? 'col-sm-5 col-md-6' : 'col-md-8']">
             <Builder
                     :object="formObjectArray[indexHighlight]"
                     v-if="formObjectArray[indexHighlight]"
@@ -151,6 +150,8 @@
                     @show="show"
                     @UpdateFormBuilder="updateFormObjectAndComponent"
                     @removeGroup="removeGroup"
+                    @modalClosed="optionsModal = false"
+                    @modalOpen="optionsModal = true"
                     :key="builderKey"
                     :rgt="rgt"
                     :prid="prid"
@@ -162,8 +163,8 @@
             />
           </div>
         </div>
-        <div v-if="menuHighlight === 1">
-          <div class="col-md-12 form-viewer-builder">
+        <div v-if="menuHighlight === 1" class="form-builder">
+          <div class="form-viewer-builder" :class="[addingElement || actions_menu ? 'col-sm-offset-5 col-md-offset-4 col-lg-offset-1 col-sm-7 col-md-7' : 'col-md-8',optionsModal ? 'col-sm-5 col-md-6' : 'col-md-8']">
             <Builder
                     :object="submittionPages[indexHighlight]"
                     v-if="submittionPages[indexHighlight]"
@@ -171,6 +172,8 @@
                     @show="show"
                     @UpdateFormBuilder="updateFormObjectAndComponent"
                     @removeGroup="removeGroup"
+                    @modalClosed="optionsModal = false"
+                    @modalOpen="optionsModal = true"
                     :key="builderSubmitKey"
                     :rgt="rgt"
                     :prid="prid"
@@ -182,12 +185,83 @@
             />
           </div>
         </div>
+        <ul class="col-md-3 sticky-form-pages" :class="[addingElement || actions_menu? 'ml-10px col-sm-offset-5 col-sm-7' : '',optionsModal ? 'col-sm-5' : '']" style="margin-top: 0" v-if="formObjectArray">
+          <div class="d-flex justify-content-between mb-1">
+            <h3 class="mb-0" style="padding: 0;">{{ FormPage }}</h3>
+            <label class="saving-at">{{ Savingat }} {{lastUpdate}}<em class="fas fa-sync ml-10px"></em></label>
+          </div>
+          <div class="form-pages">
+            <h4 class="ml-10px form-title" style="margin-bottom: 0;padding: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="Form">{{ Form }}</h4>
+            <draggable
+                handle=".handle"
+                v-model="formList"
+                :class="'draggables-list'"
+                @end="SomethingChange"
+            >
+              <li v-for="(value, index) in formList" :key="index" class="MenuForm" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
+                  <span class="icon-handle" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
+                    <em class="fas fa-grip-vertical handle"></em>
+                  </span>
+                <a @click="changeGroup(index,value.rgt);menuHighlight = 0"
+                   class="MenuFormItem"
+                   :title="value.label"
+                   :class="indexHighlight == index && menuHighlight === 0 ? 'MenuFormItem_current' : ''" >
+                    {{value.label}}
+                </a>
+              </li>
+            </draggable>
+            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 30px" :title="addMenuAction">{{addMenuAction}}</button>
+          </div>
+          <div class="form-pages">
+            <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><em class="far fa-folder-open mr-1" :alt="Documents"></em>{{ Documents }}</h4>
+            <draggable
+                handle=".handle"
+                v-model="documentsList"
+                :class="'draggables-list'"
+                @end="reorderingDocuments"
+            >
+              <li v-for="(doc, index) in documentsList" :key="index" class="MenuForm" @mouseover="enableGrabDocuments(index)" @mouseleave="disableGrabDocuments()" v-if="doc.displayed==1">
+                  <span class="icon-handle" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
+                    <em class="fas fa-grip-vertical handle"></em>
+                  </span>
+                <a class="MenuFormItem"
+                   :title="doc.label">
+                  {{doc.label}}<span v-if="doc.mandatory == 1" style="color: red">*</span>
+                </a>
+                <a class="cta-block pointer" @click="removeDocument(index,doc.id)" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
+                  <i class="fas fa-times" style="width: 15px;height: 15px;"></i>
+                </a>
+                <a @click="currentDoc = doc.docid;$modal.show('modalAddDocuments');optionsModal = true" :title="Edit" class="cta-block pointer" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
+                  <em class="fas fa-pen" style="width: 15px;height: 14px;" data-toggle="tooltip" data-placement="top"></em>
+                </a>
+              </li>
+            </draggable>
+            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalAddDocuments');optionsModal = true" style="margin-left: 30px" :title="AddNewDocument">{{AddNewDocument}}</button>
+
+          </div>
+          <div class="form-pages" style="padding-top: 20px" v-if="submittionPages">
+            <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><img src="/images/emundus/menus/confirmation.png" class="mr-1" :alt="SubmitPage">{{SubmitPage}}</h4>
+            <li v-for="(value, index) in submittionPages" :key="index" class="MenuForm">
+              <a @click="menuHighlight = 1;indexHighlight = index"
+                 class="MenuFormItem"
+                 style="margin-left: 5px"
+                 :title="value.object.show_title.value"
+                 :class="indexHighlight == index && menuHighlight === 1 ? 'MenuFormItem_current' : ''">
+                {{value.object.show_title.value}}
+              </a>
+            </li>
+          </div>
+          <div class="d-flex">
+            <button class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green mt-1" @click="sendForm" style="margin-left: 10px" :title="Validate">{{Validate}}</button>
+            <button class="bouton-sauvergarder-et-continuer mt-1" @click="exitForm" style="margin-left: 10px" :title="Validate">{{ExitFormbuilder}}</button>
+          </div>
+        </ul>
       </div>
     </div>
     <div class="loading-form" v-if="loading">
-      <Ring-Loader :color="'#de6339'" />
+      <Ring-Loader :color="'#12DB42'" />
     </div>
-    <tasks></tasks>
+<!--    <tasks></tasks>-->
   </div>
 </template>
 
@@ -210,6 +284,7 @@
   import List from "./list";
   import Tasks from "@/views/tasks";
   import ModalTestingForm from "@/components/formClean/ModalTestingForm";
+  import ModalAddDocuments from "./advancedModals/ModalAddDocuments";
 
   const qs = require("qs");
 
@@ -223,6 +298,7 @@
       manyLanguages: Number
     },
     components: {
+      ModalAddDocuments,
       Tasks,
       ModalTestingForm,
       List,
@@ -236,10 +312,13 @@
       return {
         // UX variables
         actions_menu: true,
+        optionsModal: false,
         UpdateUx: false,
         menuHighlight: 0,
-        indexHighlight: "0",
+        indexHighlight: -1,
         indexGrab: "0",
+        indexGrabDocuments: "0",
+        updateFormLabel: false,
         animation: {
           enter: {
             opacity: [1, 0],
@@ -252,6 +331,8 @@
           }
         },
         loading: false,
+        first_loading: false,
+        lastUpdate: new Date().getHours() + ':' + (new Date().getMinutes()<10?'0':'') + new Date().getMinutes(),
         //
 
         // Forms variables
@@ -261,10 +342,16 @@
         profileLabel: "",
         id: 0,
         grab: 0,
+        grabDocs: 0,
         rgt: 0,
         builderKey: 0,
         builderSubmitKey: 0,
         files: 0,
+        //
+
+        // Documents variable
+        currentDoc: null,
+        documentsList: [],
         //
 
         // Testing
@@ -322,8 +409,33 @@
             icon: 'fas fa-paragraph',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
+          /*fileupload: {
+            id: 7,
+            value: 'emundus_fileupload',
+            icon: 'fas fa-file-upload',
+            //name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FILE")
+          },*/
+        },
+        //create document when choosing plugin emundunsFileupload plugin
+        docForm: {
+          name: {
+            fr: 'Autres document',
+            en: 'Other documents'
+          },
+          description: {
+            fr: '',
+            en: ''
+          },
+          nbmax: 5,
+          selectedTypes: {
+            pdf: true,
+            jpg: true,
+            jpeg:true
+          },
         },
         addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
+        addMenuAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU_ACTION"),
         addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
         addItem: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
         Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS"),
@@ -332,10 +444,26 @@
         FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
         SubmitPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMIT_PAGE"),
         testingForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_TESTING_FORM"),
+        Form: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
+        Documents: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENTS"),
+        AddNewDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT"),
+        Back: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+        Savingat: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVING_AT"),
+        Validate: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+        update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
+        updating: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
+        updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
+        updateFailed: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
+        ExitFormbuilder: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EXIT_FORMBUILDER"),
+        BuildYourForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_BUILD_YOUR_FORM"),
       };
     },
 
     methods: {
+      slpitProfileIdfromLabel(label){
+        return (label.split(/-(.+)/))[1];
+      },
+
       createElement(gid,plugin,order) {
         let list = this.formObjectArray;
         if(this.menuHighlight === 1){
@@ -343,18 +471,91 @@
         }
         if(!_.isEmpty(list[this.indexHighlight].object.Groups)){
           this.loading = true;
+
+          if (plugin=="emundus_fileupload"){
+
+            let types = [];
+            Object.keys(this.docForm.selectedTypes).forEach(key => {
+              if(this.docForm.selectedTypes[key] == true){
+                types.push(key);
+              }
+            });
+
+            let params = {
+              document: this.docForm,
+              types: types,
+              cid: this.cid,
+              pid: this.prid,
+              did: 20
+            }
+              this.createElementEMundusFileUpload(params,gid,plugin,order);
+          } else {
+
+            axios({
+              method: "post",
+              url:
+                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                gid: gid,
+                plugin: plugin
+              })
+            }).then((result) => {
+
+              axios({
+                method: "get",
+                url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+                params: {
+                  element: result.data.scalar,
+                  gid: gid
+                },
+                paramsSerializer: params => {
+                  return qs.stringify(params);
+                }
+              }).then(response => {
+                    console.log("none emundus file upload");
+                    console.log(response);
+
+                this.menuHighlightCustumisation(response,gid,order);
+
+                this.loading = false;
+              });
+            });
+
+          }
+
+
+        }
+
+      },
+
+      createElementEMundusFileUpload(params,gid,plugin,order){
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify(params)
+        }).then((rep) => {
+
+          this.$emit("UpdateDocuments");
           axios({
             method: "post",
             url:
-                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
+                "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
             data: qs.stringify({
               gid: gid,
-              plugin: plugin
+              plugin: plugin,
+              attachementId: rep.data.data
             })
           }).then((result) => {
+
             axios({
               method: "get",
               url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
@@ -366,33 +567,48 @@
                 return qs.stringify(params);
               }
             }).then(response => {
-              if(this.menuHighlight === 0) {
-                this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid], 'elements[element' + response.data.id + ']', response.data)
-                this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts.splice(order, 0, response.data);
-                this.$refs.builder.updateOrder(gid, this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts);
-                this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
-                this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
-                this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
-              } else {
-                this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
-                this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
-                this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
-                this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
-                this.$refs.builder_submit.$refs.builder_viewer.enableActionBar(response.data.id);
-                this.$refs.builder_submit.$refs.builder_viewer.enableLabelInput(response.data.id);
-              }
+
+             this.menuHighlightCustumisation(response,gid,order);
+             this.getDocuments();
               this.loading = false;
             });
           });
+
+        });
+      },
+
+      menuHighlightCustumisation(response,gid,order){
+
+        if(this.menuHighlight === 0) {
+          this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid], 'elements[element' + response.data.id + ']', response.data)
+          this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts.splice(order, 0, response.data);
+          this.$refs.builder.updateOrder(gid, this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts);
+          this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+          this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
+          this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
+        } else {
+          this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
+          this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
+          this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
+          this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+          this.$refs.builder_submit.$refs.builder_viewer.enableActionBar(response.data.id);
+          this.$refs.builder_submit.$refs.builder_viewer.enableLabelInput(response.data.id);
         }
       },
       addingNewElement: function(evt) {
         this.dragging = false;
         this.draggingIndex = -1;
-        let plugin = evt.clone.id.split('_')[1];
+        if(typeof document.getElementsByClassName('no-elements-tip')[0] != 'undefined') {
+          document.getElementsByClassName('no-elements-tip')[0].style.background = '#e4e4e9';
+          document.getElementsByClassName('no-elements-tip')[0].style.border = '2px dashed #c3c3ce';
+          document.getElementsByClassName('no-elements-tip')[0].innerHTML = Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS");
+        }
+        let plugin = evt.clone.id.split(/_(.+)/)[1];
         let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
         if(typeof gid != 'undefined'){
+
           this.createElement(gid, plugin, evt.newIndex);
+
         }
       },
       addingNewElementByDblClick: _.debounce(function(plugin) {
@@ -458,6 +674,25 @@
       UpdateUXT() {
         this.UpdateUx = true;
       },
+      updateLabelForm(){
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=form&task=updateformlabel",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            label: this.profileLabel,
+            prid: this.prid,
+          })
+        }).then((result) => {
+            this.show("foo-velocity", "success", this.updateSuccess, this.update);
+            this.updateFormLabel = false;
+        }).catch(e => {
+          this.show("foo-velocity", "error", this.updateFailed, this.updating);
+          console.log(e);
+        });
+      },
       pushGroup(group) {
         if(this.menuHighlight === 0) {
           this.formObjectArray.forEach((form, index) => {
@@ -504,11 +739,7 @@
         }, 200);
       },
       pushMenu(menu){
-        let menulist = {
-          link: menu.link,
-          rgt: menu.rgt
-        }
-        this.formList.push(menulist);
+        this.formList.push(menu);
         axios.get("index.php?option=com_emundus_onboard&view=form&formid=" + menu.id + "&format=vue_jsonclean")
                 .then(response => {
                   this.formObjectArray.push({
@@ -538,7 +769,7 @@
       },
       updateFormObjectAndComponent(){
         this.formObjectArray = [];
-        this.getDataObject();
+        this.getDataObjectSingle(this.indexHighlight);
         this.builderKey += 1;
       },
       getElement(element,gid){
@@ -578,6 +809,11 @@
           text,
           type
         });
+        this.lastUpdate = new Date().getHours() + ':' + (new Date().getMinutes()<10?'0':'') + new Date().getMinutes();
+        document.getElementsByClassName('fa-sync')[0].style.transform = 'rotate(360deg)';
+        setTimeout(() => {
+          document.getElementsByClassName('fa-sync')[0].style.transform = 'unset';
+        },1500);
       },
       showTip(group, text = "", title = "Information") {
         this.$notify({
@@ -589,6 +825,12 @@
       },
       clean(group) {
         this.$notify({ group, clean: true });
+      },
+      enableUpdatingForm(){
+        this.updateFormLabel = true;
+        setTimeout(() => {
+          document.getElementById('update_label_form_' + this.prid).focus();
+        }, 100);
       },
 
       async getDataObject() {
@@ -616,6 +858,33 @@
         this.indexHighlight = 0;
         this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
         this.rgt = this.formObjectArray[this.indexHighlight].rgt;
+      },
+
+      async getDataObjectSingle(index) {
+        let ellink = this.formList[index].link.replace("fabrik","emundus_onboard");
+        await axios.get(ellink + "&format=vue_jsonclean")
+            .then(response => {
+              this.formObjectArray[index].object = response.data;
+             // console.log(response.data)
+              /*this.formObjectArray.push({
+                object: response.data,
+                rgt: this.formList[index].rgt,
+                link: this.formList[index].link
+              });*/
+            }).then(r => {
+              this.formObjectArray.sort((a, b) => a.rgt - b.rgt);
+            }).catch(e => {
+              console.log(e);
+            });
+        this.loading = false;
+        /*if(this.getCookie('page_' + this.prid) !== '') {
+          this.indexHighlight = this.getCookie('page_' + this.prid);
+        } else {
+          this.indexHighlight = 0;
+        }*/
+        this.elementDisabled = _.isEmpty(this.formObjectArray[index].object.Groups);
+        this.rgt = this.formObjectArray[index].rgt;
+        this.indexHighlight = index;
       },
 
       async asyncForEach(array, callback) {
@@ -690,11 +959,51 @@
         }).then(response => {
           this.formList = response.data.data;
           setTimeout(() => {
-            this.getDataObject();
+            //this.getDataObject();
+            this.formList.forEach((element) => {
+              this.formObjectArray.push({
+                object: {},
+                rgt: element.rgt,
+                link: element.link
+              });
+            });
+            this.getDataObjectSingle(0);
             this.getProfileLabel(this.prid);
           },100);
         }).catch(e => {
           console.log(e);
+        });
+      },
+
+      getDocuments(){
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=form&task=getDocuments",
+          params: {
+            pid: this.prid,
+          },
+          paramsSerializer: params => {
+             return qs.stringify(params);
+          }
+        }).then(response => {
+
+          this.documentsList = response.data.data;
+
+        });
+      },
+
+      removeDocument(index,did){
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=form&task=removeDocumentFromProfile",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            did: did,
+          })
+        }).then(() => {
+            this.documentsList.splice(index,1);
         });
       },
 
@@ -721,13 +1030,28 @@
                 });
       },
 
+      exitForm(){
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+          params: {
+            link: 'index.php?option=com_emundus_onboard&view=form',
+          },
+          paramsSerializer: params => {
+            return qs.stringify(params);
+          }
+        }).then(response => {
+          window.location.href = window.location.pathname + response.data.data;
+        });
+      },
+
       sendForm() {
         if(this.cid != 0){
           axios({
             method: "get",
             url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
             params: {
-              link: 'index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=1',
+              link: 'index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=4',
             },
             paramsSerializer: params => {
               return qs.stringify(params);
@@ -811,28 +1135,36 @@
 
       // Triggers
       changeGroup(index,rgt){
-        this.indexHighlight = index;
-        this.rgt = rgt;
-        this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
-        if(this.menuHighlight === 1){
+        this.loading = true;
+        if(_.isEmpty(this.formObjectArray[index].object)) {
+          this.getDataObjectSingle(index).then(() => {
+            this.loading = false;
+          });
+        } else {
+          this.elementDisabled = _.isEmpty(this.formObjectArray[index].object.Groups);
+          this.rgt = this.formObjectArray[index].rgt;
+          this.indexHighlight = index;
+          this.loading = false;
+        }
+
+        if (this.menuHighlight === 1) {
           this.$refs.builder_submit.$refs.builder_viewer.clickUpdatingLabel = false;
           this.$refs.builder_submit.$refs.builder_viewer.translate.label = false;
         } else {
           this.$refs.builder.$refs.builder_viewer.clickUpdatingLabel = false;
           this.$refs.builder.$refs.builder_viewer.translate.label = false;
         }
-
         document.cookie = 'page_' + this.prid + '='+index+'; expires=Session; path=/'
       },
       SomethingChange: function(e) {
         this.dragging = true;
         let rgts = [];
         this.formList.forEach((menu, index) => {
-          rgts.push(menu.rgt);
+          menu.rgt = this.formObjectArray[index].rgt;
         });
-        this.formObjectArray.forEach((item, index) => {
+        /*this.formObjectArray.forEach((item, index) => {
           item.rgt = rgts[index];
-        });
+        });*/
         this.reorderItems();
       },
       showElements() {
@@ -844,9 +1176,29 @@
       },
       //
 
+      // Draggable documents
+      reorderingDocuments: function () {
+        this.documentsList.forEach((doc, index) => {
+          doc.ordering = index;
+        });
+
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=form&task=reorderDocuments",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            documents: this.documentsList,
+
+          })
+        });
+      },
+      //
+
       // Draggable pages
       reorderItems(){
-        this.formObjectArray.forEach(item => {
+        this.formList.forEach(item => {
           axios({
             method: "post",
             url:
@@ -873,10 +1225,45 @@
         this.indexGrab = 0;
         this.grab = false;
       },
+      enableGrabDocuments(index){
+        this.indexGrabDocuments = index;
+        this.grabDocs = true;
+      },
+      disableGrabDocuments(){
+        this.indexGrabDocuments = 0;
+        this.grabDocs = false;
+      },
+      startDragging(){
+        if(typeof document.getElementsByClassName('no-elements-tip')[0] != 'undefined'){
+          document.getElementsByClassName('no-elements-tip')[0].style.background = '#fff';
+          document.getElementsByClassName('no-elements-tip')[0].style.border = '2px dashed #16afe1';
+          document.getElementsByClassName('no-elements-tip')[0].innerHTML = '';
+        }
+      },
+      enableActionsMenu(){
+        const labels = document.getElementsByClassName('action-label');
+        this.actions_menu = !this.actions_menu;
+        this.addingElement = false;
+        if(!this.actions_menu) {
+          labels.forEach((label) => {
+            label.style.display = 'none';
+          });
+        } else {
+          setTimeout(() => {
+            labels.forEach((label) => {
+              label.style.display = 'block';
+            });
+          }, 300);
+        }
+      }
       //
     },
     created() {
+      //jQuery("#g-navigation .g-main-nav .tchooz-vertical-toplevel > li").css("transform", "translateX(-100px)");
+      //jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)");
+      //this.indexHighlight = 0;
       this.getForms();
+      this.getDocuments();
       this.getSubmittionPage();
       this.getFilesByForm();
     },
@@ -898,28 +1285,24 @@
   };
 </script>
 
-<style scoped lang="scss">
-  .form-builder{
-    margin-top: 6em;
-    padding: 1em;
-    min-height: 50em;
-  }
-
+<style lang="scss" scoped>
   .menu-block {
     margin-top: 0;
   }
 
   .form-title{
-    text-align: center;
+    display: flex;
+    align-items: center;
     padding: 1em;
+    color: black !important;
+  }
+  .form-title img{
+    width: 25px;
   }
 
   @media (max-width: 768px) {
     .form-title{
       max-width: 250px;
-    }
-    .form-builder{
-      margin-top: 0;
     }
   }
   .container-fluid{
@@ -932,7 +1315,8 @@
     left: 5px;
   }
   .form-viewer-builder{
-    background: #fafafa;
+    background: white;
+    transition: all 0.3s ease-in-out;
   }
   .action-label{
     color: black;
@@ -945,5 +1329,58 @@
   .fa-pencil-alt{
     color: #de6339;
     cursor: pointer;
+  }
+  .MenuFormItem
+  {
+    margin-left: 0;
+  }
+  .fa-sync{
+    transition: all 1s ease-in-out;
+  }
+  #header-b{
+    background: #f8f8f8;
+  }
+  @media all and (min-width: 1660px) {
+    .col-lg-offset-1 {
+      margin-left: 13.333%;
+    }
+  }
+  @media all and (min-width: 992px) and (max-width: 1660px) {
+    .col-md-offset-2 {
+      margin-left: 22.667%;
+    }
+    .col-lg-offset-1{
+      margin-left: 29%;
+    }
+  }
+
+  @media all and (min-width: 992px){
+    .ml-10px {
+      margin-left: 10px !important;
+    }
+  }
+
+  @media all and (min-width: 1280px) and (max-width: 1660px)  {
+    .col-lg-offset-1{
+      margin-left: 23%;
+    }
+  }
+
+  @media all and (max-width: 992px) {
+    .menu-block{
+      display: flex;
+      flex-direction: column;
+    }
+    .sticky-form-pages{
+      position: static !important;
+      order: 2;
+    }
+    .heading-block{
+      order: 1;
+    }
+    .form-builder{
+      order: 3;
+      margin-left: 25px;
+    }
   }
 </style>

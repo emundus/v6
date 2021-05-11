@@ -1300,11 +1300,13 @@ $(document).ready(function () {
 					success: function (result) {
 
 						if (result.status) {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong>' +
-								'</div>');
-
+							setTimeout(function() {
+								$('#system-message-container').prepend('<div class="alert alert-dismissable alert-success" style="width: 70%;margin: 0 auto 10px auto;display: flex;">' +
+									'<button type="button" class="close" data-dismiss="alert">×</button>' +
+									'<strong>' + result.msg + '</strong>' +
+									'</div>');
+							},500);
+							$('.close').click();
 						} else {
 							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +

@@ -63,6 +63,7 @@ $absolute_urls = $params->get('absolute_urls', 1);
 $show_remove_files = $params->get('show_remove_files', 1);
 $show_archive_files = $params->get('show_archived_files', 1);
 $show_state_files = $params->get('show_state_files', 0);
+$show_payment_status = $params->get('show_payment_status', 0);
 
 $order_applications = $params->get('order_applications', 'esc.end_date');
 $applications_as_desc = $params->get('order_applications_asc_des', 'DESC');
@@ -175,6 +176,16 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
 	if (!empty($user->status)) {
 		$is_app_sent = ($user->status != 0);
 	}
+
+    if (!empty($show_payment_status)) {
+
+        foreach ($applications as $application => $val) {
+            $order_status = modemundusApplicationsHelper::getHikashopOrder($applications[$application]);
+            $applications[$application]->order_status = $order_status->orderstatus_namekey;
+            $applications[$application]->order_color = $order_status->orderstatus_color;
+        }
+
+    }
 
 	require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
 }
