@@ -174,6 +174,42 @@ class EmundusworkflowModelcommon extends JModelList {
         }
     }
 
+    /// update element by id
+    public function updateElementById($data) {
+        if(!empty($data)) {
+            $_uString = "";
+            //// in case of destinationSelected === other --> usersSelected is a K-V array
+            if($data['params']['destinationSelected'] === 'other' && !empty($data['params']['usersSelected'])) {
+                foreach($data['params']['usersSelected'] as $key => $value) {
+                    if($value == "true") {
+                        $_uString .= (string)$key . ",";
+                        $_uLastString = substr_replace($_uString, "", -1);
+                        $data['params']['usersSelected'] = $_uLastString;
+                    } else {}
+                }
+            }
+
+            else {
+                //// do nothing here ....
+            }
+
+            try {
+                $this->query->clear()
+                    ->update($this->db->quoteName('#__emundus_workflow_html_element'))
+                    ->set($this->db->quoteName('#__emundus_workflow_html_element.params') . '=' . $this->db->quote(json_encode($data['params'])))
+                    ->where($this->db->quoteName('#__emundus_workflow_html_element.id') . '=' . $this->db->quote($data['id']));
+                $this->db->setQuery($this->query);
+                return $this->db->execute();
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
     /// remove HTML element by id
     public function deleteElement($id) {
         if(!empty($id)) {

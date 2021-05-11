@@ -5,7 +5,7 @@
       <div class="col-xs-8">
         <select v-model="form.emailSelected" class="form-control-select" id="email-selected">
           <option selected disabled>---Email---</option>
-          <option v-for = "model in this.$data.emails" :value="model.id" :disabled="isDisable"> {{ model.lbl }}</option>
+          <option v-for = "model in this.$data.emails" :value="model.id"> {{ model.lbl }}</option>
         </select>
       </div>
     </div>
@@ -15,7 +15,7 @@
       <div class="col-xs-8">
         <select v-model="form.destinationSelected" class="form-control-select" id="destination-selected">
           <option selected disabled>---Destination---</option>
-          <option v-for="destination in this.$data.destination" :value="destination.id" :disabled="isDisable" @click="handleOtherClick"> {{ destination.label }}</option>
+          <option v-for="destination in this.$data.destination" :value="destination.id" @click="handleOtherClick"> {{ destination.label }}</option>
           <option @click="handleClick" :value="'other'"> Choisir un utilisateur</option>
         </select>
       </div>
@@ -161,10 +161,7 @@ export default {
       if(this.showOtherUser === true) {
         /// set variables
         this.form.usersSelected = this.userChecked;
-      } else {
-
-      }
-
+      } else { }
       this.showOtherUser=!this.showOtherUser;
     },
 
@@ -213,6 +210,23 @@ export default {
         to_applicant: this.form.triggerSelected === 'to_applicant' ? 1 : 0,
       }
 
+      let message_div = {
+        params: this.form,
+        id: this.messageParams.id,      /// update message div
+      }
+
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_workflow&controller=common&task=updateelement',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          data: message_div,
+        })
+      }).then(response => {})
+          .catch(error => { console.log(error); })
+
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus_workflow&controller=common&task=createtrigger',
@@ -222,14 +236,10 @@ export default {
         data: qs.stringify({
           trigger: trigger,
           users: selectedUserList.length === 0 ? this.form.destinationSelected :  selectedUserList,
-          campaign_id: this.campaignID,
-          message_div_id: this.messageParams,
+          campaign_id: this.stepParams.campaignId,
         })
-      }).then(response => {
-
-      }).catch(error => {
-        console.log(error);
-      })
+      }).then(response => {})
+        .catch(error => { console.log(error); })
     },
 
     getAllMessages: function() {
