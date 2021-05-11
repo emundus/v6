@@ -352,7 +352,7 @@ class EmundusworkflowModelcommon extends JModelList {
                     $_param['emailSelectedName'] = $this->getEmailNameById($_param['emailSelected'])->lbl;
 
                     $_param['destinationSelected'] = json_decode($_element_params)->destinationSelected;
-                    $_param['destinationSelectedName'] = $this->getDestinationNameByListId($_param['destinationSelected']) === 'other' ? 'other' : $this->getDestinationNameByListId($_param['destinationSelected'])->label;
+                    $_param['destinationSelectedName'] = $this->getDestinationNameByListId($_param['destinationSelected']) === 'Choisir un utilisateur' ? 'Choisir un utilisateur' : $this->getDestinationNameByListId($_param['destinationSelected'])->label;
 
                     $_param['messageNotes'] = json_decode($_element_params)->messageNotes;
 
@@ -402,7 +402,7 @@ class EmundusworkflowModelcommon extends JModelList {
         if(!empty($did)) {
             try {
                 if($did === 'other') {
-                    return 'other';
+                    return 'Choisir un utilisateur';
                 } else {
                     $this->query->clear()
                         ->select('#__emundus_setup_groups.*')
@@ -431,7 +431,7 @@ class EmundusworkflowModelcommon extends JModelList {
                     ->where($this->db->quoteName('#__users.id') . 'IN (' . $ulist . ')');
 
                 $this->db->setQuery($this->query);
-                return $this->db->loadObject();
+                return $this->db->loadObjectList();
             }
             catch(Exception $e) {
                 return $e->getMessage();

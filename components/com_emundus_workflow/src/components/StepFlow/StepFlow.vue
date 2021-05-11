@@ -463,9 +463,20 @@ export default {
                 data : {id: element.id, mode: 'email',}
               })
             }).then(answer => {
+              let _users = [];
+
               let _index = this.messages.findIndex((elt) => elt.id === element.id);
               this.messages[_index]['messageTemplate'] = answer.data.data.parsedParams.emailSelectedName;
               this.messages[_index]['messageDestination'] = answer.data.data.parsedParams.destinationSelectedName;
+
+              let userList = answer.data.data.parsedParams.userSelectedName;
+              userList.forEach(user => {
+                _users.push(user.name);
+              })
+
+              this.messages[_index]['messageDestinationList'] = _users.toString();
+              this.messages[_index]['trigger'] = answer.data.data.parsedParams.triggerSelected;
+
               this.$forceUpdate();
             }).catch(logs => {
               console.log(logs);
@@ -622,6 +633,7 @@ export default {
   --border-opacity: 1;
   border-color: rgba(255,255,255,var(--border-opacity));
   overflow-y: scroll;
+  border-color: red;
 }
 
 .remove-message {
