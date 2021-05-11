@@ -172,7 +172,9 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
         else {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
-            $_element = $this->_common_model->createElement($data);
+            $campaign = $jinput->getRaw('campaignId');
+
+            $_element = $this->_common_model->createElement($data,$campaign);
 
             if ($_element) {
                 $tab = array('status' => 1, 'msg' => JText::_("CREATE_ELEMENT_SUCCESSFULLY"), 'data' => $_element);

@@ -386,7 +386,8 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
-          data: data
+          data: data,
+          campaignId: this.campaignID,
         })
       }).then(response => {
         let parent_id = response.data.data.parent_id;

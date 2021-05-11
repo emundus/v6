@@ -98,64 +98,73 @@ class EmundusworkflowModelcommon extends JModelList {
 
     /// create new trigger (jos_emundus_setup_emails_trigger_repeat_campaign_id))
     public function createEmailTriggerForCampaign($trigger, $users, $campaign) {
-        if(!empty($trigger) and !empty($users)) {
-            try {
-                $trigger['user'] = JFactory::getUser()->id;
-                $trigger['date_time'] = date('Y-m-d H:i:s');
+        try {
+            $trigger['user'] = JFactory::getUser()->id;
+            $trigger['date_time'] = date('Y-m-d H:i:s');
 
-                //// step 1 --> emundus_setup_emails_trigger
-                $this->query->clear()
-                    ->insert($this->db->quoteName('#__emundus_setup_emails_trigger'))
-                    ->columns($this->db->quoteName(array_keys($trigger)))
-                    ->values(implode(',', $this->db->quote(array_values($trigger))));
+            //// step 1 --> emundus_setup_emails_trigger
+            $this->query->clear()
+                ->insert($this->db->quoteName('#__emundus_setup_emails_trigger'))
+                ->columns($this->db->quoteName(array_keys($trigger)))
+                ->values(implode(',', $this->db->quote(array_values($trigger))));
 
-                $this->db->setQuery($this->query);
-                $this->db->execute();
-                $_triggerId = $this->db->insertid();
+            $this->db->setQuery($this->query);
+            $this->db->execute();
+            $_triggerId = $this->db->insertid();
 
-                /// step 2 --> emundus_setup_emails_trigger_campaign_id
-                $this->query->clear()
-                    ->insert($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id'))
-                    ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id.parent_id') . '=' . $_triggerId)
-                    ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id.campaign_id') . '=' . $campaign);
-                $this->db->setQuery($this->query);
-                $this->db->execute();
+            /// step 2 --> emundus_setup_emails_trigger_campaign_id
+            $this->query->clear()
+                ->insert($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id'))
+                ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id.parent_id') . '=' . $_triggerId)
+                ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id.campaign_id') . '=' . $campaign);
+            $this->db->setQuery($this->query);
+            $this->db->execute();
 
-                /// step 3 --> emundus_setup_emails_trigger_user_id
-                if(is_array($users)) {
-                    foreach($users as $key=>$value) {
-                        /// sql scripts to insert trigger for many users
-                        $this->query->clear()
-                            ->insert($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id'))
-                            ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.parent_id') . '=' . $_triggerId)
-                            ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.user_id') . '=' . $this->db->quote($value));
-                        $this->db->setQuery($this->query);
-                        $this->db->execute();
-                    }
-                }
-                else {
-                        /// sql scripts to insert trigger for single user
+            /// step 3 --> emundus_setup_emails_trigger_user_id
+            if(is_array($users)) {
+                foreach($users as $key=>$value) {
+                    /// sql scripts to insert trigger for many users
                     $this->query->clear()
                         ->insert($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id'))
                         ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.parent_id') . '=' . $_triggerId)
-                        ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.user_id') . '=' . $this->db->quote($users));
+                        ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.user_id') . '=' . $this->db->quote($value));
                     $this->db->setQuery($this->query);
                     $this->db->execute();
                 }
             }
-            catch(Exception $e) {
-                return $e->getMessage();
+            else {
+                /// sql scripts to insert trigger for single user
+                $this->query->clear()
+                    ->insert($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id'))
+                    ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.parent_id') . '=' . $_triggerId)
+                    ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.user_id') . '=' . $this->db->quote($users));
+                $this->db->setQuery($this->query);
+                $this->db->execute();
             }
+
+            return $_triggerId;
         }
-        else {
-            return false;
+        catch(Exception $e) {
+            return $e->getMessage();
         }
     }
 
+    /// update email trigger by campaign id
+    public function updateEmailTriggerForCampaign($data) {
+
+    }
+
     /// create HTML element
-    public function createElement($data) {
+    public function createElement($data, $campaign) {
         if(!empty($data)) {
+            $_trigger = null;
             try {
+                if($data['element_type'] === 'message') {
+                    /// create trigger
+                    $_trigger = $this->createEmailTriggerForCampaign(null,null, $campaign);
+                }
+                else { }
+
                 $this->query->clear()
                     ->insert($this->db->quoteName('#__emundus_workflow_html_element'))
                     ->columns($this->db->quoteName(array_keys($data)))
@@ -164,7 +173,12 @@ class EmundusworkflowModelcommon extends JModelList {
                 $this->db->setQuery($this->query);
                 $this->db->execute();
                 $_newID = $this->db->insertid();
-                return array('id' => $_newID, 'parent_id' => $data['parent_id']);
+
+                if(!is_null($_trigger)) {
+                    return array('id' => $_newID, 'parent_id' => $data['parent_id'], 'trigger' => $_trigger);
+                } else {
+                    return array('id' => $_newID, 'parent_id' => $data['parent_id']);
+                }
             }
             catch(Exception $e) {
                 return $e->getMessage();
