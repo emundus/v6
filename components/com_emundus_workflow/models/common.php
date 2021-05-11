@@ -151,10 +151,9 @@ class EmundusworkflowModelcommon extends JModelList {
 
     /// update email trigger by campaign id
     public function updateEmailTriggerForCampaign($trigger, $users) {
-        //// step 1 --> update table trigger (trigger, campaign_id)
-        /// step 2 --> remove all records with parent_id === trigger_id
         if(!empty($trigger) and !empty($users)) {
             try {
+                //// step 1 --> update table trigger (trigger, campaign_id)
                 $this->query->clear()
                     ->update($this->db->quoteName('#__emundus_setup_emails_trigger'))
                     ->set($this->db->quoteName('#__emundus_setup_emails_trigger.user') . '=' . $this->db->quote(JFactory::getUser()->id))
@@ -166,7 +165,39 @@ class EmundusworkflowModelcommon extends JModelList {
                     ->where($this->db->quoteName('#__emundus_setup_emails_trigger.id') . '=' . $this->db->quote($trigger['id']));
 
                 $this->db->setQuery($this->query);
-                return $this->db->execute();
+                $this->db->execute();
+
+                /// step 2 --> remove all records in emundus_setup_emails_trigger_repeat_user_id with [parent_id === trigger_id]
+                $this->query->clear()
+                    ->delete($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id'))
+                    ->where($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.parent_id') . '=' . $this->db->quote($trigger['id']));
+
+                $this->db->setQuery($this->query);
+                $this->db->execute();
+
+                /// step 3 --> re-create new records in emundus_setup_emails_trigger_repeat_user_id with [parent_id === trigger_id] by $users
+                if(is_array($users)) {
+                    foreach($users as $key=>$value) {
+                        /// sql scripts to insert trigger for many users
+                        $this->query->clear()
+                            ->insert($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id'))
+                            ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.parent_id') . '=' . $this->db->quote($trigger['id']))
+                            ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.user_id') . '=' . $this->db->quote($value));
+                        $this->db->setQuery($this->query);
+                        $this->db->execute();
+                    }
+                }
+                else {
+                    /// sql scripts to insert trigger for single user
+                    $this->query->clear()
+                        ->insert($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id'))
+                        ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.parent_id') . '=' . $this->db->quote($trigger['id']))
+                        ->set($this->db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.user_id') . '=' . $this->db->quote($users));
+                    $this->db->setQuery($this->query);
+                    $this->db->execute();
+                }
+
+                return 'done';
             }
             catch(Exception $e) {
 
