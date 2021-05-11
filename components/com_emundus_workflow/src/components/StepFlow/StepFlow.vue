@@ -38,7 +38,7 @@
             <message-modal v-for="params in stepParams" v-if="showDiv===true && currentDiv === message.id && params.id === column.id"
                            :messageParams="message"
                            :stepParams="params"
-                           :campaignID="campaignID"/>
+            />
 
             <div v-if="showDiv===false"> Show trigger params </div>
 
@@ -163,7 +163,6 @@ export default {
     },
 
     updateStep(result) {
-      console.log(result);
       const _id = (element) => element.id == result['id'];
       var _index = this.columns.findIndex(_id);
       this.columns[_index]['stateIn'] = result['input'];
@@ -249,22 +248,21 @@ export default {
 
     getAllSteps: function () {
       axios({
-        method: 'get',
+        method: 'post',
         url: 'index.php?option=com_emundus_workflow&controller=step&task=getallsteps',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        params: {
+        data: qs.stringify({
           wid: this.$data.id,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
+        }),
       }).then(response => {
         this.columns = response.data.data;
         this.stepParams = response.data.data;
         var steps = response.data.data; // get all steps
         this.stepList = steps;
+
+        /// the reason is here
         steps.forEach(elt => {
           axios({
             method: 'get',
@@ -291,6 +289,7 @@ export default {
             this.columns[_index]['order'] = answer.data.data.ordering;
             this.columns[_index]['style'] = answer.data.data.color;
             this.columns[_index]['outputStatus'] = answer.data.data.outputStatus;
+            this.columns[_index]['campaignId'] = this.campaignID;
             this.$forceUpdate();
           })
         })

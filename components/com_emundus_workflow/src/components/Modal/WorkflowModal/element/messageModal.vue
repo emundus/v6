@@ -69,7 +69,6 @@ export default {
   props: {
     messageParams: Object,
     stepParams: Object,
-    campaignID: String,
     activateParams: Boolean,
     selectOtherUsers: Boolean,
   },
@@ -224,6 +223,7 @@ export default {
           trigger: trigger,
           users: selectedUserList.length === 0 ? this.form.destinationSelected :  selectedUserList,
           campaign_id: this.campaignID,
+          message_div_id: this.messageParams,
         })
       }).then(response => {
 

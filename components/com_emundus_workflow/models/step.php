@@ -294,33 +294,6 @@ class EmundusworkflowModelstep extends JModelList {
                 $_exportArray['outputStatusNames'] = ($this->getListStatusNameFromStep($_exportArray['outputStatus']));
 
                 /// if message params exist --> grab them
-                if(!is_null(json_decode($_rawCurrentParams->params)->emailSelected) and !is_null(json_decode($_rawCurrentParams->params)->destinationSelected)
-                    and !empty(json_decode($_rawCurrentParams->params)->emailSelected) and !empty(json_decode($_rawCurrentParams->params)->destinationSelected)) {
-                    $_exportArray['message']['email'] = json_decode($_rawCurrentParams->params)->emailSelected;
-                    $_exportArray['message']['destination'] = json_decode($_rawCurrentParams->params)->destinationSelected;
-                    $_exportArray['message']['usersSelected'] = $usersSelected;
-
-                    $_exportArray['message']['emailLabel'] = ($this->email_model->getEmailById($_exportArray['message']['email']))->lbl;
-                    $_exportArray['message']['destinationLabel'] = ($this->common_model->getDestinationsByIds($_exportArray['message']['destination']))->label;            /// here I will get the destination(s) label
-
-                    /// condition --> here
-                    $_exportArray['message']['destinationLabel'] === null
-                        ? $_exportArray['message']['destinationLabel'] = $_exportArray['message']['destination']
-                        : $_exportArray['message']['destinationLabel'] = $this->common_model->getDestinationsByIds($_exportArray['message']['destination'])->label;
-
-
-                    if(empty($_exportArray['message']['usersSelected'])) {
-                        $_exportArray['message']['usersSelected'] = null;
-                    }
-                    else {
-                        count(explode(',', $_exportArray['message']['usersSelected'])) > 1
-                            ? $_exportArray['message']['usersSelected'] = $this->common_model->getDestinationsByIds($_exportArray['message']['usersSelected'])
-                            : $_exportArray['message']['usersSelected'] = $this->common_model->getDestinationById($usersSelected);
-                    }
-                }
-
-                else { }
-
                 return $_exportArray;
             }
             catch(Exception $e) {
