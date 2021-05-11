@@ -52,7 +52,7 @@
     </div>
 
     <div class="row mb-3">
-      <b-button variant="success" @click="createTrigger()">Sauvegarder</b-button>
+      <b-button variant="success" @click="updateTrigger()">Sauvegarder</b-button>
       <b-button variant="danger">Quitter</b-button>
     </div>
   </div>
@@ -187,7 +187,7 @@ export default {
       })
     },
 
-    createTrigger: function() {
+    updateTrigger: function() {
 
       const selectedUserList = [];
 
@@ -226,7 +226,7 @@ export default {
         })
       }).then(response => {
         /// after updating --> emit to parent component all updated values --> how to do???
-        this.$emit('updateTrigger', response);
+        this.$emit('updateMessageBlock', response);
       }).catch(error => { console.log(error); })
 
       axios({

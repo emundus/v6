@@ -38,7 +38,7 @@
             <message-modal v-for="params in stepParams" v-if="showDiv===true && currentDiv === message.id && params.id === column.id"
                            :messageParams="message"
                            :stepParams="params"
-                           @updateTrigger="updateTrigger"
+                           @updateMessageBlock="updateMessageBlock"
             />
 
             <div v-if="showDiv===false"> Show trigger params </div>
@@ -109,7 +109,7 @@ export default {
   },
 
   methods: {
-    updateTrigger(trigger) {
+    updateMessageBlock(trigger) {
       console.log(trigger);
     },
 
@@ -394,6 +394,7 @@ export default {
         this.messages.push({
           parent_id: parent_id,
           id: response.data.data.id,
+          triggerId: response.data.data.trigger,
           title: data.title,            /// random title --> fix it later with hot-updating
         });
       }).catch(error => {
