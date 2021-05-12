@@ -945,7 +945,8 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
             $code = array($student->code);
             $to_applicant = '0,1';
-            $m_emails->sendEmailTrigger($step, $code, $to_applicant, $student);
+
+            $m_emails->sendEmailTrigger($step, $code, $to_applicant, $student, $student->campaign_id);                 // add campaign here from session
 
             // If pdf exporting is activated
             if ($export_pdf == 1) {

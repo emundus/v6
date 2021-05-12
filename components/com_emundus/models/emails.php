@@ -98,23 +98,18 @@ class EmundusModelEmails extends JModelList {
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_group_id') . 'ON' . $this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_group_id.parent_id') . '=' . $this->_db->quoteName('#__emundus_setup_emails_trigger.id'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id') . 'ON' . $this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.parent_id') . '=' . $this->_db->quoteName('#__emundus_setup_emails_trigger.id'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id') . 'ON' . $this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id.parent_id') . '=' . $this->_db->quoteName('#__emundus_setup_emails_trigger.id'))
-            ->leftJoin($this->_db->quoteName('#__emundus_email_templates') . 'ON' . $this->_db->quoteName('#__emundus_email_templates.id') . '=' . $this->_db->quoteName('#__emundus_setup_emails.email_tmpl'));
+            ->leftJoin($this->_db->quoteName('#__emundus_email_templates') . 'ON' . $this->_db->quoteName('#__emundus_email_templates.id') . '=' . $this->_db->quoteName('#__emundus_setup_emails.email_tmpl'))
+            ->where($this->_db->quoteName('#__emundus_setup_emails_trigger.step') . '=' . $step)
+            ->andWhere($this->_db->quoteName('#__emundus_setup_emails_trigger.to_applicant') . 'IN (' . $to_applicant . ')');
 
-        if(!is_null($code)) {
-            $query->where($this->_db->quoteName('#__emundus_setup_emails_trigger.step') . '=' . $step)
-                ->andWhere($this->_db->quoteName('#__emundus_setup_emails_trigger.to_applicant') . 'IN (' . $to_applicant . ')')
-                ->andWhere($this->_db->quoteName('#__emundus_setup_programmes.code') . ' IN ("'.implode('","', $code).'")');
-        } else {
-            $query->where($this->_db->quoteName('#__emundus_setup_emails_trigger.step') . '=' . $step)
-                ->andWhere($this->_db->quoteName('#__emundus_setup_emails_trigger.to_applicant') . 'IN (' . $to_applicant . ')')
-                ->andWhere($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id.campaign_id') . '=' . $campaign);
+        if($campaign) {
+            $query->andWhere($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id.campaign_id') . '=' . $campaign);
+        } else if($code) {
+            $query->andWhere($this->_db->quoteName('#__emundus_setup_programmes.code') . ' IN ("'.implode('","', $code).'")');
         }
 
         $this->_db->setQuery( $query );
         $triggers = $this->_db->loadObjectList();
-
-//        var_dump($triggers);die;
-
         $emails_tmpl = array();
         if (count($triggers) > 0) {
             foreach ($triggers as $key => $trigger) {
