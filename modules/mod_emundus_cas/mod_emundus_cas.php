@@ -26,6 +26,8 @@ $mod_emundus_cas_url2_desc=$params->get('mod_emundus_cas_url2_desc');
 $mod_emundus_cas_btn1=$params->get('mod_emundus_cas_btn1');
 $mod_emundus_cas_btn2=$params->get('mod_emundus_cas_btn2');
 
+$mod_emundus_cas_logo=$params->get('mod_emundus_cas_logo');
+
 
 
 $type             = ModLoginHelper::getType();

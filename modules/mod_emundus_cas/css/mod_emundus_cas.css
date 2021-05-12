@@ -118,3 +118,20 @@
     font-size: 14px;
 }
 
+.container-module-cas .btn-cas a.btn.btn-primary.logo {
+    background: #0A246A;
+    border-radius: 4px 0px 0px 4px;
+    padding: 5px 12px !important;
+}
+
+.container-module-cas .btn-cas img {
+    width: 15px;
+}
+
+.container-module-cas .sous-container-module-cas #connexion .btn-cas a.btn.btn-primary:not(.logo) {
+    border-radius: 0px 4px 4px 0px;
+   opacity: 0.9;
+    width: 90%;
+}
+
+

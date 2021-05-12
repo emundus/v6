@@ -141,6 +141,7 @@
 				<field type="text" name="mod_emundus_cas_url1_desc" default="" label="MOD_EM_CAS_SUBMENU1_URL1_DESC" description="MOD_EM_CAS_SUBMENU1_URL1_DESC"/>
 				<field type="text" name="mod_emundus_cas_btn1" default="" label="MOD_EM_CAS_SUBMENU1_URL1_BTN" description="MOD_EM_CAS_SUBMENU1_URL1_BTN"/>
 				<field type="text" name="mod_emundus_cas_url1" default="" label="MOD_EM_CAS_SUBMENU1_URL1" description="MOD_EM_CAS_SUBMENU1_URL1"/>
+				<field type="text" name="mod_emundus_cas_logo" default="" label="MOD_EM_CAS_SUBMENU1_LOGO" description="MOD_EM_CAS_SUBMENU1_LOGO"/>
 
 				<field class="text" label="TAB2" name="spacer2" type="spacer" hr="true"/>
 				<field type="spacer" name="TAB2_TITLE" label="Onglet 2" />
