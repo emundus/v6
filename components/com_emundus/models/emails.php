@@ -71,20 +71,49 @@ class EmundusModelEmails extends JModelList {
      * @param   $to_applicant   int define if trigger concern selected fnum from list or not. Can be 0, 1
      * @return  array           Emails templates and recipient to trigger
      */
-    public function getEmailTrigger($step, $code, $to_applicant = 0) {
+    public function getEmailTrigger($step, $code, $to_applicant = 0, $campaign) {
+        //// new syntax
+        $query = $this->_db->getQuery(true);
+        $query->clear()
+            ->select(
+                '#__emundus_setup_emails_trigger.id',
+                '#__emundus_setup_emails_trigger.step',
+                '#__emundus_setup_emails.*',
+                '#__emundus_setup_emails_trigger.to_current_user',
+                '#__emundus_setup_emails_trigger.to_applicant',
+                '#__emundus_setup_emails_trigger_repeat_program_id.programme_id',
+                '#__emundus_setup_programmes.code',
+                '#__emundus_setup_programmes.label',
+                '#__emundus_setup_emails_trigger_repeat_profile_id.profile_id',
+                '#__emundus_setup_emails_trigger_repeat_group_id.group_id',
+                '#__emundus_setup_emails_trigger_repeat_user_id.user_id',
+                '#__emundus_setup_emails_trigger_repeat_campaign_id.campaign_id',
+                '#__emundus_email_templates.Template'
+            )
+            ->from($this->_db->quoteName('#__emundus_setup_emails_trigger'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails') . 'ON' . $this->_db->quoteName('#__emundus_setup_emails.id') . '=' . $this->_db->quoteName('#__emundus_setup_emails_trigger.email_id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id') . 'ON' . $this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id.parent_id') . '=' . $this->_db->quoteName('#__emundus_setup_emails_trigger.id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_programmes') . 'ON' . $this->_db->quoteName('#__emundus_setup_programmes.id') . '=' . $this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id.programme_id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id') . 'ON' . $this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id.parent_id') . '=' . $this->_db->quoteName('#__emundus_setup_emails_trigger.id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_group_id') . 'ON' . $this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_group_id.parent_id') . '=' . $this->_db->quoteName('#__emundus_setup_emails_trigger.id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id') . 'ON' . $this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id.parent_id') . '=' . $this->_db->quoteName('#__emundus_setup_emails_trigger.id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id') . 'ON' . $this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id.parent_id') . '=' . $this->_db->quoteName('#__emundus_setup_emails_trigger.id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_email_templates') . 'ON' . $this->_db->quoteName('#__emundus_email_templates.id') . '=' . $this->_db->quoteName('#__emundus_setup_emails.email_tmpl'));
 
-        $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template
-                  FROM #__emundus_setup_emails_trigger as eset
-                  LEFT JOIN #__emundus_setup_emails as ese ON ese.id=eset.email_id
-                  LEFT JOIN #__emundus_setup_emails_trigger_repeat_programme_id as eserp ON eserp.parent_id=eset.id
-                  LEFT JOIN #__emundus_setup_programmes as esp ON esp.id=eserp.programme_id
-                  LEFT JOIN #__emundus_setup_emails_trigger_repeat_profile_id as eser ON eser.parent_id=eset.id
-                  LEFT JOIN #__emundus_setup_emails_trigger_repeat_group_id as eserg ON eserg.parent_id=eset.id
-                  LEFT JOIN #__emundus_setup_emails_trigger_repeat_user_id as eseru ON eseru.parent_id=eset.id
-                  LEFT JOIN #__emundus_email_templates AS et ON et.id = ese.email_tmpl
-                  WHERE eset.step='.$step.' AND eset.to_applicant IN ('.$to_applicant.') AND esp.code IN ("'.implode('","', $code).'")';
+        if(!is_null($code)) {
+            $query->where($this->_db->quoteName('#__emundus_setup_emails_trigger.step') . '=' . $step)
+                ->andWhere($this->_db->quoteName('#__emundus_setup_emails_trigger.to_applicant') . 'IN (' . $to_applicant . ')')
+                ->andWhere($this->_db->quoteName('#__emundus_setup_programmes.code') . ' IN ("'.implode('","', $code).'")');
+        } else {
+            $query->where($this->_db->quoteName('#__emundus_setup_emails_trigger.step') . '=' . $step)
+                ->andWhere($this->_db->quoteName('#__emundus_setup_emails_trigger.to_applicant') . 'IN (' . $to_applicant . ')')
+                ->andWhere($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_campaign_id.campaign_id') . '=' . $campaign);
+        }
+
         $this->_db->setQuery( $query );
         $triggers = $this->_db->loadObjectList();
+
+//        var_dump($triggers);die;
 
         $emails_tmpl = array();
         if (count($triggers) > 0) {
@@ -187,14 +216,14 @@ class EmundusModelEmails extends JModelList {
      * @return  bool           Emails templates and recipient to trigger
      * @throws Exception
      */
-    public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null) {
+    public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null, $campaign) {
         $app = JFactory::getApplication();
         $email_from_sys = $app->getCfg('mailfrom');
 
         jimport('joomla.log.log');
         JLog::addLogger(array('text_file' => 'com_emundus.email.php'), JLog::ALL, array('com_emundus'));
 
-        $trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant);
+        $trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant, $campaign);
 
         if (count($trigger_emails) > 0) {
             // get current applicant course
