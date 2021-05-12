@@ -470,11 +470,17 @@ export default {
               this.messages[_index]['messageDestination'] = answer.data.data.parsedParams.destinationSelectedName;
 
               let userList = answer.data.data.parsedParams.userSelectedName;
-              userList.forEach(user => {
-                _users.push(user.name);
-              })
 
-              this.messages[_index]['messageDestinationList'] = _users.toString();
+              if(userList !== "") {
+                userList.forEach(user => {
+                  _users.push(user.name);
+                })
+                this.messages[_index]['messageDestinationList'] = _users.toString();
+              }
+              else {
+                this.messages[_index]['messageDestinationList'] = "";
+              }
+
               this.messages[_index]['trigger'] = answer.data.data.parsedParams.triggerSelected;
 
               this.$forceUpdate();

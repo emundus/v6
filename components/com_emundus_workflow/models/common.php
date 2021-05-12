@@ -357,7 +357,7 @@ class EmundusworkflowModelcommon extends JModelList {
                     $_param['messageNotes'] = json_decode($_element_params)->messageNotes;
 
                     $_param['usersSelected'] = json_decode($_element_params)->usersSelected;
-                    $_param['userSelectedName'] = $this->getUserNameByListId($_param['usersSelected']);
+                    $_param['userSelectedName'] = $this->getUserNameByListId($_param['usersSelected']) === false ? "" : $this->getUserNameByListId($_param['usersSelected']);
 
                     $_param['triggerSelected'] = json_decode($_element_params)->triggerSelected;
                 } else {
