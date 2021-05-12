@@ -17,8 +17,8 @@ JHtml::_('bootstrap.tooltip');
 <div class="container-module-cas">
     <div class="sous-container-module-cas">
         <ul>
-            <li id="onglet-connexion" onclick="Connexion()">Connexion</li>
-            <li id="onglet-inscription" class="couleurFoncee" onclick="Inscription()">Pas de compte</li>
+            <li id="onglet-connexion" onclick="Connexion()"><?= JText::_('MOD_EM_CAS_SUBMENU1') ?></li>
+            <li id="onglet-inscription" class="couleurFoncee" onclick="Inscription()"><?= JText::_('MOD_EM_CAS_SUBMENU2') ?></li>
         </ul>
 
 
@@ -55,7 +55,9 @@ JHtml::_('bootstrap.tooltip');
 							<span class="icon-user hasTooltip"
                                   title="<?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>"></span>
 							<label for="modlgn-username"
-                                   class="element-invisible"><?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?></label>
+                                   class="element-invisible"><?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>
+                                  <i data-isicon="true" class="icon-star small "></i>
+                            </label>
 						</span>
                                         <input id="modlgn-username" type="text" name="username" class="input-small"
                                                tabindex="0"
@@ -63,7 +65,9 @@ JHtml::_('bootstrap.tooltip');
                                                placeholder="<?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>"/>
                                     </div>
                                 <?php else : ?>
-                                    <label for="modlgn-username"><?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?></label>
+                                    <label for="modlgn-username"><?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>
+                                        <i data-isicon="true" class="icon-star small "></i>
+                                    </label>
                                     <input id="modlgn-username" type="text" name="username" class="input-small"
                                            tabindex="0"
                                            size="18" placeholder="<?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>"/>
@@ -79,6 +83,7 @@ JHtml::_('bootstrap.tooltip');
 							</span>
 								<label for="modlgn-passwd"
                                        class="element-invisible"><?php echo JText::_('JGLOBAL_PASSWORD'); ?>
+                                       <i data-isicon="true" class="icon-star small "></i>
 							</label>
 						</span>
                                         <input id="modlgn-passwd" type="password" name="password" class="input-small"
@@ -86,7 +91,9 @@ JHtml::_('bootstrap.tooltip');
                                                placeholder="<?php echo JText::_('JGLOBAL_PASSWORD'); ?>"/>
                                     </div>
                                 <?php else : ?>
-                                    <label for="modlgn-passwd"><?php echo JText::_('JGLOBAL_PASSWORD'); ?></label>
+                                    <label for="modlgn-passwd"><?php echo JText::_('JGLOBAL_PASSWORD'); ?>
+                                        <i data-isicon="true" class="icon-star small "></i>
+                                    </label>
                                     <input id="modlgn-passwd" type="password" name="password" class="input-small"
                                            tabindex="0"
                                            size="18" placeholder="<?php echo JText::_('JGLOBAL_PASSWORD'); ?>"/>

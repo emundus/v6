@@ -11,6 +11,8 @@
     margin-bottom: 50px;
     margin-top: 50px;
     height: 30rem;
+    -webkit-box-shadow: -5px 5px 6px 0px rgba(0,0,0,0.02);
+    box-shadow: -5px 5px 6px 0px rgba(0,0,0,0.02);
 }
 
 .container-module-cas .sous-container-module-cas {
@@ -42,6 +44,7 @@
 .container-module-cas  .sous-container-module-cas #connexion a.btn.btn-primary,
 .container-module-cas  .sous-container-module-cas #inscription  a.btn.btn-primary {
     text-transform: initial;
+    font-size: 14px;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription {
@@ -75,8 +78,8 @@
     margin-bottom: 50px;
 }
 
-.container-module-cas  .sous-container-module-cas #inscription .formulaire .container p:nth-child(1),
-.container-module-cas  .sous-container-module-cas #inscription .formulaire .container p:nth-child(2) {
+.container-module-cas  .sous-container-module-cas #inscription .container p:nth-child(1),
+.container-module-cas  .sous-container-module-cas #inscription .container p:nth-child(2) {
     flex: 0 0 50%;
 }
 
@@ -88,5 +91,30 @@
     background: #FCFCFC;
 }
 
+.container-module-cas  .sous-container-module-cas li:nth-child(1):not(.couleurFoncee) {
+    -webkit-box-shadow: 4px -2px 6px 0px rgb(0 0 0 / 2%);
+    box-shadow: 4px -2px 6px 0px rgb(0 0 0 / 2%);
+    z-index: 9999;
+}
 
+.container-module-cas  .sous-container-module-cas li:nth-child(2):not(.couleurFoncee) {
+    -webkit-box-shadow: -4px -4px 6px 0px rgba(0,0,0,0.02);
+    box-shadow: -4px -4px 6px 0px rgba(0,0,0,0.02);
+    z-index: 9999;
+}
+
+.container-module-cas .icon-star.small {
+    margin-top: 0px;
+    padding-top: 0px;
+    position: relative;
+    padding-left: 2px;
+    color: #c30505;
+    font-size: 5px;
+    order: 2;
+    top: -10px;
+}
+
+.container-module-cas .control-group:nth-child(3) .controls button.btn.btn-primary  {
+    font-size: 14px;
+}
 
