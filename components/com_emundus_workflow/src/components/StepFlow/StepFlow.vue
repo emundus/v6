@@ -29,12 +29,12 @@
         <b-button @click="openStep(column.id)" variant="primary" style="margin-left: 20px">Ouvrir </b-button>
         <hr/>
         <div style="position: sticky"> <b-button variant="info" @click="createMessageDiv(column.id)">(+)</b-button> </div>
-        <div class="message-block" v-for="message in messages" :id="'message_zone' + message.id" v-if="column.id === message.parent_id">
+        <div class="message-block" v-for="message in messages" :id="'message_zone' + message.id" v-if="column.id === message.parent_id" @mouseleave="showDiv=false">
           <div>
             {{ message.title }}
 
-            <b-button @click="openDiv(message.id)" variant="Dark" :id="'button_' + message.id">Trigger</b-button>
-            <b-button :id="'button_' + message.id" variant="warning" @click="deleteMessageDiv(message.id)">x</b-button>
+            <b-button @click="openDiv(message.id)" variant="primary" :id="'button_' + message.id">Trigger</b-button>
+            <b-button :id="'button_' + message.id" variant="danger" @click="deleteMessageDiv(message.id)">x</b-button>
 
             <message-modal v-for="params in stepParams" v-if="showDiv===true && currentDiv === message.id && params.id === column.id"
                            :messageParams="message"
@@ -42,10 +42,13 @@
                            @updateMessageBlock="updateMessageBlock"
             />
 
-            <div v-if="showDiv===false" style="color:forestgreen"> {{ message.messageTemplate }} </div>
-            <div v-if="showDiv===false" style="color:lightseagreen"> {{ message.messageDestination }} </div>
-            <div v-if="showDiv===false" style="color:midnightblue"> {{ message.messageDestinationList }} </div>
-            <div v-if="showDiv===false" style="color:darkgoldenrod"> {{ message.trigger }} </div>
+            <div v-if="showDiv===true && currentDiv!==message.id || showDiv===false" style="color:forestgreen"> {{ message.messageTemplate }} </div>
+            <div v-if="showDiv===true && currentDiv!==message.id || showDiv===false" style="color:lightseagreen"> {{ message.messageDestination }} </div>
+            <div v-if="showDiv===true && currentDiv!==message.id || showDiv===false" style="color:midnightblue"> {{ message.messageDestinationList }} </div>
+            <div v-if="showDiv===true && currentDiv!==message.id || showDiv===false" style="color:darkgoldenrod"> {{ message.trigger }} </div>
+
+<!--            <div v-if="showDiv===true && currentDiv===message.id" @mouseleave="showDiv=false" @mouseout="showDiv=false"/>-->
+<!--            <div v-if="showDiv===true && currentDiv!==message.id || showDiv===false"> hide </div>-->
 
           </div>
         </div>
@@ -201,7 +204,17 @@ export default {
 
     openDiv: function(id) {
       this.currentDiv = id;
-      this.showDiv =!this.showDiv;
+
+      this.showDiv = !this.showDiv;
+      this.hideDiv = !this.hideDiv;
+
+      if (this.showDiv === true && this.hideDiv === false && event.target.id !== 'button_' + id) {
+        console.log('here1');
+      } else {
+        console.log('here2');
+        this.showDiv = true;
+        this.hideDiv = false;
+      }
     },
 
     createStep: function () {
