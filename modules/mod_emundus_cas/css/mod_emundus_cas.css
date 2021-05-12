@@ -10,7 +10,7 @@
     margin-right: auto;
     margin-bottom: 50px;
     margin-top: 50px;
-    height: 30rem;
+    height: 35rem;
     -webkit-box-shadow: -5px 5px 6px 0px rgba(0,0,0,0.02);
     box-shadow: -5px 5px 6px 0px rgba(0,0,0,0.02);
 }
@@ -50,10 +50,9 @@
 .container-module-cas  .sous-container-module-cas #inscription {
     display: flex;
     flex-direction: column;
-    height: 25rem;
-    width: 100%;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
+    height: 100%;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription .formulaire {
@@ -75,7 +74,7 @@
     width: 85%;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 50px;
+    margin-bottom: 20px;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription .container p:nth-child(1),
