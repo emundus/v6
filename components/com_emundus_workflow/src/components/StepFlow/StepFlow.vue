@@ -29,7 +29,7 @@
         <b-button @click="openStep(column.id)" variant="primary" style="margin-left: 20px">Ouvrir </b-button>
         <hr/>
         <div style="position: sticky"> <b-button variant="info" @click="createMessageDiv(column.id)">(+)</b-button> </div>
-        <div class="message-block" v-for="message in messages" :id="'message_zone' + message.id" v-if="column.id === message.parent_id" @mouseleave="showDiv=false">
+        <div class="message-block" v-for="message in messages" :id="'message_zone' + message.id" v-if="column.id === message.parent_id">
           <div>
             {{ message.title }}
 
@@ -42,10 +42,10 @@
                            @updateMessageBlock="updateMessageBlock"
             />
 
-            <div v-if="showDiv===true && currentDiv!==message.id || showDiv===false" style="color:forestgreen"> {{ message.messageTemplate }} </div>
-            <div v-if="showDiv===true && currentDiv!==message.id || showDiv===false" style="color:lightseagreen"> {{ message.messageDestination }} </div>
-            <div v-if="showDiv===true && currentDiv!==message.id || showDiv===false" style="color:midnightblue"> {{ message.messageDestinationList }} </div>
-            <div v-if="showDiv===true && currentDiv!==message.id || showDiv===false" style="color:darkgoldenrod"> {{ message.trigger }} </div>
+            <div v-if="showDiv===false" style="color:forestgreen"> {{ message.messageTemplate }} </div>
+            <div v-if="showDiv===false" style="color:lightseagreen"> {{ message.messageDestination }} </div>
+            <div v-if="showDiv===false" style="color:midnightblue"> {{ message.messageDestinationList }} </div>
+            <div v-if="showDiv===false" style="color:darkgoldenrod"> {{ message.trigger }} </div>
 
 <!--            <div v-if="showDiv===true && currentDiv===message.id" @mouseleave="showDiv=false" @mouseout="showDiv=false"/>-->
 <!--            <div v-if="showDiv===true && currentDiv!==message.id || showDiv===false"> hide </div>-->
@@ -204,17 +204,8 @@ export default {
 
     openDiv: function(id) {
       this.currentDiv = id;
-
       this.showDiv = !this.showDiv;
       this.hideDiv = !this.hideDiv;
-
-      if (this.showDiv === true && this.hideDiv === false && event.target.id !== 'button_' + id) {
-        console.log('here1');
-      } else {
-        console.log('here2');
-        this.showDiv = true;
-        this.hideDiv = false;
-      }
     },
 
     createStep: function () {
@@ -396,7 +387,7 @@ export default {
 
     createMessageDiv: function(parent_id) {
       let data = {
-        title: Math.random().toString(36).substring(2,7),       /// random title --> fix it later with hot-updating
+        title: Math.random().toString(36).substring(2,10),       /// random title --> fix it later with hot-updating
         parent_type: 'step',
         parent_id: parent_id,
         element_type: 'message',
