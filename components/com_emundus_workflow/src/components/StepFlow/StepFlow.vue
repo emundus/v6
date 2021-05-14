@@ -36,16 +36,16 @@
             <b-button @click="openDiv(message.id)" variant="primary" :id="'button_' + message.id">Trigger</b-button>
             <b-button :id="'button_' + message.id" variant="danger" @click="deleteMessageDiv(message.id)">x</b-button>
 
+            <div style="color:forestgreen"> {{ message.messageTemplate }} </div>
+            <div style="color:lightseagreen"> {{ message.messageDestination }} </div>
+            <div style="color:midnightblue"> {{ message.messageDestinationList }} </div>
+            <div style="color:darkgoldenrod"> {{ message.trigger }} </div>
+
             <message-modal v-for="params in stepParams" v-if="showDiv==true && currentDiv == message.id && params.id == column.id"
                            :messageParams="message"
                            :stepParams="params"
                            @updateMessageBlock="updateMessageBlock"
             />
-
-            <div v-if="showDiv==false" style="color:forestgreen"> {{ message.messageTemplate }} </div>
-            <div v-if="showDiv==false" style="color:lightseagreen"> {{ message.messageDestination }} </div>
-            <div v-if="showDiv==false" style="color:midnightblue"> {{ message.messageDestinationList }} </div>
-            <div v-if="showDiv==false" style="color:darkgoldenrod"> {{ message.trigger }} </div>
 
 <!--            <div v-if="showDiv===true && currentDiv===message.id" @mouseleave="showDiv=false" @mouseout="showDiv=false"/>-->
 <!--            <div v-if="showDiv===true && currentDiv!==message.id || showDiv===false"> hide </div>-->
