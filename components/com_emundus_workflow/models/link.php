@@ -79,26 +79,26 @@ class EmundusworkflowModellink extends JModelList {
                 if ($mode == 'from') {
                     //get link by from
                     $this->query->clear()
-                        ->select('#__emundus_workflow_links.*')
-                        ->from($this->db->quoteName('#__emundus_workflow_links'))
-                        ->where($this->db->quoteName('#__emundus_workflow_links.from') . '=' . (int)$data['_from']);
+                        ->select('ewl.*')
+                        ->from($this->db->quoteName('#__emundus_workflow_links', 'ewl'))
+                        ->where($this->db->quoteName('ewl.from') . '=' . (int)$data['_from']);
                 }
 
                 else if ($mode == 'to') {
                     //get link by to
                     $this->query->clear()
-                        ->select('#__emundus_workflow_links.*')
-                        ->from($this->db->quoteName('#__emundus_workflow_links'))
-                        ->where($this->db->quoteName('#__emundus_workflow_links.to') . '=' . (int)$data['_to']);
+                        ->select('ewl.*')
+                        ->from($this->db->quoteName('#__emundus_workflow_links', 'ewl'))
+                        ->where($this->db->quoteName('ewl.to') . '=' . (int)$data['_to']);
                 }
 
                 else {
                     //get link by both from and to
                     $this->query->clear()
-                        ->select('#__emundus_workflow_links.*')
-                        ->from($this->db->quoteName('#__emundus_workflow_links'))
-                        ->where($this->db->quoteName('#__emundus_workflow_links.from') . '=' . (int)$data['_from'])
-                        ->andWhere($this->db->quoteName('#__emundus_workflow_links.from') . '=' . (int)$data['_to']);
+                        ->select('ewl.*')
+                        ->from($this->db->quoteName('#__emundus_workflow_links', 'ewl'))
+                        ->where($this->db->quoteName('ewl.from') . '=' . (int)$data['_from'])
+                        ->andWhere($this->db->quoteName('ewl.from') . '=' . (int)$data['_to']);
                 }
 
                 $this->db->setQuery($this->query);
@@ -119,9 +119,9 @@ class EmundusworkflowModellink extends JModelList {
         if(!empty($data)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_links.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_links'))
-                    ->where($this->db->quoteName('#__emundus_workflow_links.step_id') . '=' . (int)$data);
+                    ->select('ewl.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_links', 'ewl'))
+                    ->where($this->db->quoteName('ewl.step_id') . '=' . (int)$data);
 
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
