@@ -26,14 +26,14 @@ class EmundusworkflowModelworkflow extends JModelList {
         $this->query = $this->db->getQuery(true);
     }
 
-    //// get all workflows
+    //// get all workflows --> use alias "ew" === emundus_workflow
     public function getAllWorkflows() {
         try {
             $this->query->clear()
-                ->select('#__emundus_workflow.*, #__emundus_setup_campaigns.label, #__users.name')
-                ->from($this->db->quoteName('#__emundus_workflow'))
-                ->leftJoin('#__emundus_setup_campaigns ON #__emundus_setup_campaigns.id = #__emundus_workflow.campaign_id')
-                ->leftJoin('#__users ON #__users.id = #__emundus_workflow.user_id');
+                ->select('ew.*, #__emundus_setup_campaigns.label, #__users.name')
+                ->from($this->db->quoteName('#__emundus_workflow', 'ew'))
+                ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns') . 'ON' . $this->db->quoteName('#__emundus_setup_campaigns.id') . '=' . $this->db->quoteName('ew.campaign_id'))
+                ->leftJoin($this->db->quoteName('#__users') . 'ON' . $this->db->quoteName('#__users.id') . '=' . $this->db->quoteName('ew.user_id'));
 
             $this->db->setQuery($this->query);
             return $this->db->loadObjectList();
@@ -92,10 +92,10 @@ class EmundusworkflowModelworkflow extends JModelList {
         if(!empty($wid)) {
             try {
                 $this->query->clear()
-                    ->select('*, #__emundus_setup_campaigns.id')
-                    ->from($this->db->quoteName('#__emundus_workflow'))
-                    ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns') . 'ON' . $this->db->quoteName('#__emundus_workflow.campaign_id') . '=' . $this->db->quoteName('#__emundus_setup_campaigns.id'))
-                    ->where($this->db->quoteName('#__emundus_workflow.id') . ' = ' . (int)$wid);
+                    ->select('ew.*, #__emundus_setup_campaigns.id')
+                    ->from($this->db->quoteName('#__emundus_workflow', 'ew'))
+                    ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns') . 'ON' . $this->db->quoteName('ew.campaign_id') . '=' . $this->db->quoteName('#__emundus_setup_campaigns.id'))
+                    ->where($this->db->quoteName('ew.id') . ' = ' . (int)$wid);
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
             } catch (Exception $e) {
@@ -135,10 +135,10 @@ class EmundusworkflowModelworkflow extends JModelList {
     public function getAllAvailableCampaigns() {
         try {
             $this->query
-                ->select('#__emundus_setup_campaigns.id, #__emundus_setup_campaigns.label')
-                ->from($this->db->quoteName('#__emundus_setup_campaigns'))
-                ->leftJoin($this->db->quoteName('#__emundus_workflow') . ' ON ' . $this->db->quoteName('#__emundus_setup_campaigns.id') . '=' . $this->db->quoteName('#__emundus_workflow.campaign_id'))
-                ->where($this->db->quoteName('#__emundus_setup_campaigns.id') . ' NOT IN (SELECT #__emundus_workflow.campaign_id FROM #__emundus_workflow) ');
+                ->select('esc.id, esc.label')
+                ->from($this->db->quoteName('#__emundus_setup_campaigns', 'esc'))
+                ->leftJoin($this->db->quoteName('#__emundus_workflow') . ' ON ' . $this->db->quoteName('esc.id') . '=' . $this->db->quoteName('#__emundus_workflow.campaign_id'))
+                ->where($this->db->quoteName('esc.id') . ' NOT IN (SELECT #__emundus_workflow.campaign_id FROM #__emundus_workflow) ');
 
             $this->db->setQuery($this->query);
             return $this->db->loadObjectList();
