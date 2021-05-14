@@ -99,10 +99,11 @@
           </div>
         </div>
 
-        <div class="row mb-3">
-          <b-button variant="success" @click="updateParams()">Sauvegarder</b-button>
-          <b-button variant="danger" @click="exitModal()">Quitter</b-button>
+        <div style="align-items: center">
+          <b-button variant="success" @click="updateParams()">{{ saveButtonLabel }}</b-button>
+          <b-button variant="danger" @click="exitModal()">{{ exitButtonLabel }}</b-button>
         </div>
+
       </modal>
     </div>
   </div>
@@ -144,6 +145,13 @@ export default {
 
       outputStatusPlaceHolder: Joomla.JText._("COM_EMUNDUS_WORKFLOW_PLACEHOLDER_OUTPUT_STATUS"),
       supplementaryInfoPlaceHolder: Joomla.JText._("COM_EMUNDUS_WORKFLOW_PLACEHOLDER_SUPPLEMENTARY_INFORMATION"),
+      saveButtonLabel: Joomla.JText._("COM_EMUNDUS_WORKFLOW_BUTTON_SAVE_PARAMS"),
+      exitButtonLabel: Joomla.JText._("COM_EMUNDUS_WORKFLOW_BUTTON_EXIT_PARAMS"),
+
+      swalCongratTitle: Joomla.JText._('COM_EMUNDUS_WORKFLOW_SWEET_ALERT_CONGRATULATION_TITLE'),
+      swalSuccessMessage: Joomla.JText._('COM_EMUNDUS_WORKFLOW_SWEET_ALERT_SUCCESS_MESSAGE'),
+      swalErrorTitle: Joomla.JText._('COM_EMUNDUS_WORKFLOW_SWEET_ALERT_ERROR_TITLE'),
+      swalMissingParamsMessage: Joomla.JText._('COM_EMUNDUS_WORKFLOW_SWEER_ALERT_MISSING_PARAMS_MESSAGE'),
 
       title: {
         label: Joomla.JText._("COM_EMUNDUS_WORKFLOW_MODAL_STEP_LABEL"),
@@ -258,8 +266,8 @@ export default {
         }).then(response => {
           Swal.fire({
             icon: 'success',
-            title: 'Congrat',
-            text: 'Les parametres sont sauvegardés',
+            title: this.swalCongratTitle,
+            text: this.swalSuccessMessage,
             footer: '<a href>EMundus SAS</a>',
             confirmButtonColor: '#28a745',
           }).then(result => {
@@ -275,8 +283,8 @@ export default {
       else {
         Swal.fire({
           icon: 'error',
-          title: 'Erreur',
-          html: 'Le statut d\'entré et le statut de sortie doivent être configuré',
+          title: this.swalErrorTitle,
+          html: this.swalMissingParamsMessage,
           timer: 1500,
           showConfirmButton:false,
         })
