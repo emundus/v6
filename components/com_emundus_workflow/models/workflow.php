@@ -30,10 +30,10 @@ class EmundusworkflowModelworkflow extends JModelList {
     public function getAllWorkflows() {
         try {
             $this->query->clear()
-                ->select('ew.*, #__emundus_setup_campaigns.label, #__users.name')
+                ->select('ew.*, esc.label, u.name')
                 ->from($this->db->quoteName('#__emundus_workflow', 'ew'))
-                ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns') . 'ON' . $this->db->quoteName('#__emundus_setup_campaigns.id') . '=' . $this->db->quoteName('ew.campaign_id'))
-                ->leftJoin($this->db->quoteName('#__users') . 'ON' . $this->db->quoteName('#__users.id') . '=' . $this->db->quoteName('ew.user_id'));
+                ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . 'ON' . $this->db->quoteName('esc.id') . '=' . $this->db->quoteName('ew.campaign_id'))
+                ->leftJoin($this->db->quoteName('#__users', 'u') . 'ON' . $this->db->quoteName('u.id') . '=' . $this->db->quoteName('ew.user_id'));
 
             $this->db->setQuery($this->query);
             return $this->db->loadObjectList();
@@ -50,7 +50,7 @@ class EmundusworkflowModelworkflow extends JModelList {
             try {
                 $this->query->clear()
                     ->delete($this->db->quoteName('#__emundus_workflow'))
-                    ->where(('#__emundus_workflow.id') . ' = ' . (int)$wid);
+                    ->where($this->db->quoteName('#__emundus_workflow.id') . ' = ' . (int)$wid);
 
                 $this->db->setQuery($this->query);
                 return $this->db->execute();
@@ -92,9 +92,9 @@ class EmundusworkflowModelworkflow extends JModelList {
         if(!empty($wid)) {
             try {
                 $this->query->clear()
-                    ->select('ew.*, #__emundus_setup_campaigns.id')
+                    ->select('ew.*, esc.id')
                     ->from($this->db->quoteName('#__emundus_workflow', 'ew'))
-                    ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns') . 'ON' . $this->db->quoteName('ew.campaign_id') . '=' . $this->db->quoteName('#__emundus_setup_campaigns.id'))
+                    ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . 'ON' . $this->db->quoteName('ew.campaign_id') . '=' . $this->db->quoteName('esc.id'))
                     ->where($this->db->quoteName('ew.id') . ' = ' . (int)$wid);
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
