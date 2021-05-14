@@ -89,4 +89,6 @@ class JConfig {
 	public $session_memcached_server_port = '11211';
 	public $frontediting = '1';
 	public $asset_id = '1';
+	// PROSPECT CONFIGURATION
+	public $prospect = '1';
 }
