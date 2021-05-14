@@ -191,7 +191,7 @@ export default {
 
       axios({
         method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=common&task=updateelement',
+        url: 'index.php?option=com_emundus_workflow&controller=common&task=updatemessagebloc',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -253,7 +253,7 @@ export default {
       }
       axios({
         method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=common&task=getelementbyid',
+        url: 'index.php?option=com_emundus_workflow&controller=common&task=getmessageblocbyid',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
