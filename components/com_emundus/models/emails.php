@@ -269,60 +269,118 @@ class EmundusModelEmails extends JModelList {
             );
 
             foreach ($trigger_emails as $trigger_email) {
+                if(!is_null($trigger_email[$student->code]['to']['recipients'])) {
+                    foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
+                        $mailer = JFactory::getMailer();
 
-                foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
-                    $mailer = JFactory::getMailer();
+                        $tags = $this->setTags($student->id, $post, $student->fnum);
 
-                    $tags = $this->setTags($student->id, $post, $student->fnum);
+                        $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
+                        $from_id = 62;
+                        $fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['name']);
+                        $to = $recipient['email'];
+                        $to_id = $recipient['id'];
+                        $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
 
-                    $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
-                    $from_id = 62;
-                    $fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['name']);
-                    $to = $recipient['email'];
-                    $to_id = $recipient['id'];
-                    $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
+                        $body = $trigger_email[$student->code]['tmpl']['message'];
+                        if ($trigger_email[$student->code]['tmpl']['template']) {
+                            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger_email[$student->code]['tmpl']['template']);
+                        }
+                        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+                        $body = $this->setTagsFabrik($body, array($student->fnum));
 
-                    $body = $trigger_email[$student->code]['tmpl']['message'];
-                    if ($trigger_email[$student->code]['tmpl']['template']) {
-                        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger_email[$student->code]['tmpl']['template']);
+
+                        // If the email sender has the same domain as the system sender address.
+                        if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+                            $mail_from_address = $from;
+                        } else {
+                            $mail_from_address = $email_from_sys;
+                        }
+
+                        // Set sender
+                        $sender = [
+                            $mail_from_address,
+                            $fromname
+                        ];
+
+                        $mailer->setSender($sender);
+                        $mailer->addReplyTo($from, $fromname);
+                        $mailer->addRecipient($to);
+                        $mailer->setSubject($subject);
+                        $mailer->isHTML(true);
+                        $mailer->Encoding = 'base64';
+                        $mailer->setBody($body);
+                        $send = $mailer->Send();
+
+                        if ($send !== true) {
+                            echo 'Error sending email: ' . $send->__toString();
+                            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                        } else {
+                            $message = array(
+                                'user_id_from' => $from_id,
+                                'user_id_to' => $to_id,
+                                'subject' => $subject,
+                                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . '</i><br>' . $body
+                            );
+                            $this->logEmail($message);
+                        }
                     }
-	                $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
-	                $body = $this->setTagsFabrik($body, array($student->fnum));
+                }
+                else {
+                    foreach ($trigger_email[$student->campaign_id]['to']['recipients'] as $recipient) {
+                        $mailer = JFactory::getMailer();
+
+                        $tags = $this->setTags($student->id, $post, $student->fnum);
+
+                        $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->campaign_id]['tmpl']['emailfrom']);
+                        $from_id = 62;
+                        $fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->campaign_id]['tmpl']['name']);
+                        $to = $recipient['email'];
+                        $to_id = $recipient['id'];
+                        $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->campaign_id]['tmpl']['subject']);
+
+                        $body = $trigger_email[$student->campaign_id]['tmpl']['message'];
+                        if ($trigger_email[$student->campaign_id]['tmpl']['template']) {
+                            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger_email[$student->campaign_id]['tmpl']['template']);
+                        }
+                        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+                        $body = $this->setTagsFabrik($body, array($student->fnum));
 
 
-	                // If the email sender has the same domain as the system sender address.
-                    if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
-                        $mail_from_address = $from;
-                    } else {
-                        $mail_from_address = $email_from_sys;
-                    }
+                        // If the email sender has the same domain as the system sender address.
+                        if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+                            $mail_from_address = $from;
+                        } else {
+                            $mail_from_address = $email_from_sys;
+                        }
 
-                    // Set sender
-                    $sender = [
-                        $mail_from_address,
-                        $fromname
-                    ];
+                        // Set sender
+                        $sender = [
+                            $mail_from_address,
+                            $fromname
+                        ];
 
-                    $mailer->setSender($sender);
-                    $mailer->addReplyTo($from, $fromname);
-                    $mailer->addRecipient($to);
-                    $mailer->setSubject($subject);
-                    $mailer->isHTML(true);
-                    $mailer->Encoding = 'base64';
-                    $mailer->setBody($body);
-                    $send = $mailer->Send();
+                        $mailer->setSender($sender);
+                        $mailer->addReplyTo($from, $fromname);
+                        $mailer->addRecipient($to);
+                        $mailer->setSubject($subject);
+                        $mailer->isHTML(true);
+                        $mailer->Encoding = 'base64';
+                        $mailer->setBody($body);
+                        $send = $mailer->Send();
 
-                    if ($send !== true) {
-                        echo 'Error sending email: ' . $send->__toString();
-                        JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-                    } else {
-                        $message = array(
-                            'user_id_from' => $from_id,
-                            'user_id_to' => $to_id,
-                            'subject' => $subject,
-                            'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
-                        );
-                        $this->logEmail($message);
+                        if ($send !== true) {
+                            echo 'Error sending email: ' . $send->__toString();
+                            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                        } else {
+                            $message = array(
+                                'user_id_from' => $from_id,
+                                'user_id_to' => $to_id,
+                                'subject' => $subject,
+                                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . '</i><br>' . $body
+                            );
+                            $this->logEmail($message);
+                        }
                     }
                 }
             }
