@@ -34,8 +34,8 @@ class EmundusworkflowModelitem extends JModelList {
     public function getItemMenu() {
         try {
             $this->query->clear()
-                ->select('*')
-                ->from($this->db->quoteName('#__emundus_workflow_item_type'));
+                ->select('ewit.*')
+                ->from($this->db->quoteName('#__emundus_workflow_item_type', 'ewit'));
 
             $this->db->setQuery($this->query);
             return $this->db->loadObjectList();
@@ -51,9 +51,9 @@ class EmundusworkflowModelitem extends JModelList {
         if(!empty($sid)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_item.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_item'))
-                    ->where($this->db->quoteName('#__emundus_workflow_item.step_id') . '=' . (int)$sid);
+                    ->select('ewi.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_item', 'ewi'))
+                    ->where($this->db->quoteName('ewi.step_id') . '=' . (int)$sid);
 
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
@@ -73,10 +73,10 @@ class EmundusworkflowModelitem extends JModelList {
         if(!empty($sid)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_item.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_item'))
-                    ->where($this->db->quoteName('#__emundus_workflow_item.step_id') . '=' . (int)$sid)
-                    ->andWhere($this->db->quoteName('#__emundus_workflow_item.item_id') . '=' . 1);
+                    ->select('ewi.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_item', 'ewi'))
+                    ->where($this->db->quoteName('ewi.step_id') . '=' . (int)$sid)
+                    ->andWhere($this->db->quoteName('ewi.item_id') . '=' . 1);
 
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
@@ -96,10 +96,10 @@ class EmundusworkflowModelitem extends JModelList {
         if(!empty($data)) {
             try {
                 $this->query->clear()
-                    ->select('count(*)')
-                    ->from($this->db->quoteName('#__emundus_workflow_item'))
-                    ->where($this->db->quoteName('#__emundus_workflow_item.item_id') . ' = ' . (int)$data['item_id'])
-                    ->andWhere($this->db->quoteName('#__emundus_workflow_item.step_id') . ' = ' . (int)$data['step_id']);
+                    ->select('count(ewi.*)')
+                    ->from($this->db->quoteName('#__emundus_workflow_item', 'ewi'))
+                    ->where($this->db->quoteName('ewi.item_id') .       ' = ' . (int)$data['item_id'])
+                    ->andWhere($this->db->quoteName('ewi.step_id') .    ' = ' . (int)$data['step_id']);
 
                 $this->db->setQuery($this->query);
                 return $this->db->loadResult();
@@ -130,9 +130,9 @@ class EmundusworkflowModelitem extends JModelList {
 
                 //// step 2 --> get the CSS style of this item
                 $this->query->clear()
-                    ->select('#__emundus_workflow_item_type.CSS_style')
-                    ->from($this->db->quoteName('#__emundus_workflow_item_type'))
-                    ->where($this->db->quoteName('#__emundus_workflow_item_type.id') . '=' . (int)$data['item_id']);
+                    ->select('ewit.CSS_style')
+                    ->from($this->db->quoteName('#__emundus_workflow_item_type', 'ewit'))
+                    ->where($this->db->quoteName('ewit.id') . '=' . (int)$data['item_id']);
 
                 $this->db->setQuery($this->query);
                 $_CSSStyle = $this->db->loadObject();
@@ -187,15 +187,10 @@ class EmundusworkflowModelitem extends JModelList {
         if(!empty($id)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_item.*, #__emundus_workflow_item_type.CSS_style')
-                    ->from($this->db->quoteName('#__emundus_workflow_item'))
-                    ->leftJoin($this->db->quoteName('#__emundus_workflow_item_type') .
-                        ' ON '
-                        . $this->db->quoteName('#__emundus_workflow_item.item_id') .
-                        '='
-                        . $this->db->quoteName('#__emundus_workflow_item_type.id')
-                    )
-                    ->where($this->db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$id);
+                    ->select('ewi.*, #__emundus_workflow_item_type.CSS_style')
+                    ->from($this->db->quoteName('#__emundus_workflow_item', 'ewi'))
+                    ->leftJoin($this->db->quoteName('#__emundus_workflow_item_type') . ' ON ' . $this->db->quoteName('ewi.item_id') . '=' . $this->db->quoteName('#__emundus_workflow_item_type.id'))
+                    ->where($this->db->quoteName('ewi.id') . '=' . (int)$id);
 
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
@@ -319,9 +314,9 @@ class EmundusworkflowModelitem extends JModelList {
         if(!empty($iid) and !empty($mode)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_item.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_item'))
-                    ->where($this->db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$iid);
+                    ->select('ewi.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_item', 'ewi'))
+                    ->where($this->db->quoteName('ewi.id') . '=' . (int)$iid);
 
                 $this->db->setQuery($this->query);
                 $_result = $this->db->loadObject();
@@ -338,17 +333,17 @@ class EmundusworkflowModelitem extends JModelList {
                 $query2 = $this->db->getQuery(true);
                 if ($mode == 'in' and isset($_exportStatus['in'])) {
                     $query2->clear()
-                        ->select('#__emundus_setup_status.*')
-                        ->from($this->db->quoteName('#__emundus_setup_status'))
-                        ->where($this->db->quoteName('#__emundus_setup_status.step') . 'IN (' . $_exportStatus['in'] . ')');
+                        ->select('ess.*')
+                        ->from($this->db->quoteName('#__emundus_setup_status', 'ess'))
+                        ->where($this->db->quoteName('ess.step') . 'IN (' . $_exportStatus['in'] . ')');
                     $this->db->setQuery($query2);
 
                     return $this->db->loadObjectList();
                 } else if (isset($_exportStatus['out']) and $mode == 'out') {
                     $query2->clear()
-                        ->select('#__emundus_setup_status.*')
-                        ->from($this->db->quoteName('#__emundus_setup_status'))
-                        ->where($this->db->quoteName('#__emundus_setup_status.step') . 'IN (' . $_exportStatus['out'] . ')');
+                        ->select('ess.*')
+                        ->from($this->db->quoteName('#__emundus_setup_status', 'ess'))
+                        ->where($this->db->quoteName('ess.step') . 'IN (' . $_exportStatus['out'] . ')');
                     $this->db->setQuery($query2);
 
                     return $this->db->loadObjectList();
@@ -370,13 +365,13 @@ class EmundusworkflowModelitem extends JModelList {
 
         try {
             $query->clear()
-                ->select('#__emundus_workflow_item.item_id, #__emundus_workflow_item.params')
-                ->from($db->quoteName('#__emundus_workflow_item'))
-                ->where($db->quoteName('#__emundus_workflow_item.workflow_id') . '=' . (int)(json_decode($data))->wid)
-                ->andWhere($db->quoteName('#__emundus_workflow_item.item_id') . '!=' . '1')                     //not initialization
-                ->andWhere($db->quoteName('#__emundus_workflow_item.item_id') . '!=' . '4')                     //not message
-                ->andWhere($db->quoteName('#__emundus_workflow_item.item_id') . '!=' . '5')                     //not cloture
-                ->andWhere($db->quoteName('#__emundus_workflow_item.id') . '!=' . (int)(json_decode($data))->id);
+                ->select('ewi.item_id, ewi.params')
+                ->from($db->quoteName('#__emundus_workflow_item', 'ewi'))
+                ->where($db->quoteName('ewi.workflow_id') . '=' . (int)(json_decode($data))->wid)
+                ->andWhere($db->quoteName('ewi.item_id') . '!=' . '1')                     //not initialization
+                ->andWhere($db->quoteName('ewi.item_id') . '!=' . '4')                     //not message
+                ->andWhere($db->quoteName('ewi.item_id') . '!=' . '5')                     //not cloture
+                ->andWhere($db->quoteName('ewi.id') . '!=' . (int)(json_decode($data))->id);
 
             $db->setQuery($query);
             $_results = $db->loadAssocList();
@@ -447,9 +442,9 @@ class EmundusworkflowModelitem extends JModelList {
         if(!empty($id)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_item.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_item'))
-                    ->where($this->db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$id);
+                    ->select('ewi.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_item', 'ewi'))
+                    ->where($this->db->quoteName('ewi.id') . '=' . (int)$id);
 
                 $this->db->setQuery($this->query);
                 $_data = $this->db->loadObject();
@@ -489,18 +484,18 @@ class EmundusworkflowModelitem extends JModelList {
         try {
             //get from.params.outputStatus
             $query->clear()
-                ->select('#__emundus_workflow_item.*')
-                ->from($db->quoteName('#__emundus_workflow_item'))
-                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['from']);
+                ->select('ewi.*')
+                ->from($db->quoteName('#__emundus_workflow_item', 'ewi'))
+                ->where($db->quoteName('ewi.id') . '=' . (int)$data['from']);
             $db->setQuery($query);
             $_fromParams = $db->loadObject();
 
 
             //get to.params.inputStatus
             $query1->clear()
-                ->select('#__emundus_workflow_item.*')
-                ->from($db->quoteName('#__emundus_workflow_item'))
-                ->where($db->quoteName('#__emundus_workflow_item.id') . '=' . (int)$data['to']);
+                ->select('ewi.*')
+                ->from($db->quoteName('#__emundus_workflow_item', 'ewi'))
+                ->where($db->quoteName('ewi.id') . '=' . (int)$data['to']);
             $db->setQuery($query1);
             $_toParams = $db->loadObject();
 
