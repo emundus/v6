@@ -42,7 +42,7 @@
           <label class="col-sm-6 col-form-label">{{ this.title.outputStatusTitle }}</label>
           <div class="col-xs-8">
             <select v-model="form.outputStatus" class="form-control-select" id="outstatus-selected">
-              <option selected disabled>---Sortie---</option>
+              <option selected disabled>{{ outputStatusPlaceHolder }}</option>
               <option v-for="outstatus in this.outStatus" :value="outstatus.step"> {{ outstatus.value }}</option>
             </select>
           </div>
@@ -88,7 +88,7 @@
         <div class="row mb-3">
           <label class="col-sm-6 col-form-label">{{ this.title.notes }}</label>
           <div class="col-xs-8">
-            <textarea id="notes_form" rows="3" v-model="form.stepNotes" placeholder="Informations supplementaires" style="margin: -5px; width: 102%"></textarea>
+            <textarea id="notes_form" rows="3" v-model="form.stepNotes" :placeholder="supplementaryInfoPlaceHolder" style="margin: -5px; width: 102%"></textarea>
           </div>
         </div>
 
@@ -103,7 +103,7 @@
           <b-button variant="success" @click="updateParams()">Sauvegarder</b-button>
           <b-button variant="danger" @click="exitModal()">Quitter</b-button>
         </div>
-
+      </modal>
     </div>
   </div>
 </template>
@@ -141,14 +141,18 @@ export default {
     return {
       messageParams: Object,
       colorParams: Object,
+
+      outputStatusPlaceHolder: Joomla.JText._("COM_EMUNDUS_WORKFLOW_PLACEHOLDER_OUTPUT_STATUS"),
+      supplementaryInfoPlaceHolder: Joomla.JText._("COM_EMUNDUS_WORKFLOW_PLACEHOLDER_SUPPLEMENTARY_INFORMATION"),
+
       title: {
-        label: "Nom de l'etape",
-        inputStatusTitle: "Statut d'entre",
-        outputStatusTitle: "Statut de sortie",
-        startDateTitle: "Date debut",
-        endDateTitle: "Date fin",
-        notes: "Informations supplementaires",
-        colorTitle: "Palette de couleur",
+        label: Joomla.JText._("COM_EMUNDUS_WORKFLOW_MODAL_STEP_LABEL"),
+        inputStatusTitle: Joomla.JText._("COM_EMUNDUS_WORKFLOW_MODAL_STEP_INPUT_STATUS"),
+        outputStatusTitle: Joomla.JText._("COM_EMUNDUS_WORKFLOW_MODAL_STEP_OUTPUT_STATUS"),
+        startDateTitle: Joomla.JText._("COM_EMUNDUS_WORKFLOW_MODAL_STEP_BEGIN_DATE"),
+        endDateTitle: Joomla.JText._("COM_EMUNDUS_WORKFLOW_MODAL_STEP_END_DATE"),
+        notes: Joomla.JText._("COM_EMUNDUS_WORKFLOW_MODAL_STEP_SUPPLEMENTARY_INFORMATION"),
+        colorTitle: Joomla.JText._("COM_EMUNDUS_WORKFLOW_MODAL_STEP_FAVORITE_COLOR"),
       },
       // use for form v-model
       form: {
@@ -326,6 +330,11 @@ export default {
 </script>
 
 <style>
+.col-sm-6 {
+  flex: 0 0 auto !important;
+  width: 100% !important;
+}
+
 .vm--modal {
   padding: 10px 30px !important;
   overflow-y: scroll !important;
@@ -336,7 +345,7 @@ export default {
 }
 
 .col-form-label {
-  color: blue !important;
+  color: #0088ff !important;
 }
 
 .theme-orange .vdatetime-popup__header,
