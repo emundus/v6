@@ -20,8 +20,8 @@ class EmundusworkflowModelcommon extends JModelList {
     public function getAllDestinations() {
         try {
             $this->query->clear()
-                ->select('*')
-                ->from($this->db->quoteName('#__emundus_setup_groups'));
+                ->select('esg.*')
+                ->from($this->db->quoteName('#__emundus_setup_groups', 'esg'));
 
             $this->db->setQuery($this->query);
             return $this->db->loadObjectList();
@@ -37,16 +37,16 @@ class EmundusworkflowModelcommon extends JModelList {
             try {
                 if(count(explode(',', $data)) == 1) {
                     $this->query->clear()
-                        ->select('#__emundus_setup_groups.*')
-                        ->from($this->db->quoteName('#__emundus_setup_groups'))
-                        ->where($this->db->quoteName('#__emundus_setup_groups.id') . '=' . (int)$data);
+                        ->select('esg.*')
+                        ->from($this->db->quoteName('#__emundus_setup_groups', 'esg'))
+                        ->where($this->db->quoteName('esg.id') . '=' . (int)$data);
                     $this->db->setQuery($this->query);
                     return $this->db->loadObject();
                 } else {
                     $this->query->clear()
-                        ->select('#__users.*')
-                        ->from($this->db->quoteName('#__users'))
-                        ->where($this->db->quoteName('#__users.id') . 'IN (' . $data . ')');
+                        ->select('u.*')
+                        ->from($this->db->quoteName('#__users', 'u'))
+                        ->where($this->db->quoteName('u.id') . 'IN (' . $data . ')');
                     $this->db->setQuery($this->query);
                     return $this->db->loadObjectList();
                 }
@@ -65,9 +65,9 @@ class EmundusworkflowModelcommon extends JModelList {
         if(!empty($id)) {
             try {
                 $this->query->clear()
-                    ->select('#__users.*')
-                    ->from($this->db->quoteName('#__users'))
-                    ->where($this->db->quoteName('#__users.id') . '=' . (int)$id);
+                    ->select('u.*')
+                    ->from($this->db->quoteName('#__users', 'u'))
+                    ->where($this->db->quoteName('u.id') . '=' . (int)$id);
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
             }
@@ -84,9 +84,9 @@ class EmundusworkflowModelcommon extends JModelList {
     public function getAllUsers() {
         try {
             $this->query->clear()
-                ->select('#__emundus_users.*, #__users.*')
-                ->from($this->db->quoteName('#__emundus_users'))
-                ->leftJoin($this->db->quoteName('#__users') . ' ON ' . $this->db->quoteName('#__emundus_users.user_id') . '=' . $this->db->quoteName('#__users.id'));
+                ->select('eu.*, u.*')
+                ->from($this->db->quoteName('#__emundus_users', 'eu'))
+                ->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('eu.user_id') . '=' . $this->db->quoteName('u.id'));
 
             $this->db->setQuery($this->query);
             return $this->db->loadObjectList();
@@ -305,8 +305,8 @@ class EmundusworkflowModelcommon extends JModelList {
     public function getAllMessageBlocs() {
         try {
             $this->query->clear()
-                ->select('#__emundus_workflow_messages.*')
-                ->from($this->db->quoteName('#__emundus_workflow_messages'));
+                ->select('ewm.*')
+                ->from($this->db->quoteName('#__emundus_workflow_messages', 'ewm'));
 
             $this->db->setQuery($this->query);
             return $this->db->loadObjectList();
@@ -321,9 +321,9 @@ class EmundusworkflowModelcommon extends JModelList {
         if(!empty($data)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_messages.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_messages'))
-                    ->where($this->db->quoteName('#__emundus_workflow_messages.workflow_id') . '=' . $this->db->quote($data['workflow_id']));
+                    ->select('ewm.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_messages', 'ewm'))
+                    ->where($this->db->quoteName('ewm.workflow_id') . '=' . $this->db->quote($data['workflow_id']));
 
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
@@ -341,9 +341,9 @@ class EmundusworkflowModelcommon extends JModelList {
         if(!empty($data)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_messages.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_messages'))
-                    ->where($this->db->quoteName('#__emundus_workflow_messages.id') . '=' . $this->db->quote($data['id']));
+                    ->select('ewm.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_messages', 'ewm'))
+                    ->where($this->db->quoteName('ewm.id') . '=' . $this->db->quote($data['id']));
                 $this->db->setQuery($this->query);
                 $_param = array();
                 $_result = $this->db->loadObject();
@@ -381,9 +381,9 @@ class EmundusworkflowModelcommon extends JModelList {
         if(!empty($eid)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_setup_emails.*')
-                    ->from($this->db->quoteName('#__emundus_setup_emails'))
-                    ->where($this->db->quoteName('#__emundus_setup_emails.id') . '=' . $eid);
+                    ->select('esm.*')
+                    ->from($this->db->quoteName('#__emundus_setup_emails', 'esm'))
+                    ->where($this->db->quoteName('esm.id') . '=' . $eid);
 
                 $this->db->setQuery($this->query);
                 return $this->db->loadObject();
@@ -404,9 +404,9 @@ class EmundusworkflowModelcommon extends JModelList {
                     return 'Choisir un utilisateur';
                 } else {
                     $this->query->clear()
-                        ->select('#__emundus_setup_groups.*')
-                        ->from($this->db->quoteName('#__emundus_setup_groups'))
-                        ->where($this->db->quoteName('#__emundus_setup_groups.id') . '=' . $did);
+                        ->select('esg.*')
+                        ->from($this->db->quoteName('#__emundus_setup_groups', 'esg'))
+                        ->where($this->db->quoteName('esg.id') . '=' . $did);
 
                     $this->db->setQuery($this->query);
                     return $this->db->loadObject();
@@ -425,9 +425,9 @@ class EmundusworkflowModelcommon extends JModelList {
         if(!empty($ulist)) {
             try {
                 $this->query->clear()
-                    ->select('#__users.*')
-                    ->from($this->db->quoteName('#__users'))
-                    ->where($this->db->quoteName('#__users.id') . 'IN (' . $ulist . ')');
+                    ->select('u.*')
+                    ->from($this->db->quoteName('#__users', 'u'))
+                    ->where($this->db->quoteName('u.id') . 'IN (' . $ulist . ')');
 
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
