@@ -262,20 +262,26 @@ export default {
         })
       }).then(response => {
         let json_params = response.data.data.data.params;
-        this.form.emailSelected = JSON.parse(json_params).emailSelected;
-        this.form.destinationSelected = JSON.parse(json_params).destinationSelected;
-        this.form.triggerSelected = JSON.parse(json_params).triggerSelected;
+        if(json_params !== null)
+        {
+          this.form.emailSelected = JSON.parse(json_params).emailSelected;
+          this.form.destinationSelected = JSON.parse(json_params).destinationSelected;
+          this.form.triggerSelected = JSON.parse(json_params).triggerSelected;
 
-        if(this.form.destinationSelected === 'other') {
-          var raw_users = JSON.parse(json_params).usersSelected;
-          this.showOtherUser = true;
-          let users_selected = raw_users.split(',');
-          users_selected.forEach(user => {
-            this.userChecked[user] = true;
-          })
-        } else {
-          this.showOtherUser = false;
-          /// do nothing here ...
+          if (this.form.destinationSelected === 'other') {
+            var raw_users = JSON.parse(json_params).usersSelected;
+            this.showOtherUser = true;
+            let users_selected = raw_users.split(',');
+            users_selected.forEach(user => {
+              this.userChecked[user] = true;
+            })
+          } else {
+            this.showOtherUser = false;
+            /// do nothing here ...
+          }
+        }
+        else {
+          // do nothing here ...
         }
       }).catch(error => {
         console.log(error);
