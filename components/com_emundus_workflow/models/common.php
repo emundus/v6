@@ -208,8 +208,8 @@ class EmundusworkflowModelcommon extends JModelList {
         }
     }
 
-    /// create HTML element
-    public function createElement($data, $campaign) {
+    /// create message bloc
+    public function createMessageBloc($data, $campaign) {
         if(!empty($data)) {
             $_trigger = null;
             try {
@@ -220,7 +220,7 @@ class EmundusworkflowModelcommon extends JModelList {
                 else { }
 
                 $this->query->clear()
-                    ->insert($this->db->quoteName('#__emundus_workflow_html_element'))
+                    ->insert($this->db->quoteName('#__emundus_workflow_messages'))
                     ->columns($this->db->quoteName(array_keys($data)))
                     ->values(implode(',', $this->db->quote(array_values($data))));
 
@@ -242,8 +242,8 @@ class EmundusworkflowModelcommon extends JModelList {
         }
     }
 
-    /// update element by id
-    public function updateElementById($data) {
+    /// update message bloc
+    public function updateMessageBloc($data) {
         if(!empty($data)) {
             $_uString = "";
             //// in case of destinationSelected === other --> usersSelected is a K-V array
@@ -263,9 +263,9 @@ class EmundusworkflowModelcommon extends JModelList {
 
             try {
                 $this->query->clear()
-                    ->update($this->db->quoteName('#__emundus_workflow_html_element'))
-                    ->set($this->db->quoteName('#__emundus_workflow_html_element.params') . '=' . $this->db->quote(json_encode($data['params'])))
-                    ->where($this->db->quoteName('#__emundus_workflow_html_element.id') . '=' . $this->db->quote($data['id']));
+                    ->update($this->db->quoteName('#__emundus_workflow_messages'))
+                    ->set($this->db->quoteName('#__emundus_workflow_messages.params') . '=' . $this->db->quote(json_encode($data['params'])))
+                    ->where($this->db->quoteName('#__emundus_workflow_messages.id') . '=' . $this->db->quote($data['id']));
                 $this->db->setQuery($this->query);
                 return $this->db->execute();
             }
@@ -278,13 +278,13 @@ class EmundusworkflowModelcommon extends JModelList {
         }
     }
 
-    /// remove HTML element by id
-    public function deleteElement($id) {
+    /// remove message bloc
+    public function deleteMessageBloc($id) {
         if(!empty($id)) {
             try {
                 $this->query->clear()
-                    ->delete($this->db->quoteName('#__emundus_workflow_html_element'))
-                    ->where($this->db->quoteName('#__emundus_workflow_html_element.id') . '=' . $id);
+                    ->delete($this->db->quoteName('#__emundus_workflow_messages'))
+                    ->where($this->db->quoteName('#__emundus_workflow_messages.id') . '=' . $id);
                 $this->db->setQuery($this->query);
                 return $this->db->execute();
             }
@@ -296,12 +296,12 @@ class EmundusworkflowModelcommon extends JModelList {
         }
     }
 
-    /// get all HTMl elements
-    public function getAllElements() {
+    /// get all message blocs
+    public function getAllMessageBlocs() {
         try {
             $this->query->clear()
-                ->select('#__emundus_workflow_html_element.*')
-                ->from($this->db->quoteName('#__emundus_workflow_html_element'));
+                ->select('#__emundus_workflow_messages.*')
+                ->from($this->db->quoteName('#__emundus_workflow_messages'));
 
             $this->db->setQuery($this->query);
             return $this->db->loadObjectList();
@@ -311,16 +311,16 @@ class EmundusworkflowModelcommon extends JModelList {
         }
     }
 
-    /// get all HTML elements by parent type
-    public function getElementsByParentType($data) {
+    /// get all message bloc from parent type
+    public function getMessageBlocsByParentType($data) {
         if(!empty($data)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_html_element.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_html_element'))
-                    ->where($this->db->quoteName('#__emundus_workflow_html_element.parent_type') . '=' . $this->db->quote($data['parent_type']))
-                    ->andWhere($this->db->quoteName('#__emundus_workflow_html_element.element_type') . '=' . $this->db->quote($data['element_type']))
-                    ->andWhere($this->db->quoteName('#__emundus_workflow_html_element.workflow_id') . '=' . $this->db->quote($data['workflow_id']));
+                    ->select('#__emundus_workflow_messages.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_messages'))
+                    ->where($this->db->quoteName('#__emundus_workflow_messages.parent_type') . '=' . $this->db->quote($data['parent_type']))
+                    ->andWhere($this->db->quoteName('#__emundus_workflow_messages.element_type') . '=' . $this->db->quote($data['element_type']))
+                    ->andWhere($this->db->quoteName('#__emundus_workflow_messages.workflow_id') . '=' . $this->db->quote($data['workflow_id']));
 
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
@@ -333,14 +333,14 @@ class EmundusworkflowModelcommon extends JModelList {
         }
     }
 
-    /// get element by id
-    public function getElementById($data) {
+    /// get message bloc from id
+    public function getMessageBlocById($data) {
         if(!empty($data)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_html_element.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_html_element'))
-                    ->where($this->db->quoteName('#__emundus_workflow_html_element.id') . '=' . $this->db->quote($data['id']));
+                    ->select('#__emundus_workflow_messages.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_messages'))
+                    ->where($this->db->quoteName('#__emundus_workflow_messages.id') . '=' . $this->db->quote($data['id']));
                 $this->db->setQuery($this->query);
                 $_param = array();
                 $_result = $this->db->loadObject();
