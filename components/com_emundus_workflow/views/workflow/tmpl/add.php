@@ -15,6 +15,6 @@ $document->addStyleSheet('media/com_emundus_workflow/app.css');
 
 ?>
 
-<div id="add-workflow"></div>
+<div id="workflow-dashboard"></div>
 
 <script src="media/com_emundus_workflow/app.js"></script>
