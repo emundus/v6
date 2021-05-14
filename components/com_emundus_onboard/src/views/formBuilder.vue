@@ -125,7 +125,7 @@
       <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
         <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-offset-2 col-md-6' : 'col-md-8'">
           <div class="d-flex" v-show="!updateFormLabel">
-            <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="profileLabel">{{profileLabel}}</h2>
+            <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="profileLabel">{{profileLabel}}  </h2>
             <a @click="enableUpdatingForm" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
               <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
             </a>
@@ -666,6 +666,7 @@
 
       // Update component dynamically
       UpdateName(index, label) {
+
         this.formObjectArray[index].object.show_title.value = label;
       },
       UpdateIntro(index, intro) {

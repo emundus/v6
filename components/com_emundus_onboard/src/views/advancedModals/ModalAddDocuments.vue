@@ -100,11 +100,11 @@
         <button
             type="button"
             class="bouton-sauvergarder-et-continuer w-retour"
-                @click.prevent="$modal.hide('modalAddDocuments')">
-          {{Retour}}
+            @click.prevent="$modal.hide('modalAddDocuments')">
+          {{ Retour }}
         </button>
         <button type="button"
-            class="bouton-sauvergarder-et-continuer"
+                class="bouton-sauvergarder-et-continuer"
                 @click.prevent="createNewDocument()">
           {{ Continuer }}
         </button>
@@ -115,6 +115,7 @@
 
 <script>
 import axios from "axios";
+
 const qs = require("qs");
 import Translation from "@/components/translation"
 
@@ -179,7 +180,9 @@ export default {
           title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS"),
           value: 'xls;xlsx;odf'
         },
+
       ],
+
       selectedTypes: [],
       models: [],
       createDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT"),

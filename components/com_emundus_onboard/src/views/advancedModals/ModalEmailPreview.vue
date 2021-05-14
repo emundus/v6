@@ -1,8 +1,8 @@
 <template>
   <!-- modalC -->
-  <span :id="'modalEmailPreview'">
+  <span :id="'modalEmailPreview_' + model">
     <modal
-            :name="'modalEmailPreview'"
+            :name="'modalEmailPreview_' + model"
             height="auto"
             transition="nice-modal-fade"
             :min-width="200"
@@ -14,18 +14,22 @@
             @closed="beforeClose"
             @before-open="beforeOpen"
     >
-      <div class="modalC-content">
-        <div class="update-field-header">
+      <div class="fixed-header-modal">
           <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalEmailPreview')">
-              <em class="fas fa-times-circle"></em>
+            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalEmailPreview_' + model)">
+              <em class="fas fa-times"></em>
             </button>
           </div>
+
+        <div class="update-field-header">
           <h2 class="update-title-header">
              {{ModelPreview}}
           </h2>
-          <p class="description-block" v-if="email != null"><span v-html="email.message"></span></p>
         </div>
+        </div>
+
+      <div class="modalC-content">
+          <p class="description-block" v-if="email != null"><span v-html="email.message"></span></p>
       </div>
     </modal>
   </span>
@@ -58,4 +62,9 @@
 </script>
 
 <style scoped>
+.description-block{
+  overflow: auto;
+  white-space: normal;
+  height: 100%;
+}
 </style>

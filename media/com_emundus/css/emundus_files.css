@@ -112,7 +112,7 @@ button.close {
     width: 15px;
     position: fixed;
     top: 25%;
-    left: 0;
+    left: 75px;
     cursor: pointer;
 }
 /*TABLEAUX*/
@@ -752,7 +752,7 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 .g-back-office-emundus-tableau .panel-body {
-    background-color: #fafafa;
+    background-color: #f8f8f8;
 }
 
 .g-back-office-emundus-tableau.view-export_select_columns .panel-body {
@@ -845,7 +845,7 @@ div#em-modal-actions .panel-heading h5 {
 .g-back-office-emundus-tableau .panel-info {
     box-shadow: none;
     border-radius:0;
-    border-right: 2px solid #eee;
+   border-right: 2px solid #eee;
     border-left:none;
     border-bottom:none;
     margin-bottom: 0px !important;
@@ -1339,7 +1339,7 @@ thead th:hover {
     top: 50%;
     left: 0;
     background-color: rgba(142, 142, 142, 0.83);
-    z-index: 999;
+    z-index: 10;
 }
 
 #em-hide-filters:hover {
@@ -2181,13 +2181,14 @@ div#em-assoc-files .panel > .panel-heading {
     box-shadow: none !important;
     text-shadow: none;
     color: #FFFFFF;
-    padding: 6px 12px !important;
+    padding: 0px 12px !important;
     border-radius: 4px !important;
 }
 
 .g-back-office-emundus-tableau #em_select_filter #del-filter {
-    font-size: 15px !important;
+    font-size: 19px !important;
     border-radius: 4px !important;
+    padding-top: 0px;
 }
 
 .g-back-office-emundus-tableau button#search:hover ,  .g-back-office-emundus-tableau button#clear-search:hover, .g-back-office-emundus-tableau button#save-filter:hover , .g-back-office-emundus-tableau button#add-filter:hover,  .g-back-office-emundus-tableau input#search:hover ,  .g-back-office-emundus-tableau input#clear-search:hover, .g-back-office-emundus-tableau input#save-filter:hover , .g-back-office-emundus-tableau input#add-filter:hover  {

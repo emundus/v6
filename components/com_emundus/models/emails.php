@@ -134,8 +134,7 @@ class EmundusModelEmails extends JModelList {
 
                     if (isset($tmpl['to']['group'])) {
                         if (count($tmpl['to']['group']) > 0) {
-                            $where .= $as_where?' OR ':'';
-                            $where .= ' eg.group_id IN ('.implode(',', $tmpl['to']['group']).')';
+                            $where = ' eg.group_id IN ('.implode(',', $tmpl['to']['group']).')';
                             $as_where = true;
                         }
                     }
