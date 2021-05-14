@@ -6,7 +6,7 @@
     <div class="row mb-3">
       <label class="col-sm-6 col-form-label">{{ this.elementTitle.item_name_label }}</label>
       <div class="col-xs-8">
-        <textarea :id="'step_label'+element.id" rows="3" v-model="form.itemLabel" placeholder="Nom de l'etape" style="width: 95%; height: 35px !important"></textarea>
+        <textarea :id="'step_label'+element.id" rows="3" v-model="form.itemLabel" :placeholder="modalName" style="width: 95%; height: 35px !important"></textarea>
       </div>
     </div>
 
@@ -14,30 +14,19 @@
       <label class="col-sm-6 col-form-label">{{ this.elementTitle.form_name_title }}</label>
       <div class="col-xs-8">
         <select v-model="form.formNameSelected" class="form-control-select">
-          <option selected disabled>---Formulaire---</option>
+          <option selected disabled>{{ profilePlaceholder }}</option>
           <option v-for="form in this.$data.forms" :value="form.id"> {{ form.label }}</option>
         </select>
       </div>
     </div>
 
     <div class="row mb-3">
-      <label class="col-sm-6 col-form-label">{{ this.$data.elementTitle.notes_title }}</label>
+      <label class="col-sm-6 col-form-label">{{ this.elementTitle.notes_title }}</label>
       <div class="col-xs-8">
-        <textarea id="notes_form" rows="3" v-model="form.notes" placeholder="Notes" style="margin: -5px; width: 102%"></textarea>
+        <textarea id="notes_form" rows="3" v-model="form.notes" :placeholder="notesPlaceholder" style="margin: -5px; width: 102%"></textarea>
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-sm-6">
-        <label>Choisir couleur</label>
-      </div>
-      <div class="col-sm-4" style="padding-left: 0">
-        <v-input-colorpicker  v-model="form.color" style="width:140px"/>
-      </div>
-      <div class="col-sm-2" id="hex_color">
-        <p style="padding: 3px; margin:0px -15px" v-bind:style="{ color: this.form.color }">{{ this.form.color }}</p>
-      </div>
-    </div>
   </div>
 </template>
 <script>
@@ -54,12 +43,16 @@ export default {
   },
   data: function() {
     return {
+      modalName: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ESPACE_PLACEHOLDER_LABEL"),
+      profilePlaceholder: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ESPACE_PLACEHOLDER_FORM"),
+      notesPlaceholder: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ESPACE_PLACEHOLDER_SUPPLEMENTARY_INFORMATION"),
+
       elementTitle: {
-        item_name_label: "Nom de cette étape",
-        form_name_title: "Nom du formulaire",
-        edited_status_title: "Statut d'édition",
-        output_status_title: "Statut de sortie",
-        notes_title: "Notes",
+        item_name_label: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ESPACE_MODAL_LABEL_TITLE"),
+        form_name_title: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ESPACE_MODAL_FORM_LABEL"),
+        edited_status_title: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ESPACE_MODAL_INPUT_STATUS_LABEL"),
+        output_status_title: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ESPACE_MODAL_OUTPUT_STATUS_LABEL"),
+        notes_title: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ESPACE_MODAL_SUPPLEMENTARY_INFORMATION_LABEL"),
       },
       form: {
         itemLabel: "",
@@ -90,15 +83,7 @@ export default {
             console.log(error);
           })
     },
-    // getAllStatus: function() {
-    //   axios.get('index.php?option=com_emundus_workflow&controller=common&task=getallstatus')
-    //       .then(response => {
-    //         this.$data.status = response.data.data;
-    //       })
-    //       .catch(error => {
-    //         console.log(error);
-    //       })
-    // },
+
     getWorkflowIdFromURL: function () {
       return window.location.href.split('id=')[1];
     },

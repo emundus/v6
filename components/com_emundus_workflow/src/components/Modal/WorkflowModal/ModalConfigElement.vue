@@ -103,8 +103,8 @@ export default {
       }).then(response => {
         Swal.fire({
           icon: 'success',
-          title: 'Congrat',
-          text: 'Les parametres sont sauvegardés',
+          title: this.swalCongratTitle,
+          text: this.swalSuccessMessage,
           footer: '<a href>EMundus SAS</a>',
           confirmButtonColor: '#28a745',
         }).then((result) => {
