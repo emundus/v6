@@ -286,7 +286,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             2 => "0"
         );
         $params['thanks_message'] = array(
-            3 => "Félicitations, votre dossier a bien été envoyé."
+            3 => "Félicitations, votre dossier a bien été envoyée."
         );
         $params['save_insession'] = array(
             3 => "0"
@@ -1630,6 +1630,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
             $db->setQuery($query);
             $dbtable = $db->loadObject()->dbtable;
+            //echo $dbtable;
             $formid = $db->loadObject()->formid;
 
             if ($evaluation) {

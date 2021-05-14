@@ -2010,30 +2010,7 @@ if (JFactory::getUser()->id == 63)
             $query = 'SELECT *
 					FROM #__emundus_final_grade efg
 					WHERE efg.fnum like ' . $this->_db->Quote($fnum);
-
-            $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
-
-		} catch (Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-        }
-    }
-
-    /**
-     * 	Get decision for fnum done by a user
-     *	@param fnum 		Application File number
-     *	@param user 		user
-     * 	@return array
-    **/
-    function getDecisionFnumUser($fnum, $user) {
-
-		try {
-
-			$query = 'SELECT *
-					FROM #__emundus_final_grade efg
-					WHERE efg.fnum like ' . $this->_db->Quote($fnum) . ' AND efg.user = ' . $user;
-
+//die(str_replace('#_', 'jos', $query));
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
 

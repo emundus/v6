@@ -487,6 +487,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             $types = $jinput->getRaw('types');
             $cid = $jinput->getInt('cid');
             $pid = $jinput->getInt('pid');
+
             $m_camp = $this->model;
 
             $result = $m_camp->createDocument($document,$types,$cid,$pid);

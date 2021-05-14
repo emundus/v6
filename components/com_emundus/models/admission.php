@@ -1830,10 +1830,10 @@ class EmundusModelAdmission extends JModelList
         }
     }
     /*
-    *   Get row id of admission user
-    *   @param form_table       table name of admission form
-    *   @param fnum         fnum of the user
-    *   @return int         The row Id of the user admission
+    * 	Get row id of admission user
+    *	@param form_table 		table name of admission form
+    *	@param fnum 		fnum of the user
+    * 	@return int 		The row Id of the user admission
     */
     function getAdmissionId($form_table, $fnum) {
 
@@ -1845,29 +1845,6 @@ class EmundusModelAdmission extends JModelList
                 ->where('fnum LIKE '.$this->_db->Quote($fnum));
             $this->_db->setQuery($query);
             return $this->_db->loadResult();
-
-        } catch(Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-        }
-    }
-
-     /*
-    *   Get admission user by user
-    *   @param form_table       table name of admission form
-    *   @param fnum         fnum of the user
-    *   @return array         The lines stored by user
-    */
-    function getAdmissionFnumUser($form_table, $fnum, $user) {
-
-        try {
-
-            $query = $this->_db->getQuery(true);
-            $query->select($this->_db->quoteName('id'))
-                ->from($this->_db->quoteName($form_table))
-                ->where('fnum LIKE '.$this->_db->Quote($fnum).' AND user='.$user);
-            $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
 
         } catch(Exception $e) {
             echo $e->getMessage();
