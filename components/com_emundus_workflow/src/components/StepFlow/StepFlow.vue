@@ -396,7 +396,7 @@ export default {
 
       axios({
         method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=common&task=createelement',
+        url: 'index.php?option=com_emundus_workflow&controller=common&task=createmessagebloc',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -421,7 +421,7 @@ export default {
     deleteMessageDiv: function(id) {
       axios({
         method: 'post',
-        url: 'index.php?option=com_emundus_workflow&controller=common&task=deleteelement',
+        url: 'index.php?option=com_emundus_workflow&controller=common&task=deletemessagebloc',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -446,7 +446,7 @@ export default {
 
         axios({
           method: 'post',
-          url: 'index.php?option=com_emundus_workflow&controller=common&task=getelementsbytype',
+          url: 'index.php?option=com_emundus_workflow&controller=common&task=getmessageblocbyparenttype',
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -460,7 +460,7 @@ export default {
           mess.forEach(element => {
             axios({
               method: 'post',
-              url: 'index.php?option=com_emundus_workflow&controller=common&task=getelementbyid',
+              url: 'index.php?option=com_emundus_workflow&controller=common&task=getmessageblocbyid',
               headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
               },
