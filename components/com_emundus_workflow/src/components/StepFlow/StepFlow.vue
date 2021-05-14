@@ -34,7 +34,7 @@
             {{ message.title }}
 
             <b-button @click="openDiv(message.id)" variant="primary" :id="'button_' + message.id">Trigger</b-button>
-            <b-button :id="'button_' + message.id" variant="danger" @click="deleteMessageDiv(message.id)">x</b-button>
+            <b-button :id="'button_' + message.id" variant="danger" @click="deleteMessageDiv(message.id, message.triggerId)">x</b-button>
 
             <div style="color:forestgreen"> {{ message.messageTemplate }} </div>
             <div style="color:lightseagreen"> {{ message.messageDestination }} </div>
@@ -418,7 +418,11 @@ export default {
       })
     },
 
-    deleteMessageDiv: function(id) {
+    deleteMessageDiv: function(id, trigger) {
+      let data = {
+        id: id,
+        trigger: trigger,
+      }
       axios({
         method: 'post',
         url: 'index.php?option=com_emundus_workflow&controller=common&task=deletemessagebloc',
@@ -426,7 +430,7 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
-          id: id
+          data: data,
         })
       }).then(response => {
         this.messages = this.messages.filter((message) => {

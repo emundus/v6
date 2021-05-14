@@ -246,9 +246,9 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
 
         else {
             $jinput = JFactory::getApplication()->input;
-            $id = $jinput->getRaw('id');
+            $data = $jinput->getRaw('data');
 
-            $_element = $this->_common_model->deleteMessageBloc($id);
+            $_element = $this->_common_model->deleteMessageBloc($data);
 
             if ($_element) {
                 $tab = array('status' => 1, 'msg' => JText::_("DELETE_MESSAGE_BLOC_SUCCESSFULLY"), 'data' => $_element);

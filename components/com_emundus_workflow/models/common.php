@@ -219,6 +219,7 @@ class EmundusworkflowModelcommon extends JModelList {
                 }
                 else { }
 
+                $data['trigger_id'] = $_trigger;
                 $this->query->clear()
                     ->insert($this->db->quoteName('#__emundus_workflow_messages'))
                     ->columns($this->db->quoteName(array_keys($data)))
@@ -279,14 +280,23 @@ class EmundusworkflowModelcommon extends JModelList {
     }
 
     /// remove message bloc
-    public function deleteMessageBloc($id) {
-        if(!empty($id)) {
+    public function deleteMessageBloc($data) {
+        if(!empty($data)) {
             try {
                 $this->query->clear()
                     ->delete($this->db->quoteName('#__emundus_workflow_messages'))
-                    ->where($this->db->quoteName('#__emundus_workflow_messages.id') . '=' . $id);
+                    ->where($this->db->quoteName('#__emundus_workflow_messages.id') . '=' . $data['id']);
                 $this->db->setQuery($this->query);
-                return $this->db->execute();
+                $this->db->execute();
+
+                /// remover trigger
+                $this->query->clear()
+                    ->delete($this->db->quoteName('#__emundus_setup_emails_trigger'))
+                    ->where($this->db->quoteName('#__emundus_setup_emails_trigger.id') . '=' . $data['trigger']);
+                $this->db->setQuery($this->query);
+                $this->db->execute();
+
+                return array('message'=>true);
             }
             catch(Exception $e) {
                 return $e->getMessage();
