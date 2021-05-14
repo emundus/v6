@@ -27,11 +27,11 @@ class EmundusworkflowModelplugin extends JModelList {
         if(!empty($fnum)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_step.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_step'))
-                    ->leftJoin($this->db->quoteName('#__emundus_workflow') . 'ON' . $this->db->quoteName('#__emundus_workflow_step.workflow_id') . '=' . $this->db->quoteName('#__emundus_workflow.id'))
-                    ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') . 'ON' . $this->db->quoteName('#__emundus_workflow.campaign_id') . '=' . $this->db->quoteName('#__emundus_campaign_candidature.campaign_id'))
-                    ->where($this->db->quoteName('#__emundus_campaign_candidature.fnum') . '=' . $fnum);
+                    ->select('ews.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_step', 'ews'))
+                    ->leftJoin($this->db->quoteName('#__emundus_workflow', 'ew') . 'ON' . $this->db->quoteName('ews.workflow_id') . '=' . $this->db->quoteName('ew.id'))
+                    ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . 'ON' . $this->db->quoteName('ew.campaign_id') . '=' . $this->db->quoteName('ecc.campaign_id'))
+                    ->where($this->db->quoteName('ecc.fnum') . '=' . $fnum);
 
                 $this->db->setQuery($this->query);
                 $_stepParams = $this->db->loadObjectList();
@@ -113,11 +113,11 @@ class EmundusworkflowModelplugin extends JModelList {
         if(!empty($step) or isset($step)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_item.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_item'))
-                    ->leftJoin($this->db->quoteName('#__emundus_workflow_step') . 'ON' . $this->db->quoteName('#__emundus_workflow_item.step_id') . '=' . $this->db->quoteName('#__emundus_workflow_step.id'))
-                    ->where($this->db->quoteName('#__emundus_workflow_item.item_id') . '=' . 2)
-                    ->andWhere($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$step);
+                    ->select('ewi.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_item', 'ewi'))
+                    ->leftJoin($this->db->quoteName('#__emundus_workflow_step', 'ews') . 'ON' . $this->db->quoteName('ewi.step_id') . '=' . $this->db->quoteName('ews.id'))
+                    ->where($this->db->quoteName('ewi.item_id') . '=' . 2)
+                    ->andWhere($this->db->quoteName('ews.id') . '=' . (int)$step);
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
             }
@@ -136,11 +136,11 @@ class EmundusworkflowModelplugin extends JModelList {
         if(!empty($fnum) or isset($fnum)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_setup_profiles.*')
-                    ->from($this->db->quoteName('#__emundus_setup_profiles'))
-                    ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns') . 'ON' . $this->db->quoteName('#__emundus_setup_profiles.id') . '=' . $this->db->quoteName('#__emundus_setup_campaigns.profile_id'))
-                    ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') . 'ON' . $this->db->quoteName('#__emundus_setup_campaigns.id') . '=' . $this->db->quoteName('#__emundus_campaign_candidature.campaign_id'))
-                    ->where($this->db->quoteName('#__emundus_campaign_candidature.fnum') . '=' . $fnum);
+                    ->select('esp.*')
+                    ->from($this->db->quoteName('#__emundus_setup_profiles', 'esp'))
+                    ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . 'ON' . $this->db->quoteName('esp.id') . '=' . $this->db->quoteName('esc.profile_id'))
+                    ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . 'ON' . $this->db->quoteName('esc.id') . '=' . $this->db->quoteName('ecc.campaign_id'))
+                    ->where($this->db->quoteName('ecc.fnum') . '=' . $fnum);
 
                 $this->db->setQuery($this->query);
                 return $this->db->loadResult();
@@ -160,9 +160,9 @@ class EmundusworkflowModelplugin extends JModelList {
         if(!empty($pid) or isset($pid)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_setup_profiles.*')
-                    ->from($this->db->quoteName('#__emundus_setup_profiles'))
-                    ->where($this->db->quoteName('#__emundus_setup_profiles.id') . '=' . (int)$pid);
+                    ->select('esp.*')
+                    ->from($this->db->quoteName('#__emundus_setup_profiles', 'esp'))
+                    ->where($this->db->quoteName('esp.id') . '=' . (int)$pid);
                 $this->db->setQuery($this->query);
 
                 $_data = $this->db->loadObject();
@@ -187,9 +187,9 @@ class EmundusworkflowModelplugin extends JModelList {
             try {
                 /// first query --> get the user_id by fnum
                 $this->query->clear()
-                    ->select('#__emundus_campaign_candidature.*')
-                    ->from($this->db->quoteName('#__emundus_campaign_candidature'))
-                    ->where($this->db->quoteName('#__emundus_campaign_candidature.fnum') . '=' . $fnum);
+                    ->select('ecc.*')
+                    ->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+                    ->where($this->db->quoteName('ecc.fnum') . '=' . $fnum);
 
                 $this->db->setQuery($this->query);
                 $_userID = $this->db->loadObject()->user_id;
@@ -223,11 +223,11 @@ class EmundusworkflowModelplugin extends JModelList {
             try {
                 //// first --> get all steps
                 $this->query->clear()
-                    ->select('#__emundus_workflow_step.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_step'))
-                    ->leftJoin($this->db->quoteName('#__emundus_workflow') . 'ON' . $this->db->quoteName('#__emundus_workflow.id') . '=' . $this->db->quoteName('#__emundus_workflow_step.workflow_id'))
-                    ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') . 'ON' . $this->db->quoteName('#__emundus_workflow.campaign_id') . '=' . $this->db->quoteName('#__emundus_campaign_candidature.campaign_id'))
-                    ->where($this->db->quoteName('#__emundus_campaign_candidature.fnum') . '=' . $fnum);
+                    ->select('ews.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_step', 'ews'))
+                    ->leftJoin($this->db->quoteName('#__emundus_workflow', 'ew') . 'ON' . $this->db->quoteName('ew.id') . '=' . $this->db->quoteName('ews.workflow_id'))
+                    ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . 'ON' . $this->db->quoteName('ew.campaign_id') . '=' . $this->db->quoteName('ecc.campaign_id'))
+                    ->where($this->db->quoteName('ecc.fnum') . '=' . $fnum);
                 $this->db->setQuery($this->query);
                 $_rawStepData = $this->db->loadObjectList();
 
@@ -307,9 +307,9 @@ class EmundusworkflowModelplugin extends JModelList {
         if(!empty($sid) or isset($sid)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_step.start_date, #__emundus_workflow_step.end_date')
-                    ->from($this->db->quoteName('#__emundus_workflow_step'))
-                    ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$sid);
+                    ->select('ews.start_date, ews.end_date')
+                    ->from($this->db->quoteName('#__emundus_workflow_step', 'ews'))
+                    ->where($this->db->quoteName('ews.id') . '=' . (int)$sid);
                 $this->db->setQuery($this->query);
                 return $this->db->loadObject();
             }
@@ -329,17 +329,17 @@ class EmundusworkflowModelplugin extends JModelList {
             try {
                 $_profile = array();
                 $this->query->clear()
-                    ->select('#__emundus_setup_status.*')
-                    ->from($this->db->quoteName('#__emundus_setup_status'))
-                    ->where($this->db->quoteName('#__emundus_setup_status.step') . '=' . (int)$sid);
+                    ->select('ess.*')
+                    ->from($this->db->quoteName('#__emundus_setup_status', 'ess'))
+                    ->where($this->db->quoteName('ess.step') . '=' . (int)$sid);
 
                 $this->db->setQuery($this->query);
                 $_firstProfile = $this->db->loadObject()->profile;
 
                 $this->query->clear()
-                    ->select('#__emundus_campaign_workflow.*')
-                    ->from($this->db->quoteName('#__emundus_campaign_workflow'))
-                    ->where($this->db->quoteName('#__emundus_campaign_workflow.status') . '=' . (int)$sid);
+                    ->select('ecw.*')
+                    ->from($this->db->quoteName('#__emundus_campaign_workflow', 'ecw'))
+                    ->where($this->db->quoteName('ecw.status') . '=' . (int)$sid);
 
                 $this->db->setQuery($this->query);
                 $_secondProfile = $this->db->loadObject()->profile;
@@ -378,17 +378,17 @@ class EmundusworkflowModelplugin extends JModelList {
             try {
                 if($mode == 'profile') {
                     $this->query->clear()
-                        ->select('#__emundus_setup_campaigns.*')
-                        ->from($this->db->quoteName('#__emundus_setup_campaigns'))
-                        ->where($this->db->quoteName('#__emundus_setup_campaigns.profile_id') . '=' . (int)$pid);
+                        ->select('esc.*')
+                        ->from($this->db->quoteName('#__emundus_setup_campaigns', 'esc'))
+                        ->where($this->db->quoteName('esc.profile_id') . '=' . (int)$pid);
                 }
                 else if($mode == 'default') {
                     //// get the default date by campaign <-- fnum
                     $this->query->clear()
-                        ->select('#__emundus_setup_campaigns.*')
-                        ->from($this->db->quoteName('#__emundus_setup_campaigns'))
-                        ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature') . 'ON' . $this->db->quoteName('#__emundus_campaign_candidature.campaign_id') . '=' . $this->db->quoteName('#__emundus_setup_campaigns.id'))
-                        ->where($this->db->quoteName('#__emundus_campaign_candidature.fnum') . '=' . $fnum);
+                        ->select('esc.*')
+                        ->from($this->db->quoteName('#__emundus_setup_campaigns', 'esc'))
+                        ->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . 'ON' . $this->db->quoteName('ecc.campaign_id') . '=' . $this->db->quoteName('esc.id'))
+                        ->where($this->db->quoteName('ecc.fnum') . '=' . $fnum);
                 }
                 else {
                     /// do nothing
@@ -410,9 +410,9 @@ class EmundusworkflowModelplugin extends JModelList {
         if(!empty($menutype)) {
             try {
                 $this->query->clear()
-                    ->select('#__menu.*')
-                    ->from($this->db->quoteName('#__menu'))
-                    ->where($this->db->quoteName('#__menu.menutype') . '=' . '"' . $menutype . '"');
+                    ->select('m.*')
+                    ->from($this->db->quoteName('#__menu', 'm'))
+                    ->where($this->db->quoteName('m.menutype') . '=' . '"' . $menutype . '"');
                 $this->db->setQuery($this->query);
                 $_rawData = $this->db->loadObjectList();
 
