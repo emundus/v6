@@ -187,9 +187,9 @@ class EmundusworkflowModelitem extends JModelList {
         if(!empty($id)) {
             try {
                 $this->query->clear()
-                    ->select('ewi.*, #__emundus_workflow_item_type.CSS_style')
+                    ->select('ewi.*, ewit.CSS_style')
                     ->from($this->db->quoteName('#__emundus_workflow_item', 'ewi'))
-                    ->leftJoin($this->db->quoteName('#__emundus_workflow_item_type') . ' ON ' . $this->db->quoteName('ewi.item_id') . '=' . $this->db->quoteName('#__emundus_workflow_item_type.id'))
+                    ->leftJoin($this->db->quoteName('#__emundus_workflow_item_type', 'ewit') . ' ON ' . $this->db->quoteName('ewi.item_id') . '=' . $this->db->quoteName('ewit.id'))
                     ->where($this->db->quoteName('ewi.id') . '=' . (int)$id);
 
                 $this->db->setQuery($this->query);
@@ -423,9 +423,9 @@ class EmundusworkflowModelitem extends JModelList {
             $query1 = $db->getQuery(true);
 
             $query1->clear()
-                ->select('#__emundus_setup_status.*')
-                ->from($db->quoteName('#__emundus_setup_status'))
-                ->where($db->quoteName('#__emundus_setup_status.step') . 'NOT IN (' . $_lastString . ')');
+                ->select('ess.*')
+                ->from($db->quoteName('#__emundus_setup_status', 'ess'))
+                ->where($db->quoteName('ess.step') . 'NOT IN (' . $_lastString . ')');
 
             $db->setQuery($query1);
 
