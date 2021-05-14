@@ -137,7 +137,7 @@ class EmundusworkflowModelworkflow extends JModelList {
             $this->query
                 ->select('esc.id, esc.label')
                 ->from($this->db->quoteName('#__emundus_setup_campaigns', 'esc'))
-                ->leftJoin($this->db->quoteName('#__emundus_workflow') . ' ON ' . $this->db->quoteName('esc.id') . '=' . $this->db->quoteName('#__emundus_workflow.campaign_id'))
+                ->leftJoin($this->db->quoteName('#__emundus_workflow', 'ew') . ' ON ' . $this->db->quoteName('esc.id') . '=' . $this->db->quoteName('ew.campaign_id'))
                 ->where($this->db->quoteName('esc.id') . ' NOT IN (SELECT #__emundus_workflow.campaign_id FROM #__emundus_workflow) ');
 
             $this->db->setQuery($this->query);
