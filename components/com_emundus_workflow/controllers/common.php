@@ -188,8 +188,8 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
         exit;
     }
 
-    /// create new html element
-    public function createelement() {
+    /// create new message bloc
+    public function createmessagebloc() {
         $user = JFactory::getUser();
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
@@ -200,21 +200,21 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
             $data = $jinput->getRaw('data');
             $campaign = $jinput->getRaw('campaignId');
 
-            $_element = $this->_common_model->createElement($data,$campaign);
+            $_element = $this->_common_model->createMessageBloc($data,$campaign);
 
             if ($_element) {
-                $tab = array('status' => 1, 'msg' => JText::_("CREATE_ELEMENT_SUCCESSFULLY"), 'data' => $_element);
+                $tab = array('status' => 1, 'msg' => JText::_("CREATE_MESSAGE_BLOC_SUCCESSFULLY"), 'data' => $_element);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_("CREATE_ELEMENT_FAILED"), 'data' => $_element);
+                $tab = array('status' => 0, 'msg' => JText::_("CREATE_MESSAGE_BLOC_FAILED"), 'data' => $_element);
             }
         }
         echo json_encode((object)$tab);
         exit;
     }
 
-    /// update element
-    public function updateelement() {
+    /// update message block
+    public function updatemessagebloc() {
         $user = JFactory::getUser();
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
@@ -224,21 +224,21 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_element = $this->_common_model->updateElementById($data);
+            $_element = $this->_common_model->updateMessageBloc($data);
 
             if ($_element) {
-                $tab = array('status' => 1, 'msg' => JText::_("UPDATE_ELEMENT_PARAMS_SUCCESSFULLY"), 'data' => $_element);
+                $tab = array('status' => 1, 'msg' => JText::_("UPDATE_MESSAGE_BLOC_SUCCESSFULLY"), 'data' => $_element);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_("UPDATE_ELEMENT_PARAMS_FAILED"), 'data' => $_element);
+                $tab = array('status' => 0, 'msg' => JText::_("UPDATE_MESSAGE_BLOC_FAILED"), 'data' => $_element);
             }
         }
         echo json_encode((object)$tab);
         exit;
     }
 
-    /// remove html element
-    public function deleteelement() {
+    /// remove message bloc
+    public function deletemessagebloc() {
         $user = JFactory::getUser();
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
@@ -248,21 +248,21 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $id = $jinput->getRaw('id');
 
-            $_element = $this->_common_model->deleteElement($id);
+            $_element = $this->_common_model->deleteMessageBloc($id);
 
             if ($_element) {
-                $tab = array('status' => 1, 'msg' => JText::_("DELETE_ELEMENT_SUCCESSFULLY"), 'data' => $_element);
+                $tab = array('status' => 1, 'msg' => JText::_("DELETE_MESSAGE_BLOC_SUCCESSFULLY"), 'data' => $_element);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_("DELETE_ELEMENT_FAILED"), 'data' => $_element);
+                $tab = array('status' => 0, 'msg' => JText::_("DELETE_MESSAGE_BLOC_FAILED"), 'data' => $_element);
             }
         }
         echo json_encode((object)$tab);
         exit;
     }
 
-    /// get all html elements
-    public function getallelements() {
+    /// get all message blocs
+    public function getallmessageblocs() {
         $user = JFactory::getUser();
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
@@ -270,21 +270,21 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
         else {
             $jinput = JFactory::getApplication()->input;
 
-            $_elements = $this->_common_model->getAllElements();
+            $_elements = $this->_common_model->getAllMessageBlocs();
 
             if ($_elements) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_ELEMENTS_SUCCESSFULLY"), 'data' => $_elements);
+                $tab = array('status' => 1, 'msg' => JText::_("GET_ALL_MESSAGE_BLOCS_SUCCESSFULLY"), 'data' => $_elements);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_("GET_ALL_ELEMENTS_FAILED"), 'data' => $_elements);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_ALL_MESSAGE_BLOCS_FAILED"), 'data' => $_elements);
             }
         }
         echo json_encode((object)$tab);
         exit;
     }
 
-    /// get all html elements by parent type
-    public function getelementsbytype() {
+    /// get all message blocs from parent type
+    public function getmessageblocbyparenttype() {
         $user = JFactory::getUser();
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
@@ -293,21 +293,21 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_elements = $this->_common_model->getElementsByParentType($data);
+            $_elements = $this->_common_model->getMessageBlocsByParentType($data);
 
             if ($_elements) {
-                $tab = array('status' => 1, 'msg' => JText::_("GET_ELEMENTS_BY_TYPE_SUCCESSFULLY"), 'data' => $_elements);
+                $tab = array('status' => 1, 'msg' => JText::_("GET_MESSAGE_BLOC_BY_PARENT_TYPE_SUCCESSFULLY"), 'data' => $_elements);
             }
             else {
-                $tab = array('status' => 0, 'msg' => JText::_("GET_ELEMENTS_BY_TYPE_FAILED"), 'data' => $_elements);
+                $tab = array('status' => 0, 'msg' => JText::_("GET_MESSAGE_BLOC_BY_PARENT_TYPE_FAILED"), 'data' => $_elements);
             }
         }
         echo json_encode((object)$tab);
         exit;
     }
 
-    /// get element by id
-    public function getelementbyid() {
+    /// get message block by id
+    public function getmessageblocbyid() {
         $user = JFactory::getUser();
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
@@ -316,7 +316,7 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_element = $this->_common_model->getElementById($data);
+            $_element = $this->_common_model->getMessageBlocById($data);
 
             if ($_element) {
                 $tab = array('status' => 1, 'msg' => JText::_("GET_ELEMENT_BY_ID_SUCCESFULLY"), 'data' => $_element);
