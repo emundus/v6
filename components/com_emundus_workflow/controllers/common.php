@@ -284,7 +284,7 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
     }
 
     /// get all message blocs from parent type
-    public function getmessageblocbyparenttype() {
+    public function getmessageblocsbyworkflow() {
         $user = JFactory::getUser();
         if(!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $tab = array('status'=> 0, 'msg' => JText::_('ACCESS_DENIED'));
@@ -293,7 +293,7 @@ class EmundusworkflowControllercommon extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('data');
 
-            $_elements = $this->_common_model->getMessageBlocsByParentType($data);
+            $_elements = $this->_common_model->getMessageBlocsByWorkflow($data);
 
             if ($_elements) {
                 $tab = array('status' => 1, 'msg' => JText::_("GET_MESSAGE_BLOC_BY_PARENT_TYPE_SUCCESSFULLY"), 'data' => $_elements);

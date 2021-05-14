@@ -213,12 +213,7 @@ class EmundusworkflowModelcommon extends JModelList {
         if(!empty($data)) {
             $_trigger = null;
             try {
-                if($data['element_type'] === 'message') {
-                    /// create trigger
-                    $_trigger = $this->createEmailTriggerForCampaign(null,null, $campaign);
-                }
-                else { }
-
+                $_trigger = $this->createEmailTriggerForCampaign(null,null, $campaign);
                 $data['trigger_id'] = $_trigger;
                 $this->query->clear()
                     ->insert($this->db->quoteName('#__emundus_workflow_messages'))
@@ -230,9 +225,9 @@ class EmundusworkflowModelcommon extends JModelList {
                 $_newID = $this->db->insertid();
 
                 if(!is_null($_trigger)) {
-                    return array('id' => $_newID, 'parent_id' => $data['parent_id'], 'trigger' => $_trigger);
+                    return array('id' => $_newID, 'step_id' => $data['step_id'], 'trigger' => $_trigger);
                 } else {
-                    return array('id' => $_newID, 'parent_id' => $data['parent_id']);
+                    return array('id' => $_newID, 'step_id' => $data['step_id']);
                 }
             }
             catch(Exception $e) {
@@ -322,15 +317,13 @@ class EmundusworkflowModelcommon extends JModelList {
     }
 
     /// get all message bloc from parent type
-    public function getMessageBlocsByParentType($data) {
+    public function getMessageBlocsByWorkflow($data) {
         if(!empty($data)) {
             try {
                 $this->query->clear()
                     ->select('#__emundus_workflow_messages.*')
                     ->from($this->db->quoteName('#__emundus_workflow_messages'))
-                    ->where($this->db->quoteName('#__emundus_workflow_messages.parent_type') . '=' . $this->db->quote($data['parent_type']))
-                    ->andWhere($this->db->quoteName('#__emundus_workflow_messages.element_type') . '=' . $this->db->quote($data['element_type']))
-                    ->andWhere($this->db->quoteName('#__emundus_workflow_messages.workflow_id') . '=' . $this->db->quote($data['workflow_id']));
+                    ->where($this->db->quoteName('#__emundus_workflow_messages.workflow_id') . '=' . $this->db->quote($data['workflow_id']));
 
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
@@ -356,23 +349,19 @@ class EmundusworkflowModelcommon extends JModelList {
                 $_result = $this->db->loadObject();
 
                 /// parse params if email --> new function
-                if($data['mode'] === 'email') {
-                    $_element_params = $this->db->loadObject()->params;
-                    $_param['emailSelected'] = json_decode($_element_params)->emailSelected;
-                    $_param['emailSelectedName'] = $this->getEmailNameById($_param['emailSelected'])->lbl;
+                $_element_params = $this->db->loadObject()->params;
+                $_param['emailSelected'] = json_decode($_element_params)->emailSelected;
+                $_param['emailSelectedName'] = $this->getEmailNameById($_param['emailSelected'])->lbl;
 
-                    $_param['destinationSelected'] = json_decode($_element_params)->destinationSelected;
-                    $_param['destinationSelectedName'] = $this->getDestinationNameByListId($_param['destinationSelected']) === 'Choisir un utilisateur' ? 'Choisir un utilisateur' : $this->getDestinationNameByListId($_param['destinationSelected'])->label;
+                $_param['destinationSelected'] = json_decode($_element_params)->destinationSelected;
+                $_param['destinationSelectedName'] = $this->getDestinationNameByListId($_param['destinationSelected']) === 'Choisir un utilisateur' ? 'Choisir un utilisateur' : $this->getDestinationNameByListId($_param['destinationSelected'])->label;
 
-                    $_param['messageNotes'] = json_decode($_element_params)->messageNotes;
+                $_param['messageNotes'] = json_decode($_element_params)->messageNotes;
 
-                    $_param['usersSelected'] = json_decode($_element_params)->usersSelected;
-                    $_param['userSelectedName'] = $this->getUserNameByListId($_param['usersSelected']) === false ? "" : $this->getUserNameByListId($_param['usersSelected']);
+                $_param['usersSelected'] = json_decode($_element_params)->usersSelected;
+                $_param['userSelectedName'] = $this->getUserNameByListId($_param['usersSelected']) === false ? "" : $this->getUserNameByListId($_param['usersSelected']);
 
-                    $_param['triggerSelected'] = json_decode($_element_params)->triggerSelected;
-                } else {
-
-                }
+                $_param['triggerSelected'] = json_decode($_element_params)->triggerSelected;
 
                 return array('data'=>$_result, 'parsedParams'=>$_param);
             }

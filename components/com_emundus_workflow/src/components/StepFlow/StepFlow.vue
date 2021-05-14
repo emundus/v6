@@ -29,7 +29,7 @@
         <b-button @click="openStep(column.id)" variant="primary" style="margin-left: 20px">Ouvrir </b-button>
         <hr/>
         <div style="position: sticky"> <b-button variant="info" @click="createMessageDiv(column.id)">(+)</b-button> </div>
-        <div class="message-block" v-for="message in messages" :id="'message_zone' + message.id" v-if="column.id == message.parent_id">
+        <div class="message-block" v-for="message in messages" :id="'message_zone' + message.id" v-if="column.id == message.step_id">
           <div>
             {{ message.title }}
 
@@ -385,12 +385,10 @@ export default {
       })
     },
 
-    createMessageDiv: function(parent_id) {
+    createMessageDiv: function(step_id) {
       let data = {
         title: Math.random().toString(36).substring(2,10),       /// random title --> fix it later with hot-updating
-        parent_type: 'step',
-        parent_id: parent_id,
-        element_type: 'message',
+        step_id: step_id,
         workflow_id: this.$data.id,   /// using mixin to get workflow id
       };
 
@@ -405,9 +403,9 @@ export default {
           campaignId: this.campaignID,
         })
       }).then(response => {
-        let parent_id = response.data.data.parent_id;
+        let parent_id = response.data.data.step_id;
         this.messages.push({
-          parent_id: parent_id,
+          step_id: parent_id,
           id: response.data.data.id,
           triggerId: response.data.data.trigger,
           title: data.title,            /// random title --> fix it later with hot-updating
@@ -443,14 +441,12 @@ export default {
 
     getMessagesDiv: function() {
         let data = {
-          parent_type: 'step',
-          element_type: 'message',
           workflow_id: this.$data.id,
         }
 
         axios({
           method: 'post',
-          url: 'index.php?option=com_emundus_workflow&controller=common&task=getmessageblocbyparenttype',
+          url: 'index.php?option=com_emundus_workflow&controller=common&task=getmessageblocsbyworkflow',
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -469,7 +465,7 @@ export default {
                 "Content-Type": "application/x-www-form-urlencoded"
               },
               data: qs.stringify({
-                data : {id: element.id, mode: 'email',}
+                data : { id: element.id }
               })
             }).then(answer => {
               let _users = [];
