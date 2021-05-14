@@ -32,10 +32,10 @@ class EmundusworkflowModelstep extends JModelList {
         if (!empty($wid)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_step.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_step'))
-                    ->where($this->db->quoteName('#__emundus_workflow_step.workflow_id') . '=' . (int)$wid)
-                    ->order('#__emundus_workflow_step.ordering ASC');
+                    ->select('ews.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_step', 'ews'))
+                    ->where($this->db->quoteName('ews.workflow_id') . '=' . (int)$wid)
+                    ->order('ews.ordering ASC');
 
                 $this->db->setQuery($this->query);      //set query string
                 return $this->db->loadObjectList();     //get all steps by workflow
@@ -54,9 +54,9 @@ class EmundusworkflowModelstep extends JModelList {
             try {
                 // step 1 --> get the current ordering --> if nothing previous step --> return 0, else increment 1
                 $this->query->clear()
-                    ->select('max(#__emundus_workflow_step.ordering)')
-                    ->from($this->db->quoteName('#__emundus_workflow_step'))
-                    ->where($this->db->quoteName('#__emundus_workflow_step.workflow_id') . '=' . (int)$data['workflow_id']);
+                    ->select('max(ews.ordering)')
+                    ->from($this->db->quoteName('#__emundus_workflow_step', 'ews'))
+                    ->where($this->db->quoteName('ews.workflow_id') . '=' . (int)$data['workflow_id']);
                 $this->db->setQuery($this->query);
                 $_currentOrdering = $this->db->loadResult();
 
@@ -98,20 +98,20 @@ class EmundusworkflowModelstep extends JModelList {
 
                 /// step 1 --> get the current ordering of this step
                 $this->query->clear()
-                    ->select('#__emundus_workflow_step.ordering')
-                    ->from($this->db->quoteName('#__emundus_workflow_step'))
-                    ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$data['id']);
+                    ->select('ews.ordering')
+                    ->from($this->db->quoteName('#__emundus_workflow_step', 'ews'))
+                    ->where($this->db->quoteName('ews.id') . '=' . (int)$data['id']);
                 $this->db->setQuery($this->query);
                 $_currentOrder = $this->db->loadResult();       /// current order
 
                 /// step 2 --> grab all steps from this workflow which have ordering > current_ordering
 
                 $this->query->clear()
-                    ->select('#__emundus_workflow_step.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_step'))
-                    ->where($this->db->quoteName('#__emundus_workflow_step.workflow_id') . '=' . $wid)
-                    ->andWhere($this->db->quoteName('#__emundus_workflow_step.ordering') . '>' . (int)$_currentOrder)
-                    ->order('#__emundus_workflow_step.ordering ASC');
+                    ->select('ews.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_step', 'ews'))
+                    ->where($this->db->quoteName('ews.workflow_id') . '=' . $wid)
+                    ->andWhere($this->db->quoteName('ews.ordering') . '>' . (int)$_currentOrder)
+                    ->order('ews.ordering ASC');
                 $this->db->setQuery($this->query);
                 $_stepList = $this->db->loadObjectList();   //// list of available steps
 
@@ -209,9 +209,9 @@ class EmundusworkflowModelstep extends JModelList {
         if($data !== "") {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_setup_status.*')
-                    ->from($this->db->quoteName('#__emundus_setup_status'))
-                    ->where($this->db->quoteName('#__emundus_setup_status.step') . 'IN (' . $data . ')');
+                    ->select('ess.*')
+                    ->from($this->db->quoteName('#__emundus_setup_status', 'ess'))
+                    ->where($this->db->quoteName('ess.step') . 'IN (' . $data . ')');
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
             }
@@ -230,9 +230,9 @@ class EmundusworkflowModelstep extends JModelList {
         if(!empty($sid)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_setup_status.*')
-                    ->from($this->db->quoteName('#__emundus_setup_status'))
-                    ->where($this->db->quoteName('#__emundus_setup_status.step') . '=' . (int)$sid);
+                    ->select('ess.*')
+                    ->from($this->db->quoteName('#__emundus_setup_status', 'ess'))
+                    ->where($this->db->quoteName('ess.step') . '=' . (int)$sid);
                 $this->db->setQuery($this->query);
                 return $this->db->loadObject();
             }
@@ -251,10 +251,10 @@ class EmundusworkflowModelstep extends JModelList {
         if(!empty($sid)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_step.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_step'))
-                    ->where($this->db->quoteName('#__emundus_workflow_step.id') . '=' . (int)$sid)
-                    ->order('#__emundus_workflow_step.ordering ASC');
+                    ->select('ews.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_step', 'ews'))
+                    ->where($this->db->quoteName('ews.id') . '=' . (int)$sid)
+                    ->order('ews.ordering ASC');
 
                 $this->db->setQuery($this->query);
                 $_rawCurrentParams = $this->db->loadObject();       //get current params (raw info)
@@ -296,10 +296,10 @@ class EmundusworkflowModelstep extends JModelList {
         if(!empty($data)) {
             try {
                 $this->query->clear()
-                    ->select('#__emundus_workflow_step.*')
-                    ->from($this->db->quoteName('#__emundus_workflow_step'))
-                    ->where($this->db->quoteName('#__emundus_workflow_step.workflow_id') . '=' . (int)$data['wid'])         //get all steps by workflow id
-                    ->andWhere($this->db->quoteName('#__emundus_workflow_step.id') . '!=' . (int)$data['sid']);             //get all steps differ from this current step
+                    ->select('ews.*')
+                    ->from($this->db->quoteName('#__emundus_workflow_step', 'ews'))
+                    ->where($this->db->quoteName('ews.workflow_id') . '=' . (int)$data['wid'])         //get all steps by workflow id
+                    ->andWhere($this->db->quoteName('ews.id') . '!=' . (int)$data['sid']);             //get all steps differ from this current step
                 $this->db->setQuery($this->query);
 
                 $_rawData = $this->db->loadAssocList();         //raw data --> need to parsed
@@ -358,9 +358,9 @@ class EmundusworkflowModelstep extends JModelList {
 
                 // get all available status --> NOT IN $_lastString
                 $this->query->clear()
-                    ->select('#__emundus_setup_status.*')
-                    ->from($this->db->quoteName('#__emundus_setup_status'))
-                    ->where($this->db->quoteName('#__emundus_setup_status.step') . 'NOT IN (' . $_lastString . ')');
+                    ->select('ess.*')
+                    ->from($this->db->quoteName('#__emundus_setup_status', 'ess'))
+                    ->where($this->db->quoteName('ess.step') . 'NOT IN (' . $_lastString . ')');
 
                 $this->db->setQuery($this->query);
                 return $this->db->loadObjectList();
@@ -390,10 +390,10 @@ class EmundusworkflowModelstep extends JModelList {
 
                 /// reload the ordering /// ordering = index
                 $this->query->clear()
-                    ->select('#__emundus_workflow_step.id, #__emundus_workflow_step.ordering')
-                    ->from($this->db->quoteName('#__emundus_workflow_step'))
-                    ->where($this->db->quote('#__emundus_workflow_step.workflow_id') . '=' . (int)$wid)
-                    ->order('#__emundus_workflow_step.ordering ASC');
+                    ->select('ews.id, ews.ordering')
+                    ->from($this->db->quoteName('#__emundus_workflow_step', 'ews'))
+                    ->where($this->db->quote('ews.workflow_id') . '=' . (int)$wid)
+                    ->order('ews.ordering ASC');
                 $this->db->setQuery($this->query);
 
                 /// update logs for workflow
