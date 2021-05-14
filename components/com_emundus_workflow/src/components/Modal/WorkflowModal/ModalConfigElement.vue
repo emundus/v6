@@ -4,19 +4,18 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
     <modal :name="'elementModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
-      <b-badge variant="warning"><h3 style="color:white !important">{{ this.$data.name }} Configuration</h3></b-badge>
+      <b-badge variant="warning"><h3 style="color:white !important">{{ this.$data.name }} {{ configTitle }}</h3></b-badge>
       <br/>
       <br/>
       <b-nav tabs>
-        <b-nav-item active>Configurations</b-nav-item>
-        <b-nav-item>Lorem Ipsum</b-nav-item>
+        <b-nav-item active>{{configBreadcrumb }}</b-nav-item>
       </b-nav>
       <br/>
       <br/>
       <espace-modal v-if="this.type == 2" ref="forms" :element="element"/>
       <message-modal v-if="this.type == 4" ref="emails" :element="element"/>
-      <b-button variant="success" @click="updateParams()">Sauvegarder</b-button>
-      <b-button variant="danger" @click="exitModal()">Quitter</b-button>
+      <b-button variant="success" @click="updateParams()">{{ saveButtonLabel }}</b-button>
+      <b-button variant="danger" @click="exitModal()">{{ exitButtonLabel }}</b-button>
     </modal>
   </div>
 </template>
@@ -44,6 +43,12 @@ export default {
     return {
       type: '',
       name: '',
+      configTitle: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_CONFIGURATION_TITLE"),
+      configBreadcrumb: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_CONFIGURATION_BREADCRUMB"),
+      saveButtonLabel: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_BUTTON_SAVE_PARAMS"),
+      exitButtonLabel: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_BUTTON_EXIT_PARAMS"),
+      swalCongratTitle: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_SWEET_ALERT_CONGRATULATION_TITLE"),
+      swalSuccessMessage: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_SWEET_ALERT_SUCCESS_MESSAGE"),
     }
   },
 
