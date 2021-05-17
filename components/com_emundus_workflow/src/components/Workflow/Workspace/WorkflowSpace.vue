@@ -8,9 +8,9 @@
     </div>
 
     <div class="button-group">
-      <b-button variant="warning" @click="seen=!seen" style="margin: 10px">Ajouter bloc &nbsp<b-icon icon="clipboard-plus"></b-icon></b-button>
-      <b-button variant="success" @click="alertSaveDisplay()" style="margin: 10px">Sauvegarder &nbsp<b-icon icon="bookmark-check"></b-icon></b-button>
-      <b-button variant="danger" @click="alertExitDisplay()" style="margin: 10px">Quitter &nbsp<b-icon icon="x-circle"></b-icon></b-button>
+      <b-button variant="warning" @click="seen=!seen" style="margin: 10px">{{ WorkflowSpace_button.add_button }}<b-icon icon="clipboard-plus"></b-icon></b-button>
+      <b-button variant="success" @click="alertSaveDisplay()" style="margin: 10px">{{ WorkflowSpace_button.save_button }}<b-icon icon="bookmark-check"></b-icon></b-button>
+      <b-button variant="danger" @click="alertExitDisplay()" style="margin: 10px">{{ WorkflowSpace_button.exit_button }}<b-icon icon="x-circle"></b-icon></b-button>
     </div>
 
     <!--    <button @click="autoMatchLink()">Creer des liens</button>-->
@@ -58,6 +58,12 @@ export default {
 
   data: function () {
     return {
+      WorkflowSpace_button: {
+        add_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_ADD_BUTTON_TITLE"),
+        save_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_SAVE_BUTTON_TITLE"),
+        exit_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_EXIT_BUTTON_TITLE"),
+      },
+
       seen: false,
       scene: {
         centerX: 1024,
