@@ -51,7 +51,22 @@ export default {
     return {
       workflows: [],      /// all workflows ==> 1 array
       workflowMessage: '',
+
+      id:Joomla.JText._("COM_EMUNDUS_WORKFLOW_WORKFLOW_INFO_TABLE_WORKFLOW_ID"),
+      label:Joomla.JText._("COM_EMUNDUS_WORKFLOW_WORKFLOW_INFO_TABLE_WORKFLOW_NAME"),
+      campaign:Joomla.JText._("COM_EMUNDUS_WORKFLOW_WORKFLOW_INFO_TABLE_ASSOCIATED_CAMPAIGN"),
+      last_user:Joomla.JText._("COM_EMUNDUS_WORKFLOW_WORKFLOW_INFO_TABLE_LAST_UPDATED_BY"),
+      last_updated:Joomla.JText._("COM_EMUNDUS_WORKFLOW_WORKFLOW_INFO_TABLE_LAST_UPDATED"),
+      last_created:Joomla.JText._("COM_EMUNDUS_WORKFLOW_WORKFLOW_INFO_TABLE_CREATED_AT"),
+      logs:Joomla.JText._("COM_EMUNDUS_WORKFLOW_WORKFLOW_INFO_TABLE_LOGS"),
+      actions:Joomla.JText._("COM_EMUNDUS_WORKFLOW_WORKFLOW_INFO_TABLE_ACTIONS"),
+
       table_header: ['Workflow ID', 'Nom du workflow', 'Campagne Associeé', 'Dernier Mis-a-jour par', 'Créé à', 'Mis-a-jour', 'Logs' , 'Action'],     // use JText later
+
+      WorkflowInfoTable_Button: {
+        open_button:Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_OPEN_BUTTON_TITLE"),
+        remove_button:Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_REMOVE_BUTTON_TITLE"),
+      }
     }
   },
 
