@@ -8,7 +8,7 @@
       </div>
 
       <b-form-group label-cols="4" label-cols-lg="2" label-size="lg" :label="WorkflowCreatorMenu_Title.label" label-for="input-lg">
-        <b-form-input v-model="name" :placeholder="WorkflowCreatorMenu_PlaceHolder.label" size="sm"></b-form-input>
+        <b-form-input v-model="name" :placeholder="WorkflowCreatorMenu_Title.label" size="sm"/>
       </b-form-group>
 
       <b-form-group label-cols="4" label-cols-lg="2" label-size="lg" :label="WorkflowCreatorMenu_Title.campaigns" label-for="input-lg">
