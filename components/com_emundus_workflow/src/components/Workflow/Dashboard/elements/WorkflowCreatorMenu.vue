@@ -13,12 +13,12 @@
 
       <b-form-group label-cols="4" label-cols-lg="2" label-size="lg" label="Campagne associee" label-for="input-lg">
         <b-form-select v-model="selectedCampaign" class="form-control-select" id="campaign">
-          <b-form-select-option disabled selected aria-placeholder="test">-- Campagnes disponibles --</b-form-select-option>
+          <b-form-select-option disabled selected aria-placeholder="test">{{ WorkflowCreatorMenu_PlaceHolder.campaigns }}</b-form-select-option>
           <option v-for="campaign in this.availableCampaign" :value="campaign.id"> {{ campaign.label }} </option>
         </b-form-select>
       </b-form-group>
 
-      <b-button type="submit" variant="success" @click="createWorkflow">Créer nouveau workflow</b-button>
+      <b-button type="submit" variant="success" @click="createWorkflow">{{ WorkflowCreatorMenu_Button.add_button }}</b-button>
     </div>
 </template>
 
@@ -38,6 +38,14 @@ export default {
 
   data: function() {
     return {
+      WorkflowCreatorMenu_PlaceHolder: {
+        campaigns: Joomla.JText._("COM_EMUNDUS_WORKFLOW_WORKFLOW_CREATOR_MENU_AVAILABLE_CAMPAIGNS_PLACEHOLDER"),
+      },
+
+      WorkflowCreatorMenu_Button: {
+        add_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_ADD_BUTTON_TITLE"),
+      },
+
       availableCampaign: [],
       workflowMessage: '',
       form: {
