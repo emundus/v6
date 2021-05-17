@@ -7,7 +7,7 @@
       {{ this.workflowLabel }}
     </div>
 
-    <b-button @click="createStep()" v-if="hideStep == false" variant="success" style="position: sticky">(+)</b-button>
+    <b-button @click="createStep()" v-if="hideStep == false" variant="success" style="position: sticky">{{ StepFlow_Button.add_button }}</b-button>
     <!--    <div class="min-h-screen flex overflow-x-scroll py-12">-->
     <draggable :invertedSwapThreshold="0.4" :invertSwap="true" v-model="columns" :group="columns" class="flex" :sort="true">
       <div v-for="column in columns" :key="column.title" class="bg-gray-100 rounded-lg px-3 py-3 column-width rounded mr-4" :id="'step_' + column.id" v-if="hideStep == false" style=""
@@ -24,17 +24,17 @@
         <div style="color:orange"> {{ column.endDate }}</div>
         <div style="color:forestgreen"> {{ column.order }} </div>
         <modal-config-step :ID="column.id" :element="column" @updateStep="updateStep" @deleteStep="deleteStep(column.id)" ref="stepModal"/>
-        <b-button @click="configStep(column.id)" variant="warning">Configurer</b-button>
-        <b-button @click="deleteStep(column.id)" variant="danger" style="margin-left: 20px">(-)</b-button>
-        <b-button @click="openStep(column.id)" variant="primary" style="margin-left: 20px">Ouvrir </b-button>
+        <b-button @click="configStep(column.id)" variant="warning">{{ StepFlow_Button.configure_button }}</b-button>
+        <b-button @click="deleteStep(column.id)" variant="danger" style="margin-left: 20px">{{ StepFlow_Button.remove_button }}</b-button>
+        <b-button @click="openStep(column.id)" variant="primary" style="margin-left: 20px">{{ StepFlow_Button.open_button }}</b-button>
         <hr/>
-        <div style="position: sticky"> <b-button variant="info" @click="createMessageDiv(column.id)">(+)</b-button> </div>
+        <div style="position: sticky"> <b-button variant="info" @click="createMessageDiv(column.id)">{{ StepFlow_Button.add_button }}</b-button> </div>
         <div class="message-block" v-for="message in messages" :id="'message_zone' + message.id" v-if="column.id == message.step_id">
           <div>
             {{ message.title }}
 
-            <b-button @click="openDiv(message.id)" variant="primary" :id="'button_' + message.id">Trigger</b-button>
-            <b-button :id="'button_' + message.id" variant="danger" @click="deleteMessageDiv(message.id, message.triggerId)">x</b-button>
+            <b-button @click="openDiv(message.id)" variant="primary" :id="'button_' + message.id">{{ StepFlow_Button.trigger_button }}</b-button>
+            <b-button :id="'button_' + message.id" variant="danger" @click="deleteMessageDiv(message.id, message.triggerId)">{{ StepFlow_Button.remove_button }}</b-button>
 
             <div style="color:forestgreen"> {{ message.messageTemplate }} </div>
             <div style="color:lightseagreen"> {{ message.messageDestination }} </div>
@@ -86,6 +86,14 @@ export default {
 
   data() {
     return {
+      StepFlow_Button: {
+        add_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_ADD_BUTTON_TITLE"),
+        remove_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_REMOVE_BUTTON_TITLE"),
+        configure_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_CONFIGURE_BUTTON_TITLE"),
+        open_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_OPEN_BUTTON_TITLE"),
+        trigger_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_TRIGGER_BUTTON_TITLE"),
+      },
+
       columns: [],
       currentStep: '',
       hideStep: false,
