@@ -4,25 +4,25 @@
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
     <modal :name="'elementModal' + ID" :width="580" :height="600" :adaptive="true" :draggable="true" :scrollable="true" :clickToClose="true" @before-open="beforeOpen" @before-close="beforeClose">
-      <b-badge variant="warning"><h3 style="color:white !important">{{ this.$data.name }} {{ configTitle }}</h3></b-badge>
+      <b-badge variant="warning"><h3 style="color:white !important">{{ this.$data.name }} {{ ModalConfigElement_Title.label }}</h3></b-badge>
       <br/>
       <br/>
       <b-nav tabs>
-        <b-nav-item active>{{configBreadcrumb }}</b-nav-item>
+        <b-nav-item active>{{ ModalConfigElement_Title.breadcrumb }}</b-nav-item>
       </b-nav>
       <br/>
       <br/>
       <espace-modal v-if="this.type == 2" ref="forms" :element="element"/>
-      <message-modal v-if="this.type == 4" ref="emails" :element="element"/>
-      <b-button variant="success" @click="updateParams()">{{ saveButtonLabel }}</b-button>
-      <b-button variant="danger" @click="exitModal()">{{ exitButtonLabel }}</b-button>
+<!--      <message-modal v-if="this.type == 4" ref="emails" :element="element"/>-->
+      <b-button variant="success" @click="updateParams()">{{ ModalConfigElement_Button.save_button }}</b-button>
+      <b-button variant="danger" @click="exitModal()">{{ ModalConfigElement_Button.exit_button }}</b-button>
     </modal>
   </div>
 </template>
 
 <script>
 import espaceModal from './element/espaceModal.vue';
-import messageModal from './element/messageModal.vue';
+//import messageModal from './element/messageModal.vue';
 
 import axios from 'axios';
 import Swal from "sweetalert2";
@@ -36,19 +36,27 @@ export default {
 
   components: {
     espaceModal,
-    messageModal,
+    //messageModal,
   },
 
   data: function() {
     return {
       type: '',
       name: '',
-      configTitle: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_CONFIGURATION_TITLE"),
-      configBreadcrumb: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_CONFIGURATION_BREADCRUMB"),
-      saveButtonLabel: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_BUTTON_SAVE_PARAMS"),
-      exitButtonLabel: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_BUTTON_EXIT_PARAMS"),
-      swalCongratTitle: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_SWEET_ALERT_CONGRATULATION_TITLE"),
-      swalSuccessMessage: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_SWEET_ALERT_SUCCESS_MESSAGE"),
+      ModalConfigElement_Title: {
+        label: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_MODAL_TITLE_LABEL"),
+        breadcrumb: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_MODAL_TITLE_BREADCRUMB"),
+      },
+
+      ModalConfigElement_Button: {
+        save_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_SAVE_BUTTON_TITLE"),
+        exit_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_EXIT_BUTTON_TITLE"),
+      },
+
+      ModalConfigElement_SweetAlert: {
+        congratulation_title: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_SWEET_ALERT_CONGRATULATION_TITLE"),
+        congratulation_message: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_SWEET_ALERT_CONGRATULATION_MESSAGE"),
+      }
     }
   },
 
@@ -103,8 +111,8 @@ export default {
       }).then(response => {
         Swal.fire({
           icon: 'success',
-          title: this.swalCongratTitle,
-          text: this.swalSuccessMessage,
+          title: this.ModalConfigElement_SweetAlert.congratulation_title,
+          text: this.ModalConfigElement_SweetAlert.congratulation_message,
           footer: '<a href>EMundus SAS</a>',
           confirmButtonColor: '#28a745',
         }).then((result) => {
