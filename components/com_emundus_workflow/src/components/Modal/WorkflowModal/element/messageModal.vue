@@ -1,29 +1,29 @@
 <template>
   <div>
     <div class="row mb-3">
-      <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.email_model_title }}</label>
+      <label class="col-sm-4 col-form-label">{{ messageModal_Title.email_template}}</label>
       <div class="col-xs-8">
         <select v-model="form.emailSelected" class="form-control-select" id="email-selected">
-          <option selected disabled>---Email---</option>
+          <option selected disabled>{{ messageModal_PlaceHolder.email_template }}</option>
           <option v-for = "model in this.$data.emails" :value="model.id"> {{ model.lbl }}</option>
         </select>
       </div>
     </div>
 
     <div class="row mb-3">
-      <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.destination_title }}</label>
+      <label class="col-sm-4 col-form-label">{{ messageModal_Title.destination }}</label>
       <div class="col-xs-8">
         <select v-model="form.destinationSelected" class="form-control-select" id="destination-selected">
-          <option selected disabled>---Destination---</option>
+          <option selected disabled>{{ messageModal_PlaceHolder.destination }}</option>
           <option v-for="destination in this.$data.destination" :value="destination.id" @click="handleOtherClick"> {{ destination.label }}</option>
-          <option @click="handleClick" :value="'other'"> Choisir un utilisateur</option>
+          <option @click="handleClick" :value="'other'">{{ messageModal_Title.select_one }}</option>
         </select>
       </div>
     </div>
 
 <!--    v-if showOtheruser == true -->
     <div class="row mb-3" v-if="showOtherUser==true">
-      <input type="checkbox" id="selectAll_" v-if="showOtherUser==true" @click="handleSelect"> {{ selectAllTitle }}
+      <input type="checkbox" id="selectAll_" v-if="showOtherUser==true" @click="handleSelect"> {{ messageModal_Title.select_all }}
       <div v-for="user in this.userList" v-if="showOtherUser==true">
         <input type="checkbox" :id="'check' + user.id" :value="user.id" v-model="userChecked[user.id]" @click="handleClickUser(user.id)"/>
         <label class="form-check-label" :id="'userName_' + user.id"> {{ user.firstname }} {{ user.lastname }}</label>
@@ -35,7 +35,7 @@
 
     <!--  TRIGGER PART -->
     <div class="row mb-3">
-      <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.trigger_title }}</label>
+      <label class="col-sm-4 col-form-label">{{ messageModal_Title.trigger }}</label>
       <div class="col-xs-8">
         <select v-model="form.triggerSelected" class="form-control-select" id="trigger-selected">
           <option value="to_current_user">{{ TO_CURRENT_USER }}</option>
@@ -45,15 +45,15 @@
     </div>
 
     <div class="row mb-3">
-      <label class="col-sm-4 col-form-label">{{ this.$data.elementTitle.notes_title }}</label>
+      <label class="col-sm-4 col-form-label">{{ messageModal_Title.supplementary_information }}</label>
       <div class="col-xs-8">
-        <textarea v-model="form.messageNotes" placeholder="Supplementaires informations" style="margin: -3px; width: 95%"/>
+        <textarea v-model="form.messageNotes" :placeholder="messageModal_PlaceHolder.supplementary_information" style="margin: -3px; width: 95%"/>
       </div>
     </div>
 
     <div class="row mb-3">
-      <b-button variant="success" @click="updateTrigger()">Sauvegarder</b-button>
-      <b-button variant="danger">Quitter</b-button>
+      <b-button variant="success" @click="updateTrigger()">{{ messageModal_Button.save_button }}</b-button>
+      <b-button variant="danger">{{ messageModal_Button.exit_button }}</b-button>
     </div>
   </div>
 </template>
@@ -75,12 +75,24 @@ export default {
 
   data: function() {
     return {
-      elementTitle: {
-        email_model_title: "Message",
-        input_status_title: "Statut d'entrée",
-        destination_title: "Destinataire",
-        notes_title: "Notes",
-        trigger_title: "Trigger",
+      messageModal_PlaceHolder: {
+        email_template: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_MESSAGE_MODAL_EMAIL_TEMPLATE_PLACEHOLDER"),
+        destination: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_MESSAGE_MODAL_DESTINATION_PLACEHOLDER"),
+        supplementary_information: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_MESSAGE_MODAL_SUPPLEMENTARY_INFORMATION_PLACEHOLDER"),
+      },
+
+      messageModal_Title: {
+        email_template: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_MESSAGE_MODAL_TITLE_EMAIL_TEMPLATE"),
+        destination: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_MESSAGE_MODAL_TITLE_DESTINATION"),
+        supplementary_information: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_MESSAGE_MODAL_TITLE_SUPPLEMENTARY_INFORMATION"),
+        trigger: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_MESSAGE_MODAL_TITLE_TRIGGER"),
+        select_one: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_MESSAGE_MODAL_TITLE_SELECT_ONE"),
+        select_all: Joomla.JText._("COM_EMUNDUS_WORKFLOW_ELEMENT_MESSAGE_MODAL_TITLE_SELECT_ALL"),
+      },
+
+      messageModal_Button: {
+        save_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_SAVE_BUTTON_TITLE"),
+        exit_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_EXIT_BUTTON_TITLE"),
       },
 
       form: {
@@ -102,7 +114,6 @@ export default {
       userChecked: [],
       triggerChecked: [],
 
-      selectAllTitle: "Choisir tous",
       selectAll: false,
 
       TO_CURRENT_USER: 'Current User',
