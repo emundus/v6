@@ -23,14 +23,14 @@
         <!--&lt;!&ndash;    option 2 : multiple step in &ndash;&gt;-->
 
         <div class="row mb-3">
-          <label class="col-sm-6 col-form-label">{{ this.title.label }}</label>
+          <label class="col-sm-6 col-form-label">{{ ModalConfigStep_Title.label }}</label>
           <div class="col-xs-8">
             <textarea class='notes' id="step_label" rows="3" v-model="stepLabel" placeholder="Nom de l'etape" style="width: 95%; height: 35px !important"></textarea>
           </div>
         </div>
 
         <div class="row mb-3">
-          <label class="col-sm-6 col-form-label">{{ this.title.inputStatusTitle }}</label>
+          <label class="col-sm-6 col-form-label">{{ ModalConfigStep_Title.input_status }}</label>
           <div v-for="item in this.$data.inStatus" v-if="!item.disabled">
             <input type="checkbox" :id="item.step" :value="item.step" v-model="checked[item.step]"/>
             <label class="form-check-label" :id="'status'+ item.step" name=""> {{item.value}}</label>
@@ -39,10 +39,10 @@
 
         <!-- Step step out -->
         <div class="row mb-3">
-          <label class="col-sm-6 col-form-label">{{ this.title.outputStatusTitle }}</label>
+          <label class="col-sm-6 col-form-label">{{ ModalConfigStep_Title.output_status }}</label>
           <div class="col-xs-8">
             <select v-model="form.outputStatus" class="form-control-select" id="outstatus-selected">
-              <option selected disabled>{{ outputStatusPlaceHolder }}</option>
+              <option selected disabled>{{ ModalConfigStep_PlaceHolder.output_status }}</option>
               <option v-for="outstatus in this.outStatus" :value="outstatus.step"> {{ outstatus.value }}</option>
             </select>
           </div>
@@ -50,7 +50,7 @@
 
         <!--       Step start date >>> add datetime picker -->
         <div class="row mb-3">
-          <label class="col-sm-6 col-form-label">{{ this.title.startDateTitle }}</label>
+          <label class="col-sm-6 col-form-label">{{ ModalConfigStep_Title.start_date }}</label>
           <div class="col-xs-8">
             <date-picker v-model="startDate" mode="dateTime" is24hr>
               <template v-slot="{ inputValue, inputEvents }">
@@ -68,7 +68,7 @@
 
         <!-- Step end date >>> add datetime picker -->
         <div class="row mb-3">
-          <label class="col-sm-6 col-form-label">{{ this.title.endDateTitle }}</label>
+          <label class="col-sm-6 col-form-label">{{ ModalConfigStep_Title.end_date }}</label>
           <div class="col-xs-8">
             <date-picker v-model="endDate" mode="dateTime" is24hr>
               <template v-slot="{ inputValue, inputEvents }">
@@ -86,22 +86,29 @@
 
         <!-- Supplementary information -->
         <div class="row mb-3">
-          <label class="col-sm-6 col-form-label">{{ this.title.notes }}</label>
+          <label class="col-sm-6 col-form-label">{{ ModalConfigStep_Title.supplementary_notes }}</label>
           <div class="col-xs-8">
-            <textarea id="notes_form" rows="3" v-model="form.stepNotes" :placeholder="supplementaryInfoPlaceHolder" style="margin: -5px; width: 102%"></textarea>
+            <textarea id="notes_form" rows="3" v-model="form.stepNotes" :placeholder="ModalConfigStep_PlaceHolder.supplementary_notes" style="margin: -5px; width: 102%"></textarea>
           </div>
         </div>
 
         <div class="row mb-3">
-          <label class="col-sm-6 col-form-label">{{ this.title.colorTitle }}</label>
+          <label class="col-sm-6 col-form-label">{{ ModalConfigStep_Title.color_palette }}</label>
           <div class="col-xs-8">
             <color-picker :element="form" :colorParam="colorParams"/>
           </div>
         </div>
 
+        <div class="row mb-3">
+          <label class="col-sm-6 col-form-label">Migration des triggers existant </label>
+          <div class="col-xs-8">
+            <input type="checkbox" id="triggerMigration_" v-model="form.triggerMigration"/>
+          </div>
+        </div>
+
         <div style="align-items: center">
-          <b-button variant="success" @click="updateParams()">{{ saveButtonLabel }}</b-button>
-          <b-button variant="danger" @click="exitModal()">{{ exitButtonLabel }}</b-button>
+          <b-button variant="success" @click="updateParams()">{{ ModalConfigStep_Button.save_button }}</b-button>
+          <b-button variant="danger" @click="exitModal()">{{ ModalConfigStep_Button.exit_button }}</b-button>
         </div>
 
       </modal>
@@ -143,31 +150,41 @@ export default {
       messageParams: Object,
       colorParams: Object,
 
-      outputStatusPlaceHolder: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_PLACEHOLDER_OUTPUT_STATUS"),
-      supplementaryInfoPlaceHolder: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_PLACEHOLDER_SUPPLEMENTARY_INFORMATION"),
-      saveButtonLabel: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_BUTTON_SAVE_PARAMS"),
-      exitButtonLabel: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_BUTTON_EXIT_PARAMS"),
-
-      swalCongratTitle: Joomla.JText._('COM_EMUNDUS_WORKFLOW_STEP_SWEET_ALERT_CONGRATULATION_TITLE'),
-      swalSuccessMessage: Joomla.JText._('COM_EMUNDUS_WORKFLOW_SSTEP_WEET_ALERT_SUCCESS_MESSAGE'),
-      swalErrorTitle: Joomla.JText._('COM_EMUNDUS_WORKFLOW_STEP_SWEET_ALERT_ERROR_TITLE'),
-      swalMissingParamsMessage: Joomla.JText._('COM_EMUNDUS_WORKFLOW_STEP_SWEET_ALERT_MISSING_PARAMS_MESSAGE'),
-
-      title: {
-        label: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_STEP_LABEL"),
-        inputStatusTitle: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_STEP_INPUT_STATUS"),
-        outputStatusTitle: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_STEP_OUTPUT_STATUS"),
-        startDateTitle: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_STEP_BEGIN_DATE"),
-        endDateTitle: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_STEP_END_DATE"),
-        notes: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_STEP_SUPPLEMENTARY_INFORMATION"),
-        colorTitle: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_STEP_FAVORITE_COLOR"),
+      ModalConfigStep_PlaceHolder: {
+        output_status: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_PLACEHOLDER_OUTPUT_STATUS"),
+        supplementary_notes: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_PLACEHOLDER_SUPPLEMENTARY_INFORMATION"),
       },
+
+      ModalConfigStep_Title: {
+        label: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_STEP_TITLE_LABEL"),
+        input_status: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_STEP_TITLE_INPUT_STATUS"),
+        output_status: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_STEP_TITLE_OUTPUT_STATUS"),
+        start_date: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_STEP_TITLE_START_DATE"),
+        end_date: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_STEP_TITLE_END_DATE"),
+        supplementary_notes: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_STEP_TITLE_SUPPLEMENTARY_INFORMATION"),
+        color_palette: Joomla.JText._("COM_EMUNDUS_WORKFLOW_STEP_MODAL_STEP_TITLE_STEP_COLOR"),
+      },
+
+      ModalConfigStep_Button: {
+        save_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_SAVE_BUTTON_TITLE"),          /// common
+        exit_button: Joomla.JText._("COM_EMUNDUS_WORKFLOW_COMMON_EXIT_BUTTON_TITLE"),          /// common
+      },
+
+      ModalConfigStep_SweetAlert: {
+        congratulation_title: Joomla.JText._('COM_EMUNDUS_WORKFLOW_COMMON_SWEET_ALERT_CONGRATULATION_TITLE'),                 /// common
+        congratulation_message: Joomla.JText._('COM_EMUNDUS_WORKFLOW_COMMON_SWEET_ALERT_CONGRATULATION_MESSAGE'),               /// common
+        error_title: Joomla.JText._('COM_EMUNDUS_WORKFLOW_COMMON_SWEET_ALERT_ERROR_TITLE'),
+        error_message: Joomla.JText._('COM_EMUNDUS_WORKFLOW_COMMON_SWEET_ALERT_ERROR_MESSAGE'),
+      },
+
+
       // use for form v-model
       form: {
         id: '',
         inputStatus: [],
         outputStatus: '',
         stepNotes: '',
+        triggerMigration: '',
       },
 
       // use for date v-model
@@ -266,8 +283,8 @@ export default {
         }).then(response => {
           Swal.fire({
             icon: 'success',
-            title: this.swalCongratTitle,
-            text: this.swalSuccessMessage,
+            title: this.ModalConfigStep_SweetAlert.congratulation_title,
+            text: this.ModalConfigStep_SweetAlert.congratulation_message,
             footer: '<a href>EMundus SAS</a>',
             confirmButtonColor: '#28a745',
           }).then(result => {
@@ -283,8 +300,8 @@ export default {
       else {
         Swal.fire({
           icon: 'error',
-          title: this.swalErrorTitle,
-          html: this.swalMissingParamsMessage,
+          title: this.ModalConfigStep_SweetAlert.error_title,
+          html: this.ModalConfigStep_SweetAlert.error_message,
           timer: 1500,
           showConfirmButton:false,
         })
