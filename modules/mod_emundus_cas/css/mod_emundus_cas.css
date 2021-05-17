@@ -36,15 +36,27 @@
     display: flex;
     flex-direction: row;
     height: 25rem;
-    width: 100%;
+    width: 85%;
     justify-content: center;
     align-items: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.container-module-cas  .sous-container-module-cas #connexion a.btn.btn-primary,
+.container-module-cas  .sous-container-module-cas #connexion .container {
+  width: 100%;
+}
+
+
+.container-module-cas  .sous-container-module-cas #connexion a.btn.btn-primary {
+    text-transform: initial;
+    font-size: 14px;
+}
+
 .container-module-cas  .sous-container-module-cas #inscription  a.btn.btn-primary {
     text-transform: initial;
     font-size: 14px;
+     width: 100%;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription {
