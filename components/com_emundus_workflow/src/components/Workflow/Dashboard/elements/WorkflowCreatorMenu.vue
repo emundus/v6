@@ -7,11 +7,11 @@
         </b-alert>
       </div>
 
-      <b-form-group label-cols="4" label-cols-lg="2" label-size="lg" label="Nom du workflow" label-for="input-lg">
-        <b-form-input v-model="name" placeholder="Nom du workflow" size="sm"></b-form-input>
+      <b-form-group label-cols="4" label-cols-lg="2" label-size="lg" :label="WorkflowCreatorMenu_Title.label" label-for="input-lg">
+        <b-form-input v-model="name" :placeholder="WorkflowCreatorMenu_PlaceHolder.label" size="sm"></b-form-input>
       </b-form-group>
 
-      <b-form-group label-cols="4" label-cols-lg="2" label-size="lg" label="Campagne associee" label-for="input-lg">
+      <b-form-group label-cols="4" label-cols-lg="2" label-size="lg" :label="WorkflowCreatorMenu_Title.campaigns" label-for="input-lg">
         <b-form-select v-model="selectedCampaign" class="form-control-select" id="campaign">
           <b-form-select-option disabled selected aria-placeholder="test">{{ WorkflowCreatorMenu_PlaceHolder.campaigns }}</b-form-select-option>
           <option v-for="campaign in this.availableCampaign" :value="campaign.id"> {{ campaign.label }} </option>
@@ -39,7 +39,13 @@ export default {
   data: function() {
     return {
       WorkflowCreatorMenu_PlaceHolder: {
+        label: Joomla.JText._("COM_EMUNDUS_WORKFLOW_WORKFLOW_CREATOR_MENU_WORKFLOW_NAME_PLACEHOLDER"),
         campaigns: Joomla.JText._("COM_EMUNDUS_WORKFLOW_WORKFLOW_CREATOR_MENU_AVAILABLE_CAMPAIGNS_PLACEHOLDER"),
+      },
+
+      WorkflowCreatorMenu_Title: {
+        label: Joomla.JText._("COM_EMUNDUS_WORKFLOW_WORKFLOW_CREATOR_MENU_TITLE_WORKFLOW_NAME"),
+        campaigns: Joomla.JText._("COM_EMUNDUS_WORKFLOW_WORKFLOW_CREATOR_MENU_TITLE_ASSOCIATED_CAMPAIGN"),
       },
 
       WorkflowCreatorMenu_Button: {
