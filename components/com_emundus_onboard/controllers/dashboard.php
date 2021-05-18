@@ -39,32 +39,6 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         }
     }
 
-    /**
-     * Get the last active campaign
-     */
-    public function getLastCampaignActive(){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $query->select('sc.*, cc.id as files')
-                ->from($db->quoteName('#__emundus_setup_campaigns', 'sc'))
-                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $db->quoteName('cc.campaign_id') . ' = ' . $db->quoteName('sc.id'))
-                ->where('sc.published=1 AND "' . $this->now . '" <= sc.end_date and "' . $this->now . '">= sc.start_date')
-                ->group('sc.id')
-                ->order('sc.start_date DESC');
-
-            $db->setQuery($query);
-            $campaigns = $db->loadObjectList();
-
-            $tab = array('status' => 0, 'msg' => 'success', 'data' => $campaigns);
-        } catch (Exception $e) {
-            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-
     public function getwidgets(){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -212,6 +186,18 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
             }
 
             $tab = array('msg' => 'success', 'data' => $register_at);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getprospect(){
+        try {
+            $j_config = JFactory::getConfig();
+
+            $tab = array('msg' => 'success', 'data' => $j_config->get('prospect'));
         } catch (Exception $e) {
             $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
         }

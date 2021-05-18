@@ -11,7 +11,8 @@
         chosen-class="plugin-chosen"
         ghost-class="plugin-ghost">
       <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index" :class="enableDrag ? 'jello-horizontal handle' : ''" :key="widget.name + '_' + index">
-        <Faq v-if="widget.name === 'faq'"/>
+        <Faq v-if="widget.name === 'faq' && !prospect"/>
+        <Prospect v-if="widget.name === 'faq' && prospect"/>
         <FilesNumberByStatus v-if="widget.name === 'files_number_by_status'"/>
         <UsersByMonth v-if="widget.name === 'users_by_month'"/>
         <Tips v-if="widget.name === 'tips'"/>
@@ -29,6 +30,7 @@ import FilesNumberByStatus from "@/components/FilesNumberByStatus";
 import Tips from "@/components/Tips";
 import UsersByMonth from "@/components/UsersByMonth";
 import DemoCounter from "@/components/DemoCounter";
+import Prospect from "@/components/Prospect";
 
 export default {
   name: 'App',
@@ -39,6 +41,7 @@ export default {
     Tips,
     FilesNumberByStatus,
     Faq,
+    Prospect,
     draggable,
   },
   data() {
@@ -47,11 +50,13 @@ export default {
       widgets: [],
       status: null,
       lastCampaigns: 0,
-      enableDrag: false
+      enableDrag: false,
+      prospect: 0,
     }
   },
   created() {
     this.getWidgets();
+    this.getProspect();
   },
   methods: {
     getWidgets(){
@@ -61,44 +66,30 @@ export default {
       }).then(response => {
         response.data.data.forEach((data) => {
           switch (data) {
-            case 'last_campaign_active':
-              if(this.campaigns.length == 0) {
-                this.getLastCampaignsActive();
-              }
-              this.widgets.push({
-                name: data,
-                cindex: this.lastCampaigns
-              });
-              this.lastCampaigns++;
-              break;
             default:
               this.widgets.push({
                 name: data,
               });
           }
         });
-        if(response.data.data.indexOf('last_campaign_active') !== -1){
-          this.getLastCampaignsActive();
-        }
       });
     },
 
-    getLastCampaignsActive(){
-      axios.get(
-          'index.php?option=com_emundus_onboard&controller=dashboard&task=getLastCampaignActive'
-      ).then(response => {
-        this.campaigns = response.data.data;
-      }).catch(e => {
-        console.log(e);
+    getProspect(){
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getprospect",
+      }).then(response => {
+        this.prospect = response.data.data;
       });
-    }
+    },
   }
 }
 </script>
 
 <style scoped>
 .tchooz-widget{
-  height: 25vh;
+  height: auto;
   margin-bottom: 30px !important;
   margin-left: 0px !important;
   padding-left: 30px !important;

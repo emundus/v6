@@ -1,5 +1,5 @@
 <template>
-  <div class='col-md-5 col-sm-6 tchooz-widget'>
+  <div class='col-md-10 col-sm-12 tchooz-widget'>
     <div class='section-sub-menu' style='margin-bottom: 10px'>
       <div id="chart-container">
         <fusioncharts
@@ -56,6 +56,12 @@ export default {
             subcaption: "",
             xaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_STATUS"),
             yaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER"),
+            forceYAxisValueDecimals: 1,
+            yAxisValueDecimals: 0,
+            formatNumber: 0,
+            setAdaptiveYMin: 0,
+            yAxisValuesStep: 10,
+            adjustDiv: 0,
             numbersuffix: "",
             theme: "fusion"
           },

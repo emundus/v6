@@ -57,10 +57,11 @@ export default {
             subcaption: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_TOTAL") + this.total + Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS"),
             xaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_DAYS"),
             yaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_NUMBER"),
-            yAxisMinValue: 0,
+            forceYAxisValueDecimals: 1,
+            yAxisValueDecimals: 0,
             setAdaptiveYMin: 0,
             adjustDiv: 0,
-            yAxisValuesStep: 10,
+            yAxisValuesStep: 1,
             numbersuffix: "",
             theme: "fusion"
           },
