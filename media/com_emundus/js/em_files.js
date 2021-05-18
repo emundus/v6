@@ -3405,14 +3405,15 @@ $(document).ready(function() {
                 $('#data').append(
                 '<div class="panel panel-default pdform" id="form-exists" style="display:none;">'+
                 '<div class="panel-heading">'+
-                '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" checked />' +
+                '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms"/>' +
                 '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('FORMS_PDF').toUpperCase()+'</font></label>'+
                 '</div>'+
 
+                '<div id = "form-element">' +
                 '<h5><button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
                 '<span class="glyphicon glyphicon-plus"></span>' +
                 '</button> &ensp;' +Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
-                '</h5>' +
+                '</h5></div>' +
 
                 '<div class="panel-body" id="felts" style="overflow:auto;display:none;"></div>'+
 
@@ -3504,6 +3505,10 @@ $(document).ready(function() {
                     data: {checkInput : checkInput},
                     dataType:'json',
                     success: function(result) {
+                        //$('#form-element').empty();
+                        $('#felts').empty();
+                        //$('#form-element').hide();
+                        // $('#showelements').empty();      // hide button
                         if (result.status) {
 
                             $('#em-export-prg').append(result.html);
@@ -3710,6 +3715,8 @@ $(document).ready(function() {
                     var camp = $("#em-export-camp").val();          // get value of chosen campaign
 
                     if (code != 0 && camp != 0) {
+                        console.log(code);
+                        console.log(camp);
                         $.ajax({
                             type: 'get',
                             url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code,
@@ -3724,7 +3731,35 @@ $(document).ready(function() {
                                     } if(this.className == 'btn-xs btn btn-elements-success') {
                                         $('#felts').hide();
                                     }
-                                })
+                                });
+
+                                $('#em-ex-forms').click(function(e) {
+
+                                    if ($('#em-ex-forms').is(":checked")){
+                                        //document.getElementById('em-ex-forms').checked = true;
+                                        //$('#emundus_checkall_tbl_'+div_id).trigger("click");
+                                        let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
+
+                                        // find all children of panels
+                                        let children = Array.prototype.slice.call( panel.children );
+                                        children.forEach((elt) => {
+                                            var div_id = elt.id.split('emundus_table_')[1];
+                                            $('#emundus_checkall_tbl_'+div_id).trigger("click");
+                                        })
+                                        document.getElementById('em-ex-forms').checked = true;
+
+                                    } else {
+                                        let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
+
+                                        // find all children of panels
+                                        let children = Array.prototype.slice.call( panel.children );
+                                        children.forEach((elt) => {
+                                            var div_id = elt.id.split('emundus_table_')[1];
+                                            $('#emundus_checkall_tbl_'+div_id).trigger("click");
+                                        })
+                                        document.getElementById('em-ex-forms').checked = false;
+                                    }
+                                });
                             }
                         })
 
@@ -3803,11 +3838,12 @@ $(document).ready(function() {
                         });
                     } else {
                         /// if one of two conditions as above is not correct --> hide the div "felts"
-                        $('#felts').hide();
+                        $('#felts').empty();
                     }
                 });
 
                 $('#em-ex-forms').click(function(e) {
+                    //console.log('clicked');
                     if ($('#em-ex-forms').is(":checked")){
                         $('[id^=felts-]').hide();
                         $('#felts input').attr('checked', false);
