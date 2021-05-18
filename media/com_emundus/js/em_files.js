@@ -3711,69 +3711,138 @@ $(document).ready(function() {
                         console.log(code);
                         console.log(camp);
 
-                        /// get form eleme by code, camp
-                        $('#elements-popup').empty();
-                        $('#em-export-form').empty();
-                        $('#em-export').empty();
                         $.ajax({
                             type: 'get',
-                            url: 'index.php?option=com_emundus&controller=files&task=getformelem&code=' + code + '&camp=' + camp + '&Itemid=' + itemId,
-                            dataType: 'json',
-                            success: function (result) {
-                                console.log(result);        //// parse this result and render to select option  -->
-                                var item='';
-                                var menu = null;
-                                var grId = null;
+                            url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code,
+                            success: function (data) {
+                                $('#elements-popup').empty();
+                                $('#em-export-form').empty();
+                                $('#em-export').empty();
 
-                                item+='<option value="0" selected>'+Joomla.JText._('JGLOBAL_SELECT_AN_OPTION')+'</option>';             /// placeholder of selection option (value = 0)
-                                //console.log(item);
-                                for (var d in result.elts) {
-                                    //console.log(d);
-                                    if (isNaN(parseInt(d)))
-                                        break;
-                                    var menu_tmp = result.elts[d].title;
+                                $.ajax({
+                                    type: 'get',
+                                    url: 'index.php?option=com_emundus&controller=files&task=getformelem&code=' + code + '&camp=' + camp + '&Itemid=' + itemId,
+                                    dataType: 'json',
+                                    success: function (result) {
+                                        var item = '';
+                                        item += '<option value="0" selected>' + Joomla.JText._('JGLOBAL_SELECT_AN_OPTION') + '</option>';
+                                        for (var d in result.elts) {
 
-                                    if (menu != menu_tmp) {
-                                        item += '<optgroup label="________________________________"><option disabled class="emundus_search_elm" value="-">' + menu_tmp.toUpperCase() + '</option></optgroup>';
-                                        menu = menu_tmp;
-                                    }
+                                            if (isNaN(parseInt(d)))
+                                                break;
 
-                                    if (grId != null || grId != result.elts[d].group_id) {
-                                        item += '</optgroup>';
-                                    }
+                                            var menu = null;
+                                            var grId = null;
+                                            var menu_tmp = result.elts[d].title;
 
-                                    if (grId != result.elts[d].group_id) {
-                                        item += '<optgroup label=">> '+result.elts[d].group_label+'">';
-                                    }
+                                            if (menu != menu_tmp) {
+                                                item += '<optgroup label="________________________________"><option disabled class="emundus_search_elm" value="-">' + menu_tmp.toUpperCase() + '</option></optgroup>';
+                                                menu = menu_tmp;
+                                            }
 
-                                    grId = result.elts[d].group_id;
+                                            if (grId != null || grId != result.elts[d].group_id) {
+                                                item += '</optgroup>';
+                                            }
 
-                                    var label = result.elts[d].element_label.replace(/(<([^>]+)>)/ig, "");
+                                            if (grId != result.elts[d].group_id) {
+                                                item += '<optgroup label=">> ' + result.elts[d].group_label + '">';
+                                            }
 
-                                    var elt_label = label;
-                                    item += '<option value="'+result.elts[d].id+'" data-value="'+label+'">'+elt_label+'</option>';
-                                }
-                                $('#em-export-form').append(item);
-                                $('#em-export-form').trigger("chosen:updated");
+                                            grId = result.elts[d].group_id;
 
-                                console.log(data);
-                                $('#elements-popup').append(item);                  /// append item to #elements-popup
-                                item ='';
+                                            var label = result.elts[d].element_label.replace(/(<([^>]+)>)/ig, "");
 
-                                if (view == "files") {
-                                    for (var d in result.defaults) {
-                                        if (isNaN(parseInt(d))) {
-                                            break;
+                                            var elt_label = label;
+
+                                            item += '<option value="' + result.elts[d].id + '" data-value="' + label + '">' + elt_label + '</option>';
                                         }
 
-                                        if ($("#em-export").find('#'+result.defaults[d].id).length == 0) {
-                                            item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                        $('#em-export-form').append(item);
+                                        $('#em-export-form').trigger("chosen:updated");
+
+                                        $('#elements-popup').append(data);
+                                        item = '';
+
+                                        if (view == "files") {
+                                            for (var d in result.defaults) {
+                                                if (isNaN(parseInt(d))) {
+                                                    break;
+                                                }
+
+                                                if ($("#em-export").find('#' + result.defaults[d].id).length == 0) {
+                                                    item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                }
+                                            }
+                                            $('#em-export').append(item);
                                         }
                                     }
-                                    $('#em-export').append(item);
-                                }
+                                })
                             }
                         })
+
+                        // /// get form eleme by code, camp
+                        // $('#elements-popup').empty();
+                        // $('#em-export-form').empty();
+                        // $('#em-export').empty();
+                        // $.ajax({
+                        //     type: 'get',
+                        //     url: 'index.php?option=com_emundus&controller=files&task=getformelem&code=' + code + '&camp=' + camp + '&Itemid=' + itemId,
+                        //     dataType: 'json',
+                        //     success: function (result) {
+                        //         console.log(result);        //// parse this result and render to select option  -->
+                        //         var item='';
+                        //         var menu = null;
+                        //         var grId = null;
+                        //
+                        //         item+='<option value="0" selected>'+Joomla.JText._('JGLOBAL_SELECT_AN_OPTION')+'</option>';             /// placeholder of selection option (value = 0)
+                        //         //console.log(item);
+                        //         for (var d in result.elts) {
+                        //             //console.log(d);
+                        //             if (isNaN(parseInt(d)))
+                        //                 break;
+                        //             var menu_tmp = result.elts[d].title;
+                        //
+                        //             if (menu != menu_tmp) {
+                        //                 item += '<optgroup label="________________________________"><option disabled class="emundus_search_elm" value="-">' + menu_tmp.toUpperCase() + '</option></optgroup>';
+                        //                 menu = menu_tmp;
+                        //             }
+                        //
+                        //             if (grId != null || grId != result.elts[d].group_id) {
+                        //                 item += '</optgroup>';
+                        //             }
+                        //
+                        //             if (grId != result.elts[d].group_id) {
+                        //                 item += '<optgroup label=">> '+result.elts[d].group_label+'">';
+                        //             }
+                        //
+                        //             grId = result.elts[d].group_id;
+                        //
+                        //             var label = result.elts[d].element_label.replace(/(<([^>]+)>)/ig, "");
+                        //
+                        //             var elt_label = label;
+                        //             item += '<option value="'+result.elts[d].id+'" data-value="'+label+'">'+elt_label+'</option>';
+                        //         }
+                        //         $('#em-export-form').append(item);
+                        //         $('#em-export-form').trigger("chosen:updated");
+                        //
+                        //         console.log(data);
+                        //         $('#elements-popup').append(item);                  /// append item to #elements-popup
+                        //         item ='';
+                        //
+                        //         if (view == "files") {
+                        //             for (var d in result.defaults) {
+                        //                 if (isNaN(parseInt(d))) {
+                        //                     break;
+                        //                 }
+                        //
+                        //                 if ($("#em-export").find('#'+result.defaults[d].id).length == 0) {
+                        //                     item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                        //                 }
+                        //             }
+                        //             $('#em-export').append(item);
+                        //         }
+                        //     }
+                        // })
 
                         $.ajax({
                             type:'get',
