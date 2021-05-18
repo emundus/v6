@@ -3475,7 +3475,7 @@ $(document).ready(function() {
                 $('#data').append('<div class="panel panel-default pdform pdform-filters"><div class="panel-body"> <select class="chzn-select" id="filt_save" name="filt_save" >'+
                     '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option></select>'+
 
-                    '<button class="w3-button w3-tiny btn-warning" id="savefilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
+                    '<button class="w3-button w3-tiny btn-warning" id="savePDFfilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
                     '<button class="w3-button w3-tiny" id="delfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'"><i class="icon-trash"></i></button></div></div>'+
 
                     '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
@@ -3885,6 +3885,36 @@ $(document).ready(function() {
                         $('#exp-opt').show();
                     else
                         $('#exp-opt').hide();
+                });
+
+                var id = ($('#felts').find('input').checked = true);
+
+
+                /// save pdf filter
+                $('#savePDFfilter').on("click", function(){
+                    /// find all childs of #felts which has the name 'emundus_elm'
+
+                    var code = $('#em-export-prg').val();
+                    var camp = $('#em-export-camp').val();
+                    var proglabel = $("#em-export-prg option:selected").text();
+                    var camplabel = $("#em-export-camp option:selected").text();
+
+                    let elements = [];
+                    let eltsObject = $('[id^=emundus_elm_]');
+                    let eltsArray = Array.prototype.slice.call(eltsObject);
+                    
+                    eltsArray.forEach(elt => {
+                        if(elt.checked == true) {
+                            elements.push(elt.value);
+                        }
+                    })
+                    console.log(elements);
+
+                    //
+                    var exportParams = [];
+                    //var params = '{"programmelabel":"'+proglabel+'","code":"'+code+'","camp":"'+camp+'","campaignlabel":"'+camplabel+'","elements":'
+                    //var eltJson = "{";
+
                 });
 
                 $('#em-export-prg').chosen({width: "95%"});
@@ -5531,7 +5561,6 @@ $(document).ready(function() {
     //action fin
     //
     $(document).on('change', '#em-modal-actions #em-export-form', function(e) {
-
         if (e.handle !== true) {
             e.handle = true;
             var id = $(this).val();
