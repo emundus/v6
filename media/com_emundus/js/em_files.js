@@ -3405,39 +3405,25 @@ $(document).ready(function() {
                 $('#data').append(
                     '<div class="panel panel-default pdform" id="form-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
-                    '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" checked />' +
-                    '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('FORMS_PDF').toUpperCase()+'</font></label>'+
-                    '</div>'+
-                    '<div class="panel-body" id="felts" style="overflow:auto;display:none;"></div>'+
-                    '</div>'+
-                    '<div class="panel panel-default pdform" id="att-exists" style="display:none;">'+
-                    '<div class="panel-heading">'+
-                    '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment"/>' +
-                    '<label for="em-ex-attachment"><font color="black">'+Joomla.JText._('ATTACHMENT_PDF').toUpperCase()+'</font></label>'+
-                    '</div>'+
-                    '<div class="panel-body" id="aelts" style="overflow:auto;display:none;"></div>'+
-                    '</div>'+
+                    '<table style="width:100%;"><tr>'+
+                    '<th><h5><button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
+                    '<span class="glyphicon glyphicon-plus"></span>' +
+                    '</button> &ensp;' +Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
+                    '</h5></th>' +
 
-                    '<div class="panel panel-default pdform" id="eval-exists" style="display:none;">'+
-                    '<div class="panel-heading">'+
-                    '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
-                    '<label for="em-ex-assessment"><font color="black">'+Joomla.JText._('ASSESSMENT_PDF').toUpperCase()+'</font></label>'+
-                    '</div>'+
-                    '</div>'+
+                    '<th id="th-eval"><h5><button type="button" id="showevalelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
+                    '<span class="glyphicon glyphicon-plus"></span>' +
+                    '</button> &ensp;' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EVAL_FORM_ELEM')+
+                    '</h5></th>'+
 
-                    '<div class="panel panel-default pdform" id="dec-exists" style="display:none;">'+
-                    '<div class="panel-heading">'+
-                    '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
-                    '<label for="em-ex-decision"><font color="black">'+Joomla.JText._('DECISION_PDF').toUpperCase()+'</font></label>'+
-                    '</div>'+
-                    '</div>'+
+                    '<th id="th-dec"><h5><button type="button" id="showdecisionelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
+                    '<span class="glyphicon glyphicon-plus"></span>' +
+                    '</button> &ensp; ' +Joomla.JText._('COM_EMUNDUS_CHOOSE_DECISION_FORM_ELEM')+
+                    ' </h5></th>'+
 
-                    '<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
-                    '<div class="panel-heading">'+
-                    '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
-                    '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
-                    '</div>'+
-                    '</div><br/>');
+                    '</div>' +
+                    '</div>'
+                );
 
                 $('#data').append('<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
@@ -3462,6 +3448,26 @@ $(document).ready(function() {
                     '<option  value="upload" selected>'+Joomla.JText._('FILES_UPLOADED')+'</option>' +
                     '</select>'+
                     '</div></div><br/>' );
+
+                $('#data').append('<div class="panel panel-default pdform pdform-filters"><div class="panel-body"> <select class="chzn-select" id="filt_save" name="filt_save" >'+
+                    '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option></select>'+
+
+                    '<button class="w3-button w3-tiny btn-warning" id="savefilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
+                    '<button class="w3-button w3-tiny" id="delfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'"><i class="icon-trash"></i></button></div></div>'+
+
+                    '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
+                    '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                    '<strong>'+Joomla.JText._('FILTER_SAVED')+'</strong>'+
+                    '</div>'+
+                    '<div class="alert alert-dismissable alert-success em-alert-filter" id="del-filter">'+
+                    '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                    '<strong>'+Joomla.JText._('FILTER_DELETED')+'</strong>'+
+                    '</div>'+
+                    '<div class="alert alert-dismissable alert-danger em-alert-filter" id="err-filter">'+
+                    '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                    '<strong>'+Joomla.JText._('SQL_ERROR')+'</strong>'+
+                    '</div>');
+
                 $('chzn-select').trigger("chosen:updated");
 
                 $('#em-export-opt').chosen({width:'80%'});
