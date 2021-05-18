@@ -2873,7 +2873,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             $path = EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'] . DS . $name;
                             if (copy($file, $path)) {
                                 $url = JURI::base().EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/';
-                                $upId = $m_files->addAttachment($fnum, $name, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
+                                $upId = $m_files->addAttachment($fnum, $name, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description'], $canSee);
 
                                 $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url,);
                             }
@@ -3144,7 +3144,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $res = $m_export->toPdf($src, $dest, $fnum);
                             }
 
-                            $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
+                            $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description'], $canSee);
 
                             $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/',);
                         }
@@ -3277,7 +3277,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
                     $writer->save(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'] . DS . $filename);
 
-                    $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
+                    $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description'], $canSee);
 
                     $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL.$fnumsInfos[$fnum]['applicant_id'].'/',);
                 }
