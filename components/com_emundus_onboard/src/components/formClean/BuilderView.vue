@@ -198,7 +198,7 @@
                           <strong class="b switch"></strong>
                           <strong class="b track"></strong>
                         </div>
-                        <span class="ml-10px" style="color:black">{{Required}} </span>
+                        <span class="ml-10px" style="color:black">{{Required}}</span>
                       </a>
                     </div>
                   </div>
@@ -606,13 +606,10 @@ export default {
       if(labels.en === 'Unnamed item'){
         labels.en = labels.fr;
         element.label.en = labels.fr;
-        //this.elementAssociateDocUpdateForm.name.en="Unamed document";
       }
       if(element.plugin=="emundus_fileupload") {
         this.elementAssociateDocUpdateForm.name.en=labels.en;
         this.elementAssociateDocUpdateForm.name.fr=labels.fr
-
-      this.elementAssociateDocUpdateForm.name.fr=labels.fr;
       }
 
       axios({
@@ -640,8 +637,6 @@ export default {
               label: element.label.fr
             })
           }).then(() => {
-
-
             axios({
               method: "get",
               url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
@@ -654,8 +649,6 @@ export default {
               }
             }).then(response => {
               element.label_value = response.data.label_value;
-
-
               this.$emit(
                   "show",
                   "foo-velocity",
@@ -975,8 +968,8 @@ export default {
     // Page trigger
     updateLabelPage(page) {
       let labels = {
-        fr: this.prid+'-'+page.show_title.label.fr,
-        en: this.prid+'-'+page.show_title.label.en
+        fr: page.show_title.label.fr,
+        en: page.show_title.label.en
       }
       axios({
         method: "post",
@@ -1000,7 +993,7 @@ export default {
             },
             data: qs.stringify({
               pid: page.id,
-              label: this.prid+'_'+page.show_title.label.fr
+              label: page.show_title.label.fr
             })
           });
         }
@@ -1089,9 +1082,6 @@ export default {
 
     getDataObject: _.debounce(function() {
       this.object_json = this.object.object;
-      /*this.object_json.show_title.label.fr=this.splitProfileIdFromLabel(this.object_json.show_title.label.fr);
-      this.object_json.show_title.label.en=this.splitProfileIdFromLabel(this.object_json.show_title.label.en);*/
-
       this.getElementsArray();
     }, 500),
     getApiData: _.debounce(function() {

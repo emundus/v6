@@ -777,8 +777,6 @@
 
       createForm(){
         this.loading = true;
-       // console.log("form creation start here");
-
         axios({
           method: "post",
           url: "index.php?option=com_emundus_onboard&controller=form&task=createform",
@@ -789,7 +787,6 @@
         }).then(response => {
           this.loading = false;
           this.profileId = response.data.data;
-
           this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=');
         }).catch(error => {
           console.log(error);

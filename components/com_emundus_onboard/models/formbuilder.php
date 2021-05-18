@@ -80,8 +80,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $app->setUserState('com_languages.overrides.language_client', $language->lang_code . '0');
                 $this->model_language_overrides->populateState();
                 $cids = [$text];
-                $results[] = $this->model_language_overrides->delete($cids);
-                $this->copyFileToAdministration($language->lang_code);
+                if(!empty($cids)) {
+                    $results[] = $this->model_language_overrides->delete($cids);
+                    $this->copyFileToAdministration($language->lang_code);
+                }
             }
             return $results;
         } else {
@@ -286,7 +288,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             2 => "0"
         );
         $params['thanks_message'] = array(
-            3 => "Félicitations, votre dossier a bien été envoyée."
+            3 => "Félicitations, votre dossier a bien été envoyé."
         );
         $params['save_insession'] = array(
             3 => "0"
@@ -1538,17 +1540,13 @@ class EmundusonboardModelformbuilder extends JModelList {
         $default = '';
         //
 
-
-
         if ($plugin === 'birthday') {
             $dbtype = 'DATE';
         } elseif ($plugin === 'textarea') {
             $dbtype = 'TEXT';
         } elseif ($plugin === 'display') {
             $default = 'Ajoutez du texte personnalisé pour vos candidats';
-        } /*elseif ($plugin === 'fileupload'){
-            $dbtype='FILEUPLOAD';
-        }*/
+        }
 
         // Prepare parameters
         $params = $this->prepareElementParameters($plugin,$attachementId);
@@ -1630,7 +1628,6 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
             $db->setQuery($query);
             $dbtable = $db->loadObject()->dbtable;
-            //echo $dbtable;
             $formid = $db->loadObject()->formid;
 
             if ($evaluation) {
