@@ -3891,7 +3891,7 @@ $(document).ready(function() {
 
 
                 /// save pdf filter
-                $('#savePDFfilter').on("click", function(){
+                $('#savePDFfilter').on("click", function() {
                     /// find all childs of #felts which has the name 'emundus_elm'
 
                     var code = $('#em-export-prg').val();
@@ -3902,19 +3902,51 @@ $(document).ready(function() {
                     let elements = [];
                     let eltsObject = $('[id^=emundus_elm_]');
                     let eltsArray = Array.prototype.slice.call(eltsObject);
-                    
+
                     eltsArray.forEach(elt => {
-                        if(elt.checked == true) {
+                        if (elt.checked == true) {
                             elements.push(elt.value);
                         }
                     })
-                    console.log(elements);
-
                     //
-                    var exportParams = [];
-                    //var params = '{"programmelabel":"'+proglabel+'","code":"'+code+'","camp":"'+camp+'","campaignlabel":"'+camplabel+'","elements":'
-                    //var eltJson = "{";
+                    // var exportParams = [];
+                    // exportParams['code'] = code;
+                    // exportParams['camp'] = camp;
+                    // exportParams['proglabel'] = proglabel;
+                    // exportParams['camplabel'] = camplabel;
+                    // exportParams['elements'] = elements;
+                    // exportParams['mode'] = 'pdf';
+                    //
+                    // console.log(exportParams);
+                    //
+                    // var filName = prompt(filterName);
+                    // if (filName != null) {
+                    //     exportParams['filterlabel'] = filName;
+                    //     // call to ajax
+                    //     axios({
+                    //
+                    //     })
+                    // }
+                    var params = '{"programmelabel":"'+proglabel+'","code":"'+code+'","camp":"'+camp+'","campaignlabel":"'+camplabel+'","elements":';
+                    params += elements;
+                    params += '}';
 
+                    var filName = prompt(filterName);
+                    if (filName != null) {
+                        $.ajax({
+                            type: 'post',
+                            url: 'index.php?option=com_emundus&controller=files&task=savePdfFilter&Itemid=' + itemId,
+                            dataType: 'JSON',
+                            data: ({
+                                params: params,
+                                filt_name: filName,
+                                mode: 'pdf'
+                            }),
+                            success: function (result) {
+
+                            }
+                        })
+                    }
                 });
 
                 $('#em-export-prg').chosen({width: "95%"});

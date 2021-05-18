@@ -2634,6 +2634,25 @@ class EmundusHelperFiles
         }
     }
 
+    /// params :: user_id, $mode = "pdf", selected_elements = []
+    public function savePdfFilter($user_id, $time_date, $name, $constraints, $itemid, $mode) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            // step 1 :: insert data here
+            $query->insert($db->quoteName('#__emundus_filters'))
+                ->columns($db->quoteName(['time_date', 'user', 'name', 'constraints', 'item_id', 'mode']))
+                ->values($db->quote($time_date).",".$user_id.",".$db->quote($name).",".$db->quote($constraints).",".$itemid.",".$db->quote($mode));
+            $db->setQuery($query);
+            $db->execute();
+            return $db->insertid();
+
+        } catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
     public function getExportExcelFilter($user_id) {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);

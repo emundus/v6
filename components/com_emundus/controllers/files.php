@@ -3547,6 +3547,28 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         exit;
     }
 
+    public function savePdfFilter() {
+        $current_user = JFactory::getUser();
+        $jinput = JFactory::getApplication()->input;
+        $name = $jinput->getString('filt_name', null);
+        $itemid = $jinput->get->get('Itemid', null);
+        $params = $jinput->getString('params', null);
+        $mode = $jinput->getString('mode', null);
+
+        $constraints = json_encode(array('pdffilter'=>$params));
+
+        $h_files = new EmundusHelperFiles;
+        if (empty($itemid)) {
+            $itemid = $jinput->post->get('Itemid', null);
+        }
+
+        $time_date = (date('Y-m-d H:i:s'));
+        $result = $h_files->savePdfFilter($current_user->id, $time_date, $name, $constraints, $itemid, $mode);
+
+        echo json_encode((object)(array('status' => true, 'filter' => $result)));
+        exit;
+    }
+
     public function getExportExcelFilter() {
         $user_id  = JFactory::getUser()->id;
 
