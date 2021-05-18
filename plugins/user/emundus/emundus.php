@@ -411,14 +411,26 @@ class plgUserEmundus extends JPlugin
                         }
 
                         if ($user->id == 95) {
-                            // Send an email to Commercial
                             $db = JFactory::getDBO();
+                            $query = $db->getQuery(true);
 
+                            $date = new DateTime();
+                            $date->modify('+1 month');
+
+                            // Init prospect free period
+                            $query->insert($db->quoteName('#__emundus_tchooz_variables'));
+                            $query->set($db->quoteName('limit_form') . ' = 2')
+                                ->set($db->quoteName('free_period_end') . ' = ' . $db->quote($date->format('Y-m-d H:i:s')));
+                            $db->setQuery($query);
+                            $db->execute();
+                            //
+
+                            // Send an email to Commercial
                             $site_url = str_replace('http://', "", JURI::base());
 
                             $obj = new stdClass;
-                            $query = $db->getQuery(true);
-                            $query->select('Template')
+                            $query->clear()
+                                ->select('Template')
                                 ->from($db->quoteName('#__emundus_email_templates'))
                                 ->where($db->quoteName('id') . ' = 1');
                             $db->setQuery($query);
@@ -468,7 +480,7 @@ class plgUserEmundus extends JPlugin
                                 $send = $mailer->Send();
                                 if ($send !== true) {
                                     JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT') . ' : ' . $email, 'error');
-                                    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                                    JLog::add($send, JLog::ERROR, 'com_emundus');
                                 }
                             }
                         }

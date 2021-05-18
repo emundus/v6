@@ -1,5 +1,5 @@
 <template>
-  <div class='col-md-10 col-sm-12 tchooz-widget'>
+  <div class='col-md-9 col-sm-12 tchooz-widget'>
     <div class='section-sub-menu' style='margin-bottom: 10px'>
       <div id="chart-container">
         <fusioncharts

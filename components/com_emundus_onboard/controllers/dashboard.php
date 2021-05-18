@@ -204,4 +204,50 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function democounter(){
+        try {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('free_period_end')
+                ->from($db->quoteName('#__emundus_tchooz_variables'))
+                ->where($db->quoteName('id') . ' = 1');
+            $db->setQuery($query);
+            $end = $db->loadResult();
+
+            $now = new DateTime();
+            $end_period = new DateTime($end);
+
+            $count = $now->diff($end_period);
+
+            $tab = array('msg' => 'success', 'data' => $count->days);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function enablefreeperiod(){
+        try {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $now = new DateTime();
+            $extend_free_period = $now->modify('+3 months');
+
+            $query->update('#__emundus_tchooz_variables')
+                ->set($db->quoteName('free_period_end') . ' = ' . $db->quote($extend_free_period->format('Y-m-d H:i:s')))
+                ->where($db->quoteName('id') . ' = 1');
+            $db->setQuery($query);
+            $status = $db->execute();
+
+            $tab = array('msg' => 'success','status' => $status);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage());
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 }

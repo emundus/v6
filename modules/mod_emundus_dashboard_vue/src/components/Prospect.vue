@@ -1,14 +1,16 @@
 <template>
-  <div class='col-md-2 col-sm-4 tchooz-widget'>
+  <div class='col-md-3 col-sm-5 tchooz-widget'>
     <div class='section-sub-menu' style='margin-bottom: 10px'>
       <h3>{{translations.Demo}}</h3>
-      <p class="faq-intro">{{translations.currentlyDemo}}</p>
-      <a href='https://www.emundus.fr/ressources/centre-aide' target='_blank' rel="noopener noreferrer" class="prospect-link"><button class='bouton-faq'><span>{{translations.enableDemo}}</span></button></a>
+      <p class="faq-intro">{{translations.currentlyDemo}}<span style="font-weight: bold">{{this.counter}}</span>{{translations.currentlyDemo2}}</p>
+      <button class='bouton-faq' @click="enableFreePeriod"><span>{{translations.enableDemo}}</span></button>
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 const qs = require("qs");
 
 export default {
@@ -22,15 +24,43 @@ export default {
     translations: {
       Demo: Joomla.JText._("COM_EMUNDUS_DASHBOARD_PROSPECT_DEMO"),
       currentlyDemo: Joomla.JText._("COM_EMUNDUS_DASHBOARD_PROSPECT_DEMO_TEXT"),
+      currentlyDemo2: Joomla.JText._("COM_EMUNDUS_DASHBOARD_PROSPECT_DEMO_TEXT_2"),
       enableDemo: Joomla.JText._("COM_EMUNDUS_DASHBOARD_PROSPECT_DEMO_ENABLE"),
-    }
+    },
+    counter: 30,
   }),
 
   created() {
-
+    this.getcounter();
   },
 
-  methods: {},
+  methods: {
+    enableFreePeriod(){
+      axios({
+        method: "post",
+        url:
+            "index.php?option=com_emundus_onboard&controller=dashboard&task=enablefreeperiod",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+      }).then(response => {
+        console.log(response.msg);
+      });
+    },
+
+    getcounter(){
+      axios({
+        method: "get",
+        url:
+            "index.php?option=com_emundus_onboard&controller=dashboard&task=democounter",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+      }).then(response => {
+        this.counter = response.data.data;
+      });
+    }
+  },
 }
 </script>
 
@@ -74,12 +104,6 @@ export default {
 
   .prospect-link:hover{
     text-decoration: unset;
-  }
-
-  @media (max-width: 1440px) {
-    .faq-intro{
-      display: none;
-    }
   }
 
 </style>
