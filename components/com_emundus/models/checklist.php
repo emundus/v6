@@ -243,5 +243,22 @@ class EmundusModelChecklist extends JModelList
 
 		return $filename;
 	}
+
+
+    public function formatFileName(String $file, String $fnum, Array $post= []): string {
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        $m_emails = new EmundusModelEmails;
+
+        $aid = intval(substr($fnum, 21, 7));
+        $tags = $m_emails->setTags($aid, $post, $fnum);
+        $formatted_file = preg_replace($tags['patterns'], $tags['replacements'], $file);
+        $formatted_file = $m_emails->setTagsFabrik($formatted_file, array($fnum));
+
+        // Format filename
+        $formatted_file = $m_emails->stripAccents($formatted_file);
+        $formatted_file = preg_replace('/[^A-Za-z0-9 _.-]/','', $formatted_file);
+        $formatted_file = preg_replace('/\s/', '', $formatted_file);
+        return strtolower($formatted_file);
+    }
 }
 
