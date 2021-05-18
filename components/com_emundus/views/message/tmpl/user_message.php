@@ -62,7 +62,7 @@ $email_list = array();
             <!-- Dropdown to select the email template used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail">
                 <label for="select_template" ><?= JText::_('SELECT_TEMPLATE'); ?></label>
-                <select name="select_template" id="select_template" class="form-control" onChange="getTemplate(this);">
+                <select name="select_template" id="message_template" class="form-control" onChange="getTemplate(this);">
                     <?php if (!$message_templates) :?>
                         <option value="%"> <?= JText::_('NO_TEMPLATES_FOUND'); ?> </option>
                     <?php else: ?>
