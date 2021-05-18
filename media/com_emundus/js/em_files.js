@@ -3408,7 +3408,14 @@ $(document).ready(function() {
                 '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" checked />' +
                 '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('FORMS_PDF').toUpperCase()+'</font></label>'+
                 '</div>'+
+
+                '<h5><button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
+                '<span class="glyphicon glyphicon-plus"></span>' +
+                '</button> &ensp;' +Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
+                '</h5>' +
+
                 '<div class="panel-body" id="felts" style="overflow:auto;display:none;"></div>'+
+
                 '</div>'+
                 '<div class="panel panel-default pdform" id="att-exists" style="display:none;">'+
                 '<div class="panel-heading">'+
@@ -3437,71 +3444,8 @@ $(document).ready(function() {
                 '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
                 '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
                 '</div>'+
-                '</div><br/>');
-
-                // $('#data').append('<div class="panel-body">' +
-                // '<select name="em-export-form" id="em-export-form" class="chzn-select"></select><br/>' +
-                // '<div id="appelement">'+
-                // '<div id="elements-popup" style="width : 95%;margin : auto; display: none; ">' +
-                // '</div>' +
-                // '</div>'+
-                // '<div id="evalelement" style="display: none;">' +
-                // '<div id="eval-elements-popup" style="width : 95%;margin : auto; display: none;">' +
-                // '</div>' +
-                // '</div>' +
-                // '<div id="decelement" style="display: none;">' +
-                // '<div id="decision-elements-popup" style="width : 95%;margin : auto; display: none;">' +
-                // '</div>' +
-                // '</div>' +
-                // '<div id="admelement" style="display: none;">' +
-                // '<div id="admission-elements-popup" style="width : 95%;margin : auto; display: none;">' +
-                // '</div>' +
-                // '</div>' +
-                // '</div>' +
-                // '</div>' +
-                // '</div>');
-                
-                // $('#data').append('<div class="panel panel-default pdform" id="form-exists" style="display:none;">'+
-                //     '<div class="panel-heading">'+
-                //     '<table style="width:100%;"><tr>'+
-                //     '<th><h5><button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
-                //     '<span class="glyphicon glyphicon-plus"></span>' +
-                //     '</button> &ensp;' +Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
-                //     '</h5></th>' +
-                //
-                //     '<th id="th-eval"><h5><button type="button" id="showevalelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
-                //     '<span class="glyphicon glyphicon-plus"></span>' +
-                //     '</button> &ensp;' +Joomla.JText._('COM_EMUNDUS_CHOOSE_EVAL_FORM_ELEM')+
-                //     '</h5></th>'+
-                //
-                //     '<th id="th-dec"><h5><button type="button" id="showdecisionelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
-                //     '<span class="glyphicon glyphicon-plus"></span>' +
-                //     '</button> &ensp; ' +Joomla.JText._('COM_EMUNDUS_CHOOSE_DECISION_FORM_ELEM')+
-                //     ' </h5></th>'+
-                //
-                //     '</div>' +
-                //     '<div class="panel-body">' +
-                //     '<select name="em-export-form" id="em-export-form" class="chzn-select"></select><br/>' +
-                //     '<div id="appelement">'+
-                //     '<div id="elements-popup" style="width : 95%;margin : auto; display: none; ">' +
-                //     '</div>' +
-                //     '</div>'+
-                //     '<div id="evalelement" style="display: none;">' +
-                //     '<div id="eval-elements-popup" style="width : 95%;margin : auto; display: none;">' +
-                //     '</div>' +
-                //     '</div>' +
-                //     '<div id="decelement" style="display: none;">' +
-                //     '<div id="decision-elements-popup" style="width : 95%;margin : auto; display: none;">' +
-                //     '</div>' +
-                //     '</div>' +
-                //     '<div id="admelement" style="display: none;">' +
-                //     '<div id="admission-elements-popup" style="width : 95%;margin : auto; display: none;">' +
-                //     '</div>' +
-                //     '</div>' +
-                //     '</div>' +
-                //     '</div>' +
-                //     '</div>'
-                // );
+                '</div><br/>'
+                );
 
                 $('#data').append('<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
@@ -3774,7 +3718,13 @@ $(document).ready(function() {
                                 $('#felts-'+code+camp).parent('div').remove();
                                 $('#felts-'+code+'0').parent('div').remove();
                                 $('#felts').append(data);
-                                $('#felts').show();
+                                $('#showelements').on('click', function() {
+                                    if(this.className == 'btn btn-info btn-xs' || this.className == 'btn-xs btn btn-info') {
+                                        $('#felts').show();
+                                    } if(this.className == 'btn-xs btn btn-elements-success') {
+                                        $('#felts').hide();
+                                    }
+                                })
                             }
                         })
 
