@@ -3582,6 +3582,27 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         exit;
     }
 
+    public function getAllExportPdfFilter() {
+        $user_id  = JFactory::getUser()->id;
+
+        $h_files = new EmundusHelperFiles;
+        $filters = $h_files->getAllExportPdfFilter($user_id);
+
+        echo json_encode((object)(array('status' => true, 'filter' => $filters)));
+        exit;
+    }
+
+    public function getExportPdfFilterById() {
+        $jinput = JFactory::getApplication()->input;
+        $modelId = $jinput->getRaw('id');
+
+        $h_files = new EmundusHelperFiles;
+        $filters = $h_files->getExportPdfFilterById($modelId);
+
+        echo json_encode((object)(array('status' => true, 'filter' => $filters)));
+        exit;
+    }
+
     public function checkforms(){
         $user_id   = JFactory::getUser()->id;
         $jinput    = JFactory::getApplication()->input;

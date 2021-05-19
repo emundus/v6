@@ -3510,6 +3510,30 @@ $(document).ready(function() {
                         //$('#form-element').hide();
                         // $('#showelements').empty();      // hide button
                         if (result.status) {
+                            /// get all pdf models by user_id
+                            $.ajax({
+                                type: 'get',
+                                url: 'index.php?option=com_emundus&controller=files&task=getAllExportPdfFilter',
+                                dataType: 'json',
+                                success: function(result) {
+                                    if(result.status) {
+                                        let models = result.filter;
+                                        models.forEach(model => {
+                                            //add some logical conditions here
+                                            $('#filt_save_pdf').append('<option value="' + model.id + '">' + model.name + '</option>');
+                                            $('#filt_save_pdf').trigger("chosen:updated");
+
+                                            /// parse params --> checkbbox
+                                        });
+                                    } else {
+                                        /// add some events here
+                                    }
+                                }, error: function(jqXHR) {
+                                    console.log(jqXHR.responseText);
+                                }
+                            })
+
+
 
                             $('#em-export-prg').append(result.html);
                             $('#em-export-prg').trigger("chosen:updated");
@@ -3609,6 +3633,34 @@ $(document).ready(function() {
                     error: function (jqXHR) {
                         console.log(jqXHR.responseText);
                     }
+                });
+
+                $('#filt_save_pdf').on('change', function() {
+                   // get model params by model id
+                   console.log('change model');
+                   var model = $('#filt_save_pdf').val();
+
+                   if(model !== 0) {
+                       $.ajax({
+                           type: 'get',
+                           url: 'index.php?option=com_emundus&controller=files&task=getExportPdfFilterById',
+                           data: {
+                               id: model,
+                           },
+                           dataType: 'json',
+                           success: function(result) {
+                               if(result.status) {
+                                   console.log(result);
+                               } else {
+
+                               }
+                           }, error: function(jqXHR) {
+                               console.log(jqXHR.responseText);
+                           }
+                       })
+                   } else {
+                       /// do nothing
+                   }
                 });
 
                 $('#em-export-prg').on('change', function() {

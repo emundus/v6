@@ -2638,18 +2638,24 @@ class EmundusHelperFiles
     public function savePdfFilter($params) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        try {
-            // step 1 :: insert data here
-            $query->clear()
-                ->insert($db->quoteName('#__emundus_filters'))
-                ->columns($db->quoteName(array_keys($params)))
-                ->values(implode(',', $db->quote(array_values($params))));
 
-            $db->setQuery($query);
-            $db->execute();
-            return $db->insertid();
-        } catch(Exception $e) {
-            return $e->getMessage();
+        if(!empty($params)) {
+            try {
+                // step 1 :: insert data here
+                $query->clear()
+                    ->insert($db->quoteName('#__emundus_filters'))
+                    ->columns($db->quoteName(array_keys($params)))
+                    ->values(implode(',', $db->quote(array_values($params))));
+
+                $db->setQuery($query);
+                $db->execute();
+                return $db->insertid();
+            } catch (Exception $e) {
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
         }
     }
 
@@ -2667,6 +2673,53 @@ class EmundusHelperFiles
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function getAllExportPdfFilter($user_id) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($user_id)) {
+            try {
+                $query->clear()
+                    ->select('#__emundus_filters.*')
+                    ->from($db->quoteName('#__emundus_filters'))
+                    ->where($db->quoteName('#__emundus_filters.user').' = '.$user_id.' AND constraints LIKE '.$db->quote('%pdffilter%'))
+                    ->andWhere($db->quoteName('#__emundus_filters.mode') . ' = ' . $db->quote('pdf'));
+
+                $db->setQuery($query);
+                return $db->loadObjectList();
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    public function getExportPdfFilterById($model_id) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($model_id)) {
+            try {
+                $query->clear()
+                    ->select('#__emundus_filters.*')
+                    ->from($db->quoteName('#__emundus_filters'))
+                    ->where($db->quoteName('#__emundus_filters.id') . '=' . (int)$model_id . ' AND constraints LIKE '.$db->quote('%pdffilter%'))
+                    ->andWhere($db->quoteName('#__emundus_filters.mode') . ' = ' . $db->quote('pdf'));
+
+                $db->setQuery($query);
+                return $db->loadObject();
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+        } else {
             return false;
         }
     }
