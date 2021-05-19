@@ -373,6 +373,24 @@
             icon: 'fas fa-font',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FIELD")
           },
+          nom: {
+            id: 8,
+            value: 'nom',
+            icon: 'fas fa-font',
+            name: 'nom'
+          },
+          prenom: {
+            id: 9,
+            value: 'prenom',
+            icon: 'fas fa-font',
+            name: 'prénom'
+          },
+          email:{
+            id:10,
+            value: 'email',
+            icon: 'fas fa-font',
+            name: 'email'
+          },
           textarea: {
             id: 5,
             value: 'textarea',
@@ -490,7 +508,8 @@
             }
               this.createElementEMundusFileUpload(params,gid,plugin,order);
           } else {
-
+            console.log("simple element creation ")
+            console.log(plugin)
             axios({
               method: "post",
               url:
@@ -516,7 +535,25 @@
                 }
               }).then(response => {
                     console.log("none emundus file upload");
+
                     console.log(response);
+
+                if (plugin=="email") {
+                  response.data.params.password = 3;
+                } else {
+                  response.data.params.password=0;
+                }
+                axios({
+                  method: "post",
+                  url:
+                      "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateparams",
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                  },
+                  data: qs.stringify({
+                    element: response.data,
+                  })
+                })
 
                 this.menuHighlightCustumisation(response,gid,order);
 

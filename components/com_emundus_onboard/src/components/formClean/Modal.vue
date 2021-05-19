@@ -187,6 +187,10 @@
         if(typeof this.element.params.sub_options !== 'undefined') {
           this.element.params.sub_options.sub_values = this.sublabel;
         }
+        console.log('before');
+        console.log(this.element);
+        console.log('after');
+
         axios({
           method: "post",
           url:

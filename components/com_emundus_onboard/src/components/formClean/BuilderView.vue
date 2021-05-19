@@ -192,6 +192,21 @@
                           <em class="fas fa-link settings-elt"></em>
                         </a>
                       </div>
+
+
+                      <!--<div class="form-group" v-if="element.plugin == 'field'">
+                        <label>{{fieldtype}} :</label>
+                        <select id='selectIdTest' class="dropdown-toggle" :disabled="files != 0 && element.params.password == 6" v-on:change="changeInputFieldType(element,$event)">
+                          <option value="0">{{textfield}}</option>
+
+                          <option value="3">{{emailfield}}</option>
+                          <option value="name">Nom</option>
+                          <option value="surname">Prenom</option>
+                          <option value="6" v-if="files == 0 || (files != 0 && element.params.password == 6)">{{numberfield}}</option>
+                        </select>
+                      </div>-->
+
+
                       <a class="d-flex mr-2" v-if="element.plugin != 'display'" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
                         <div class="toggle">
                           <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement(element)"/>
@@ -200,6 +215,8 @@
                         </div>
                         <span class="ml-10px" style="color:black">{{Required}} </span>
                       </a>
+
+
                     </div>
                   </div>
                   </transition-group>
@@ -330,6 +347,11 @@ export default {
       RepeatedGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEATED_GROUP"),
       Duplicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_DUPLICATE"),
       NoElementsTips: Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS"),
+      fieldtype: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_FIELDTYPE"),
+      textfield: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_FIELDTEXT"),
+      phonefield: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_FIELDPHONE"),
+      emailfield: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EMAIL"),
+      numberfield: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_NUMBER"),
     };
   },
   methods: {
@@ -1284,7 +1306,53 @@ export default {
     show(group, type, text, title) {
       this.$emit("show", group, type, text, title);
     },
+
+    changeInputFieldType:function
+        changeInputFieldType(element,event){
+      if (event.target.value=='name'){
+        //element.params.bootstrap_class='input-xxlarge text-uppercase';
+        element.label.fr='Nom';
+        element.label.en='Name';
+        element.params.password=0;
+        console.log('element name')
+        console.log(element.params)
+
+
+      } else if(event.target.value=='surname') {
+        element.label.fr='Prénom';
+        element.label.en='Surname';
+        //element.params.bootstrap_class='input-xxlarge text-capitalize';
+        element.params.password=0;
+        console.log('element surname')
+        console.log(element.params)
+      } else {
+        element.label.fr='Element sans titre';
+        element.label.en='Unamed item';
+        element.params.password=event.target.value;
+        element.params.bootstrap_class='input-xxlarge';
+        console.log('element pass')
+        console.log(element.params)
+      }
+
+      axios({
+        method: "post",
+        url:
+            "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateparams",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          element: element,
+        })
+      }).then((response)=>{
+        this.updateLabelElement(element)
+        console.log('update succesfully');
+
+
+      })
+    },
   },
+
   created() {
     if(!_.isEmpty(this.object.object)) {
       this.getDataObject();
@@ -1299,7 +1367,8 @@ export default {
       if (this.UpdateUx === true) {
         this.getApiData();
       }
-    }
+    },
+
   },
   computed: {
     orderedGroups: function () {
