@@ -3651,6 +3651,36 @@ $(document).ready(function() {
                            success: function(result) {
                                if(result.status) {
                                    console.log(result);
+                                   let constraints = result.filter.constraints;
+                                   let json = JSON.parse(constraints);
+
+                                   let progCode = json['pdffilter']['code'];
+                                   let progLabel = json['pdffilter']['proglabel'];
+
+                                   let campCode = json['pdffilter']['camp'];
+                                   let campLabel = json['pdffilter']['camplabel'];
+
+
+                                   let elems = json['pdffilter']['elements'];
+                                   let headears = json['pdffilter']['headers'];
+
+                                   let optionsObjects = document.getElementById('em-export-camp');
+                                   let optionsArray = Array.prototype.slice.call( optionsObjects );
+                                   optionsArray.forEach(opt => {
+                                       if(opt.value == campCode) {
+                                           document.getElementById('em-export-camp')[campCode].selected = true;
+                                           // $('#em-export-camp option[value=campCode]').trigger("click");
+                                       }
+                                   })
+
+                                   $('#em-export-camp').trigger("chosen:updated");
+                                   $('#em-export-camp').trigger("change");
+                                   /// set the headers
+                                   $('#felts').show();
+
+                                   /// check to elems
+                                   setTimeout(function() {elems.forEach(elt => {$("#emundus_elm_" + elt).prop('checked', true);})}, 5000);
+
                                } else {
 
                                }
@@ -3773,7 +3803,7 @@ $(document).ready(function() {
                             type: 'get',
                             url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code,
                             success: function (data) {
-                                console.log(data);
+                                //console.log(data);
                                 $('#felts-'+code+camp).parent('div').remove();
                                 $('#felts-'+code+'0').parent('div').remove();
                                 $('#felts').append(data);
@@ -3848,7 +3878,7 @@ $(document).ready(function() {
 
                                             success: function(result) {
                                                 if (result.status) {
-                                                    console.log(result);
+                                                    //console.log(result);
                                                     // $('#felts-'+code+camp).parent('div').remove();
                                                     // $('#felts-'+code+'0').parent('div').remove();
                                                     // $('#felts').append(result.html);
