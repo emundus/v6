@@ -3909,27 +3909,14 @@ $(document).ready(function() {
                         }
                     })
                     //
-                    // var exportParams = [];
-                    // exportParams['code'] = code;
-                    // exportParams['camp'] = camp;
-                    // exportParams['proglabel'] = proglabel;
-                    // exportParams['camplabel'] = camplabel;
-                    // exportParams['elements'] = elements;
-                    // exportParams['mode'] = 'pdf';
-                    //
-                    // console.log(exportParams);
-                    //
-                    // var filName = prompt(filterName);
-                    // if (filName != null) {
-                    //     exportParams['filterlabel'] = filName;
-                    //     // call to ajax
-                    //     axios({
-                    //
-                    //     })
-                    // }
-                    var params = '{"programmelabel":"'+proglabel+'","code":"'+code+'","camp":"'+camp+'","campaignlabel":"'+camplabel+'","elements":';
-                    params += elements;
-                    params += '}';
+
+                    let params = {
+                        'code':code,
+                        'camp': camp,
+                        'proglabel': proglabel,
+                        'camplabel': camplabel,
+                        'elements': elements,
+                    };
 
                     var filName = prompt(filterName);
                     if (filName != null) {
@@ -3940,7 +3927,7 @@ $(document).ready(function() {
                             data: ({
                                 params: params,
                                 filt_name: filName,
-                                mode: 'pdf'
+                                mode: 'pdf',
                             }),
                             success: function (result) {
 

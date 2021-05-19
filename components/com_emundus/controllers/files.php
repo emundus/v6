@@ -3548,22 +3548,25 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
     }
 
     public function savePdfFilter() {
-        $current_user = JFactory::getUser();
         $jinput = JFactory::getApplication()->input;
-        $name = $jinput->getString('filt_name', null);
-        $itemid = $jinput->get->get('Itemid', null);
-        $params = $jinput->getString('params', null);
-        $mode = $jinput->getString('mode', null);
 
+        $time_date = (date('Y-m-d H:i:s'));
+        $current_user = JFactory::getUser();
+        $name = $jinput->getString('filt_name', null);
+
+        $params = $jinput->getString('params', null);
         $constraints = json_encode(array('pdffilter'=>$params));
+
+        $itemid = $jinput->get->get('Itemid', null);
+        $mode = $jinput->getString('mode', null);
 
         $h_files = new EmundusHelperFiles;
         if (empty($itemid)) {
             $itemid = $jinput->post->get('Itemid', null);
         }
 
-        $time_date = (date('Y-m-d H:i:s'));
-        $result = $h_files->savePdfFilter($current_user->id, $time_date, $name, $constraints, $itemid, $mode);
+        $pdfParams = array('time_date'=>$time_date, 'user'=>$current_user->id,'name'=>$name, 'constraints'=>$constraints,'item_id'=>$itemid, 'mode'=>$mode);
+        $result = $h_files->savePdfFilter($pdfParams);
 
         echo json_encode((object)(array('status' => true, 'filter' => $result)));
         exit;
