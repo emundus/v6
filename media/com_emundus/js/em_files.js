@@ -3472,7 +3472,7 @@ $(document).ready(function() {
                     '</select>'+
                     '</div></div><br/>' );
 
-                $('#data').append('<div class="panel panel-default pdform pdform-filters"><div class="panel-body"> <select class="chzn-select" id="filt_save" name="filt_save" >'+
+                $('#data').append('<div class="panel panel-default pdform pdform-filters"><div class="panel-body"> <select class="chzn-select" id="filt_save_pdf" name="filt_save_pdf" >'+
                     '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option></select>'+
 
                     '<button class="w3-button w3-tiny btn-warning" id="savePDFfilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
@@ -3908,7 +3908,14 @@ $(document).ready(function() {
                             elements.push(elt.value);
                         }
                     })
-                    //
+
+                    let headers = [];
+                    let headersObject = document.querySelectorAll("[class=search-choice]");
+                    let headersArray = Array.prototype.slice.call(headersObject);
+
+                    headersArray.forEach(header => {
+                        headers.push(header.textContent);
+                    })
 
                     let params = {
                         'code':code,
@@ -3916,6 +3923,7 @@ $(document).ready(function() {
                         'proglabel': proglabel,
                         'camplabel': camplabel,
                         'elements': elements,
+                        'headers': headers,
                     };
 
                     var filName = prompt(filterName);
@@ -3930,9 +3938,22 @@ $(document).ready(function() {
                                 mode: 'pdf',
                             }),
                             success: function (result) {
-
+                                if(result.status) {
+                                    $('#filt_save_pdf').append('<option value="' + result.filter + '" selected="">' + filName + '</option>');
+                                    $('#filt_save_pdf').trigger("chosen:updated");
+                                    $('#filt_save_pdf').show();
+                                    //// adding some effects here
+                                }
+                                else {
+                                    //// adding some effects here
+                                }
+                            }, error: function(jqXHR) {
+                                console.log(jqXHR.responseText);
                             }
                         })
+                    } else {
+                        alert(filterEmpty);
+                        filName = prompt(filterName, "name");
                     }
                 });
 

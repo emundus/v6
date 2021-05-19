@@ -2647,10 +2647,7 @@ class EmundusHelperFiles
 
             $db->setQuery($query);
             $db->execute();
-            $_modelId = $db->insertid();
-
-            // step 2 :: get model
-
+            return $db->insertid();
         } catch(Exception $e) {
             return $e->getMessage();
         }
