@@ -152,11 +152,10 @@ class EmundusControllerExport extends JControllerLegacy
     }
 
     public function getProfileByCampaignWorkflow() {
-        $user = JFactory::getUser();
+        $current_user = JFactory::getUser();
 
-        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+            die(JText::_('RESTRICTED_ACCESS'));
         } else {
             $jinput = JFactory::getApplication()->input;
             $data = $jinput->getRaw('campaign');
@@ -164,6 +163,8 @@ class EmundusControllerExport extends JControllerLegacy
             $_model = $this->getModel('export');
             $_profiles = $_model->getProfileByCampaignWorkflow($data);
 
+            echo json_encode((object) $_profiles);
+            exit();
         }
     }
 }
