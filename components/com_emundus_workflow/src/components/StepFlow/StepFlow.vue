@@ -72,7 +72,7 @@ import { commonMixin } from '../../mixins/common-mixin';
 import workflowDashboard from "../Workflow/Dashboard/WorkflowDashboard"; /// using mixin in this case
 
 import draggable from 'vuedraggable';
-import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+// import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 
 import messageModal from "../Modal/WorkflowModal/element/messageModal";
 
@@ -80,7 +80,7 @@ export default {
   name: "stepflow",
   mixins: [commonMixin],
 
-  components: {ModalConfigStep, SimpleFlowchart, WorkflowSpace, draggable, PulseLoader, messageModal},
+  components: {ModalConfigStep, SimpleFlowchart, WorkflowSpace, draggable, messageModal},
 
   props: {},
 
