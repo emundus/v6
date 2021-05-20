@@ -3409,12 +3409,7 @@ $(document).ready(function() {
                 '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('FORMS_PDF').toUpperCase()+'</font></label>'+
                 '</div>'+
 
-                '<div id = "form-element">' +
-                '<h5><button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
-                '<span class="glyphicon glyphicon-plus"></span>' +
-                '</button> &ensp;' +Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
-                '</h5></div>' +
-
+                '<div id = "form-element" style="overflow:auto"></div>' +
                 '<div class="panel-body" id="felts" style="overflow:auto;display:none;"></div>'+
 
                 '</div>'+
@@ -3818,6 +3813,12 @@ $(document).ready(function() {
                     var camp = $("#em-export-camp").val();          // get value of chosen campaign
 
                     if (code != 0 && camp != 0) {
+                        $('#form-element').append(
+                            '<h5><button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
+                            '<span class="glyphicon glyphicon-plus"></span>' +
+                            '</button> &ensp;' +Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
+                            '</h5>');
+
                         console.log(code);
                         console.log(camp);
                         $.ajax({
