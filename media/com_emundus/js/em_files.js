@@ -3410,7 +3410,7 @@ $(document).ready(function() {
                 '</div>'+
 
                 '<div id = "form-element" style="overflow:auto"></div>' +
-                '<div class="panel-body" id="felts" style="overflow:auto;display:none;"></div>'+
+                // '<div class="panel-body" id="felts" style="overflow:auto;display:none;"></div>'+
 
                 '</div>'+
                 '<div class="panel panel-default pdform" id="att-exists" style="display:none;">'+
@@ -3832,18 +3832,24 @@ $(document).ready(function() {
                                         '   <button type="button" id="showelements_'+profile_ids[index]+'" class="btn btn-info btn-xs" title="'+profile_labels[index]+'">' +
                                                 '<span class="glyphicon glyphicon-plus"></span>' +
                                             '</button> &ensp;' +profile_labels[index]+
-                                        '</h5>'
+                                        '</h5>' +
+                                        '<div class="panel-body" id="felts'+profile_ids[index]+'" style="overflow:auto;display:none;">felts '+profile_ids[index]+'</div>'
                                     );
                                 }
 
-                                // profile_labels.forEach(label => {
-                                //     // console.log(profile.profile_label);
-                                //     $('#form-element').append(
-                                //         '<h5><button type="button" id="showelements" class="btn btn-info btn-xs" title="'+label+'">' +
-                                //         '<span class="glyphicon glyphicon-plus"></span>' +
-                                //         '</button> &ensp;' +label+
-                                //         '</h5>');
-                                // })
+                                $('[id^=showelements_]').click(function(e) {
+                                    let id = ($(this).attr('id')).split('_')[1];
+                                    if(this.firstElementChild.className == 'glyphicon glyphicon-plus') {
+                                        this.firstChild.className = 'glyphicon glyphicon-minus';
+                                        this.className = 'btn-xs btn btn-elements-success'
+                                        $('#felts'+ id).show();
+                                    } else if( this.firstElementChild.className == 'glyphicon glyphicon-minus'){
+                                        this.firstChild.className = 'glyphicon glyphicon-plus';
+                                        this.className = 'btn-xs btn btn-info';
+                                        $('#felts'+ id).hide();
+                                    }
+
+                                })
 
                                 $.ajax({
                                     type: 'get',
@@ -3855,9 +3861,9 @@ $(document).ready(function() {
                                         $('#felts').append(data);
                                         $('#showelements').on('click', function() {
                                             if(this.className == 'btn btn-info btn-xs' || this.className == 'btn-xs btn btn-info') {
-                                                $('#felts').show();
+                                                //$('#felts').show();
                                             } if(this.className == 'btn-xs btn btn-elements-success') {
-                                                $('#felts').hide();
+                                                //$('#felts').hide();
                                             }
                                         });
 
