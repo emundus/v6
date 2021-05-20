@@ -3638,6 +3638,7 @@ $(document).ready(function() {
                 $('#filt_save_pdf').on('change', function() {
                    // get model params by model id
                    console.log('change model');
+                    $('#felts').empty();
                    var model = $('#filt_save_pdf').val();
 
                    if(model !== 0) {
@@ -4598,10 +4599,20 @@ $(document).ready(function() {
         var attach_checked = [];
         var options = [];
 
-        $('#felts input:checked').each(function() {
-            form_checked.push($(this).val());
-            forms = 0;
-        });
+        // $('#felts input:checked').each(function() {
+        //     form_checked.push($(this).val());
+        //     forms = 0;
+        // });
+
+        /// grab all selected elements
+        let eltsObject = $('[id^=emundus_elm_]');
+        let eltsArray = Array.prototype.slice.call(eltsObject);
+        eltsArray.forEach(elt => {
+            if (elt.checked == true) {
+                form_checked.push(elt.value);
+                forms = 0;
+            }
+        })
 
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
