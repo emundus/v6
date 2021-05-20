@@ -367,36 +367,4 @@ class EmundusHelperExport
 		}
 
 	}
-
-    public function getProfileByCampaignWorkflow($campaign_id) {
-        if(!empty($campaign_id)) {
-            try {
-                $query = $this->_db->getQuery(true);
-                $profile = [];
-
-                $query->clear()
-                    ->select('#__emundus_campaign_workflow.*')
-                    ->from($this->_db->quoteName('#__emundus_campaign_workflow'))
-                    ->where($this->_db->quoteName('#__emundus_campaign_workflow.campaign') . '=' . (int)$campaign_id);
-
-                $this->_db->setQuery($query);
-                $_firstProfileList = $this->_db->loadObjectList();
-
-                $query->clear()
-                    ->select('#__emundus_setup_campaigns.*')
-                    ->from($this->_db->quoteName('#__emundus_setup_campaigns'))
-                    ->where($this->_db->quoteName('#__emundus_setup_campaigns.id') . '=' . (int)$campaign_id);
-                $this->_db->setQuery($query);
-                $_defaultProfile = $this->_db->loadObjectList();
-
-                /// check if default profile is in firstProfileList --> if yes, keep only firstProfileList, if no, keep both
-                /// using in_array
-            } catch(Exception $e) {
-                return $e->getMessage();
-            }
-        } else {
-            return false;
-        }
-    }
-
 }
