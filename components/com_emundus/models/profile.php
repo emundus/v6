@@ -500,6 +500,111 @@ class EmundusModelProfile extends JModelList {
         return $res;
     }
 
+    public function getProfileIDByCampaigns($campaigns, $codes) {
+        $query = $this->_db->getQuery(true);
+        if(!empty($campaigns)) {
+            if(!empty($codes)) {
+                try {
+                    $query->clear()
+                        ->select('#__emundus_campaign_workflow.*')
+                        ->from($this->_db->quoteName('#__emundus_campaign_workflow'))
+                        ->where($this->_db->quoteName('#__emundus_campaign_workflow.campaign') . 'IN (' . implode(',', $campaigns) . ')');
+
+                    $this->_db->setQuery($query);
+
+                    $_firstResult = $this->_db->loadObjectList();
+
+                    foreach ($_firstResult as $key => $value) {
+                        $firstProfile[] = $value->profile;
+                    }
+
+
+                    $query->clear()
+                        ->select('#__emundus_setup_campaigns.*')
+                        ->from($this->_db->quoteName('#__emundus_setup_campaigns'))
+                        ->where($this->_db->quoteName('#__emundus_setup_campaigns.id') . 'IN (' . implode(',', $campaigns) . ')')
+                        ->andWhere($this->_db->quoteName('#__emundus_setup_campaigns.training') . 'IN ("' . implode(',', $codes) . '")');
+
+                    $this->_db->setQuery($query);
+                    $_secondResult = $this->_db->loadObjectList();
+
+                    foreach ($_secondResult as $key => $value) {
+                        $secondProfile[] = $value->profile_id;
+                    }
+
+                    $_profileIds = array_unique(array_merge($firstProfile,$secondProfile));
+
+                    $query->clear()
+                        ->select('#__emundus_setup_profiles.*')
+                        ->from($this->_db->quoteName('#__emundus_setup_profiles'))
+                        ->where($this->_db->quoteName('#__emundus_setup_profiles.id') . 'IN (' . implode(',', $_profileIds) . ')');
+
+                    $this->_db->setQuery($query);
+
+                    $_profilesLabels = $this->_db->loadObjectList();
+
+                    foreach ($_profilesLabels as $key => $value) {
+                        $profileLabels[] = $value->label;
+                    }
+
+                    return ['profile_id' => $_profileIds, 'profile_label' => $profileLabels];
+
+                } catch(Exception $e) {
+                    return $e->getMessage();
+                }
+            } else {
+                try {
+                    $query->clear()
+                        ->select('#__emundus_campaign_workflow.*')
+                        ->from($this->_db->quoteName('#__emundus_campaign_workflow'))
+                        ->where($this->_db->quoteName('#__emundus_campaign_workflow.campaign') . 'IN (' . implode(',', $campaigns) . ')');
+
+                    $this->_db->setQuery($query);
+
+                    $_firstResult = $this->_db->loadObjectList();
+
+                    foreach ($_firstResult as $key => $value) {
+                        $firstProfile[] = $value->profile;
+                    }
+
+                    $query->clear()
+                        ->select('#__emundus_setup_campaigns.*')
+                        ->from($this->_db->quoteName('#__emundus_setup_campaigns'))
+                        ->where($this->_db->quoteName('#__emundus_setup_campaigns.id') . 'IN (' . implode(',', $campaigns) . ')');
+
+                    $this->_db->setQuery($query);
+                    $_secondResult = $this->_db->loadObjectList();
+
+                    foreach ($_secondResult as $key => $value) {
+                        $secondProfile[] = $value->profile_id;
+                    }
+
+                    $_profileIds = array_unique(array_merge($firstProfile,$secondProfile));
+
+                    $query->clear()
+                        ->select('#__emundus_setup_profiles.*')
+                        ->from($this->_db->quoteName('#__emundus_setup_profiles'))
+                        ->where($this->_db->quoteName('#__emundus_setup_profiles.id') . 'IN (' . implode(',', $_profileIds) . ')');
+
+                    $this->_db->setQuery($query);
+
+                    $_profilesLabels = $this->_db->loadObjectList();
+
+                    foreach ($_profilesLabels as $key => $value) {
+                        $profileLabels[] = $value->label;
+                    }
+
+                    return ['profile_id' => $_profileIds, 'profile_label' => $profileLabels];
+
+                } catch(Exception $e) {
+                    return $e->getMessage();
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+
     function getFnumDetails($fnum) {
         $query = 'SELECT ecc.*, esc.*, ess.*, epd.profile as profile_id_form
 					FROM #__emundus_campaign_candidature AS ecc

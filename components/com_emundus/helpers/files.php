@@ -539,10 +539,12 @@ class EmundusHelperFiles
             }
 
             // get profiles for selected programmes or campaigns
-            $plist = $m_profile->getProfileIDByCampaign((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
+            //$plist = $m_profile->getProfileIDByCampaign((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
+            $plist = $m_profile->getProfileIDByCampaigns((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
 
         } else {
-            $plist = $m_profile->getProfileIDByCourse($code, $camps);
+//            var_dump($camps);die;
+            $plist = $m_profile->getProfileIDByCampaigns($camps, $code) ?: $m_profile->getProfileIDByCourse($code, $camps);
         }
 
         if ($plist) {
