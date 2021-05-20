@@ -616,7 +616,10 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
             if ($table_name === 'jos_emundus_users') {
 
-                if($element_name != 'user_id') {
+                if($element_name == 'id_ehesp' && (empty($element['user_id']) || !isset($element['user_id']))){
+                    $fields = $fields;
+                }
+                elseif($element_name != 'user_id') {
                     $fields[] = $db->quoteName($element_name).' = '.$element_value;
                 }
 
@@ -629,9 +632,12 @@ foreach ($parsed_data as $row_id => $insert_row) {
         }
 
         if ($table_name === 'jos_emundus_users') {
-
-            $select = array('email');
-
+            if(array_key_exists('id_ehesp',$element)){
+                $select = array('email','id_ehesp');
+            }
+            else{
+                $select = array('email');
+            }
             $query->clear()
                 ->select($db->quoteName($select))
                 ->from($db->quoteName('#__emundus_users'))
@@ -642,6 +648,11 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
             if($element['email'] == $existData->email){
                 $app->enqueueMessage('The user with email : '.$existData->email.' already exist', 'info');
+            }
+            if(array_key_exists('id_ehesp',$element)){
+                if($element['id_ehesp'] !== $existData->id_ehesp && (!empty($element['user_id']) && isset($element['user_id']))){
+                    $app->enqueueMessage('The EHESP id : '.$existData->id_ehesp.' have been modified', 'info');
+                }
             }
 
             $query->clear()
