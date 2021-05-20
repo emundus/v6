@@ -539,15 +539,18 @@ class EmundusHelperFiles
             }
 
             // get profiles for selected programmes or campaigns
-            //$plist = $m_profile->getProfileIDByCampaign((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
-            $plist = $m_profile->getProfileIDByCampaigns((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
+            $plist = $m_profile->getProfileIDByCampaign((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
 
         } else {
-//            var_dump($camps);die;
-            $plist = $m_profile->getProfileIDByCampaigns($camps, $code) ?: $m_profile->getProfileIDByCourse($code, $camps);
+//            $plist = $m_profile->getProfileIDByCampaigns($camps,$code) ?: $m_profile->getProfileIDByCourse($code, $camps);
+            $plist = $m_profile->getProfileIDByCourse($code, $camps);
         }
 
+        $prfiles = $m_profile->getProfileIDByCampaigns($camps,$code);
+        //var_dump($prfiles);die;
+
         if ($plist) {
+
             // get Fabrik list ID for profile_id
             $fl = array();
             $menutype = array();
@@ -604,7 +607,6 @@ class EmundusHelperFiles
             }
 
             $query .= ' ' . $join . ' ' . $where . ' ' . $order;
-
             try {
 
                 $db->setQuery($query);
@@ -624,6 +626,7 @@ class EmundusHelperFiles
                         $elts[] = $value;
                     }
                 }
+                $elts['profiles'] = $prfiles;
                 return $elts;
 
             } catch (Exception $e) {
@@ -2716,6 +2719,7 @@ class EmundusHelperFiles
                     ->andWhere($db->quoteName('#__emundus_filters.mode') . ' = ' . $db->quote('pdf'));
 
                 $db->setQuery($query);
+                var_dump($db->loadObject());die;
                 return $db->loadObject();
             }
             catch(Exception $e) {

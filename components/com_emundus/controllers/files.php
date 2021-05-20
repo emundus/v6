@@ -1192,7 +1192,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $defaultElements    = $m_files->getDefaultElements();
         $elements           = $h_files->getElements($code, $camp);
-        //var_dump($elements);
+
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
         echo json_encode((object)$res);
         exit;

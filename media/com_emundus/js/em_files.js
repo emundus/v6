@@ -3815,13 +3815,35 @@ $(document).ready(function() {
                     if (code != 0 && camp != 0) {
                         $.ajax({
                             type: 'get',
-                            url: 'index.php?option=com_emundus&controller=profile&task=getProfileByCampaignWorkflow',
+                            url: 'index.php?option=com_emundus&controller=files&task=getformelem',
                             dataType: 'json',
-                            data: {campaign:camp},
+                            data: {
+                                camp: camp,
+                                code: code,
+                            },
                             success: function(result) {
                                 /// render how many profiles
+                                let profile_labels = Array.prototype.slice.call( result.elts.profiles.profile_label );
+                                let profile_ids = Array.prototype.slice.call( result.elts.profiles.profile_id );
 
+                                for(index = 0; index < profile_labels.length; index ++) {
+                                    $('#form-element').append(
+                                        '<h5>' +
+                                        '   <button type="button" id="showelements_'+profile_ids[index]+'" class="btn btn-info btn-xs" title="'+profile_labels[index]+'">' +
+                                                '<span class="glyphicon glyphicon-plus"></span>' +
+                                            '</button> &ensp;' +profile_labels[index]+
+                                        '</h5>'
+                                    );
+                                }
 
+                                // profile_labels.forEach(label => {
+                                //     // console.log(profile.profile_label);
+                                //     $('#form-element').append(
+                                //         '<h5><button type="button" id="showelements" class="btn btn-info btn-xs" title="'+label+'">' +
+                                //         '<span class="glyphicon glyphicon-plus"></span>' +
+                                //         '</button> &ensp;' +label+
+                                //         '</h5>');
+                                // })
 
                                 $.ajax({
                                     type: 'get',

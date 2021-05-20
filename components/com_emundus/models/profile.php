@@ -518,7 +518,6 @@ class EmundusModelProfile extends JModelList {
                         $firstProfile[] = $value->profile;
                     }
 
-
                     $query->clear()
                         ->select('#__emundus_setup_campaigns.*')
                         ->from($this->_db->quoteName('#__emundus_setup_campaigns'))
