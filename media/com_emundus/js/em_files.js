@@ -3813,59 +3813,108 @@ $(document).ready(function() {
                     var camp = $("#em-export-camp").val();          // get value of chosen campaign
 
                     if (code != 0 && camp != 0) {
-                        $('#form-element').append(
-                            '<h5><button type="button" id="showelements" class="btn btn-info btn-xs" title="'+Joomla.JText._('COM_EMUNDUS_SHOW_ELEMENTS')+'">' +
-                            '<span class="glyphicon glyphicon-plus"></span>' +
-                            '</button> &ensp;' +Joomla.JText._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+
-                            '</h5>');
-
-                        console.log(code);
-                        console.log(camp);
                         $.ajax({
                             type: 'get',
-                            url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code,
-                            success: function (data) {
-                                //console.log(data);
-                                $('#felts-'+code+camp).parent('div').remove();
-                                $('#felts-'+code+'0').parent('div').remove();
-                                $('#felts').append(data);
-                                $('#showelements').on('click', function() {
-                                    if(this.className == 'btn btn-info btn-xs' || this.className == 'btn-xs btn btn-info') {
-                                        $('#felts').show();
-                                    } if(this.className == 'btn-xs btn btn-elements-success') {
-                                        $('#felts').hide();
+                            url: 'index.php?option=com_emundus&controller=profile&task=getProfileByCampaignWorkflow',
+                            dataType: 'json',
+                            data: {campaign:camp},
+                            success: function(result) {
+                                /// render how many profiles
+
+
+
+                                $.ajax({
+                                    type: 'get',
+                                    url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code,
+                                    success: function (data) {
+                                        //console.log(data);
+                                        $('#felts-'+code+camp).parent('div').remove();
+                                        $('#felts-'+code+'0').parent('div').remove();
+                                        $('#felts').append(data);
+                                        $('#showelements').on('click', function() {
+                                            if(this.className == 'btn btn-info btn-xs' || this.className == 'btn-xs btn btn-info') {
+                                                $('#felts').show();
+                                            } if(this.className == 'btn-xs btn btn-elements-success') {
+                                                $('#felts').hide();
+                                            }
+                                        });
+
+                                        $('#em-ex-forms').click(function(e) {
+
+                                            if ($('#em-ex-forms').is(":checked")){
+                                                //document.getElementById('em-ex-forms').checked = true;
+                                                //$('#emundus_checkall_tbl_'+div_id).trigger("click");
+                                                let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
+
+                                                // find all children of panels
+                                                let children = Array.prototype.slice.call( panel.children );
+                                                children.forEach((elt) => {
+                                                    var div_id = elt.id.split('emundus_table_')[1];
+                                                    $('#emundus_checkall_tbl_'+div_id).trigger("click");
+                                                })
+                                                document.getElementById('em-ex-forms').checked = true;
+
+                                            } else {
+                                                let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
+
+                                                // find all children of panels
+                                                let children = Array.prototype.slice.call( panel.children );
+                                                children.forEach((elt) => {
+                                                    var div_id = elt.id.split('emundus_table_')[1];
+                                                    $('#emundus_checkall_tbl_'+div_id).trigger("click");
+                                                })
+                                                document.getElementById('em-ex-forms').checked = false;
+                                            }
+                                        });
                                     }
-                                });
-
-                                $('#em-ex-forms').click(function(e) {
-
-                                    if ($('#em-ex-forms').is(":checked")){
-                                        //document.getElementById('em-ex-forms').checked = true;
-                                        //$('#emundus_checkall_tbl_'+div_id).trigger("click");
-                                        let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
-
-                                        // find all children of panels
-                                        let children = Array.prototype.slice.call( panel.children );
-                                        children.forEach((elt) => {
-                                            var div_id = elt.id.split('emundus_table_')[1];
-                                            $('#emundus_checkall_tbl_'+div_id).trigger("click");
-                                        })
-                                        document.getElementById('em-ex-forms').checked = true;
-
-                                    } else {
-                                        let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
-
-                                        // find all children of panels
-                                        let children = Array.prototype.slice.call( panel.children );
-                                        children.forEach((elt) => {
-                                            var div_id = elt.id.split('emundus_table_')[1];
-                                            $('#emundus_checkall_tbl_'+div_id).trigger("click");
-                                        })
-                                        document.getElementById('em-ex-forms').checked = false;
-                                    }
-                                });
+                                })
                             }
                         })
+                        // $.ajax({
+                        //     type: 'get',
+                        //     url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code,
+                        //     success: function (data) {
+                        //         //console.log(data);
+                        //         $('#felts-'+code+camp).parent('div').remove();
+                        //         $('#felts-'+code+'0').parent('div').remove();
+                        //         $('#felts').append(data);
+                        //         $('#showelements').on('click', function() {
+                        //             if(this.className == 'btn btn-info btn-xs' || this.className == 'btn-xs btn btn-info') {
+                        //                 $('#felts').show();
+                        //             } if(this.className == 'btn-xs btn btn-elements-success') {
+                        //                 $('#felts').hide();
+                        //             }
+                        //         });
+                        //
+                        //         $('#em-ex-forms').click(function(e) {
+                        //
+                        //             if ($('#em-ex-forms').is(":checked")){
+                        //                 //document.getElementById('em-ex-forms').checked = true;
+                        //                 //$('#emundus_checkall_tbl_'+div_id).trigger("click");
+                        //                 let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
+                        //
+                        //                 // find all children of panels
+                        //                 let children = Array.prototype.slice.call( panel.children );
+                        //                 children.forEach((elt) => {
+                        //                     var div_id = elt.id.split('emundus_table_')[1];
+                        //                     $('#emundus_checkall_tbl_'+div_id).trigger("click");
+                        //                 })
+                        //                 document.getElementById('em-ex-forms').checked = true;
+                        //
+                        //             } else {
+                        //                 let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
+                        //
+                        //                 // find all children of panels
+                        //                 let children = Array.prototype.slice.call( panel.children );
+                        //                 children.forEach((elt) => {
+                        //                     var div_id = elt.id.split('emundus_table_')[1];
+                        //                     $('#emundus_checkall_tbl_'+div_id).trigger("click");
+                        //                 })
+                        //                 document.getElementById('em-ex-forms').checked = false;
+                        //             }
+                        //         });
+                        //     }
+                        // })
 
                         $.ajax({
                             type:'get',

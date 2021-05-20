@@ -150,4 +150,20 @@ class EmundusControllerExport extends JControllerLegacy
             exit();
         }
     }
+
+    public function getProfileByCampaignWorkflow() {
+        $user = JFactory::getUser();
+
+        if (!EmundusworkflowHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('campaign');
+
+            $_model = $this->getModel('export');
+            $_profiles = $_model->getProfileByCampaignWorkflow($data);
+
+        }
+    }
 }
