@@ -542,35 +542,25 @@ class EmundusHelperFiles
             $plist = $m_profile->getProfileIDByCampaign((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
 
         } else {
+//            $plist = $m_profile->getProfileIDByCampaigns($camps,$code) ?: $m_profile->getProfileIDByCourse($code, $camps);
             $plist = $m_profile->getProfileIDByCourse($code, $camps);
         }
 
         $prfiles = $m_profile->getProfileIDByCampaigns($camps,$code);
         //var_dump($prfiles);die;
 
-        //var_dump($prfiles['profile_id']);die;
+        if ($plist) {
 
-        //if ($plist) {
-
-        if($prfiles)
             // get Fabrik list ID for profile_id
             $fl = array();
             $menutype = array();
 
             // get all profiles
-            $profiles = $m_user->getApplicantProfiles();                /// get all published profiles
+            $profiles = $m_user->getApplicantProfiles();
 
             foreach ($profiles as $profile) {
-//                if (is_array($plist) && count($plist) == 0 || (count($plist) > 0 && in_array($profile->id, $plist))) {
-//                 	$menu_list = $h_menu->buildMenuQuery($profile->id);
-//                    foreach ($menu_list as $m) {
-//                        $fl[] = $m->table_id;
-//                        $menutype[$profile->id] = $m->menutype;
-//                    }
-//                }
-
-                if(is_array($prfiles['profile_id']) && count($prfiles['profile_id']) > 0 && in_array($profile->id, $prfiles['profile_id'])) {
-                    $menu_list = $h_menu->buildMenuQuery($profile->id);
+                if (is_array($plist) && count($plist) == 0 || (count($plist) > 0 && in_array($profile->id, $plist))) {
+                 	$menu_list = $h_menu->buildMenuQuery($profile->id);
                     foreach ($menu_list as $m) {
                         $fl[] = $m->table_id;
                         $menutype[$profile->id] = $m->menutype;
@@ -578,15 +568,9 @@ class EmundusHelperFiles
                 }
             }
 
-            //// here --> menutype is still correct menytype['9'] = menu-profile9 // menutype['1000'] = menu-profile1000
-
             if (empty($fl)) {
 	            return array();
             }
-        $elts = array();
-
-        foreach($menutype as $k=>$v) {
-            /// 3 menutypes --> 3 for loops
 
             $query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
                     INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, joins.table_join, menu.title,
@@ -605,92 +589,54 @@ class EmundusHelperFiles
                 $where .= ' AND p.id IN (' . implode(',', $plist) . ') ';
             }
 
-            if (count($fabrik_elements) > 0) {
+            if (count($fabrik_elements) > 0 ) {
 
                 $where .= ' AND element.id IN (' . implode(',', $fabrik_elements) . ') ';
-                $order = '';
+                $order ='';
 
             } else {
+
                 $where .= ' AND (tab.id IN ( ' . implode(',', $fl) . ' ))
-                       AND element.published=1
-                       AND element.hidden=0
-                       AND element.label!=" "
-                       AND element.label!=""
-                       AND menu.menutype IN ( "' . implode('","', [$v]) . '" ) 
-                       AND element.plugin!="display"';
+                        AND element.published=1
+                        AND element.hidden=0
+                        AND element.label!=" "
+                        AND element.label!=""
+                        AND menu.menutype IN ( "' . implode('","', $menutype) . '" ) 
+                        AND element.plugin!="display"';
                 $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
             }
+
             $query .= ' ' . $join . ' ' . $where . ' ' . $order;
+            try {
 
-            $db->setQuery($query);
+                $db->setQuery($query);
+                $elements = $db->loadObjectList('id');
 
-            $elements = $db->loadObjectList('id');
-
-//            $elts = array();
-            $allowed_groups = EmundusHelperAccess::getUserFabrikGroups(JFactory::getUser()->id);
-            $elts[$v] = null;
-//            if (count($elements) > 0) {
-                foreach ($elements as $key => $value) {
-                    if ($allowed_groups !== true && is_array($allowed_groups) && !in_array($value->group_id, $allowed_groups)) {
-                        continue;
+                $elts = array();
+                $allowed_groups = EmundusHelperAccess::getUserFabrikGroups(JFactory::getUser()->id);
+                if (count($elements) > 0) {
+                    foreach ($elements as $key => $value) {
+	                    if ($allowed_groups !== true && is_array($allowed_groups) && !in_array($value->group_id, $allowed_groups)) {
+		                    continue;
+	                    }
+                        $value->id = $key;
+                        $value->table_label = JText::_($value->table_label);
+                        $value->group_label = JText::_($value->group_label);
+                        $value->element_label = JText::_($value->element_label);
+                        $elts[] = $value;
                     }
-                    $value->id = $key;
-                    $value->table_label = JText::_($value->table_label);
-                    $value->group_label = JText::_($value->group_label);
-                    $value->element_label = JText::_($value->element_label);
-                    $elts[$v] = $value;
                 }
-//            }
-//            var_dump($elts);
+                $elts['profiles'] = $prfiles;
+                return $elts;
 
+            } catch (Exception $e) {
+                echo $e->getMessage();
+                return array();
+            }
+
+        } else {
+        	return array();
         }
-        $elts['profiles'] = $prfiles;
-        return $elts;
-//        var_dump($elts);
-//        die;
-
-
-
-
-//            try {
-//                $db->setQuery($query);
-//                var_dump($query);
-//                $elements = $db->loadObjectList('id');
-//
-//                var_dump($elements);die;
-//
-//                $elts = array();
-//                $allowed_groups = EmundusHelperAccess::getUserFabrikGroups(JFactory::getUser()->id);
-//
-//
-//
-//
-//                if (count($elements) > 0) {
-//                    foreach ($elements as $key => $value) {
-//                        if ($allowed_groups !== true && is_array($allowed_groups) && !in_array($value->group_id, $allowed_groups)) {
-//                            continue;
-//                        }
-//                        $value->id = $key;
-//                        $value->table_label = JText::_($value->table_label);
-//                        $value->group_label = JText::_($value->group_label);
-//                        $value->element_label = JText::_($value->element_label);
-//                        $elts[] = $value;
-//                    }
-//                }
-//
-//                $elts['profiles'] = $prfiles;
-//                return $elts;
-//
-//            } catch (Exception $e) {
-//                echo $e->getMessage();
-//                return array();
-//            }
-//
-//        }
-//        die;
-//        } else {
-//        	return array();
-//        }
     }
 
     /**
