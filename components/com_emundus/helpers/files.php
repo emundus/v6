@@ -516,7 +516,7 @@ class EmundusHelperFiles
 	 *
 	 * @return array
 	 */
-    public static function getElements($code = array(), $camps = array(), $fabrik_elements = array()) : array {
+    public static function getElements($code = array(), $camps = array(), $fabrik_elements = array(),$profile=null) : array {
         require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
         require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
         require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');

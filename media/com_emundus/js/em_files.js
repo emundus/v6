@@ -3859,7 +3859,7 @@ $(document).ready(function() {
 
                                             childrenArray.forEach(child => {
                                                 if(child.id.split('emundus_elements_menu-profile')[1] !== elt.id.split('felts')[1]) {
-                                                    console.log('hide' + elt.id + 'div' + child.id);
+                                                    console.log(elt.id + '.....' + child.id);
                                                 }
                                             })
                                         });
