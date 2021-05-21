@@ -272,7 +272,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 								}
 							}
 
-						} elseif ((int)$g_params->repeated === 1) {
+						} elseif ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) {
 
 							$t_elt = array();
 							foreach ($elements as &$element) {

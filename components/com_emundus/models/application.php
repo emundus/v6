@@ -862,7 +862,7 @@ class EmundusModelApplication extends JModelList {
 
                         // TABLEAU DE PLUSIEURS LIGNES
                     }
-                    elseif ((int)$g_params->repeated === 1) {
+                    elseif ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) {
 
                         $form .= '<table class="table table-bordered table-striped">
                             <thead>
@@ -1244,7 +1244,7 @@ class EmundusModelApplication extends JModelList {
 	                    if (count($elements) > 0) {
 
 
-	                        if ((int)$g_params->repeated === 1) {
+                            if ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) {
 
 	                            $query = 'SELECT table_join FROM #__fabrik_joins WHERE list_id='.$itemt->table_id.' AND group_id='.$itemg->group_id.' AND table_join_key like "parent_id"';
                                 try {
@@ -1760,7 +1760,7 @@ class EmundusModelApplication extends JModelList {
                             // TABLEAU DE PLUSIEURS LIGNES avec moins de 7 colonnes
                         }
 
-                        elseif (((int)$g_params->repeated === 1) && count($elements) < 6 && !$asTextArea) {
+                        elseif (((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) && count($elements) < 6 && !$asTextArea) {
                             //-- Entrée du tableau -- */
                             $t_elt = array();
                             foreach ($elements as &$element) {
@@ -1969,7 +1969,7 @@ class EmundusModelApplication extends JModelList {
                             // TABLEAU DE PLUSIEURS LIGNES sans tenir compte du nombre de lignes
                         }
 
-                        elseif ((int)$g_params->repeated === 1) {
+                        elseif ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) {
 
                             //-- Entrée du tableau -- */
                             $t_elt = array();
@@ -2401,7 +2401,7 @@ class EmundusModelApplication extends JModelList {
                             }
 
                             // TABLEAU DE PLUSIEURS LIGNES
-                        } elseif ((int)$g_params->repeated === 1){
+                        } elseif ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1){
                             $forms .= '<p><table class="adminlist">
                               <thead>
                               <tr> ';
