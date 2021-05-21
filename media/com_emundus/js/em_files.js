@@ -3813,65 +3813,76 @@ $(document).ready(function() {
                     var camp = $("#em-export-camp").val();          // get value of chosen campaign
 
                     if (code != 0 && camp != 0) {
+                        // step 1 --> grab all profiles by campaigns
                         $.ajax({
                             type: 'get',
-                            url: 'index.php?option=com_emundus&controller=files&task=getformelem',
+                            url: 'index.php?option=com_emundus&controller=export&task=getprofiles',
                             dataType: 'json',
                             data: {
                                 camp: camp,
                                 code: code,
                             },
                             success: function(result) {
-                                /// render how many profiles
-                                let profile_labels = Array.prototype.slice.call( result.elts.profiles.profile_label );
-                                let profile_ids = Array.prototype.slice.call( result.elts.profiles.profile_id );
-
-                                for(index = 0; index < profile_labels.length; index ++) {
-                                    $('#form-element').append(
-                                        '<h5>' +
-                                        '   <button type="button" id="showelements_'+profile_ids[index]+'" class="btn btn-info btn-xs" title="'+profile_labels[index]+'">' +
-                                                '<span class="glyphicon glyphicon-plus"></span>' +
-                                            '</button> &ensp;' +profile_labels[index]+
-                                        '</h5>' +
-                                        '<div class="panel-body" id="felts'+profile_ids[index]+'" style="overflow:auto;display:none;">felts '+profile_ids[index]+'</div>'
-                                    );
-                                }
-
-                                $('[id^=showelements_]').click(function(e) {
-                                    let id = ($(this).attr('id')).split('_')[1];
-                                    if(this.firstElementChild.className == 'glyphicon glyphicon-plus') {
-                                        this.firstChild.className = 'glyphicon glyphicon-minus';
-                                        this.className = 'btn-xs btn btn-elements-success'
-                                        $('#felts'+ id).show();
-                                    } else if( this.firstElementChild.className == 'glyphicon glyphicon-minus'){
-                                        this.firstChild.className = 'glyphicon glyphicon-plus';
-                                        this.className = 'btn-xs btn btn-info';
-                                        $('#felts'+ id).hide();
-                                    }
-
-                                })
-
+                                // step 2 --> grab all elems form for each profiles
                                 $.ajax({
                                     type: 'get',
                                     url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code,
                                     success: function (data) {
-                                        //console.log(data);
                                         $('#felts-'+code+camp).parent('div').remove();
                                         $('#felts-'+code+'0').parent('div').remove();
-                                        $('#felts').append(data);
-                                        $('#showelements').on('click', function() {
-                                            if(this.className == 'btn btn-info btn-xs' || this.className == 'btn-xs btn btn-info') {
-                                                //$('#felts').show();
-                                            } if(this.className == 'btn-xs btn btn-elements-success') {
-                                                //$('#felts').hide();
-                                            }
+
+                                        let profile_labels = Array.prototype.slice.call( result.profile_label );
+                                        let profile_ids = Array.prototype.slice.call( result.profile_id );
+
+                                        console.log(data);
+                                        for(index = 0; index < profile_labels.length; index ++) {
+                                            $('#form-element').append(
+                                                '<h5>' +
+                                                '   <button type="button" id="showelements_'+profile_ids[index]+'" class="btn btn-info btn-xs" title="'+profile_labels[index]+'">' +
+                                                '<span class="glyphicon glyphicon-plus"></span>' +
+                                                '</button> &ensp;' +profile_labels[index]+
+                                                '</h5>' +
+                                                '<div class="panel-body" id="felts'+profile_ids[index]+'" style="overflow:auto"/>'
+                                            );
+                                            $('#felts'+profile_ids[index]).hide();
+                                            $('#felts'+profile_ids[index]).append(data);
+                                        }
+
+                                        /// get all profiles div
+                                        let feltsObject = $('[id^=felts]');
+                                        let feltsArray = Array.prototype.slice.call( feltsObject );
+
+                                        /// for each profile div, compare its name with all children name
+                                        feltsArray.forEach(elt => {
+                                            let children = document.getElementById(elt.id).children;
+                                            let childrenArray = Array.prototype.slice.call( children );
+
+                                            childrenArray.forEach(child => {
+                                                if(child.id.split('emundus_elements_menu-profile')[1] !== elt.id.split('felts')[1]) {
+                                                    console.log('hide' + elt.id + 'div' + child.id);
+                                                }
+                                            })
                                         });
+
+
+                                        $('[id^=showelements_]').click(function(e) {
+                                            let id = ($(this).attr('id')).split('_')[1];
+                                            if(this.firstElementChild.className == 'glyphicon glyphicon-plus') {
+                                                this.firstChild.className = 'glyphicon glyphicon-minus';
+                                                this.className = 'btn-xs btn btn-elements-success'
+                                                $('#felts'+ id).show();
+                                            } else if( this.firstElementChild.className == 'glyphicon glyphicon-minus'){
+                                                this.firstChild.className = 'glyphicon glyphicon-plus';
+                                                this.className = 'btn-xs btn btn-info';
+                                                $('#felts'+ id).hide();
+                                            }
+                                        })
 
                                         $('#em-ex-forms').click(function(e) {
 
                                             if ($('#em-ex-forms').is(":checked")){
-                                                //document.getElementById('em-ex-forms').checked = true;
-                                                //$('#emundus_checkall_tbl_'+div_id).trigger("click");
+                                                document.getElementById('em-ex-forms').checked = true;
+                                                // $('#emundus_checkall_tbl_'+div_id).trigger("click");
                                                 let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
 
                                                 // find all children of panels
@@ -3882,7 +3893,8 @@ $(document).ready(function() {
                                                 })
                                                 document.getElementById('em-ex-forms').checked = true;
 
-                                            } else {
+                                            }
+                                            else {
                                                 let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
 
                                                 // find all children of panels
@@ -3896,6 +3908,49 @@ $(document).ready(function() {
                                         });
                                     }
                                 })
+
+
+
+
+
+                                // $.ajax({
+                                //     type: 'get',
+                                //     url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code,
+                                //     success: function (data) {
+                                //         console.log(data);
+                                //         $('#felts-'+code+camp).parent('div').remove();
+                                //         $('#felts-'+code+'0').parent('div').remove();
+                                //
+                                //
+                                //         $('#em-ex-forms').click(function(e) {
+                                //
+                                //             if ($('#em-ex-forms').is(":checked")){
+                                //                 //document.getElementById('em-ex-forms').checked = true;
+                                //                 //$('#emundus_checkall_tbl_'+div_id).trigger("click");
+                                //                 let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
+                                //
+                                //                 // find all children of panels
+                                //                 let children = Array.prototype.slice.call( panel.children );
+                                //                 children.forEach((elt) => {
+                                //                     var div_id = elt.id.split('emundus_table_')[1];
+                                //                     $('#emundus_checkall_tbl_'+div_id).trigger("click");
+                                //                 })
+                                //                 document.getElementById('em-ex-forms').checked = true;
+                                //
+                                //             } else {
+                                //                 let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
+                                //
+                                //                 // find all children of panels
+                                //                 let children = Array.prototype.slice.call( panel.children );
+                                //                 children.forEach((elt) => {
+                                //                     var div_id = elt.id.split('emundus_table_')[1];
+                                //                     $('#emundus_checkall_tbl_'+div_id).trigger("click");
+                                //                 })
+                                //                 document.getElementById('em-ex-forms').checked = false;
+                                //             }
+                                //         });
+                                //     }
+                                // })
                             }
                         })
                         // $.ajax({

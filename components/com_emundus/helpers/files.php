@@ -640,6 +640,7 @@ class EmundusHelperFiles
                         }
                         $array = $elts;
                     }
+                    $array['menu-profile1001'] = $prfiles;          // this line aims to test with hard-code
                 } catch (Exception $e) {
                     echo $e->getMessage();
                     return array();
