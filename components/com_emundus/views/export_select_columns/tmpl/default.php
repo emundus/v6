@@ -25,122 +25,129 @@ if (!empty($s_elements)) {
 ?>
 
     <?php
-    if (is_array($this->elements) && count($this->elements) > 0) {
-        // If the form is set then this means that we are getting the Admission form details or some other extra form
-        // We are going to use the form value as a way to make unique IDs so the JS works correctly :)
-        if (isset($this->form) && !empty($this->form)) {
+//    echo '<pre>'; var_dump(array_search($this->elements['menu-profile9'], $this->elements)); echo '</pre>'; die;
 
-            echo '<div id="emundus_elements_'.$this->form.'" class="otherForm">';
-            $tbl_tmp='';
-            $grp_tmp='';
 
-            foreach ($this->elements as $t) {
-                if ($tbl_tmp == '') {
-                    echo '<div class="panel panel-primary excel otherForm" id="emundus_table_'.$this->form.'_'.$t->table_id.'">
+    foreach($this->elements as $k=>$v) {
+//        echo '<pre>'; var_dump($k); echo '</pre>'; ;
+
+        if (is_array($v) && count($v) > 0) {
+            // If the form is set then this means that we are getting the Admission form details or some other extra form
+            // We are going to use the form value as a way to make unique IDs so the JS works correctly :)
+            if (isset($this->form) && !empty($this->form)) {
+
+                echo '<div id="emundus_elements_' . $k . $this->form . '" class="otherForm">';
+                $tbl_tmp = '';
+                $grp_tmp = '';
+
+                foreach ($v as $t) {
+                    if ($tbl_tmp == '') {
+                        echo '<div class="panel panel-primary excel otherForm" id="emundus_table_' . $this->form . '_' . $t->table_id . '">
                             <div class="panel-heading"><div><input type="checkbox" ';
 
-                    echo ' id="emundus_checkall_tbl_'.$this->form.'_'.$t->table_id.'" class="emunduspage otherForm" data-check=".emundusgroup_'.$this->form.'_'.$t->table_id.'" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$this->form.'_'.$t->table_id.'\')" /><label for="emundus_checkall_tbl_'.$this->form.'_'.$t->table_id.'">'.$t->table_label.'</label></div></div><div class="panel-body">
-                        <div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
+                        echo ' id="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '" class="emunduspage otherForm" data-check=".emundusgroup_' . $this->form . '_' . $t->table_id . '" onClick="javascript:check_all(\'emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '\')" /><label for="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '">' . $t->table_label . '</label></div></div><div class="panel-body">
+                        <div class="panel panel-info excel" id="emundus_grp_' . $t->group_id . '">
                             <div class="panel-heading"><div><input type="checkbox" ';
 
-                    echo ' id="emundus_checkall_grp_'.$this->form.'_'.$t->group_id.'" class="emundusgroup_'.$this->form.'_'.$t->table_id.' otherForm" data-check=".emundusitem_'.$this->form.'_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$this->form.'_'.$t->group_id.'\')" /><label for="emundus_checkall_grp_'.$this->form.'_'.$this->form.'_'.$t->group_id.'">'.$t->group_label.'</label></div></div><div class="panel-body">';
-                } elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') {
+                        echo ' id="emundus_checkall_grp_' . $this->form . '_' . $t->group_id . '" class="emundusgroup_' . $this->form . '_' . $t->table_id . ' otherForm" data-check=".emundusitem_' . $this->form . '_' . $t->group_id . '" onClick="javascript:check_all(\'emundus_checkall_grp_' . $this->form . '_' . $t->group_id . '\')" /><label for="emundus_checkall_grp_' . $this->form . '_' . $this->form . '_' . $t->group_id . '">' . $t->group_label . '</label></div></div><div class="panel-body">';
+                    } elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') {
                         echo '</div></div></div></div>
-                            <div class="panel panel-primary excel" id="emundus_table_'.$this->form.'_'.$t->table_id.'">
+                            <div class="panel panel-primary excel" id="emundus_table_' . $this->form . '_' . $t->table_id . '">
                                 <div class="panel-heading"><div><input type="checkbox" ';
 
-                        echo ' id="emundus_checkall_tbl_'.$this->form.'_'.$t->table_id.'" class="emunduspage otherForm" data-check=".emundusgroup_'.$this->form.'_'.$t->table_id.'" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$this->form.'_'.$t->table_id.'\')" /><label for="emundus_checkall_tbl_'.$this->form.'_'.$t->table_id.'">'.$t->table_label.'</label></div></div><div class="panel-body">
-                            <div class="panel panel-info excel otherForm" id="emundus_grp_'.$this->form.'_'.$t->group_id.'">
+                        echo ' id="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '" class="emunduspage otherForm" data-check=".emundusgroup_' . $this->form . '_' . $t->table_id . '" onClick="javascript:check_all(\'emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '\')" /><label for="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '">' . $t->table_label . '</label></div></div><div class="panel-body">
+                            <div class="panel panel-info excel otherForm" id="emundus_grp_' . $this->form . '_' . $t->group_id . '">
                                 <div class="panel-heading"><div><input type="checkbox" ';
 
-                        echo ' id="emundus_checkall_grp_'.$this->form.'_'.$t->group_id.'" class="emundusgroup_'.$this->form.'_'.$t->table_id.' otherForm" data-check=".emundusitem_'.$this->form.'_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$this->form.'_'.$t->group_id.'\')" /><label for="emundus_checkall_grp_'.$this->form.'_'.$t->group_id.'">'.$t->group_label.'</label></div></div><div class="panel-body">';
-                } else {
-                    if ($t->group_id != $grp_tmp && $grp_tmp != '') {
-                            echo '</div></div><div class="panel panel-info excel otherForm" id="emundus_grp_'.$t->group_id.'">
+                        echo ' id="emundus_checkall_grp_' . $this->form . '_' . $t->group_id . '" class="emundusgroup_' . $this->form . '_' . $t->table_id . ' otherForm" data-check=".emundusitem_' . $this->form . '_' . $t->group_id . '" onClick="javascript:check_all(\'emundus_checkall_grp_' . $this->form . '_' . $t->group_id . '\')" /><label for="emundus_checkall_grp_' . $this->form . '_' . $t->group_id . '">' . $t->group_label . '</label></div></div><div class="panel-body">';
+                    } else {
+                        if ($t->group_id != $grp_tmp && $grp_tmp != '') {
+                            echo '</div></div><div class="panel panel-info excel otherForm" id="emundus_grp_' . $t->group_id . '">
                                     <div class="panel-heading"><div><input type="checkbox" ';
 
-                            echo ' id="emundus_checkall_grp_'.$this->form.'_'.$t->group_id.'" class="emundusgroup_'.$this->form.'_'.$t->table_id.' otherForm" data-check=".emundusitem_'.$this->form.'_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$this->form.'_'.$t->group_id.'\')"/><label for="emundus_checkall_grp_'.$this->form.'_'.$t->group_id.'">'.$t->group_label.'</div></div><div class="panel-body">';
+                            echo ' id="emundus_checkall_grp_' . $this->form . '_' . $t->group_id . '" class="emundusgroup_' . $this->form . '_' . $t->table_id . ' otherForm" data-check=".emundusitem_' . $this->form . '_' . $t->group_id . '" onClick="javascript:check_all(\'emundus_checkall_grp_' . $this->form . '_' . $t->group_id . '\')"/><label for="emundus_checkall_grp_' . $this->form . '_' . $t->group_id . '">' . $t->group_label . '</div></div><div class="panel-body">';
+                        }
                     }
-                }
-                echo ' <input name="ud[]" type="checkbox" id="emundus_elm_'.$t->id.'" class="emundusitem_'.$this->form.'_'.$t->group_id.' otherForm" onClick="javascript:check_all(\'emundus_elm_'.$t->id.'\')" ';
-                if (!empty($s_elements) && in_array($t->table_name,$table_name) && in_array($t->element_name,$element_name)) {
-	                echo "checked=checked";
-                }
-                echo ' value="'.$t->id.'"/><label class="label-element" for="emundus_elm_'.$t->id.'">'.preg_replace('#<[^>]+>#', ' ', JText::_($t->element_label)).'</label> ';
+                    echo ' <input name="ud[]" type="checkbox" id="emundus_elm_' . $t->id . '" class="emundusitem_' . $this->form . '_' . $t->group_id . ' otherForm" onClick="javascript:check_all(\'emundus_elm_' . $t->id . '\')" ';
+                    if (!empty($s_elements) && in_array($t->table_name, $table_name) && in_array($t->element_name, $element_name)) {
+                        echo "checked=checked";
+                    }
+                    echo ' value="' . $t->id . '"/><label class="label-element" for="emundus_elm_' . $t->id . '">' . preg_replace('#<[^>]+>#', ' ', JText::_($t->element_label)) . '</label> ';
 
-                $tbl_tmp=$t->table_id;
-                $grp_tmp=$t->group_id;
-            }
-            echo '</div></div></div></div>';
-            echo '</div>';
+                    $tbl_tmp = $t->table_id;
+                    $grp_tmp = $t->group_id;
+                }
+                echo '</div></div></div></div>';
+                echo '</div>';
 
-        } else {
+            } else {
 
             /*echo '<input type="checkbox" id="emundus_checkall" class="emundusall" data-check=".emunduspage" onClick="javascript:check_all(\'emundus_checkall\')" /> ';
             echo '<label for="emundus_checkall">'.JText::_('SELECT_ALL').'</label>';*/
-            echo '<div id="emundus_elements">';
-            $tbl_tmp='';
+            echo '<div id="emundus_elements' . '_' . $k .'';
+           $tbl_tmp='';
             $grp_tmp='';
 
-            foreach ($this->elements as $t) {
-                if ($tbl_tmp == '') {
-                    echo '<div class="panel panel-primary excel" id="emundus_table_'.$t->table_id.'">
+                foreach ($v as $t) {
+                    if ($tbl_tmp == '') {
+                            echo '<div class="panel panel-primary excel" id="emundus_table_' . $t->table_id . '">
                             <div class="panel-heading"><div><input type="checkbox" ';
-                    if ($t->created_by_alias == 'comment' && $comments == 1) {
-	                    echo "checked=checked";
-                    }
-                    $label = explode("-", $t->table_label);
-                    $label = !empty($label[1]) ? $label[1] : $label[0];
-                    echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emunduspage" data-check=".emundusgroup_'.$t->table_id.'" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\')" /><label for="emundus_checkall_tbl_'.$t->table_id.'">'.$label.' <i>['.$t->label.']</i></label></div></div><div class="panel-body">
-                        <div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
+                            if ($t->created_by_alias == 'comment' && $comments == 1) {
+                                echo "checked=checked";
+                            }
+                            $label = explode("-", $t->table_label);
+                            $label = !empty($label[1]) ? $label[1] : $label[0];
+                            echo ' id="emundus_checkall_tbl_' . $t->table_id . '" class="emunduspage" data-check=".emundusgroup_' . $t->table_id . '" onClick="javascript:check_all(\'emundus_checkall_tbl_' . $t->table_id . '\')" /><label for="emundus_checkall_tbl_' . $t->table_id . '">' . $label . ' <i>[' . $t->label . ']</i></label></div></div><div class="panel-body">
+                        <div class="panel panel-info excel" id="emundus_grp_' . $t->group_id . '">
                             <div class="panel-heading"><div><input type="checkbox" ';
 
-                    if ($t->created_by_alias == 'comment' && $comments == 1) {
-	                    echo "checked=checked";
-                    }
-                    echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup_'.$t->table_id.'" data-check=".emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\')" /><label for="emundus_checkall_grp_'.$t->group_id.'">'.$t->group_label.'</label></div></div><div class="panel-body">';
-                } elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') {
-                        echo '</div></div></div></div>
-                            <div class="panel panel-primary excel" id="emundus_table_'.$t->table_id.'">
+                            if ($t->created_by_alias == 'comment' && $comments == 1) {
+                                echo "checked=checked";
+                            }
+                            echo ' id="emundus_checkall_grp_' . $t->group_id . '" class="emundusgroup_' . $t->table_id . '" data-check=".emundusitem_' . $t->group_id . '" onClick="javascript:check_all(\'emundus_checkall_grp_' . $t->group_id . '\')" /><label for="emundus_checkall_grp_' . $t->group_id . '">' . $t->group_label . '</label></div></div><div class="panel-body">';
+                    } elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') {
+                            echo '</div></div></div></div>
+                            <div class="panel panel-primary excel" id="emundus_table_' . $t->table_id . '">
                                 <div class="panel-heading"><div><input type="checkbox" ';
-                        if ($t->created_by_alias == 'comment' && $comments == 1) {
-	                        echo "checked=checked";
-                        }
-                    $label = explode("-", $t->table_label);
-                    $label = !empty($label[1]) ? $label[1] : $label[0];
-                        echo ' id="emundus_checkall_tbl_'.$t->table_id.'" class="emunduspage" data-check=".emundusgroup_'.$t->table_id.'" onClick="javascript:check_all(\'emundus_checkall_tbl_'.$t->table_id.'\')" /><label for="emundus_checkall_tbl_'.$t->table_id.'">'.$label.' <i>['.$t->label.']</i></label></div></div><div class="panel-body">
-                            <div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
+                            if ($t->created_by_alias == 'comment' && $comments == 1) {
+                                echo "checked=checked";
+                            }
+                            $label = explode("-", $t->table_label);
+                            $label = !empty($label[1]) ? $label[1] : $label[0];
+                            echo ' id="emundus_checkall_tbl_' . $t->table_id . '" class="emunduspage" data-check=".emundusgroup_' . $t->table_id . '" onClick="javascript:check_all(\'emundus_checkall_tbl_' . $t->table_id . '\')" /><label for="emundus_checkall_tbl_' . $t->table_id . '">' . $label . ' <i>[' . $t->label . ']</i></label></div></div><div class="panel-body">
+                            <div class="panel panel-info excel" id="emundus_grp_' . $t->group_id . '">
                                 <div class="panel-heading"><div><input type="checkbox" ';
 
-                        if ($t->created_by_alias == 'comment' && $comments == 1) {
-	                        echo "checked=checked";
-                        }
-                        echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup_'.$t->table_id.'" data-check=".emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\')" /><label for="emundus_checkall_grp_'.$t->group_id.'">'.$t->group_label.'</label></div></div><div class="panel-body">';
-                } else {
-                    if ($t->group_id != $grp_tmp && $grp_tmp != '') {
-                            echo '</div></div><div class="panel panel-info excel" id="emundus_grp_'.$t->group_id.'">
+                            if ($t->created_by_alias == 'comment' && $comments == 1) {
+                                echo "checked=checked";
+                            }
+                            echo ' id="emundus_checkall_grp_' . $t->group_id . '" class="emundusgroup_' . $t->table_id . '" data-check=".emundusitem_' . $t->group_id . '" onClick="javascript:check_all(\'emundus_checkall_grp_' . $t->group_id . '\')" /><label for="emundus_checkall_grp_' . $t->group_id . '">' . $t->group_label . '</label></div></div><div class="panel-body">';
+                    } else {
+                        if ($t->group_id != $grp_tmp && $grp_tmp != '') {
+                            echo '</div></div><div class="panel panel-info excel" id="emundus_grp_' . $t->group_id . '">
                                     <div class="panel-heading"><div><input type="checkbox" ';
 
                             if ($t->created_by_alias == 'comment' && $comments == 1) {
-	                            echo "checked=checked";
+                                echo "checked=checked";
                             }
-                            echo ' id="emundus_checkall_grp_'.$t->group_id.'" class="emundusgroup_'.$t->table_id.'" data-check=".emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_checkall_grp_'.$t->group_id.'\')"/><label for="emundus_checkall_grp_'.$t->group_id.'">'.$t->group_label.'</div></div><div class="panel-body">';
+                            echo ' id="emundus_checkall_grp_' . $t->group_id . '" class="emundusgroup_' . $t->table_id . '" data-check=".emundusitem_' . $t->group_id . '" onClick="javascript:check_all(\'emundus_checkall_grp_' . $t->group_id . '\')"/><label for="emundus_checkall_grp_' . $t->group_id . '">' . $t->group_label . '</div></div><div class="panel-body">';
+                        }
                     }
-                }
-                echo ' <input name="ud[]" type="checkbox" id="emundus_elm_'.$t->id.'" class="emundusitem_'.$t->group_id.'" onClick="javascript:check_all(\'emundus_elm_'.$t->id.'\')" ';
-                if ((!empty($s_elements) && in_array($t->table_name,$table_name) && in_array($t->element_name,$element_name)) || ($t->created_by_alias == 'comment' && $comments == 1)) {
-	                echo "checked=checked";
-                }
-                echo ' value="'.$t->id.'"/><label class="label-element" for="emundus_elm_'.$t->id.'">'.preg_replace('#<[^>]+>#', ' ', JText::_($t->element_label)).'</label> ';
+                    echo ' <input name="ud[]" type="checkbox" id="emundus_elm_' . $t->id . '" class="emundusitem_' . $t->group_id . '" onClick="javascript:check_all(\'emundus_elm_' . $t->id . '\')" ';
+                    if ((!empty($s_elements) && in_array($t->table_name, $table_name) && in_array($t->element_name, $element_name)) || ($t->created_by_alias == 'comment' && $comments == 1)) {
+                        echo "checked=checked";
+                    }
+                    echo ' value="' . $t->id . '"/><label class="label-element" for="emundus_elm_' . $t->id . '">' . preg_replace('#<[^>]+>#', ' ', JText::_($t->element_label)) . '</label> ';
 
-                $tbl_tmp=$t->table_id;
-                $grp_tmp=$t->group_id;
+                    $tbl_tmp = $t->table_id;
+                    $grp_tmp = $t->group_id;
+                }
+                echo '</div></div></div></div>';
+                echo '</div>';
             }
-            echo '</div></div></div></div>';
-            echo '</div>';
-        }
 
-    } else echo JText::_('NO_FORM_DEFINED');
+        } else echo JText::_('NO_FORM_DEFINED');
+    }
 ?>
 
 <script>
