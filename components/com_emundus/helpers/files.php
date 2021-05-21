@@ -640,7 +640,6 @@ class EmundusHelperFiles
                         }
                         $array = $elts;
                     }
-                    $array['profiles'] = $prfiles;
                 } catch (Exception $e) {
                     echo $e->getMessage();
                     return array();
