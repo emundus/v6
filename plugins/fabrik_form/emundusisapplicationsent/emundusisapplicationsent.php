@@ -170,6 +170,13 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     }
                     //try to access detail view or other
                     else {
+                        if(!$can_edit && $is_app_sent){
+                            JError::raiseNotice(401, JText::_('READ_ONLY'));
+                        } elseif ($is_dead_line_passed){
+                            JError::raiseNotice(401, JText::_('PERIOD'));
+                        } elseif (!$is_campaign_started){
+                            JError::raiseNotice(401, JText::_('PERIOD_NOT_STARTED'));
+                        }
                         $reload_url = false;
                     }
                 }
