@@ -544,9 +544,10 @@ class EmundusModelProfile extends JModelList {
 
                     foreach ($_profilesLabels as $key => $value) {
                         $profileLabels[] = $value->label;
+                        $profileMenuType[] = $value->menutype;
                     }
 
-                    return ['profile_id' => $_profileIds, 'profile_label' => $profileLabels];
+                    return ['profile_id' => $_profileIds, 'profile_label' => $profileLabels, 'profileMenuType'=>$profileMenuType];
 
                 } catch(Exception $e) {
                     return $e->getMessage();
