@@ -559,7 +559,16 @@ class EmundusHelperFiles
             }
 
             $menu_list = $h_menu->buildMenuQuery($prid);
-            $fl = $menu_list[0]->table_id;
+
+            $fl = array();
+
+            foreach ($menu_list as $m) {
+                $fl[] = $m->table_id;
+            }
+
+            if (empty($fl)) {
+                return array();
+            }
 
             $query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
                     INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, joins.table_join, menu.title,
@@ -584,7 +593,7 @@ class EmundusHelperFiles
                 $order = '';
 
             } else {
-                $where .= ' AND tab.id = ' . $fl .'         
+                $where .= ' AND (tab.id IN ( ' . implode(',', $fl) . ' ))         
                         AND element.published=1
                         AND element.hidden=0
                         AND element.label!=" "
@@ -595,12 +604,10 @@ class EmundusHelperFiles
             }
 
             $query .= ' ' . $join . ' ' . $where . ' ' . $order;
-
             try {
 
                 $db->setQuery($query);
                 $elements = $db->loadObjectList('id');
-
 
                 $elts = array();
                 $allowed_groups = EmundusHelperAccess::getUserFabrikGroups(JFactory::getUser()->id);
@@ -625,7 +632,7 @@ class EmundusHelperFiles
         }
 
         else if ($plist and is_null($profile)) {
-            // get Fabrik list ID for profile_id
+            // get Fabrik list ID for profile_id$where .= ' AND (tab.id IN ( ' . implode(',', $fl) . ' ))
             $fl = array();
             $menutype = array();
             // get all profiles
@@ -2791,7 +2798,7 @@ class EmundusHelperFiles
                     ->andWhere($db->quoteName('#__emundus_filters.mode') . ' = ' . $db->quote('pdf'));
 
                 $db->setQuery($query);
-                var_dump($db->loadObject());die;
+//                var_dump($db->loadObject());die;
                 return $db->loadObject();
             }
             catch(Exception $e) {
