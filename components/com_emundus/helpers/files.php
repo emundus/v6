@@ -486,8 +486,8 @@ class EmundusHelperFiles
         $query = 'SELECT *
                 FROM #__emundus_setup_attachments esa
                 WHERE id IN (
-                    SELECT distinct(esl.attachment_id) 
-                    FROM #__emundus_setup_letters esl 
+                    SELECT distinct(esl.attachment_id)
+                    FROM #__emundus_setup_letters esl
                     LEFT JOIN #__emundus_setup_letters_repeat_status eslr ON eslr.parent_id=esl.id
                     WHERE esl.status='.$status.'
                     )
@@ -513,14 +513,16 @@ class EmundusHelperFiles
 	 * @param array $code
 	 * @param array $camps
 	 * @param array $fabrik_elements
+     * @param int $profile --> to get all form elems of a profile
 	 *
 	 * @return array
 	 */
-    public static function getElements($code = array(), $camps = array(), $fabrik_elements = array(),$profile=null) : array {
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+
+    public static function getElements($code = array(), $camps = array(), $fabrik_elements = array(), $profile=null) : array {
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
         $h_menu = new EmundusHelperMenu;
         $m_user = new EmundusModelUsers;
@@ -545,28 +547,91 @@ class EmundusHelperFiles
             $plist = $m_profile->getProfileIDByCourse($code, $camps);
         }
 
-        $prfiles = $m_profile->getProfileIDByCampaigns($camps, $code);
+        if(!is_null($profile)) {
+            /// get profile id from $profile --> using split
 
-        //if ($plist) {
+            $prfiles = $m_user->getApplicantProfiles();
 
-        if ($prfiles) {
+            foreach($prfiles as$k=>$v) {
+                if($v->menutype == $profile) {
+                    $prid = $v->id;
+                } else {}
+            }
+
+            $menu_list = $h_menu->buildMenuQuery($prid);
+            $fl = $menu_list[0]->table_id;
+
+            $query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
+                    INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, joins.table_join, menu.title,
+                    p.label, p.id as profil_id
+                    FROM #__fabrik_elements element';
+            $join = 'INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
+                    INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
+                    INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
+                    INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
+                    LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
+                    INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
+                    INNER JOIN #__emundus_setup_profiles as p on p.menutype=menu.menutype ';
+            $where = 'WHERE tab.published = 1 AND groupe.published = 1 ';
+
+
+            if ($profile) {
+                $where .= ' AND p.id = ' . $prid;
+            }
+
+            if (count($fabrik_elements) > 0) {
+                $where .= ' AND element.id IN (' . implode(',', $fabrik_elements) . ') ';
+                $order = '';
+
+            } else {
+                $where .= ' AND tab.id = ' . $fl .'         
+                        AND element.published=1
+                        AND element.hidden=0
+                        AND element.label!=" "
+                        AND element.label!=""
+                        AND menu.menutype = ' . '"' . $profile .'"' . '
+                        AND element.plugin!="display"';
+                $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
+            }
+
+            $query .= ' ' . $join . ' ' . $where . ' ' . $order;
+            try {
+
+                $db->setQuery($query);
+                $elements = $db->loadObjectList('id');
+
+                $elts = array();
+                $allowed_groups = EmundusHelperAccess::getUserFabrikGroups(JFactory::getUser()->id);
+                if (count($elements) > 0) {
+                    foreach ($elements as $key => $value) {
+                        if ($allowed_groups !== true && is_array($allowed_groups) && !in_array($value->group_id, $allowed_groups)) {
+                            continue;
+                        }
+                        $value->id = $key;
+                        $value->table_label = JText::_($value->table_label);
+                        $value->group_label = JText::_($value->group_label);
+                        $value->element_label = JText::_($value->element_label);
+                        $elts[] = $value;
+                    }
+                }
+                var_dump($elts);die;
+                return $elts;
+
+            } catch (Exception $e) {
+                echo $e->getMessage();
+                return array();
+            }
+        }
+
+        else if ($plist and is_null($profile)) {
             // get Fabrik list ID for profile_id
             $fl = array();
             $menutype = array();
-
             // get all profiles
-            $profiles = $m_user->getApplicantProfiles();                /// get all published profiles
+            $profiles = $m_user->getApplicantProfiles();
 
             foreach ($profiles as $profile) {
-                //                if (is_array($plist) && count($plist) == 0 || (count($plist) > 0 && in_array($profile->id, $plist))) {
-                //                 	$menu_list = $h_menu->buildMenuQuery($profile->id);
-                //                    foreach ($menu_list as $m) {
-                //                        $fl[] = $m->table_id;
-                //                        $menutype[$profile->id] = $m->menutype;
-                //                    }
-                //                }
-
-                if (is_array($prfiles['profile_id']) && count($prfiles['profile_id']) > 0 && in_array($profile->id, $prfiles['profile_id'])) {
+                if (is_array($plist) && count($plist) == 0 || (count($plist) > 0 && in_array($profile->id, $plist))) {
                     $menu_list = $h_menu->buildMenuQuery($profile->id);
                     foreach ($menu_list as $m) {
                         $fl[] = $m->table_id;
@@ -575,80 +640,74 @@ class EmundusHelperFiles
                 }
             }
 
-            //// here --> menutype is still correct menytype['9'] = menu-profile9 // menutype['1000'] = menu-profile1000
-
             if (empty($fl)) {
                 return array();
             }
 
-            $array = array();
-            foreach ($menutype as $k => $v) {
-                /// 3 menutypes --> 3 for loops
+            $query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
+                    INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, joins.table_join, menu.title,
+                    p.label, p.id as profil_id
+                    FROM #__fabrik_elements element';
+            $join = 'INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
+                    INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
+                    INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
+                    INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
+                    LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
+                    INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
+                    INNER JOIN #__emundus_setup_profiles as p on p.menutype=menu.menutype ';
+            $where = 'WHERE tab.published = 1 AND groupe.published = 1 ';
 
-                $query = 'SELECT distinct(concat_ws("_",tab.db_table_name,element.name)) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
-                        INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, joins.table_join, menu.title,
-                        p.label, p.id as profil_id
-                        FROM #__fabrik_elements element';
-                $join = 'INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
-                        INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
-                        INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-                        INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
-                        LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
-                        INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
-                        INNER JOIN #__emundus_setup_profiles as p on p.menutype=menu.menutype ';
-                $where = 'WHERE tab.published = 1 AND groupe.published = 1 ';
-
-                if (is_array($plist) && count($plist) > 0) {
-                    $where .= ' AND p.id IN (' . implode(',', $plist) . ') ';
-                }
-
-                if (count($fabrik_elements) > 0) {
-
-                    $where .= ' AND element.id IN (' . implode(',', $fabrik_elements) . ') ';
-                    $order = '';
-
-                } else {
-                    $where .= ' AND (tab.id IN ( ' . implode(',', $fl) . ' ))
-                           AND element.published=1
-                           AND element.hidden=0
-                           AND element.label!=" "
-                           AND element.label!=""
-                           AND menu.menutype IN ( "' . implode('","', [$v]) . '" ) 
-                           AND element.plugin!="display"';
-                    $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
-                }
-                $query .= ' ' . $join . ' ' . $where . ' ' . $order;
-
-                try {
-                    $db->setQuery($query);
-
-                    $elements = $db->loadObjectList('id');
-
-                    $elts = array();
-
-                    $allowed_groups = EmundusHelperAccess::getUserFabrikGroups(JFactory::getUser()->id);
-                    if (count($elements) > 0) {
-                        foreach ($elements as $key => $value) {
-                            if ($allowed_groups !== true && is_array($allowed_groups) && !in_array($value->group_id, $allowed_groups)) {
-                                continue;
-                            }
-                            $value->id = $key;
-                            $value->table_label = JText::_($value->table_label);
-                            $value->group_label = JText::_($value->group_label);
-                            $value->element_label = JText::_($value->element_label);
-                            $elts[$v][] = $value;
-                        }
-                        $array = $elts;
-                    }
-                    $array['menu-profile1001'] = $prfiles;          // this line aims to test with hard-code
-                } catch (Exception $e) {
-                    echo $e->getMessage();
-                    return array();
-                }
+            if (is_array($plist) && count($plist) > 0) {
+                $where .= ' AND p.id IN (' . implode(',', $plist) . ') ';
             }
-            return $array;
-        }
-        else {
+
+            if (count($fabrik_elements) > 0 ) {
+
+                $where .= ' AND element.id IN (' . implode(',', $fabrik_elements) . ') ';
+                $order ='';
+
+            } else {
+
+                $where .= ' AND (tab.id IN ( ' . implode(',', $fl) . ' ))
+                        AND element.published=1
+                        AND element.hidden=0
+                        AND element.label!=" "
+                        AND element.label!=""
+                        AND menu.menutype IN ( "' . implode('","', $menutype) . '" ) 
+                        AND element.plugin!="display"';
+                $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
+            }
+
+            $query .= ' ' . $join . ' ' . $where . ' ' . $order;
+//            var_dump($query);die;
+            try {
+
+                $db->setQuery($query);
+                $elements = $db->loadObjectList('id');
+                var_dump($elements);die;
+
+                $elts = array();
+                $allowed_groups = EmundusHelperAccess::getUserFabrikGroups(JFactory::getUser()->id);
+                if (count($elements) > 0) {
+                    foreach ($elements as $key => $value) {
+                        if ($allowed_groups !== true && is_array($allowed_groups) && !in_array($value->group_id, $allowed_groups)) {
+                            continue;
+                        }
+                        $value->id = $key;
+                        $value->table_label = JText::_($value->table_label);
+                        $value->group_label = JText::_($value->group_label);
+                        $value->element_label = JText::_($value->element_label);
+                        $elts[] = $value;
+                    }
+                }
+                return $elts;
+
+            } catch (Exception $e) {
+                echo $e->getMessage();
+                return array();
+            }
+
+        } else {
             return array();
         }
     }
@@ -1076,7 +1135,7 @@ class EmundusHelperFiles
         $filters .='<fieldset id="em_select_filter" class="em-user-personal-filter">
                         <label for="select_filter" class="control-label em-user-personal-filter-label">'.JText::_('SELECT_FILTER').'</label>
                         <div class="em_select_filter_rapid_search">
-                            <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" > 
+                            <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" >
                                 <option value="0" selected="true" style="font-style: italic;">'.JText::_('CHOOSE_FILTER').'</option>';
         if (!empty($research_filters)) {
             foreach ($research_filters as $filter) {
@@ -1088,7 +1147,7 @@ class EmundusHelperFiles
             }
         }
         $filters .= '</select>
-					
+
 						<button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><i class="fas fa-trash"></i></button></div>
                             <div class="alert alert-dismissable alert-success em-alert-filter" id="saved-filter">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
@@ -1116,9 +1175,9 @@ class EmundusHelperFiles
                             } else {
                                 $("#em_adv_filters").hide();
                             }
-                            
+
 	                        $("#select_filter").chosen({width:"95%"});
-            
+
                         });
                     </script>';
 
@@ -1162,7 +1221,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $profile .= '<div class="form-group em-filter" id="o_profiles">
                                     <div class="em_label">
-                                    	<label class="control-label em-filter-label">'.JText::_('OTHER_PROFILES').'&ensp; <a href="javascript:clearchosen(\'#select_oprofiles\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a></label> 
+                                    	<label class="control-label em-filter-label">'.JText::_('OTHER_PROFILES').'&ensp; <a href="javascript:clearchosen(\'#select_oprofiles\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a></label>
                                     </div>';
             }
 
@@ -1790,7 +1849,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $institution .= '<div id="group">
                     				<div class="em_label">
-                    					<label class="control-label em_filters_other_label">'.JText::_('UNIVERSITY').' &ensp; 
+                    					<label class="control-label em_filters_other_label">'.JText::_('UNIVERSITY').' &ensp;
                     						<a href="javascript:clearchosen(\'#select_multiple_institutions\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a>
                     					</label>
                                     </div>
@@ -1911,8 +1970,8 @@ class EmundusHelperFiles
                     $adv_filter .= '</fieldset>';
                 }
             }
-            $adv_filter .= '</div> 
-   
+            $adv_filter .= '</div>
+
             <div class="em_save_filter">
                 <input value="'.JText::_('SAVE_FILTER').'" class="btn btn-sm btn-warning" title="'.JText::_('SAVE_FILTER').'" type="button" id="save-filter">
             </div>
@@ -2759,3 +2818,4 @@ class EmundusHelperFiles
     }
 
 }
+
