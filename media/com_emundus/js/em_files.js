@@ -3823,91 +3823,61 @@ $(document).ready(function() {
                                 code: code,
                             },
                             success: function(result) {
-                                // step 2 --> grab all elems form for each profiles
-                                $.ajax({
-                                    type: 'get',
-                                    url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code,
-                                    success: function (data) {
-                                        $('#felts-'+code+camp).parent('div').remove();
-                                        $('#felts-'+code+'0').parent('div').remove();
+                                let profile_labels = Array.prototype.slice.call(result.profile_label);
+                                let profile_ids = Array.prototype.slice.call(result.profile_id);
+                                let profile_menus = Array.prototype.slice.call(result.profile_menu_type);
 
-                                        let profile_labels = Array.prototype.slice.call( result.profile_label );
-                                        let profile_ids = Array.prototype.slice.call( result.profile_id );
+                                console.log(profile_menus);
 
-                                        console.log(data);
-                                        for(index = 0; index < profile_labels.length; index ++) {
-                                            $('#form-element').append(
-                                                '<h5>' +
-                                                '   <button type="button" id="showelements_'+profile_ids[index]+'" class="btn btn-info btn-xs" title="'+profile_labels[index]+'">' +
-                                                '<span class="glyphicon glyphicon-plus"></span>' +
-                                                '</button> &ensp;' +profile_labels[index]+
-                                                '</h5>' +
-                                                '<div class="panel-body" id="felts'+profile_ids[index]+'" style="overflow:auto"/>'
-                                            );
-                                            $('#felts'+profile_ids[index]).hide();
-                                            $('#felts'+profile_ids[index]).append(data);
-                                        }
 
-                                        /// get all profiles div
-                                        let feltsObject = $('[id^=felts]');
-                                        let feltsArray = Array.prototype.slice.call( feltsObject );
+                                /// foreac menutype --> call formelem and then export_select_column
+                                profile_ids.forEach(id => {
+                                    $.ajax({
+                                        type:'get',
+                                        url: 'index.php?option=com_emundus&controller=files&task=getformelem',
+                                        data: {
+                                            camp:camp,
+                                            code:code,
+                                            profile: 'menu-profile' + id,
+                                        },
+                                        dataType:'json',
+                                        success: function(data) {
+                                            $.ajax({
+                                                type: 'get',
+                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code + '&profile=menu-profile' + id,
+                                                success: function (answer) {
+                                                    /// using Virtual DOM to render DOM --> append #formelement and #felts
+                                                    console.log(answer);
+                                                    $('#form-element').append(
+                                                        '<h5>' +
+                                                                '<button type="button" id="showelements_' + id + '" class="btn btn-info btn-xs" title="' + id + '">' +
+                                                                '<span class="glyphicon glyphicon-plus"></span>' +
+                                                                '</button> &ensp;' + id +
+                                                                '</h5>' +
+                                                                '<div class="panel-body" id="felts' + id + '" style="overflow:auto; display: none"/>' +
+                                                        '</h5>'
+                                                    );
 
-                                        /// for each profile div, compare its name with all children name
-                                        feltsArray.forEach(elt => {
-                                            let children = document.getElementById(elt.id).children;
-                                            let childrenArray = Array.prototype.slice.call( children );
-
-                                            childrenArray.forEach(child => {
-                                                if(child.id.split('emundus_elements_menu-profile')[1] !== elt.id.split('felts')[1]) {
-                                                    console.log(elt.id + '.....' + child.id);
+                                                    $('#felts'+id).append(answer);
+                                                    $('#felts'+id).show();
                                                 }
                                             })
-                                        });
-
-
-                                        $('[id^=showelements_]').click(function(e) {
-                                            let id = ($(this).attr('id')).split('_')[1];
-                                            if(this.firstElementChild.className == 'glyphicon glyphicon-plus') {
-                                                this.firstChild.className = 'glyphicon glyphicon-minus';
-                                                this.className = 'btn-xs btn btn-elements-success'
-                                                $('#felts'+ id).show();
-                                            } else if( this.firstElementChild.className == 'glyphicon glyphicon-minus'){
-                                                this.firstChild.className = 'glyphicon glyphicon-plus';
-                                                this.className = 'btn-xs btn btn-info';
-                                                $('#felts'+ id).hide();
-                                            }
-                                        })
-
-                                        $('#em-ex-forms').click(function(e) {
-
-                                            if ($('#em-ex-forms').is(":checked")){
-                                                document.getElementById('em-ex-forms').checked = true;
-                                                // $('#emundus_checkall_tbl_'+div_id).trigger("click");
-                                                let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
-
-                                                // find all children of panels
-                                                let children = Array.prototype.slice.call( panel.children );
-                                                children.forEach((elt) => {
-                                                    var div_id = elt.id.split('emundus_table_')[1];
-                                                    $('#emundus_checkall_tbl_'+div_id).trigger("click");
-                                                })
-                                                document.getElementById('em-ex-forms').checked = true;
-
-                                            }
-                                            else {
-                                                let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
-
-                                                // find all children of panels
-                                                let children = Array.prototype.slice.call( panel.children );
-                                                children.forEach((elt) => {
-                                                    var div_id = elt.id.split('emundus_table_')[1];
-                                                    $('#emundus_checkall_tbl_'+div_id).trigger("click");
-                                                })
-                                                document.getElementById('em-ex-forms').checked = false;
-                                            }
-                                        });
-                                    }
+                                        }
+                                    })
                                 })
+
+                                // for (index = 0; index < profile_labels.length; index++) {
+                                //     $('#form-element').append(
+                                //         '<h5>' +
+                                //         '   <button type="button" id="showelements_' + profile_ids[index] + '" class="btn btn-info btn-xs" title="' + profile_labels[index] + '">' +
+                                //         '<span class="glyphicon glyphicon-plus"></span>' +
+                                //         '</button> &ensp;' + profile_labels[index] +
+                                //         '</h5>' +
+                                //         '<div class="panel-body" id="felts' + profile_ids[index] + '" style="overflow:auto; display: none"/>'
+                                //     );
+                                // }
+
+
 
 
 
