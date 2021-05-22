@@ -1190,8 +1190,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $code = explode(",", $code);
         $camp = explode(",", $camp);
 
+        /// add profile, menutype here
+        $profile = $jinput->getVar('profile', null);
+
         $defaultElements    = $m_files->getDefaultElements();
-        $elements           = $h_files->getElements($code, $camp);
+        $elements           = $h_files->getElements($code, $camp, [], $profile);
 
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
         echo json_encode((object)$res);

@@ -595,10 +595,12 @@ class EmundusHelperFiles
             }
 
             $query .= ' ' . $join . ' ' . $where . ' ' . $order;
+
             try {
 
                 $db->setQuery($query);
                 $elements = $db->loadObjectList('id');
+
 
                 $elts = array();
                 $allowed_groups = EmundusHelperAccess::getUserFabrikGroups(JFactory::getUser()->id);
@@ -614,7 +616,6 @@ class EmundusHelperFiles
                         $elts[] = $value;
                     }
                 }
-                var_dump($elts);die;
                 return $elts;
 
             } catch (Exception $e) {
@@ -679,12 +680,10 @@ class EmundusHelperFiles
             }
 
             $query .= ' ' . $join . ' ' . $where . ' ' . $order;
-//            var_dump($query);die;
             try {
 
                 $db->setQuery($query);
                 $elements = $db->loadObjectList('id');
-                var_dump($elements);die;
 
                 $elts = array();
                 $allowed_groups = EmundusHelperAccess::getUserFabrikGroups(JFactory::getUser()->id);
