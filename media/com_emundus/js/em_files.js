@@ -3827,61 +3827,41 @@ $(document).ready(function() {
                                 let profile_ids = Array.prototype.slice.call(result.profile_id);
                                 let profile_menus = Array.prototype.slice.call(result.profile_menu_type);
 
-                                console.log(profile_menus);
-
-
-                                /// foreac menutype --> call formelem and then export_select_column
-                                profile_ids.forEach(id => {
+                                for (index = 0; index < profile_labels.length; index++) {
+                                    let menu = profile_menus[index];
+                                    let id = profile_ids[index];
+                                    let labels = profile_labels[index];
                                     $.ajax({
-                                        type:'get',
+                                        type: 'get',
                                         url: 'index.php?option=com_emundus&controller=files&task=getformelem',
                                         data: {
-                                            camp:camp,
-                                            code:code,
-                                            profile: 'menu-profile' + id,
+                                            camp: camp,
+                                            code: code,
+                                            profile: menu,
                                         },
-                                        dataType:'json',
-                                        success: function(data) {
+                                        dataType: 'json',
+                                        success: function (data) {
                                             $.ajax({
                                                 type: 'get',
-                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code + '&profile=menu-profile' + id,
+                                                url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code + '&profile=' + menu,
                                                 success: function (answer) {
                                                     /// using Virtual DOM to render DOM --> append #formelement and #felts
-                                                    console.log(answer);
                                                     $('#form-element').append(
                                                         '<h5>' +
-                                                                '<button type="button" id="showelements_' + id + '" class="btn btn-info btn-xs" title="' + id + '">' +
-                                                                '<span class="glyphicon glyphicon-plus"></span>' +
-                                                                '</button> &ensp;' + id +
-                                                                '</h5>' +
-                                                                '<div class="panel-body" id="felts' + id + '" style="overflow:auto; display: none"/>' +
+                                                        '<button type="button" id="showelements_' + id + '" class="btn btn-info btn-xs" title="' + labels + '">' +
+                                                        '<span class="glyphicon glyphicon-plus"></span>' +
+                                                        '</button> &ensp;' + labels +
+                                                        '</h5>' +
+                                                        '<div class="panel-body" id="felts' + id + '" style="overflow:auto; display: none"/>' +
                                                         '</h5>'
                                                     );
-
-                                                    $('#felts'+id).append(answer);
-                                                    $('#felts'+id).show();
+                                                    $('#felts' + id).append(answer);
+                                                    $('#felts' + id).show();
                                                 }
                                             })
                                         }
                                     })
-                                })
-
-                                // for (index = 0; index < profile_labels.length; index++) {
-                                //     $('#form-element').append(
-                                //         '<h5>' +
-                                //         '   <button type="button" id="showelements_' + profile_ids[index] + '" class="btn btn-info btn-xs" title="' + profile_labels[index] + '">' +
-                                //         '<span class="glyphicon glyphicon-plus"></span>' +
-                                //         '</button> &ensp;' + profile_labels[index] +
-                                //         '</h5>' +
-                                //         '<div class="panel-body" id="felts' + profile_ids[index] + '" style="overflow:auto; display: none"/>'
-                                //     );
-                                // }
-
-
-
-
-
-
+                                }
 
                                 // $.ajax({
                                 //     type: 'get',
