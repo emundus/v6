@@ -4102,11 +4102,15 @@ $(document).ready(function() {
                     var proglabel = $("#em-export-prg option:selected").text();
                     var camplabel = $("#em-export-camp option:selected").text();
 
+                    // save all tables
                     let tblElements = [];
                     let tblElementsObject = $('[id^=emundus_checkall_tbl_]');
                     let tblElementsArray = Array.prototype.slice.call(tblElementsObject);
                     tblElementsArray.forEach(tbl => {
-
+                        if(tbl.checked == true) {
+                            let id = tbl.id.split('emundus_checkall_tbl_')[1];
+                            tblElements.push(id);
+                        }
                     });
 
                     /// save all groups
@@ -4147,6 +4151,7 @@ $(document).ready(function() {
                         'camp': camp,
                         'proglabel': proglabel,
                         'camplabel': camplabel,
+                        'tables': tblElements,
                         'groups': grpElements,
                         'elements': elements,
                         'headers': headers,
