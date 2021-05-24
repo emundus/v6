@@ -3848,21 +3848,25 @@ $(document).ready(function() {
                                                     /// using Virtual DOM to render DOM --> append #formelement and #felts
                                                     $('#form-element').append(
                                                         '<h5>' +
-                                                        '<button type="button" id="showelements_' + id + '" class="btn btn-info btn-xs" title="' + labels + '">' +
+                                                        '<button type="button" id="showelements_' + id + '" class="btn btn-info btn-xs" title="' + id + '">' +
                                                         '<span class="glyphicon glyphicon-plus"></span>' +
                                                         '</button> &ensp;' + labels +
                                                         '</h5>' +
                                                         '<div class="panel-body" id="felts' + id + '" style="overflow:auto; display: none"/>' +
                                                         '</h5>'
                                                     );
+                                                    // console.log($('#showelements_1001').length);
                                                     $('#felts' + id).append(answer);
-                                                    $('#felts' + id).show();
+                                                    // $('#felts' + id).empty();
                                                 }
                                             })
+
                                         }
                                     })
                                 }
 
+
+                                // console.log('here3');
                                 // $.ajax({
                                 //     type: 'get',
                                 //     url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code,
@@ -3903,6 +3907,7 @@ $(document).ready(function() {
                                 // })
                             }
                         })
+
                         // $.ajax({
                         //     type: 'get',
                         //     url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code,
@@ -4024,7 +4029,20 @@ $(document).ready(function() {
                         });
                     } else {
                         /// if one of two conditions as above is not correct --> hide the div "felts"
-                        $('#felts').empty();
+                        $('[id^=form-element]').empty();
+                    }
+                });
+
+                $(document).on('click', '[id^=showelements_]', function() {
+                    let id = ($(this).attr('id')).split('_')[1];
+                    if(this.firstElementChild.className == 'glyphicon glyphicon-plus') {
+                        this.firstChild.className = 'glyphicon glyphicon-minus';
+                        this.className = 'btn-xs btn btn-elements-success'
+                        $('#felts'+ id).show();
+                    } else if( this.firstElementChild.className == 'glyphicon glyphicon-minus'){
+                        this.firstChild.className = 'glyphicon glyphicon-plus';
+                        this.className = 'btn-xs btn btn-info';
+                        $('#felts'+ id).hide();
                     }
                 });
 
