@@ -4102,6 +4102,27 @@ $(document).ready(function() {
                     var proglabel = $("#em-export-prg option:selected").text();
                     var camplabel = $("#em-export-camp option:selected").text();
 
+                    let tblElements = [];
+                    let tblElementsObject = $('[id^=emundus_checkall_tbl_]');
+                    let tblElementsArray = Array.prototype.slice.call(tblElementsObject);
+                    tblElementsArray.forEach(tbl => {
+
+                    });
+
+                    /// save all groups
+                    let grpElements = [];
+                    let grpElementsObject = $('[id^=emundus_checkall_grp_]');
+                    let grpElementsArray = Array.prototype.slice.call(grpElementsObject);
+
+                    grpElementsArray.forEach(grp => {
+                        if(grp.checked == true) {
+                            let id = grp.id.split('emundus_checkall_grp_')[1];
+                            grpElements.push(id);
+                        }
+                    });
+
+
+                    /// save all elements
                     let elements = [];
                     let eltsObject = $('[id^=emundus_elm_]');
                     let eltsArray = Array.prototype.slice.call(eltsObject);
@@ -4126,6 +4147,7 @@ $(document).ready(function() {
                         'camp': camp,
                         'proglabel': proglabel,
                         'camplabel': camplabel,
+                        'groups': grpElements,
                         'elements': elements,
                         'headers': headers,
                     };
