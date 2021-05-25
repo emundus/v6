@@ -2085,26 +2085,28 @@ class EmundusControllerFiles extends JControllerLegacy
         /// params --> 1st: csv, 2nd: excel
         require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         $jinput = JFactory::getApplication()->input;
-        $csv = $jinput->getVar('csv', null);
+        $source = $jinput->getVar('source', null);
         $letter = $jinput->getVar('letter', null);
 
         /// copy excel to excel
-        $_start = '/Users/justduy/Documents/core1/tmp/prog_2019-2021_1rows_jKw17rKqt94I9Cam0FKn.xlsx';
-        $_end = '/Users/justduy/Documents/core1/images/emundus/letters/modele_export_excel.xlsx';
+        $_start = JPATH_BASE.DS."tmp".DS. $source;
+        $_end = JPATH_BASE . $letter;
 
         $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
         $_readerSpreadSheet = $reader->load($_start);
 
         $_readerData = $_readerSpreadSheet->getActiveSheet()->toArray();
-        $_letter_header = $_readerData[0];
 
         $_destination = \PhpOffice\PhpSpreadsheet\IOFactory::load($_end);
         $_destination->setActiveSheetIndex(0);
 
-        $_destination->getActiveSheet()->fromArray($_letter_header,null,'A1');
+        $_destination->getActiveSheet()->fromArray($_readerData,null,'A1');
 
         $writer = new Xlsx($_destination);
         $writer->save($_end);
+
+        /// before return true --> return the link
+        return true;
     }
 
     public function export_xls_from_csv() {
