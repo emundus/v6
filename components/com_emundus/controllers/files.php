@@ -2080,6 +2080,32 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
+    public function export_letter_from_csv() {
+        /// the main idea of this function is to use Stream of Buffer to pass data from CSV to Excel
+        /// params --> 1st: csv, 2nd: excel
+        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+        $jinput = JFactory::getApplication()->input;
+        $csv = $jinput->getVar('csv', null);
+        $letter = $jinput->getVar('letter', null);
+
+        /// copy excel to excel
+        $_start = '/Users/justduy/Documents/core1/tmp/prog_2019-2021_1rows_jKw17rKqt94I9Cam0FKn.xlsx';
+        $_end = '/Users/justduy/Documents/core1/images/emundus/letters/modele_export_excel.xlsx';
+
+        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+        $_readerSpreadSheet = $reader->load($_start);
+
+        $_readerData = $_readerSpreadSheet->getActiveSheet()->toArray();
+        $_letter_header = $_readerData[0];
+
+        $_destination = \PhpOffice\PhpSpreadsheet\IOFactory::load($_end);
+        $_destination->setActiveSheetIndex(0);
+
+        $_destination->getActiveSheet()->fromArray($_letter_header,null,'A1');
+
+        $writer = new Xlsx($_destination);
+        $writer->save($_end);
+    }
 
     public function export_xls_from_csv() {
         /** PHPExcel */
@@ -2182,11 +2208,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $objPHPExcel->disconnectWorksheets();
         unset($objPHPExcel);
         $link = $excel_file_name.'_'.$nbrow.'rows_'.$randomString.'.xlsx';
-        if (!unlink(JPATH_BASE.DS."tmp".DS.$csv)) {
-            $result = array('status' => false, 'msg'=>'ERROR_DELETE_CSV');
-            echo json_encode((object) $result);
-            exit();
-        }
+//        if (!unlink(JPATH_BASE.DS."tmp".DS.$csv)) {
+//            $result = array('status' => false, 'msg'=>'ERROR_DELETE_CSV');
+//            echo json_encode((object) $result);
+//            exit();
+//        }
 
         $session = JFactory::getSession();
         $session->clear('fnums_export');
@@ -3562,6 +3588,18 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         $letters = $h_files->getAllLetters();
 
         echo json_encode((object)(array('status' => true, 'letters' => $letters)));
+        exit;
+    }
+
+    public function getletter() {
+        $h_files = new EmundusHelperFiles;
+
+        $jinput = JFactory::getApplication()->input;
+        $lid = $jinput->getVar('letter', null);
+
+        $letter = $h_files->getLetterById($lid);
+
+        echo json_encode((object)(array('status' => true, 'letter' => $letter)));
         exit;
     }
 
