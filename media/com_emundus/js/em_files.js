@@ -1774,7 +1774,27 @@ $(document).ready(function() {
                             $('.modal-body').append('<div id="data"></div>');
 
 
-                            $('#data').append('<div class="panel panel-default xclsform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select class="chzn-select" name="em-export-prg" id="em-export-prg"><option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option></select><br/><br/><div id="camp" style="display:none;"><select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option></select></div></div></div>');
+                            $('#data').append('<div class="panel panel-default xclsform">' +
+                                '<div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div>' +
+                                    '<div class="panel-body">' +
+                                        '<select class="chzn-select" name="em-export-prg" id="em-export-prg">' +
+                                            '<option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option>' +
+                                        '</select><br/><br/>' +
+
+                                        '<div id="camp" style="display:none;">' +
+                                            '<select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select">' +
+                                                '<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>' +
+                                            '</select>' +
+                                        '</div>' +
+
+                                        // '<div id="letter">' +
+                                        //     '<select name="em-export-letter" id="em-export-letter" class="chzn-select">' +
+                                        //         '<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_LETTER')+' --</option>' +
+                                        //     '</select>' +
+                                        // '</div>' +
+                                    '</div>' +
+                                '</div>'
+                            )
 
                             $('#data').append('<div id="elements_detail" style="display: none">' +
                                 '<div class="panel panel-default xclsform">' +
@@ -1825,6 +1845,7 @@ $(document).ready(function() {
                                 '</div>');
 
                             var checkInput = getUserCheck();
+
 
                             $.ajax({
                                 type:'post',
@@ -2916,7 +2937,9 @@ $(document).ready(function() {
 
                             $('#em-export-prg').chosen({width: "95%"});
                             $('#em-export-camp').chosen({width: "95%"});
+                            $('#em-export-letter').chosen({width: "95%"});
                             $('#filt_save').chosen({width: "85%"});
+                            $('#filt_save_pdf').chosen({width: "85%"});
                             $('#em-export-form').chosen({width: "95%"});
                             $('.xclsform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
                             $('th').css({'padding-right':"40px"});
