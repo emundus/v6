@@ -636,6 +636,7 @@ function getUserCheckArray() {
 maxcsv = 65000;
 maxxls = 65000;
 function generate_csv(json, eltJson, objJson, options, objclass) {
+    let letter = $('#em-export-letter').val();          /// get letter id
     var start = json.start;
     var limit = json.limit;
     var totalfile = json.totalfile;
@@ -660,44 +661,84 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                 objs: objJson,
                 opts: options,
                 objclass: objclass,
-                excelfilename:json.excelfilename
+                excelfilename:json.excelfilename,
             },
             success: function(result) {
                 var json = result.json;
                 if (result.status) {
-                    if ((methode == 0) && ($('#view').val()!="evaluation")) {
+                    if ((methode == 0) && ($('#view').val() != "evaluation")) {
                         $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start + ' / ' + result.json.totalfile + '</p></div>');
                     } else {
-                        $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start+'</p></div>');
+                        $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start + '</p></div>');
 
-                    }
-                    if (start != json.start) {
-                        generate_csv(json, eltJson, objJson, options, objclass);
-                    } else {
-                        $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_XLS_GENERATION')+'</p></div>');
-                        $.ajax(
-                            {
-                                type: 'post',
-                                url: 'index.php?option=com_emundus&controller=files&task=export_xls_from_csv',
-                                dataType: 'JSON',
-                                data: {csv: file, nbcol: nbcol, start: start, excelfilename: result.json.excelfilename},
-                                success: function(result) {
-                                    if (result.status) {
+                        }
+                        if (start != json.start) {
+                            generate_csv(json, eltJson, objJson, options, objclass);
+                        } else {
+                            $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.JText._('COM_EMUNDUS_XLS_GENERATION') + '</p></div>');
+                            $.ajax(
+                                {
+                                    type: 'post',
+                                    url: 'index.php?option=com_emundus&controller=files&task=export_xls_from_csv',
+                                    dataType: 'JSON',
+                                    data: {
+                                        csv: file,
+                                        nbcol: nbcol,
+                                        start: start,
+                                        excelfilename: result.json.excelfilename
+                                    },
+                                    success: function (result) {
+                                        if (result.status) {
+                                            //// right here --> I will
+                                            console.log(result);
+                                            let source = result.link;
+
+                                            if(letter !== 0) {
+                                                $.ajax({
+                                                    type: 'post',
+                                                    url: 'index.php?option=com_emundus&controller=files&task=getletter',
+                                                    dataType: 'JSON',
+                                                    data: {letter: letter},
+                                                    success: function (data) {
+                                                        if (data.status) {
+                                                            let letter = data.letter.file;      /// get the destination of letters
+                                                            // call ajax to migrate all csv to letter
+                                                            $.ajax({
+                                                                type: 'post',
+                                                                url: 'index.php?option=com_emundus&controller=files&task=export_letter_from_csv',
+                                                                dataType: 'JSON',
+                                                                data: {
+                                                                    source: source,
+                                                                    letter: letter,
+                                                                },
+                                                                success: function(reply) {
+                                                                    console.log(letter);
+                                                                }
+                                                            })
+                                                        }
+                                                    }, error: function (jqXHR) {
+                                                        console.log(jqXHR.responseText);
+                                                    }
+                                                });
+                                            }
+
+                                            else {
+                                                $('#loadingimg').empty();
+                                                $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
+                                                $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                                                $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + result.link + '"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
+                                            }
+                                        }
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
                                         $('#loadingimg').empty();
-                                        $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
-                                        $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
-                                        $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + result.link + '"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
+                                        $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + Joomla.JText._('COM_EMUNDUS_ERROR_XLS') + '</div>');
+                                        $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                                        console.log(jqXHR.responseText);
                                     }
-                                },
-                                error: function (jqXHR, textStatus, errorThrown) {
-                                    $('#loadingimg').empty();
-                                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_XLS')+'</div>');
-                                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
-                                    console.log(jqXHR.responseText);
-                                }
-                            });
+                                });
+                        }
                     }
-                }
             },
             error: function (jqXHR) {
                 $('#loadingimg').empty();
