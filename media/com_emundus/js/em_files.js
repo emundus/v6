@@ -1850,6 +1850,21 @@ $(document).ready(function() {
 
                             var checkInput = getUserCheck();
 
+                            /// first --> get all letters
+                            $.ajax({
+                               type: 'post',
+                               url: 'index.php?option=com_emundus&controller=files&task=getAllLetters',
+                               dataType:'json',
+                               success: function(result) {
+                                    console.log(result);
+                                    let letters = result.letters;
+                                    letters.forEach(letter => {
+                                        $('#em-export-letter').append('<option value="' + letter.id + '">' + letter.title + '</option>');
+                                        $('#em-export-letter').trigger("chosen:updated");
+                                    });
+                               }
+                            });
+
                             $.ajax({
                                 type:'post',
                                 url: 'index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
@@ -4459,6 +4474,8 @@ $(document).ready(function() {
     $(document).on('click', '#savefilter', function(e) {
         var code = $('#em-export-prg').val();
         var camp = $('#em-export-camp').val();
+        var letters = $('#em-export-letter').val();
+
         var proglabel = $("#em-export-prg option:selected").text();
         var camplabel = $("#em-export-camp option:selected").text();
         var exp_methode = $('#em-export-methode:checked').val();

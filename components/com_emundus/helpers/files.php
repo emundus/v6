@@ -2652,6 +2652,23 @@ class EmundusHelperFiles
         }
     }
 
+    public function getAllLetters() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('#__emundus_setup_letters.*')
+                ->from($db->quoteName('#__emundus_setup_letters'));
+            $db->setQuery($query);
+            return $db->loadObjectList();
+
+        } catch(Exception $e) {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+
     public function checkadmission() {
         $db = JFactory::getDBO();
 

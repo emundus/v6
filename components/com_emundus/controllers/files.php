@@ -3557,6 +3557,14 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         exit;
     }
 
+    public function getAllLetters() {
+        $h_files = new EmundusHelperFiles;
+        $letters = $h_files->getAllLetters();
+
+        echo json_encode((object)(array('status' => true, 'letters' => $letters)));
+        exit;
+    }
+
     public function checkforms(){
         $user_id   = JFactory::getUser()->id;
         $jinput    = JFactory::getApplication()->input;
