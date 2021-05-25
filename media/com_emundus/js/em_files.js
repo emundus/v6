@@ -4021,27 +4021,22 @@ $(document).ready(function() {
                 //// changer ici un peu pour bien s'adapter
                 $('#em-ex-forms').click(function(e) {
                     if ($('#em-ex-forms').is(":checked")){
-                        //document.getElementById('em-ex-forms').checked = true;
-                        let panel = $('#emundus_checkall.emundusall');
-
-                        // find all children of panels
-                        let children = Array.prototype.slice.call( panel.children );
-                        children.forEach((elt) => {
-                            var div_id = elt.id.split('emundus_table_')[1];
-                            $('#emundus_checkall_tbl_'+div_id).trigger("click");
-                        })
                         document.getElementById('em-ex-forms').checked = true;
+                        $('[id^=emundus_checkall_tbl_]').trigger('click');
+                        $('[id^=emundus_checkall_grp_]').trigger('click');
+                        $('[id^=emundus_elm_]').trigger('click');
 
+                        let grp = $('[id^=emundus_checkall_grp_]');
+                        grp[0].checked = true;
                     } else {
-                        let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
-
-                        // find all children of panels
-                        let children = Array.prototype.slice.call( panel.children );
-                        children.forEach((elt) => {
-                            var div_id = elt.id.split('emundus_table_')[1];
-                            $('#emundus_checkall_tbl_'+div_id).trigger("click");
-                        })
                         document.getElementById('em-ex-forms').checked = false;
+
+                        $('[id^=emundus_checkall_tbl_]').trigger('click');
+                        $('[id^=emundus_checkall_grp_]').trigger('click');
+                        $('[id^=emundus_elm_]').trigger('click');
+
+                        let grp = $('[id^=emundus_checkall_grp_]');
+                        grp[0].checked = false;
                     }
                 });
 
