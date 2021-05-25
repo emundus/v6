@@ -1793,8 +1793,8 @@ $(document).ready(function() {
                                         '</div>' +
                                     '</div>' +
 
-                                    '<div id="letter">' +
-                                        '<select name="em-export-letter" id="em-export-letter" class="chzn-select">' +
+                                    '<div id="letter" style="display:none;">' +
+                                        '<select name="em-export-letter" id="em-export-letter" style="display:none;" class="chzn-select">' +
                                             '<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_LETTER')+' --</option>' +
                                         '</select>' +
                                     '</div>' +
@@ -1861,6 +1861,7 @@ $(document).ready(function() {
                                     letters.forEach(letter => {
                                         $('#em-export-letter').append('<option value="' + letter.id + '">' + letter.title + '</option>');
                                         $('#em-export-letter').trigger("chosen:updated");
+                                        $('#letter').show();
                                     });
                                }
                             });
@@ -2723,8 +2724,16 @@ $(document).ready(function() {
                                                         var camplabel = filter.campaignlabel;
                                                         var code = filter.code;
                                                         var camp = filter.camp;
+                                                        var letters = filter.letters;
 
                                                         if (code != 0) { //for programmes
+
+                                                            /// check if letters != 0 -> [yes] --> select it, [no] --> do nothing
+                                                            if(letters !== 0) {
+                                                                document.getElementById('em-export-letter')[letters].selected = true;
+                                                                $('#em-export-letter').trigger("chosen:updated");
+                                                                $('#em-export-letter').trigger("change");
+                                                            }
 
                                                             html = '<option value="'+code+'">'+proglabel+'</option>';
                                                             if ($("#em-export-prg option[value="+code+"]").length == 0) {
@@ -4479,9 +4488,18 @@ $(document).ready(function() {
         var proglabel = $("#em-export-prg option:selected").text();
         var camplabel = $("#em-export-camp option:selected").text();
         var exp_methode = $('#em-export-methode:checked').val();
-        var params = '{"programmelabel":"'+proglabel+'","code":"'+code+'","camp":"'+camp+'","campaignlabel":"'+camplabel+'","elements":'
+
+
+        var params = '{' +
+            '"programmelabel":"'+proglabel+
+            '","code":"'+code+
+            '","camp":"'+camp+
+            '","letters":"'+letters+
+            '","campaignlabel":"'+camplabel+
+            '","elements":';
         var eltJson = "{";
         var i = 0;
+
 
         $(".em-export-item").each(function() {
             eltJson += '"'+i+'":"'+$(this).attr('id').split('-')[0]+'",';
