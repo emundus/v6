@@ -2761,6 +2761,7 @@ class EmundusHelperFiles
         }
     }
 
+    //// get profile from elements IDs
     public function getAllExportPdfFilter($user_id) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
