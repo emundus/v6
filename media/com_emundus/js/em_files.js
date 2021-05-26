@@ -690,10 +690,10 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                                     success: function (result) {
                                         if (result.status) {
                                             //// right here --> I will
-                                            console.log(result);
+                                            //console.log(result);
                                             let source = result.link;
 
-                                            if(letter !== 0) {
+                                            if(letter != 0) {
                                                 $.ajax({
                                                     type: 'post',
                                                     url: 'index.php?option=com_emundus&controller=files&task=getletter',
@@ -705,14 +705,21 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                                                             // call ajax to migrate all csv to letter
                                                             $.ajax({
                                                                 type: 'post',
-                                                                url: 'index.php?option=com_emundus&controller=files&task=export_letter_from_csv',
+                                                                url: 'index.php?option=com_emundus&controller=files&task=export_letter',
                                                                 dataType: 'JSON',
                                                                 data: {
                                                                     source: source,
                                                                     letter: letter,
                                                                 },
                                                                 success: function(reply) {
-                                                                    console.log(letter);
+                                                                    console.log(reply);
+                                                                    let tmp = reply.link.split('/');
+                                                                    let filename = tmp[tmp.length - 1];
+                                                                    console.log(filename);
+                                                                    $('#loadingimg').empty();
+                                                                    $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
+                                                                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                                                                    $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + filename + '"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
                                                                 }
                                                             })
                                                         }
