@@ -720,6 +720,8 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                                                                     $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
                                                                     $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
                                                                     $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + filename + '"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
+                                                                }, error: function(jqXHR) {
+                                                                    console.log(jqXHR.responseText);
                                                                 }
                                                             })
                                                         }
@@ -1821,6 +1823,24 @@ $(document).ready(function() {
                             //**export excel filter */
                             $('.modal-body').append('<div id="data"></div>');
 
+                            $('#data').append('<div class="panel panel-default xclsform xclsform-filters"><div class="panel-body"> <select class="chzn-select" id="filt_save" name="filt_save" >'+
+                                '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option></select>'+
+
+                                '<button class="w3-button w3-tiny btn-warning" id="savefilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
+                                '<button class="w3-button w3-tiny" id="delfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'"><i class="icon-trash"></i></button></div></div>'+
+
+                                '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                                '<strong>'+Joomla.JText._('FILTER_SAVED')+'</strong>'+
+                                '</div>'+
+                                '<div class="alert alert-dismissable alert-success em-alert-filter" id="del-filter">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                                '<strong>'+Joomla.JText._('FILTER_DELETED')+'</strong>'+
+                                '</div>'+
+                                '<div class="alert alert-dismissable alert-danger em-alert-filter" id="err-filter">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                                '<strong>'+Joomla.JText._('SQL_ERROR')+'</strong>'+
+                                '</div>');
 
                             $('#data').append('' +
                                 '<div class="panel panel-default xclsform">' +
@@ -1911,6 +1931,8 @@ $(document).ready(function() {
                                         $('#em-export-letter').trigger("chosen:updated");
                                         $('#letter').show();
                                     });
+                               }, error: function(jqXHR) {
+                                    console.log(jqXHR.responseText);
                                }
                             });
 
@@ -2731,24 +2753,24 @@ $(document).ready(function() {
                                 '</div>'+
                                 '</div>' );
 
-                            $('#data').append('<div class="panel panel-default xclsform xclsform-filters"><div class="panel-body"> <select class="chzn-select" id="filt_save" name="filt_save" >'+
-                                '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option></select>'+
-
-                                '<button class="w3-button w3-tiny btn-warning" id="savefilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
-                                '<button class="w3-button w3-tiny" id="delfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'"><i class="icon-trash"></i></button></div></div>'+
-
-                                '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
-                                '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                                '<strong>'+Joomla.JText._('FILTER_SAVED')+'</strong>'+
-                                '</div>'+
-                                '<div class="alert alert-dismissable alert-success em-alert-filter" id="del-filter">'+
-                                '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                                '<strong>'+Joomla.JText._('FILTER_DELETED')+'</strong>'+
-                                '</div>'+
-                                '<div class="alert alert-dismissable alert-danger em-alert-filter" id="err-filter">'+
-                                '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                                '<strong>'+Joomla.JText._('SQL_ERROR')+'</strong>'+
-                                '</div>');
+                            // $('#data').append('<div class="panel panel-default xclsform xclsform-filters"><div class="panel-body"> <select class="chzn-select" id="filt_save" name="filt_save" >'+
+                            //     '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option></select>'+
+                            //
+                            //     '<button class="w3-button w3-tiny btn-warning" id="savefilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
+                            //     '<button class="w3-button w3-tiny" id="delfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'"><i class="icon-trash"></i></button></div></div>'+
+                            //
+                            //     '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
+                            //     '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                            //     '<strong>'+Joomla.JText._('FILTER_SAVED')+'</strong>'+
+                            //     '</div>'+
+                            //     '<div class="alert alert-dismissable alert-success em-alert-filter" id="del-filter">'+
+                            //     '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                            //     '<strong>'+Joomla.JText._('FILTER_DELETED')+'</strong>'+
+                            //     '</div>'+
+                            //     '<div class="alert alert-dismissable alert-danger em-alert-filter" id="err-filter">'+
+                            //     '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                            //     '<strong>'+Joomla.JText._('SQL_ERROR')+'</strong>'+
+                            //     '</div>');
 
                             //*** on export excel filter change ******************************/
                             $('#filt_save').on('change', function() {
