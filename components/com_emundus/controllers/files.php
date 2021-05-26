@@ -2080,11 +2080,13 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
-    public function export_letter_from_csv() {
+    public function export_letter() {
         /// the main idea of this function is to use Stream of Buffer to pass data from CSV to Excel
         /// params --> 1st: csv, 2nd: excel
         require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         $jinput = JFactory::getApplication()->input;
+
+        // get source, letter name
         $source = $jinput->getVar('source', null);
         $letter = $jinput->getVar('letter', null);
 
@@ -2092,21 +2094,32 @@ class EmundusControllerFiles extends JControllerLegacy
         $_start = JPATH_BASE.DS."tmp".DS. $source;
         $_end = JPATH_BASE . $letter;
 
+        /// copy letter from /images/emundus/letters --> /tmp
+        $tmp_route = JPATH_BASE.DS."tmp".DS;
+        $randomString = JUserHelper::genRandomPassword(20);
+
+        $letter_file = end(explode('/', $letter));
+        $letter_file_random = explode('.xlsx', $letter_file)[0] .'_' . $randomString;
+
+        $_newLetter = JPATH_BASE.DS."tmp".DS.$letter_file_random.'.xlsx';
+        copy($_end, JPATH_BASE.DS."tmp".DS.$letter_file_random.'.xlsx');
+
         $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
         $_readerSpreadSheet = $reader->load($_start);
 
         $_readerData = $_readerSpreadSheet->getActiveSheet()->toArray();
 
-        $_destination = \PhpOffice\PhpSpreadsheet\IOFactory::load($_end);
+        $_destination = \PhpOffice\PhpSpreadsheet\IOFactory::load($_newLetter);
         $_destination->setActiveSheetIndex(0);
 
         $_destination->getActiveSheet()->fromArray($_readerData,null,'A1');
 
         $writer = new Xlsx($_destination);
-        $writer->save($_end);
+        $writer->save($_newLetter);
 
-        /// before return true --> return the link
-        return true;
+        $result = array('status' => true, 'link' => $_newLetter);
+        echo json_encode((object) $result);
+        exit();
     }
 
     public function export_xls_from_csv() {
@@ -2210,11 +2223,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $objPHPExcel->disconnectWorksheets();
         unset($objPHPExcel);
         $link = $excel_file_name.'_'.$nbrow.'rows_'.$randomString.'.xlsx';
-//        if (!unlink(JPATH_BASE.DS."tmp".DS.$csv)) {
-//            $result = array('status' => false, 'msg'=>'ERROR_DELETE_CSV');
-//            echo json_encode((object) $result);
-//            exit();
-//        }
+        if (!unlink(JPATH_BASE.DS."tmp".DS.$csv)) {
+            $result = array('status' => false, 'msg'=>'ERROR_DELETE_CSV');
+            echo json_encode((object) $result);
+            exit();
+        }
 
         $session = JFactory::getSession();
         $session->clear('fnums_export');
