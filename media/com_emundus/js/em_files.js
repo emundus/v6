@@ -3511,11 +3511,10 @@ $(document).ready(function() {
                     '</div></div><br/>' );
 
                 $('#data').append(
-                    '<div class="panel panel-default xclsform xclsform-filters">' +
+                    '<div class="panel panel-default pdf pdf-filters">' +
                         '<div class="panel-body"> ' +
                             '<select class="chzn-select" id="filt_save_pdf" name="filt_save_pdf" >'+
-                                // '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option>' +
-                                '<option value="0">' + "do it yourself" + '</option>' +
+                                '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option>' +
                             '</select>'+
 
                         '<button class="w3-button w3-tiny btn-warning" id="savePDFfilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
@@ -4204,7 +4203,7 @@ $(document).ready(function() {
                     };
 
                     var filName = prompt(filterName);
-                    if (filName != null) {
+                    if (filName != null && camp != 0 & code != 0) {
                         $.ajax({
                             type: 'post',
                             url: 'index.php?option=com_emundus&controller=files&task=savePdfFilter&Itemid=' + itemId,
@@ -4218,11 +4217,19 @@ $(document).ready(function() {
                                 if(result.status) {
                                     $('#filt_save_pdf').append('<option value="' + result.filter + '" selected="">' + filName + '</option>');
                                     $('#filt_save_pdf').trigger("chosen:updated");
-                                    $('#filt_save_pdf').show();
-                                    //// adding some effects here
+                                    $('#sav-filter').show();
+
+                                    setTimeout(function(e) {
+                                        $('#sav-filter').hide();
+                                    }, 600);
+
                                 }
                                 else {
-                                    //// adding some effects here
+                                    $('#err-filter').show();
+                                    setTimeout(function(e) {
+                                        $('#err-filter').hide();
+                                    }, 600);
+
                                 }
                             }, error: function(jqXHR) {
                                 console.log(jqXHR.responseText);
@@ -4230,6 +4237,11 @@ $(document).ready(function() {
                         })
                     } else {
                         alert(filterEmpty);
+                        $('#err-filter').show();
+                        setTimeout(function(e) {
+                            $('#err-filter').hide();
+                        }, 600);
+
                         filName = prompt(filterName, "name");
                     }
                 });
