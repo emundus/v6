@@ -3424,6 +3424,31 @@ $(document).ready(function() {
                 $('#em-modal-actions .modal-body').empty();
                 $('#em-modal-actions .modal-body').append('<div id="data"></div>');
                 $('#data').append(
+                    '<div class="panel panel-default pdform pdform-filters">' +
+                        '<div class="panel-body"> ' +
+                            '<select class="chzn-select" id="filt_save_pdf" name="filt_save_pdf" >'+
+                                '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option>' +
+                            '</select>'+
+
+                        '<button class="w3-button w3-tiny btn-warning" id="savePDFfilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
+                        '<button class="w3-button w3-tiny" id="delfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'"><i class="icon-trash"></i></button></div></div>'+
+
+                        '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
+                            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                            '<strong>'+Joomla.JText._('FILTER_SAVED')+'</strong>'+
+                        '</div>'+
+
+                        '<div class="alert alert-dismissable alert-success em-alert-filter" id="del-filter">'+
+                            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                            '<strong>'+Joomla.JText._('FILTER_DELETED')+'</strong>'+
+                        '</div>'+
+
+                        '<div class="alert alert-dismissable alert-danger em-alert-filter" id="err-filter">'+
+                            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                            '<strong>'+Joomla.JText._('SQL_ERROR')+'</strong>'+
+                        '</div>'+
+                    '</div>');
+                $('#data').append(
                     '<div class="panel panel-default pdform">' +
                         '<div class="panel-heading">' +
                             '<h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5>' +
@@ -3509,32 +3534,6 @@ $(document).ready(function() {
                     '<option  value="upload" selected>'+Joomla.JText._('FILES_UPLOADED')+'</option>' +
                     '</select>'+
                     '</div></div><br/>' );
-
-                $('#data').append(
-                    '<div class="panel panel-default pdf pdf-filters">' +
-                        '<div class="panel-body"> ' +
-                            '<select class="chzn-select" id="filt_save_pdf" name="filt_save_pdf" >'+
-                                '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option>' +
-                            '</select>'+
-
-                        '<button class="w3-button w3-tiny btn-warning" id="savePDFfilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
-                        '<button class="w3-button w3-tiny" id="delfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'"><i class="icon-trash"></i></button></div></div>'+
-
-                        '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
-                            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                            '<strong>'+Joomla.JText._('FILTER_SAVED')+'</strong>'+
-                        '</div>'+
-
-                        '<div class="alert alert-dismissable alert-success em-alert-filter" id="del-filter">'+
-                            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                            '<strong>'+Joomla.JText._('FILTER_DELETED')+'</strong>'+
-                        '</div>'+
-
-                        '<div class="alert alert-dismissable alert-danger em-alert-filter" id="err-filter">'+
-                            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                            '<strong>'+Joomla.JText._('SQL_ERROR')+'</strong>'+
-                        '</div>'+
-                    '</div>');
 
                 $('chzn-select').trigger("chosen:updated");
 
@@ -3681,14 +3680,14 @@ $(document).ready(function() {
                 });
 
                 $('#filt_save_pdf').on('change', function() {
-                   // get model params by model id
-                   console.log('change model');
-                    $('#felts').empty();
+                   $('#felts').empty();
                    var model = $('#filt_save_pdf').val();
 
-                   if(model !== 0) {
+                   console.log(model);
+
+                   if(model != 0) {
                        $.ajax({
-                           type: 'get',
+                           type: 'post',
                            url: 'index.php?option=com_emundus&controller=files&task=getExportPdfFilterById',
                            data: {
                                id: model,
