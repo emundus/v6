@@ -3911,6 +3911,18 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         echo json_encode((object)(array('status' => $result, 'msg' => $msg)));
         exit;
     }
+
+    public function getselectedelements() {
+        $jinput = JFactory::getApplication()->input;
+
+        $h_files = new EmundusHelperFiles;
+        $_elements = $jinput->getVar('elts', null);
+
+        $_getElements = $h_files->getSelectedElements($_elements);
+
+        echo json_encode((object)(array('status' => true, 'elements' => $_getElements, )));
+        exit;
+    }
 }
 
 

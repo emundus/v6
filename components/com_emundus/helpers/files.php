@@ -2706,4 +2706,29 @@ class EmundusHelperFiles
         }
     }
 
+    /// this code will be fixed in the future
+    public function getSelectedElements($selectedElts) {
+        /// base elements ==> fnum = 2540 // status = 2754 // programme = 1906 // last_name = 7057 // first_name = 7056 // email = 7068
+
+        $default = "2540,2754,1906,7056,7057,7068";
+
+        $selectedElts = $default . ',' . $selectedElts;
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('#__fabrik_elements.*')
+                ->from($db->quoteName('#__fabrik_elements'))
+                ->where($db->quoteName('#__fabrik_elements.id') . 'IN (' . $selectedElts . ')');
+
+            $db->setQuery($query);
+            $selected_elts = $db->loadObjectList();
+
+            return $selected_elts;
+        } catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

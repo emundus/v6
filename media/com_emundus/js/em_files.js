@@ -2026,7 +2026,7 @@ $(document).ready(function() {
                                                             success: function(data) {
                                                                 $('#elements-popup').empty();
                                                                 $('#em-export-form').empty();
-                                                                $('#em-export').empty();
+                                                                //$('#em-export').empty();
                                                                 $.ajax({
                                                                     type:'get',
                                                                     url: 'index.php?option=com_emundus&controller=files&task=getformelem&code='+code+'&camp='+camp+'&Itemid='+itemId,
@@ -2774,6 +2774,8 @@ $(document).ready(function() {
 
                             //*** on export excel filter change ******************************/
                             $('#filt_save').on('change', function() {
+                                $('#em-export').empty();
+
                                 var id = $(this).val();
                                 if (id != 0) {
                                     $.ajax({
@@ -2794,7 +2796,31 @@ $(document).ready(function() {
                                                         var camplabel = filter.campaignlabel;
                                                         var code = filter.code;
                                                         var camp = filter.camp;
-                                                        var letters = filter.letters;
+                                                        var baseElements = filter.baseElements;
+                                                        console.log(baseElements);
+
+                                                        /// add default elements + customized elementd
+                                                        $.ajax({
+                                                            type: 'post',
+                                                            url: 'index.php?option=com_emundus&controller=files&task=getselectedelements',
+                                                            dataType: 'JSON',
+                                                            data: { elts : baseElements },
+                                                            success: function(answer) {
+
+                                                                if(answer.status) {
+                                                                    $('#em-export').empty();
+
+                                                                    let selectedElts = answer.elements;
+                                                                    selectedElts.forEach(selts => {
+                                                                        $('#em-export').append('<li class="em-export-item" id="' + selts.id + '-item"><button class="btn btn-danger btn-xs" id="' + selts.id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + selts.label + '</strong></span></li>');
+                                                                    })
+                                                                } else {
+                                                                    $('#em-export').empty();
+                                                                }
+                                                            }
+                                                        })
+
+                                                        continue;
 
                                                         if (code != 0) { //for programmes
 
@@ -2862,7 +2888,7 @@ $(document).ready(function() {
                                                                 type: 'get',
                                                                 url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&camp='+camp+'&code=' + code,
                                                                 success: function (data) {
-                                                                    $('#em-export').empty();
+                                                                    //$('#em-export').empty();
                                                                     $.ajax({
                                                                         type:'get',
                                                                         url: 'index.php?option=com_emundus&controller=files&task=getformelem&code='+code+'&camp='+camp+'&Itemid='+itemId,
@@ -4559,17 +4585,25 @@ $(document).ready(function() {
         var camplabel = $("#em-export-camp option:selected").text();
         var exp_methode = $('#em-export-methode:checked').val();
 
+        var baseElements = [];
+        let baseEltNodes = document.getElementById("em-export").querySelectorAll('li');
+        baseEltNodes.forEach(baseElt => {
+            let id = baseElt.id.split('-')[0];
+            baseElements.push(id);
+        })
+
+        console.log(baseElements);
 
         var params = '{' +
             '"programmelabel":"'+proglabel+
             '","code":"'+code+
             '","camp":"'+camp+
             '","letters":"'+letters+
+            '","baseElements":"'+baseElements+
             '","campaignlabel":"'+camplabel+
             '","elements":';
         var eltJson = "{";
         var i = 0;
-
 
         $(".em-export-item").each(function() {
             eltJson += '"'+i+'":"'+$(this).attr('id').split('-')[0]+'",';
