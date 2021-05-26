@@ -2939,7 +2939,6 @@ $(document).ready(function() {
                             $('#em-export-camp').chosen({width: "95%"});
                             $('#em-export-letter').chosen({width: "95%"});
                             $('#filt_save').chosen({width: "85%"});
-                            $('#filt_save_pdf').chosen({width: "85%"});
                             $('#em-export-form').chosen({width: "95%"});
                             $('.xclsform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
                             $('th').css({'padding-right':"40px"});
@@ -3424,46 +3423,67 @@ $(document).ready(function() {
 
                 $('#em-modal-actions .modal-body').empty();
                 $('#em-modal-actions .modal-body').append('<div id="data"></div>');
-                $('#data').append('<div class="panel panel-default pdform"><div class="panel-heading"><h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5></div><div class="panel-body"><select class="chzn-select" name="em-export-prg" id="em-export-prg"><option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option></select><br/><br/><div id="camp" style="display:none;"><select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select"><option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option></select></div></div></div>');
+                $('#data').append(
+                    '<div class="panel panel-default pdform">' +
+                        '<div class="panel-heading">' +
+                            '<h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5>' +
+                        '</div>' +
+
+                        '<div class="panel-body">' +
+                            '<select class="chzn-select" name="em-export-prg" id="em-export-prg">' +
+                                '<option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option>' +
+                            '</select>' +
+                            '<br/><br/>' +
+
+                            '<div id="camp" style="display:none;">' +
+                                '<select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select">' +
+                                    '<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>' +
+                                '</select>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>');
+
                 $('#data').append(
                 '<div class="panel panel-default pdform" id="form-exists" style="display:none;">'+
-                '<div class="panel-heading">'+
-                '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms"/>' +
-                '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('FORMS_PDF').toUpperCase()+'</font></label>'+
-                '</div>'+
+                    '<div class="panel-heading">'+
+                        '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms"/>' +
+                        '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('FORMS_PDF').toUpperCase()+'</font></label>'+
+                    '</div>'+
 
                 '<div id = "form-element" style="overflow:auto"></div>' +
                 // '<div class="panel-body" id="felts" style="overflow:auto;display:none;"></div>'+
 
                 '</div>'+
+
                 '<div class="panel panel-default pdform" id="att-exists" style="display:none;">'+
-                '<div class="panel-heading">'+
-                '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment"/>' +
-                '<label for="em-ex-attachment"><font color="black">'+Joomla.JText._('ATTACHMENT_PDF').toUpperCase()+'</font></label>'+
-                '</div>'+
-                '<div class="panel-body" id="aelts" style="overflow:auto;display:none;"></div>'+
+                    '<div class="panel-heading">'+
+                        '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment"/>' +
+                        '<label for="em-ex-attachment"><font color="black">'+Joomla.JText._('ATTACHMENT_PDF').toUpperCase()+'</font></label>'+
+                    '</div>'+
+                    '<div class="panel-body" id="aelts" style="overflow:auto;display:none;"></div>'+
                 '</div>'+
 
                 '<div class="panel panel-default pdform" id="eval-exists" style="display:none;">'+
-                '<div class="panel-heading">'+
-                '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
-                '<label for="em-ex-assessment"><font color="black">'+Joomla.JText._('ASSESSMENT_PDF').toUpperCase()+'</font></label>'+
-                '</div>'+
+                    '<div class="panel-heading">'+
+                        '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
+                        '<label for="em-ex-assessment"><font color="black">'+Joomla.JText._('ASSESSMENT_PDF').toUpperCase()+'</font></label>'+
+                    '</div>'+
                 '</div>'+
 
                 '<div class="panel panel-default pdform" id="dec-exists" style="display:none;">'+
-                '<div class="panel-heading">'+
-                '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
-                '<label for="em-ex-decision"><font color="black">'+Joomla.JText._('DECISION_PDF').toUpperCase()+'</font></label>'+
-                '</div>'+
+                    '<div class="panel-heading">'+
+                        '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
+                        '<label for="em-ex-decision"><font color="black">'+Joomla.JText._('DECISION_PDF').toUpperCase()+'</font></label>'+
+                    '</div>'+
                 '</div>'+
 
                 '<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
-                '<div class="panel-heading">'+
-                '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
-                '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
-                '</div>'+
-                '</div><br/>'
+                    '<div class="panel-heading">'+
+                        '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
+                        '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
+                    '</div>'+
+                '</div>' +
+                '<br/>'
                 );
 
                 $('#data').append('<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
@@ -3490,23 +3510,31 @@ $(document).ready(function() {
                     '</select>'+
                     '</div></div><br/>' );
 
-                $('#data').append('<div class="panel panel-default pdform pdform-filters"><div class="panel-body"> <select class="chzn-select" id="filt_save_pdf" name="filt_save_pdf" >'+
-                    '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option></select>'+
+                $('#data').append(
+                    '<div class="panel panel-default xclsform xclsform-filters">' +
+                        '<div class="panel-body"> ' +
+                            '<select class="chzn-select" id="filt_save_pdf" name="filt_save_pdf" >'+
+                                // '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option>' +
+                                '<option value="0">' + "do it yourself" + '</option>' +
+                            '</select>'+
 
-                    '<button class="w3-button w3-tiny btn-warning" id="savePDFfilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
-                    '<button class="w3-button w3-tiny" id="delfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'"><i class="icon-trash"></i></button></div></div>'+
+                        '<button class="w3-button w3-tiny btn-warning" id="savePDFfilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
+                        '<button class="w3-button w3-tiny" id="delfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'"><i class="icon-trash"></i></button></div></div>'+
 
-                    '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
-                    '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                    '<strong>'+Joomla.JText._('FILTER_SAVED')+'</strong>'+
-                    '</div>'+
-                    '<div class="alert alert-dismissable alert-success em-alert-filter" id="del-filter">'+
-                    '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                    '<strong>'+Joomla.JText._('FILTER_DELETED')+'</strong>'+
-                    '</div>'+
-                    '<div class="alert alert-dismissable alert-danger em-alert-filter" id="err-filter">'+
-                    '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                    '<strong>'+Joomla.JText._('SQL_ERROR')+'</strong>'+
+                        '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
+                            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                            '<strong>'+Joomla.JText._('FILTER_SAVED')+'</strong>'+
+                        '</div>'+
+
+                        '<div class="alert alert-dismissable alert-success em-alert-filter" id="del-filter">'+
+                            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                            '<strong>'+Joomla.JText._('FILTER_DELETED')+'</strong>'+
+                        '</div>'+
+
+                        '<div class="alert alert-dismissable alert-danger em-alert-filter" id="err-filter">'+
+                            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                            '<strong>'+Joomla.JText._('SQL_ERROR')+'</strong>'+
+                        '</div>'+
                     '</div>');
 
                 $('chzn-select').trigger("chosen:updated");
@@ -4208,8 +4236,10 @@ $(document).ready(function() {
 
                 $('#em-export-prg').chosen({width: "95%"});
                 $('#em-export-camp').chosen({width: "95%"});
+                $('#filt_save_pdf').chosen({width: "85%"});
 
-                $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px", 'border-radius':"4px"});
+                // $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px", 'border-radius':"4px"});
+                $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
 
                 $('#can-val').empty();
                 $('#can-val').append('<a class="btn-large btn-success btn-attach"  id="em_generate" href="'+url+'">'+Joomla.JText._('GENERATE_PDF')+'</a><div id="attachement_res"></div>');
