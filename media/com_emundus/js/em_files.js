@@ -2797,6 +2797,7 @@ $(document).ready(function() {
                                                         var code = filter.code;
                                                         var camp = filter.camp;
                                                         var baseElements = filter.baseElements;
+                                                        var letters = filter.letters;
                                                         console.log(baseElements);
 
                                                         /// add default elements + customized elementd
@@ -2820,12 +2821,10 @@ $(document).ready(function() {
                                                             }
                                                         })
 
-                                                        continue;
-
                                                         if (code != 0) { //for programmes
 
                                                             /// check if letters != 0 -> [yes] --> select it, [no] --> do nothing
-                                                            if(letters !== 0) {
+                                                            if(letters != 0) {
                                                                 document.getElementById('em-export-letter')[letters].selected = true;
                                                                 $('#em-export-letter').trigger("chosen:updated");
                                                                 $('#em-export-letter').trigger("change");
