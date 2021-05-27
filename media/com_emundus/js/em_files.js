@@ -2801,10 +2801,10 @@ $(document).ready(function() {
                                                             data: { elts : baseElements },
                                                             success: function(my_reply_2) {
                                                                 let selectedElts = my_reply_2.elements.selected_elements;
-                                                                let defaultElts = my_reply_2.elements.default_elements;
-                                                                let showElts = selectedElts.concat(defaultElts);
+                                                                //let defaultElts = my_reply_2.elements.default_elements;
+                                                                //let showElts = selectedElts.concat(defaultElts);
 
-                                                                showElts.forEach(elts => {
+                                                                selectedElts.forEach(elts => {
                                                                     console.log(elts.label);
                                                                     $('#em-export').append('<li class="em-export-item" id="' + elts.id + '-item"><button class="btn btn-danger btn-xs" id="' + elts.id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elts.label + '</strong></span></li>');
                                                                 });

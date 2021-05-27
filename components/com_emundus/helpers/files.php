@@ -2726,7 +2726,7 @@ class EmundusHelperFiles
     public function getSelectedElements($selectedElts) {
         /// base elements ==> fnum = 2540 // status = 2754 // programme = 1906 // last_name = 7057 // first_name = 7056 // email = 7068
 
-        $default = "2540,2754,1906,7056,7057,7068";
+        //$default = "2540,2754,1906,7056,7057,7068";
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -2740,15 +2740,16 @@ class EmundusHelperFiles
             $db->setQuery($query);
             $selected_elts = $db->loadObjectList();
 
-            $query->clear()
-                ->select('#__fabrik_elements.*')
-                ->from($db->quoteName('#__fabrik_elements'))
-                ->where($db->quoteName('#__fabrik_elements.id') . 'IN (' . $default . ')');
+//            $query->clear()
+//                ->select('#__fabrik_elements.*')
+//                ->from($db->quoteName('#__fabrik_elements'))
+//                ->where($db->quoteName('#__fabrik_elements.id') . 'IN (' . $default . ')');
 
             $db->setQuery($query);
             $default_elements = $db->loadObjectList();
 
-            return array('selected_elements' => $selected_elts, 'default_elements' => $default_elements);
+//            return array('selected_elements' => $selected_elts, 'default_elements' => $default_elements);
+            return array('selected_elements' => $selected_elts);
         } catch(Exception $e) {
             return $e->getMessage();
         }
