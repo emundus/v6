@@ -2983,7 +2983,7 @@ $(document).ready(function() {
                                                                                                 var checked = $('#emundus_elm_' + elements[d]).is(':checked');
                                                                                                 if (checked == true) {
                                                                                                     var text =  $("label[for='emundus_elm_" + elements[d] + "']").text();
-                                                                                                    $('#em-export').append('<li class="em-export-item" id="' + elements[d] + '-item"><button class="btn btn-danger btn-xs" id="' + elements[d] + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
+                                                                                                    //$('#em-export').append('<li class="em-export-item" id="' + elements[d] + '-item"><button class="btn btn-danger btn-xs" id="' + elements[d] + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
                                                                                                 } else {
                                                                                                     //$('#' + elements[d] + '-item').remove();
                                                                                                 }
