@@ -3692,59 +3692,31 @@ $(document).ready(function() {
                            data: {
                                id: model,
                            },
-                           dataType: 'json',
+                           dataType: 'JSON',
                            success: function(result) {
                                if(result.status) {
-                                   console.log(result);
                                    let constraints = result.filter.constraints;
                                    let json = JSON.parse(constraints);
 
-                                   let progCode = json['pdffilter']['code'];
-                                   let progLabel = json['pdffilter']['proglabel'];
+                                   /// from json --> we will re-render data to DOM
+                                   let progCode = json.pdffilter.code;
+                                   let progName = json.pdffilter.proglabel;
 
-                                   let campCode = json['pdffilter']['camp'];
-                                   let campLabel = json['pdffilter']['camplabel'];
+                                   let campCode = json.pdffilter.camp;
+                                   let campName = json.pdffilter.camplabel;
 
+                                   let groups = json.pdffilter.groups;
 
-                                   let elems = json['pdffilter']['elements'];
-                                   let headers = json['pdffilter']['headers'];
+                                   let tables = json.pdffilter.tables;
 
-                                   let optionsObjects = document.getElementById('em-export-camp');
-                                   let optionsArray = Array.prototype.slice.call( optionsObjects );
-                                   optionsArray.forEach(opt => {
-                                       if(opt.value == campCode) {
-                                           document.getElementById('em-export-camp')[campCode].selected = true;
-                                           // $('#em-export-camp option[value=campCode]').trigger("click");
-                                       }
-                                   })
+                                   let elements = json.pdffilter.elements;
 
+                                   let headers = json.pdffilter.headers;
+
+                                   // re-render to DOM
+                                   $('#em-export-camp').val(campCode);
                                    $('#em-export-camp').trigger("chosen:updated");
                                    $('#em-export-camp').trigger("change");
-                                   /// set the headers
-                                   $('#felts').show();
-                                   if(document.getElementById('showelements').firstChild.className == "glyphicon glyphicon-plus") {
-                                       document.getElementById('showelements').firstChild.className = "glyphicon glyphicon-minus";
-                                       document.getElementById('showelements').className = "btn-xs btn btn-elements-success";
-                                   }
-
-                                   /// check to elems
-                                   setTimeout(function() {elems.forEach(elt => {$("#emundus_elm_" + elt).prop('checked', true);})}, 3000);
-
-                                   let headerObjects = document.getElementById('em-export-opt');
-                                   let headerArray = Array.prototype.slice.call( headerObjects );
-
-                                   for(var i=0; i<headerArray.length; i++) {
-                                       if(headers.includes(headerArray[i].value)) {
-                                           headerArray[i].selected = true;
-                                           $('#em-export-opt').trigger("chosen:updated");
-                                           $('#em-export-opt').trigger("change");
-                                       } else {
-                                           headerArray[i].selected = false;
-                                           $('#em-export-opt').trigger("chosen:updated");
-                                           $('#em-export-opt').trigger("change");
-                                       }
-                                   }
-
 
                                } else {
 
