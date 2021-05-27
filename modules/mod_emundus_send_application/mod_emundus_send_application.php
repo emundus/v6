@@ -17,6 +17,7 @@ if (!empty($user->fnum)) {
 
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
 	$layout = $params->get('layout', 'default');
 	$print = $params->get('showprint', 1);
@@ -27,14 +28,17 @@ if (!empty($user->fnum)) {
 	$id_applicants = $eMConfig->get('id_applicants', '0');
 	$applicants = explode(',',$id_applicants);
     $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
+    $application_fee = $eMConfig->get('application_fee', 0);
 
 	$application = modemundusSendApplicationHelper::getApplication($user->fnum);
 
 	$m_application = new EmundusModelApplication;
 	$m_checklist = new EmundusModelChecklist;
+    $m_profile = new EmundusModelProfile;
 
 	$attachments = $m_application->getAttachmentsProgress($user->fnum);
 	$forms 	= $m_application->getFormsProgress($user->fnum);
+    $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 
 	// We redirect to the "send application" form, this form will redirect to payment if required.
 	$confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
