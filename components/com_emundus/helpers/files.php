@@ -2652,6 +2652,22 @@ class EmundusHelperFiles
         }
     }
 
+    public function getExportExcelFilterById($fid) {
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        if(!empty($fid)) {
+            $query->clear()
+                ->select('#__emundus_filters.*')
+                ->from($db->quoteName('#__emundus_filters'))
+                ->where($db->quoteName('#__emundus_filters.id') . '=' . (int)$fid);
+            $db->setQuery($query);
+            return $db->loadObject();
+        } else {
+            return false;
+        }
+    }
+
     public function getAllLetters() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -2712,8 +2728,6 @@ class EmundusHelperFiles
 
         $default = "2540,2754,1906,7056,7057,7068";
 
-        $selectedElts = $default . ',' . $selectedElts;
-
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -2726,7 +2740,15 @@ class EmundusHelperFiles
             $db->setQuery($query);
             $selected_elts = $db->loadObjectList();
 
-            return $selected_elts;
+            $query->clear()
+                ->select('#__fabrik_elements.*')
+                ->from($db->quoteName('#__fabrik_elements'))
+                ->where($db->quoteName('#__fabrik_elements.id') . 'IN (' . $default . ')');
+
+            $db->setQuery($query);
+            $default_elements = $db->loadObjectList();
+
+            return array('selected_elements' => $selected_elts, 'default_elements' => $default_elements);
         } catch(Exception $e) {
             return $e->getMessage();
         }

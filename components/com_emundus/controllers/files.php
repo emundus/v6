@@ -3598,6 +3598,19 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         exit;
     }
 
+    public function getExportExcelFilterById() {
+        $user_id  = JFactory::getUser()->id;
+
+        $jinput = JFactory::getApplication()->input;
+        $fid = $jinput->getVar('id', null);
+
+        $h_files = new EmundusHelperFiles;
+        $filters = $h_files->getExportExcelFilterById($fid);
+
+        echo json_encode((object)(array('status' => true, 'filter' => $filters)));
+        exit;
+    }
+
     public function getAllLetters() {
         $h_files = new EmundusHelperFiles;
         $letters = $h_files->getAllLetters();
@@ -3917,6 +3930,8 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         $h_files = new EmundusHelperFiles;
         $_elements = $jinput->getVar('elts', null);
+
+//        var_dump($_elements);die;
 
         $_getElements = $h_files->getSelectedElements($_elements);
 
