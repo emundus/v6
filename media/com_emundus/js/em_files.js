@@ -4091,7 +4091,7 @@ $(document).ready(function() {
                 });
 
                 $(document).on('click', '[id^=showelements_]', function() {
-                    let id = ($(this).attr('id')).split('_')[1];
+                    let id = $(this).attr('id').split('_')[1];
                     let button_id = $(this).attr('id');
 
                     if($('#' + button_id + ' > span').attr('class') == 'glyphicon glyphicon-plus') {
@@ -4102,6 +4102,26 @@ $(document).ready(function() {
                         $('#' + button_id + ' > span').attr('class', 'glyphicon glyphicon-plus');
                         $(this).attr('class','btn-xs btn btn-info');
                         $('#felts'+ id).hide();
+                    }
+                });
+
+                /// check all children of table
+                $(document).on('click', '[id^=emundus_checkall_tbl_]', function() {
+                    let id = $(this).attr('id').split('emundus_checkall_tbl_')[1];
+                    if($('#emundus_checkall_tbl_' + id).is(":checked")) {
+                        $('#emundus_table_' + id + " :input").attr('checked', true);
+                    } else {
+                        $('#emundus_table_' + id + " :input").attr('checked', false);
+                    }
+                });
+
+                // check all children of group
+                $(document).on('click', '[id^=emundus_checkall_grp_]', function(){
+                    let id = $(this).attr('id').split('emundus_checkall_grp_')[1];
+                    if($('#emundus_checkall_grp_' + id).is(":checked")) {
+                        $('#emundus_grp_' + id + " :input").attr('checked', true);
+                    } else {
+                        $('#emundus_grp_' + id + " :input").attr('checked', false);
                     }
                 });
 
