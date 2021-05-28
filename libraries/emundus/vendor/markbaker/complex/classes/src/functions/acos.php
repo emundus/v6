@@ -16,25 +16,23 @@ namespace Complex;
  * @return    Complex          The inverse cosine of the complex argument.
  * @throws    Exception        If argument isn't a valid real or complex number.
  */
-if (!function_exists(__NAMESPACE__ . '\\acos')) {
-    function acos($complex): Complex
-    {
-        $complex = Complex::validateComplexArgument($complex);
+function acos($complex): Complex
+{
+    $complex = Complex::validateComplexArgument($complex);
 
-        $square = clone $complex;
-        $square = multiply($square, $complex);
-        $invsqrt = new Complex(1.0);
-        $invsqrt = subtract($invsqrt, $square);
-        $invsqrt = sqrt($invsqrt);
-        $adjust = new Complex(
-            $complex->getReal() - $invsqrt->getImaginary(),
-            $complex->getImaginary() + $invsqrt->getReal()
-        );
-        $log = ln($adjust);
+    $square = clone $complex;
+    $square = multiply($square, $complex);
+    $invsqrt = new Complex(1.0);
+    $invsqrt = subtract($invsqrt, $square);
+    $invsqrt = sqrt($invsqrt);
+    $adjust = new Complex(
+        $complex->getReal() - $invsqrt->getImaginary(),
+        $complex->getImaginary() + $invsqrt->getReal()
+    );
+    $log = ln($adjust);
 
-        return new Complex(
-            $log->getImaginary(),
-            -1 * $log->getReal()
-        );
-    }
+    return new Complex(
+        $log->getImaginary(),
+        -1 * $log->getReal()
+    );
 }

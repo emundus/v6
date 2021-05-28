@@ -229,15 +229,15 @@ class Functions
      * @return Matrix
      * @throws Exception
      **/
-    public static function inverse(Matrix $matrix, string $type = 'inverse')
+    public static function inverse(Matrix $matrix)
     {
         if (!$matrix->isSquare()) {
-            throw new Exception(ucfirst($type) . ' can only be calculated for a square matrix');
+            throw new Exception('Inverse can only be calculated for a square matrix');
         }
 
         $determinant = self::getDeterminant($matrix);
         if ($determinant == 0.0) {
-            throw new Div0Exception(ucfirst($type) . ' can only be calculated for a matrix with a non-zero determinant');
+            throw new Exception('Inverse can only be calculated for a matrix with a non-zero determinant');
         }
 
         if ($matrix->rows == 1) {

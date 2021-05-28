@@ -23,9 +23,7 @@ namespace Complex;
  * @see    rho
  *
  */
-if (!function_exists(__NAMESPACE__ . '\\abs')) {
-    function abs($complex): float
-    {
-        return rho($complex);
-    }
+function abs($complex): float
+{
+    return rho($complex);
 }

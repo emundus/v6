@@ -17,11 +17,9 @@ namespace Complex;
  * @throws    Exception        If argument isn't a valid real or complex number.
  * @throws    \InvalidArgumentException    If function would result in a division by zero
  */
-if (!function_exists(__NAMESPACE__ . '\\sec')) {
-    function sec($complex): Complex
-    {
-        $complex = Complex::validateComplexArgument($complex);
+function sec($complex): Complex
+{
+    $complex = Complex::validateComplexArgument($complex);
 
-        return inverse(cos($complex));
-    }
+    return inverse(cos($complex));
 }

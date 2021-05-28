@@ -17,16 +17,14 @@ namespace Matrix;
  * @return Matrix The identity matrix
  * @throws Exception If argument isn't a valid matrix or array.
  */
-if (!function_exists(__NAMESPACE__ . '\\identity')) {
-    function identity($matrix): Matrix
-    {
-        if (is_array($matrix)) {
-            $matrix = new Matrix($matrix);
-        }
-        if (!$matrix instanceof Matrix) {
-            throw new Exception('Must be Matrix or array');
-        }
-
-        return Functions::identity($matrix);
+function identity($matrix): Matrix
+{
+    if (is_array($matrix)) {
+        $matrix = new Matrix($matrix);
     }
+    if (!$matrix instanceof Matrix) {
+        throw new Exception('Must be Matrix or array');
+    }
+
+    return Functions::identity($matrix);
 }

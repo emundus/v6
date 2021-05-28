@@ -2,8 +2,7 @@
 
 namespace Http\Message\UriFactory;
 
-use function GuzzleHttp\Psr7\uri_for;
-use GuzzleHttp\Psr7\Utils;
+use GuzzleHttp\Psr7;
 use Http\Message\UriFactory;
 
 /**
@@ -20,10 +19,6 @@ final class GuzzleUriFactory implements UriFactory
      */
     public function createUri($uri)
     {
-        if (class_exists(Utils::class)) {
-            return Utils::uriFor($uri);
-        }
-
-        return uri_for($uri);
+        return Psr7\uri_for($uri);
     }
 }

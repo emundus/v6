@@ -17,14 +17,12 @@ namespace Complex;
  * @return    float            The rho value of the complex argument.
  * @throws    Exception        If argument isn't a valid real or complex number.
  */
-if (!function_exists(__NAMESPACE__ . '\\rho')) {
-    function rho($complex): float
-    {
-        $complex = Complex::validateComplexArgument($complex);
+function rho($complex): float
+{
+    $complex = Complex::validateComplexArgument($complex);
 
-        return \sqrt(
-            ($complex->getReal() * $complex->getReal()) +
-            ($complex->getImaginary() * $complex->getImaginary())
-        );
-    }
+    return \sqrt(
+        ($complex->getReal() * $complex->getReal()) +
+        ($complex->getImaginary() * $complex->getImaginary())
+    );
 }

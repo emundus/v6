@@ -17,16 +17,14 @@ namespace Matrix;
  * @return float The trace of the matrix
  * @throws Exception If argument isn't a valid matrix or array.
  */
-if (!function_exists(__NAMESPACE__ . '\\trace')) {
-    function trace($matrix): float
-    {
-        if (is_array($matrix)) {
-            $matrix = new Matrix($matrix);
-        }
-        if (!$matrix instanceof Matrix) {
-            throw new Exception('Must be Matrix or array');
-        }
-
-        return Functions::trace($matrix);
+function trace($matrix): float
+{
+    if (is_array($matrix)) {
+        $matrix = new Matrix($matrix);
     }
+    if (!$matrix instanceof Matrix) {
+        throw new Exception('Must be Matrix or array');
+    }
+
+    return Functions::trace($matrix);
 }

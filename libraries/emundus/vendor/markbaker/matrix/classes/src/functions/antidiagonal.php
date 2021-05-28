@@ -16,16 +16,14 @@ namespace Matrix;
  * @return    Matrix           The new matrix
  * @throws    Exception        If argument isn't a valid matrix or array.
  */
-if (!function_exists(__NAMESPACE__ . '\\antidiagonal')) {
-    function antidiagonal($matrix): Matrix
-    {
-        if (is_array($matrix)) {
-            $matrix = new Matrix($matrix);
-        }
-        if (!$matrix instanceof Matrix) {
-            throw new Exception('Must be Matrix or array');
-        }
-
-        return Functions::antidiagonal($matrix);
+function antidiagonal($matrix): Matrix
+{
+    if (is_array($matrix)) {
+        $matrix = new Matrix($matrix);
     }
+    if (!$matrix instanceof Matrix) {
+        throw new Exception('Must be Matrix or array');
+    }
+
+    return Functions::antidiagonal($matrix);
 }
