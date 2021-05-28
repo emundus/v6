@@ -3431,7 +3431,7 @@ $(document).ready(function() {
                             '</select>'+
 
                         '<button class="w3-button w3-tiny btn-warning" id="savePDFfilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
-                        '<button class="w3-button w3-tiny" id="delfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'"><i class="icon-trash"></i></button></div></div>'+
+                        '<button class="w3-button w3-tiny" id="delPDFfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'"><i class="icon-trash"></i></button></div></div>'+
 
                         '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
                             '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
@@ -4300,6 +4300,35 @@ $(document).ready(function() {
 
                         filName = prompt(filterName, "name");
                     }
+                });
+
+                /// delete pdf filter
+                $('#delPDFfilter').on("click", function() {
+                    let filter = $('#filt_save_pdf').val();
+                    $.ajax({
+                        type: 'post',
+                        url: 'index.php?option=com_emundus&controller=files&task=deletePdfFilter',
+                        dataType: 'JSON',
+                        data: { fid : filter },
+                        success: function(result) {
+                            if(result.status) {
+                                $("#filt_save_pdf option:selected").remove();
+                                $("#filt_save_pdf option:selected").trigger("chosen:updated");
+                                $('#del-filter').show();
+                                setTimeout(function (e) {
+                                    $('#del-filter').hide();
+                                }, 600);
+                            }
+                            else {
+                                $('#err-filter').show();
+                                setTimeout(function(e) {
+                                    $('#err-filter').hide();
+                                }, 600);
+                            }
+                        }, error: function(jqXHR) {
+                            console.log(jqXHR.responseText);
+                        }
+                    })
                 });
 
                 $('#em-export-prg').chosen({width: "95%"});

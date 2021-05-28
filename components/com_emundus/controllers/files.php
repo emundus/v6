@@ -3575,6 +3575,17 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         exit;
     }
 
+    public function deletePdfFilter() {
+        $jinput = JFactory::getApplication()->input;
+
+        $_fid = $jinput->getVar('fid');
+        $h_files = new EmundusHelperFiles;
+
+        $_result = $h_files->deletePdfFilter($_fid);
+        echo json_encode((object)(array('status' => true, 'result' => $_result)));
+        exit;
+    }
+
     public function getExportExcelFilter() {
         $user_id  = JFactory::getUser()->id;
 

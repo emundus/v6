@@ -2743,6 +2743,23 @@ class EmundusHelperFiles
         }
     }
 
+    // delete pdf filter
+    public function deletePdfFilter($fid) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($fid)) {
+            $query->clear()
+                ->delete($db->quoteName('#__emundus_filters'))
+                ->where($db->quoteName('#__emundus_filters.id') . '=' . (int)$fid);
+            $db->setQuery($query);
+            $db->execute();
+            return (object)['message' => true];
+        } else {
+            return false;
+        }
+    }
+
     public function getExportExcelFilter($user_id) {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
