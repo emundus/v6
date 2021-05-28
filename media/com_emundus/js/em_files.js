@@ -712,10 +712,10 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                                                                     letter: letter,
                                                                 },
                                                                 success: function(reply) {
-                                                                    console.log(reply);
+                                                                    //console.log(reply);
                                                                     let tmp = reply.link.split('/');
                                                                     let filename = tmp[tmp.length - 1];
-                                                                    console.log(filename);
+                                                                    //console.log(filename);
                                                                     $('#loadingimg').empty();
                                                                     $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
                                                                     $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
@@ -1924,7 +1924,7 @@ $(document).ready(function() {
                                url: 'index.php?option=com_emundus&controller=files&task=getAllLetters',
                                dataType:'json',
                                success: function(result) {
-                                    console.log(result);
+                                    //console.log(result);
                                     let letters = result.letters;
                                     letters.forEach(letter => {
                                         $('#em-export-letter').append('<option value="' + letter.id + '">' + letter.title + '</option>');
@@ -2791,21 +2791,21 @@ $(document).ready(function() {
                                                     data: { id : id},
                                                     success: function(my_reply) {
                                                         let constraints = jQuery.parseJSON(my_reply.filter.constraints);
-                                                        console.log(constraints);
+                                                        //console.log(constraints);
                                                         let filter = jQuery.parseJSON(constraints.excelfilter);
                                                         let baseElements = filter.baseElements;
+
                                                         $.ajax({
                                                             type: 'post',
                                                             url: 'index.php?option=com_emundus&controller=files&task=getselectedelements',
                                                             dataType: 'JSON',
-                                                            data: { elts : baseElements },
+                                                            data: { elts : baseElements.split(',') },
                                                             success: function(my_reply_2) {
                                                                 let selectedElts = my_reply_2.elements.selected_elements;
                                                                 //let defaultElts = my_reply_2.elements.default_elements;
                                                                 //let showElts = selectedElts.concat(defaultElts);
 
                                                                 selectedElts.forEach(elts => {
-                                                                    console.log(elts.label);
                                                                     $('#em-export').append('<li class="em-export-item" id="' + elts.id + '-item"><button class="btn btn-danger btn-xs" id="' + elts.id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elts.label + '</strong></span></li>');
                                                                 });
                                                                 $('#em-export').trigger("chosen:updated");
@@ -4598,7 +4598,7 @@ $(document).ready(function() {
             baseElements.push(id);
         })
 
-        console.log(baseElements);
+        //console.log(baseElements);
 
         var params = '{' +
             '"programmelabel":"'+proglabel+

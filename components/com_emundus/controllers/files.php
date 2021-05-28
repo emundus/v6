@@ -3931,8 +3931,6 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         $h_files = new EmundusHelperFiles;
         $_elements = $jinput->getVar('elts', null);
 
-//        var_dump($_elements);die;
-
         $_getElements = $h_files->getSelectedElements($_elements);
 
         echo json_encode((object)(array('status' => true, 'elements' => $_getElements, )));
