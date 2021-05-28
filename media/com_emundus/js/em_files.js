@@ -3716,8 +3716,43 @@ $(document).ready(function() {
                                    // re-render to DOM
                                    $('#em-export-camp').val(campCode);
                                    $('#em-export-camp').trigger("chosen:updated");
+                                   $('#em-export-prg').trigger("click");
                                    $('#em-export-camp').trigger("change");
 
+                                   $('#em-export-prg').val(progCode);
+                                   $('#em-export-prg').trigger("chosen:updated");
+                                   // $('#em-export-prg').trigger("click");
+                                   // $('#em-export-prg').trigger("change");
+
+                                   //
+                                   // setTimeout(function() {
+                                   //     elements.forEach(elt => {$('#emundus_elm_'+elt).attr('checked',true);})
+                                   // }, 3000);
+
+                                   $.ajax({
+                                       type: 'post',
+                                       url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
+                                       dataType: 'JSON',
+                                       data: { elts: elements.toString() },
+                                       success: function(my_reply) {
+                                           let profiles = my_reply.fabrik_data.profiles;
+                                           console.log(profiles);
+
+                                           // show 'felts' + profile
+                                           setTimeout(function() {
+                                               profiles.forEach(prf => {
+                                                   console.log(prf.id);
+                                                   $('#felts' + prf.id).show();
+
+                                                   $('#showelements_'+ prf.id).attr('class','btn-xs btn btn-elements-success');
+                                                   $('#showelements_'+ prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
+
+                                               })},3000
+                                           );
+                                       }, error: function(jqXHR) {
+                                           console.log(jqXHR.responseText);
+                                       }
+                                   })
                                } else {
 
                                }

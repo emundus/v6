@@ -2810,6 +2810,98 @@ class EmundusHelperFiles
         }
     }
 
+    /// get profiles from element list
+    public function getFabrikDataByListElements($elements) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($elements)) {
+            try {
+                /// first one --> get fabrik_groups (distinct) from list elements
+                $query->clear()
+                    ->select('distinct jfg.id')
+                    ->from($db->quoteName('#__fabrik_groups', 'jfg'))
+                    ->leftJoin($db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $db->quoteName('jfg.id') . '=' . $db->quoteName('jfe.group_id'))
+                    ->where($db->quoteName('jfe.id') . ' IN (' . $elements . ' )');
+                $db->setQuery($query);
+                $_groups = $db->loadObjectList();
+
+                $_groupList = "";
+                foreach($_groups as $k=>$v) {
+                    $_groupList .= $v->id . ',';
+                }
+
+                $_groupList = mb_substr($_groupList, 0, -1);
+
+                /// second one --> get fabrik_forms (distinct) from elements
+                $query->clear()
+                    ->select('distinct jff.id')
+                    ->from($db->quoteName('#__fabrik_forms', 'jff'))
+                    ->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $db->quoteName('jff.id') . '=' . $db->quoteName('jffg.form_id'))
+                    ->leftJoin($db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $db->quoteName('jffg.group_id') . '=' . $db->quoteName('jfg.id'))
+                    ->where($db->quoteName('jfg.id') . ' IN (' . $_groupList . ' )');
+                $db->setQuery($query);
+                $_forms =$db->loadObjectList();
+
+                $_formList = "";
+                foreach($_forms as $k=>$v) {
+                    $_formList .= $v->id . ',';
+                }
+
+                $_formList = mb_substr($_formList, 0, -1);
+
+                /// third one --> get fabrik_lists (distinct) from forms
+                $query->clear()
+                    ->select('distinct jfl.id')
+                    ->from($db->quoteName('#__fabrik_lists', 'jfl'))
+                    ->leftJoin($db->quoteName('#__fabrik_forms', 'jff') . ' ON ' . $db->quoteName('jfl.form_id') . '=' . $db->quoteName('jff.id'))
+                    ->where($db->quoteName('jff.id') . ' IN (' . $_formList . ' )');
+                $db->setQuery($query);
+                $_lists =$db->loadObjectList();
+
+                $_listList = "";
+                foreach($_lists as $k=>$v) {
+                    $_listList .= $v->id . ',';
+                }
+
+                $_listList = mb_substr($_listList, 0, -1);
+
+                /// four one --> get menutype (distinct) menutype
+                $query = "SELECT DISTINCT #__menu.menutype 
+                            FROM #__menu 
+                            WHERE SUBSTRING_INDEX(SUBSTRING(#__menu.link, LOCATE('formid=',jos_menu.link)+7, 3), '&', 1) IN ($_formList)";
+                $db->setQuery($query);
+                $_menus = $db->loadObjectList();
+
+                $_menuList = "";
+                foreach($_menus as $k=>$v) {
+                    $_menuList .= '"' . $v->menutype . '"' . ',';
+                }
+
+                $_menuList = mb_substr($_menuList, 1, -2);
+
+                /// last one --> get profile (distinct) jos_emundus_setup_profiles
+                $queryProfiles = $db->getQuery(true);
+                $queryProfiles->clear()
+                    ->select('distinct jesp.id')
+                    ->from($db->quoteName('#__emundus_setup_profiles', 'jesp'))
+                    ->where($db->quoteName('jesp.menutype') . ' IN ("' . $_menuList . '")')
+                    ->andWhere($db->quoteName('jesp.published') . '=' . 1);
+
+                $db->setQuery($queryProfiles);
+
+                $_profiles = $db->loadObjectList();
+
+                return array('groups' => $_groups, 'forms' => $_forms, 'lists' => $_lists, 'profiles' => $_profiles);
+
+            } catch(Exception $e) {
+
+            }
+        } else {
+            return false;
+        }
+    }
+
     public function checkadmission() {
         $db = JFactory::getDBO();
 

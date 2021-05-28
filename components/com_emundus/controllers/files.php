@@ -3899,6 +3899,19 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         echo json_encode((object)(array('status' => $result, 'msg' => $msg)));
         exit;
     }
+
+    /// get profiles from elements
+    public function getfabrikdatabyelements() {
+        $h_files = new EmundusHelperFiles;
+        $jinput = JFactory::getApplication()->input;
+
+        $elts = $jinput->getVar('elts', null);
+        $_fabrik_data = $h_files->getFabrikDataByListElements($elts);
+
+        echo json_encode((object)(array('status' => true, 'fabrik_data' => $_fabrik_data)));
+        exit;
+    }
+
 }
 
 
