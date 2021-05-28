@@ -818,6 +818,48 @@ body>.g-container {
   }
 }
 
+/* CAS */
+.container-module-cas .sous-container-module-cas #login-form .control-group button.login-button {
+  background: $base-secondary-color;
+  border-color: $base-secondary-color;
+  color: #fff;
+   &:hover,&:focus,&:active {
+     background: transparent;
+     border-color: $base-secondary-color;
+     color: $base-secondary-color;
+   }
+}
+
+.container-module-cas .sous-container-module-cas #connexion .btn-cas a.btn.btn-primary:not(.logo) {
+  background: $base-primary-color;
+  border-color: $base-primary-color;
+  color: #fff;
+  &:hover,&:focus,&:active {
+    background: transparent;
+    border-color: $base-primary-color;
+    color: $base-primary-color;
+  }
+}
+
+.container-module-cas .sous-container-module-cas #inscription a.btn.btn-primary {
+  background: $base-primary-color;
+  border-color: $base-primary-color;
+  color: #fff;
+  &:hover,&:focus,&:active {
+    background: transparent;
+    border-color: $base-primary-color;
+    color: $base-primary-color;
+  }
+}
+
+.container-module-cas .sous-container-module-cas #connexion a.btn.btn-primary {
+  background: $base-primary-color;
+  border-color: $base-primary-color;
+}
+
+
+
+
 /* BOUTON RADIO SELECTIONNE- COULEUR */
 .view-form input[type='radio']:checked {
   background: $base-secondary-color;

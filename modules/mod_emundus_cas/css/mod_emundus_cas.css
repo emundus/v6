@@ -1,11 +1,14 @@
 /* Module CAS */
+ .em-formRegistrationCenter .container-module-cas  {
+     margin-top: 150px !important;
+ }
 
 .container-module-cas {
     display: flex !important;
     flex-direction: column;
     align-items: center;
     background: white;
-    width: 50%;
+    width: 60%;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 50px;
@@ -51,13 +54,22 @@
 .container-module-cas  .sous-container-module-cas #connexion a.btn.btn-primary {
     text-transform: initial;
     font-size: 14px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription  a.btn.btn-primary {
     text-transform: initial;
     font-size: 14px;
      width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
 
 .container-module-cas  .sous-container-module-cas #inscription {
     display: flex;
@@ -105,13 +117,13 @@
 .container-module-cas  .sous-container-module-cas li:nth-child(1):not(.couleurFoncee) {
     -webkit-box-shadow: 4px -2px 6px 0px rgb(0 0 0 / 2%);
     box-shadow: 4px -2px 6px 0px rgb(0 0 0 / 2%);
-    z-index: 9999;
+    z-index: 1;
 }
 
 .container-module-cas  .sous-container-module-cas li:nth-child(2):not(.couleurFoncee) {
     -webkit-box-shadow: -4px -4px 6px 0px rgba(0,0,0,0.02);
     box-shadow: -4px -4px 6px 0px rgba(0,0,0,0.02);
-    z-index: 9999;
+    z-index: 1;
 }
 
 .container-module-cas .icon-star.small {
@@ -130,19 +142,37 @@
 }
 
 .container-module-cas .btn-cas a.btn.btn-primary.logo {
-    background: #0A246A;
-    border-radius: 4px 0px 0px 4px;
+    border-radius: 4px 0px 0px 4px !important;
     padding: 5px 12px !important;
 }
 
 .container-module-cas .btn-cas img {
     width: 15px;
 }
-
-.container-module-cas .sous-container-module-cas #connexion .btn-cas a.btn.btn-primary:not(.logo) {
-    border-radius: 0px 4px 4px 0px;
-   opacity: 0.9;
-    width: 90%;
+.container-module-cas .btn-cas  {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+.container-module-cas .sous-container-module-cas #connexion .btn-cas a.btn.btn-primary:not(.logo) {
+    border-radius: 0px 4px 4px 0px !important;
+   opacity: 0.9;
+    width: 90%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#login-form .control-group button.login-button {
+    text-transform: capitalize;
+    width: 100% !important;
+    height: 50px;
+    margin-right: 0px !important;
+    font-weight: 300;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
