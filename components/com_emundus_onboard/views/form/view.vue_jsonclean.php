@@ -100,6 +100,14 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                     $show_title->label->en = $form->form->label;
                 }
                 $returnObject->show_title = $show_title;
+            else :
+                $show_title = new stdClass();
+                $show_title->titleraw = '';
+                $show_title->value = '';
+                $show_title->label = new stdClass;
+                $show_title->label->fr = '';
+                $show_title->label->en = '';
+                $returnObject->show_title = $show_title;
             endif;
 
             if ($form->getIntro()) :
