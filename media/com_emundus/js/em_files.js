@@ -3721,6 +3721,8 @@ $(document).ready(function() {
                                    // $('#em-export-prg').trigger("click");
                                    // $('#em-export-prg').trigger("change");
 
+                                   // render headers
+
                                    if(elements[0] !== "") {
                                        $.ajax({
                                            type: 'post',
@@ -4103,23 +4105,21 @@ $(document).ready(function() {
 
                 //// changer ici un peu pour bien s'adapter
                 $('#em-ex-forms').click(function(e) {
+                    let feltsObj = $('[id^=felts]');
+                    var feltsArr = Array.prototype.slice.call(feltsObj);
+
                     if ($('#em-ex-forms').is(":checked")){
-                        document.getElementById('em-ex-forms').checked = true;
-                        $('[id^=emundus_checkall_tbl_]').trigger('click');
-                        $('[id^=emundus_checkall_grp_]').trigger('click');
-                        $('[id^=emundus_elm_]').trigger('click');
-
-                        let grp = $('[id^=emundus_checkall_grp_]');
-                        grp[0].checked = true;
+                        // check all inputs of all felts
+                        feltsArr.forEach(flt => {
+                            let id = flt.id;
+                            $('#'+id+" :input").attr('checked', true);
+                        })
                     } else {
-                        document.getElementById('em-ex-forms').checked = false;
-
-                        $('[id^=emundus_checkall_tbl_]').trigger('click');
-                        $('[id^=emundus_checkall_grp_]').trigger('click');
-                        $('[id^=emundus_elm_]').trigger('click');
-
-                        let grp = $('[id^=emundus_checkall_grp_]');
-                        grp[0].checked = false;
+                        // uncheck all inputs of all felts
+                        feltsArr.forEach(flt => {
+                            let id = flt.id;
+                            $('#'+id+" :input").attr('checked', false);
+                        })
                     }
                 });
 
