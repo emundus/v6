@@ -4092,13 +4092,15 @@ $(document).ready(function() {
 
                 $(document).on('click', '[id^=showelements_]', function() {
                     let id = ($(this).attr('id')).split('_')[1];
-                    if(this.firstElementChild.className == 'glyphicon glyphicon-plus') {
-                        this.firstChild.className = 'glyphicon glyphicon-minus';
-                        this.className = 'btn-xs btn btn-elements-success'
+                    let button_id = $(this).attr('id');
+
+                    if($('#' + button_id + ' > span').attr('class') == 'glyphicon glyphicon-plus') {
+                        $('#' + button_id + ' > span').attr('class', 'glyphicon glyphicon-minus');
+                        $(this).attr('class','btn-xs btn btn-elements-success');
                         $('#felts'+ id).show();
-                    } else if( this.firstElementChild.className == 'glyphicon glyphicon-minus'){
-                        this.firstChild.className = 'glyphicon glyphicon-plus';
-                        this.className = 'btn-xs btn btn-info';
+                    } else {
+                        $('#' + button_id + ' > span').attr('class', 'glyphicon glyphicon-plus');
+                        $(this).attr('class','btn-xs btn btn-info');
                         $('#felts'+ id).hide();
                     }
                 });
