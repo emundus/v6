@@ -4318,8 +4318,24 @@ $(document).ready(function() {
                                 setTimeout(function (e) {
                                     $('#del-filter').hide();
                                 }, 600);
-                            }
-                            else {
+
+                                //change class of button "showelements_"
+                                let showFeltsObj = $('[id^=showelements_]');
+                                var showFeltsArr = Array.prototype.slice.call(showFeltsObj);
+
+                                showFeltsArr.forEach(sftl => {
+                                    let id = $(sftl).attr('id').split('showelements_')[1];
+
+                                    // set class of button
+                                    $('#' + sftl.id + ' > span').attr('class', 'glyphicon glyphicon-plus');
+                                    $('#' + sftl.id).attr('class','btn-xs btn btn-info');
+
+                                    // hide felts
+                                    $('#felts' + id + " :input").attr('checked', false);
+                                    $('#felts' + id).hide();
+                                })
+
+                            } else {
                                 $('#err-filter').show();
                                 setTimeout(function(e) {
                                     $('#err-filter').hide();
