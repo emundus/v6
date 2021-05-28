@@ -3706,11 +3706,8 @@ $(document).ready(function() {
                                    let campName = json.pdffilter.camplabel;
 
                                    let groups = json.pdffilter.groups;
-
                                    let tables = json.pdffilter.tables;
-
                                    let elements = json.pdffilter.elements;
-
                                    let headers = json.pdffilter.headers;
 
                                    // re-render to DOM
@@ -3724,35 +3721,65 @@ $(document).ready(function() {
                                    // $('#em-export-prg').trigger("click");
                                    // $('#em-export-prg').trigger("change");
 
-                                   //
-                                   // setTimeout(function() {
-                                   //     elements.forEach(elt => {$('#emundus_elm_'+elt).attr('checked',true);})
-                                   // }, 3000);
+                                   if(elements[0] !== "") {
+                                       $.ajax({
+                                           type: 'post',
+                                           url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
+                                           dataType: 'JSON',
+                                           data: {elts: elements.toString()},
+                                           success: function (my_reply) {
+                                               let profiles = my_reply.fabrik_data.profiles;
+                                               console.log(profiles);
 
-                                   $.ajax({
-                                       type: 'post',
-                                       url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
-                                       dataType: 'JSON',
-                                       data: { elts: elements.toString() },
-                                       success: function(my_reply) {
-                                           let profiles = my_reply.fabrik_data.profiles;
-                                           console.log(profiles);
+                                               // show 'felts' + profile
+                                               setTimeout(function () {
+                                                       profiles.forEach(prf => {
+                                                           console.log(prf.id);
+                                                           $('#felts' + prf.id).show();
 
-                                           // show 'felts' + profile
-                                           setTimeout(function() {
-                                               profiles.forEach(prf => {
-                                                   console.log(prf.id);
-                                                   $('#felts' + prf.id).show();
+                                                           $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
+                                                           $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
 
-                                                   $('#showelements_'+ prf.id).attr('class','btn-xs btn btn-elements-success');
-                                                   $('#showelements_'+ prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
+                                                       })
+                                                   }, 3000
+                                               );
 
-                                               })},3000
-                                           );
-                                       }, error: function(jqXHR) {
-                                           console.log(jqXHR.responseText);
-                                       }
-                                   })
+                                               if (tables !== null || tables !== undefined || tables[0] !== "") {
+                                                   //render tables
+                                                   setTimeout(function () {
+                                                       tables.forEach(tbl => {
+                                                           $('#emundus_checkall_tbl_' + tbl).attr('checked', true);
+                                                       })
+                                                   }, 3000);
+                                               }
+                                               //
+
+                                               if (groups !== null || groups !== undefined || groups[0] !== "") {
+                                                   // render groups
+                                                   setTimeout(function () {
+                                                       groups.forEach(grp => {
+                                                           $('#emundus_checkall_grp_' + grp).attr('checked', true);
+                                                       })
+                                                   }, 3000);
+                                               }
+
+                                               if (elements !== null || elements !== undefined || elements[0] !== "") {
+                                                   // render elements
+                                                   setTimeout(function () {
+                                                       elements.forEach(elt => {
+                                                           $('#emundus_elm_' + elt).attr('checked', true);
+                                                       })
+                                                   }, 3000);
+                                               }
+
+                                           }, error: function (jqXHR) {
+                                               console.log(jqXHR.responseText);
+                                           }
+                                       })
+                                   }
+                                   else {
+
+                                   }
                                } else {
 
                                }
@@ -4202,12 +4229,13 @@ $(document).ready(function() {
                         'camp': camp,
                         'proglabel': proglabel,
                         'camplabel': camplabel,
-                        'tables': tblElements,
-                        'groups': grpElements,
-                        'elements': elements,
-                        'headers': headers,
+                        'tables': tblElements.length > 0 ? tblElements : [""],
+                        'groups': grpElements.length > 0 ? grpElements : [""],
+                        'elements': elements.length > 0 ? elements : [""],
+                        'headers': headers.length > 0 ? headers : [""],
                     };
 
+                    /// jquery remove all empty data before sending
                     var filName = prompt(filterName);
                     if (filName != null && camp != 0 & code != 0) {
                         $.ajax({
