@@ -3695,6 +3695,9 @@ $(document).ready(function() {
                            dataType: 'JSON',
                            success: function(result) {
                                if(result.status) {
+                                   //$('#em-export-opt > option').attr('selected', false);
+                                   //$('#em-export-opt').trigger("chosen:updated");
+
                                    let constraints = result.filter.constraints;
                                    let json = JSON.parse(constraints);
 
@@ -3721,7 +3724,21 @@ $(document).ready(function() {
                                    // $('#em-export-prg').trigger("click");
                                    // $('#em-export-prg').trigger("change");
 
-                                   // render headers
+                                   /// this way is not too efficient
+                                   let headerObjects = document.getElementById('em-export-opt');
+                                   let headerArray = Array.prototype.slice.call(headerObjects);
+
+                                   for(var i=0; i<headerArray.length; i++) {
+                                       if(headers.includes(headerArray[i].value)) {
+                                           headerArray[i].selected = true;
+                                           $('#em-export-opt').trigger("chosen:updated");
+                                           $('#em-export-opt').trigger("change");
+                                       } else {
+                                           headerArray[i].selected = false;
+                                           $('#em-export-opt').trigger("chosen:updated");
+                                           $('#em-export-opt').trigger("change");
+                                       }
+                                   }
 
                                    if(elements[0] !== "") {
                                        $.ajax({
