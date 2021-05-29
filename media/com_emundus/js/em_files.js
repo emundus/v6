@@ -4914,13 +4914,60 @@ $(document).ready(function() {
         let selectedGroups = [];
         let selectedElements = [];
 
+
         /// if at least one is checked --> forms = 1
         $('[id^=felts] input:checked').length > 0 ? forms = 1 : forms = 0;
         console.log(forms);
 
+        let selectedProfiles = new Object();
+        $('[id^=felts]').each(function(flt) {
+            if(($(this) + "input:checked").length > 0) {
+                // let felts id
+                let felts_id = $(this).attr('id').split('felts')[1];
+                selectedProfiles['menutype_' + felts_id] = {};
 
+                // get all selected tables
+                $('[id^=emundus_checkall_tbl_]').each(function(tbl) {
+                    if($(this).prop('checked') == true) {
+                        let table_id = $(this).attr('id').split('emundus_checkall_tbl_')[1];
+                        selectedProfiles['menutype_' + felts_id]['table_' + table_id] = {};
+                    } else {
 
+                    }
+                })
 
+                // get all selected groups
+                $('[id^=emundus_checkall_grp_]').each(function(tbl) {
+                    if($(this).prop('checked') == true) {
+                        let group_id = $(this).attr('id').split('emundus_checkall_grp_')[1];
+                        let parent = $('#emundus_grp_' + group_id).parent().parent().attr('id');
+                        let parent_id = parent.split('emundus_table_')[1];
+                        selectedProfiles['menutype_' + felts_id]['table_' + parent_id]['group_' + group_id] = [];
+
+                    } else {
+
+                    }
+                })
+
+                // get all selected elements and then push to array (array push)
+                $('[id^=emundus_elm_]').each(function(elt) {
+                    if($(this).prop('checked') == true) {
+                        let elt_id = $(this).attr('id').split('emundus_elm_')[1];
+
+                        // get group_id, table_id (using parent())
+                        let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
+                        let group_id = group.split('emundus_grp_')[1];
+
+                        let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
+                        let table_id = table.split('emundus_table_')[1];
+
+                        selectedProfiles['menutype_' + felts_id]['table_' + table_id]['group_' + group_id].push(elt_id);
+                    }
+                })
+            }
+            else {}
+        });
+        console.log(selectedProfiles);
 
 
 
