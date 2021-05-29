@@ -3724,23 +3724,14 @@ $(document).ready(function() {
                                    // $('#em-export-prg').trigger("click");
                                    // $('#em-export-prg').trigger("change");
 
-                                   /// this way is not too efficient
-                                   let headerObjects = document.getElementById('em-export-opt');
-                                   let headerArray = Array.prototype.slice.call(headerObjects);
+                                   console.log(headers);
 
-                                   for(var i=0; i<headerArray.length; i++) {
-                                       if(headers.includes(headerArray[i].value)) {
-                                           headerArray[i].selected = true;
-                                           $('#em-export-opt').trigger("chosen:updated");
-                                           $('#em-export-opt').trigger("change");
-                                       } else {
-                                           headerArray[i].selected = false;
-                                           $('#em-export-opt').trigger("chosen:updated");
-                                           $('#em-export-opt').trigger("change");
-                                       }
-                                   }
+                                   $('#em-export-opt').val(headers);
+                                   $('#em-export-opt').trigger("chosen:updated");
+                                   $('#em-export-opt').trigger("change");
 
-                                   if(elements[0] !== "") {
+                                   /// in the future, I will detect profile from tbl,grp,elts by jquery (instead of using ajax)
+                                    if(elements[0] !== "") {
                                        $.ajax({
                                            type: 'post',
                                            url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
