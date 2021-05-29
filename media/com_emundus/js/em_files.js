@@ -3730,7 +3730,6 @@ $(document).ready(function() {
                                    $('#em-export-opt').trigger("chosen:updated");
                                    $('#em-export-opt').trigger("change");
 
-                                   /// in the future, I will detect profile from tbl,grp,elts by jquery (instead of using ajax)
                                     if(elements[0] !== "") {
                                        $.ajax({
                                            type: 'post',
@@ -4901,14 +4900,32 @@ $(document).ready(function() {
         // });
 
         /// grab all selected elements
-        let eltsObject = $('[id^=emundus_elm_]');
-        let eltsArray = Array.prototype.slice.call(eltsObject);
-        eltsArray.forEach(elt => {
-            if (elt.checked == true) {
-                form_checked.push(elt.value);
-                forms = 0;
-            }
-        })
+        // let eltsObject = $('[id^=emundus_elm_]');
+        // let eltsArray = Array.prototype.slice.call(eltsObject);
+        // eltsArray.forEach(elt => {
+        //     if (elt.checked == true) {
+        //         form_checked.push(elt.value);
+        //         forms = 0;
+        //     }
+        // })
+
+        /// new logic --> if at least one "emundus_checkall_tbl_", "emundus_checkall_grp_", "emundus_elm_"
+        let selectedTables = [];
+        let selectedGroups = [];
+        let selectedElements = [];
+
+        /// if at least one is checked --> forms = 1
+        $('[id^=felts] input:checked').length > 0 ? forms = 1 : forms = 0;
+        console.log(forms);
+
+
+
+
+
+
+
+
+
 
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
