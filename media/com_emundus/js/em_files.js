@@ -4945,7 +4945,7 @@ $(document).ready(function() {
                             let group_id = $(this).attr('id').split('emundus_checkall_grp_')[1];
                             let parent = $('#emundus_grp_' + group_id).parent().parent().attr('id');
                             let parent_id = parent.split('emundus_table_')[1];
-                            selectedProfiles['menutype_' + felts_id]['table_' + parent_id]['group_' + group_id] = [];
+                            selectedProfiles['menutype_' + felts_id]['table_' + parent_id]['group_' + group_id] = {};
 
                         } else {
 
@@ -4964,7 +4964,7 @@ $(document).ready(function() {
                             let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
                             let table_id = table.split('emundus_table_')[1];
 
-                            selectedProfiles['menutype_' + felts_id]['table_' + table_id]['group_' + group_id].push(elt_id);
+                            selectedProfiles['menutype_' + felts_id]['table_' + table_id]['group_' + group_id]['element' + elt_id] = 'true';
                         }
                     })
                 } else {
@@ -4973,15 +4973,44 @@ $(document).ready(function() {
         }
 
         /// nothing table is selected --> but at least one group is selected
-        else if($('[id^=felts]').find($('[id^=emundus_checkall_tbl_]')).is(':checked') == false && $('[id^=felts]').find($('[id^=emundus_checkall_grp_]')).is(':checked') == true) {
-            console.log(' here we are1');
+        if($('[id^=felts]').find($('[id^=emundus_checkall_tbl_]')).is(':checked') == false && $('[id^=felts]').find($('[id^=emundus_checkall_grp_]')).is(':checked') == true) {
+            $('[id^=felts]').each(function (flt) {
+                if (($(this) + "input:checked").length > 0) {
+                    // let felts id
+                    let felts_id = $(this).attr('id').split('felts')[1];
+                    selectedProfiles['menutype_' + felts_id] = {};
 
-            // get fetls
+                    $('[id^=emundus_checkall_grp_]').each(function (tbl) {
+                        if ($(this).prop('checked') == true) {
+                            let group_id = $(this).attr('id').split('emundus_checkall_grp_')[1];
+                            let parent = $('#emundus_grp_' + group_id).parent().parent().attr('id');
+                            let parent_id = parent.split('emundus_table_')[1];
+                            selectedProfiles['menutype_' + felts_id]['table_' + parent_id] = {};
+                            selectedProfiles['menutype_' + felts_id]['table_' + parent_id]['group_' + group_id] = {};
 
-            // get table
+                        } else {
 
-            // get elements
+                        }
+                    })
+
+                    $('[id^=emundus_elm_]').each(function (elt) {
+                        if ($(this).prop('checked') == true) {
+                            let elt_id = $(this).attr('id').split('emundus_elm_')[1];
+                            // get group_id, table_id (using parent())
+                            let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
+                            let group_id = group.split('emundus_grp_')[1];
+                            let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
+                            let table_id = table.split('emundus_table_')[1];
+                            selectedProfiles['menutype_' + felts_id]['table_' + table_id]['group_' + group_id]['element' + elt_id] = 'true';
+                        }
+                    })
+
+
+                }
+            })
         }
+
+        // get elements
 
         /// nothing table and group are selected --> but at least one element is selected
         else if($('[id^=felts]').find($('[id^=emundus_checkall_tbl_]')).is(':checked') == false && $('[id^=felts]').find($('[id^=emundus_checkall_grp_]')).is(':checked') == false && $('[id^=felts]').find($('[id^=emundus_elm_]')).is(':checked') == true) {
