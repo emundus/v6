@@ -4939,7 +4939,7 @@ $(document).ready(function() {
                             let group_id = $(this).attr('id').split('emundus_checkall_grp_')[1];
                             let parent = $('#emundus_grp_' + group_id).parent().parent().attr('id');
                             let parent_id = parent.split('emundus_table_')[1];
-                            selectedElements['menutype_' + felts_id]['table_' + parent_id]['group_' + group_id] = {};
+                            selectedElements['menutype_' + felts_id]['table_' + parent_id]['group_' + group_id] = [];
 
                         } else {
 
@@ -4958,7 +4958,7 @@ $(document).ready(function() {
                             let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
                             let table_id = table.split('emundus_table_')[1];
 
-                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id]['element_' + elt_id] = 'true';
+                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id].push(elt_id);
                         }
                     })
                 } else {
@@ -4980,7 +4980,17 @@ $(document).ready(function() {
                             let parent = $('#emundus_grp_' + group_id).parent().parent().attr('id');
                             let parent_id = parent.split('emundus_table_')[1];
                             selectedElements['menutype_' + felts_id]['table_' + parent_id] = {};
-                            selectedElements['menutype_' + felts_id]['table_' + parent_id]['group_' + group_id] = {};
+                        } else {
+
+                        }
+                    })
+
+                    $('[id^=emundus_checkall_grp_]').each(function (tbl) {
+                        if ($(this).prop('checked') == true) {
+                            let group_id = $(this).attr('id').split('emundus_checkall_grp_')[1];
+                            let parent = $('#emundus_grp_' + group_id).parent().parent().attr('id');
+                            let parent_id = parent.split('emundus_table_')[1];
+                            selectedElements['menutype_' + felts_id]['table_' + parent_id]['group_' + group_id] = [];
 
                         } else {
 
@@ -4995,7 +5005,7 @@ $(document).ready(function() {
                             let group_id = group.split('emundus_grp_')[1];
                             let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
                             let table_id = table.split('emundus_table_')[1];
-                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id]['element_' + elt_id] = 'true';
+                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id].push(elt_id);
                         }
                     })
                 }
@@ -5034,7 +5044,7 @@ $(document).ready(function() {
                             let group_id = group.split('emundus_grp_')[1];
                             let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
                             let table_id = table.split('emundus_table_')[1];
-                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id] = {};
+                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id] = [];
                         }
                     })
 
@@ -5046,7 +5056,7 @@ $(document).ready(function() {
                             let group_id = group.split('emundus_grp_')[1];
                             let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
                             let table_id = table.split('emundus_table_')[1];
-                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id]['element_' + elt_id] = 'true';
+                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id].push(elt_id);
                         }
                     })
                 }
