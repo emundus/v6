@@ -4958,7 +4958,7 @@ $(document).ready(function() {
                             let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
                             let table_id = table.split('emundus_table_')[1];
 
-                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id]['element' + elt_id] = 'true';
+                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id]['element_' + elt_id] = 'true';
                         }
                     })
                 } else {
@@ -4995,7 +4995,7 @@ $(document).ready(function() {
                             let group_id = group.split('emundus_grp_')[1];
                             let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
                             let table_id = table.split('emundus_table_')[1];
-                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id]['element' + elt_id] = 'true';
+                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id]['element_' + elt_id] = 'true';
                         }
                     })
                 }
@@ -5046,7 +5046,7 @@ $(document).ready(function() {
                             let group_id = group.split('emundus_grp_')[1];
                             let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
                             let table_id = table.split('emundus_table_')[1];
-                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id]['element' + elt_id] = 'true';
+                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id]['element_' + elt_id] = 'true';
                         }
                     })
                 }
@@ -5054,6 +5054,20 @@ $(document).ready(function() {
         }
 
         console.log(selectedElements);
+
+        if(forms == 1) {
+            $.ajax({
+                type: 'post',
+                url: 'index.php?option=com_emundus&controller=files&task=generate_customized_pdf',
+                dataType: 'JSON',
+                data: { params: selectedElements },
+                success: function(result) {
+                    console.log(result);
+                }, error: function(jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            })
+        }
 
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
