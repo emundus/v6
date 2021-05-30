@@ -4920,59 +4920,82 @@ $(document).ready(function() {
         console.log(forms);
 
         let selectedProfiles = new Object();
-        $('[id^=felts]').each(function(flt) {
-            if(($(this) + "input:checked").length > 0) {
-                // let felts id
-                let felts_id = $(this).attr('id').split('felts')[1];
-                selectedProfiles['menutype_' + felts_id] = {};
 
-                // get all selected tables
-                $('[id^=emundus_checkall_tbl_]').each(function(tbl) {
-                    if($(this).prop('checked') == true) {
-                        let table_id = $(this).attr('id').split('emundus_checkall_tbl_')[1];
-                        selectedProfiles['menutype_' + felts_id]['table_' + table_id] = {};
-                    } else {
+        // /// check if at least one table is checked 0--> $('[id^=felts] > div > div > div :input:checked').length
+        if($('[id^=felts]').find($('[id^=emundus_checkall_tbl_]')).is(':checked') == true) {
+            $('[id^=felts]').each(function (flt) {
+                if (($(this) + "input:checked").length > 0) {
+                    // let felts id
+                    let felts_id = $(this).attr('id').split('felts')[1];
+                    selectedProfiles['menutype_' + felts_id] = {};
 
-                    }
-                })
+                    // get all selected tables
+                    $('[id^=emundus_checkall_tbl_]').each(function (tbl) {
+                        if ($(this).prop('checked') == true) {
+                            let table_id = $(this).attr('id').split('emundus_checkall_tbl_')[1];
+                            selectedProfiles['menutype_' + felts_id]['table_' + table_id] = {};
+                        } else {
 
-                // get all selected groups
-                $('[id^=emundus_checkall_grp_]').each(function(tbl) {
-                    if($(this).prop('checked') == true) {
-                        let group_id = $(this).attr('id').split('emundus_checkall_grp_')[1];
-                        let parent = $('#emundus_grp_' + group_id).parent().parent().attr('id');
-                        let parent_id = parent.split('emundus_table_')[1];
-                        selectedProfiles['menutype_' + felts_id]['table_' + parent_id]['group_' + group_id] = [];
+                        }
+                    })
 
-                    } else {
+                    // get all selected groups
+                    $('[id^=emundus_checkall_grp_]').each(function (tbl) {
+                        if ($(this).prop('checked') == true) {
+                            let group_id = $(this).attr('id').split('emundus_checkall_grp_')[1];
+                            let parent = $('#emundus_grp_' + group_id).parent().parent().attr('id');
+                            let parent_id = parent.split('emundus_table_')[1];
+                            selectedProfiles['menutype_' + felts_id]['table_' + parent_id]['group_' + group_id] = [];
 
-                    }
-                })
+                        } else {
 
-                // get all selected elements and then push to array (array push)
-                $('[id^=emundus_elm_]').each(function(elt) {
-                    if($(this).prop('checked') == true) {
-                        let elt_id = $(this).attr('id').split('emundus_elm_')[1];
+                        }
+                    })
 
-                        // get group_id, table_id (using parent())
-                        let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
-                        let group_id = group.split('emundus_grp_')[1];
+                    // get all selected elements and then push to array (array push)
+                    $('[id^=emundus_elm_]').each(function (elt) {
+                        if ($(this).prop('checked') == true) {
+                            let elt_id = $(this).attr('id').split('emundus_elm_')[1];
 
-                        let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
-                        let table_id = table.split('emundus_table_')[1];
+                            // get group_id, table_id (using parent())
+                            let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
+                            let group_id = group.split('emundus_grp_')[1];
 
-                        selectedProfiles['menutype_' + felts_id]['table_' + table_id]['group_' + group_id].push(elt_id);
-                    }
-                })
-            }
-            else {}
-        });
+                            let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
+                            let table_id = table.split('emundus_table_')[1];
+
+                            selectedProfiles['menutype_' + felts_id]['table_' + table_id]['group_' + group_id].push(elt_id);
+                        }
+                    })
+                } else {
+                }
+            });
+        }
+
+        /// nothing table is selected --> but at least one group is selected
+        else if($('[id^=felts]').find($('[id^=emundus_checkall_tbl_]')).is(':checked') == false && $('[id^=felts]').find($('[id^=emundus_checkall_grp_]')).is(':checked') == true) {
+            console.log(' here we are1');
+
+            // get fetls
+
+            // get table
+
+            // get elements
+        }
+
+        /// nothing table and group are selected --> but at least one element is selected
+        else if($('[id^=felts]').find($('[id^=emundus_checkall_tbl_]')).is(':checked') == false && $('[id^=felts]').find($('[id^=emundus_checkall_grp_]')).is(':checked') == false && $('[id^=felts]').find($('[id^=emundus_elm_]')).is(':checked') == true) {
+            console.log(' here we are2');
+            // get felts
+
+            // get table
+
+            // get group
+
+            // get elements
+        }
+
         console.log(selectedProfiles);
-
-
-
-
-
 
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
