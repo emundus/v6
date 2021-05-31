@@ -2083,6 +2083,58 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
+    /// generate pdf with selected form elements
+    public function generate_customized_pdf() {
+        $current_user = JFactory::getUser();
+
+        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+            die(JText::_('RESTRICTED_ACCESS'));
+        }
+
+        $jinput = JFactory::getApplication()->input;
+        $m_files = $this->getModel('Files');
+
+        $session = JFactory::getSession();
+        $fnums_post = $session->get('fnums_export');
+
+        if (count($fnums_post) == 0) {
+            $fnums_post = array($session->get('application_fnum'));
+        }
+
+        $jinput     = JFactory::getApplication()->input;
+        $file       = $jinput->getVar('file', null, 'STRING');
+        $totalfile  = $jinput->getVar('totalfile', null);
+        $start      = $jinput->getInt('start', 0);
+        $limit      = $jinput->getInt('limit', 1);
+        $forms      = $jinput->getInt('forms', 0);
+        $attachment = $jinput->getInt('attachment', 0);
+        $assessment = $jinput->getInt('assessment', 0);
+        $decision   = $jinput->getInt('decision', 0);
+        $admission  = $jinput->getInt('admission', 0);
+        $ids        = $jinput->getVar('ids', null);
+        $formid     = $jinput->getVar('formids', null);
+        $attachid   = $jinput->getVar('attachids', null);
+        $option     = $jinput->getVar('options', null);
+
+        $params = $jinput->getVar('params', null);          // an object need to parsed
+
+        $formids    = explode(',', $formid);
+        $attachids  = explode(',', $attachid);
+        $options    = explode(',', $option);
+
+        $validFnums = array();
+        foreach ($fnums_post as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
+                $validFnums[] = $fnum;
+            }
+        }
+
+        $fnumsInfo = $m_files->getFnumsInfos($validFnums);
+
+
+//        echo '<pre>'; var_dump($fnumsInfo); echo '</pre>'; die;
+        exit;
+    }
 
     public function export_xls_from_csv() {
         /** PHPExcel */

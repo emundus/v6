@@ -740,7 +740,7 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
 }
 
 maxfiles = 5000;
-function generate_pdf(json) {
+function generate_pdf(json,elements=undefined) {
 
     var start       = json.start;
     var limit       = json.limit;
@@ -755,67 +755,105 @@ function generate_pdf(json) {
     var formids     = json.formids;
     var attachids   = json.attachids;
     var options     = json.options;
+
+    var elements    = elements;
+
+    console.log(elements);
+
     //console.log(attachids);
     $.ajaxQ.abortAll();
 
     if (start+limit < maxfiles) {
-        $.ajax({
-            type: 'post',
-            url: 'index.php?option=com_emundus&controller=files&task=generate_pdf&format=raw',
-            dataType: 'JSON',
-            data: {
-                file: file,
-                totalfile: totalfile,
-                start: start,
-                limit: limit,
-                forms: forms,
-                attachment: attachment,
-                assessment: assessment,
-                decision: decision,
-                admission: admission,
-                ids: ids,
-                formids: formids,
-                attachids:attachids,
-                options:options
-            },
-            success: function(result) {
-                var json = result.json;
 
-                if (result.status) {
-
-                    $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start + ' / ' + result.json.totalfile + '</p></div>');
-
-                    if (start != json.start) {
-                        //$('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+json.msg+'</div>' );
-                        generate_pdf(json);
-                    } else {
-                        $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_PDF_GENERATION')+'</p></div>');
-                        $('#loadingimg').empty();
-                        $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
-                        $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
-                        $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="'+result.json.path+'tmp/' + file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
-                    }
-
-                } else {
-
-                    var json = result.json;
-                    if (start != json.start) {
-                        generate_pdf(json);
-                    } else {
-                        $('#loadingimg').empty();//.append(json.msg);
-                        $('#addatatext').empty()
-                        $('#datasbs p').replaceWith('<span class="alert alert-danger"> '+json.msg+'</span><br/><br/>');
-                        $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
-                    }
-
+        if(forms == 1 && jQuery.isEmptyObject(elements) == false) {
+            // call to generate_customized_pdf api
+            $.ajax({
+                type: 'post',
+                url: 'index.php?option=com_emundus&controller=files&task=generate_customized_pdf',
+                dataType: 'JSON',
+                data: {
+                    file: file,
+                    totalfile: totalfile,
+                    start: start,
+                    limit: limit,
+                    forms: forms,                   /// always 0
+                    attachment: attachment,
+                    assessment: assessment,
+                    decision: decision,
+                    admission: admission,
+                    ids: ids,
+                    formids: formids,               /// always empty
+                    attachids: attachids,
+                    options: options,
+                    params : elements               /// add params
+                },
+                success: function(result) {
+                    /// focus on back-end PHP
+                }, error: function(jqXHR) {
+                    console.log(jqXHR.responseText);
                 }
-            },
-            error: function (jqXHR) {
-                $('#loadingimg').empty();
-                $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
-                $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
-            }
-        });
+            })
+        }
+
+        if(forms == 0) {
+            $.ajax({
+                type: 'post',
+                url: 'index.php?option=com_emundus&controller=files&task=generate_pdf&format=raw',
+                dataType: 'JSON',
+                data: {
+                    file: file,
+                    totalfile: totalfile,
+                    start: start,
+                    limit: limit,
+                    forms: forms,
+                    attachment: attachment,
+                    assessment: assessment,
+                    decision: decision,
+                    admission: admission,
+                    ids: ids,
+                    formids: formids,
+                    attachids: attachids,
+                    options: options
+                },
+                success: function (result) {
+                    var json = result.json;
+
+                    if (result.status) {
+
+                        $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start + ' / ' + result.json.totalfile + '</p></div>');
+
+                        if (start != json.start) {
+                            //$('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+json.msg+'</div>' );
+                            generate_pdf(json);
+                        } else {
+                            $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.JText._('COM_EMUNDUS_PDF_GENERATION') + '</p></div>');
+                            $('#loadingimg').empty();
+                            $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
+                            $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                            $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' + result.json.path + 'tmp/' + file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
+                        }
+
+                    } else {
+
+                        var json = result.json;
+                        if (start != json.start) {
+                            generate_pdf(json);
+                        } else {
+                            $('#loadingimg').empty();//.append(json.msg);
+                            $('#addatatext').empty()
+                            $('#datasbs p').replaceWith('<span class="alert alert-danger"> ' + json.msg + '</span><br/><br/>');
+                            $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                        }
+
+                    }
+                },
+                error: function (jqXHR) {
+                    $('#loadingimg').empty();
+                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
+                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                }
+            });
+        }
 
     } else if (start+limit> maxfiles) {
         $('#loadingimg').empty();
@@ -4894,20 +4932,12 @@ $(document).ready(function() {
         var attach_checked = [];
         var options = [];
 
+        var elements = null;
+
         // $('#felts input:checked').each(function() {
         //     form_checked.push($(this).val());
         //     forms = 0;
         // });
-
-        /// grab all selected elements
-        // let eltsObject = $('[id^=emundus_elm_]');
-        // let eltsArray = Array.prototype.slice.call(eltsObject);
-        // eltsArray.forEach(elt => {
-        //     if (elt.checked == true) {
-        //         form_checked.push(elt.value);
-        //         forms = 0;
-        //     }
-        // })
 
         /// if at least one is checked --> forms = 1
         $('[id^=felts] input:checked').length > 0 ? forms = 1 : forms = 0;
@@ -4915,8 +4945,7 @@ $(document).ready(function() {
 
         let selectedElements = new Object();
 
-        /// nothing table and group are selected --> but at least one element is selected
-
+        // at least one element is selected
         $('[id^=felts]').each(function (flt) {
             if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
                 console.log('at least one element is selected');
@@ -4985,25 +5014,11 @@ $(document).ready(function() {
                     }
                 })
             } else {
-                return false;
+
             }
         })
 
         console.log(selectedElements);
-
-        if(forms == 1) {
-            $.ajax({
-                type: 'post',
-                url: 'index.php?option=com_emundus&controller=files&task=generate_customized_pdf',
-                dataType: 'JSON',
-                data: { params: selectedElements },
-                success: function(result) {
-                    console.log(result);
-                }, error: function(jqXHR) {
-                    console.log(jqXHR.responseText);
-                }
-            })
-        }
 
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
@@ -5059,14 +5074,23 @@ $(document).ready(function() {
                                     Joomla.JText._('COM_EMUNDUS_ADD_FILES_TO_PDF') +
                                     '</p></div><div id="datasbs"</div>');
 
-                                var json = jQuery.parseJSON('{"start":"' + start + '","limit":"' + limit +
-                                    '","totalfile":"' + totalfile + '","forms":"' + forms + '","formids":"' + form_checked +
-                                    '","attachment":"' + attachment + '", "attachids":"' + attach_checked + '", "options":"' + options + '", "assessment":"' + assessment +
-                                    '","decision":"' + decision + '","admission":"' + admission + '","file":"' + result.file + '","ids":"' + ids + '"}');
-
+                                /// if forms = 0 --> so selectedElements is empty --> selectedElements = {} --> using jQuery to check it (jQuery.isEmptyObject(_obj_))
+                                if(forms == 0) {
+                                    var json = jQuery.parseJSON('{"start":"' + start + '","limit":"' + limit +
+                                        '","totalfile":"' + totalfile + '","forms":"' + forms + '","formids":"' + form_checked +
+                                        '","attachment":"' + attachment + '", "attachids":"' + attach_checked + '", "options":"' + options + '", "assessment":"' + assessment +
+                                        '","decision":"' + decision + '","admission":"' + admission + '","file":"' + result.file + '","ids":"' + ids + '"}');
+                                }
+                                else {
+                                    var json = jQuery.parseJSON('{"start":"' + start + '","limit":"' + limit +
+                                        '","totalfile":"' + totalfile + '","forms":"' + forms + '","formids":"' + form_checked +
+                                        '","attachment":"' + attachment + '", "attachids":"' + attach_checked + '", "options":"' + options + '", "assessment":"' + assessment +
+                                        '","decision":"' + decision + '","admission":"' + admission + '","file":"' + result.file + '","ids":"' + ids + '"}');
+                                    elements = selectedElements;
+                                }
                                 $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>...</p></div>');
 
-                                generate_pdf(json);
+                                generate_pdf(json,elements);
 
                             } else {
 
