@@ -367,12 +367,13 @@ foreach ($parsed_data as $row_id => $insert_row) {
     } elseif (!empty($insert_row['jos_emundus_users']['username']) || !empty($insert_row['jos_emundus_users']['email'])) {
 
         $username = (!empty($insert_row['jos_emundus_users']['username'])) ? $insert_row['jos_emundus_users']['username'] : strtolower($insert_row['jos_emundus_users']['email']);
-
+        $id_ehesp = $insert_row['jos_emundus_users']['id_ehesp'];
         // If we have an email present then we need to check if a user already exists.
         $query->clear()
-            ->select($db->quoteName('id'))
-            ->from($db->quoteName('#__users'))
-            ->where($db->quoteName('username').' LIKE '.$db->quote($username));
+            ->select($db->quoteName('u.id'))
+            ->from($db->quoteName('#__users','u'))
+            ->join('LEFT',$db->quoteName('#__emundus_users','eu').' ON u.id=eu.user_id')
+            ->where($db->quoteName('username').' LIKE '.$db->quote($username).' OR '.$db->quoteName('id_ehesp').' LIKE '.$db->quote($id_ehesp));
         $db->setQuery($query);
 
         try {
@@ -402,6 +403,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
         $email = $insert_row['jos_emundus_users']['email'];
         $firstname = $insert_row['jos_emundus_personal_detail']['first_name'];
         $lastname = $insert_row['jos_emundus_personal_detail']['last_name'];
+
         $ldap_user = false;
 
         // No user could be found either by id, username, email, or fnum: so we need to make a new one.
@@ -480,6 +482,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
         $other_param['lastname'] = $lastname;
         $other_param['profile'] = $profile;
         $other_param['em_campaigns'] = $campaign;
+        $other_param['id_ehesp'] = $id_ehesp;
 
         require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
         require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
@@ -616,10 +619,15 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
             if ($table_name === 'jos_emundus_users') {
 
-                if($element_name != 'user_id') {
+                if($element_name == 'email' && (empty($element['user_id']) || !isset($element['user_id']))){
+                    $fields = $fields;
+                }
+                elseif($element_name == 'id_ehesp' && (empty($element['user_id']) || !isset($element['user_id']))){
+                    $fields = $fields;
+                }
+                elseif($element_name != 'user_id') {
                     $fields[] = $db->quoteName($element_name).' = '.$element_value;
                 }
-
             }
             else {
                 $columns[] = $element_name;
@@ -629,8 +637,14 @@ foreach ($parsed_data as $row_id => $insert_row) {
         }
 
         if ($table_name === 'jos_emundus_users') {
+            if(array_key_exists('id_ehesp',$element)){
+                $select = array('email','id_ehesp');
+            }
+            else{
+                $select = array('email');
+            }
 
-            $select = array('email');
+
 
             $query->clear()
                 ->select($db->quoteName($select))
@@ -643,7 +657,24 @@ foreach ($parsed_data as $row_id => $insert_row) {
             if($element['email'] == $existData->email){
                 $app->enqueueMessage('The user with email : '.$existData->email.' already exist', 'info');
             }
+            elseif($element['email'] != $existData->email && (!empty($element['user_id']) && isset($element['user_id']))){
+                $query->clear()
+                    ->update($db->quoteName('#__users'))
+                    ->set($db->quoteName('username').' = ' . $db->quote($element['email']).' , '.$db->quoteName('email').' = '.$db->quote($element['email']))
+                    ->where($db->quoteName('id').' = '.$user->id);
 
+                try{
+                    $db->execute();
+                }
+                catch (Exception $e){
+
+                }
+            }
+            if(array_key_exists('id_ehesp',$element)){
+                if($element['id_ehesp'] !== $existData->id_ehesp && (!empty($element['user_id']) && isset($element['user_id']))){
+                    $app->enqueueMessage('The EHESP id : '.$existData->id_ehesp.' have been modified', 'info');
+                }
+            }
             $query->clear()
                 ->update($db->quoteName($table_name))
                 ->set($fields)

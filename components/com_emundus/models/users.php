@@ -796,12 +796,22 @@ class EmundusModelUsers extends JModelList {
         $news = $params['news'];
         $univ_id = $params['univ_id'];
 
+        if(!empty($params['id_ehesp'])){
+            $id_ehesp = $params['id_ehesp'];
+        }
+
         $dispatcher->trigger('onBeforeSaveEmundusUser', [$user_id, $params]);
-        if (empty($univ_id)) {
+        if(!empty($id_ehesp)){
+            $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id,id_ehesp) VALUES ('',".$user_id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','','".$univ_id."','".$id_ehesp."')";
+            $db->setQuery($query);
+            $db->execute();
+        }
+        elseif (empty($univ_id)) {
             $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','',0)";
             $db->setQuery($query);
             $db->execute();
-        } else {
+        }
+        else {
             $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','','".$univ_id."')";
             $db->setQuery($query);
             $db->execute();
