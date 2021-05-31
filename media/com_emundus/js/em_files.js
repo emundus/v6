@@ -4916,53 +4916,78 @@ $(document).ready(function() {
         let selectedElements = new Object();
 
         /// nothing table and group are selected --> but at least one element is selected
-        if($('[id^=felts]').find($('[id^=emundus_elm_]')).is(':checked') == true) {
-            console.log('at least one element is selected');
-            // get felts
 
-            $('[id^=felts]').each(function (flt) {
-                if (($(this) + "input:checked").length > 0) {
-                    // let felts id
-                    let felts_id = $(this).attr('id').split('felts')[1];
-                    selectedElements['menutype_' + felts_id] = {};
+        $('[id^=felts]').each(function (flt) {
+            if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
+                console.log('at least one element is selected');
 
-                    $('[id^=emundus_elm_]').each(function (elt) {
-                        if ($(this).prop('checked') == true) {
-                            let elt_id = $(this).attr('id').split('emundus_elm_')[1];
-                            // get group_id, table_id (using parent())
+                /// get associated #felts
+                $('[id^=emundus_elm_]').each(function (elt) {
+                    if ($(this).prop('checked') == true) {
+                        let elt_id = $(this).attr('id').split('emundus_elm_')[1];
 
-                            let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
-                            let table_id = table.split('emundus_table_')[1];
-                            selectedElements['menutype_' + felts_id]['table_' + table_id] = {};
-                        }
-                    })
+                        let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
+                        let felts_id = felts.split('felts')[1];
 
-                    $('[id^=emundus_elm_]').each(function (elt) {
-                        if ($(this).prop('checked') == true) {
-                            let elt_id = $(this).attr('id').split('emundus_elm_')[1];
-                            // get group_id, table_id (using parent())
-                            let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
-                            let group_id = group.split('emundus_grp_')[1];
-                            let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
-                            let table_id = table.split('emundus_table_')[1];
-                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id] = [];
-                        }
-                    })
+                        selectedElements['menutype_' + felts_id] = {};
+                    }
+                })
 
-                    $('[id^=emundus_elm_]').each(function (elt) {
-                        if ($(this).prop('checked') == true) {
-                            let elt_id = $(this).attr('id').split('emundus_elm_')[1];
-                            // get group_id, table_id (using parent())
-                            let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
-                            let group_id = group.split('emundus_grp_')[1];
-                            let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
-                            let table_id = table.split('emundus_table_')[1];
-                            selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id].push(elt_id);
-                        }
-                    })
-                }
-            })
-        }
+                /// get associated tables
+                $('[id^=emundus_elm_]').each(function (elt) {
+                    if ($(this).prop('checked') == true) {
+                        let elt_id = $(this).attr('id').split('emundus_elm_')[1];
+
+                        let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
+                        let felts_id = felts.split('felts')[1];
+
+                        let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
+                        let table_id = table.split('emundus_table_')[1];
+
+                        selectedElements['menutype_' + felts_id]['table_' + table_id] = {};
+                    }
+                })
+
+                /// get associated group
+                $('[id^=emundus_elm_]').each(function (elt) {
+                    if ($(this).prop('checked') == true) {
+                        let elt_id = $(this).attr('id').split('emundus_elm_')[1];
+
+                        let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
+                        let felts_id = felts.split('felts')[1];
+
+                        let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
+                        let table_id = table.split('emundus_table_')[1];
+
+                        let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
+                        let group_id = group.split('emundus_grp_')[1];
+
+                        selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id] = [];
+                    }
+                })
+
+                /// push element to array
+                $('[id^=emundus_elm_]').each(function (elt) {
+                    if ($(this).prop('checked') == true) {
+                        let elt_id = $(this).attr('id').split('emundus_elm_')[1];
+                        // get group_id, table_id (using parent())
+
+                        let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
+                        let felts_id = felts.split('felts')[1];
+
+                        let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
+                        let table_id = table.split('emundus_table_')[1];
+
+                        let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
+                        let group_id = group.split('emundus_grp_')[1];
+
+                        selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id].push(elt_id);
+                    }
+                })
+            } else {
+                return false;
+            }
+        })
 
         console.log(selectedElements);
 
