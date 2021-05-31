@@ -26,7 +26,25 @@ JHtml::_('bootstrap.tooltip');
             <div class="container">
                 <p><?= $mod_emundus_cas_url1_desc; ?></p>
                 <br/>
-                <p class="btn-cas"><a href="<?= $mod_emundus_cas_url1; ?>" class="btn btn-primary logo"><img src="<?= $mod_emundus_cas_logo; ?>" alt="Icône du système de connexion"/></a><a href="<?= $mod_emundus_cas_url1; ?>" target="_blank" class="btn btn-primary"><?= $mod_emundus_cas_btn1; ?></a>
+                <div class="btn-cas">
+                    <?php if (empty($mod_emundus_cas_logo)) :?>
+
+                            <a href="<?= $mod_emundus_cas_url1; ?>" target="_blank" class="btn btn-primary rounded">
+                            <?= $mod_emundus_cas_btn1; ?>
+                           </a>
+                        </div>
+                 <?php else:?>
+
+                          <a href="<?= $mod_emundus_cas_url1; ?>" class="btn btn-primary logo">
+
+                                <img src="<?= $mod_emundus_cas_logo; ?>" alt="Icône du système de connexion"/>
+                            </a>
+                            <a href="<?= $mod_emundus_cas_url1; ?>" target="_blank" class="btn btn-primary">
+                                <?= $mod_emundus_cas_btn1; ?>
+                            </a>
+
+                <?php endif;?>
+            </div>
             </div>
         </div>
 
