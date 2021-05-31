@@ -788,7 +788,8 @@ function data_to_img($match) {
     return "$img$fn$end";  // new <img> tag
 }
 
-function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null) {
+/// add $elements as optional params
+function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
@@ -825,6 +826,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $htmldata = '';
     $forms ='';
 
+    if($form_post == 1 && !empty($elements) && !is_null($elements)) {
+        $forms = $m_application->getCustomizedPDF($user_id, $fnum, $profile_id, $elements);
+    }
+
     if ($form_post || !empty($form_ids)) {
 	    $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id);
     }
@@ -852,6 +857,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 					ORDER BY esc.id DESC';
         $db->setQuery($query);
         $item = $db->loadObject();
+
+        /// this query get all fnum information
 
     } catch (Exception $e) {
         JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');

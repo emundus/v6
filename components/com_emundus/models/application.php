@@ -2315,6 +2315,18 @@ class EmundusModelApplication extends JModelList {
         return $forms;
     }
 
+    /// goal: generate HTML data and then send to PDF libraries
+    public function getCustomizedPDF($uid,$fnum,$profile_id, $elements) {
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+        $em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
+
+        $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25');
+
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+        $h_list = new EmundusHelperList;
+    }
+
     public function getFormsPDFElts($aid, $elts, $options, $checklevel=true) {
 
         $tableuser = @EmundusHelperList::getFormsListByProfileID($options['profile_id'], $checklevel);

@@ -15,6 +15,10 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
+jimport('joomla.application.component.model');
+JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
+
+
 /**
  * Content Component Query Helper
  *
@@ -45,9 +49,49 @@ class EmundusHelperExport
 		}
         
         application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order);
-
+        /// application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order, null, null, null);           /// review this function
 		return EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_application.pdf';
     }
+
+    /*
+     * @static
+     * @params mandatory
+     *      --> $fnum::info [Array]
+     *      --> $sid
+     *      --> $forms = 1 (always)
+     *      --> $elements (Object)
+     *      --> $options (Array) [null]
+     * */
+    public function buildCustomizedPDF($fnumInfos, $forms = 1, $elements, $options=null, $application_form_order = null) {
+        $_profile_model = JModelLegacy::getInstance('profile','EmundusModel');   /// invoke model of profile
+
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
+
+        if (!file_exists($file)) {
+            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+        }
+
+        if (!file_exists(EMUNDUS_PATH_ABS.$fnumInfos['applicant_id'])) {
+            mkdir(EMUNDUS_PATH_ABS.$fnumInfos['applicant_id']);
+            chmod(EMUNDUS_PATH_ABS.$fnumInfos['applicant_id'], 0755);
+        }
+
+        // Prevent including PDF library twice.
+        if (!function_exists('application_form_pdf')) {
+            require_once($file);
+        }
+
+        foreach($elements as $prfiles=>$data) {
+            $pr_id = $_profile_model->getProfileByMenu($prfiles);
+
+            /// foreach profile_id --> create a pdf form
+            application_form_pdf($fnumInfos['applicant_id'],$fnumInfos['fnum'],false,$forms,null,$options,null,$pr_id,null,$elements[$prfiles]);
+        }
+
+        return EMUNDUS_PATH_ABS.$fnumInfos['applicant_id'].DS.$fnumInfos['fnum'].'_application.pdf';
+    }
+
+
     public static function buildHeaderPDF($fnumInfos, $sid, $fnum, $options = null) {
 		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
         

@@ -420,6 +420,26 @@ class EmundusModelProfile extends JModelList {
         }
     }
 
+    /// get profile from menutype
+    public function getProfileByMenu($menu) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            /// another way, if $menu has the regular expression "menu-profile" --> will see
+
+            $query->clear()
+                ->select('#__emundus_setup_profiles.*')
+                ->from($db->quoteName('#__emundus_setup_profiles'))
+                ->where($db->quoteName('#__emundus_setup_profiles.menutype') . '=' . $db->quote($menu))
+                ->andWhere($db->quoteName('#__emundus_setup_profiles.published') . '=' . 1);
+            $db->setQuery($query);
+            return $db->loadObject();
+
+        } catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
 
 	/**
 	 * Gets the list of profiles from array of programmes

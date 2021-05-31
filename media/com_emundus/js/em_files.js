@@ -4958,7 +4958,7 @@ $(document).ready(function() {
                         let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
                         let felts_id = felts.split('felts')[1];
 
-                        selectedElements['menutype_' + felts_id] = {};
+                        selectedElements['menu-profile' + felts_id] = {};
                     }
                 })
 
@@ -4973,7 +4973,7 @@ $(document).ready(function() {
                         let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
                         let table_id = table.split('emundus_table_')[1];
 
-                        selectedElements['menutype_' + felts_id]['table_' + table_id] = {};
+                        selectedElements['menu-profile' + felts_id]['table_' + table_id] = {};
                     }
                 })
 
@@ -4991,7 +4991,7 @@ $(document).ready(function() {
                         let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
                         let group_id = group.split('emundus_grp_')[1];
 
-                        selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id] = [];
+                        selectedElements['menu-profile' + felts_id]['table_' + table_id]['group_' + group_id] = [];
                     }
                 })
 
@@ -5010,7 +5010,7 @@ $(document).ready(function() {
                         let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
                         let group_id = group.split('emundus_grp_')[1];
 
-                        selectedElements['menutype_' + felts_id]['table_' + table_id]['group_' + group_id].push(elt_id);
+                        selectedElements['menu-profile' + felts_id]['table_' + table_id]['group_' + group_id].push(elt_id);
                     }
                 })
             } else {

@@ -2101,7 +2101,6 @@ class EmundusControllerFiles extends JControllerLegacy
             $fnums_post = array($session->get('application_fnum'));
         }
 
-        $jinput     = JFactory::getApplication()->input;
         $file       = $jinput->getVar('file', null, 'STRING');
         $totalfile  = $jinput->getVar('totalfile', null);
         $start      = $jinput->getInt('start', 0);
@@ -2116,7 +2115,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $attachid   = $jinput->getVar('attachids', null);
         $option     = $jinput->getVar('options', null);
 
-        $params = $jinput->getVar('params', null);          // an object need to parsed
+        $elements = $jinput->getVar('params', null);          // an object need to parsed
 
         $formids    = explode(',', $formid);
         $attachids  = explode(',', $attachid);
@@ -2131,9 +2130,133 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $fnumsInfo = $m_files->getFnumsInfos($validFnums);
 
+        /// old code
+        if (count($validFnums) == 1) {
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $application_form_name = $eMConfig->get('application_form_name', "application_form_pdf");
 
-//        echo '<pre>'; var_dump($fnumsInfo); echo '</pre>'; die;
-        exit;
+            if ($application_form_name != "application_form_pdf") {
+
+                require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+                $m_emails = new EmundusModelEmails;
+
+                $fnum = $validFnums[0];
+                $post = array(
+                    'FNUM' => $fnum,
+                    'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
+                );
+                $tags = $m_emails->setTags($fnumsInfo[$fnum]['applicant_id'], $post, $fnum);
+
+                // Format filename
+                $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
+                $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
+                $application_form_name = $m_emails->stripAccents($application_form_name);
+                $application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
+                $application_form_name = preg_replace('/\s/', '', $application_form_name);
+                $application_form_name = strtolower($application_form_name);
+
+                if ($file != $application_form_name.'.pdf' && file_exists(JPATH_BASE.DS.'tmp'.DS.$application_form_name.'.pdf')) {
+                    unlink(JPATH_BASE.DS.'tmp'.DS.$application_form_name.'.pdf');
+                }
+
+                $file = $application_form_name.'.pdf';
+            }
+        }
+        ////////////////////////////////////////////////////////////
+        if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $file)) {
+            $files_list = array(JPATH_BASE.DS.'tmp'.DS.$file);
+        } else {
+            $files_list = array();
+        }
+
+        /// get all elements of profile by key --> var_dump($elements['menutype_1002']);die;
+        /// $forms = 0 or 1
+        for ($i = $start; $i < ($start+$limit) && $i < $totalfile; $i++) {
+            $fnum = $validFnums[$i];
+            if (is_numeric($fnum) && !empty($fnum)) {
+                if (isset($forms)) {
+                    if ($forms && !empty($elements) && !is_null($elements)) {
+                        /// for each fnum, call to function buildCustomizedPDF
+                        $files_list[] = EmundusHelperExport::buildCustomizedPDF($fnumsInfo[$fnum], $forms, $elements, $options);
+                    }
+                }
+
+                if ($attachment || !empty($attachids)) {
+                    $tmpArray = array();
+                    $m_application = $this->getModel('application');
+                    $attachment_to_export = array();
+                    foreach ($attachids as $aids) {
+                        $detail = explode("|", $aids);
+                        if ((!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training']) && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+                            $attachment_to_export[] = $detail[0];
+                        }
+                    }
+                    if ($attachment || !empty($attachment_to_export)) {
+                        $files = $m_application->getAttachmentsByFnum($fnum, $ids, $attachment_to_export);
+                        if ($options[0] != "0") {
+                            $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
+                        }
+                        $files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+                    }
+                }
+
+                if ($assessment)
+                    $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
+
+                if ($decision)
+                    $files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
+
+                if ($admission)
+                    $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
+
+                if (($forms != 1) && $formids[0] == "" && ($attachment != 1) && ($attachids[0] == "") && ($assessment != 1) && ($decision != 1) && ($admission != 1) && ($options[0] != "0"))
+                    $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
+
+            }
+
+        }
+        $start = $i;
+
+        if (count($files_list) > 0) {
+
+            // all PDF in one file
+            require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+
+            $pdf = new ConcatPdf();
+
+            $pdf->setFiles($files_list);
+
+            $pdf->concat();
+
+            if (isset($tmpArray)) {
+                foreach ($tmpArray as $fn) {
+                    unlink($fn);
+                }
+            }
+            $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $file, 'F');
+
+            $start = $i;
+
+            $dataresult = [
+                'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
+                'options' => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+                'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('FILES_ADDED')//.' : '.$fnum
+            ];
+            $result = array('status' => true, 'json' => $dataresult);
+
+        } else {
+
+            $dataresult = [
+                'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
+                'options' => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+                'admission' => $admission, 'file' => $file, 'ids' => $ids, 'msg' => JText::_('FILE_NOT_FOUND')
+            ];
+
+            $result = array('status' => false, 'json' => $dataresult);
+        }
+        echo json_encode((object) $result);
+        exit();
+
     }
 
     public function export_xls_from_csv() {
