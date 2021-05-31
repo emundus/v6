@@ -159,11 +159,9 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
                 }
                 // to avoid been considered as a spam process or DDoS
                 sleep(0.1);
-
             }
 
         }
-
         $this->log .= "\n process " . count($applicants) . " applicant(s)";
 
         return count($applicants);
