@@ -5,7 +5,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 
 <div class="em-infoComp">
-	<h3 class="g-title"><?php echo $module->title; ?></h3>
+	<h1 class="g-title"><?php echo $module->title; ?></h1>
 	<ul>
 	<?php foreach($files as $file) { ?>
 		<a href="files/<?php echo $file->catid."/".$file->title_category."/".$file->id."/".$file->title_file.".".$file->ext; ?>" target="_blank" rel="noopener noreferrer" >

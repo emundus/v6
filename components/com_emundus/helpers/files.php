@@ -539,7 +539,7 @@ class EmundusHelperFiles
             }
 
             // get profiles for selected programmes or campaigns
-            $plist = $m_profile->getProfileIDByCampaign($campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
+            $plist = $m_profile->getProfileIDByCampaign((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
 
         } else {
             $plist = $m_profile->getProfileIDByCourse($code, $camps);
@@ -563,7 +563,7 @@ class EmundusHelperFiles
                 }
             }
 
-            if (!empty($fl)) {
+            if (empty($fl)) {
 	            return array();
             }
 
@@ -1058,7 +1058,7 @@ class EmundusHelperFiles
                         <label for="select_filter" class="control-label em-user-personal-filter-label">'.JText::_('SELECT_FILTER').'</label>
                         <div class="em_select_filter_rapid_search">
                             <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" > 
-                                <option value="0" selected="true" >'.JText::_('CHOOSE_FILTER').'</option>';
+                                <option value="0" selected="true" style="font-style: italic;">'.JText::_('CHOOSE_FILTER').'</option>';
         if (!empty($research_filters)) {
             foreach ($research_filters as $filter) {
                 if ($select_id == $filter->id) {

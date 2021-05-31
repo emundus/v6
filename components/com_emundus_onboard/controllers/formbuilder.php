@@ -132,29 +132,6 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-
-     public function SubLabelsxValues() {
-        $user = JFactory::getUser();
-        $m_form = $this->model;
-
-        $jinput = JFactory::getApplication()->input;
-        $element = $jinput->getRaw('element');
-        $newLabel = $jinput->getString('NewSubLabel');
-
-        $lang = JFactory::getLanguage();
-        $locallang = $lang->getTag();
-
-        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-	        $result = 0;
-	        $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $changeresponse = $m_form->SubLabelsxValues($element,  $locallang, $newLabel,  $user->id);
-        }
-
-        echo json_encode((object)$changeresponse);
-        exit;
-     }
-
     /**
      * Update translations of an element
      *
@@ -468,6 +445,17 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
+    public function retriveElementFormAssociatedDoc(){
+        $m_form = $this->model;
+
+        $jinput = JFactory::getApplication()->input;
+        $docid = $jinput->getInt('docid');
+        $gid = $jinput->getInt('gid');
+        $changeresponse = $m_form->retriveElementFormAssociatedDoc($gid, $docid);
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
+
 
     public function createsimpleelement() {
         $user = JFactory::getUser();
@@ -476,12 +464,24 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $gid = $jinput->getInt('gid');
         $plugin = $jinput->getString('plugin');
+        if ($jinput->getString('attachementId')){
+
+        $attachementId = $jinput->getString('attachementId');
+
+
+        }
+
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $changeresponse = $m_form->createSimpleElement($gid,$plugin);
+            if($attachementId) {
+                $changeresponse = $m_form->createSimpleElement($gid, $plugin, $attachementId);
+            } else {
+                $changeresponse = $m_form->createSimpleElement($gid, $plugin,0);
+
+            }
         }
         echo json_encode((object)$changeresponse);
         exit;
@@ -504,7 +504,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
             $result = 0;
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $changeresponse = $m_form->createSimpleElement($gid, $plugin, 1);
+            $changeresponse = $m_form->createSimpleElement($gid, $plugin, null, 1);
         }
         echo json_encode((object)$changeresponse);
         exit;

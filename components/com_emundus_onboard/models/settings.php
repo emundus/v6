@@ -95,6 +95,18 @@ class EmundusonboardModelsettings extends JModelList {
                 if ($fr_value != null) {
                     $statu->label->fr = $fr_value;
                 }
+
+                $statu->edit = 1;
+                $query->clear()
+                    ->select('count(id)')
+                    ->from($db->quoteName('#__emundus_campaign_candidature'))
+                    ->where($db->quoteName('status') . ' = ' . $db->quote($statu->step));
+                $db->setQuery($query);
+                $files = $db->loadResult();
+
+                if($files > 0){
+                    $statu->edit = 0;
+                }
             }
 
             return $status;
@@ -461,13 +473,38 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
-    function updateHomepage($content) {
+    function updateHomepage($content,$label,$color) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         $results = [];
 
-        $query->update($db->quoteName('#__content'))
+        // Update label
+        $query->select('id,content')
+            ->from($db->quoteName('#__modules'))
+            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_custom'))
+            ->andWhere($db->quoteName('title') . ' LIKE ' . $db->quote('Homepage background'));
+
+        $db->setQuery($query);
+        $module = $db->loadObject();
+        $old_content = $module->content;
+        $id_module = $module->id;
+
+        $title_to_complete = explode('<h1 class="welcome-message">',$old_content);
+        $new_content = $title_to_complete[0] . '<h1 class="welcome-message">' . $label[0] . '</h1></div>';
+
+        $query->clear()
+            ->update($db->quoteName('#__modules'))
+            ->set($db->quoteName('content') . ' = ' . $db->quote($new_content))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($id_module));
+
+        $db->setQuery($query);
+        $results[] = $db->execute();
+        //
+
+        // Update content
+        $query->clear()
+            ->update($db->quoteName('#__content'))
             ->set($db->quoteName('introtext') . ' = ' . $db->quote($content['fr']))
             ->where($db->quoteName('id') . ' = ' . 52);
 
@@ -490,6 +527,7 @@ class EmundusonboardModelsettings extends JModelList {
             JLog::add('component/com_emundus_onboard/models/settings | Error at updating homepage article : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
+        //
 
         return $results;
     }
@@ -957,7 +995,7 @@ class EmundusonboardModelsettings extends JModelList {
         $user = JFactory::getUser();
         $form_module = null;
 
-        $html = '<li class="col-md-6 em-print-button" id="' . explode('.',$file)[0] . '" style="margin-bottom: 10px"><a id="print" style="border-radius: 4px;text-decoration: unset" href="' . $dir . $file . '" download="">' . $filename . '</a></li>';
+        $html = '<li class="col-md-6 em-print-button" id="' . explode('.',$file)[0] . '" style="margin-bottom: 10px"><a id="print" style="border-radius: 4px;text-decoration: unset" href="' . $dir . $file . '" download=""><i class="fas fa-arrow-circle-down"></i>' . $filename . '</a></li>';
 
         try {
             $query->select('*')

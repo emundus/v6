@@ -382,6 +382,8 @@ class EmundusViewFiles extends JViewLegacy {
 			    $this->assignRef('actions', $actions);
 			    $pagination = $this->get('Pagination');
 			    $this->assignRef('pagination', $pagination);
+                $pageNavigation = $this->get('PageNavigation');
+                $this->assignRef('pageNavigation', $pageNavigation);
 			    $this->assignRef('users', $users);
 			    $this->assignRef('datas', $data);
 

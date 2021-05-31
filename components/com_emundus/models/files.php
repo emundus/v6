@@ -235,7 +235,7 @@ class EmundusModelFiles extends JModelLegacy
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
                             $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-                                $element_attribs->sub_options->sub_labels[$key] . '")';
+                                addslashes($element_attribs->sub_options->sub_labels[$key]) . '")';
                         }
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
@@ -1474,6 +1474,59 @@ if (JFactory::getUser()->id == 63)
         return $this->_pagination;
     }
 
+    public function getPageNavigation() : string {
+        $pageNavigation = "<div class='em-container-pagination-selectPage'>";
+        $pageNavigation .= "<ul class='pagination pagination-sm'>";
+        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'> << </a></li>";
+        if ($this->getPagination()->pagesTotal > 15) {
+            for ($i = 1; $i <= 5; $i++ ) {
+                $pageNavigation .= "<li ";
+                if ($this->getPagination()->pagesCurrent == $i) {
+                    $pageNavigation .= "class='active'";
+                }
+                $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+            }
+            $pageNavigation .= "<li class='disabled'><span>...</span></li>";
+            if ($this->getPagination()->pagesCurrent <= 5) {
+                for ($i = 6; $i <= 10; $i++ ) {
+                    $pageNavigation .= "<li ";
+                    if ($this->getPagination()->pagesCurrent == $i) {
+                        $pageNavigation .= "class='active'";
+                    }
+                    $pageNavigation .= "><a id=" . $i . " href='#em-data'>" . $i . "</a></li>";
+                }
+            } else {
+                for ( $i = $this->getPagination()->pagesCurrent - 2 ; $i <= $this->getPagination()->pagesCurrent + 2 ; $i++) {
+                    if ( $i <= $this->getPagination()->pagesTotal ) {
+                        $pageNavigation .= "<li ";
+                        if ( $this->getPagination()->pagesCurrent == $i ) {
+                            $pageNavigation .= "class='active'";
+                        }
+                        $pageNavigation .= "><a id=" . $i . " href='#em-data'>" . $i . "</a></li>";
+                    }
+                }
+            }
+            $pageNavigation .= "<li class='disabled'><span>...</span></li>";
+            for ( $i = $this->getPagination()->pagesTotal - 4 ; $i <= $this->getPagination()->pagesTotal ; $i++ ) {
+                $pageNavigation .= "<li ";
+                if ( $this->getPagination()->pagesCurrent == $i ) {
+                    $pageNavigation .= "class='active'";
+                }
+                $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+            }
+        } else {
+            for ( $i = 1 ; $i <= $this->getPagination()->pagesStop ; $i++) {
+                $pageNavigation .= "<li ";
+                if ( $this->getPagination()->pagesCurrent == $i ) {
+                    $pageNavigation .= "class='active'";
+                }
+                $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+            }
+        }
+        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'> >> </a></li></ul></div>";
+
+        return $pageNavigation;
+    }
     /**
      * @return mixed
      */
@@ -2051,7 +2104,7 @@ if (JFactory::getUser()->id == 63)
             }
 
             $db->setQuery($query);
-            return $db->query() ;
+            return $db->execute() ;
         }
         catch(Exception $e)
         {
@@ -2243,17 +2296,24 @@ if (JFactory::getUser()->id == 63)
     *   @param elements     array of element to get value
     *   @return array
     */
-    public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=1) {
+    public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=0, $defaultElement='') {
 
     	$db = $this->getDbo();
         $locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
 
 	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-	    if ($anonymize_data) {
-		    $query = 'select jos_emundus_campaign_candidature.fnum, esc.label, sp.code, esc.id as campaign_id';
-	    } else {
-		    $query = 'select jos_emundus_campaign_candidature.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
-	    }
+
+	    if(empty($defaultElement)){
+            if ($anonymize_data) {
+                $query = 'select jos_emundus_campaign_candidature.fnum, esc.label, sp.code, esc.id as campaign_id';
+            } else {
+                $query = 'select jos_emundus_campaign_candidature.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
+            }
+        }
+	    else{
+	        $query = $defaultElement;
+        }
+
 
         $leftJoin = '';
         $leftJoinMulti = '';
@@ -2416,76 +2476,117 @@ if (JFactory::getUser()->id == 63)
                 $if = array();
                 $endif = '';
 
-                if ($raw == 1) {
-	                $query .= ', '.$select.' AS '.$tableAlias[$elt->tab_name].'___'.$elt->element_name.'_raw';
-                }
 
                 if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
-                    $element_attribs = json_decode($elt->element_attribs);
-                    foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                        $if[] = 'IF('.$select.'="'.$value.'","'.$db->escape($element_attribs->sub_options->sub_labels[$key]).'"';
-                        $endif .= ')';
+                    if($raw == 1){
+                        $select = 'REPLACE(`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`, "\t", "" )';
                     }
-                    $select = implode(',', $if).','.$select.$endif;
-
+                    else{
+                        $element_attribs = json_decode($elt->element_attribs);
+                        foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                            $if[] = 'IF(' . $select . '="' . $value . '","' . $element_attribs->sub_options->sub_labels[$key] . '"';
+                            $endif .= ')';
+                        }
+                        $select = implode(',', $if) . ',' . $select . $endif;
+                    }
                 } elseif ($elt->element_plugin == 'databasejoin') {
 
-                	$element_attribs = json_decode($elt->element_attribs);
+                    $element_attribs = json_decode($elt->element_attribs);
 
                     if ($element_attribs->database_join_display_type == "checkbox") {
                         $select_check = $element_attribs->join_val_column;
-                        if(!empty($element_attribs->join_val_column_concat)){
+                        if (!empty($element_attribs->join_val_column_concat)) {
                             $select_check = $element_attribs->join_val_column_concat;
                             $select_check = preg_replace('#{thistable}#', 'jd', $select_check);
                             $select_check = preg_replace('#{shortlang}#', $this->locales, $select_check);
                         }
 
-                        $t = $tableAlias[$elt->tab_name].'_repeat_'.$elt->element_name;
-                        $select = '(
-                            SELECT GROUP_CONCAT('.$select_check.' SEPARATOR ", ")
-                            FROM '.$t.' AS t
-                            LEFT JOIN '.$element_attribs->join_db_name.' AS jd ON jd.'.$element_attribs->join_key_column.' = t.'.$elt->element_name.'
-                            WHERE '.$tableAlias[$elt->tab_name].'.id = t.parent_id
-                          )';
+                        $t = $tableAlias[$elt->tab_name] . '_repeat_' . $elt->element_name;
+                        if($raw == 1){
+                            $select = '(
+                                SELECT GROUP_CONCAT(' . $elt->element_name . ' SEPARATOR ", ")
+                                FROM ' . $t . ' AS t
+                                WHERE ' . $tableAlias[$elt->tab_name] . '.id = t.parent_id
+                                )';
+                        }else{
+                            $select = '(
+                                SELECT GROUP_CONCAT(' . $select_check . ' SEPARATOR ", ")
+                                FROM ' . $t . ' AS t
+                                LEFT JOIN ' . $element_attribs->join_db_name . ' AS jd ON jd.' . $element_attribs->join_key_column . ' = t.' . $elt->element_name . '
+                                WHERE ' . $tableAlias[$elt->tab_name] . '.id = t.parent_id
+                                )';
+                        }
                     } else {
-                        $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.$element_attribs->join_val_column;
+                        if($raw == 1){
+                            $select = '(SELECT '. $elt->element_name .'
+                            FROM ' . $tableAlias[$elt->tab_name] . ' as t
+                            WHERE t.fnum LIKE '.$db->quote($fnums['fnum']).')';
+                        }
+                        else {
+                            $join_val_column = !empty($element_attribs->join_val_column_concat) ? 'CONCAT(' . str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)) . ')' : 't.' . $element_attribs->join_val_column;
 
-                        $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ")
-                            FROM '.$element_attribs->join_db_name.' as t
-                            WHERE t.'.$element_attribs->join_key_column.'='.$tableAlias[$elt->tab_name].'.'.$elt->element_name.')';
+                            $select = '(SELECT GROUP_CONCAT(DISTINCT(' . $join_val_column . ') SEPARATOR ", ")
+                            FROM ' . $element_attribs->join_db_name . ' as t
+                            WHERE t.' . $element_attribs->join_key_column . '=' . $tableAlias[$elt->tab_name] . '.' . $elt->element_name . ')';
+                        }
                     }
 
                 } elseif ($elt->element_plugin == 'cascadingdropdown') {
 
-                	$element_attribs = json_decode($elt->element_attribs);
-	                $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
-	                $where = explode('___', $element_attribs->cascadingdropdown_id)[1].'='.$elt->tab_name.'.'.$elt->element_name;
-	                $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->cascadingdropdown_label_concat)).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
+                    $element_attribs = json_decode($elt->element_attribs);
+                    $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
+                    $where = explode('___', $element_attribs->cascadingdropdown_id)[1] . '=' . $elt->tab_name . '.' . $elt->element_name;
+                    $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat) ? 'CONCAT(' . str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)) . ')' : 't.' . explode('___', $element_attribs->cascadingdropdown_label)[1];
 
-	                $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ")
-                            FROM '.$from.' as t
-                            WHERE t.'.$where.')';
+                    if($raw == 1){
+                        $select = '(SELECT '. $elt->element_name .'
+                        FROM ' . $tableAlias[$elt->tab_name] . ' as t
+                        WHERE t.fnum LIKE '.$db->quote($fnums['fnum']).')';
+
+                    }
+                    else{
+                        $select = '(SELECT GROUP_CONCAT(DISTINCT(' . $join_val_column . ') SEPARATOR ", ")
+                        FROM ' . $from . ' as t
+                        WHERE t.' . $where . ')';
+                    }
                 }
 
                 $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
+
             }
         }
+
         $query .= ' from #__emundus_campaign_candidature as jos_emundus_campaign_candidature
                     left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
+                    left join #__emundus_users as eu on u.id = eu.user_id
                     left join #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id
-                    left join #__emundus_setup_programmes as sp on sp.code = esc.training ';
+                    left join #__emundus_setup_programmes as sp on sp.code = esc.training';
+
+        if(!empty($defaultElement)){
+            $query .= ' LEFT JOIN #__emundus_tag_assoc as eta ON  eta.fnum = jos_emundus_campaign_candidature.fnum
+                    LEFT JOIN #__emundus_setup_action_tag as esat ON esat.id= eta.id_tag
+                    LEFT JOIN #__emundus_setup_status as ess ON ess.step = jos_emundus_campaign_candidature.status
+                    LEFT JOIN #__emundus_declaration as ed ON ed.fnum = jos_emundus_campaign_candidature.fnum';
+        }
 
         $query .= $leftJoin. ' '. $leftJoinMulti;
 
         $query .= 'where u.block=0 AND jos_emundus_campaign_candidature.fnum in ("'.implode('","', $fnums).'") ';
-
 	    if (preg_match("/emundus_evaluations/i", $query)) {
 
             $current_user = JFactory::getSession()->get('emundusUser');
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $eval_can_see_eval = $eMConfig->get('evaluators_can_see_other_eval', 0);
 
-            if (!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id) && (!empty($current_user->fnums) && !empty(array_diff($fnums, array_keys($current_user->fnums)))) || ((@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)) && $eval_can_see_eval == 0)) {
+            $eval_query = $db->getQuery(true);
+            $eval_query->select('id')
+                    ->from($db->quoteName('#__emundus_evaluations'))
+                    ->where($db->quoteName('fnum') . ' IN (' . implode('","', $fnums) . ')')
+                    ->andWhere($db->quoteName('user') . ' = ' . JFactory::getUser()->id);
+            $db->setQuery($eval_query);
+            $eval = $db->loadResult();
+
+            if (!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id) && (!empty($current_user->fnums) && !empty(array_diff($fnums, array_keys($current_user->fnums)))) || ((@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)) && $eval_can_see_eval == 0) && $eval) {
                 $query .= ' AND jos_emundus_evaluations.user = '.JFactory::getUser()->id;
             }
 
@@ -3374,7 +3475,7 @@ if (JFactory::getUser()->id == 63)
         try {
 
 	        $db->setQuery($query);
-	        $res = $db->query();
+	        $res = $db->execute();
 	        $dispatcher->trigger('onAfterDeleteFile', $fnum);
             return $res;
         } catch(Exception $e) {

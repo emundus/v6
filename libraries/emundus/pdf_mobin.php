@@ -132,7 +132,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 
 			$query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter->attachment_id.' AND campaign_id='.$campaign['id']. ' AND fnum like '.$db->Quote($fnum).' AND filename NOT LIKE "%lock%"';
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 
 		} catch (Exception $e) {
 			JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -204,7 +204,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 
 			$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter->attachment_id.', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign['id'].', '.$db->Quote($fnum).')';
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 
 		} catch (Exception $e) {
 			JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -409,7 +409,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 				$query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id. ' AND fnum like '.$db->Quote($fnum).' AND filename NOT LIKE "%lock%"';
 				$db->setQuery($query);
-				$db->query();
+				$db->execute();
 
 			} catch (Exception $e) {
 				JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -551,7 +551,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 					$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign_id.', '.$db->Quote($fnum).')';
 					$db->setQuery($query);
-					$db->query();
+					$db->execute();
 					$id = $db->insertid();
 
 				} catch (Exception $e) {

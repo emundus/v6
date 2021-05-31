@@ -114,10 +114,12 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-		<field name="accept_created_payments" menu="hide" type="list" default="0" label="COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS" description="COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS_DESC">
+		<field name="accept_other_payments" menu="hide" type="list" default="0" label="COM_EMUNDUS_ACCEPT_OTHER_PAYMENTS" description="COM_EMUNDUS_ACCEPT_OTHER_PAYMENTS_DESC">
 			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-			<option value="2">COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS_ALLOW_ALL</option>
+			<option value="1">CREATED_PAYMENTS</option>
+			<option value="3">PENDING_PAYMENTS</option>
+			<option value="4">PENDING_AND_CREATED_PAYMENTS</option>
+			<option value="2">COM_EMUNDUS_ACCEPT_OTHER_PAYMENTS_ALLOW_ALL</option>
 		</field>
 		<field name="application_payment_status" type="text" default="0" label="COM_EMUNDUS_APPLICATION_PAYMENT_STATUS" description="COM_EMUNDUS_APPLICATION_PAYMENT_STATUS_DESC" />
 		<field name="status_after_payment" menu="hide" type="text" default="1" label="COM_EMUNDUS_STATUS_AFTER_PAYMENT" description="COM_EMUNDUS_STATUS_AFTER_PAYMENT_DESC" />
@@ -348,6 +350,19 @@
 		<field name="ametys_sync_default_eval" type="text" default="229,230,231" label="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_EVAL_GROUPS" description="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_EVAL_GROUPS_DESC" />
 		<field name="ametys_sync_default_decision" type="text" default="56" label="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_DECISION_GROUPS" description="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_DECISION_GROUPS_DESC" />
 		<field name="ametys_sync_default_synthesis" type="editor" default="[APPLICANT_NAME]" label="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_SYNTHESIS" description="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_DECISION_SYNTHESIS_DESC" />
+		<field
+				name="spacer6"
+				type="spacer"
+				hr="true"
+		/>
+		<field
+				name="export_siscole"
+				type="note"
+				label="Export Siscole"
+		/>
+		<field name="filename" type="text" default="" label="COM_EMUNDUS_FILENAME" description="COM_EMUNDUS_FILENAME_DESC" />
+		<field name="filtre_ip" type="text" default="" label="COM_EMUNDUS_FILTRE_IP" description="COM_EMUNDUS_FILTRE_IP_DESC" />
+		<field name="attachment_id" type="text" default="" label="COM_EMUNDUS_ATTACHMENT_ID" description="COM_EMUNDUS_ATTACHMENT_ID_DESC" />
 	</fieldset>
 	<fieldset
 			name="permissions"

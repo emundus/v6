@@ -1089,13 +1089,19 @@ class EmundusonboardModelprogram extends JModelList {
         }
     }
 
+    /**
+     * @param $label
+     * @param $intro
+     * @param $model
+     * @param $pid
+     * @return false|mixed
+     */
     function createGridFromModel($label, $intro, $model, $pid) {
         // Prepare Fabrik API
         JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
         $form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
         $form->setId(intval($model));
         $groups	= $form->getGroups();
-        //
 
         // Prepare languages
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
@@ -1108,7 +1114,6 @@ class EmundusonboardModelprogram extends JModelList {
         }
 
         $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
-        //
 
         $new_groups = [];
 
@@ -1217,7 +1222,6 @@ class EmundusonboardModelprogram extends JModelList {
                     );
                 }
                 $formbuilder->translate('GROUP_' . $formid . '_' . $newgroupid,$labels_to_duplicate);
-                //
 
                 $query->set('label = ' . $db->quote('GROUP_' . $formid . '_' . $newgroupid));
                 $query->set('name = ' . $db->quote('GROUP_' . $formid . '_' . $newgroupid));
@@ -1240,7 +1244,22 @@ class EmundusonboardModelprogram extends JModelList {
                         $dbnull = 'NULL';
                         //
 
-                        $newelement = $element->copyRow($element->element->id, 'Copy of %s', $newgroupid);
+                        $newelement = $element->copyRow($element->element->id, '%s', $newgroupid);
+                        //add to array
+                        $newElementArray[] =$newelement->id;
+
+                        $skipped_elms = [
+                            'id',
+                            'time_date',
+                            'fnum',
+                            'student_id',
+                            'user'
+                        ];
+
+                        if (in_array($element->element->name, $skipped_elms)) {
+                            continue;
+                        }
+
                         $newelementid = $newelement->id;
 
                         $el_params = json_decode($element->element->params);
@@ -1282,7 +1301,6 @@ class EmundusonboardModelprogram extends JModelList {
 
                         $query->set('label = ' . $db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));
                         $query->set('name = ' . $db->quote('criteria_' . $formid . '_' . $newelementid));
-                        $query->set('published = 1');
                         $query->set('params = ' . $db->quote(json_encode($el_params)));
                         $query->where('id =' . $newelementid);
                         $db->setQuery($query);
@@ -1303,6 +1321,15 @@ class EmundusonboardModelprogram extends JModelList {
                         return false;
                     }
                 }
+
+                // publish new elements. It is outside the foreach so we can publish the skipped elements
+                $query
+                    ->clear()
+                    ->update($db->quoteName('#__fabrik_elements'))
+                    ->set('published =  1')
+                    ->where('id IN (' . implode(',', $newElementArray). ')');
+                $db->setQuery($query);
+                $db->execute();
             }
             //
 
@@ -1313,7 +1340,7 @@ class EmundusonboardModelprogram extends JModelList {
                 ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
             $db->setQuery($query);
             return $db->execute();
-            //
+
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/program | Cannot create a grid from the model ' . $model . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
@@ -1414,7 +1441,7 @@ class EmundusonboardModelprogram extends JModelList {
             $db->execute();
             //
 
-            $formbuilder->createHiddenGroup($formid);
+            $formbuilder->createHiddenGroup($formid,1);
             $group = $formbuilder->createGroup($label,$formid);
 
             // Link groups to program
@@ -1436,6 +1463,31 @@ class EmundusonboardModelprogram extends JModelList {
             return true;
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/program | Cannot create a grid in the program' . $pid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function deleteGrid($grid,$pid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update($db->quoteName('#__emundus_setup_programmes'))
+            ->set($db->quoteName('fabrik_group_id') . ' = NULL')
+            ->where($db->quoteName('id') . ' = ' . $pid);
+
+        try {
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__fabrik_forms'))
+                ->set($db->quoteName('published') . ' = 0')
+                ->where($db->quoteName('id') . ' = ' . $grid);
+
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/program | Error at delete the grid ' . $grid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1586,6 +1638,23 @@ class EmundusonboardModelprogram extends JModelList {
             return $db->loadResult();
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/program | Error at getting groups by parent ' . $parent . ' of the program ' . $code . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function getCampaignsByProgram($program){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('c.*')
+                ->from($db->quoteName('#__emundus_setup_campaigns','c'))
+                ->leftJoin($db->quoteName('#__emundus_setup_programmes','sg').' ON '.$db->quoteName('sg.code').' = '.$db->quoteName('c.training'))
+                ->where($db->quoteName('sg.id') . ' = '. $db->quote($program));
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting campaigns by program ' . $program . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }

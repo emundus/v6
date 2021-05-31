@@ -11,6 +11,8 @@
  * details.
  */
 
+use setasign\Fpdi\Tcpdf\Fpdi;
+
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
@@ -24,10 +26,19 @@ jimport('joomla.application.component.helper');
  * @since 1.5
  */
  
-class EmundusHelperExport
-{
-	
-	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 0, $form_ids = null, $options = null, $application_form_order = null ) {
+class EmundusHelperExport {
+
+    /**
+     * @param $fnumInfos
+     * @param $sid
+     * @param $fnum
+     * @param int $form_post
+     * @param null $form_ids
+     * @param null $options
+     * @param null $application_form_order
+     * @return string
+     */
+    public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 0, $form_ids = null, $options = null, $application_form_order = null ): string {
 		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
         
 		if (!file_exists($file)) {
@@ -191,14 +202,14 @@ class EmundusHelperExport
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums)))
             die(JText::_('ACCESS_DENIED'));
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
 
         $name = $fnum.'-evaluation.pdf';
-        $tmpName = JPATH_BASE.DS.'tmp'.DS.$name;
+        $tmpName = JPATH_SITE.DS.'tmp'.DS.$name;
         //$exports[] = $tmpName;
 
         if (!empty($fnum)) {
@@ -223,14 +234,14 @@ class EmundusHelperExport
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums)))
             die(JText::_('ACCESS_DENIED'));
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
 
         $name = $fnum.'-decision.pdf';
-        $tmpName = JPATH_BASE.DS.'tmp'.DS.$name;
+        $tmpName = JPATH_SITE.DS.'tmp'.DS.$name;
         //$exports[] = $tmpName;
 
         if (!empty($fnum)) {
@@ -256,14 +267,14 @@ class EmundusHelperExport
         	die(JText::_('ACCESS_DENIED'));
         }
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
 
         $name = $fnum.'-admission.pdf';
-        $tmpName = JPATH_BASE.DS.'tmp'.DS.$name;
+        $tmpName = JPATH_SITE.DS.'tmp'.DS.$name;
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
@@ -284,10 +295,11 @@ class EmundusHelperExport
 
 	public static function makePDF($fileName, $ext, $aid, $i=0)
 	{
-        require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+
         include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 		$imgExt = array('jpeg', 'jpg', 'png', 'gif', 'svg');
-		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+		$pdf = new Fpdi();
 		$pdf->SetCreator(PDF_CREATOR);
 		$pdf->SetAuthor('eMundus');
         $pdf->SetTitle($fileName);
@@ -301,31 +313,7 @@ class EmundusHelperExport
 		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 		$pdf->SetFont('helvetica', '', 8);
         $pdf->AddPage();
-        
-        
-		/*if (in_array(strtolower($ext), $imgExt)) {
-           
-			$pdf->setJPEGQuality(75);
-			if ($ext == 'svg')
-				$pdf->ImageSVG(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
-            else
-                $pdf->Image(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
 
-            $pdf->startTransaction();
-            $start_y = $pdf->GetY();
-            $start_page = $pdf->getPage();
-            $pdf->writeHTMLCell(0,'','',$start_y,$htmlData,'B', 1);     
-        
-		} else {
-            if (EmundusHelperExport::isEncrypted(EMUNDUS_PATH_ABS.$aid.DS.$fileName)) { 
-			    $htmlData .= JText::_('ENCRYPTED_FILE').' : ';
-                $htmlData .= '<a href="'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
-            }
-			$pdf->startTransaction();
-			$start_y = $pdf->GetY();
-			$start_page = $pdf->getPage();
-			$pdf->writeHTMLCell(0,'','',$start_y,$htmlData,'B', 1);
-        }*/
         if (in_array(strtolower($ext), $imgExt)) {
 			$pdf->setJPEGQuality(75);
 			if ($ext == 'svg')
@@ -334,13 +322,13 @@ class EmundusHelperExport
 				$pdf->Image(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
 		} else {
 			$htmlData = JText::_('ENCRYPTED_FILE').' : ';
-			$htmlData .= '<a href="'.JURI::base(true).EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base(true).EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
+			$htmlData .= '<a href="'.JURI::base(true).DS.EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base(true).DS.EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
 			$pdf->startTransaction();
 			$start_y = $pdf->GetY();
 			$start_page = $pdf->getPage();
 			$pdf->writeHTMLCell(0,'','',$start_y,$htmlData,'B', 1);
 		}
-		$tmpName = JPATH_BASE.DS.'tmp'.DS."$aid-$fileName.pdf";
+		$tmpName = JPATH_SITE.DS.'tmp'.DS."$aid-$fileName.pdf";
 		$pdf->Output($tmpName, 'F');
 		return $tmpName;
 	}

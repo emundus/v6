@@ -161,7 +161,7 @@ class PlgFabrik_FormEmundusconfirmpostehesp extends plgFabrik_Form
 		$dispatcher = JEventDispatcher::getInstance();
 		$dispatcher->trigger('onBeforeSubmitFile', [$student->id, $student->fnum]);
 
-		$status_by_fnum = $student->fnums[$student->fnum]->step;
+		$status_by_fnum = $student->fnums[$student->fnum]->status;
 		$status_actuel = $this->getParam('emundusconfirmpost_status_actual',0);
 		$status_wanted_after_sent = $this->getParam('emundusconfirmpost_status_after_sent',1);
 
@@ -177,6 +177,7 @@ class PlgFabrik_FormEmundusconfirmpostehesp extends plgFabrik_Form
 
 		try {
 			$db->execute();
+            EmundusModelLogs::log($student->id, $student->id, $student->fnum, 13, 'u', $status_after_sent);
 
 		} catch (Exception $e) {
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');

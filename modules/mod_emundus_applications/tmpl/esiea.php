@@ -134,6 +134,13 @@ echo $description;
                     <span class="label label-<?= $application->class; ?>">
                         <?= $application->value; ?>
                     </span>
+                    <?php if(!empty($application->order_status)): ?>
+                        <br>
+                        <strong><?= JText::_('ORDER_STATUS'); ?> :</strong>
+                        <span class="label" style="background-color: <?= $application->order_color; ?>">
+                            <?= JText::_(strtoupper($application->order_status)); ?>
+                        </span>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php if ($show_state_files == 1) :?>

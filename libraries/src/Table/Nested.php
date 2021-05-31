@@ -52,7 +52,7 @@ class Nested extends Table
 	public $rgt;
 
 	/**
-	 * Object property holding the alias of this node used to constuct the full text path, forward-slash delimited.
+	 * Object property holding the alias of this node used to construct the full text path, forward-slash delimited.
 	 *
 	 * @var    string
 	 * @since  1.7.0
@@ -746,11 +746,11 @@ class Nested extends Table
 			if ($this->_location_id >= 0)
 			{
 				// Lock the table for writing.
-				if (!$this->_lock())
+				/*if (!$this->_lock())
 				{
 					// Error message set in lock method.
 					return false;
-				}
+				}*/
 
 				// We are inserting a node relative to the last root node.
 				if ($this->_location_id == 0)

@@ -136,9 +136,9 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
         } else {
 	        $jinput = JFactory::getApplication()->input;
 	        $data = $jinput->getRaw('body');
-	        $code = $jinput->getString('code');
+	        $id = $jinput->getString('id');
 	        $m_prog = $this->model;
-            $result = $m_prog->updateProgram($code, $data);
+            $result = $m_prog->updateProgram($id, $data);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_ADDED'), 'data' => $result);
@@ -544,6 +544,25 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
         exit;
     }
 
+    public function deletegrid() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $m_prog = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $grid = $jinput->getInt('grid');
+            $pid = $jinput->getInt('pid');
+
+            $changeresponse = $m_prog->deleteGrid($grid,$pid);
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
+
     public function affectgrouptoprogram() {
         $user = JFactory::getUser();
 
@@ -597,6 +616,25 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
             $groups = $m_prog->getGroupsByPrograms($programs);
 
             $tab = array('status' => 1, 'msg' => JText::_('GRID_RETRIEVED'), 'groups' => $groups);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getcampaignsbyprogram() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $m_prog = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $program = $jinput->getInt('pid');
+            $campaigns = $m_prog->getCampaignsByProgram($program);
+
+            $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'campaigns' => $campaigns);
         }
         echo json_encode((object)$tab);
         exit;

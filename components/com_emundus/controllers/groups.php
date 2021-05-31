@@ -73,7 +73,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 					//** Delete members of group to add **/
 					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$id.' AND user_id IN (select user_id from #__emundus_groups where group_id='.$ag_id.')';
 					$db->setQuery($query);
-					$db->Query() or die($db->getErrorMsg());
+					$db->execute() or die($db->getErrorMsg());
 
 					if (count($cpt)==0)
 						$db->setQuery('INSERT INTO #__emundus_groups_eval (applicant_id, group_id, user_id) VALUES ('.$id.','.$ag_id.',null)');
@@ -92,7 +92,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 				else {
 					$db->setQuery('DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$id);
 				}
-				$db->Query() or die($db->getErrorMsg());
+				$db->execute() or die($db->getErrorMsg());
 			}
 		}
 		if (count($ids)>1)
@@ -128,12 +128,12 @@ class EmundusControllerGroups extends JControllerLegacy {
 				if(!empty($ag_id) && isset($ag_id)) {
 					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$id.' AND group_id='.$ag_id;
 					$db->setQuery($query);
-					$db->Query() or die($db->getErrorMsg());
+					$db->execute() or die($db->getErrorMsg());
 				}
 				elseif(!empty($au_id) && isset($au_id)) {
 					$query = 'DELETE FROM #__emundus_groups_eval WHERE applicant_id='.$id.' AND user_id='.$au_id;
 					$db->setQuery($query);
-					$db->Query() or die($db->getErrorMsg());
+					$db->execute() or die($db->getErrorMsg());
 				}
 			}
 		}
@@ -166,7 +166,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 			if(!empty($uid) && is_numeric($uid))
 				$query .= ' AND user_id='.$db->Quote($uid);
 			$db->setQuery($query);
-			$db->Query();
+			$db->execute();
 		}
 		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_DONE'), 'message');
 	}
@@ -290,7 +290,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 					$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 						VALUES ('".$from_id."', '".$user->id."', '".$obj[0]->subject."', '".$body."', NOW())";
 					$db->setQuery( $sql );
-					$db->query();
+					$db->execute();
 				} else {
 					$error++;
 				}
@@ -422,7 +422,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 			$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
 				VALUES ('".$from_id."', '".$user->id."', '".$subject."', '".$body."', NOW())";
 			$db->setQuery( $sql );
-			$db->query();
+			$db->execute();
 
 			unset($replacements);
 		}

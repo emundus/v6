@@ -1,21 +1,6 @@
 <?php
-function age($naiss) {
-    @list($annee, $mois, $jour) = preg_split('[-.]', $naiss);
-    $today['mois'] = date('n');
-    $today['jour'] = date('j');
-    $today['annee'] = date('Y');
-    $annees = $today['annee'] - $annee;
-    if ($today['mois'] <= $mois) {
-        if ($mois == $today['mois']) {
-            if ($jour > $today['jour']) {
-	            $annees--;
-            }
-        } else {
-	        $annees--;
-        }
-    }
-    return $annees;
-}
+use setasign\Fpdi\Tcpdf\Fpdi;
+require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
 function get_mime_type($filename, $mimePath = '../etc') {
     $fileext = substr(strrchr($filename, '.'), 1);
@@ -40,7 +25,7 @@ function get_mime_type($filename, $mimePath = '../etc') {
 }
 
 function is_image_ext($filename) {
-	return array_key_exists(strtolower(array_pop(explode('.', $filename))), ['png', 'jpe', 'jpeg', 'jpg', 'gif', 'bmp', 'ico', 'tiff', 'tif', 'svg', 'svgz']);
+	return array_key_exists(strtolower(array_pop(...explode('.', $filename))), ['png', 'jpe', 'jpeg', 'jpg', 'gif', 'bmp', 'ico', 'tiff', 'tif', 'svg', 'svgz']);
 }
 
 
@@ -144,7 +129,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 
             $query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter->attachment_id.' AND campaign_id='.$campaign['id']. ' AND fnum like '.$db->Quote($fnum).' AND filename NOT LIKE "%lock%"';
             $db->setQuery($query);
-            $db->query();
+            $db->execute();
 
         } catch (Exception $e) {
             JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -216,7 +201,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 
             $query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter->attachment_id.', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign['id'].', '.$db->Quote($fnum).')';
             $db->setQuery($query);
-            $db->query();
+            $db->execute();
 
         } catch (Exception $e) {
             JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -243,7 +228,6 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
  */
 function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluation_id, $output = true, $fnum = null) {
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
@@ -418,7 +402,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
                 $query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id. ' AND fnum like '.$db->Quote($fnum).' AND filename NOT LIKE "%lock%"';
                 $db->setQuery($query);
-                $db->query();
+                $db->execute();
 
             } catch (Exception $e) {
                 JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -544,7 +528,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
                     $query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign_id.', '.$db->Quote($fnum).')';
                     $db->setQuery($query);
-                    $db->query();
+                    $db->execute();
                     $id = $db->insertid();
 
                 } catch (Exception $e) {
@@ -673,7 +657,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
             $file_type = explode('.', $file_path[count($file_path)-1]);
             $name = date('Y-m-d_H-i-s').$attachment['lbl'].'.'.$file_type[1];
 
-            $file = JPATH_BASE.$letter['file']; 
+            $file = JPATH_BASE.$letter['file'];
             if (file_exists($file)) {
                 $mime_type = get_mime_type($file);
                 header('Content-type: application/'.$mime_type);
@@ -710,7 +694,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
 
             $document->save(JPATH_BASE.DS.'tmp'.DS.$name);
 
-            $file = JPATH_BASE.DS.'tmp'.DS.$name; 
+            $file = JPATH_BASE.DS.'tmp'.DS.$name;
             if (file_exists($file)) {
                 $mime_type = get_mime_type($file);
                 header('Content-type: application/'.$mime_type);
@@ -791,12 +775,11 @@ function data_to_img($match) {
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
-    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
     if (empty($file_lbl)) {
     	$file_lbl = "_application";
@@ -830,7 +813,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     }
 
     // Create PDF object
-    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf = new Fpdi();
 
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor('eMundus');
@@ -884,7 +867,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $tab[1] = parse_url($tab[1], PHP_URL_PATH);
             }
 
-            $logo = JPATH_BASE.DS.$tab[1];
+            $logo = JPATH_SITE.DS.$tab[1];
 
         }
     }
@@ -913,7 +896,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
     $pdf->setCellPaddings('L');//Set Padding
- 
+
     //$pdf->SetLineWidth();
 
 	// set default monospaced font
@@ -976,6 +959,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             
 
             h2 {
+                font-family: 'Roboto'
                font-size:40px;
                color: ".$cTitle.";
                font-weight:500;
@@ -1243,7 +1227,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 function application_header_pdf($user_id, $fnum = null, $output = true, $options = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
+
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
@@ -1270,7 +1254,8 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     $htmldata = '';
 
     // Create PDF object
-    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    //$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf = new Fpdi();
 
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor('eMundus');
@@ -1527,7 +1512,6 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 function generatePDFfromHTML($html, $path = null, $footer = '') {
 
     set_time_limit(0);
-    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
     require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
 

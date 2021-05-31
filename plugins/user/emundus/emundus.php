@@ -44,7 +44,7 @@ class plgUserEmundus extends JPlugin
             'DELETE FROM '.$db->quoteName('#__session') .
             ' WHERE '.$db->quoteName('userid').' = '.(int) $user['id']
         );
-        $db->Query();
+        $db->execute();
 
         $db->setQuery('SHOW TABLES');
         $tables = $db->loadColumn();
@@ -64,7 +64,7 @@ class plgUserEmundus extends JPlugin
                 $db->setQuery('DELETE FROM '.$table.' WHERE user_id = '.(int) $user['id']);
             elseif (strpos($table, '_emundus_comments')>0 || strpos($table, '_emundus_campaign_candidature')>0)
                 $db->setQuery('DELETE FROM '.$table.' WHERE applicant_id = '.(int) $user['id']);
-            $db->Query();
+            $db->execute();
         }
         $dir = EMUNDUS_PATH_ABS.$user['id'].DS;
         if (!$dh = @opendir($dir))
@@ -219,7 +219,7 @@ class plgUserEmundus extends JPlugin
             if ($isnew) {
 
                 // Update name and firstname from #__users
-                $db->setQuery(' UPDATE #__users SET name="'.ucfirst($firstname).' '.strtoupper($lastname).'",
+                $db->setQuery(' UPDATE #__users SET name='.$db->quote(ucfirst($firstname)).' '.$db->quote(strtoupper($lastname)).',
                                 usertype = (SELECT u.title FROM #__usergroups AS u
                                                 LEFT JOIN #__user_usergroup_map AS uum ON u.id=uum.group_id
                                                 WHERE uum.user_id='.$user['id'].' ORDER BY uum.group_id DESC LIMIT 1) 
@@ -250,7 +250,7 @@ class plgUserEmundus extends JPlugin
 
                 $db->setQuery($query);
                 try {
-                    $db->Query();
+                    $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
                 }
@@ -267,7 +267,7 @@ class plgUserEmundus extends JPlugin
 
                 $db->setQuery($query);
                 try {
-                    $db->Query();
+                    $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
                 }
@@ -277,7 +277,7 @@ class plgUserEmundus extends JPlugin
                     $query = 'INSERT INTO #__emundus_campaign_candidature (`applicant_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].','.$campaign_id.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
                     $db->setQuery($query);
                     try {
-                        $db->Query();
+                        $db->execute();
                     } catch (Exception $e) {
                         // catch any database errors.
                     }
@@ -285,14 +285,14 @@ class plgUserEmundus extends JPlugin
 
             } elseif (!empty($lastname) && !empty($firstname)) {
                 // Update name and firstname from #__users
-                $db->setQuery('UPDATE #__users SET name="'.ucfirst($firstname).' '.strtoupper($lastname).'" WHERE id='.$user['id']);
-                $db->Query();
+                $db->setQuery('UPDATE #__users SET name='.$db->quote(ucfirst($firstname)).' '.$db->quote(strtoupper($lastname)).' WHERE id='.$user['id']);
+                $db->execute();
 
-                $db->setQuery('UPDATE #__emundus_users SET lastname="'.strtoupper($lastname).'", firstname="'.ucfirst($firstname).'" WHERE user_id='.$user['id']);
-                $db->Query();
+                $db->setQuery('UPDATE #__emundus_users SET lastname='.$db->quote(strtoupper($lastname)).', firstname='.$db->quote(ucfirst($firstname)).' WHERE user_id='.$user['id']);
+                $db->execute();
 
-                $db->setQuery('UPDATE #__emundus_personal_detail SET last_name="'.strtoupper($lastname).'", first_name="'.ucfirst($firstname).'" WHERE user='.$user['id']);
-                $db->Query();
+                $db->setQuery('UPDATE #__emundus_personal_detail SET last_name='.$db->quote(strtoupper($lastname)).', first_name='.$db->quote(ucfirst($firstname)).' WHERE user='.$user['id']);
+                $db->execute();
 
                 $this->onUserLogin($user);
 
@@ -385,6 +385,90 @@ class plgUserEmundus extends JPlugin
 		        $previous_url = "";
 	        }
 
+	        // Init first_login parameter
+            $user = JFactory::getUser();
+            $table = JTable::getInstance('user', 'JTable');
+            /*$table->load($user->id);
+
+            $params = $user->getParameters();
+            if (!$params->get('first_login_date')) {
+                $date = \JFactory::getDate();
+                $user->setParam('first_login_date', $date->toSql());
+
+                // Get the raw User Parameters
+                $params = $user->getParameters();
+
+                // Set the user table instance to include the new token.
+                $table->params = $params->toString();
+
+                if (!$table->store()) {
+                    JLog::add('component/com_emundus_onboard/models/settings | Error when create a param in the user ' . $user->id . ' : ' . $table->getError(), JLog::ERROR, 'com_emundus');
+                }
+
+                /*if($user->id == 95) {
+                    // Send an email to Commercial
+                    $db = JFactory::getDBO();
+
+                    $query = 'SELECT se.id, se.subject, se.emailfrom, se.name, se.message, et.Template
+				FROM #__emundus_setup_emails AS se
+				LEFT JOIN #__emundus_email_templates AS et ON se.email_tmpl = et.id
+				WHERE se.lbl LIKE "first_coord_login"';
+                    $db->setQuery($query);
+                    $obj = $db->loadObjectList();
+
+                    $site_url = str_replace('http://', "", JURI::base());
+
+                    $subject = $obj[0]->subject;
+                    $body = $obj[0]->message;
+
+                    if ($obj[0]->Template) {
+                        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/", "/\[SITE_NAME\]/"], [$subject, $body, JFactory::getConfig()->get('sitename')], $obj[0]->Template);
+                    }
+
+                    $body = preg_replace(["/\[USER_EMAIL\]/", "/\[SITE_URL\]/"], [$user->email, $site_url], $body);
+
+                    $commercial_emails = 'brice.hubinet@emundus.fr,brice.hubinet@emundus.io';
+
+                    $emails = explode(',', $commercial_emails);
+
+                    // setup mail
+                    $email_from_sys = JFactory::getConfig()->get('mailfrom');
+
+                    $from = $obj[0]->emailfrom;
+                    $fromname = $obj[0]->name;
+
+                    $sender = array(
+                        $email_from_sys,
+                        $fromname
+                    );
+
+                    foreach ($emails as $email) {
+                        $to = array($email);
+
+                        $mailer = JFactory::getMailer();
+                        $mailer->setSender($sender);
+                        $mailer->addReplyTo($from, $fromname);
+                        $mailer->addRecipient($to);
+                        $mailer->setSubject($subject);
+                        $mailer->isHTML(true);
+                        $mailer->Encoding = 'base64';
+                        $mailer->setBody($body);
+
+                        $send = $mailer->Send();
+                        if ($send !== true) {
+
+                            JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT') . ' : ' . $email, 'error');
+                            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+
+                        }
+                    }
+                }
+            }*/
+
+            // Store token in User's Parameters
+
+            //
+
             include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
             $m_profile = new EmundusModelProfile;
             $m_profile->initEmundusSession();
@@ -469,7 +553,7 @@ class plgUserEmundus extends JPlugin
             ' WHERE '.$db->quoteName('userid').' = '.(int) $user['id'] .
             ' AND '.$db->quoteName('client_id').' = '.(int) $options['clientid']
         );
-        $db->query();
+        $db->execute();
 
         $app->redirect($url);
         return true;

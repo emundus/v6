@@ -142,7 +142,7 @@ class EmundusHelperAccess {
 	 */
 	static function asAccessAction($action_id, $crud, $user_id = null, $fnum = null) {
 
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 		$m_users = new EmundusModelUsers();
 
 		if (!is_null($fnum) && !empty($fnum)) {
@@ -177,7 +177,7 @@ class EmundusHelperAccess {
 	 */
 	static function canAccessGroup($gids, $action_id, $crud, $fnum = null) {
 
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 		$m_users = new EmundusModelUsers();
 
 		if (!is_null($fnum) && !empty($fnum)) {
@@ -220,8 +220,8 @@ class EmundusHelperAccess {
 	 * @since version
 	 */
 	public static function getUserFabrikGroups($user_id) {
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'groups.php');
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'groups.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 		$m_groups = new EmundusModelGroups();
 		$m_users = new EmundusModelUsers();
 
@@ -239,8 +239,8 @@ class EmundusHelperAccess {
 	 * @since version
 	 */
 	public static function getUserAllowedAttachmentIDs($user_id) {
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 		$m_files = new EmundusModelFiles();
 		$m_users = new EmundusModelUsers();
 
@@ -259,7 +259,7 @@ class EmundusHelperAccess {
 	 */
 	public static function isDataAnonymized($user_id) {
 		JLog::addLogger(['text_file' => 'com_emundus.access.error.php'], JLog::ERROR, 'com_emundus');
-		require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 		$m_users = new EmundusModelUsers();
 
 		$group_ids = $m_users->getUserGroups($user_id);

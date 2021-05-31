@@ -39,6 +39,9 @@ echo <<<EOT
 /* BEGIN - Your CSS styling starts here */
 
 /* Add a padding on list program-year-page for example */
+#g-page-surround {
+  background: #f5f5f5 !important;
+}
 .span12{
 width:100%!important;
 }
@@ -50,6 +53,10 @@ a {
   transition: color 200ms cubic-bezier(.55, .085, .68, .53);
   color: #482683;
   text-decoration: underline;
+}
+
+.em-containerbottomfooter {
+ z-index: -1 !important;
 }
 
 #g-container-main {
@@ -139,7 +146,7 @@ form {
 }
 
 .em-paragrapheprojet-explain {
-  width: 40%;
+ 
   margin-top: 10px;
   margin-bottom: 50px;
   margin-right: auto;
@@ -161,6 +168,22 @@ form {
   line-height: 24px;
   text-align: left;
   font-weight: 500;
+}
+.em-divprojet-explain {
+    width: 50%;
+    margin-top: 10px;
+    margin-bottom: 50px;
+    margin-right: auto;
+    margin-left: auto;
+    color: #636363;
+    font-size: 18px;
+    line-height: 24px;
+    text-align: center;
+    font-weight: 500;
+  }
+
+p.em-paragrapheprojet-explain {
+width: 100%; 
 }
 
 .em-wrappernavbar {
@@ -194,13 +217,14 @@ form {
   font-weight: 400;
   text-decoration: none;
   text-transform: uppercase;
+  line-height: 28px !important;
 
 }
 
 .em-itemmenu:hover {
   background-color: #482683;
   color: #fff !important;
-  line-height: 28px;
+  line-height: 28px !important;
 }
 
 .view-list {
@@ -1208,7 +1232,7 @@ form {
   display: -ms-flexbox;
   display: flex !important;
   overflow: hidden;
-  width: 90px;
+  width: 100px;
   height: 50px;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: reverse;
@@ -2131,7 +2155,6 @@ form {
   margin-left: auto;
   position:relative;
 }
-
 .em-containerimage {
   position: relative;
   display: -webkit-box;
@@ -2249,6 +2272,7 @@ form {
   background-size: contain;
   background-repeat: no-repeat;
 }
+
 .em-titleproject {
   margin-top: 0px;
   margin-bottom: 0px;
@@ -2598,10 +2622,10 @@ html.w-mod-js *[data-ix="center"] {
   }
 
   .nav-link {
-    margin-right: 4px;
-    margin-left: 4px;
-    font-size: 13px;
-    line-height: 13px;
+    margin-right: 8px;
+    margin-left: 8px;
+    font-size: 9px !important;
+    line-height: 9px !important;
     font-weight: 400;
   }
 
@@ -3017,28 +3041,27 @@ html.w-mod-js *[data-ix="center"] {
 color:#e39809;
 }
 @media (max-width: 767px) {
-  .em-wrappermenu {
-    display: none;
-  }
-  .em-sectionmain {
-    padding-top: 105px;
-    padding-bottom: 80px;
-    background-image: url('../../../../../../images/custom/5e04d6a54c88a6740a582b50_blue-shape.png');
-    background-position: 100% 100%;
-    background-size: 30%;
-    background-repeat: no-repeat;
-  }
+      .em-wrappermenu {
+        display: none;
+      }
+      .em-sectionmain {
+        padding-top: 105px;
+        padding-bottom: 80px;
+        background-image: url('../../../../../../images/custom/5e04d6a54c88a6740a582b50_blue-shape.png');
+        background-position: 100% 100%;
+        background-size: 30%;
+        background-repeat: no-repeat;
+      }
 
-  #listform_349_com_fabrik_349 .em-project-section .fabrikNav .list-footer .pagination ul.pagination-list  {
-    display: flex;
-    flex-direction: row;
-    padding-left: 0px !important;
-}
+      #listform_349_com_fabrik_349 .em-project-section .fabrikNav .list-footer .pagination ul.pagination-list  {
+        display: flex;
+        flex-direction: row;
+        padding-left: 0px !important;
+    }
 
-#listform_349_com_fabrik_349 .em-project-section .fabrikNav .list-footer .pagination ul.pagination-list li   {
-   margin: 0px !important;
-}
-
+    #listform_349_com_fabrik_349 .em-project-section .fabrikNav .list-footer .pagination ul.pagination-list li   {
+      margin: 0px !important;
+    }
 
   .em-h1 {
     font-size: 43px;
@@ -3165,17 +3188,17 @@ color:#e39809;
     margin-left: auto;
   }
   .em-menufooter {
-    margin-right: 10px;
-    margin-left: 10px;
-    font-size: 12px;
-    font-weight: 500;
+    width: 110px;
+    margin-right: 10px !important;
+    margin-left: 10px !important;
+    font-size: 12px !important;
   }
   .em-rowfooter {
     -webkit-box-orient: vertical;
     -webkit-box-direction: reverse;
     -webkit-flex-direction: column-reverse;
     -ms-flex-direction: column-reverse;
-    flex-direction: column-reverse;
+    flex-direction: column-reverse !important;
   }
   .em-sectionreglement {
     padding-top: 107px;
@@ -3255,9 +3278,16 @@ color:#e39809;
     margin-left: 8px;
     color: #636363;
   }
-  .nav-link:hover {
+  a.nav-link:hover {
     color: #ee7937;
   }
+  a.em-itemmenu:hover {
+    color: #ee7937 !important;
+    background-color:transparent;
+    padding: 0px !important;
+    
+}
+  
   .nav-link.margin {
     margin-right: 25px;
   }
@@ -3447,7 +3477,7 @@ color:#e39809;
   }
   .em-paragrapheprojet {
     width: 100%;
-    font-size: 13px;
+    font-size: 18px;
     line-height: 17px;
   }
   .em-rowproject {
@@ -3526,6 +3556,19 @@ color:#e39809;
   width: 100% !important;
 }
 
+.em-containerimage-bloque{
+
+  width: 100% !important;
+
+}
+.em-containerimage2-bloque {
+  width: 100% !important;
+}
+
+.em-containerimage3-bloque {
+  width: 100% !important;
+}
+
 .em-wrappertextproject { 
 
   width: 100% !important;
@@ -3565,13 +3608,19 @@ color:#e39809;
   }
 
   .em-paragrapheprojet-explain {
-    width: 30%;
+    width: 50%;
   }
 
-  .em-project-section .em-paragrapheprojet-explain span.em-thematique-deja-votee {
-    color: #82208B;
-    font-weight: 600;
+  .em-project-section .em-paragrapheprojet-explain p.em-thematique-deja-votee, .em-project-section .em-divprojet-explain p.em-thematique-deja-votee {
+            color: #82208B;
+            font-weight: 600;
+            margin: 0px;
 }
+
+.em-project-section .em-paragrapheprojet-explain p.em-thematique-deja-votee:first-child {
+  margin-top: 10px !important;
+}
+
 
   .em-paragraphecategory {
     font-size: 12px;
@@ -3756,14 +3805,14 @@ color:#e39809;
     padding-left: 23px;
   }
   .nav-link {
-    margin-right: 4px;
-    margin-left: 4px;
-    font-size: 9px;
-    line-height: 9px;
+    margin-right: 8px;
+    margin-left: 8px;
+    font-size: 14px;
+    line-height: 14px;
     font-weight: 400;
   }
   .nav-link.margin {
-    margin-right: 15px;
+    margin-right: 25px;
   }
   .em-menureglement {
     font-size: 12px;
@@ -4730,6 +4779,37 @@ textarea.w-select {
   .w-col-small-12 {
     width: 100%;
   }
+
+  .em-containerimage {
+
+    width: 100% !important;
+  
+  }
+  
+  .em-containerimage2 {
+    width: 100% !important;
+  }
+  
+  .em-containerimage3 {
+    width: 100% !important;
+  }
+
+  .em-containerimage-bloque {
+
+    width: 100% !important;
+  
+  }
+  
+  .em-containerimage2-bloque {
+    width: 100% !important;
+  }
+  
+  .em-containerimage3-bloque {
+    width: 100% !important;
+  }
+
+
+
 }
 @media screen and (max-width: 479px) {
   .w-container {

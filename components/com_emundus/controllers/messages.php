@@ -1149,7 +1149,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	    if ($send !== true) {
 
-		    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+		    JLog::add($send, JLog::ERROR, 'com_emundus');
 		    return false;
 
 	    } else {

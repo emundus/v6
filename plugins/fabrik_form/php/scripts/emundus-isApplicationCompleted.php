@@ -75,19 +75,11 @@ if ($jinput->get('view') == 'form') {
 		$fnumInfos = $m_files->getFnumInfos($user->fnum);
 
 		// This allows users who have started a bank transfer or cheque to go through even if it has not been marked as received yet.
-		$accept_created_payments = $params->get('accept_created_payments', 0);
+		$accept_other_payments = $params->get('accept_other_payments', 0);
 
 		if (count($fnumInfos) > 0) {
-			$paid = (!(array)$m_application->getHikashopOrder($fnumInfos)) ? 0 : 1;
-
-			// If created payments aren't accepted then we don't need to check.
-			if ($accept_created_payments)
-				$payment_created_offline = (!(array)$m_application->getHikashopOrder($fnumInfos, true)) ? 0 : 1;
-			else
-				$payment_created_offline = false;
-
-			// If $accept_created_payments is 2 : that means we do not redirect to the payment page.
-			if ($accept_created_payments != 2 && !$paid && !$payment_created_offline && $attachments >= 100 && $forms >= 100) {
+			// If $accept_other_payments is 2 : that means we do not redirect to the payment page.
+			if ($accept_other_payments != 2 && empty($m_application->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
 				// Profile number and document ID are concatenated, this is equal to the menu corresponding to the free option (or the paid option in the case of document_id = NULL)
 				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile . $scholarship_document_id)));
 				$mainframe->redirect($checkout_url);

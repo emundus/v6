@@ -38,10 +38,13 @@ $mod_em_campaign_show_admission_end_date = $params->get('mod_em_campaign_show_ad
 $mod_em_campaign_show_nav_order = $params->get('mod_em_campaign_show_nav_order', 1);
 $mod_em_campaign_show_timezone = $params->get('mod_em_campaign_show_timezone', 1);
 $mod_em_campaign_show_localedate = $params->get('mod_em_campaign_show_localedate', 0);
+$mod_em_campaign_show_search = $params->get('mod_em_campaign_show_search', 1);
+$mod_em_campaign_show_results = $params->get('mod_em_campaign_show_results', 1);
 $showcampaign=$params->get('mod_em_campaign_param_showcampaign');
 $showprogramme=$params->get('mod_em_campaign_param_showprogramme');
 $redirect_url=$params->get('mod_em_campaign_link', 'registration');
 $program_code=$params->get('mod_em_program_code');
+$modules_tabs = $params->get('mod_em_campaign_modules_tab');
 $offset = JFactory::getConfig()->get('offset');
 $sef = JFactory::getConfig()->get('sef');
 
@@ -85,7 +88,7 @@ if (!empty($program_code)) {
 }
 
 // Get single campaign
-$cid = JFactory::getApplication()->input->getInt('id', 0);
+$cid = JFactory::getApplication()->input->getInt('cid', 0);
 if (!empty($cid)) {
     $condition = ' AND ca.id = ' . $cid;
 }
@@ -117,6 +120,7 @@ $currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teach
 $pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
 $futurCampaign      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
 $allCampaign        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
+$faq_articles                = $helper->getFaq();
 
 $now = $helper->now;
 
