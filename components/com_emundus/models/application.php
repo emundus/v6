@@ -15,6 +15,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
+JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
 
 class EmundusModelApplication extends JModelList {
     var $_user = null;
@@ -2318,13 +2319,25 @@ class EmundusModelApplication extends JModelList {
     /// goal: generate HTML data and then send to PDF libraries
     public function getCustomizedPDF($uid,$fnum,$profile_id, $elements) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
+        $_profile_model = JModelLegacy::getInstance('profile', 'EmundusModel');
+
         $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
         $em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
 
         $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25');
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
         $h_list = new EmundusHelperList;
+
+        $forms = "";
+        /// get profile informations
+        $profile = $_profile_model->getProfileByMenu($profile_id);
+
+        $forms .= '<hr class="sections"><h2>';
+        $forms .= $profile->label;
+        $forms .= '</h2>';
+
+        return $forms;
     }
 
     public function getFormsPDFElts($aid, $elts, $options, $checklevel=true) {

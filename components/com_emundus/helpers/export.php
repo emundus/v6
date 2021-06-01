@@ -81,12 +81,7 @@ class EmundusHelperExport
             require_once($file);
         }
 
-        foreach($elements as $prfiles=>$data) {
-            $pr_id = $_profile_model->getProfileByMenu($prfiles);
-
-            /// foreach profile_id --> create a pdf form
-            application_form_pdf($fnumInfos['applicant_id'],$fnumInfos['fnum'],false,$forms,null,$options,null,$pr_id,null,$elements[$prfiles]);
-        }
+        application_form_pdf($fnumInfos['applicant_id'], $fnumInfos['fnum'], false, $forms, null, $options, null, null, null, $elements);       /// create pdf file for each fnum
 
         return EMUNDUS_PATH_ABS.$fnumInfos['applicant_id'].DS.$fnumInfos['fnum'].'_application.pdf';
     }

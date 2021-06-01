@@ -441,7 +441,54 @@ class EmundusModelProfile extends JModelList {
         }
     }
 
-	/**
+    /// get fabrik list by ids
+    public function getFabrikListByIds($flist) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($flist)) {
+            try {
+                $query->clear()
+                    ->select('jfl.*')
+                    ->from($db->quoteName('#__fabrik_lists', 'jfl'))
+                    ->where($db->quoteName('jfl.id') . 'IN (' . $flist . ' )');
+
+                $db->setQuery($query);
+
+                return $db->loadObjectList();
+            } catch(Exception $e) {
+                return $e->getMessage();
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /// get fabrik groups by ids
+    public function getFabrikGroupByIds($glist) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($glist)) {
+            try {
+                $query->clear()
+                    ->select('jfg.*')
+                    ->from($db->quoteName('#__fabrik_groups', 'jfg'))
+                    ->where($db->quoteName('jfg.id') . 'IN (' . $glist . ')');
+
+                $db->setQuery($query);
+                return $db->loadObjectList();
+
+            } catch(Exception $e) {
+                return $e->getMessage();
+            }
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
 	 * Gets the list of profiles from array of programmes
 	 *
 	 * @param array $code    list of programmes code
