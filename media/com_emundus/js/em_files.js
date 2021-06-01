@@ -3718,7 +3718,7 @@ $(document).ready(function() {
                 });
 
                 $('#filt_save_pdf').on('change', function() {
-                   $('#felts').empty();
+                   $('[id^=form-element]').empty();             /// when a new model is loaded, clean all existing felts
                    var model = $('#filt_save_pdf').val();
 
                    console.log(model);
@@ -3938,7 +3938,8 @@ $(document).ready(function() {
 
 
                 $('#em-export-camp').on('change', function() {
-
+                    /// when a new campaign is loaded, clean the existing formelement
+                    $('[id^=form-element]').empty();
                     var code = $('#em-export-prg').val();           // get value of chosen program
                     var camp = $("#em-export-camp").val();          // get value of chosen campaign
 
@@ -4135,20 +4136,20 @@ $(document).ready(function() {
                     }
                 });
 
-                $(document).on('click', '[id^=showelements_]', function() {
-                    let id = $(this).attr('id').split('_')[1];
-                    let button_id = $(this).attr('id');
-
-                    if($('#' + button_id + ' > span').attr('class') == 'glyphicon glyphicon-plus') {
-                        $('#' + button_id + ' > span').attr('class', 'glyphicon glyphicon-minus');
-                        $(this).attr('class','btn-xs btn btn-elements-success');
-                        $('#felts'+ id).show();
-                    } else {
-                        $('#' + button_id + ' > span').attr('class', 'glyphicon glyphicon-plus');
-                        $(this).attr('class','btn-xs btn btn-info');
-                        $('#felts'+ id).hide();
-                    }
-                });
+                // $(document).on('click', '[id^=showelements_]', function() {
+                //     let id = $(this).attr('id').split('_')[1];
+                //     let button_id = $(this).attr('id');
+                //
+                //     if($('#' + button_id + ' > span').attr('class') == 'glyphicon glyphicon-plus') {
+                //         $('#' + button_id + ' > span').attr('class', 'glyphicon glyphicon-minus');
+                //         $(this).attr('class','btn-xs btn btn-elements-success');
+                //         $('#felts'+ id).show();
+                //     } else {
+                //         $('#' + button_id + ' > span').attr('class', 'glyphicon glyphicon-plus');
+                //         $(this).attr('class','btn-xs btn btn-info');
+                //         $('#felts'+ id).hide();
+                //     }
+                // });
 
                 /// check all children of table
                 $(document).on('click', '[id^=emundus_checkall_tbl_]', function() {
@@ -6375,6 +6376,21 @@ $(document).ready(function() {
         }
         else {
             $("#add-filter").prop("disabled", true);
+        }
+    });
+
+    $(document).on('click', '[id^=showelements_]', function() {
+        let id = $(this).attr('id').split('_')[1];
+        let button_id = $(this).attr('id');
+
+        if($('#' + button_id + ' > span').attr('class') == 'glyphicon glyphicon-plus') {
+            $('#' + button_id + ' > span').attr('class', 'glyphicon glyphicon-minus');
+            $(this).attr('class','btn-xs btn btn-elements-success');
+            $('#felts'+ id).show();
+        } else {
+            $('#' + button_id + ' > span').attr('class', 'glyphicon glyphicon-plus');
+            $(this).attr('class','btn-xs btn btn-info');
+            $('#felts'+ id).hide();
         }
     });
 });
