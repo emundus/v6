@@ -805,6 +805,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25'); //déclaration couleur principale
+    $profile_color = '#42b983';
 
     $config = JFactory::getConfig();
     $offset = $config->get('offset');
@@ -981,6 +982,11 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             .label-darkpink { background-color: #db0a5b; }
             h3 {  font-family: 'Roboto', sans-serif; font-size:35px;  color: #000000; text-align:left!important; font-weight:bold;}
 
+                    h1 {
+                        font-size:55px;
+                        color: " . $profile_color . ";
+                        font-weight:650;
+                    }
 
                     h2 {
                        font-size:40px;
@@ -1393,7 +1399,12 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     .label-darkpink { background-color: #db0a5b; }
     h3 {  font-family: 'Roboto', sans-serif; font-size:35px;  color: #000000; text-align:left!important; font-weight:bold;}
             
-
+            h1 {
+               font-size:55px;
+               color: " . $profile_color . ";
+               font-weight:650;
+            }
+          
             h2 {
                font-size:40px;
                color: " . $cTitle . ";
