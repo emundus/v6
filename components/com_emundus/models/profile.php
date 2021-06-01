@@ -475,10 +475,10 @@ class EmundusModelProfile extends JModelList {
                     ->select('jff.id, jff.label')
                     ->from($db->quoteName('#__fabrik_forms', 'jff'))
                     ->leftJoin($db->quoteName('#__fabrik_lists', 'jfl') . ' ON ' . $db->quoteName('jfl.form_id') . ' = ' . $db->quoteName('jff.id'))
-                    ->where($db->quoteName('jfl.id') . ' IN (' . $list . ')');
+                    ->where($db->quoteName('jfl.id') . '=' . $list );
 
                 $db->setQuery($query);
-                return $db->loadObjectList();
+                return $db->loadObject();
 
             } catch(Exception $e) {
 
@@ -489,7 +489,7 @@ class EmundusModelProfile extends JModelList {
     }
 
     /// get fabrik groups by ids
-    public function getFabrikGroupByIds($glist) {
+    public function getFabrikGroupByList($glist) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -498,7 +498,7 @@ class EmundusModelProfile extends JModelList {
                 $query->clear()
                     ->select('jfg.*')
                     ->from($db->quoteName('#__fabrik_groups', 'jfg'))
-                    ->where($db->quoteName('jfg.id') . 'IN (' . $glist . ')');
+                    ->where($db->quoteName('jfg.id') . '=' . $glist);
 
                 $db->setQuery($query);
                 return $db->loadObjectList();

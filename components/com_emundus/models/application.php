@@ -2342,21 +2342,29 @@ class EmundusModelApplication extends JModelList {
         /// print the form label --> get the form from selected list --> $elements[$profile_id]
         $selected_fabrik_lists = array_keys($elements[$profile_id]);
 
-        $list_id = "";
         foreach($selected_fabrik_lists as $key => $value) {
-            $list_id .= explode('table_',$value)[1] . ',';
-        }
-        $list_id = mb_substr($list_id, 0, -1);
+            $listID = explode('table_', $value)[1];
 
-        // call to function getFabrikFormByList [params :: list_id] to get all forms
-        $selected_fabrik_forms = $_profile_model->getFabrikFormByList($list_id);
-
-        foreach($selected_fabrik_forms as $_form => $data) {
+            $listData = $_profile_model->getFabrikFormByList($listID);
             $forms .= '<h2>';
-            $forms .= $data->label;
+            $forms .= $listData->label;
             $forms .= '</h2>';
+
+            /// extract groups for each list
+            foreach($elements[$profile_id] as $index => $data) {
+                $groupID = array_keys($elements[$profile_id][$value]);
+                foreach($groupID as $group => $grp) {
+                    $groupData = array_unique($_profile_model->getFabrikGroupByList(explode('group_', $grp)[1]));
+
+                    $forms .= '<h3>';
+                    $forms .= $groupData[0]->name;
+                    $forms .= '</h2>';
+                }
+                break;
+            }
         }
 
+        //extract groups for each list
         return $forms;
     }
 
