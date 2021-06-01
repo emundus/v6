@@ -2362,18 +2362,14 @@ class EmundusModelApplication extends JModelList {
 
                     /// extract elements for each group
 
-                    $element_data = array_values($elements[$profile_id][$value]);
-                    foreach($element_data as $elt_key => $elt_value) {
-                        foreach($elt_value as $k => $v) {
-                            $eltData = $_profile_model->getFabrikElementById($v);
-
-                            $forms .= '<h4>';
-                            $forms .= $eltData->label;
-                            $forms .= '</h4>';
-                        }
-                        //break;
+                    /// elements id = $elements[$profile_id][$value][$grp]
+                    $element_ids = $elements[$profile_id][$value][$grp];
+                    foreach($element_ids as $elt_key => $elt_value) {
+                        $eltData = $_profile_model->getFabrikElementById($elt_value);
+                        $forms .= '<h4>';
+                        $forms .= $eltData->label;
+                        $forms .= '</h4>';
                     }
-                    //break;
                 }
                 break;
             }
