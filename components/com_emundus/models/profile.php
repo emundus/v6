@@ -511,6 +511,23 @@ class EmundusModelProfile extends JModelList {
         }
     }
 
+    /// get fabrik elements by ids
+    public function getFabrikElementById($eid) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($eid)) {
+            $query->clear()
+                ->select('jfe.id, jfe.name, jfe.label')
+                ->from($db->quoteName('#__fabrik_elements', 'jfe'))
+                ->where($db->quoteName('jfe.id') . '=' . (int)$eid);
+
+            $db->setQuery($query);
+            return $db->loadObject();       // return element
+        } else {
+            return false;
+        }
+    }
 
     /**
 	 * Gets the list of profiles from array of programmes

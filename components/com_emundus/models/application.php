@@ -2358,7 +2358,22 @@ class EmundusModelApplication extends JModelList {
 
                     $forms .= '<h3>';
                     $forms .= $groupData[0]->name;
-                    $forms .= '</h2>';
+                    $forms .= '</h3>';
+
+                    /// extract elements for each group
+
+                    $element_data = array_values($elements[$profile_id][$value]);
+                    foreach($element_data as $elt_key => $elt_value) {
+                        foreach($elt_value as $k => $v) {
+                            $eltData = $_profile_model->getFabrikElementById($v);
+
+                            $forms .= '<h4>';
+                            $forms .= $eltData->label;
+                            $forms .= '</h4>';
+                        }
+                        //break;
+                    }
+                    //break;
                 }
                 break;
             }
