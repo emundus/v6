@@ -2349,9 +2349,9 @@ class EmundusModelApplication extends JModelList {
         $list_id = mb_substr($list_id, 0, -1);
 
         // call to function getFabrikFormByList [params :: list_id] to get all forms
-        $_forms = $_profile_model->getFabrikFormByList($list_id);
+        $selected_fabrik_forms = $_profile_model->getFabrikFormByList($list_id);
 
-        foreach($_forms as $_form => $data) {
+        foreach($selected_fabrik_forms as $_form => $data) {
             $forms .= '<h2>';
             $forms .= $data->label;
             $forms .= '</h2>';

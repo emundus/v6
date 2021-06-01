@@ -832,20 +832,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         $htmldata = '';
         $forms = '';
 
-        foreach ($profile_list as $key => $value) {
-            $forms = $m_application->getCustomizedPDF($user_id, $fnum, $value, $elements);
+        try {
 
-            // Create PDF object
-            $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
-            $pdf->SetCreator(PDF_CREATOR);
-            $pdf->SetAuthor('eMundus');
-            $pdf->SetTitle('Application Form');
-
-            try {
-
-                // Users informations
-                $query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted
+            // Users informations
+            $query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__users AS u ON u.id=ecc.applicant_id
 					LEFT JOIN #__emundus_users AS c ON u.id = c.user_id
@@ -856,14 +846,58 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 					LEFT JOIN #__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like ' . $db->Quote($fnum) . '
 					WHERE ecc.fnum like ' . $db->Quote($fnum) . '
 					ORDER BY esc.id DESC';
-                $db->setQuery($query);
-                $item = $db->loadObject();
+            $db->setQuery($query);
+            $item = $db->loadObject();
 
-                /// this query get all fnum information
-
-            } catch (Exception $e) {
-                JLog::add('SQL error in emundus pdf library at query : ' . $query, JLog::ERROR, 'com_emundus');
+            $htmldata .= '<table width="100%"><tr>';
+            if (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+                $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="right" /></td>';
+            } elseif (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+                $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar . '" width="100" align="right" /></td>';
             }
+
+            $htmldata .= '<td><h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3><tr><td class="name">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
+
+            if (isset($item->maiden_name)) {
+                $htmldata .= '<tr class="maidename"><td>' . JText::_('MAIDEN_NAME') . ' : ' . $item->maiden_name . '</td></tr>';
+            }
+
+        } catch (Exception $e) {
+            JLog::add('SQL error in emundus pdf library at query : ' . $query, JLog::ERROR, 'com_emundus');
+        }
+
+        foreach ($profile_list as $key => $value) {
+            $forms = $m_application->getCustomizedPDF($user_id, $fnum, $value, $elements);
+
+            // Create PDF object
+            $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+            $pdf->SetCreator(PDF_CREATOR);
+            $pdf->SetAuthor('eMundus');
+            $pdf->SetTitle('Application Form');
+
+//            try {
+//
+//                // Users informations
+//                $query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted
+//					FROM #__emundus_campaign_candidature AS ecc
+//					LEFT JOIN #__users AS u ON u.id=ecc.applicant_id
+//					LEFT JOIN #__emundus_users AS c ON u.id = c.user_id
+//					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ' . $campaign_id . '
+//					LEFT JOIN #__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = ' . EMUNDUS_PHOTO_AID . ' AND a.fnum like ' . $db->Quote($fnum) . '
+//					LEFT JOIN #__emundus_setup_profiles AS p ON p.id = esc.profile_id
+//					LEFT JOIN #__emundus_personal_detail AS epd ON epd.user = u.id AND epd.fnum like ' . $db->Quote($fnum) . '
+//					LEFT JOIN #__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like ' . $db->Quote($fnum) . '
+//					WHERE ecc.fnum like ' . $db->Quote($fnum) . '
+//					ORDER BY esc.id DESC';
+//                $db->setQuery($query);
+//                $item = $db->loadObject();
+//
+//                /// this query get all fnum information
+//
+//            } catch (Exception $e) {
+//                JLog::add('SQL error in emundus pdf library at query : ' . $query, JLog::ERROR, 'com_emundus');
+//            }
 
             //get logo
             $template = $app->getTemplate(true);
@@ -1041,19 +1075,18 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
                 if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
 
-                    $htmldata .= '
-                            <table width="100%"><tr>';
-                    if (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
-                        $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="right" /></td>';
-                    } elseif (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
-                        $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar . '" width="100" align="right" /></td>';
-                    }
-
-                    $htmldata .= '<td><h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3><tr><td class="name">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
-
-                    if (isset($item->maiden_name)) {
-                        $htmldata .= '<tr class="maidename"><td>' . JText::_('MAIDEN_NAME') . ' : ' . $item->maiden_name . '</td></tr>';
-                    }
+//                    $htmldata .= '<table width="100%"><tr>';
+//                    if (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+//                        $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="right" /></td>';
+//                    } elseif (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+//                        $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar . '" width="100" align="right" /></td>';
+//                    }
+//
+//                    $htmldata .= '<td><h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3><tr><td class="name">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
+//
+//                    if (isset($item->maiden_name)) {
+//                        $htmldata .= '<tr class="maidename"><td>' . JText::_('MAIDEN_NAME') . ' : ' . $item->maiden_name . '</td></tr>';
+//                    }
                 }
 
                 $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000')) ? JHTML::_('date', $item->date_submitted, JText::_('DATE_FORMAT_LC2')) : JText::_('NOT_SENT');
