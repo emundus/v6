@@ -2333,9 +2333,29 @@ class EmundusModelApplication extends JModelList {
         /// get profile informations
         $profile = $_profile_model->getProfileByMenu($profile_id);
 
-        $forms .= '<hr class="sections"><h2>';
+        /// print the profile label
+
+        $forms .= '<hr class="sections"><h1>';
         $forms .= $profile->label;
-        $forms .= '</h2>';
+        $forms .= '</h1>';
+
+        /// print the form label --> get the form from selected list --> $elements[$profile_id]
+        $selected_fabrik_lists = array_keys($elements[$profile_id]);
+
+        $list_id = "";
+        foreach($selected_fabrik_lists as $key => $value) {
+            $list_id .= explode('table_',$value)[1] . ',';
+        }
+        $list_id = mb_substr($list_id, 0, -1);
+
+        // call to function getFabrikFormByList [params :: list_id] to get all forms
+        $_forms = $_profile_model->getFabrikFormByList($list_id);
+
+        foreach($_forms as $_form => $data) {
+            $forms .= '<h2>';
+            $forms .= $data->label;
+            $forms .= '</h2>';
+        }
 
         return $forms;
     }

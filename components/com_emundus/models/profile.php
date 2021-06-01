@@ -464,6 +464,30 @@ class EmundusModelProfile extends JModelList {
         }
     }
 
+    // get fabrik form by list
+    public function getFabrikFormByList($list) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($list)) {
+            try {
+                $query->clear()
+                    ->select('jff.id, jff.label')
+                    ->from($db->quoteName('#__fabrik_forms', 'jff'))
+                    ->leftJoin($db->quoteName('#__fabrik_lists', 'jfl') . ' ON ' . $db->quoteName('jfl.form_id') . ' = ' . $db->quoteName('jff.id'))
+                    ->where($db->quoteName('jfl.id') . ' IN (' . $list . ')');
+
+                $db->setQuery($query);
+                return $db->loadObjectList();
+
+            } catch(Exception $e) {
+
+            }
+        } else {
+            return false;
+        }
+    }
+
     /// get fabrik groups by ids
     public function getFabrikGroupByIds($glist) {
         $db = JFactory::getDbo();
