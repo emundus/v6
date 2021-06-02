@@ -597,6 +597,7 @@ footer#g-footer {
   //margin-top: auto !important;
   margin-top: 75px !important;
   transition: all 0.3s ease-in-out;
+
 }
 
 footer#g-footer img {
@@ -637,7 +638,7 @@ body>.g-container {
 
 #g-footer .g-grid {
   flex-direction: row;
-  align-items: center;
+  align-items: start;
   justify-content: start;
 }
 
@@ -676,6 +677,10 @@ body>.g-container {
     color: $base-primary-color;
     float: left;
   }
+}
+
+.rgpd p {
+  color: $base-primary-color;
 }
 
 .customfooter-legal p {
