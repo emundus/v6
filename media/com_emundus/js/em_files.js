@@ -2789,8 +2789,8 @@ $(document).ready(function() {
                                                     url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilterById',
                                                     dataType: 'JSON',
                                                     data: { id : id},
-                                                    success: function(my_reply) {
-                                                        let constraints = jQuery.parseJSON(my_reply.filter.constraints);
+                                                    success: function(excelFilter) {
+                                                        let constraints = jQuery.parseJSON(excelFilter.filter.constraints);
                                                         //console.log(constraints);
                                                         let filter = jQuery.parseJSON(constraints.excelfilter);
                                                         let baseElements = filter.baseElements;
@@ -2800,10 +2800,8 @@ $(document).ready(function() {
                                                             url: 'index.php?option=com_emundus&controller=files&task=getselectedelements',
                                                             dataType: 'JSON',
                                                             data: { elts : baseElements.split(',') },
-                                                            success: function(my_reply_2) {
-                                                                let selectedElts = my_reply_2.elements.selected_elements;
-                                                                //let defaultElts = my_reply_2.elements.default_elements;
-                                                                //let showElts = selectedElts.concat(defaultElts);
+                                                            success: function(selectedElements) {
+                                                                let selectedElts = selectedElements.elements.selected_elements;
 
                                                                 selectedElts.forEach(elts => {
                                                                     $('#em-export').append('<li class="em-export-item" id="' + elts.id + '-item"><button class="btn btn-danger btn-xs" id="' + elts.id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elts.label + '</strong></span></li>');
