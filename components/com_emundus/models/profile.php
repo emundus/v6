@@ -518,12 +518,55 @@ class EmundusModelProfile extends JModelList {
 
         if(!empty($eid)) {
             $query->clear()
-                ->select('jfe.id, jfe.name, jfe.label')
+                ->select('jfe.id, jfe.name, jfe.label, jfe.group_id')
                 ->from($db->quoteName('#__fabrik_elements', 'jfe'))
                 ->where($db->quoteName('jfe.id') . '=' . (int)$eid);
 
             $db->setQuery($query);
             return $db->loadObject();       // return element
+        } else {
+            return false;
+        }
+    }
+
+    /// get data from element name
+    public function getDataFromElementName($element, $fnum, $user) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($element) and !empty($fnum) and !empty($user)) {
+            try {
+                /// step 1 --> get table name
+                $query->clear()
+                    ->select('jfl.*')
+                    ->from($db->quoteName('#__fabrik_lists', 'jfl'))
+                    ->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $db->quoteName('jffg.form_id') . '=' . $db->quoteName('jfl.form_id'))
+                    ->leftJoin($db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $db->quoteName('jffg.group_id') . '=' . $db->quoteName('jfe.group_id'))
+                    ->where($db->quoteName('jfe.id') . '=' . (int)$element->id)
+                    ->andWhere($db->quoteName('jfe.name') . '=' . $db->quote($element->name))
+                    ->andWhere($db->quoteName('jfe.group_id') . '=' . (int)$element->group_id);
+
+                $db->setQuery($query);
+
+                $_table_name = $db->loadObject();
+
+                /// step 2 --> from table name --> get element data from element name (element_name == column) with ::fnum and ::user
+                /// input params :: $db->quote($element->name) + $_table_name->db_tale_name
+                ///
+                $query->clear()
+                    ->select($_table_name->db_table_name . '.' . $element->name)
+                    ->from($_table_name->db_table_name)
+                    ->where($_table_name->db_table_name . '.fnum' . '=' . $db->quote($fnum))
+                    ->andWhere($_table_name->db_table_name . '.user' . '=' . $db->quote($user));
+
+                $db->setQuery($query);
+                $_element_data = $db->loadResult();
+
+                return $_element_data;
+
+            } catch(Exception $e) {
+                return $e->getMessage();
+            }
         } else {
             return false;
         }

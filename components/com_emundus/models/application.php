@@ -2318,6 +2318,8 @@ class EmundusModelApplication extends JModelList {
 
     /// goal: generate HTML data and then send to PDF libraries
     public function getCustomizedPDF($uid,$fnum,$profile_id, $elements) {
+//        var_dump($uid);die;
+
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $_profile_model = JModelLegacy::getInstance('profile', 'EmundusModel');
 
@@ -2369,6 +2371,13 @@ class EmundusModelApplication extends JModelList {
                         $forms .= '<h4>';
                         $forms .= JText::_($eltData->label);
                         $forms .= '</h4>';
+
+                        $elementData = $_profile_model->getDataFromElementName($eltData, $fnum, $uid);
+
+                        //// add data for this element here
+                        $forms .= '<h5>';
+                        $forms .= $elementData;
+                        $forms .= '</h5>';
                     }
                 }
                 break;
