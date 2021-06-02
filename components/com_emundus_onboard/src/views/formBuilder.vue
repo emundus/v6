@@ -376,20 +376,20 @@
           nom: {
             id: 8,
             value: 'nom',
-            icon: 'fas fa-font',
-            name: 'nom'
+            icon: 'fas fa-user-circle',
+            name: 'Nom'
           },
           prenom: {
             id: 9,
             value: 'prenom',
-            icon: 'fas fa-font',
-            name: 'prénom'
+            icon: 'fas fa-user-circle',
+            name: 'Prénom'
           },
           email:{
             id:10,
             value: 'email',
-            icon: 'fas fa-font',
-            name: 'email'
+            icon: 'fas fa-envelope',
+            name: 'Email'
           },
           textarea: {
             id: 5,
@@ -427,6 +427,14 @@
             icon: 'fas fa-paragraph',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
+          areacodephonefield: {
+           id: 7,
+           value: 'emundus_areacodephonefield',
+           icon: 'fas fa-phone',
+           //name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
+           //name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FILE")
+            name: 'Portable'
+         },
           /*fileupload: {
             id: 7,
             value: 'emundus_fileupload',
@@ -508,8 +516,7 @@
             }
               this.createElementEMundusFileUpload(params,gid,plugin,order);
           } else {
-            console.log("simple element creation ")
-            console.log(plugin)
+
             axios({
               method: "post",
               url:
@@ -522,7 +529,7 @@
                 plugin: plugin
               })
             }).then((result) => {
-
+            console.log(result);
               axios({
                 method: "get",
                 url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
@@ -534,9 +541,9 @@
                   return qs.stringify(params);
                 }
               }).then(response => {
-                    console.log("none emundus file upload");
 
-                    console.log(response);
+                  console.log(response);
+                   // console.log(response);
 
                 if (plugin=="email") {
                   response.data.params.password = 3;
@@ -617,6 +624,7 @@
       menuHighlightCustumisation(response,gid,order){
 
         if(this.menuHighlight === 0) {
+          console.log('highlight 0');
           this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid], 'elements[element' + response.data.id + ']', response.data)
           this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts.splice(order, 0, response.data);
           this.$refs.builder.updateOrder(gid, this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts);
@@ -624,6 +632,8 @@
           this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
           this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
         } else {
+          console.log('highlight not null');
+
           this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
           this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
           this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);

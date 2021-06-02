@@ -478,9 +478,12 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         } else {
             if($attachementId) {
                 $changeresponse = $m_form->createSimpleElement($gid, $plugin, $attachementId);
-            } else {
-                $changeresponse = $m_form->createSimpleElement($gid, $plugin,0);
+            } else if($plugin=="emundus_areacodephonefield") {
 
+                $changeresponse = $m_form->createSimpleIndicatifElement($gid, $plugin,0);
+
+            } else{
+                $changeresponse = $m_form->createSimpleElement($gid, $plugin,0);
             }
         }
         echo json_encode((object)$changeresponse);

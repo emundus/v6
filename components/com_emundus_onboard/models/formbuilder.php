@@ -421,7 +421,7 @@ class EmundusonboardModelformbuilder extends JModelList
             $params['notempty-message'] = array();
             $params['notempty-validation_condition'] = array();
         }
-        if ($plugin == 'nom'|| $plugin=='prenom' || $plugin=='email') {
+        if ($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email') {
             return $this->updateElementParams('field', null, $params, $attachementId);
 
         } else {
@@ -722,6 +722,107 @@ class EmundusonboardModelformbuilder extends JModelList
                     $params['attachmentId'] = $attachementId;
                     $params['can_submit_encrypted'] = 2;
                     break;
+                case 'emundus_areacodephonefield':
+                    $params["database_join_display_type"] = "dropdown";
+                    $params["join_conn_id"] = "1";
+                    $params["join_db_name"] = "jos_emundus_country";
+                    $params["join_key_column"] = "iso2";
+                    $params["join_val_column"] = "iso2";
+                    $params["join_val_column_concat"] = "{thistable}.iso2";
+                    $params["database_join_where_sql"] = "";
+                    $params["database_join_where_access"] = "1";
+                    $params["database_join_where_when"] = "3";
+                    $params["databasejoin_where_ajax"] = "0";
+                    $params["databasejoin_where_ajax_default_eval"] = "";
+                    $params["database_join_filter_where_sql"] = "";
+                    $params["database_join_show_please_select"] = "1";
+                    $params["database_join_noselectionvalue"] = "";
+                    $params["database_join_noselectionlabel"] = "";
+                    $params["placeholder"] = "";
+                    $params["databasejoin_popupform"] = "41";
+                    $params["fabrikdatabasejoin_frontend_add"] = "0";
+                    $params["join_popupwidth"] = "";
+                    $params["databasejoin_readonly_link"] = "0";
+                    $params["fabrikdatabasejoin_frontend_select"] = "0";
+                    $params["advanced_behavior"] = "1";
+                    $params["dbjoin_options_per_row"] = "4";
+                    $params["dbjoin_multiselect_max"] = "0";
+                    $params["dbjoin_multilist_size"] = "0";
+                    $params["dbjoin_autocomplete_size"] = "0";
+                    $params["dbjoin_autocomplete_rows"] = "0";
+                    $params["bootstrap_class"] = "input-mini";
+                    $params["dabase_join_label_eval"] = "";
+                    $params["join_desc_column"] = "";
+                    $params["dbjoin_autocomplete_how"] = "contains";
+                    $params["clean_concat"] = "0";
+                    $params["show_in_rss_feed"] = "0";
+                    $params["show_label_in_rss_feed"] = "0";
+                    $params["use_as_rss_enclosure"] = "0";
+                    $params["rollover"] = "";
+                    $params["tipseval"] = "0";
+                    $params["tiplocation"] = "top-left";
+                    $params["labelindetails"] = "0";
+                    $params["labelinlist"] = "0";
+                    $params["comment"] = "";
+                    $params["edit_access"] = "1";
+                    $params["edit_access_user"] = "";
+                    $params["view_access"] = "1";
+                    $params["view_access_user"] = "";
+                    $params["list_view_access"] = "1";
+                    $params["encrypt"] = "0";
+                    $params["store_in_db"] = "1";
+                    $params["default_on_copy"] = "0";
+                    $params["can_order"] = "0";
+                    $params["alt_list_heading"];
+                    $params["custom_link"] = "";
+                    $params["custom_link_target"] = "";
+                    $params["custom_link_indetails"] = "1";
+                    $params["use_as_row_class"] = "0";
+                    $params["include_in_list_query"] = "1";
+                    $params["always_render"] = "0";
+                    $params["icon_folder"] = "0";
+                    $params["icon_hovertext"] = "1";
+                    $params["icon_file"] = "";
+                    $params["icon_subdir"] = "";
+                    $params["filter_length"] = "20";
+                    $params["filter_access"] = "1";
+                    $params["full_words_only"] = "0";
+                    $params["filter_required"] = "0";
+                    $params["filter_build_method"] = "0";
+                    $params["filter_groupby"] = "text";
+                    $params["inc_in_adv_search"] = "1";
+                    $params["filter_class"] = "input-medium";
+                    $params["filter_responsive_class"] = "";
+                    $params["tablecss_header_class"] = "";
+                    $params["tablecss_header"] = "";
+                    $params["tablecss_cell_class"] = "";
+                    $params["tablecss_cell"] = "";
+                    $params["sum_on"] = "0";
+                    $params["sum_label"] = "Sum";
+                    $params["sum_access"] = "1";
+                    $params["sum_split"] = "";
+                    $params["avg_on"] = "0";
+                    $params["avg_label"] = "Average";
+                    $params["avg_access"] = "1";
+                    $params["avg_round"] = "0";
+                    $params["avg_split"] = "";
+                    $params["median_on"] = "0";
+                    $params["median_label"] = "Median";
+                    $params["median_access"] = "1";
+                    $params["median_split"] = "";
+                    $params["count_on"] = "0";
+                    $params["count_label"] = "Count";
+                    $params["count_condition"] = "";
+                    $params["count_access"] = "1";
+                    $params["count_split"] = "";
+                    $params["custom_calc_on"] = "0";
+                    $params["custom_calc_label"] = "Custom";
+                    $params["custom_calc_query"] = "";
+                    $params["custom_calc_access"] = "1";
+                    $params["custom_calc_split"] = "";
+                    $params["custom_calc_php"] = "";
+                    $params["validations"] = [];
+
                 default:
                     break;
             }
@@ -1594,7 +1695,7 @@ class EmundusonboardModelformbuilder extends JModelList
 
         // Prepare parameters
 
-        $plugin=='email'? $params = $this->prepareElementParameters('field', $attachementId):$params = $this->prepareElementParameters($plugin, $attachementId);
+        $plugin == 'email' || is_array($plugin) == true ? $params = $this->prepareElementParameters('field', $attachementId) : $params = $this->prepareElementParameters($plugin, $attachementId);
         //
 
         $query->clear()
@@ -1625,7 +1726,7 @@ class EmundusonboardModelformbuilder extends JModelList
                 ->insert($db->quoteName('#__fabrik_elements'))
                 ->set($db->quoteName('name') . ' = ' . $db->quote('element'))
                 ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
-                ->set($db->quoteName('plugin') . ' = ' . $db->quote($plugin == 'nom' || $plugin == 'prenom'|| $plugin=='email' ? 'field' : $plugin))
+                ->set($db->quoteName('plugin') . ' = ' . $db->quote($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email' || is_array($plugin) == true ? 'field' : $plugin))
                 ->set($db->quoteName('label') . ' = ' . $db->quote(strtoupper('element_' . $gid)))
                 ->set($db->quoteName('checked_out') . ' = 0')
                 ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
@@ -1636,7 +1737,7 @@ class EmundusonboardModelformbuilder extends JModelList
                 ->set($db->quoteName('modified_by') . ' = 95')
                 ->set($db->quoteName('width') . ' = 0')
                 ->set($db->quoteName('default') . ' = ' . $db->quote($default))
-                ->set($db->quoteName('hidden') . ' = 0')
+                ->set($db->quoteName('hidden') . ' = ' . $db->quote(is_array($plugin) == true && $plugin['type_name']!='tel' ? 1 : 0))
                 ->set($db->quoteName('eval') . ' = 1')
                 ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
                 ->set($db->quoteName('parent_id') . ' = 0')
@@ -1651,6 +1752,7 @@ class EmundusonboardModelformbuilder extends JModelList
 
                 if ($plugin == 'nom') {
                     $label = array(
+
                         'fr' => 'Nom',
                         'en' => 'Name',
                     );
@@ -1669,11 +1771,11 @@ class EmundusonboardModelformbuilder extends JModelList
                         'fr' => 'Email',
                         'en' => 'Email',
                     );
-                    $plugin='field';
-                } else{
+                    $plugin = 'field';
+                } else {
                     $label = array(
-                        'fr' => 'Element sans titre',
-                        'en' => 'Unnamed item',
+                        'fr' => !is_array($plugin) ? 'Element sans titre': '',
+                        'en' => !is_array($plugin) ? 'Unnamed item': '',
                     );
                 }
 
@@ -1702,7 +1804,7 @@ class EmundusonboardModelformbuilder extends JModelList
                 ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
             $db->setQuery($query);
             $dbtable = $db->loadObject()->dbtable;
-            //echo $dbtable;
+
             $formid = $db->loadObject()->formid;
 
             if ($evaluation) {
@@ -1711,16 +1813,31 @@ class EmundusonboardModelformbuilder extends JModelList
                 $db->execute();
                 $name = 'criteria_' . $formid . '_' . $elementId;
             } else {
-                $query = "ALTER TABLE " . $dbtable . " ADD e_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+                if (!is_array($plugin)):
+                    $query = "ALTER TABLE " . $dbtable . " ADD e_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+                else :
+                    $query = "ALTER TABLE " . $dbtable . " ADD " . $plugin['indicatif_name'] . "_" . $plugin['type_name'] . " " . $dbtype . " " . $dbnull;
+                endif;
                 $db->setQuery($query);
                 $db->execute();
                 if ($group_params->repeat_group_button == 1) {
+
+
                     $repeat_table_name = $dbtable . "_" . $gid . "_repeat";
-                    $query = "ALTER TABLE " . $repeat_table_name . " ADD e_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+                    if (!is_array($plugin)):
+                        $query = "ALTER TABLE " . $repeat_table_name . " ADD e_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+                    else:
+                        $query = "ALTER TABLE " . $repeat_table_name . " ADD " . $plugin['indicatif_name'] . "_" . $plugin['type_name'] . " " . $dbtype . " " . $dbnull;
+
+                    endif;
                     $db->setQuery($query);
                     $db->execute();
+
                 }
-                $name = 'e_' . $formid . '_' . $elementId;
+
+
+                //$name = 'e_' . $formid . '_' . $elementId;
+                !is_array($plugin) ? $name = 'e_' . $formid . '_' . $elementId : $name = $plugin['indicatif_name'] . '_' . $plugin['type_name'];
             }
             //
 
@@ -1800,8 +1917,172 @@ this.set(words.join(&quot; &quot;));
             }
 
 
+            if (!is_array($plugin)):
+                return $elementId;
+            endif;
+
+        } catch (Exception $e) {
+
+            JLog::add('component/com_emundus_onboard/models/formbuilder | Problem when create a simple element in the group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function createSimpleIndicatifElement($gid, $plugin, $attachementId = null, $evaluation = 0)
+    {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        JModelLegacy::addIncludePath(JPATH_SITE . '/administrator/components/com_languages/models');
+        $language = JModelLegacy::getInstance('Override', 'LanguagesModel');
+
+        // Default parameters
+        $dbtype = 'VARCHAR(255)';
+        $dbnull = 'NULL';
+        $default = '';
+        //
+        // Prepare parameters
+
+        $params = $this->prepareElementParameters($plugin, $attachementId);
+        //
+
+        $query->clear()
+            ->select('*')
+            ->from($db->quoteName('#__fabrik_elements'))
+            ->where($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+            ->order('ordering');
+        try {
+            $db->setQuery($query);
+            $results = $db->loadObjectList();
+            $orderings = [];
+            foreach (array_values($results) as $result) {
+                if (!in_array($result->ordering, $orderings)) {
+                    $orderings[] = intval($result->ordering);
+                }
+            }
+
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__fabrik_groups'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $fabrik_group = $db->loadObject();
+
+            $group_params = json_decode($fabrik_group->params);
+
+            $query->clear()
+                ->insert($db->quoteName('#__fabrik_elements'))
+                ->set($db->quoteName('name') . ' = ' . $db->quote('element_indicatif'))
+                ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                ->set($db->quoteName('plugin') . ' = ' . $db->quote($plugin))
+                ->set($db->quoteName('label') . ' = ' . $db->quote(strtoupper('element_' . $gid . '_indicatif')))
+                ->set($db->quoteName('checked_out') . ' = 0')
+                ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('created_by') . ' = 95')
+                ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
+                ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('modified_by') . ' = 95')
+                ->set($db->quoteName('width') . ' = 0')
+                ->set($db->quoteName('default') . ' = ' . $db->quote($default))
+                ->set($db->quoteName('hidden') . ' = 0')
+                ->set($db->quoteName('eval') . ' = 1')
+                ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
+                ->set($db->quoteName('parent_id') . ' = 0')
+                ->set($db->quoteName('published') . ' = 1')
+                ->set($db->quoteName('access') . ' = 1')
+                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+            $db->setQuery($query);
+            $db->execute();
+            $elementId = $db->insertid();
+            $label = array(
+                'fr' => 'Portable',
+                'en' => 'Phone',
+            );
+
+
+            $this->translate('ELEMENT_' . $gid . '_' . $elementId . '_INDICATIF', $label);
+
+            $query->clear()
+                ->update($db->quoteName('#__fabrik_elements'))
+                ->set($db->quoteName('label') . ' = ' . $db->quote(strtoupper('element_' . $gid . '_' . $elementId . '_indicatif')))
+                ->where($db->quoteName('id') . '= ' . $db->quote($elementId));
+            $db->setQuery($query);
+            $db->execute();
+
+            // Add element to table
+            $query
+                ->clear()
+                ->select([
+                    'fl.db_table_name AS dbtable',
+                    'fl.form_id AS formid',
+                ])
+                ->from($db->quoteName('#__fabrik_formgroup', 'fg'))
+                ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
+                ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $dbtable = $db->loadObject()->dbtable;
+            //echo $dbtable;
+            $formid = $db->loadObject()->formid;
+
+
+            if ($evaluation) {
+                $query = "ALTER TABLE jos_emundus_evaluations" . " ADD criteria_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+                $db->setQuery($query);
+                $db->execute();
+                $name = 'criteria_' . $formid . '_' . $elementId;
+            } else {
+                $query = "ALTER TABLE " . $dbtable . " ADD e_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+                $db->setQuery($query);
+                $db->execute();
+                if ($group_params->repeat_group_button == 1) {
+                    $repeat_table_name = $dbtable . "_" . $gid . "_repeat";
+                    $query = "ALTER TABLE " . $repeat_table_name . " ADD e_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+                $name = 'e_' . $formid . '_' . $elementId;
+            }
+            //
+
+            $query = $db->getQuery(true);
+            $query->update($db->quoteName('#__fabrik_elements'));
+
+            // Init a default subvalue
+            /*if ($plugin === 'checkbox' || $plugin === 'radiobutton' || $plugin === 'dropdown') {
+                $sub_values = [];
+                $sub_labels = [];
+
+                $sub_labels[] = strtoupper('sublabel_' . $gid . '_' . $elementId . '_0');
+                $sub_values[] = 'Option 1';
+                $labels = array(
+                    'fr' => 'Option 1',
+                    'en' => 'Option 1'
+                );
+
+                $this->translate(strtoupper('sublabel_' . $gid . '_' . $elementId . '_0'), $labels);
+
+                $params['sub_options'] = array(
+                    'sub_values' => $sub_values,
+                    'sub_labels' => $sub_labels
+                );
+
+                $query->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+            }*/
+            //
+
+            $query->set($db->quoteName('name') . ' = ' . $db->quote($name))
+                ->where($db->quoteName('id') . '= ' . $db->quote($elementId));
+            $db->setQuery($query);
+            $db->execute();
+            $this->createSimpleElement($gid, ["indicatif_name" => $name, "type_name" => "national_number"], $attachementId = null, $evaluation = 0);
+            $this->createSimpleElement($gid, ["indicatif_name" => $name, "type_name" => "number_regex"], $attachementId = null, $evaluation = 0);
+            // $this->createSimpleElement($gid, ["indicatif_name"=>$name,"type_name"=>"national_number"], $attachementId = null, $evaluation = 0);
+            $this->createSimpleElement($gid, ["indicatif_name" => $name, "type_name" => "tel"], $attachementId = null, $evaluation = 0);
+
             return $elementId;
         } catch (Exception $e) {
+
             JLog::add('component/com_emundus_onboard/models/formbuilder | Problem when create a simple element in the group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
@@ -2312,6 +2593,7 @@ this.set(words.join(&quot; &quot;));
         foreach ($elements as $group_elt) {
             if ($group_elt->element->id == $element) {
                 $o_element = $group_elt->element;
+
                 $el_params = json_decode($o_element->params);
                 $content_element = $group_elt->preRender('0', '1', 'bootstrap');
 
@@ -3378,25 +3660,5 @@ this.set(words.join(&quot; &quot;));
             return false;
         }
     }
-
-    function retriveElementFormAssociatedDoc($gid, $docid)
-    {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-
-            $query->select('*')
-                ->from($db->quoteName('#__emundus_setup_attachments'))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($docid));
-
-            $db->setQuery($query);
-
-            return $db->loadObject();
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot get ordering of group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
-    }
-
 }
+  

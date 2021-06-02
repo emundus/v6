@@ -1408,7 +1408,7 @@ class PlgFabrik_ElementEmundus_areacodephonefield extends PlgFabrik_ElementList
             if ($this->canUse())
             {
                 // If user can access the drop down
-                echo "can use";
+
                 switch ($displayType)
                 {
                     case 'dropdown':

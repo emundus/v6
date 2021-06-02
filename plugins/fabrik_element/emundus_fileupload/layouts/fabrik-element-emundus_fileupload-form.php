@@ -16,6 +16,7 @@
 
 <div id="div_<?php echo $d->attributes['name']; ?>">
     <input type="file" id="<?= $d->attributes['name']; ?>" name="<?= $d->attributes['name']; ?>" multiple <?php foreach ($d->attributes as $key => $value) { echo $key . '="' . $value . '" '; } ?>/>
+
 </div>
 
 <script>

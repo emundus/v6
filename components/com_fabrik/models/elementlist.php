@@ -667,7 +667,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 
 				if (!$this->iconsSet == true)
 				{
-					if (!is_a($this, 'PlgFabrik_ElementDatabasejoin'))
+					if (!is_a($this, 'PlgFabrik_ElementDatabasejoin') )
 					{
 						$l = $this->getLabelForValue($tmpVal);
 					}

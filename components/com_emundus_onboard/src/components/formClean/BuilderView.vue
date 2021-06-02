@@ -178,8 +178,8 @@
                         <span v-if="element.tipBelow" v-html="element.tipBelow"></span>
                       </div>
                       <div class="actions-item-bar" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
-                        <a class="d-flex mr-2 mb-1" v-if="element.plugin != 'calc'" @click="openParameters(element)" :title="Settings">
-                          <em class="fas fa-cog settings-elt"></em>
+                        <a class="d-flex mr-2 mb-1" v-if="element.plugin !== 'calc'|| element.plugin !=='emundus_areacodephonefield'" @click="openParameters(element)" :title="Settings">
+                          <em class="fas fa-cog settings-elt"> </em>
                         </a>
                         <!--                      <a class="d-flex mr-2" v-if="element.plugin != 'calc'" @click="openDuplicate(element)">
                                                 <em class="fas fa-copy"></em>
@@ -192,19 +192,6 @@
                           <em class="fas fa-link settings-elt"></em>
                         </a>
                       </div>
-
-
-                      <!--<div class="form-group" v-if="element.plugin == 'field'">
-                        <label>{{fieldtype}} :</label>
-                        <select id='selectIdTest' class="dropdown-toggle" :disabled="files != 0 && element.params.password == 6" v-on:change="changeInputFieldType(element,$event)">
-                          <option value="0">{{textfield}}</option>
-
-                          <option value="3">{{emailfield}}</option>
-                          <option value="name">Nom</option>
-                          <option value="surname">Prenom</option>
-                          <option value="6" v-if="files == 0 || (files != 0 && element.params.password == 6)">{{numberfield}}</option>
-                        </select>
-                      </div>-->
 
 
                       <a class="d-flex mr-2" v-if="element.plugin != 'display'" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
@@ -1307,50 +1294,7 @@ export default {
       this.$emit("show", group, type, text, title);
     },
 
-    changeInputFieldType:function
-        changeInputFieldType(element,event){
-      if (event.target.value=='name'){
-        //element.params.bootstrap_class='input-xxlarge text-uppercase';
-        element.label.fr='Nom';
-        element.label.en='Name';
-        element.params.password=0;
-        console.log('element name')
-        console.log(element.params)
 
-
-      } else if(event.target.value=='surname') {
-        element.label.fr='Prénom';
-        element.label.en='Surname';
-        //element.params.bootstrap_class='input-xxlarge text-capitalize';
-        element.params.password=0;
-        console.log('element surname')
-        console.log(element.params)
-      } else {
-        element.label.fr='Element sans titre';
-        element.label.en='Unamed item';
-        element.params.password=event.target.value;
-        element.params.bootstrap_class='input-xxlarge';
-        console.log('element pass')
-        console.log(element.params)
-      }
-
-      axios({
-        method: "post",
-        url:
-            "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateparams",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          element: element,
-        })
-      }).then((response)=>{
-        this.updateLabelElement(element)
-        console.log('update succesfully');
-
-
-      })
-    },
   },
 
   created() {
