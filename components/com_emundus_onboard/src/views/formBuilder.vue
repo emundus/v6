@@ -529,7 +529,7 @@
                 plugin: plugin
               })
             }).then((result) => {
-            console.log(result);
+
               axios({
                 method: "get",
                 url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
@@ -542,7 +542,7 @@
                 }
               }).then(response => {
 
-                  console.log(response);
+
                    // console.log(response);
 
                 if (plugin=="email") {
@@ -624,7 +624,7 @@
       menuHighlightCustumisation(response,gid,order){
 
         if(this.menuHighlight === 0) {
-          console.log('highlight 0');
+
           this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid], 'elements[element' + response.data.id + ']', response.data)
           this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts.splice(order, 0, response.data);
           this.$refs.builder.updateOrder(gid, this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts);
@@ -632,7 +632,7 @@
           this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
           this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
         } else {
-          console.log('highlight not null');
+
 
           this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
           this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
