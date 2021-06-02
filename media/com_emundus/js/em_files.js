@@ -793,7 +793,7 @@ function generate_pdf(json,elements=undefined) {
             })
         }
 
-        if(forms == 0) {
+        else if(forms == 0 && jQuery.isEmptyObject(elements) == true) {
             $.ajax({
                 type: 'post',
                 url: 'index.php?option=com_emundus&controller=files&task=generate_pdf&format=raw',
@@ -4972,7 +4972,7 @@ $(document).ready(function() {
                         let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
                         let table_id = table.split('emundus_table_')[1];
 
-                        selectedElements['menu-profile' + felts_id]['table_' + table_id] = {};
+                        selectedElements['menu-profile' + felts_id][table_id] = {};
                     }
                 })
 
@@ -4990,7 +4990,7 @@ $(document).ready(function() {
                         let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
                         let group_id = group.split('emundus_grp_')[1];
 
-                        selectedElements['menu-profile' + felts_id]['table_' + table_id]['group_' + group_id] = [];
+                        selectedElements['menu-profile' + felts_id][table_id][group_id] = [];
                     }
                 })
 
@@ -5009,7 +5009,7 @@ $(document).ready(function() {
                         let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
                         let group_id = group.split('emundus_grp_')[1];
 
-                        selectedElements['menu-profile' + felts_id]['table_' + table_id]['group_' + group_id].push(elt_id);
+                        selectedElements['menu-profile' + felts_id][table_id][group_id].push(elt_id);
                     }
                 })
             } else {
