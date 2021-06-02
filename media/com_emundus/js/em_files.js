@@ -4736,7 +4736,8 @@ $(document).ready(function() {
                     $('#forms :input').attr('checked',false);
                 } else { }
 
-                /// set option d'extraction by default value (1st value)
+                /// set option d'extraction to default checked value
+                $('#em-export-methode').attr('checked', true)
 
                 $.ajax({
                     type: 'POST',
