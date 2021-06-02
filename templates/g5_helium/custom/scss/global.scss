@@ -4,8 +4,6 @@
 /*IMPORT POLICE*/
 @import url("https://use.typekit.net/czx4mrf.css");
 
-@import "dependencies";
-
 // Here you can add Anything you want to be present on the entire site AND with variables
 // - Laura.scss
 
@@ -470,7 +468,7 @@ input[type="text"],
 /* Branding */
 .g-branding {
   margin-right: 0;
-  text-align: end;
+  text-align: start;
 }
 
 #g-navigation #header-a .logo {
@@ -640,7 +638,7 @@ body>.g-container {
 #g-footer .g-grid {
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
 }
 
 .bas-footer {
@@ -676,7 +674,7 @@ body>.g-container {
 .credits-emundus {
   p {
     color: $base-primary-color;
-    float: right;
+    float: left;
   }
 }
 
@@ -3405,7 +3403,7 @@ div#em-appli-block {
         width: 25vw;
 
         .credits-emundus p {
-          text-align: center;
+          text-align: left;
         }
       }
     }
