@@ -4708,6 +4708,36 @@ $(document).ready(function() {
         if (confirm(Joomla.JText._('CONFIRM_DELETE_FILTER'))) {
             var id = $('#filt_save').val();
             if (id != 0) {
+                /// clean all elements de base
+                $('#em-export').empty();
+
+                /// uncheck all elements du formulaire
+                if($('#appelement :input').is(":checked") == true) {
+                    $('#appelement :input').attr('checked',false);
+                } else { }
+
+                /// uncheck all criteres d'evaluation --> evalelement
+                if($('#evalelement :input').is(":checked") == true) {
+                    $('#evalelement :input').attr('checked',false);
+                } else { }
+
+                /// uncheck all elements de decision --> decelement
+                if($('#decelement :input').is(":checked") == true) {
+                    $('#decelement :input').attr('checked',false);
+                } else { }
+
+                // uncheck all autres colonnes --> oelts
+                if($('#oelts :input').is(":checked") == true) {
+                    $('#oelts :input').attr('checked',false);
+                } else { }
+
+                /// uncheck all autres options --> forms
+                if($('#forms :input').is(":checked") == true) {
+                    $('#forms :input').attr('checked',false);
+                } else { }
+
+                /// set option d'extraction by default value (1st value)
+
                 $.ajax({
                     type: 'POST',
                     url: 'index.php?option=com_emundus&controller=files&task=deletefilters&Itemid=' + itemId,
