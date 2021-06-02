@@ -1646,6 +1646,7 @@ class EmundusModelApplication extends JModelList {
     // @description  generate HTML to send to PDF librairie
     // @param   int applicant user id
     // @param   int fnum application file number
+    // @param   list elements
     // @return  string HTML to send to PDF librairie
     function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) {
            /* COULEURS*/
@@ -2318,8 +2319,6 @@ class EmundusModelApplication extends JModelList {
 
     /// goal: generate HTML data and then send to PDF libraries
     public function getCustomizedPDF($uid,$fnum,$profile_id, $elements) {
-//        var_dump($uid);die;
-
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $_profile_model = JModelLegacy::getInstance('profile', 'EmundusModel');
 

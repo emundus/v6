@@ -781,8 +781,6 @@ function generate_pdf(json,elements=undefined) {
                     assessment: assessment,
                     decision: decision,
                     admission: admission,
-                    ids: ids,
-                    formids: formids,               /// always empty
                     attachids: attachids,
                     options: options,
                     params : elements               /// add params
@@ -5078,7 +5076,7 @@ $(document).ready(function() {
                                 /// if forms = 0 --> so selectedElements is empty --> selectedElements = {} --> using jQuery to check it (jQuery.isEmptyObject(_obj_))
                                 if(forms == 0) {
                                     var json = jQuery.parseJSON('{"start":"' + start + '","limit":"' + limit +
-                                        '","totalfile":"' + totalfile + '","forms":"' + forms + '","formids":"' + form_checked +
+                                        '","totalfile":"' + totalfile + '","forms":"' + forms +
                                         '","attachment":"' + attachment + '", "attachids":"' + attach_checked + '", "options":"' + options + '", "assessment":"' + assessment +
                                         '","decision":"' + decision + '","admission":"' + admission + '","file":"' + result.file + '","ids":"' + ids + '"}');
                                 }
