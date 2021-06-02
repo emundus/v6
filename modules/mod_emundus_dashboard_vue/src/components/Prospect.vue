@@ -1,16 +1,14 @@
 <template>
-  <div class='col-md-3 col-sm-5 tchooz-widget'>
+  <div class='col-md-2 col-sm-4 tchooz-widget'>
     <div class='section-sub-menu' style='margin-bottom: 10px'>
       <h3>{{translations.Demo}}</h3>
-      <p class="faq-intro">{{translations.currentlyDemo}}<span style="font-weight: bold">{{this.counter}}</span>{{translations.currentlyDemo2}}</p>
-      <button class='bouton-faq' @click="enableFreePeriod"><span>{{translations.enableDemo}}</span></button>
+      <p class="faq-intro">{{translations.currentlyDemo}}</p>
+      <a href='https://www.emundus.fr/ressources/centre-aide' target='_blank' rel="noopener noreferrer"><button class='bouton-faq'>F.A.Q</button></a>
     </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
-
 const qs = require("qs");
 
 export default {
@@ -24,43 +22,14 @@ export default {
     translations: {
       Demo: Joomla.JText._("COM_EMUNDUS_DASHBOARD_PROSPECT_DEMO"),
       currentlyDemo: Joomla.JText._("COM_EMUNDUS_DASHBOARD_PROSPECT_DEMO_TEXT"),
-      currentlyDemo2: Joomla.JText._("COM_EMUNDUS_DASHBOARD_PROSPECT_DEMO_TEXT_2"),
-      enableDemo: Joomla.JText._("COM_EMUNDUS_DASHBOARD_PROSPECT_DEMO_ENABLE"),
-    },
-    counter: 30,
+    }
   }),
 
   created() {
-    this.getcounter();
+
   },
 
-  methods: {
-    enableFreePeriod(){
-      axios({
-        method: "post",
-        url:
-            "index.php?option=com_emundus_onboard&controller=dashboard&task=enablefreeperiod",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-      }).then(response => {
-        console.log(response.msg);
-      });
-    },
-
-    getcounter(){
-      axios({
-        method: "get",
-        url:
-            "index.php?option=com_emundus_onboard&controller=dashboard&task=democounter",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-      }).then(response => {
-        this.counter = response.data.data;
-      });
-    }
-  },
+  methods: {},
 }
 </script>
 
@@ -79,6 +48,7 @@ export default {
   }
   .bouton-faq{
     margin-top: 20px;
+    padding: 5px 30px;
     height: 30px;
     border-radius: 25px;
     border: 2px solid #16afe1;
@@ -86,7 +56,9 @@ export default {
     transition: color .2s ease,background-color .2s cubic-bezier(.55,.085,.68,.53);
     color: #fff;
     text-decoration: none;
-    width: 100%;
+    width: auto;
+    display: flex;
+    align-items: center;
     font-size: 14px;
     font-weight: 500;
   }
@@ -102,8 +74,10 @@ export default {
     font-size: 24px;
   }
 
-  .prospect-link:hover{
-    text-decoration: unset;
+  @media (max-width: 1440px) {
+    .faq-intro{
+      display: none;
+    }
   }
 
 </style>

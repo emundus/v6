@@ -250,4 +250,16 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function getprospect(){
+        try {
+            $j_config = JFactory::getConfig();
+
+            $tab = array('msg' => 'success', 'data' => $j_config->get('prospect'));
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 }
