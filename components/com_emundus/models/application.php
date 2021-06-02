@@ -2347,7 +2347,7 @@ class EmundusModelApplication extends JModelList {
 
             $listData = $_profile_model->getFabrikFormByList($listID);
             $forms .= '<h2>';
-            $forms .= $listData->label;
+            $forms .= JText::_($listData->label);
             $forms .= '</h2>';
 
             /// extract groups for each list
@@ -2357,7 +2357,7 @@ class EmundusModelApplication extends JModelList {
                     $groupData = array_unique($_profile_model->getFabrikGroupByList(explode('group_', $grp)[1]));
 
                     $forms .= '<h3>';
-                    $forms .= $groupData[0]->name;
+                    $forms .= JText::_($groupData[0]->name);
                     $forms .= '</h3>';
 
                     /// extract elements for each group
@@ -2367,7 +2367,7 @@ class EmundusModelApplication extends JModelList {
                     foreach($element_ids as $elt_key => $elt_value) {
                         $eltData = $_profile_model->getFabrikElementById($elt_value);
                         $forms .= '<h4>';
-                        $forms .= $eltData->label;
+                        $forms .= JText::_($eltData->label);
                         $forms .= '</h4>';
                     }
                 }
