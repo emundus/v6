@@ -861,16 +861,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                             </td>';
             }
 
-//            $htmldata .=
-//                    '<td>
-//                        <h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3>
-//                        <tr>
-//                            <td class="name">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td>
-//                        </tr>
-//                    </td>';
-
-            $htmldata .= '<td><h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3><tr><td class="name">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr></td>';
-
                 if (isset($item->maiden_name)) {
                     $htmldata .=
                         '<tr class="maidename">
@@ -889,6 +879,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     $dt->setTimezone(new DateTimeZone($offset));
 
                     $htmldata .= '<table width="100%"><tr>';
+
+                    $htmldata .= '<h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3><tr><td class="name">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
+
                     if (!$anonymize_data && in_array("aemail", $options)) {
                         $htmldata .=
                             '<tr class="birthday">
@@ -902,6 +895,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                                 <td class="idcandidat">' . JText::_('ID_CANDIDAT') . ' : ' . @$item->user_id . '</td>
                             </tr>';
                     }
+
+                    $htmldata .= '<p></p>';
                     $htmldata .= '<h3>' . JText::_('PDF_HEADER_INFO_DOSSIER') . '</h3><tr><td class="name">' . @$item->label . ' (' . @$item->cb_schoolyear . ')</td></tr>';
 ////
                     if (in_array("afnum", $options)) {
@@ -1144,100 +1139,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $htmldata .= '</td></tr></table><br/>';
             }
 
-//            else {
-//                var_dump('here');die;
-////                var_dump($htmldata . $forms);die;
-////                $htmldata . $forms;
-//            //}
-
-//            elseif ($options[0] == "-1") {
-//                $htmldata .= '';
-//            } else {
-//                $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-//                $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
-//                if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
-//                    $htmldata .= '
 //
-//            <table class="en-tete">
-//                <tr>
-//                ';
-//                    /* td candidat */
-//                    $htmldata .= '
-//
-//                        <td class="candidat">
-//
-//                        <h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3>
-//
-//                        <table>
-//
-//                        <tr><td class="name">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
-//
-//                    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-////                    if (!$anonymize_data) {
-////                        $htmldata .= '
-////                                <tr><td class="birthday">' . JText::_('EMAIL') . ' : ' . @$item->email . '</td></tr>
-////                                <tr><td class="idcandidat">' . JText::_('ID_CANDIDAT') . ' : ' . @$item->user_id . '</td></tr>';
-////                    }
-////
-////
-////                    if (isset($item->maiden_name)) {
-////                        $htmldata .= ' <tr><td class="maidename">' . JText::_('MAIDEN_NAME') . ' : ' . $item->maiden_name . '</td></tr>';
-////                    }
-//                }
-//
-//                $htmldata .= ' </table></td>';
-//
-//
-//                /* td image */
-//                $htmldata .= '<td class="avatar">';
-//
-//                if (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
-//                    $htmldata .= '<img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" />';
-//                } elseif (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
-//                    $htmldata .= '<img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar . '" width="100" />';
-//                }
-//
-//                $htmldata .= '</td>';
-//                $htmldata .= '</tr>';
-//
-//                $date_submitted = (!empty($item->date_submitted) && $item->date_submitted != '0000-00-00 00:00:00') ? JHTML::_('date', $item->date_submitted) : JText::_('NOT_SENT');
-//
-//                // create a $dt object with the UTC timezone
-//                $dt = new DateTime('NOW', new DateTimeZone('UTC'));
-//                // change the timezone of the object without changing it's time
-//                $dt->setTimezone(new DateTimeZone($offset));
-//
-////                $htmldata .= '
-////
-////                        <tr>
-////                        <td class="dossier">
-////
-////                        <h3>' . JText::_('PDF_HEADER_INFO_DOSSIER') . '</h3>
-////
-////                            <table>
-////                                <tr><td class="name">' . @$item->label . ' (' . @$item->cb_schoolyear . ')</td></tr>
-////                                <tr><td class="nationality">' . JText::_('FNUM') . ' : ' . $fnum . '</td></tr>
-////                                <tr><td class="statut">' . JText::_('APPLICATION_SENT_ON') . ' : ' . $date_submitted . '</td></tr>
-////                                <tr><td class="sent">' . JText::_('DOCUMENT_PRINTED_ON') . ' : ' . $dt->format('d/m/Y H:i') . '</td></tr>
-////
-////                            </table>
-////
-////                        </td>
-////                        </tr>
-////            </table>
-////
-////
-////                ';
-//
-//            }
-//var_dump($htmldata);die;
             /**  END APPLICANT   ****/
 
             $htmldata .= $forms;
-//            var_dump($htmldata);die;
+
             // Listes des fichiers chargés
             if (!empty($options) && in_array("upload", $options)) {
-//                var_dump('here');die;
                 $uploads = $m_application->getUserAttachmentsByFnum($fnum);
                 $nbuploads = 0;
                 foreach ($uploads as $upload) {
@@ -1268,30 +1176,18 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
             $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
 
-//            var_dump($htmldata);die;
-
             if (!empty($htmldata)) {
                 $pdf->startTransaction();
                 $start_y = $pdf->GetY();
                 $start_page = $pdf->getPage();
 
-
-
-
-//                var_dump($pdf->writeHTMLCell(0, '', '', $start_y, $htmldata, 'B', 1));die;
-
                 $pdf->writeHTMLCell(0, '', '', $start_y, $htmldata, 'B', 1);
-
-//                var_dump($pdf);die;
-//                $htmldata = '';
-//                var_dump($htmldata);die;
             }
             if (!file_exists(EMUNDUS_PATH_ABS . @$item->user_id)) {
                 mkdir(EMUNDUS_PATH_ABS . $item->user_id, 0777, true);
                 chmod(EMUNDUS_PATH_ABS . $item->user_id, 0777);
             }
 
-            //  fix the code here
             @chdir('tmp');
             if ($output) {
                 if (!isset($current_user->applicant) && @$current_user->applicant != 1) {
