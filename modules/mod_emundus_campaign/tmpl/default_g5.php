@@ -28,13 +28,20 @@ $site_offset = $config->get('offset');
     <?php endif; ?>
 	<div class="g-grid" id="navfilter">
 		<div class="g-block size-30 navrowtabs">
-			<ul id="tabslist" class="nav nav-tabs">
+            <?php if((count($currentCampaign )>=1 && count($pastCampaign)>=1 && count($futurCampaign)==0) || (count($currentCampaign )==0 && count($pastCampaign)>=1 && count($futurCampaign)>=1) || (count($currentCampaign )>=1 && count($pastCampaign)==0 && count($futurCampaign)>=1)) : ?>
+
+            <ul id="tabslist" class="nav nav-tabs">
 				<?php if ($mod_em_campaign_param_tab) :?>
 					<?php foreach ($mod_em_campaign_list_tab as $tab) :?>
+
+                     <?php if(($tab=='current'&& !empty($currentCampaign)) || ($tab=='past' && !empty($pastCampaign)) || ($tab=='futur' && !empty($futurCampaign))) :?>
 						<li role="presentation"><a data-toggle="tab" href="#<?php echo $tab; ?>"><?php echo JText::_("MOD_EM_CAMPAIGN_LIST_".strtoupper($tab)); ?></a></li>
-					<?php endforeach; ?>
+					<?php endif; ?>
+
+                    <?php endforeach; ?>
 				<?php endif; ?>
 			</ul>
+            <?php endif;?>
 		</div>
         <?php if($mod_em_campaign_show_nav_order): ?>
 		<div class="g-block size-30 navorder">
@@ -100,7 +107,8 @@ $site_offset = $config->get('offset');
 	</div>
 
 	<div class="tab-content">
-        <?php if (in_array('current', $mod_em_campaign_list_tab)) : ?>
+        <?php if (in_array('current', $mod_em_campaign_list_tab) && !empty($currentCampaign)) : ?>
+
 		<div id="current" class="tab-pane fade in active">
 			<div class="campaigns-list">
                 <?php if($mod_em_campaign_show_results): ?><p class="campaigns-list-result"><?php echo $paginationCurrent->getResultsCounter(); ?></p><?php endif; ?>
@@ -254,7 +262,7 @@ $site_offset = $config->get('offset');
 	</div><!-- Close current tab -->
 <?php endif; ?>
 
-    <?php if (in_array('futur', $mod_em_campaign_list_tab)) : ?>
+    <?php if (in_array('futur', $mod_em_campaign_list_tab) && !empty($futurCampaign)) : ?>
 	<div id="futur" class="tab-pane fade in active">
 		<div class="campaigns-list">
             <?php if($mod_em_campaign_show_results): ?><p class="campaigns-list-result"><?php echo $paginationFutur->getResultsCounter(); ?></p><?php endif; ?>
@@ -370,7 +378,7 @@ $site_offset = $config->get('offset');
 </div><!-- Close futur tab -->
     <?php endif; ?>
 
-    <?php if (in_array('past', $mod_em_campaign_list_tab)) : ?>
+    <?php if (in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign)) : ?>
 	<div id="past" class="tab-pane fade in active">
 		<div class="campaigns-list">
             <?php if($mod_em_campaign_show_results): ?><p class="campaigns-list-result"><?php echo $paginationPast->getResultsCounter(); ?></p><?php endif; ?>
