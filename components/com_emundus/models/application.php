@@ -1716,7 +1716,6 @@ class EmundusModelApplication extends JModelList {
             $forms .= '</h2>';
             /*-- Liste des groupes -- */
             foreach ($groupes as $itemg) {
-
                 $g_params = json_decode($itemg->params);
 
                 if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
@@ -1729,6 +1728,8 @@ class EmundusModelApplication extends JModelList {
 			    				<thead><tr><th>' . JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</th></tr></thead>
 							   </table>';
                     continue;
+                } else {
+                    $forms .= '<h2>' . JText::_($itemg->label) . '</h2>';
                 }
 
                         // liste des items par groupe
@@ -1742,6 +1743,7 @@ class EmundusModelApplication extends JModelList {
                 }
 
                 $query .= ' ORDER BY fe.ordering';
+
                 try {
                     $this->_db->setQuery($query);
                     $elements = $this->_db->loadObjectList();
@@ -1759,9 +1761,9 @@ class EmundusModelApplication extends JModelList {
                         }
                     }
 
-                    $forms .= '<h3>';
-                    $forms .= JText::_($itemg->label);
-                    $forms .= '</h3>';
+//                    $forms .= '<h3>';
+//                    $forms .= JText::_($itemg->label);
+//                    $forms .= '</h3>';
 
                     if ($itemg->group_id == 14) {
                         $forms .= '<table>';

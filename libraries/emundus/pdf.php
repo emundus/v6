@@ -931,6 +931,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             JLog::add('SQL error in emundus pdf library at query : ' . $query, JLog::ERROR, 'com_emundus');
         }
 
+        $group_list = array_values($elements);
+
         foreach ($profile_menu as $key => $value) {
             $query = "SELECT id from #__emundus_setup_profiles as jesp WHERE jesp.menutype LIKE " . $db->quote($value);
             $db->setQuery($query);
@@ -950,9 +952,12 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             }
 
             $eids = [];
-
             foreach($elements[$value] as $key => $data) {
-                $eids[] = implode(',', array_values($data)[0]);
+                foreach($data as $k => $v) {
+                    foreach($v as $a => $b) {
+                        $eids[] = $b;
+                    }
+                }
             }
 
             $forms = $m_application->getFormsPDF($user_id, $fnum, $fid, $gids, $profile_id, $eids);
@@ -1091,7 +1096,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                        font-size:40px;
                        color: " . $cTitle . ";
                        font-weight:500;
-
+                        
                     }
 
                    h3 {
@@ -1143,35 +1148,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             /**  END APPLICANT   ****/
 
             $htmldata .= $forms;
-
-            // Listes des fichiers chargés
-            if (!empty($options) && in_array("upload", $options)) {
-                $uploads = $m_application->getUserAttachmentsByFnum($fnum);
-                $nbuploads = 0;
-                foreach ($uploads as $upload) {
-                    if (strrpos($upload->filename, "application_form") === false) {
-                        $nbuploads++;
-                    }
-                }
-                $titleupload = $nbuploads > 0 ? JText::_('FILES_UPLOADED') : JText::_('FILE_UPLOADED');
-
-                $htmldata .= '
-                    <h2>' . $titleupload . ' : ' . $nbuploads . '</h2>';
-
-                $htmldata .= '<div class="file_upload">';
-                $htmldata .= '<ol>';
-                foreach ($uploads as $upload) {
-                    if (strrpos($upload->filename, "application_form") === false) {
-                        $path_href = JURI::base() . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
-                        $htmldata .= '<li><b>' . $upload->value . '</b>';
-                        $htmldata .= '<ul>';
-                        $htmldata .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
-                        $htmldata .= '</ul>';
-                        $htmldata .= '</li>';
-                    }
-                }
-                $htmldata .= '</ol></div>';
-            }
 
             $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
             $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
@@ -1456,7 +1432,6 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
     $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
 
-//    var_dump($htmldata);die;
     if (!empty($htmldata)) {
         $pdf->startTransaction();
         $start_y = $pdf->GetY();

@@ -82,7 +82,6 @@ class EmundusHelperExport
         }
 
         application_form_pdf($fnumInfos['applicant_id'], $fnumInfos['fnum'], false, $forms, null, $options, null, null, null, $elements);       /// create pdf file for each fnum
-
         return EMUNDUS_PATH_ABS.$fnumInfos['applicant_id'].DS.$fnumInfos['fnum'].'_application.pdf';
     }
 
