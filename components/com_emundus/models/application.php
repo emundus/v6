@@ -1674,6 +1674,10 @@ class EmundusModelApplication extends JModelList {
         $forms .= '<h1><b>';
         $forms .= strtoupper(trim($_profile_->label));
         $forms .= '</b></h1>';
+        $forms .= '<hr class="sections"></hr>';
+
+        $upload_files = $this->getUploadedFile($fnum, $aid);
+        $forms .= $upload_files;
 
         $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
 
@@ -1703,8 +1707,7 @@ class EmundusModelApplication extends JModelList {
             }
 
             if (count($groupes) > 0) {
-                /*  $forms .= '<br>';*/
-                $forms .= '<hr class="sections"><h2' . $breaker . '>';
+                $forms .= '<h2' . $breaker . '>';
                 $title = explode('-', JText::_($itemt->label));
                 if (empty($title[1])) {
                     $forms .= JText::_(trim($itemt->label));
@@ -3750,4 +3753,35 @@ class EmundusModelApplication extends JModelList {
         }
     }
 
+    public function getUploadedFile($fnum,$user_id) {
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
+        $m_application = new EmundusModelApplication;
+
+        $html = '';
+        $uploads = $m_application->getUserAttachmentsByFnum($fnum);
+
+        $nbuploads = 0;
+        foreach ($uploads as $upload) {
+            if (strrpos($upload->filename, "application_form") === false) {
+                $nbuploads++;
+            }
+        }
+        $titleupload = $nbuploads > 0 ? JText::_('FILES_UPLOADED') : JText::_('FILE_UPLOADED');
+        $html .= '<h2>' . $titleupload . ' : ' . $nbuploads . '</h2>';
+
+        $html .= '<ol>';
+        foreach ($uploads as $upload) {
+            if (strrpos($upload->filename, "application_form") === false) {
+                $path_href = JURI::base() . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
+                $html .= '<li><b>' . $upload->value . '</b>';
+                $html .= '<ul>';
+                $html .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
+                $html .= '</ul>';
+                $html .= '</li>';
+            }
+        }
+        $html .= '</ol>';
+
+        return $html;
+    }
 }

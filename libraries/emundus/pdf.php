@@ -1399,36 +1399,6 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     /**  END APPLICANT   ****/
 
     // Listes des fichiers chargés
-    if (!empty($options) && in_array("upload", $options)) {
-        $uploads = $m_application->getUserAttachmentsByFnum($fnum);
-        $nbuploads = 0;
-        foreach ($uploads as $upload) {
-            if (strrpos($upload->filename, "application_form") === false) {
-                $nbuploads++;
-            }
-        }
-        $titleupload = $nbuploads > 0 ? JText::_('FILES_UPLOADED') : JText::_('FILE_UPLOADED');
-
-        $htmldata .= '
-			<h2>' . $titleupload . ' : ' . $nbuploads . '</h2>';
-
-        $htmldata .= '<div class="file_upload">';
-        $htmldata .= '<ol>';
-        foreach ($uploads as $upload) {
-            if (strrpos($upload->filename, "application_form") === false) {
-                $path_href = JURI::base() . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
-                $htmldata .= '<li><b>' . $upload->value . '</b>';
-                $htmldata .= '<ul>';
-                $htmldata .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
-                $htmldata .= '</ul>';
-                $htmldata .= '</li>';
-
-            }
-
-        }
-        $htmldata .= '</ol></div>';
-    }
-
     $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
     $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
 
