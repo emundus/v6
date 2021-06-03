@@ -1710,9 +1710,9 @@ class EmundusModelApplication extends JModelList {
                 $forms .= '<h2' . $breaker . '>';
                 $title = explode('-', JText::_($itemt->label));
                 if (empty($title[1])) {
-                    $forms .= JText::_(trim($itemt->label));
+                    $forms .= '<b><h2>' . strtoupper(JText::_(trim($itemt->label))) . '</h2></b>';
                 } else {
-                    $forms .= JText::_(trim($title[1]));
+                    $forms .= '<b><h2>' . strtoupper(JText::_(trim($title[1]))) . '</h2></b>';
                 }
             }
 
@@ -1726,13 +1726,13 @@ class EmundusModelApplication extends JModelList {
                 }
 
                 if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
-                    $forms .= '<h2>' . JText::_($itemg->label) . '</h2>';
+                    $forms .= '<h2 class="group">' . JText::_($itemg->label) . '</h2>';
                     $forms .= '<table>
 			    				<thead><tr><th>' . JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</th></tr></thead>
 							   </table>';
                     continue;
                 } else {
-                    $forms .= '<h2>' . JText::_($itemg->label) . '</h2>';
+                    $forms .= '<h2 class="group">' . JText::_($itemg->label) . '</h2>';
                 }
 
                         // liste des items par groupe

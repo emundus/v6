@@ -1086,8 +1086,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             .label-darkpink { background-color: #db0a5b; }
             h3 {  font-family: 'Roboto', sans-serif; font-size:35px;  color: #000000; text-align:left!important; font-weight:bold;}
 
+            .group { color: blue; }
                     h1 {
-                        font-size:55px;
+                        font-size:95px;
                         color: " . $profile_color . ";
                         font-weight:650;
                     }
