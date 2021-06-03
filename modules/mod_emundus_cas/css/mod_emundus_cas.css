@@ -116,7 +116,6 @@
     -webkit-box-shadow: 5px -6px 6px 0px rgb(0 0 0 / 4%);
     box-shadow: 5px -6px 6px 0px rgb(0 0 0 / 4%);
     z-index: 1;
-    z-index: 1;
 }
 
 .container-module-cas  .sous-container-module-cas li:nth-child(2):not(.couleurFoncee) {
@@ -177,5 +176,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media all and (max-width: 479px) {
+
+    .container-module-cas {
+        width: 90%;
+    }
+
 }
 
