@@ -1676,7 +1676,7 @@ class EmundusModelApplication extends JModelList {
         $forms .= '</b></h1>';
         $forms .= '<hr class="sections"></hr>';
 
-        $upload_files = $this->getUploadedFile($fnum, $aid);
+        $upload_files = $this->getCountUploadedFile($fnum, $aid);
         $forms .= $upload_files;
 
         $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
@@ -1978,7 +1978,8 @@ class EmundusModelApplication extends JModelList {
 
 
                                 // TABLEAU DE PLUSIEURS LIGNES sans tenir compte du nombre de lignes
-                    } elseif ((int)$g_params->repeated === 1) {
+                    }
+                    elseif ((int)$g_params->repeated === 1) {
 
                                 //-- Entrée du tableau -- */
                                 $t_elt = array();
@@ -2149,7 +2150,8 @@ class EmundusModelApplication extends JModelList {
 
 
                                 // AFFICHAGE EN LIGNE
-                            } else {
+                            }
+                    else {
                                 $forms .= '<table>';
                                 foreach ($elements as $element) {
 
@@ -2306,11 +2308,14 @@ class EmundusModelApplication extends JModelList {
                                     }
                                 }
                                 $forms .= '</table><div></div>';
+
                             }
                         }
                     }
                 }
             //}
+        $list_upload_files = $this->getListUploadedFile($fnum, $aid);
+        $forms .= $list_upload_files;
         return $forms;
     }
 
@@ -3753,7 +3758,8 @@ class EmundusModelApplication extends JModelList {
         }
     }
 
-    public function getUploadedFile($fnum,$user_id) {
+    /// get count uploaded files
+    public function getCountUploadedFile($fnum,$user_id) {
         require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
         $m_application = new EmundusModelApplication;
 
@@ -3768,6 +3774,24 @@ class EmundusModelApplication extends JModelList {
         }
         $titleupload = $nbuploads > 0 ? JText::_('FILES_UPLOADED') : JText::_('FILE_UPLOADED');
         $html .= '<h2>' . $titleupload . ' : ' . $nbuploads . '</h2>';
+
+        return $html;
+    }
+
+    /// get list uploaded files
+    public function getListUploadedFile($fnum, $user_id) {
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
+        $m_application = new EmundusModelApplication;
+
+        $html = '';
+        $uploads = $m_application->getUserAttachmentsByFnum($fnum);
+
+        $nbuploads = 0;
+        foreach ($uploads as $upload) {
+            if (strrpos($upload->filename, "application_form") === false) {
+                $nbuploads++;
+            }
+        }
 
         $html .= '<ol>';
         foreach ($uploads as $upload) {

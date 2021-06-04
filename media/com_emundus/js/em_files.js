@@ -3599,14 +3599,16 @@ $(document).ready(function() {
                                 dataType: 'json',
                                 success: function(result) {
                                     if(result.status) {
-                                        let models = result.filter;
-                                        models.forEach(model => {
-                                            //add some logical conditions here
-                                            $('#filt_save_pdf').append('<option value="' + model.id + '">' + model.name + '</option>');
-                                            $('#filt_save_pdf').trigger("chosen:updated");
-
-                                            /// parse params --> checkbbox
-                                        });
+                                        if(result.filter !== null || result.filter !== undefined) {
+                                            let models = result.filter;
+                                            models.forEach(model => {
+                                                //add some logical conditions here
+                                                $('#filt_save_pdf').append('<option value="' + model.id + '">' + model.name + '</option>');
+                                                $('#filt_save_pdf').trigger("chosen:updated");
+                                            });
+                                        } else {
+                                            // do nothing
+                                        }
                                     } else {
                                         /// add some events here
                                     }
@@ -4672,6 +4674,9 @@ $(document).ready(function() {
                 $('#em-modal-actions .modal-dialog').addClass('modal-lg');
                 $('#em-modal-actions .modal').show();
                 $('#em-modal-actions').modal({backdrop:false, keyboard:true},'toggle');
+
+                console.log(url);
+
                 $.ajax({
                     type:'get',
                     url:url,
