@@ -391,6 +391,12 @@
             icon: 'fas fa-font',
             name: 'email'
           },
+          yesno:{
+            id:12,
+            value: 'yesno',
+            icon: 'fas fa-font',
+            name: 'yesno'
+          },
           textarea: {
             id: 5,
             value: 'textarea',
@@ -508,8 +514,7 @@
             }
               this.createElementEMundusFileUpload(params,gid,plugin,order);
           } else {
-            console.log("simple element creation ")
-            console.log(plugin)
+
             axios({
               method: "post",
               url:
@@ -534,9 +539,7 @@
                   return qs.stringify(params);
                 }
               }).then(response => {
-                    console.log("none emundus file upload");
 
-                    console.log(response);
 
                 if (plugin=="email") {
                   response.data.params.password = 3;
