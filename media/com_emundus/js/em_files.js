@@ -758,8 +758,6 @@ function generate_pdf(json,elements=undefined) {
 
     var elements    = elements;
 
-    console.log(elements);
-
     //console.log(attachids);
     $.ajaxQ.abortAll();
 
@@ -3723,8 +3721,6 @@ $(document).ready(function() {
                    $('[id^=form-element]').empty();             /// when a new model is loaded, clean all existing felts
                    var model = $('#filt_save_pdf').val();
 
-                   console.log(model);
-
                    if(model != 0) {
                        $.ajax({
                            type: 'post',
@@ -3764,8 +3760,6 @@ $(document).ready(function() {
                                    // $('#em-export-prg').trigger("click");
                                    // $('#em-export-prg').trigger("change");
 
-                                   console.log(headers);
-
                                    $('#em-export-opt').val(headers);
                                    $('#em-export-opt').trigger("chosen:updated");
                                    $('#em-export-opt').trigger("change");
@@ -3776,14 +3770,12 @@ $(document).ready(function() {
                                            url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
                                            dataType: 'JSON',
                                            data: {elts: elements.toString()},
-                                           success: function (my_reply) {
-                                               let profiles = my_reply.fabrik_data.profiles;
-                                               console.log(profiles);
+                                           success: function (returnData) {
+                                               let profiles = returnData.fabrik_data.profiles;
 
                                                // show 'felts' + profile
                                                setTimeout(function () {
                                                        profiles.forEach(prf => {
-                                                           console.log(prf.id);
                                                            $('#felts' + prf.id).show();
 
                                                            $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
@@ -3801,7 +3793,6 @@ $(document).ready(function() {
                                                        })
                                                    }, 3000);
                                                }
-                                               //
 
                                                if (groups !== null || groups !== undefined || groups[0] !== "") {
                                                    // render groups
@@ -3995,69 +3986,8 @@ $(document).ready(function() {
                                         }
                                     })
                                 }
-
-
-                                // console.log('here3');
-                                // $.ajax({
-                                //     type: 'get',
-                                //     url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code,
-                                //     success: function (data) {
-                                //         console.log(data);
-                                //         $('#felts-'+code+camp).parent('div').remove();
-                                //         $('#felts-'+code+'0').parent('div').remove();
-                                //
-                                //
-
-                                //     }
-                                // })
                             }
                         })
-
-                        // $.ajax({
-                        //     type: 'get',
-                        //     url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code,
-                        //     success: function (data) {
-                        //         //console.log(data);
-                        //         $('#felts-'+code+camp).parent('div').remove();
-                        //         $('#felts-'+code+'0').parent('div').remove();
-                        //         $('#felts').append(data);
-                        //         $('#showelements').on('click', function() {
-                        //             if(this.className == 'btn btn-info btn-xs' || this.className == 'btn-xs btn btn-info') {
-                        //                 $('#felts').show();
-                        //             } if(this.className == 'btn-xs btn btn-elements-success') {
-                        //                 $('#felts').hide();
-                        //             }
-                        //         });
-                        //
-                        //         $('#em-ex-forms').click(function(e) {
-                        //
-                        //             if ($('#em-ex-forms').is(":checked")){
-                        //                 //document.getElementById('em-ex-forms').checked = true;
-                        //                 //$('#emundus_checkall_tbl_'+div_id).trigger("click");
-                        //                 let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
-                        //
-                        //                 // find all children of panels
-                        //                 let children = Array.prototype.slice.call( panel.children );
-                        //                 children.forEach((elt) => {
-                        //                     var div_id = elt.id.split('emundus_table_')[1];
-                        //                     $('#emundus_checkall_tbl_'+div_id).trigger("click");
-                        //                 })
-                        //                 document.getElementById('em-ex-forms').checked = true;
-                        //
-                        //             } else {
-                        //                 let panel = document.getElementById('felts').firstElementChild;                         /// changer ici en jquery
-                        //
-                        //                 // find all children of panels
-                        //                 let children = Array.prototype.slice.call( panel.children );
-                        //                 children.forEach((elt) => {
-                        //                     var div_id = elt.id.split('emundus_table_')[1];
-                        //                     $('#emundus_checkall_tbl_'+div_id).trigger("click");
-                        //                 })
-                        //                 document.getElementById('em-ex-forms').checked = false;
-                        //             }
-                        //         });
-                        //     }
-                        // })
 
                         $.ajax({
                             type:'get',
@@ -4944,15 +4874,12 @@ $(document).ready(function() {
 
         /// if at least one is checked --> forms = 1
         $('[id^=felts] input:checked').length > 0 ? forms = 1 : forms = 0;
-        console.log(forms);
 
         let selectedElements = new Object();
 
         // at least one element is selected
         $('[id^=felts]').each(function (flt) {
             if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
-                console.log('at least one element is selected');
-
                 /// get associated #felts
                 $('[id^=emundus_elm_]').each(function (elt) {
                     if ($(this).prop('checked') == true) {
@@ -5020,8 +4947,6 @@ $(document).ready(function() {
 
             }
         })
-
-        console.log(selectedElements);
 
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
