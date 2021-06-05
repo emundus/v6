@@ -1988,6 +1988,7 @@ class EmundusControllerFiles extends JControllerLegacy
         } else {
 	        $files_list = array();
         }
+        $db = JFactory::getDbo();
 
         for ($i = $start; $i <= $totalfile; $i++) {
             $fnum = $validFnums[$i];
@@ -2003,7 +2004,29 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
                     }
                     if ($forms || !empty($forms_to_export)) {
-	                    $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $elements);
+
+                        //// fnum --> campaign_id
+                        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+                        $m_profile = new EmundusModelProfile;
+                        $infos = $m_profile->getFnumDetails($fnum);
+                        $campaign_id = $infos['campaign_id'];
+
+                        ///  campaign_id --> menu-profile
+                        $query = "SELECT jesp.menutype
+                                    FROM #__emundus_setup_profiles AS jesp
+                                        LEFT JOIN #__emundus_setup_campaigns ON jesp.id =  #__emundus_setup_campaigns.profile_id
+                                            WHERE #__emundus_setup_campaigns.id = " . $campaign_id;
+                        $db->setQuery($query);
+                        $_return_menutype = $db->loadResult();
+
+                        /// if menu-profile is not in array array_keys($elements) --> do nothing
+                        /// otherwise, call to buildFormPDF
+
+                        if(in_array($_return_menutype, array_keys($elements))) {
+                            $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $elements);
+                        } else {
+
+                        }
                     }
                 }
 
