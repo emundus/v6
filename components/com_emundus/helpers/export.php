@@ -31,7 +31,7 @@ JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
 class EmundusHelperExport
 {
 	
-	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 0, $form_ids = null, $options = null, $application_form_order = null ) {
+	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 0, $form_ids = null, $options = null, $application_form_order = null, $elements = null ) {
 		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
         
 		if (!file_exists($file)) {
@@ -47,8 +47,7 @@ class EmundusHelperExport
 		if (!function_exists('application_form_pdf')) {
 			require_once($file);
 		}
-        
-        application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order);
+        application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order,null,null,$elements);
         /// application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order, null, null, null);           /// review this function
 		return EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_application.pdf';
     }

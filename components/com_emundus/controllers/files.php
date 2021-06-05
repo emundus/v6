@@ -1933,6 +1933,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $attachid   = $jinput->getVar('attachids', null);
         $option     = $jinput->getVar('options', null);
 
+        $elements = $jinput->getVar('elements', null);                // default NULL
+
         $formids    = explode(',', $formid);
         $attachids  = explode(',', $attachid);
         $options    = explode(',', $option);
@@ -1987,8 +1989,7 @@ class EmundusControllerFiles extends JControllerLegacy
 	        $files_list = array();
         }
 
-
-        for ($i = $start; $i < ($start+$limit) && $i < $totalfile; $i++) {
+        for ($i = $start; $i <= $totalfile; $i++) {
             $fnum = $validFnums[$i];
             if (is_numeric($fnum) && !empty($fnum)) {
                 if (isset($forms)) {
@@ -2002,7 +2003,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
                     }
                     if ($forms || !empty($forms_to_export)) {
-	                    $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options);
+	                    $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $elements);
                     }
                 }
 
