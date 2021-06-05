@@ -3776,7 +3776,7 @@ $(document).ready(function() {
                 });
 
                 $('#em-export-prg').on('change', function() {
-
+                    $('#form-element').empty();
                     var code = $(this).val();
                     if (code != 0) {
 
