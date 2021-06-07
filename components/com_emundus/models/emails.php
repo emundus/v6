@@ -568,11 +568,11 @@ class EmundusModelEmails extends JModelList {
                 if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
                     $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, @$groupParams->repeat_group_button == 1);
 
-                    /*
-                    if (empty($fabrikValues[$elt['id']['val'])) {
+
+                    if (empty($fabrikValues[$elt['id']])) {
                         $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
                     }
-                    */
+
 
                 } else {
                     if ($isDate) {
