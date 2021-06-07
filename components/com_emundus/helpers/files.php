@@ -631,7 +631,7 @@ class EmundusHelperFiles
             }
         }
 
-        else if ($plist and is_null($profile)) {
+        else if ($plist) {
             // get Fabrik list ID for profile_id$where .= ' AND (tab.id IN ( ' . implode(',', $fl) . ' ))
             $fl = array();
             $menutype = array();
