@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
+JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_onboard/models');        // call com_emundus_onboard model
 
 class EmundusModelApplication extends JModelList {
     var $_user = null;
@@ -1658,6 +1659,7 @@ class EmundusModelApplication extends JModelList {
         $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25');
 
         $_profile_model = JModelLegacy::getInstance('profile', 'EmundusModel');
+        $_formbuilder_model = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');         // call formbuilder model
 
     	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
         $h_list = new EmundusHelperList;
@@ -1672,12 +1674,9 @@ class EmundusModelApplication extends JModelList {
         $_profile_ = $this->_db->loadObject();
 
         $forms .= '<h1><b>';
-        $forms .= strtoupper(trim($_profile_->label));
+        $forms .= strtoupper(preg_replace('/\s+/', '-', $_formbuilder_model->replaceAccents($_profile_->label)));
         $forms .= '</b></h1>';
         $forms .= '<hr class="sections"></hr>';
-
-        $upload_files = $this->getCountUploadedFile($fnum, $aid);
-        $forms .= $upload_files;
 
         $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
 
@@ -1710,9 +1709,9 @@ class EmundusModelApplication extends JModelList {
                 $forms .= '<h2' . $breaker . '>';
                 $title = explode('-', JText::_($itemt->label));
                 if (empty($title[1])) {
-                    $forms .= '<b><h2>' . strtoupper(JText::_(trim($itemt->label))) . '</h2></b>';
+                    $forms .= '<b><h2>' . strtoupper(trim(preg_replace('/\s+/', '-', $_formbuilder_model->replaceAccents(JText::_($itemt->label))))) . '</h2></b>';
                 } else {
-                    $forms .= '<b><h2>' . strtoupper(JText::_(trim($title[1]))) . '</h2></b>';
+                    $forms .= '<b><h2>' . strtoupper(trim(preg_replace('/\s+/', '-', $_formbuilder_model->replaceAccents(JText::_($title[1]))))) . '</h2></b>';
                 }
             }
 
@@ -2314,6 +2313,9 @@ class EmundusModelApplication extends JModelList {
                     }
                 }
             //}
+        $upload_files = $this->getCountUploadedFile($fnum, $aid);
+        $forms .= $upload_files;
+
         $list_upload_files = $this->getListUploadedFile($fnum, $aid);
         $forms .= $list_upload_files;
         return $forms;
