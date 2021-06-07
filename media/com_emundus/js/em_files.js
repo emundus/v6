@@ -3577,8 +3577,8 @@ $(document).ready(function() {
                                    let campCode = json.pdffilter.camp;
                                    let campName = json.pdffilter.camplabel;
 
-                                   let groups = json.pdffilter.groups;
-                                   let tables = json.pdffilter.tables;
+                                   let checkAllGroups = json.pdffilter.checkAllGroups;
+                                   let checkAllTables = json.pdffilter.checkAllTables;
                                    let elements = json.pdffilter.elements;
                                    let headers = json.pdffilter.headers;
 
@@ -3623,19 +3623,19 @@ $(document).ready(function() {
                                                                }, 3000
                                                            );
 
-                                                           if (tables !== null || tables !== undefined || tables[0] !== "") {
+                                                           if (checkAllTables !== null || checkAllTables !== undefined || checkAllTables[0] !== "") {
                                                                //render tables
                                                                setTimeout(function () {
-                                                                   tables.forEach(tbl => {
+                                                                   checkAllTables.forEach(tbl => {
                                                                        $('#emundus_checkall_tbl_' + tbl).attr('checked', true);
                                                                    })
                                                                }, 3000);
                                                            }
 
-                                                           if (groups !== null || groups !== undefined || groups[0] !== "") {
+                                                           if (checkAllGroups !== null || checkAllGroups !== undefined || checkAllGroups[0] !== "") {
                                                                // render groups
                                                                setTimeout(function () {
-                                                                   groups.forEach(grp => {
+                                                                   checkAllGroups.forEach(grp => {
                                                                        $('#emundus_checkall_grp_' + grp).attr('checked', true);
                                                                    })
                                                                }, 3000);
@@ -3954,26 +3954,26 @@ $(document).ready(function() {
                     var proglabel = $("#em-export-prg option:selected").text();
                     var camplabel = $("#em-export-camp option:selected").text();
 
-                    // save all tables
-                    let tblElements = [];
+                    // save check all tables
+                    let checkAllTables = [];
                     let tblElementsObject = $('[id^=emundus_checkall_tbl_]');
                     let tblElementsArray = Array.prototype.slice.call(tblElementsObject);
                     tblElementsArray.forEach(tbl => {
                         if(tbl.checked == true) {
                             let id = tbl.id.split('emundus_checkall_tbl_')[1];
-                            tblElements.push(id);
+                            checkAllTables.push(id);
                         }
                     });
 
-                    /// save all groups
-                    let grpElements = [];
+                    /// save check all groups
+                    let checkAllGroups = [];
                     let grpElementsObject = $('[id^=emundus_checkall_grp_]');
                     let grpElementsArray = Array.prototype.slice.call(grpElementsObject);
 
                     grpElementsArray.forEach(grp => {
                         if(grp.checked == true) {
                             let id = grp.id.split('emundus_checkall_grp_')[1];
-                            grpElements.push(id);
+                            checkAllGroups.push(id);
                         }
                     });
 
@@ -3986,6 +3986,34 @@ $(document).ready(function() {
                     eltsArray.forEach(elt => {
                         if (elt.checked == true) {
                             elements.push(elt.value);
+                        }
+                    })
+
+                    ///////////////
+                    /// save all profiles
+                    let profiles = [];
+                    $('[id^=felts]').each(function (flt) {
+                        if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
+                            let id = $(this).attr('id').split('felts')[1];
+                            profiles.push(id);
+                        }
+                    })
+
+                    /// save all tables
+                    let tables = [];
+                    $('[id^=emundus_table_]').each(function (flt) {
+                        if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
+                            let id = $(this).attr('id').split('emundus_table_')[1];
+                            tables.push(id);
+                        }
+                    })
+
+                    /// save all groups
+                    let groups = [];
+                    $('[id^=emundus_grp_]').each(function (flt) {
+                        if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
+                            let id = $(this).attr('id').split('emundus_grp_')[1];
+                            groups.push(id);
                         }
                     })
 
@@ -4003,9 +4031,14 @@ $(document).ready(function() {
                         'camp': camp,
                         'proglabel': proglabel,
                         'camplabel': camplabel,
-                        'tables': tblElements.length > 0 ? tblElements : [""],
-                        'groups': grpElements.length > 0 ? grpElements : [""],
+
+                        'profiles': profiles.length > 0 ? profiles : [""],
+                        'tables': tables.length > 0 ? tables : [""],
+                        'groups': groups.length > 0 ? groups : [""],
                         'elements': elements.length > 0 ? elements : [""],
+
+                        'checkAllTables': checkAllTables.length > 0 ? checkAllTables : [""],
+                        'checkAllGroups': checkAllGroups.length > 0 ? checkAllGroups : [""],
                         'headers': headers.length > 0 ? headers : [""],
                     };
 
