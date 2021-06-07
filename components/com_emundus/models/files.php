@@ -3316,15 +3316,14 @@ if (JFactory::getUser()->id == 63)
 	 */
     public function getFabrikValueRepeat($elt, $fnums, $params = null, $groupRepeat) {
 
-        if (!is_array($fnums))
+        if (!is_array($fnums)) {
             $fnums = [$fnums];
+        }
 
-        //$gid = $elt['group_id'];
         $tableName = $elt['db_table_name'];
         $tableJoin = $elt['table_join'];
         $name = $elt['name'];
         $plugin = $elt['plugin'];
-//var_dump($elt);
         $isFnumsNull = ($fnums === null);
         $isDatabaseJoin = ($plugin === 'databasejoin');
         $isMulti = (@$params->database_join_display_type == "multilist" || @$params->database_join_display_type == "checkbox");
