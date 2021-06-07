@@ -1730,10 +1730,7 @@ class EmundusModelApplication extends JModelList {
 			    				<thead><tr><th>' . JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</th></tr></thead>
 							   </table>';
                     continue;
-                } else {
-                    $forms .= '<h2 class="group">' . JText::_($itemg->label) . '</h2>';
                 }
-
                         // liste des items par groupe
                 $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
                         FROM #__fabrik_elements fe
@@ -2320,76 +2317,6 @@ class EmundusModelApplication extends JModelList {
 
         $list_upload_files = $this->getListUploadedFile($fnum, $aid);
         $forms .= $list_upload_files;
-        return $forms;
-    }
-
-    /// goal: generate HTML data and then send to PDF libraries
-    public function getCustomizedPDF($uid,$fnum,$profile_id, $elements) {
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $_profile_model = JModelLegacy::getInstance('profile', 'EmundusModel');
-
-        $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
-        $em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
-
-        $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25');
-
-        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
-        $h_list = new EmundusHelperList;
-
-        $forms = "";
-        /// get profile informations
-        $profile = $_profile_model->getProfileByMenu($profile_id);
-
-        /// print the profile label
-
-        $forms .= '<hr class="sections"><h1>';
-        $forms .= $profile->label;
-        $forms .= '</h1>';
-
-        /// print the form label --> get the form from selected list --> $elements[$profile_id]
-        $selected_fabrik_lists = array_keys($elements[$profile_id]);
-
-        foreach($selected_fabrik_lists as $key => $value) {
-            $listID = explode('table_', $value)[1];
-
-            $listData = $_profile_model->getFabrikFormByList($listID);
-            $forms .= '<h2>';
-            $forms .= JText::_($listData->label);
-            $forms .= '</h2>';
-
-            /// extract groups for each list
-            foreach($elements[$profile_id] as $index => $data) {
-                $groupID = array_keys($elements[$profile_id][$value]);
-                foreach($groupID as $group => $grp) {
-                    $groupData = array_unique($_profile_model->getFabrikGroupByList(explode('group_', $grp)[1]));
-
-                    $forms .= '<h3>';
-                    $forms .= JText::_($groupData[0]->name);
-                    $forms .= '</h3>';
-
-                    /// extract elements for each group
-
-                    /// elements id = $elements[$profile_id][$value][$grp]
-                    $element_ids = $elements[$profile_id][$value][$grp];
-                    foreach($element_ids as $elt_key => $elt_value) {
-                        $eltData = $_profile_model->getFabrikElementById($elt_value);
-                        $forms .= '<h4>';
-                        $forms .= JText::_($eltData->label);
-                        $forms .= '</h4>';
-
-                        $elementData = $_profile_model->getDataFromElementName($eltData, $fnum, $uid);
-
-                        //// add data for this element here
-                        $forms .= '<h5>';
-                        $forms .= $elementData;
-                        $forms .= '</h5>';
-                    }
-                }
-                break;
-            }
-        }
-
-        //extract groups for each list
         return $forms;
     }
 

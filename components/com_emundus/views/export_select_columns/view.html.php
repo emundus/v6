@@ -49,8 +49,6 @@ class EmundusViewExport_select_columns extends JViewLegacy
         $camp = $jinput->getVar('camp', null);
         $profile = $jinput->getVar('profile', null);
 
-        var_dump($profile);die;
-
         if (!empty($prg)) {
             $program = $m_program->getProgramme($prg);
             $code = $prg;

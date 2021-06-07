@@ -155,27 +155,6 @@ function reloadData(view)
     });
 }
 
-/*
-// load Filter
-function reloadFilter(view)
-{
-    view = (typeof view === "undefined") ? "files" : view;
-
-    $.ajax({
-        type: "GET",
-        url: 'index.php?option=com_emundus&view='+view+'&layout=filters&format=raw&Itemid=' + itemId,
-        dataType: 'html',
-        success: function(data)
-        {
-            //$("#em_filters").remove();
-            $("#em_filters").append(data);
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR.responseText);
-        }
-    })
-}
-*/
 // load Menu action
 function reloadActions(view, fnum, onCheck, async) {
 
@@ -196,8 +175,6 @@ function reloadActions(view, fnum, onCheck, async) {
         url: 'index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId+ '&display=none&fnum='+fnum+'&multi='+multi,
         dataType: 'html',
         success: function(data) {
-            //$('.em-dimmer').remove();
-            //$(".col-md-9 .panel.panel-default").remove();
             $('.navbar.navbar-inverse').empty();
             $('.navbar.navbar-inverse').append(data);
 
@@ -335,10 +312,8 @@ function openFiles(fnum, page = 0) {
     // Run the reload actions function without waiting for return.
     setTimeout(function(){reloadActions(undefined, fnum.fnum, false, true);},0);
 
-    //var fnum = fnum.fnum;
     var cid = parseInt(fnum.fnum.substr(14, 7));
     var sid = parseInt(fnum.fnum.substr(21, 7));
-
 
     $('#em-assoc-files .panel-body').empty();
 
@@ -359,7 +334,6 @@ function openFiles(fnum, page = 0) {
         url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=synthesis&action=0',
         dataType: 'html',
         success: function(result) {
-            //$('#em-hide-filters, #em-last-open, #em-appli-menu').show();
             $('#em-last-open .list-group .active').removeClass('active');
             if ($('#'+fnum.fnum+'_ls_op').is(':visible')) {
                 $('#'+fnum.fnum+'_ls_op' ).addClass('active');
@@ -851,7 +825,6 @@ function back() {
 }
 
 $(document).ready(function() {
-    //$('.em-check-all-all').hide();
     $('#check').removeClass('em-check-all-all');
 
     var lastVal = new Object();
@@ -938,7 +911,6 @@ $(document).ready(function() {
                         success: function(result) {
                             if (result.status) {
                                 refreshFilter();
-                                //reloadData($('#view').val());
                             }
                         },
                         error: function(jqXHR) {
@@ -1361,12 +1333,7 @@ $(document).ready(function() {
         e.preventDefault();
         var id = $(this).attr('id');
         var url = $(this).attr('href');
-        //var currenturl = $(location).attr('href');
-        // currenturl = currenturl.split("#");
-        //if (currenturl[1] != null) {
-        // currenturl = currenturl[1].split("|");
-        // var fnum = currenturl[0];
-        // if (fnum != null) {
+
         $.ajax({
             type: "get",
             url: url,
@@ -1380,37 +1347,12 @@ $(document).ready(function() {
                 console.log(jqXHR.responseText);
             }
         });
-        //}
-        // ;
-        //};
+
     });
 
 //
 // Lien Edition / Ajout de données de formulaire de candidature
 //
-    /*   $(document).on('click', '#em-appli-block .active.content a.btn-primary', function(e)
-     {
-     e.preventDefault();
-     // var id=$(this).attr("rel");
-     var url = $(this).attr('href');
-     var fnum = $('.em-check:checked').attr('id').split('_')[0];
-     //$(".modal-body").fadeIn(1000).html('<div style="text-align:center; margin-right:auto; margin-left:auto">Patientez...</div>');
-     $(".modal-body").empty();
-     $.ajax({
-     type:"GET",
-     url:url,
-     dataType:'html',
-     data:({fnum:fnum}),
-     error:function(msg){
-     $(".modal-body").addClass("tableau_msg_erreur").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).html('<div style="margin-right:auto; margin-left:auto; text-align:center">Impossible de charger cette page</div>');
-     },
-     success:function(data){
-     $(".modal-body").empty();
-     $(".modal-body").append(data);
-     }
-     });
-     });
-     */
     $(document).on('change', '#pager-select', function(e) {
         if (e.handle !== true) {
             e.handle = true;
@@ -1504,7 +1446,6 @@ $(document).ready(function() {
 
     $(document).on('change', '.em-check', function(e) {
         if ($(this).attr('id') == 'em-check-all') {
-            //$('.em-check-all-all').show();
             $('.em-actions[multi="1"]').show();
             $('.em-actions[multi="1"]').removeClass('em-hidden');
 
@@ -1525,8 +1466,6 @@ $(document).ready(function() {
                 reloadActions('files', undefined, true);
 
             } else {
-
-                //$('.em-check-all-all').hide();
                 $(this).prop('checked', false);
                 $('.em-check').prop('checked', false);
                 $('.em-actions[multi="0"]').show();
@@ -1738,7 +1677,6 @@ $(document).ready(function() {
                 $('#can-val').show();
 
                 $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="loading"/>' +'</div>');
-                //var url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getformelem&Itemid='+itemId;
                 $.ajax({
                     type:'get',
                     url:url,
@@ -1765,12 +1703,6 @@ $(document).ready(function() {
                                                 '<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>' +
                                             '</select>' +
                                         '</div>' +
-
-                                        // '<div id="letter">' +
-                                        //     '<select name="em-export-letter" id="em-export-letter" class="chzn-select">' +
-                                        //         '<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_LETTER')+' --</option>' +
-                                        //     '</select>' +
-                                        // '</div>' +
                                     '</div>' +
                                 '</div>'
                             )
@@ -1866,7 +1798,6 @@ $(document).ready(function() {
                                         nbprg = $('#em-export-prg option').size();
 
                                         if (nbprg == 2) {
-                                            //$('#em-export-prg option:eq(1)').attr('selected', true);
                                             document.getElementById('em-export-prg').selectedIndex = 1;
                                             $('#em-export-prg').trigger("chosen:updated");
                                             var code = $('#em-export-prg').val();
@@ -3528,10 +3459,7 @@ $(document).ready(function() {
                     data: {checkInput : checkInput},
                     dataType:'json',
                     success: function(result) {
-                        //$('#form-element').empty();
-                        $('#felts').empty();
-                        //$('#form-element').hide();
-                        // $('#showelements').empty();      // hide button
+                        $('#felts').empty(); /// error here
                         if (result.status) {
                             /// get all pdf models by user_id
                             $.ajax({
@@ -3566,7 +3494,6 @@ $(document).ready(function() {
                             nbprg = $('#em-export-prg option').size();
 
                             if (nbprg == 2) {
-                                //$('#em-export-prg option:eq(1)').attr('selected', true);
                                 document.getElementById('em-export-prg').selectedIndex = 1;
                                 $('#em-export-prg').trigger("chosen:updated");
 
@@ -3607,39 +3534,6 @@ $(document).ready(function() {
                                                         $('#camp').show();
 
                                                         var camp = $("#em-export-camp").val();
-
-                                                        /// do not get form elem when load modal
-                                                        // $.ajax({
-                                                        //     type:'get',
-                                                        //     url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
-                                                        //     dataType:'json',
-                                                        //     success: function(result) {
-                                                        //         if (result.status) {
-                                                        //             prghtml = result.html;
-                                                        //             $('#felts').append(result.html);
-                                                        //             $('#felts').toggle(400);
-                                                        //
-                                                        //             $.ajax({
-                                                        //                 type:'get',
-                                                        //                 url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
-                                                        //                 dataType:'json',
-                                                        //                 success: function(result) {
-                                                        //                     if (result.status) {
-                                                        //                         atthtml = result.html;
-                                                        //                         $('#aelts').append(result.html);
-                                                        //                         $('#aelts').toggle(400);
-                                                        //                     }
-                                                        //                 },
-                                                        //                 error: function (jqXHR) {
-                                                        //                     console.log(jqXHR.responseText);
-                                                        //                 }
-                                                        //             });
-                                                        //         }
-                                                        //     },
-                                                        //     error: function (jqXHR) {
-                                                        //         console.log(jqXHR.responseText);
-                                                        //     }
-                                                        // });
                                                     }
                                                 },
                                                 error: function (jqXHR) {
@@ -3674,9 +3568,6 @@ $(document).ready(function() {
                            dataType: 'JSON',
                            success: function(result) {
                                if(result.status) {
-                                   //$('#em-export-opt > option').attr('selected', false);
-                                   //$('#em-export-opt').trigger("chosen:updated");
-
                                    let constraints = result.filter.constraints;
                                    let json = JSON.parse(constraints);
 
@@ -3815,41 +3706,6 @@ $(document).ready(function() {
                                                 $('#camp').show();
 
                                                 var camp = $("#em-export-camp").val();
-
-                                                // $.ajax({
-                                                //     type:'get',
-                                                //     url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
-                                                //     dataType:'json',
-                                                //     success: function(result) {
-                                                //         if (result.status) {
-                                                //
-                                                //             prghtml = result.html;
-                                                //             $('#felts-'+code+camp).parent('div').remove();
-                                                //             $('#felts').append(result.html);
-                                                //             $('#felts').show();
-                                                //
-                                                //             $.ajax({
-                                                //                 type:'get',
-                                                //                 url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
-                                                //                 dataType:'json',
-                                                //                 success: function(result) {
-                                                //                     if (result.status) {
-                                                //                         atthtml = result.html;
-                                                //                         $('#aelts-'+code+camp).parent('div').remove();
-                                                //                         $('#aelts').append(result.html);
-                                                //                         $('#aelts').show();
-                                                //                     }
-                                                //                 },
-                                                //                 error: function(jqXHR) {
-                                                //                     console.log(jqXHR.responseText);
-                                                //                 }
-                                                //             })
-                                                //         }
-                                                //     },
-                                                //     error: function(jqXHR) {
-                                                //         console.log(jqXHR.responseText);
-                                                //     }
-                                                // })
                                             }
                                         },
                                         error: function (jqXHR) {
@@ -3965,11 +3821,6 @@ $(document).ready(function() {
 
                                             success: function(result) {
                                                 if (result.status) {
-                                                    //console.log(result);
-                                                    // $('#felts-'+code+camp).parent('div').remove();
-                                                    // $('#felts-'+code+'0').parent('div').remove();
-                                                    // $('#felts').append(result.html);
-                                                    // $('#felts').show();
 
                                                     $.ajax({
                                                         type:'post',
@@ -3994,9 +3845,7 @@ $(document).ready(function() {
                                             }
                                         });
                                     } else {
-                                        //$('[id^=felts-'+code+']').parent('div').remove();
                                         $('[id^=aelts-'+code+']').parent('div').remove();
-                                        //$('#felts').append(prghtml);
                                         $('#aelts').append(atthtml);
                                     }
                                 }
@@ -4010,21 +3859,6 @@ $(document).ready(function() {
                         $('[id^=form-element]').empty();
                     }
                 });
-
-                // $(document).on('click', '[id^=showelements_]', function() {
-                //     let id = $(this).attr('id').split('_')[1];
-                //     let button_id = $(this).attr('id');
-                //
-                //     if($('#' + button_id + ' > span').attr('class') == 'glyphicon glyphicon-plus') {
-                //         $('#' + button_id + ' > span').attr('class', 'glyphicon glyphicon-minus');
-                //         $(this).attr('class','btn-xs btn btn-elements-success');
-                //         $('#felts'+ id).show();
-                //     } else {
-                //         $('#' + button_id + ' > span').attr('class', 'glyphicon glyphicon-plus');
-                //         $(this).attr('class','btn-xs btn btn-info');
-                //         $('#felts'+ id).hide();
-                //     }
-                // });
 
                 /// check all children of table
                 $(document).on('click', '[id^=emundus_checkall_tbl_]', function() {
@@ -4616,8 +4450,6 @@ $(document).ready(function() {
                 $('#em-modal-actions .modal').show();
                 $('#em-modal-actions').modal({backdrop:false, keyboard:true},'toggle');
 
-                console.log(url);
-
                 $.ajax({
                     type:'get',
                     url:url,
@@ -4812,11 +4644,6 @@ $(document).ready(function() {
         var options = [];
 
         var elements = null;
-
-        // $('#felts input:checked').each(function() {
-        //     form_checked.push($(this).val());
-        //     forms = 0;
-        // });
 
         /// if at least one is checked --> forms = 1
         $('[id^=felts] input:checked').length > 0 ? forms = 1 : forms = 0;
