@@ -3583,100 +3583,84 @@ $(document).ready(function() {
                                    let headers = json.pdffilter.headers;
 
                                    // re-render to DOM
-                                   if($("#em-export-prg option[value='" + progCode + "']").length > 0 === true &&  $("#em-export-camp option[value='" + campCode + "']").length > 0 === true){
-
+                                   if($("#em-export-prg option[value='" + progCode + "']").length > 0 === true){
                                        if(progCode !== $('#em-export-prg').val()) {
-                                           console.log('diff');
                                            $('#em-export-prg').val(progCode);
                                            $('#em-export-prg').trigger("chosen:updated");
                                            $('#em-export-prg').trigger("click");
                                            $('#em-export-prg').trigger("change");
-                                       }
+                                       } else {}
 
-                                       // $('#em-export-prg').val(progCode);
-                                       // $('#em-export-prg').trigger("chosen:updated");
-                                       // $('#em-export-prg').trigger("click");
-                                       // $('#em-export-prg').trigger("change");
+                                       setTimeout(function(){
+                                           if($("#em-export-camp option[value='" + campCode + "']").length > 0 === true) {
+                                               $('#em-export-camp').val(campCode);
+                                               $('#em-export-camp').trigger("chosen:updated");
+                                               $('#em-export-camp').trigger("click");
+                                               $('#em-export-camp').trigger("change");
 
-                                       console.log(campCode);
-                                       $('#em-export-camp').val(campCode);
-                                       $('#em-export-camp').trigger("chosen:updated");
-                                       $('#em-export-prg').trigger("click");
-                                       $('#em-export-camp').trigger("change");
-                                       //
-                                       $('#em-export-opt').val(headers);
-                                       $('#em-export-opt').trigger("chosen:updated");
-                                       $('#em-export-opt').trigger("change");
+                                               $('#em-export-opt').val(headers);
+                                               $('#em-export-opt').trigger("chosen:updated");
+                                               $('#em-export-opt').trigger("change");
 
-                                            if(elements[0] !== "") {
-                                                $.ajax({
-                                                    type: 'post',
-                                                    url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
-                                                    dataType: 'JSON',
-                                                    data: {elts: elements.toString()},
-                                                    success: function (returnData) {
-                                                        let profiles = returnData.fabrik_data.profiles;
+                                               if (elements[0] !== "") {
+                                                   $.ajax({
+                                                       type: 'post',
+                                                       url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
+                                                       dataType: 'JSON',
+                                                       data: {elts: elements.toString()},
+                                                       success: function (returnData) {
+                                                           let profiles = returnData.fabrik_data.profiles;
 
-                                                        // show 'felts' + profile
-                                                        setTimeout(function () {
-                                                                profiles.forEach(prf => {
-                                                                    $('#felts' + prf.id).show();
+                                                           // show 'felts' + profile
+                                                           setTimeout(function () {
+                                                                   profiles.forEach(prf => {
+                                                                       $('#felts' + prf.id).show();
 
-                                                                    $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
-                                                                    $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
+                                                                       $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
+                                                                       $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
 
-                                                                })
-                                                            }, 3000
-                                                        );
+                                                                   })
+                                                               }, 3000
+                                                           );
 
-                                                        if (tables !== null || tables !== undefined || tables[0] !== "") {
-                                                            //render tables
-                                                            setTimeout(function () {
-                                                                tables.forEach(tbl => {
-                                                                    $('#emundus_checkall_tbl_' + tbl).attr('checked', true);
-                                                                })
-                                                            }, 3000);
-                                                        }
+                                                           if (tables !== null || tables !== undefined || tables[0] !== "") {
+                                                               //render tables
+                                                               setTimeout(function () {
+                                                                   tables.forEach(tbl => {
+                                                                       $('#emundus_checkall_tbl_' + tbl).attr('checked', true);
+                                                                   })
+                                                               }, 3000);
+                                                           }
 
-                                                        if (groups !== null || groups !== undefined || groups[0] !== "") {
-                                                            // render groups
-                                                            setTimeout(function () {
-                                                                groups.forEach(grp => {
-                                                                    $('#emundus_checkall_grp_' + grp).attr('checked', true);
-                                                                })
-                                                            }, 3000);
-                                                        }
+                                                           if (groups !== null || groups !== undefined || groups[0] !== "") {
+                                                               // render groups
+                                                               setTimeout(function () {
+                                                                   groups.forEach(grp => {
+                                                                       $('#emundus_checkall_grp_' + grp).attr('checked', true);
+                                                                   })
+                                                               }, 3000);
+                                                           }
 
-                                                        if (elements !== null || elements !== undefined || elements[0] !== "") {
-                                                            // render elements
-                                                            setTimeout(function () {
-                                                                elements.forEach(elt => {
-                                                                    $('#emundus_elm_' + elt).attr('checked', true);
-                                                                })
-                                                            }, 3000);
-                                                        }
-
-                                                    }, error: function (jqXHR) {
-                                                        console.log(jqXHR.responseText);
-                                                    }
-                                                })
-                                            } else {
-
-                                            }
-                                   }
-                                   else {
-                                       console.log('false');
-                                   }
-                               } else {
-
+                                                           if (elements !== null || elements !== undefined || elements[0] !== "") {
+                                                               // render elements
+                                                               setTimeout(function () {
+                                                                   elements.forEach(elt => {
+                                                                       $('#emundus_elm_' + elt).attr('checked', true);
+                                                                   })
+                                                               }, 3000);
+                                                           }
+                                                       }, error: function (jqXHR) {
+                                                           console.log(jqXHR.responseText);
+                                                       }
+                                                   })
+                                               } else {}
+                                           } else {}
+                                       }, 4500);
+                                   } else { }
                                }
-                           }, error: function(jqXHR) {
-                               console.log(jqXHR.responseText);
-                           }
+                           }, error: function(jqXHR) {console.log(jqXHR.responseText);}
                        })
-                   } else {
-                       /// do nothing
-                   }
+                   } else {}
                 });
 
                 $('#em-export-prg').on('change', function() {
