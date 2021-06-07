@@ -1674,7 +1674,7 @@ class EmundusModelApplication extends JModelList {
         $_profile_ = $this->_db->loadObject();
 
         $forms .= '<h1><b>';
-        $forms .= strtoupper(preg_replace('/\s+/', '-', $_formbuilder_model->replaceAccents($_profile_->label)));
+        $forms .= strtoupper(preg_replace('/\s+/', ' ', $_formbuilder_model->replaceAccents($_profile_->label)));
         $forms .= '</b></h1>';
         $forms .= '<hr class="sections"></hr>';
 
@@ -1709,9 +1709,9 @@ class EmundusModelApplication extends JModelList {
                 $forms .= '<h2' . $breaker . '>';
                 $title = explode('-', JText::_($itemt->label));
                 if (empty($title[1])) {
-                    $forms .= '<b><h2>' . strtoupper(trim(preg_replace('/\s+/', '-', $_formbuilder_model->replaceAccents(JText::_($itemt->label))))) . '</h2></b>';
+                    $forms .= '<b><h2>' . strtoupper(trim(preg_replace('/\s+/', ' ', $_formbuilder_model->replaceAccents(JText::_($itemt->label))))) . '</h2></b>';
                 } else {
-                    $forms .= '<b><h2>' . strtoupper(trim(preg_replace('/\s+/', '-', $_formbuilder_model->replaceAccents(JText::_($title[1]))))) . '</h2></b>';
+                    $forms .= '<b><h2>' . strtoupper(trim(preg_replace('/\s+/', ' ', $_formbuilder_model->replaceAccents(JText::_($title[1]))))) . '</h2></b>';
                 }
             }
 
