@@ -2313,6 +2313,8 @@ class EmundusModelApplication extends JModelList {
                     }
                 }
             //}
+        $forms .= '</p></p>';
+
         $upload_files = $this->getCountUploadedFile($fnum, $aid);
         $forms .= $upload_files;
 
