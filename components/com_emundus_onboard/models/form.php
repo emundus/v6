@@ -1478,12 +1478,14 @@ class EmundusonboardModelform extends JModelList {
 			foreach ($forms as $form){
 			    $link = explode('=', $form->link);
                 $form->id = $link[sizeof($link) - 1];
+
                 $query->clear()
                     ->select('label')
                     ->from($db->quoteName('#__fabrik_forms'))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($form->id));
                 $db->setQuery($query);
                 $form->label = $formbuilder->getJTEXT($db->loadResult());
+                print_r($forms->label);
             }
 
 			return $forms;

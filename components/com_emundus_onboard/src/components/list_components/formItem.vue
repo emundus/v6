@@ -24,10 +24,10 @@
               </ul>
             </div>
             <div class="stats-block" style="justify-content: flex-end">
-              <a class="cta-block pointer"
+              <a class="bouton-ajouter pointer add-button-div"
                  @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
                  :title="translations.Modify">
-                <em class="fas fa-pen"></em>
+                <em class="fas fa-pen"></em> Éditer
               </a>
             </div>
           </div>

@@ -23,9 +23,9 @@
       <li v-for="(cat, index) in email_categories" v-if="cat != ''">
         <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
       </li>
-      <li>
+      <!--<li>
         <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">{{System}}</a>
-      </li>
+      </li>-->
     </ul>
 
 <!--    <transition :name="'slide-down'" type="transition">

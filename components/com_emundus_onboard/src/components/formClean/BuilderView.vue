@@ -1111,6 +1111,8 @@ export default {
 
     getDataObject: _.debounce(function() {
       this.object_json = this.object.object;
+      console.log('results');
+      console.log(this.object_json)
       /*this.object_json.show_title.label.fr=this.splitProfileIdFromLabel(this.object_json.show_title.label.fr);
       this.object_json.show_title.label.en=this.splitProfileIdFromLabel(this.object_json.show_title.label.en);*/
 

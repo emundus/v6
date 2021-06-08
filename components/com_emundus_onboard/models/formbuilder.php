@@ -129,8 +129,15 @@ class EmundusonboardModelformbuilder extends JModelList
         $matches = [];
 
         $textWithoutTags = str_replace('\'', '', strip_tags($text));
+        /*echo '<pre>';
+        echo $textWithoutTags;
+        echo '</pre>';
+        echo 'yes yes';*/
+
         $textTofind = $textWithoutTags . "=";
         $textTofind = "/^" . $textTofind . ".*/mi";
+
+        //echo $textTofind;
 
         // Search and return the translation
         preg_match_all($textTofind, $content, $matches, PREG_SET_ORDER, 0);
