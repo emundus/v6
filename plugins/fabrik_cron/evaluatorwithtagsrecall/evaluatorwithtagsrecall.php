@@ -81,7 +81,7 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
                 // Remove empty users
                 $evaluators = array_filter($evaluators, function ($value) {
                     return !empty($value);
-                });echo "<pre>";var_dump();echo "</pre>";die();
+                });
                 
 
                 // Check if the tagged fnums are in our list of evaluators
