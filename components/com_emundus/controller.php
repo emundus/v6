@@ -1458,7 +1458,7 @@ class EmundusController extends JControllerLegacy {
                 $infos = $m_profile->getFnumDetails($fnum);
                 $campaign_id = $infos['campaign_id'];
 
-                $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, null, $options, null, $pdf_elements, 'fdst');
+                $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, null, $options, null, $pdf_elements);
             }
         }
 

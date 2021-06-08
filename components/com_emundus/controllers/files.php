@@ -1933,7 +1933,16 @@ class EmundusControllerFiles extends JControllerLegacy
         $attachid   = $jinput->getVar('attachids', null);
         $option     = $jinput->getVar('options', null);
 
-        $elements = $jinput->getVar('elements', null);                // default NULL
+        $profiles = $jinput->getRaw('profiles', null);                          // default NULL
+        $tables = $jinput->getRaw('tables', null);                          // default NULL
+        $groups = $jinput->getRaw('groups', null);                      // default NULL
+        $elements = $jinput->getRaw('elements', null);                // default NULL
+
+        $pdf_data = array();
+
+        foreach($profiles as $profile => $id) {
+            $pdf_data[$id] = array('fids' => $tables, 'gids' => $groups, 'eids' => $elements);
+        }
 
         $formids    = explode(',', $formid);
         $attachids  = explode(',', $attachid);
@@ -2023,7 +2032,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         /// otherwise, call to buildFormPDF
 
                         if(in_array($_return_menutype, array_keys($elements))) {
-                            $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $elements, 'classic');
+                            $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $pdf_data);
                         }
                     }
                 }

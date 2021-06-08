@@ -714,7 +714,7 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
 }
 
 maxfiles = 5000;
-function generate_pdf(json,elements=undefined) {
+function generate_pdf(json,pdf_elements=undefined) {
 
     var start       = json.start;
     var limit       = json.limit;
@@ -730,7 +730,11 @@ function generate_pdf(json,elements=undefined) {
     var attachids   = json.attachids;
     var options     = json.options;
 
-    var elements    = elements;
+    // pdf params
+    var profiles    = pdf_elements['profiles'];
+    var tables    = pdf_elements['tables'];
+    var groups    = pdf_elements['groups'];
+    var elements    = pdf_elements['elements'];
 
     //console.log(attachids);
     $.ajaxQ.abortAll();
@@ -755,6 +759,10 @@ function generate_pdf(json,elements=undefined) {
                 formids: formids,
                 attachids: attachids,
                 options: options,
+
+                profiles: profiles,         /// default is UNDEFINED
+                tables: tables,             /// default is UNDEFINED
+                groups: groups,             /// default is UNDEFINED
                 elements: elements,         /// default is UNDEFINED
             },
             success: function (result) {
@@ -4716,76 +4724,117 @@ $(document).ready(function() {
 
         let selectedElements = new Object();
 
-        // at least one element is selected
+        let pdf_elements = [];
+        pdf_elements['profiles'] = [];
+        pdf_elements['tables'] = [];
+        pdf_elements['groups'] = [];
+        pdf_elements['elements'] = [];
+
+        /// save all profiles
+        let profiles = [];
         $('[id^=felts]').each(function (flt) {
             if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
-                /// get associated #felts
-                $('[id^=emundus_elm_]').each(function (elt) {
-                    if ($(this).prop('checked') == true) {
-                        let elt_id = $(this).attr('id').split('emundus_elm_')[1];
-
-                        let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
-                        let felts_id = felts.split('felts')[1];
-
-                        selectedElements['menu-profile' + felts_id] = {};
-                    }
-                })
-
-                /// get associated tables
-                $('[id^=emundus_elm_]').each(function (elt) {
-                    if ($(this).prop('checked') == true) {
-                        let elt_id = $(this).attr('id').split('emundus_elm_')[1];
-
-                        let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
-                        let felts_id = felts.split('felts')[1];
-
-                        let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
-                        let table_id = table.split('emundus_table_')[1];
-
-                        selectedElements['menu-profile' + felts_id][table_id] = {};
-                    }
-                })
-
-                /// get associated group
-                $('[id^=emundus_elm_]').each(function (elt) {
-                    if ($(this).prop('checked') == true) {
-                        let elt_id = $(this).attr('id').split('emundus_elm_')[1];
-
-                        let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
-                        let felts_id = felts.split('felts')[1];
-
-                        let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
-                        let table_id = table.split('emundus_table_')[1];
-
-                        let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
-                        let group_id = group.split('emundus_grp_')[1];
-
-                        selectedElements['menu-profile' + felts_id][table_id][group_id] = [];
-                    }
-                })
-
-                /// push element to array
-                $('[id^=emundus_elm_]').each(function (elt) {
-                    if ($(this).prop('checked') == true) {
-                        let elt_id = $(this).attr('id').split('emundus_elm_')[1];
-                        // get group_id, table_id (using parent())
-
-                        let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
-                        let felts_id = felts.split('felts')[1];
-
-                        let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
-                        let table_id = table.split('emundus_table_')[1];
-
-                        let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
-                        let group_id = group.split('emundus_grp_')[1];
-
-                        selectedElements['menu-profile' + felts_id][table_id][group_id].push(elt_id);
-                    }
-                })
-            } else {
-
+                let id = $(this).attr('id').split('felts')[1];
+                pdf_elements['profiles'].push(id);
             }
         })
+
+        /// save all tables
+        let tables = [];
+        $('[id^=emundus_table_]').each(function (flt) {
+            if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
+                let id = $(this).attr('id').split('emundus_table_')[1];
+                pdf_elements['tables'].push(id);
+            }
+        })
+
+        /// save all groups
+        let groups = [];
+        $('[id^=emundus_grp_]').each(function (flt) {
+            if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
+                let id = $(this).attr('id').split('emundus_grp_')[1];
+                pdf_elements['groups'].push(id);
+            }
+        })
+
+        let eltsObject = $('[id^=emundus_elm_]');
+        let eltsArray = Array.prototype.slice.call(eltsObject);
+        eltsArray.forEach(elt => {
+            if (elt.checked == true) {
+                pdf_elements['elements'].push(elt.value);
+            }
+        })
+
+        // at least one element is selected
+        // $('[id^=felts]').each(function (flt) {
+        //     if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
+        //         /// get associated #felts
+        //         $('[id^=emundus_elm_]').each(function (elt) {
+        //             if ($(this).prop('checked') == true) {
+        //                 let elt_id = $(this).attr('id').split('emundus_elm_')[1];
+        //
+        //                 let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
+        //                 let felts_id = felts.split('felts')[1];
+        //
+        //                 selectedElements['menu-profile' + felts_id] = {};
+        //             }
+        //         })
+        //
+        //         /// get associated tables
+        //         $('[id^=emundus_elm_]').each(function (elt) {
+        //             if ($(this).prop('checked') == true) {
+        //                 let elt_id = $(this).attr('id').split('emundus_elm_')[1];
+        //
+        //                 let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
+        //                 let felts_id = felts.split('felts')[1];
+        //
+        //                 let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
+        //                 let table_id = table.split('emundus_table_')[1];
+        //
+        //                 selectedElements['menu-profile' + felts_id][table_id] = {};
+        //             }
+        //         })
+        //
+        //         /// get associated group
+        //         $('[id^=emundus_elm_]').each(function (elt) {
+        //             if ($(this).prop('checked') == true) {
+        //                 let elt_id = $(this).attr('id').split('emundus_elm_')[1];
+        //
+        //                 let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
+        //                 let felts_id = felts.split('felts')[1];
+        //
+        //                 let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
+        //                 let table_id = table.split('emundus_table_')[1];
+        //
+        //                 let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
+        //                 let group_id = group.split('emundus_grp_')[1];
+        //
+        //                 selectedElements['menu-profile' + felts_id][table_id][group_id] = [];
+        //             }
+        //         })
+        //
+        //         /// push element to array
+        //         $('[id^=emundus_elm_]').each(function (elt) {
+        //             if ($(this).prop('checked') == true) {
+        //                 let elt_id = $(this).attr('id').split('emundus_elm_')[1];
+        //                 // get group_id, table_id (using parent())
+        //
+        //                 let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
+        //                 let felts_id = felts.split('felts')[1];
+        //
+        //                 let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
+        //                 let table_id = table.split('emundus_table_')[1];
+        //
+        //                 let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
+        //                 let group_id = group.split('emundus_grp_')[1];
+        //
+        //                 selectedElements['menu-profile' + felts_id][table_id][group_id].push(elt_id);
+        //             }
+        //         })
+        //     } else {
+        //
+        //     }
+        // })
 
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
@@ -4853,7 +4902,7 @@ $(document).ready(function() {
                                         '","totalfile":"' + totalfile + '","forms":"' + forms + '","formids":"' + form_checked +
                                         '","attachment":"' + attachment + '", "attachids":"' + attach_checked + '", "options":"' + options + '", "assessment":"' + assessment +
                                         '","decision":"' + decision + '","admission":"' + admission + '","file":"' + result.file + '","ids":"' + ids + '"}');
-                                    elements = selectedElements;
+                                    elements = pdf_elements;
                                 }
                                 $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>...</p></div>');
 

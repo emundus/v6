@@ -1668,16 +1668,6 @@ class EmundusModelApplication extends JModelList {
 
         $forms = "";
 
-//        // print profile label
-//        $query = "SELECT jesp.* FROM #__emundus_setup_profiles AS jesp WHERE jesp.id = " . $profile_id;
-//        $this->_db->setQuery($query);
-//        $_profile_ = $this->_db->loadObject();
-//
-//        $forms .= '<h1><b>';
-//        $forms .= strtoupper(preg_replace('/\s+/', ' ', $_formbuilder_model->replaceAccents($_profile_->label)));
-//        $forms .= '</b></h1>';
-//        $forms .= '<hr class="sections"></hr>';
-
         $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
 
         foreach ($tableuser as $key => $itemt) {
