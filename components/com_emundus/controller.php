@@ -1383,6 +1383,47 @@ class EmundusController extends JControllerLegacy {
         } else {
             echo JText::_('ERROR');
         }
+    }
 
+    // export_fiche_synthese
+    public function export_fiche_synthese() {
+        $user = JFactory::getSession()->get('emundusUser');
+        $jinput = JFactory::getApplication()->input;
+
+        /// get valid fnum
+        $fnums_post = $jinput->getRaw('checkInput');
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
+
+        $validFnums = array();
+        foreach ($fnums_array as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(35, 'c', $user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
+                $validFnums[] = $fnum;
+        }
+
+        /// set params
+        $file = $jinput->getVar('file', null, 'STRING');
+        $totalfile = count($validFnums);
+        $model = $jinput->getRaw('model', null);
+        $start = 0;
+        $limit = 2;
+
+        /// from model --> get all model params
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
+        $h_files = new EmundusHelperFiles;
+        $export_model = $h_files->getExportPdfFilterById($model);
+
+        // from export_model --> build fiche de synthese
+        $pdf_elements = array();
+
+        $profiles = json_decode($export_model->constraints)->pdffilter->profiles;           /// type Array
+        $formulaires = json_decode($export_model->constraints)->pdffilter->tables;
+        $groups = json_decode($export_model->constraints)->pdffilter->groups;
+        $elements = json_decode($export_model->constraints)->pdffilter->elements;
+
+        foreach($profiles as $key => $value) {
+            $pdf_elements[$value] = array('fids' => $formulaires, 'gids' => $groups, 'eids' => $elements);
+        }
+
+        /// from pdf elements --> build pdf
     }
 }

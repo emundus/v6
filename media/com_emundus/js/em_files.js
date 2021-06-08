@@ -4542,6 +4542,42 @@ $(document).ready(function() {
                 $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
                 break;
 
+            case 35:
+                /// first --> get fnums
+                $('.modal-dialog').hide();
+                $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
+                $('#em-modal-actions').css('display', 'none');
+
+                var checkInput = getUserCheck();
+                var start = 0;
+                var limit = 2;
+
+                $.ajax({
+                    type: 'post',
+                    url: 'index.php?option=com_emundus&controller=files&task=create_file_pdf&format=raw',
+                    dataType: 'JSON',
+                    success: function (response) {
+                        let file = response.file;
+                        let model = $('[id^=l_35]').attr('href').split('model=')[1];
+                        $.ajax({
+                            type: 'post',
+                            url: 'index.php?option=com_emundus&task=export_fiche_synthese',
+                            dataType: 'JSON',
+                            data: {checkInput: checkInput, file: file, model: model},
+                            success: function (data) {
+                                console.log(data);
+                            }, error: function (jqXHR) {
+                                console.log(jqXHR.responseText);
+                            }
+                        })
+
+                    }, error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                })
+
+                break;
+
             default:
                 break;
         }
