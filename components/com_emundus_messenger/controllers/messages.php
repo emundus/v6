@@ -42,22 +42,42 @@ class EmundusmessengerControllermessages extends JControllerLegacy
 
         $campaigns = $m_messages->getCampaignsByUser();
 
-        echo json_encode((object)$campaigns);
+        $data = array('data' => $campaigns, 'current_user' => $user->id);
+
+        echo json_encode((object)$data);
         exit;
     }
 
-    public function getmessagesbycampaign(){
+    public function getmessagesbyfnum(){
         $user = JFactory::getUser();
 
         $m_messages = $this->model;
 
         $jinput = JFactory::getApplication()->input;
 
-        $cid = $jinput->getString('cid');
+        $fnum = $jinput->getString('fnum');
 
-        $messages = $m_messages->getMessagesByCampaign($cid);
+        $messages = $m_messages->getMessagesByFnum($fnum);
 
-        echo json_encode((object)$messages);
+        $data = array('data' => $messages);
+
+        echo json_encode((object)$data);
+        exit;
+    }
+
+    public function sendmessage(){
+        $user = JFactory::getUser();
+
+        $m_messages = $this->model;
+
+        $jinput = JFactory::getApplication()->input;
+
+        $message = $jinput->getString('message');
+        $fnum = $jinput->getString('fnum');
+
+        $new_message = $m_messages->sendMessage($message,$fnum);
+
+        echo json_encode((object)$new_message);
         exit;
     }
 }

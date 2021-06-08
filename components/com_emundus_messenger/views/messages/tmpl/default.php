@@ -12,6 +12,8 @@ defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
 $document->addScript('media/com_emundus_messenger/chunk-vendors.js');
 $document->addStyleSheet('media/com_emundus_messenger/app.css');
+
+JText::script('COM_EMUNDUS_MESSENGER_TITLE');
 ?>
 
 <div id="em-messages-vue"></div>
