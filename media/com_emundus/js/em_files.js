@@ -714,7 +714,7 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
 }
 
 maxfiles = 5000;
-function generate_pdf(json,pdf_elements=undefined) {
+function generate_pdf(json,pdf_elements= null) {
 
     var start       = json.start;
     var limit       = json.limit;
@@ -730,53 +730,86 @@ function generate_pdf(json,pdf_elements=undefined) {
     var attachids   = json.attachids;
     var options     = json.options;
 
-    // pdf params
-    var profiles    = pdf_elements['profiles'];
-    var tables    = pdf_elements['tables'];
-    var groups    = pdf_elements['groups'];
-    var elements    = pdf_elements['elements'];
-
     //console.log(attachids);
     $.ajaxQ.abortAll();
 
     if (start+limit < maxfiles) {
         /// call to ajax
-        $.ajax({
-            type: 'post',
-            url: 'index.php?option=com_emundus&controller=files&task=generate_pdf&format=raw',
-            dataType: 'JSON',
-            data: {
-                file: file,
-                totalfile: totalfile,
-                start: start,
-                limit: limit,
-                forms: forms,
-                attachment: attachment,
-                assessment: assessment,
-                decision: decision,
-                admission: admission,
-                ids: ids,
-                formids: formids,
-                attachids: attachids,
-                options: options,
+        if(pdf_elements !== null && pdf_elements !== undefined) {
+            var profiles = pdf_elements['profiles'];
+            var tables = pdf_elements['tables'];
+            var groups = pdf_elements['groups'];
+            var elements = pdf_elements['elements'];
 
-                profiles: profiles,         /// default is UNDEFINED
-                tables: tables,             /// default is UNDEFINED
-                groups: groups,             /// default is UNDEFINED
-                elements: elements,         /// default is UNDEFINED
-            },
-            success: function (result) {
-                $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.JText._('COM_EMUNDUS_PDF_GENERATION') + '</p></div>');
-                $('#loadingimg').empty();
-                $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
-                $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
-                $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' + 'tmp/' + result.json.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
-            }, error: function (jqXHR) {
-                $('#loadingimg').empty();
-                $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
-                $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
-            }
-        })
+            $.ajax({
+                type: 'post',
+                url: 'index.php?option=com_emundus&controller=files&task=generate_pdf&format=raw',
+                dataType: 'JSON',
+                data: {
+                    file: file,
+                    totalfile: totalfile,
+                    start: start,
+                    limit: limit,
+                    forms: forms,
+                    attachment: attachment,
+                    assessment: assessment,
+                    decision: decision,
+                    admission: admission,
+                    ids: ids,
+                    formids: formids,
+                    attachids: attachids,
+                    options: options,
+
+                    profiles: profiles,         /// default is UNDEFINED
+                    tables: tables,             /// default is UNDEFINED
+                    groups: groups,             /// default is UNDEFINED
+                    elements: elements,         /// default is UNDEFINED
+                },
+                success: function (result) {
+                    $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.JText._('COM_EMUNDUS_PDF_GENERATION') + '</p></div>');
+                    $('#loadingimg').empty();
+                    $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
+                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                    $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' + 'tmp/' + result.json.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
+                }, error: function (jqXHR) {
+                    $('#loadingimg').empty();
+                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
+                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                }
+            })
+        } else {
+            $.ajax({
+                type: 'post',
+                url: 'index.php?option=com_emundus&controller=files&task=generate_pdf&format=raw',
+                dataType: 'JSON',
+                data: {
+                    file: file,
+                    totalfile: totalfile,
+                    start: start,
+                    limit: limit,
+                    forms: forms,
+                    attachment: attachment,
+                    assessment: assessment,
+                    decision: decision,
+                    admission: admission,
+                    ids: ids,
+                    formids: formids,
+                    attachids: attachids,
+                    options: options,
+                },
+                success: function (result) {
+                    $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.JText._('COM_EMUNDUS_PDF_GENERATION') + '</p></div>');
+                    $('#loadingimg').empty();
+                    $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
+                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                    $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' + 'tmp/' + result.json.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
+                }, error: function (jqXHR) {
+                    $('#loadingimg').empty();
+                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
+                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                }
+            })
+        }
 
     } else if (start+limit> maxfiles) {
         $('#loadingimg').empty();
@@ -4025,14 +4058,20 @@ $(document).ready(function() {
                         }
                     })
 
+
+
                     let headers = [];
                     let headersObject = document.getElementById('em-export-opt');
                     let headersArray = Array.prototype.slice.call(headersObject);
 
-                    headersArray.forEach(header => {
-                        if(header.selected == true)
-                            headers.push(header.value);
-                    })
+                    if($('#em-export-opt option:selected').length == 0 || $('#em-add-header').is(":checked")) {
+                        headers = [""];
+                    } else {
+                        headersArray.forEach(header => {
+                            if (header.selected == true)
+                                headers.push(header.value);
+                        })
+                    }
 
                     let params = {
                         'code':code,
@@ -4552,13 +4591,18 @@ $(document).ready(function() {
 
             case 35:
                 /// first --> get fnums
-                $('.modal-dialog').hide();
-                $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
-                $('#em-modal-actions').css('display', 'none');
+
+                $('.modal-body').append('<div id="chargement" style="padding:15px">' +
+                    '<h5>'+Joomla.JText._('COM_EMUNDUS_PDF_GENERATION')+'</h5>'+
+                    '<div id="loadingimg"><img src="'+loadingLine+'" alt="loading"/></div>' +
+                    '<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_CREATE_PDF')+'</p></div>'+
+                    '</div>');
 
                 var checkInput = getUserCheck();
                 var start = 0;
                 var limit = 2;
+
+                $.ajaxQ.abortAll();
 
                 $.ajax({
                     type: 'post',
@@ -4573,9 +4617,16 @@ $(document).ready(function() {
                             dataType: 'JSON',
                             data: {checkInput: checkInput, file: file, model: model},
                             success: function (data) {
-                                console.log(data);
+                                /// show download url
+                                $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.JText._('COM_EMUNDUS_PDF_GENERATION') + '</p></div>');
+                                $('#loadingimg').empty();
+                                $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
+                                $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                                $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' + 'tmp/' + data.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
                             }, error: function (jqXHR) {
-                                console.log(jqXHR.responseText);
+                                $('#loadingimg').empty();
+                                $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
+                                $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
                             }
                         })
 
