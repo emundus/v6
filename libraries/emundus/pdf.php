@@ -789,7 +789,7 @@ function data_to_img($match) {
 }
 
 /// add $elements as optional params
-function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null) {
+function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $mode=null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
     require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf' . DS . 'config' . DS . 'lang' . DS . 'eng.php');
@@ -927,7 +927,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             JLog::add('SQL error in emundus pdf library at query : ' . $query, JLog::ERROR, 'com_emundus');
         }
 
-        if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
+        if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements) && $mode == 'classic') {
             $profile_menu = array_keys($elements);
             // Get form HTML
             $group_list = array_values($elements);
@@ -958,10 +958,21 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                         }
                     }
                 }
-
                 $forms = $m_application->getFormsPDF($user_id, $fnum, $fid, $gids, $profile_id, $eids);
             }
-        } else {
+        } else if($mode == 'fdst') {
+            ////
+            $profile_menu = array_keys($elements);
+
+            foreach($profile_menu as $key => $value) {
+                $fids = $elements[$value]['fids'];
+                $gids = $elements[$value]['gids'];
+                $eids = $elements[$value]['eids'];
+
+                $forms = $m_application->getFormsPDF($user_id, $fnum, $fids, $gids, $value, $eids);
+            }
+        }
+        else {
             $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id);
         }
 

@@ -1400,6 +1400,10 @@ class EmundusController extends JControllerLegacy {
                 $validFnums[] = $fnum;
         }
 
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $m_files = new EmundusModelFiles;
+        $fnumsInfo = $m_files->getFnumsInfos($validFnums);
+
         /// set params
         $file = $jinput->getVar('file', null, 'STRING');
         $totalfile = count($validFnums);
@@ -1407,8 +1411,10 @@ class EmundusController extends JControllerLegacy {
         $start = 0;
         $limit = 2;
 
+        $forms = 0;
+
         /// from model --> get all model params
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
         $h_files = new EmundusHelperFiles;
         $export_model = $h_files->getExportPdfFilterById($model);
 
@@ -1420,10 +1426,33 @@ class EmundusController extends JControllerLegacy {
         $groups = json_decode($export_model->constraints)->pdffilter->groups;
         $elements = json_decode($export_model->constraints)->pdffilter->elements;
 
+        if(empty($profiles) and empty($formulaires) and empty($groups) and empty($elements)) { $forms = 0;} else { $forms = 1; }
+
+        $options = json_decode($export_model->constraints)->pdffilter->headers;
+
         foreach($profiles as $key => $value) {
             $pdf_elements[$value] = array('fids' => $formulaires, 'gids' => $groups, 'eids' => $elements);
         }
 
         /// from pdf elements --> build pdf
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+
+        if (!function_exists('application_form_pdf')) {
+            require_once($file);
+        }
+
+        //// pour chaque fnum --> appeler la fonction helpers/export.php/buildFormPDF
+        for ($i = $start; $i <= $totalfile; $i++) {
+            $fnum = $validFnums[$i];
+
+            if (is_numeric($fnum) && !empty($fnum)) {
+                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+                $m_profile = new EmundusModelProfile;
+                $infos = $m_profile->getFnumDetails($fnum);
+                $campaign_id = $infos['campaign_id'];
+
+                $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, null, $options, null, $pdf_elements, 'fdst');
+            }
+        }
     }
 }
