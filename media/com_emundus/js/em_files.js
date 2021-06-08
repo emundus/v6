@@ -4073,6 +4073,12 @@ $(document).ready(function() {
                         })
                     }
 
+                    // save all attachments id
+                    var attachments = [];
+                    $('#aelts input:checked').each(function() {
+                        attachments.push($(this).val());
+                    })
+
                     let params = {
                         'code':code,
                         'camp': camp,
@@ -4087,6 +4093,8 @@ $(document).ready(function() {
                         'checkAllTables': checkAllTables.length > 0 ? checkAllTables : [""],
                         'checkAllGroups': checkAllGroups.length > 0 ? checkAllGroups : [""],
                         'headers': headers.length > 0 ? headers : [""],
+
+                        'attachments': attachments.length > 0 ? attachments : "",
                     };
 
                     /// jquery remove all empty data before sending
