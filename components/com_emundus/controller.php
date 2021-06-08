@@ -1435,13 +1435,20 @@ class EmundusController extends JControllerLegacy {
         }
 
         /// from pdf elements --> build pdf
-        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+        $files = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
 
         if (!function_exists('application_form_pdf')) {
-            require_once($file);
+            require_once($files);
         }
 
         //// pour chaque fnum --> appeler la fonction helpers/export.php/buildFormPDF
+        ///
+        if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $files)) {
+            $files_list = array(JPATH_BASE.DS.'tmp'.DS.$files);
+        } else {
+            $files_list = array();
+        }
+
         for ($i = $start; $i <= $totalfile; $i++) {
             $fnum = $validFnums[$i];
 
@@ -1454,5 +1461,30 @@ class EmundusController extends JControllerLegacy {
                 $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, null, $options, null, $pdf_elements, 'fdst');
             }
         }
+
+        if (count($files_list) > 0) {
+            require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+
+            $pdf = new ConcatPdf();
+
+            $pdf->setFiles($files_list);
+
+            $pdf->concat();
+
+            if (isset($tmpArray)) {
+                foreach ($tmpArray as $fn) {
+                    unlink($fn);
+                }
+            }
+            $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $file, 'F');
+
+            var_dump($pdf);die;
+            $result = array('status' => true, 'file' => $file, 'msg' => JText::_('FILES_ADDED'));
+        } else {
+            $result = array('status' => false, 'msg' => JText::_('FILE_NOT_FOUND'));
+        }
+
+        echo json_encode((object) $result);
+        exit();
     }
 }
