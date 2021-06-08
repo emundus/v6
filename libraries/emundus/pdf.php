@@ -963,12 +963,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         } else if($mode == 'fdst') {
             ////
             $profile_menu = array_keys($elements);
-
             foreach($profile_menu as $key => $value) {
                 $fids = $elements[$value]['fids'];
                 $gids = $elements[$value]['gids'];
                 $eids = $elements[$value]['eids'];
-
                 $forms = $m_application->getFormsPDF($user_id, $fnum, $fids, $gids, $value, $eids);
             }
         }

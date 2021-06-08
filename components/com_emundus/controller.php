@@ -107,10 +107,10 @@ class EmundusController extends JControllerLegacy {
         $profile_id = $m_profile->getProfileByFnum($fnum);
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, null, null, $profile_id);
+            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, null, null, $profile_id,null,null,null);
             exit;
         } elseif (EmundusHelperAccess::isApplicant($user->id)) {
-            application_form_pdf($user->id, $fnum, true, 1, $formid, null, null, $profile_id);
+            application_form_pdf($user->id, $fnum, true, 1, $formid, null, null, $profile_id,null,null,null);
             exit;
         } else {
             die(JText::_('ACCESS_DENIED'));
@@ -1478,7 +1478,6 @@ class EmundusController extends JControllerLegacy {
             }
             $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $file, 'F');
 
-            var_dump($pdf);die;
             $result = array('status' => true, 'file' => $file, 'msg' => JText::_('FILES_ADDED'));
         } else {
             $result = array('status' => false, 'msg' => JText::_('FILE_NOT_FOUND'));
