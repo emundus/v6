@@ -9,7 +9,10 @@ if (document.getElementById('em-messages-vue')) {
     el: '#em-messages-vue',
     render(h) {
       return h(Messages, {
-        props: {}
+        props: {
+          fnum: this.$el.attributes.fnum.value,
+          user: this.$el.attributes.user.value,
+        }
       });
     }
   });

@@ -32,6 +32,7 @@ hr{
     max-height: 60vh;
     overflow-y: auto;
     overflow-x: hidden;
+    padding-right: 50px;
 }
 
 .messages__list-block li{

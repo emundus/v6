@@ -1,6 +1,6 @@
 <template>
   <div class="messages__vue">
-    <div class="col-md-3">
+    <div class="col-md-3" v-if="fnum == ''">
       <div v-for="campaign in campaigns" @click="campaignSelected = campaign.fnum" :class="campaign.fnum == campaignSelected ? 'messages__active-campaign' : ''" class="messages__block">
         <div class="messages__campaign-block">
           <span>{{campaign.label}}</span>
@@ -11,10 +11,10 @@
     <!--  <select v-model="campaignSelected">
         <option v-for="campaign in campaigns" :value="campaign.id">{{campaign.label}}</option>
       </select>-->
-    <div class="col-md-8 messages__list">
+    <div class="messages__list" :class="fnum != '' ? 'col-md-10 col-md-offset-1' : 'col-md-8'">
       <label class="text-center" style="width: 100%">{{translations.messages}}</label>
       <div class="messages__list-block">
-        <div v-for="message in messages" class="messages__message-item" :class="currentUser == message.user_id_from ? 'messages__current_user' : ''">
+        <div v-for="message in messages" class="messages__message-item" :class="user == message.user_id_from ? 'messages__current_user' : ''">
           <div class="messages__message-item-block">
             <p><em class="messages__message-item-from">{{message.name}}</em></p>
             <span class="messages__message-item-span">{{message.message}}</span>
@@ -22,7 +22,7 @@
         </div>
       </div>
       <div class="messages__bottom-input">
-        <input type="text" v-model="message" @keyup.enter="sendMessage"/>
+        <input type="text" v-model="message" @keyup.enter.exact.prevent="sendMessage($event)"/>
         <i class="far fa-paper-plane messages__send-icon" @click="sendMessage"></i>
       </div>
     </div>
@@ -39,14 +39,16 @@ const qs = require("qs");
 
 export default {
   name: "Messages",
-  props: {},
+  props: {
+    fnum: String,
+    user: Number,
+  },
   components: {},
   data() {
     return {
       messages: [],
       campaigns: [],
       campaignSelected: 0,
-      currentUser: null,
       message: '',
       translations:{
         messages: Joomla.JText._("COM_EMUNDUS_MESSENGER_TITLE"),
@@ -61,7 +63,6 @@ export default {
         url: "index.php?option=com_emundus_messenger&controller=messages&task=getcampaignsbyuser",
       }).then(response => {
         this.campaigns = response.data.data;
-        this.currentUser = response.data.current_user;
         this.campaignSelected = this.campaigns[0].fnum;
       });
     },
@@ -110,7 +111,11 @@ export default {
   },
 
   created(){
-    this.getCampaignsByUser();
+    if(this.fnum != ''){
+      this.campaignSelected = this.fnum;
+    } else {
+      this.getCampaignsByUser();
+    }
   },
 
   watch: {
