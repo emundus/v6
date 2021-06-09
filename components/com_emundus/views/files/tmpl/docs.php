@@ -8,13 +8,13 @@ $template_type = array(
 ?>
 <input name="em-doc-fnums" type="hidden" value="<?= $this->fnums ?>"/>
 
-<label for="em-doc-trainings"><?= JText::_('PROGRAM_NAME'); ?></label>
-<select name="trainings" id="em-doc-trainings" class="form-control form-control-lg">
-	<?php foreach ($this->prgs as $code => $label) :?>
-		<option value = "<?= $code ?>"><?= $label ?></option>
-	<?php endforeach;?>
-</select>
-<br/>
+<!--<label for="em-doc-trainings">--><?//= JText::_('PROGRAM_NAME'); ?><!--</label>-->
+<!--<select name="trainings" id="em-doc-trainings" class="form-control form-control-lg">-->
+<!--	--><?php //foreach ($this->prgs as $code => $label) :?>
+<!--		<option value = "--><?//= $code ?><!--">--><?//= $label ?><!--</option>-->
+<!--	--><?php //endforeach;?>
+<!--</select>-->
+<!--<br/>-->
 <label for="em-doc-tmpl"><?= JText::_('DOCUMENT_TYPE'); ?></label>
 <select name="docs" id="em-doc-tmpl" class="form-control form-control-lg">
 	<?php foreach ($this->docs as $doc) :?>
