@@ -5203,7 +5203,6 @@ $(document).ready(function() {
                     return;
 
                 var fnums = $('input:hidden[name="em-doc-fnums"]').val();
-                var code = $('#em-doc-trainings').val();
                 var idTmpl = $('#em-doc-tmpl').val();
                 var cansee = $('#em-doc-cansee').val();
 
@@ -5213,40 +5212,41 @@ $(document).ready(function() {
                     '</div>');
                 $.ajax({
                     type:'post',
-                    url:'index.php?option=com_emundus&controller=files&task=generatedoc&format=raw',
+                    url:'index.php?option=com_emundus&controller=files&task=generateletter&format=raw',
                     dataType:'json',
-                    data:{fnums: fnums, code:code, id_tmpl: idTmpl, cansee: cansee},
+                    data:{fnums: fnums, id_tmpl: idTmpl, cansee: cansee},
                     success: function(result) {
-                        $('.modal-body').empty();
-                        if (result.status) {
-                            var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
-
-                            var table = "<h3>" +
-                                Joomla.JText._('FILES_GENERATED')+
-                                "</h3>" +
-                                "<table class='table table-striped' id='em-generated-docs'>" +
-                                "<thead>" +
-                                "<tr>" +
-                                "<th>"+Joomla.JText._('FILE_NAME')+" <a class='btn btn-small pull-right' id='em-doc-zip' href=''>"+Joomla.JText._('COM_EMUNDUS_ACCESS_EXPORT_ZIP')+"</a></th>" +
-                                "</tr>" +
-                                "</thead>" +
-                                "<tbody>";
-                            for (var i = 0; i < result.files.length; i++ ) {
-                                table += "<tr id='"+result.files[i].upload+"'>" +
-                                    "<td>"+result.files[i].filename+" <a class='btn btn-success btn-xs pull-right em-doc-dl'  href='"+result.files[i].url+result.files[i].filename+"'><span class='glyphicon glyphicon-save'></span></a></td>" +
-                                    "</tr>";
-                                if (i === 0) {
-                                    zipUrl += result.files[i].upload;
-                                } else {
-                                    zipUrl += ','+result.files[i].upload;
-                                }
-                            }
-                            table += "</tbody></table>";
-                            $('.modal-body').append(table);
-                            $('#em-doc-zip').attr('href', zipUrl);
-                        } else {
-                            $('.modal-body').append('<div class="alert alert-danger"><h4>'+result.msg+'</h4></div>');
-                        }
+                        console.log(result);
+                        // $('.modal-body').empty();
+                        // if (result.status) {
+                        //     var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
+                        //
+                        //     var table = "<h3>" +
+                        //         Joomla.JText._('FILES_GENERATED')+
+                        //         "</h3>" +
+                        //         "<table class='table table-striped' id='em-generated-docs'>" +
+                        //         "<thead>" +
+                        //         "<tr>" +
+                        //         "<th>"+Joomla.JText._('FILE_NAME')+" <a class='btn btn-small pull-right' id='em-doc-zip' href=''>"+Joomla.JText._('COM_EMUNDUS_ACCESS_EXPORT_ZIP')+"</a></th>" +
+                        //         "</tr>" +
+                        //         "</thead>" +
+                        //         "<tbody>";
+                        //     for (var i = 0; i < result.files.length; i++ ) {
+                        //         table += "<tr id='"+result.files[i].upload+"'>" +
+                        //             "<td>"+result.files[i].filename+" <a class='btn btn-success btn-xs pull-right em-doc-dl'  href='"+result.files[i].url+result.files[i].filename+"'><span class='glyphicon glyphicon-save'></span></a></td>" +
+                        //             "</tr>";
+                        //         if (i === 0) {
+                        //             zipUrl += result.files[i].upload;
+                        //         } else {
+                        //             zipUrl += ','+result.files[i].upload;
+                        //         }
+                        //     }
+                        //     table += "</tbody></table>";
+                        //     $('.modal-body').append(table);
+                        //     $('#em-doc-zip').attr('href', zipUrl);
+                        // } else {
+                        //     $('.modal-body').append('<div class="alert alert-danger"><h4>'+result.msg+'</h4></div>');
+                        // }
                     },
                     error: function (jqXHR) {
                         console.log(jqXHR.responseText);

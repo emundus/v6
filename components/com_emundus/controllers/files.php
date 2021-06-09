@@ -3850,6 +3850,33 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         echo json_encode((object)(array('status' => $result, 'msg' => $msg)));
         exit;
     }
+
+    // generate letter by template --> apply for $fnums
+    public function generateletter() {
+        $jinput = JFactory::getApplication()->input;
+
+        $fnums = $jinput->post->getRaw('fnums');
+        $template = $jinput->post->getRaw('id_tmpl');
+
+        /// from $template --> get a list of letter
+        $_mEval = new EmundusModelEvaluation;
+        $letter_list = $_mEval->getLettersByListID($template);          /// @return Array
+
+        // store $fnums in an array
+        $fnums_array = explode(',', $fnums);
+        $_mFile = new EmundusModelFiles;
+
+        foreach($fnums_array as $key => $value) {
+            $fnum_info = $_mFile->getFnumInfos($value);
+
+            $_letters = $_mEval->getLettersByFnum($value);
+            var_dump($_letters);die;
+        }
+
+
+
+
+    }
 }
 
 

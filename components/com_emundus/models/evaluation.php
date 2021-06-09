@@ -2238,9 +2238,9 @@ if (JFactory::getUser()->id == 63)
 
     /// get all letters [left join jos_emundus_setup_letters *---* jos_emundus_setup_attachments]
     public function getAllAttachmentLetters() {
-        try {
-            $query = $this->_db->getQuery(true);
+        $query = $this->_db->getQuery(true);
 
+        try {
             /// first --> get distinct attachments id from jos_emundus_letters
             $query->clear()
                 ->select('distinct #__emundus_setup_letters.attachment_id')
@@ -2265,6 +2265,56 @@ if (JFactory::getUser()->id == 63)
             return $attachment_letter;
         } catch(Exception $e) {
             return $e->getMessage();
+        }
+    }
+
+    /// get letters from attachmene_id
+    public function getLettersByListID($lid) {
+        $query = $this->_db->getQuery(true);
+
+        if(!empty($lid) or !is_null($lid)) {
+            try {
+                $query->clear()
+                    ->select('#__emundus_setup_letters.id')
+                    ->from($this->_db->quoteName('#__emundus_setup_letters'))
+                    ->where($this->_db->quoteName('#__emundus_setup_letters.attachment_id') . '=' . (int)$lid);
+
+                $this->_db->setQuery($query);
+                return $this->_db->loadAssocList();
+            } catch(Exception $e) {
+                return $e->getMessage();
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /// get letters by status
+    public function getLettersByFnum($fnum) {
+        $query = $this->_db->getQuery(true);
+
+        if(!empty($fnum) or !is_null($fnum)) {
+            try {
+                /// first --> from fnum --> get fnum info
+                $_mFile = new EmundusModelFiles;
+                $_fnumInfo = $_mFile->getFnumInfos($fnum);
+
+                /// from fnumInfo --> deduct the 'training' and 'status'
+                $query->clear()
+                    ->select('jesl.*')
+                    ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+                    ->where($this->_db->quoteName('jeslrs.status') . ' = ' . (int)$_fnumInfo['status'])
+                    ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumInfo['training']));
+
+                $this->_db->setQuery($query);
+                return $this->_db->loadObjectList();
+            } catch(Exception $e) {
+                return $e->getMessage();
+            }
+        } else {
+            return false;
         }
     }
 }
