@@ -1430,6 +1430,11 @@ class EmundusController extends JControllerLegacy {
         // attachments
         $attachments = json_decode($export_model->constraints)->pdffilter->attachments;
 
+        /// is_assessment, is_admission, is_decision
+        $assessment = json_decode($export_model->constraints)->pdffilter->assessment;
+        $admission = json_decode($export_model->constraints)->pdffilter->admission;
+        $decision = json_decode($export_model->constraints)->pdffilter->decision;
+
         if(empty($profiles) and empty($formulaires) and empty($groups) and empty($elements)) { $forms = 0;} else { $forms = 1; }
 
         $options = json_decode($export_model->constraints)->pdffilter->headers;
@@ -1463,12 +1468,13 @@ class EmundusController extends JControllerLegacy {
                 $campaign_id = $infos['campaign_id'];
 
                 /// build pdf for forms
-                if(!empty($pdf_elements)) {
+                if(!empty($pdf_elements) and array_keys($pdf_elements)[0] != "") {
                     $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, null, $options, null, $pdf_elements);
                 }
 
                 /// build pdf for attachments
-                if(!empty($attachments)) {
+                if(!empty($attachments) and $attachments[0] != "") {
+                    var_dump('hello2');die;
                     $tmpArray = array();
                     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
                     $m_application = new EmundusModelApplication;
@@ -1486,6 +1492,19 @@ class EmundusController extends JControllerLegacy {
                         }
                         $files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                     }
+                }
+
+//                var_dump(array_keys($pdf_elements)[0] == "" and $attachments[0] == "" and ($options[0] != "0"));die;
+                if ($assessment == 1)
+                    $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
+                if ($decision == 1)
+                    $files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
+                if ($admission == 1)
+                    $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
+
+                if(array_keys($pdf_elements)[0] == "" and $attachments[0] == "" and ($assessment != 1) and ($decision != 1) and ($admission != 1) and ($options[0] != "0")) {
+//                    var_dump('hello3');die;
+                    $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
                 }
             }
         }

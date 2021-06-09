@@ -4064,8 +4064,8 @@ $(document).ready(function() {
                     let headersObject = document.getElementById('em-export-opt');
                     let headersArray = Array.prototype.slice.call(headersObject);
 
-                    if($('#em-export-opt option:selected').length == 0 || $('#em-add-header').is(":checked")) {
-                        headers = [""];
+                    if($('#em-add-header').is(":checked") == false) {
+                        headers = "0";
                     } else {
                         headersArray.forEach(header => {
                             if (header.selected == true)
@@ -4078,6 +4078,17 @@ $(document).ready(function() {
                     $('#aelts input:checked').each(function() {
                         attachments.push($(this).val());
                     })
+
+                    var is_assessment = 0;
+                    var is_decision = 0;
+                    var is_admission = 0;
+
+                    if ($('#em-ex-assessment').is(":checked"))
+                        is_assessment = 1;
+                    if ($('#em-ex-decision').is(":checked"))
+                        is_decision = 1;
+                    if ($('#em-ex-admission').is(":checked"))
+                        is_admission = 1;
 
                     let params = {
                         'code':code,
@@ -4094,7 +4105,10 @@ $(document).ready(function() {
                         'checkAllGroups': checkAllGroups.length > 0 ? checkAllGroups : [""],
                         'headers': headers.length > 0 ? headers : [""],
 
-                        'attachments': attachments.length > 0 ? attachments : "",
+                        'attachments': attachments.length > 0 ? attachments : [""],
+                        'assessment': is_assessment,
+                        'admission': is_admission,
+                        'decision': is_decision,
                     };
 
                     /// jquery remove all empty data before sending
