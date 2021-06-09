@@ -1717,7 +1717,7 @@ class EmundusModelApplication extends JModelList {
                 }
 
                 if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
-//                    $forms .= '<h2 class="group">' . JText::_($itemg->label) . '</h2>';
+                    $forms .= '<h2 class="group">' . JText::_($itemg->label) . '</h2>';
                     $forms .= '<table>
 			    				<thead><tr><th>' . JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</th></tr></thead>
 							   </table>';
@@ -1752,9 +1752,7 @@ class EmundusModelApplication extends JModelList {
                         }
                     }
 
-//                    $forms .= '<h3>';
-//                    $forms .= JText::_($itemg->label);
-//                    $forms .= '</h3>';
+                    $forms .= '<h2 class="group">' . JText::_($itemg->label) . '</h2>';
 
                     if ($itemg->group_id == 14) {
                         $forms .= '<table>';
