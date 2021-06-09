@@ -1387,6 +1387,7 @@ class EmundusController extends JControllerLegacy {
 
     // export_fiche_synthese
     public function export_fiche_synthese() {
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
         $user = JFactory::getSession()->get('emundusUser');
         $jinput = JFactory::getApplication()->input;
 
@@ -1426,6 +1427,9 @@ class EmundusController extends JControllerLegacy {
         $groups = json_decode($export_model->constraints)->pdffilter->groups;
         $elements = json_decode($export_model->constraints)->pdffilter->elements;
 
+        // attachments
+        $attachments = json_decode($export_model->constraints)->pdffilter->attachments;
+
         if(empty($profiles) and empty($formulaires) and empty($groups) and empty($elements)) { $forms = 0;} else { $forms = 1; }
 
         $options = json_decode($export_model->constraints)->pdffilter->headers;
@@ -1458,11 +1462,29 @@ class EmundusController extends JControllerLegacy {
                 $infos = $m_profile->getFnumDetails($fnum);
                 $campaign_id = $infos['campaign_id'];
 
+                /// build pdf for forms
                 if(!empty($pdf_elements)) {
                     $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, null, $options, null, $pdf_elements);
-                } else {
-                    if($options[0] != 0) {
-                        $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
+                }
+
+                /// build pdf for attachments
+                if(!empty($attachments)) {
+                    $tmpArray = array();
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+                    $m_application = new EmundusModelApplication;
+                    $attachment_to_export = array();
+                    foreach ($attachments as $key=>$aids) {
+                        $detail = explode("|", $aids);
+                        if ((!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training']) && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+                            $attachment_to_export[] = $detail[0];
+                        }
+                    }
+                    if ($attachments || !empty($attachment_to_export)) {
+                        $files = $m_application->getAttachmentsByFnum($fnum, null, $attachment_to_export);
+                        if ($options[0] != "0") {
+                            $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
+                        }
+                        $files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
                     }
                 }
             }
