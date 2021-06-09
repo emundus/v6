@@ -1406,7 +1406,7 @@ class EmundusController extends JControllerLegacy {
         $fnumsInfo = $m_files->getFnumsInfos($validFnums);
 
         /// set params
-        $file = $jinput->getVar('file', null, 'STRING');
+        $file = $jinput->getRaw('file', null);
         $totalfile = count($validFnums);
         $model = $jinput->getRaw('model', null);
         $start = 0;
@@ -1474,7 +1474,6 @@ class EmundusController extends JControllerLegacy {
 
                 /// build pdf for attachments
                 if(!empty($attachments) and $attachments[0] != "") {
-                    var_dump('hello2');die;
                     $tmpArray = array();
                     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
                     $m_application = new EmundusModelApplication;
@@ -1494,7 +1493,6 @@ class EmundusController extends JControllerLegacy {
                     }
                 }
 
-//                var_dump(array_keys($pdf_elements)[0] == "" and $attachments[0] == "" and ($options[0] != "0"));die;
                 if ($assessment == 1)
                     $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
                 if ($decision == 1)
@@ -1503,7 +1501,6 @@ class EmundusController extends JControllerLegacy {
                     $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
 
                 if(array_keys($pdf_elements)[0] == "" and $attachments[0] == "" and ($assessment != 1) and ($decision != 1) and ($admission != 1) and ($options[0] != "0")) {
-//                    var_dump('hello3');die;
                     $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
                 }
             }

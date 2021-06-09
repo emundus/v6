@@ -3761,13 +3761,13 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         $time_date = (date('Y-m-d H:i:s'));
         $current_user = JFactory::getUser();
-        $name = $jinput->getString('filt_name', null);
+        $name = $jinput->getRaw('filt_name', null);
 
-        $params = $jinput->getString('params', null);
+        $params = $jinput->getRaw('params', null);
         $constraints = json_encode(array('pdffilter'=>$params));
 
         $itemid = $jinput->get->get('Itemid', null);
-        $mode = $jinput->getString('mode', null);
+        $mode = $jinput->getRaw('mode', null);
 
         $h_files = new EmundusHelperFiles;
         if (empty($itemid)) {

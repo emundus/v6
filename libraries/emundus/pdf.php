@@ -896,15 +896,15 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
                 $htmldata .= '<p></p>';
                 $htmldata .= '<h3>' . JText::_('PDF_HEADER_INFO_DOSSIER') . '</h3><tr><td class="name">' . @$item->label . ' (' . @$item->cb_schoolyear . ')</td></tr>';
-                ////
+
                 if (in_array("afnum", $options)) {
                     $htmldata .= '<tr class="nationality"><td>' . JText::_('FNUM') . ' : ' . $fnum . '</td></tr>';
                 }
-                //
+
                 if (in_array("aapp-sent", $options)) {
                     $htmldata .= '<tr><td class="statut">' . JText::_('APPLICATION_SENT_ON') . ' : ' . $date_submitted . '</td></tr>';
                 }
-                //
+
                 if (in_array("adoc-print", $options)) {
                     $htmldata .= '<tr class="sent"><td>' . JText::_('DOCUMENT_PRINTED_ON') . ' : ' . $dt->format('d/m/Y H:i') . '</td></tr>';
                 }
@@ -913,7 +913,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     $status = $m_files->getStatusByFnums(explode(',', $fnum));
                     $htmldata .= '<tr class="sent"><td>' . JText::_('PDF_STATUS') . ' : ' . $status[$fnum]['value'] . '</td></tr>';
                 }
-                //
+
                 if (in_array("tags", $options)) {
                     $tags = $m_files->getTagsByFnum(explode(',', $fnum));
                     $htmldata .= '<br/><table><tr><td style="display: inline;"> ';
