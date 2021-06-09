@@ -1699,9 +1699,9 @@ class EmundusModelApplication extends JModelList {
                 $forms .= '<h2' . $breaker . '>';
                 $title = explode('-', JText::_($itemt->label));
                 if (empty($title[1])) {
-                    $forms .= '<b><h2>' . strtoupper(trim(preg_replace('/\s+/', ' ', $_formbuilder_model->replaceAccents(JText::_($itemt->label))))) . '</h2></b>';
+                    $forms .= '<b><h2>' . strtoupper(preg_replace('/\s+/', ' ', $_formbuilder_model->replaceAccents(JText::_(trim($itemt->label))))) . '</h2></b>';
                 } else {
-                    $forms .= '<b><h2>' . strtoupper(trim(preg_replace('/\s+/', ' ', $_formbuilder_model->replaceAccents(JText::_($title[1]))))) . '</h2></b>';
+                    $forms .= '<b><h2>' . strtoupper(preg_replace('/\s+/', ' ', $_formbuilder_model->replaceAccents(JText::_(trim($title[1]))))) . '</h2></b>';
                 }
             }
 
@@ -1710,7 +1710,7 @@ class EmundusModelApplication extends JModelList {
             foreach ($groupes as $itemg) {
                 $g_params = json_decode($itemg->params);
 
-                $forms .= '<h2 class="group">' . JText::_($itemg->label) . '</h2>';
+//                $forms .= '<h2 class="group">' . JText::_($itemg->label) . '</h2>';
 
                 if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
                     continue;
