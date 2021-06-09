@@ -361,12 +361,15 @@ JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
 JHTML::script('media/com_emundus/js/em_files.js');
 JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
 JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
+JHTML::script('media/com_emundus_messenger/app.js');
+JHTML::script('media/com_emundus_messenger/chunk-vendors.js');
 
 JHtml::styleSheet('media/com_emundus/css/reset.css');
 JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
 JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
 JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
 JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
+JHtml::styleSheet('media/com_emundus_messenger/app.css');
 JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
 JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
 JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');

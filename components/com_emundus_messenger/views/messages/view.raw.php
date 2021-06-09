@@ -26,9 +26,9 @@ class EmundusmessengerViewMessages extends JViewLegacy {
     function display($tpl = null) {
         $jinput = JFactory::getApplication()->input;
 
-        $document = JFactory::getDocument();
-        $document->addScript('media/com_emundus_messenger/chunk-vendors.js');
-        $document->addStyleSheet('media/com_emundus_messenger/app.css');
+        JHTML::script( 'media/com_emundus_messenger/app.js');
+        JHTML::script( 'media/com_emundus_messenger/chunk-vendors.js');
+        JHtml::stylesheet( 'media/com_emundus_messenger/app.css');
 
         // Display the template
         $layout = $jinput->getString('layout', null);
