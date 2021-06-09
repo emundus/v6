@@ -2235,4 +2235,36 @@ if (JFactory::getUser()->id == 63)
 	    
 	    return $return;
     }
+
+    /// get all letters [left join jos_emundus_setup_letters *---* jos_emundus_setup_attachments]
+    public function getAllAttachmentLetters() {
+        try {
+            $query = $this->_db->getQuery(true);
+
+            /// first --> get distinct attachments id from jos_emundus_letters
+            $query->clear()
+                ->select('distinct #__emundus_setup_letters.attachment_id')
+                ->from($this->_db->quoteName('#__emundus_setup_letters'));
+            $this->_db->setQuery($query);
+            $attachment_ids = $this->_db->loadObjectList();
+
+            $id_list = array();
+            foreach($attachment_ids as $key => $value) {
+                $id_list[] = $value->attachment_id;
+            }
+
+            /// second --> get attachment being letters
+            $query->clear()
+                ->select('distinct #__emundus_setup_attachments.*')
+                ->from($this->_db->quoteName('#__emundus_setup_attachments'))
+                ->where($this->_db->quoteName('#__emundus_setup_attachments.id') . 'IN ('. implode(',', $id_list) . ')');
+
+            $this->_db->setQuery($query);
+            $attachment_letter = $this->_db->loadAssocList();
+
+            return $attachment_letter;
+        } catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

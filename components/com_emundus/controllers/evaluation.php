@@ -1834,4 +1834,13 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         return $nom;
     }
+
+    // controller of get all letters
+    public function getallattachmentletter() {
+        $attachment_letter = $this->getModel('Evaluation')->getAllAttachmentLetters();
+
+        $result = array('status' => true, 'attachment_letter' => $attachment_letter);
+        echo json_encode((object) $result);
+        exit;
+    }
 }
