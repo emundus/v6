@@ -1710,12 +1710,14 @@ class EmundusModelApplication extends JModelList {
             foreach ($groupes as $itemg) {
                 $g_params = json_decode($itemg->params);
 
+                $forms .= '<h2 class="group">' . JText::_($itemg->label) . '</h2>';
+
                 if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
                     continue;
                 }
 
                 if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
-                    $forms .= '<h2 class="group">' . JText::_($itemg->label) . '</h2>';
+//                    $forms .= '<h2 class="group">' . JText::_($itemg->label) . '</h2>';
                     $forms .= '<table>
 			    				<thead><tr><th>' . JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</th></tr></thead>
 							   </table>';
