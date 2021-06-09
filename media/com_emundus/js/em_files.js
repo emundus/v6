@@ -4064,7 +4064,7 @@ $(document).ready(function() {
                     let headersObject = document.getElementById('em-export-opt');
                     let headersArray = Array.prototype.slice.call(headersObject);
 
-                    if($('#em-add-header').is(":checked") == false) {
+                    if($('#em-add-header').is(":checked") == false || $('#em-export-opt option:selected').length == 0) {
                         headers = "0";
                     } else {
                         headersArray.forEach(header => {
