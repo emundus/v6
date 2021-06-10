@@ -7,21 +7,20 @@ $template_type = array(
 );
 ?>
 <input name="em-doc-fnums" type="hidden" value="<?= $this->fnums ?>"/>
+<div style="padding-left:30px" id="em-options">
+    <label for="em-doc-tmpl-label"><?= JText::_('DOCUMENT_TYPE'); ?></label>
+    <div id="exp-opt" >
+        <select name="docs" id="em-doc-tmpl" class="chzn-select" multiple></select>
+    </div>
 
-<label for="em-doc-tmpl"><?= JText::_('DOCUMENT_TYPE'); ?></label>
-<select name="docs" id="em-doc-tmpl" class="form-control form-control-lg">
-<!--	--><?php //foreach ($this->docs as $doc) :?>
-<!--		<option value = "--><?//= $doc['file_id'] ?><!--">--><?//= $doc['title'].' ('.$template_type[$doc['template_type']]?><!--)</option>-->
-<!--	--><?php //endforeach;?>
-</select>
-
-<label for="em-doc-cansee"><?= JText::_('CAN_BE_VIEWED'); ?></label>
-<select name="cansee" id="em-doc-cansee" class="form-control">
-    <option value="0"><?= JText::_('JNO'); ?></option>
-    <option value="1"><?= JText::_('JYES'); ?></option>
-</select>
-
+    <label for="em-doc-cansee"><?= JText::_('CAN_BE_VIEWED'); ?></label>
+    <select name="cansee" id="em-doc-cansee" class="form-control">
+        <option value="0"><?= JText::_('JNO'); ?></option>
+        <option value="1"><?= JText::_('JYES'); ?></option>
+    </select>
+</div>
 <script type="text/javascript">
+    $('#em-doc-tmpl').chosen({width:'80%'});
     // get all letters from fnums
     var fnums = $('input:hidden[name="em-doc-fnums"]').val();
 
