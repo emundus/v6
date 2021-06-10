@@ -3193,6 +3193,7 @@ if (JFactory::getUser()->id == 63)
      * @return int
      */
     public function addAttachment($fnum, $name, $uid, $cid, $attachment_id, $desc, $canSee = 0) {
+        var_dump($uid);die;
         $dbo = $this->getDbo();
         $query = "insert into jos_emundus_uploads (user_id, fnum, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id) values ({$uid}, {$dbo->quote($fnum)}, {$attachment_id}, {$dbo->quote($name)}, {$dbo->quote($desc)}, 0, {$canSee}, {$cid})";
         $dbo->setQuery($query);

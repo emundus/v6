@@ -3878,17 +3878,17 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         /// a partit de $fnums + $templates --> generer les lettres qui correspondent
         foreach($fnum_Array as $key => $fnum) {
             $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates); // return :: Array
-
             foreach($generated_letters as $key => $letter) {
                 // get attachment info
                 $attachInfo = $_mFile->getAttachmentInfos($letter->attachment_id);
                 $type = $letter->template_type;
+
                 switch ((int)$type) {
                     case 1:     // simple file
                         $file = JPATH_BASE . $letter->file;
                         if(file_exists($file)) {
                             /// get fnum info from fnum
-                            $fnumInfo = $_mFile->getFnumInfos($fnum);
+                            $fnumInfo = $_mFile->getFnumsTagsInfos($fnum);
 
                             // get file name
                             $name = $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . '.' . pathinfo($file)['extension'];
@@ -3898,7 +3898,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
                             if (copy($file, $path)) {
                                 $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo['applicant_id'] . '/';
-                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo['applicant_id'], $fnumInfo['applicant_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo['applicant_id'], $fnumInfo['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
 
                                 $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
                             }
@@ -3910,7 +3910,11 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                     /// end of case 1 ///
 
                     case 2:     /// pdf file from html (tinymce)
+
                         $fnumInfo = $_mFile->getFnumInfos($fnum);
+
+                        var_dump($fnumInfo['applicant_id']);die;
+
                         if(isset($fnumInfo)) {
                             $post = [
                                 'TRAINING_CODE' => $fnumInfo['campaign_code'],
@@ -3925,15 +3929,86 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                             // Generate PDF
                             $tags = $_mEmail->setTags($fnumInfo['applicant_id'], $post, $fnum);
 
+                            require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
+                            $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+                            $pdf->SetCreator(PDF_CREATOR);
+                            $pdf->SetAuthor($user->name);
+                            $pdf->SetTitle($letter->title);
+
+                            // Set margins
+                            $pdf->SetMargins(5, 40, 5);
+                            $pdf->footer = $letter->footer;
+
+                            // Get logo
+                            preg_match('#src="(.*?)"#i', $letter->header, $tab);
+                            $pdf->logo_footer = JPATH_BASE . DS . @$tab[1];
+                            unset($logo, $logo_footer);
+
+                            $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+
+                            // Set default monospaced font
+                            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+                            // Set default font subsetting mode
+                            $pdf->setFontSubsetting(true);
+
+                            // Set font
+                            $pdf->SetFont('freeserif', '', 8);
+
+                            $htmldata = $_mEmail->setTagsFabrik($letter->body, array($fnum));
+
+                            // clean html
+                            $htmldata = preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $htmldata))));
+
+                            // base64 images to link
+                            $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', function($match) {
+                                list(, $img, $type, $base64, $end) = $match;
+
+                                $bin = base64_decode($base64);
+                                $md5 = md5($bin);   // generate a new temporary filename
+                                $fn = "tmp/$md5.$type";
+                                file_exists($fn) or file_put_contents($fn, $bin);
+
+                                return "$img$fn$end";  // new <img> tag
+                            }, $htmldata);
+
+                            $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
+
+                            $pdf->AddPage();
+
+                            // Print text using writeHTMLCell()
+                            $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $htmldata, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
+
+                            $rand = rand(0, 1000000);
+                            if (!file_exists(EMUNDUS_PATH_ABS . $fnumInfo['applicant_id'])) {
+                                mkdir(EMUNDUS_PATH_ABS . $fnumInfo['applicant_id'], 0775);
+                            }
+
+                            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+                            if (!$anonymize_data) {
+                                $name = $this->sanitize_filename($fnumInfo['applicant_name']).$attachInfo['lbl']."-".md5($rand.time()).".pdf";
+                            } else {
+                                $name = $this->sanitize_filename($fnum).$attachInfo['lbl']."-".md5($rand.time()).".pdf";
+                            }
+
+                            $path = EMUNDUS_PATH_ABS . $fnumInfo['applicant_id'] . DS . $name;
+                            $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo['applicant_id'] . '/';
+
+
+                            $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo['applicant_id'], $fnumInfo['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
+
+                            $pdf->Output($path, 'F');
+                            $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
                         }
-                        exit;
+                        unset($pdf, $path, $name, $url, $upIdn);
                     case 3:
-                        exit;
+                        //exit;
                     case 4:
-                        exit;
+                        //exit;
                 }
             }
         }
+
         echo json_encode($res);
         exit;
     }
