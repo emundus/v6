@@ -3883,8 +3883,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                 // get attachment info
                 $attachInfo = $_mFile->getAttachmentInfos($letter->attachment_id);
                 $type = $letter->template_type;
-
-                switch($type) {
+                switch ((int)$type) {
                     case 1:     // simple file
                         $file = JPATH_BASE . $letter->file;
                         if(file_exists($file)) {
@@ -3908,29 +3907,34 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                             $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
                         }
 
-                        echo json_encode($res);
-                        break;
-
                     /// end of case 1 ///
 
                     case 2:     /// pdf file from html (tinymce)
+                        $fnumInfo = $_mFile->getFnumInfos($fnum);
+                        if(isset($fnumInfo)) {
+                            $post = [
+                                'TRAINING_CODE' => $fnumInfo['campaign_code'],
+                                'TRAINING_PROGRAMME' => $fnumInfo['campaign_label'],
+                                'CAMPAIGN_LABEL' => $fnumInfo['campaign_label'],
+                                'CAMPAIGN_YEAR' => $fnumInfo['campaign_year'],
+                                'USER_NAME' => $fnumInfo['applicant_name'],
+                                'USER_EMAIL' => $fnumInfo['applicant_email'],
+                                'FNUM' => $fnum
+                            ];
 
+                            // Generate PDF
+                            $tags = $_mEmail->setTags($fnumInfo['applicant_id'], $post, $fnum);
 
-
-
-                        break;
+                        }
+                        exit;
                     case 3:
-                        break;
+                        exit;
                     case 4:
-                        break;
-                    default:
-                        break;
+                        exit;
                 }
             }
-            break;
         }
-
-        echo true;
+        echo json_encode($res);
         exit;
     }
 }
