@@ -7,9 +7,9 @@ $template_type = array(
 );
 ?>
 <input name="em-doc-fnums" type="hidden" value="<?= $this->fnums ?>"/>
-<div style="padding-left:30px" id="em-options">
+<div style="padding-left:30px" id="em-documents">
     <label for="em-doc-tmpl-label"><?= JText::_('DOCUMENT_TYPE'); ?></label>
-    <div id="exp-opt" >
+    <div id="exp-document" >
         <select name="docs" id="em-doc-tmpl" class="chzn-select" multiple></select>
     </div>
 
@@ -18,6 +18,19 @@ $template_type = array(
         <option value="0"><?= JText::_('JNO'); ?></option>
         <option value="1"><?= JText::_('JYES'); ?></option>
     </select>
+
+    <label for="em-export-mode"><?= JText::_('COM_EMUNDUS_EXPORT_MODE'); ?></label>
+    <select name="mode" id="em-doc-export-mode" class="form-control">
+        <option value="0"><?= JText::_('COM_EMUNDUS_EXPORT_BY_FNUM'); ?></option>
+        <option value="1"><?= JText::_('COM_EMUNDUS_EXPORT_BY_DOCUMMENT'); ?></option>
+    </select>
+
+    <label for="em-combine-pdf"><?= JText::_('COM_EMUNDUS_PDF_MERGE'); ?></label>
+    <select name="merge" id="em-doc-pdf-merge" class="form-control">
+        <option value="0" selected><?= JText::_('JNO'); ?></option>
+        <option value="1"><?= JText::_('JYES'); ?></option>
+    </select>
+
 </div>
 <script type="text/javascript">
     $('#em-doc-tmpl').chosen({width:'100%'});
