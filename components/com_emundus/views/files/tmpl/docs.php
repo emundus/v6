@@ -20,7 +20,7 @@ $template_type = array(
     </select>
 </div>
 <script type="text/javascript">
-    $('#em-doc-tmpl').chosen({width:'80%'});
+    $('#em-doc-tmpl').chosen({width:'100%'});
     // get all letters from fnums
     var fnums = $('input:hidden[name="em-doc-fnums"]').val();
 
