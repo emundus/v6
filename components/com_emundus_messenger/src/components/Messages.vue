@@ -24,7 +24,10 @@
           </div>
 
           <div class="messages__list col-md-9">
-            <label class="text-center" style="width: 100%">{{translations.messages}}</label>
+            <div class="message__header">
+              <label class="text-center" style="width: 100%">{{translations.messages}}</label>
+              <i class="fas fa-times pointer" @click="$modal.hide('messages')"></i>
+            </div>
             <div class="messages__list-block" id="messages__list">
               <div v-for="message in messages" class="messages__message-item" :class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'">
                 <div class="messages__message-item-block" :class="user == message.user_id_from ? 'messages__text-align-right' : 'messages__text-align-left'">

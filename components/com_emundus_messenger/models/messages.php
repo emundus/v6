@@ -54,7 +54,8 @@ class EmundusmessengerModelmessages extends JModelList
                 ->from($db->quoteName('#__messages','m'))
                 ->leftJoin($db->quoteName('#__emundus_chatroom','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('m.page'))
                 ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('m.user_id_from'))
-                ->where($db->quoteName('c.fnum') .' LIKE ' . $db->quote($fnum));
+                ->where($db->quoteName('c.fnum') .' LIKE ' . $db->quote($fnum))
+                ->group('m.date_time');
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e){

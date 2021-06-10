@@ -120,7 +120,7 @@ hr{
 .messages__campaigns_title{
     margin-left: 10px;
     text-overflow: ellipsis;
-    max-width: 80%;
+    max-width: 100px;
     overflow: hidden;
     white-space: nowrap;
 }
@@ -137,6 +137,12 @@ hr{
     text-align: left;
 }
 
+.message__header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .loader {
     border: 5px solid #f3f3f4; /* Light grey */
     border-top: 5px solid #7886ae; /* Blue */
@@ -151,6 +157,10 @@ hr{
     top: 50vh;
     box-shadow: 0 0 0 9999px #cecece85;
     background: #cecece85;
+}
+
+.pointer{
+    cursor: pointer;
 }
 
 @keyframes spin {
