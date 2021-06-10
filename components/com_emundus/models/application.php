@@ -1763,7 +1763,7 @@ class EmundusModelApplication extends JModelList {
                         }
                         $forms .= '</table>';
                                 // TABLEAU DE PLUSIEURS LIGNES avec moins de 7 colonnes
-                    } elseif (((int)$g_params->repeated === 1) && count($elements) < 6 && !$asTextArea) {
+                    } elseif (((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) && count($elements) < 6 && !$asTextArea) {
                                 //-- Entrée du tableau -- */
                         $t_elt = array();
                         foreach ($elements as &$element) {
@@ -1965,7 +1965,7 @@ class EmundusModelApplication extends JModelList {
 
                                 // TABLEAU DE PLUSIEURS LIGNES sans tenir compte du nombre de lignes
                     }
-                    elseif ((int)$g_params->repeated === 1) {
+                    elseif ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) {
 
                                 //-- Entrée du tableau -- */
                                 $t_elt = array();
