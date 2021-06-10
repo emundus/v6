@@ -1836,10 +1836,14 @@ class EmundusControllerEvaluation extends JControllerLegacy
     }
 
     // controller of get all letters
-    public function getallattachmentletter() {
-        $attachment_letter = $this->getModel('Evaluation')->getAllAttachmentLetters();
+    public function getattachmentletters() {
+        /// first, get list of fnums
+        $jinput = JFactory::getApplication()->input;
+        $fnums = $jinput->getRaw('fnums', null);
 
-        $result = array('status' => true, 'attachment_letter' => $attachment_letter);
+        $attachment_letters = $this->getModel('Evaluation')->getLettersByFnums($fnums);
+
+        $result = array('status' => true, 'attachment_letters' => $attachment_letters);
         echo json_encode((object) $result);
         exit;
     }

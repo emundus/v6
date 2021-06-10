@@ -2236,33 +2236,18 @@ if (JFactory::getUser()->id == 63)
 	    return $return;
     }
 
-    /// get all letters [left join jos_emundus_setup_letters *---* jos_emundus_setup_attachments]
-    public function getAllAttachmentLetters() {
+    /// get distinct attachment
+    public function getAttachmentByIds($ids) {
         $query = $this->_db->getQuery(true);
 
         try {
-            /// first --> get distinct attachments id from jos_emundus_letters
-            $query->clear()
-                ->select('distinct #__emundus_setup_letters.attachment_id')
-                ->from($this->_db->quoteName('#__emundus_setup_letters'));
-            $this->_db->setQuery($query);
-            $attachment_ids = $this->_db->loadObjectList();
-
-            $id_list = array();
-            foreach($attachment_ids as $key => $value) {
-                $id_list[] = $value->attachment_id;
-            }
-
-            /// second --> get attachment being letters
             $query->clear()
                 ->select('distinct #__emundus_setup_attachments.*')
                 ->from($this->_db->quoteName('#__emundus_setup_attachments'))
-                ->where($this->_db->quoteName('#__emundus_setup_attachments.id') . 'IN ('. implode(',', $id_list) . ')');
+                ->where($this->_db->quoteName('#__emundus_setup_attachments.id') . 'IN ('. implode(',', $ids) . ')');
 
             $this->_db->setQuery($query);
-            $attachment_letter = $this->_db->loadAssocList();
-
-            return $attachment_letter;
+            return $this->_db->loadAssocList();
         } catch(Exception $e) {
             return $e->getMessage();
         }
@@ -2290,31 +2275,66 @@ if (JFactory::getUser()->id == 63)
     }
 
     /// get letters by status
-    public function getLettersByFnum($fnum) {
+    public function getLettersByFnums($fnums) {
         $query = $this->_db->getQuery(true);
-
-        if(!empty($fnum) or !is_null($fnum)) {
+        if(!empty($fnums) or !is_null($fnums)) {
             try {
                 /// first --> from fnum --> get fnum info
                 $_mFile = new EmundusModelFiles;
-                $_fnumInfo = $_mFile->getFnumInfos($fnum);
+                $_fnumArray = explode(',', $fnums);
 
-                /// from fnumInfo --> deduct the 'training' and 'status'
-                $query->clear()
-                    ->select('jesl.*')
-                    ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
-                    ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
-                    ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
-                    ->where($this->_db->quoteName('jeslrs.status') . ' = ' . (int)$_fnumInfo['status'])
-                    ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumInfo['training']));
+                $_fnumsInfo = $_mFile->getFnumsInfos($_fnumArray);
 
-                $this->_db->setQuery($query);
-                return $this->_db->loadObjectList();
+                $_programs = [];
+                $_campaigns = [];
+                $_status = [];
+
+                foreach($_fnumsInfo as $key => $value) {
+                    $_programs[] = $value['training'];
+                    $_campaigns[] = $value['campaign_id'];
+                    $_status[] = $value['step'];
+                }
+
+                $_letters = $this->getLettersByProgrammesStatus($_programs,$_status);
+                $_letters_ids = [];
+
+                foreach($_letters as $key => $value) {
+                    $_letters_ids[] = $value->attachment_id;
+                }
+
+                $_letters_ids = array_unique($_letters_ids);
+
+                /// from $_letters --> get distinct attachment_id
+                $_attachment_ids = $this->getAttachmentByIds($_letters_ids);
+
+                return $_attachment_ids;
+                
             } catch(Exception $e) {
                 return $e->getMessage();
             }
         } else {
             return false;
+        }
+    }
+
+    /// get letters by traininng and status
+    public function getLettersByProgrammesStatus($programs=[], $status=[]) {
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('jesl.*')
+                ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+                ->where($this->_db->quoteName('jeslrs.status') . ' IN (' . implode(',', $status) . ')')
+                ->andWhere($this->_db->quoteName('jeslrt.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')');
+
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+
+        } catch(Exception $e) {
+            return $e->getMessage();
         }
     }
 }
