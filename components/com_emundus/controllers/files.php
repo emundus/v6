@@ -3853,14 +3853,22 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
     // generate letter by template --> apply for $fnums
     public function generateletter() {
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+        $_mEval = new EmundusModelEvaluation;
+
         $jinput = JFactory::getApplication()->input;
 
         $fnums = $jinput->post->getRaw('fnums');
-        $template = $jinput->post->getRaw('id_tmpl');
+        $templates = $jinput->post->getRaw('ids_tmpl');
 
-        /// from $template --> get a list of letter
-        ///
-        $_mEval = new EmundusModelEvaluation;
+        $fnum_Array = explode(',', $fnums);
+
+        /// a partit de $fnums + $templates --> generer les lettres qui correspondent
+        foreach($fnum_Array as $key => $fnum) {
+            $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates);
+            echo '<pre>'; var_dump($generated_letters); echo '</pre>';
+        }
+        die;
     }
 }
 

@@ -5203,7 +5203,7 @@ $(document).ready(function() {
                     return;
 
                 var fnums = $('input:hidden[name="em-doc-fnums"]').val();
-                var idTmpl = $('#em-doc-tmpl').val();
+                var idsTmpl = $('#em-doc-tmpl').val();
                 var cansee = $('#em-doc-cansee').val();
 
                 $('.modal-body').empty();
@@ -5214,7 +5214,7 @@ $(document).ready(function() {
                     type:'post',
                     url:'index.php?option=com_emundus&controller=files&task=generateletter&format=raw',
                     dataType:'json',
-                    data:{fnums: fnums, id_tmpl: idTmpl, cansee: cansee},
+                    data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee},
                     success: function(result) {
                         console.log(result);
                         // $('.modal-body').empty();

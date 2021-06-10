@@ -2318,7 +2318,7 @@ if (JFactory::getUser()->id == 63)
     }
 
     /// get letters by traininng and status
-    public function getLettersByProgrammesStatus($programs=[], $status=[]) {
+    public function getLettersByProgrammesStatus($programs=array(), $status=array()) {
         $query = $this->_db->getQuery(true);
 
         try {
@@ -2335,6 +2335,40 @@ if (JFactory::getUser()->id == 63)
 
         } catch(Exception $e) {
             return $e->getMessage();
+        }
+    }
+
+    /// get exactly letter id by fnum and template (32,33,34)
+    public function getLetterTemplateForFnum($fnum,$templates=array()) {
+        if(!empty($fnum) and !empty($templates)) {
+            $query = $this->_db->getQuery(true);
+
+            try {
+                /// first :: get fnum info
+                $_mFile = new EmundusModelFiles;
+
+                $_fnumStatus = $_mFile->getFnumInfos($fnum)['status'];
+                $_fnumProgram = $_mFile->getFnumInfos($fnum)['training'];
+                $_fnumCampaign = $_mFile->getFnumInfos($fnum)['id'];
+
+                /// second :: status, program, templates --> detect the letter id to generate
+                $query->clear()
+                    ->select('jesl.*')
+                    ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+                    ->where($this->_db->quoteName('jeslrs.status') . ' = ' . $_fnumStatus)
+                    ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
+                    ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
+
+                $this->_db->setQuery($query);
+                return $this->_db->loadObjectList();
+
+            } catch(Exception $e) {
+                return $e->getMessage();
+            }
+        } else {
+            return false;
         }
     }
 }
