@@ -3854,21 +3854,84 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
     // generate letter by template --> apply for $fnums
     public function generateletter() {
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
+
         $_mEval = new EmundusModelEvaluation;
+        $_mFile = new EmundusModelFiles;
+        $_mEmail = new EmundusModelEmails;
+
+        $user = JFactory::getUser();
 
         $jinput = JFactory::getApplication()->input;
 
         $fnums = $jinput->post->getRaw('fnums');
         $templates = $jinput->post->getRaw('ids_tmpl');
+        $canSee = $jinput->post->getRaw('cansee', 0);
 
         $fnum_Array = explode(',', $fnums);
 
+        $res = new stdClass();
+        $res->status = true;
+        $res->files = [];
+
         /// a partit de $fnums + $templates --> generer les lettres qui correspondent
         foreach($fnum_Array as $key => $fnum) {
-            $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates);
-            echo '<pre>'; var_dump($generated_letters); echo '</pre>';
+            $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates); // return :: Array
+
+            foreach($generated_letters as $key => $letter) {
+                // get attachment info
+                $attachInfo = $_mFile->getAttachmentInfos($letter->attachment_id);
+                $type = $letter->template_type;
+
+                switch($type) {
+                    case 1:     // simple file
+                        $file = JPATH_BASE . $letter->file;
+                        if(file_exists($file)) {
+                            /// get fnum info from fnum
+                            $fnumInfo = $_mFile->getFnumInfos($fnum);
+
+                            // get file name
+                            $name = $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . '.' . pathinfo($file)['extension'];
+
+                            // get file path
+                            $path = EMUNDUS_PATH_ABS . $fnumInfo['applicant_id'] . DS . $name;
+
+                            if (copy($file, $path)) {
+                                $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo['applicant_id'] . '/';
+                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo['applicant_id'], $fnumInfo['applicant_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+
+                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
+                            }
+                        } else {
+                            $res->status = false;
+                            $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
+                        }
+
+                        echo json_encode($res);
+                        break;
+
+                    /// end of case 1 ///
+
+                    case 2:     /// pdf file from html (tinymce)
+
+
+
+
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        break;
+                    default:
+                        break;
+                }
+            }
+            break;
         }
-        die;
+
+        echo true;
+        exit;
     }
 }
 
