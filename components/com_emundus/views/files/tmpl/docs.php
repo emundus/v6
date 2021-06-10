@@ -13,17 +13,23 @@ $template_type = array(
         <select name="docs" id="em-doc-tmpl" class="chzn-select" multiple></select>
     </div>
 
+    </br>
+
     <label for="em-doc-cansee"><?= JText::_('CAN_BE_VIEWED'); ?></label>
     <select name="cansee" id="em-doc-cansee" class="form-control">
         <option value="0"><?= JText::_('JNO'); ?></option>
         <option value="1"><?= JText::_('JYES'); ?></option>
     </select>
 
+    </br>
+
     <label for="em-export-mode"><?= JText::_('COM_EMUNDUS_EXPORT_MODE'); ?></label>
     <select name="mode" id="em-doc-export-mode" class="form-control">
         <option value="0"><?= JText::_('COM_EMUNDUS_EXPORT_BY_FNUM'); ?></option>
         <option value="1"><?= JText::_('COM_EMUNDUS_EXPORT_BY_DOCUMMENT'); ?></option>
     </select>
+
+    </br>
 
     <label for="em-combine-pdf"><?= JText::_('COM_EMUNDUS_PDF_MERGE'); ?></label>
     <select name="merge" id="em-doc-pdf-merge" class="form-control">
@@ -45,7 +51,7 @@ $template_type = array(
         success: function(result) {
             let attachment_letters = result.attachment_letters;
             attachment_letters.forEach(letter => {
-                $('#em-doc-tmpl').append('<option value="' + letter.id + '">' + letter.value + "   " + '(' + (letter.allowed_types).toUpperCase() + ')' + '</option>');
+                $('#em-doc-tmpl').append('<option value="' + letter.id + '">' + letter.value + '</option>');
                 $('#em-doc-tmpl').trigger("chosen:updated");
             })
         }
