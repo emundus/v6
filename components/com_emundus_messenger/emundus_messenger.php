@@ -32,10 +32,6 @@ JLog::addLogger(
 
 $current_user = JFactory::getUser();
 
-if (!EmundusonboardHelperAccess::asPartnerAccessLevel($current_user->id)) {
-    die( JText::_('RESTRICTED_ACCESS') );
-}
-
 $app = JFactory::getApplication();
 
 // Require specific controller if requested

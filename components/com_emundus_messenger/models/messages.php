@@ -39,7 +39,7 @@ class EmundusmessengerModelmessages extends JModelList
             return $db->loadObjectList();
         } catch (Exception $e){
             JLog::add('component/com_emundus_messages/models/messages | Error when try to get campaigns associated to user : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return new stdClass();
+            return [];
         }
     }
 
@@ -59,7 +59,7 @@ class EmundusmessengerModelmessages extends JModelList
             return $db->loadObjectList();
         } catch (Exception $e){
             JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id .'and to campaign : '.$cid . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return new stdClass();
+            return [];
         }
     }
 
@@ -69,6 +69,12 @@ class EmundusmessengerModelmessages extends JModelList
         $query = $db->getQuery(true);
 
         $user = JFactory::getSession()->get('emundusUser');
+
+        if (!EmundusonboardHelperAccess::asPartnerAccessLevel($user->id)) {
+            $state = 1;
+        } else {
+            $state = 0;
+        }
 
         $m_messages = new EmundusModelMessages;
 
@@ -87,7 +93,7 @@ class EmundusmessengerModelmessages extends JModelList
                 ->set($db->quoteName('user_id_from') . ' = ' . $db->quote($user->id))
                 ->set($db->quoteName('folder_id') . ' = 2')
                 ->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('state') . ' = 1')
+                ->set($db->quoteName('state') . ' = ' . $state)
                 ->set($db->quoteName('message') . ' = ' . $db->quote($message))
                 ->set($db->quoteName('page') . ' = ' . $db->quote($chatroom));
             $db->setQuery($query);
@@ -115,6 +121,53 @@ class EmundusmessengerModelmessages extends JModelList
         } catch (Exception $e){
             JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id .'and to campaign : '.$cid . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();
+        }
+    }
+
+    function getNotifications($user){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('count(m.message_id) as notifications,ec.fnum')
+                ->from($db->quoteName('#__messages','m'))
+                ->leftJoin($db->quoteName('#__emundus_chatroom','ec').' ON '.$db->quoteName('ec.id').' = '.$db->quoteName('m.page'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature','cc').' ON '.$db->quoteName('cc.fnum').' = '.$db->quoteName('ec.fnum'))
+                ->where($db->quoteName('cc.applicant_id') . ' = ' . $db->quote($user))
+                ->andWhere($db->quoteName('m.state') . ' = 0')
+                ->group('ec.fnum');
+            $db->setQuery($query);
+            return $db->loadObject();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id .'and to campaign : '.$cid . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return 0;
+        }
+    }
+
+    function markAsRead($fnum){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('m.message_id')
+                ->from($db->quoteName('#__messages','m'))
+                ->leftJoin($db->quoteName('#__emundus_chatroom','ec').' ON '.$db->quoteName('ec.id').' = '.$db->quoteName('m.page'))
+                ->where($db->quoteName('ec.fnum') . ' LIKE ' . $db->quote($fnum))
+                ->andWhere($db->quoteName('m.state') . ' = 0');
+            $db->setQuery($query);
+            $messages_readed = $db->loadColumn();
+
+            $query->clear()
+                ->update($db->quoteName('#__messages'))
+                ->set($db->quoteName('state') . ' = 1')
+                ->where($db->quoteName('message_id') . ' IN (' . implode(',',$messages_readed) . ')');
+            $db->setQuery($query);
+            $db->execute();
+
+            return sizeof($messages_readed);
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_messages/models/messages | Error when try to mark messages as read with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 }
