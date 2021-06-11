@@ -4003,10 +4003,301 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                         unset($pdf, $path, $name, $url, $upIdn);
                         break;
 
-                    case 3:
-                        //exit;
+                    /// end of case 2
+
+                    case 3: /// generate pdf from docx --> using Gotenberg
+                        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+                        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'export.php');
+
+                        $m_Export = new EmundusModelExport;
+                        $eMConfig = JComponentHelper::getParams('com_emundus');
+                        $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
+
+                        $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
+
+                        $special = ['user_dob_age', 'evaluation_radar'];
+
+                        try {
+                            $phpWord = new \PhpOffice\PhpWord\PhpWord();
+                            $preprocess = $phpWord->loadTemplate(JPATH_BASE . $letter->file);
+                            $tags = $preprocess->getVariables();
+
+                            $idFabrik = array();
+                            $setupTags = array();
+
+                            foreach ($tags as $i => $val) {
+                                $tag = strip_tags($val);
+                                if (is_numeric($tag)) {
+                                    $idFabrik[] = $tag;
+                                } else {
+                                    $setupTags[] = $tag;
+                                }
+                            }
+
+                            if (!empty($idFabrik)) {
+                                $fabrikElts = $_mFile->getValueFabrikByIds($idFabrik);
+                            } else {
+                                $fabrikElts = array();
+                            }
+
+                            $fabrikValues = array();
+                            foreach ($fabrikElts as $elt) {
+                                $params = json_decode($elt['params']);
+                                $groupParams = json_decode($elt['group_params']);
+                                $isDate = ($elt['plugin'] == 'date');
+                                $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
+
+                                if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
+                                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, $fnum_Array, $params, $groupParams->repeat_group_button == 1);
+                                } else {
+                                    if ($isDate) {
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue($fnum_Array, $elt['db_table_name'], $elt['name'], $params->date_form_format);                   /// $fnum_Array or $fnum ???
+                                    } else {
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue($fnum_Array, $elt['db_table_name'], $elt['name']);                                              /// $fnum_Array or $fnum ???
+                                    }
+                                }
+
+                                if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown") {
+
+                                    foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+
+                                        if ($elt['plugin'] == "checkbox") {
+                                            $val = json_decode($val['val']);
+                                        } else {
+                                            $val = explode(',', $val['val']);
+                                        }
+
+                                        if (count($val) > 0) {
+                                            foreach ($val as $k => $v) {
+                                                $index = array_search(trim($v), $params->sub_options->sub_values);
+                                                $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
+                                            }
+                                            $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
+                                        } else {
+                                            $fabrikValues[$elt['id']][$fnum]['val'] = "";
+                                        }
+
+                                    }
+
+                                } elseif ($elt['plugin'] == "birthday") {
+
+                                    foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+                                        $val = explode(',', $val['val']);
+                                        foreach ($val as $k => $v) {
+                                            $val[$k] = date($params->details_date_format, strtotime($v));
+                                        }
+                                        $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
+                                    }
+
+                                } else {
+                                    if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, $fnum_Array, $params, $groupParams->repeat_group_button == 1);              /// $fnum_Array or $fnum ???
+                                    } else {
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue($fnum_Array, $elt['db_table_name'], $elt['name']);                                                  /// $fnum_Array or $fnum ???
+                                    }
+                                }
+                            }
+
+                            $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE . $letter->file);
+                            if (isset($fnumsInfos[$fnum])) {
+                                foreach ($setupTags as $tag) {
+                                    $val = "";
+                                    $lowerTag = strtolower($tag);
+
+                                    if (array_key_exists($lowerTag, $const)) {
+                                        $preprocess->setValue($tag, $const[$lowerTag]);
+                                    }
+                                    elseif (in_array($lowerTag, $special)) {
+                                        switch ($lowerTag) {
+
+                                            // dd-mm-YYYY (YY)
+                                            case 'user_dob_age':
+                                                $birthday = $_mFile->getBirthdate($fnum, 'd/m/Y', true);
+                                                $preprocess->setValue($tag, $birthday->date . ' (' . $birthday->age . ')');
+                                                break;
+
+                                            default:
+                                                $preprocess->setValue($tag, '');
+                                                break;
+                                        }
+                                    }
+                                    elseif(!empty(@$fnumInfo[$fnum][$lowerTag])) {
+                                        $preprocess->setValue($tag, @$fnumInfo[$fnum][$lowerTag]);
+                                    }
+                                    else {
+                                        $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+                                        $i = 0;
+                                        foreach ($tags['patterns'] as $value) {
+                                            if ($value == $tag) {
+                                                $val = $tags['replacements'][$i];
+                                                break;
+                                            }
+                                            $i++;
+                                        }
+                                        $preprocess->setValue($tag, htmlspecialchars($val));
+                                    }
+                                }
+
+                                /// foreach
+                                foreach ($idFabrik as $id) {
+                                    if (isset($fabrikValues[$id][$fnum])) {
+                                        $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+                                        $preprocess->setValue($id, htmlspecialchars($value));
+                                    } else {
+                                        $preprocess->setValue($id, '');
+                                    }
+                                }
+
+                                $rand = rand(0, 1000000);
+                                if (!file_exists(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'])) {
+                                    mkdir(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'], 0775);
+                                }
+
+                                $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']).$attachInfo['lbl']."-".md5($rand . time()).".docx";
+
+                                $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumInfo[$fnum]['applicant_id'].DS.$filename);
+
+                                if($gotenberg_activation == 1 && $letter->pdf == 1){
+                                    //convert to PDF
+                                    $src = EMUNDUS_PATH_ABS.$fnumInfo[$fnum]['applicant_id'].DS.$filename;
+                                    $dest = str_replace('.docx', '.pdf', $src);
+                                    $filename = str_replace('.docx', '.pdf', $filename);
+                                    $res = $m_Export->toPdf($src, $dest, $fnum);
+                                }
+
+                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+
+                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/',);
+                            }
+                            unset($preprocess);
+                            echo json_encode($res);
+                        } catch(Exception $e) {
+                            $res->status = false;
+                            $res->msg = JText::_("AN_ERROR_OCURRED") . ':' . $e->getMessage();
+                            echo json_encode($res);
+                            exit();
+                        }
+                        break;
+
+                    /// end of case 3
+
                     case 4:
-                        //exit;
+                        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+
+                        $inputFileName = JPATH_BASE . $letter->file;
+                        $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
+                        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+
+                        $reader->setIncludeCharts(true);
+                        $spreadsheet = $reader->load($inputFileName);
+
+                        $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
+
+                        $special = ['user_dob_age'];
+
+                        if (isset($fnumInfo[$fnum])) {
+                            $preprocess = $spreadsheet->getAllSheets(); //Search in each sheet of the workbook
+
+                            foreach ($preprocess as $sheet) {
+                                foreach ($sheet->getRowIterator() as $row) {
+                                    $cellIterator = $row->getCellIterator();
+                                    foreach ($cellIterator as $cell) {
+
+                                        $cell->getValue();
+
+                                        $regex = '/\$\{(.*?)}|\[(.*?)]/';
+                                        preg_match_all($regex, $cell, $matches);
+
+                                        $idFabrik = array();
+                                        $setupTags = array();
+
+                                        foreach ($matches[1] as $i => $val) {
+
+                                            $tag = strip_tags($val);
+
+                                            if (is_numeric($tag)) {
+                                                $idFabrik[] = $tag;
+                                            } else {
+                                                $setupTags[] = $tag;
+                                            }
+                                        }
+
+                                        if (!empty($idFabrik)) {
+                                            $fabrikElts = $_mFile->getValueFabrikByIds($idFabrik);
+                                        } else {
+                                            $fabrikElts = array();
+                                        }
+
+                                        $fabrikValues = $this->getValueByFabrikElts($fabrikElts, $fnum_Array);
+
+                                        foreach ($setupTags as $tag) {
+                                            $val = "";
+                                            $lowerTag = strtolower($tag);
+
+                                            if (array_key_exists($lowerTag, $const)) {
+                                                $cell->setValue($const[$lowerTag]);
+                                            } elseif (in_array($lowerTag, $special)) {
+
+                                                // Each tag has it's own logic requiring special work.
+                                                switch ($lowerTag) {
+
+                                                    // dd-mm-YYYY (YY)
+                                                    case 'user_dob_age':
+                                                        $birthday = $_mFile->getBirthdate($fnum, 'd/m/Y', true);
+                                                        $cell->setValue($birthday->date . ' (' . $birthday->age . ')');
+                                                        break;
+
+                                                    default:
+                                                        $cell->setValue('');
+                                                        break;
+                                                }
+
+                                            } elseif (!empty(@$fnumInfo[$fnum][$lowerTag])) {
+                                                $cell->setValue(@$fnumInfo[$fnum][$lowerTag]);
+                                            } else {
+                                                $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+                                                $i = 0;
+                                                foreach ($tags['patterns'] as $value) {
+                                                    if ($value == $tag) {
+                                                        $val = $tags['replacements'][$i];
+                                                        break;
+                                                    }
+                                                    $i++;
+                                                }
+                                                $cell->setValue(htmlspecialchars($val));
+                                            }
+                                        }
+                                        foreach ($idFabrik as $id) {
+
+                                            if (isset($fabrikValues[$id][$fnum])) {
+                                                $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+                                                $cell->setValue(htmlspecialchars($value));
+                                            } else {
+                                                $cell->setValue('');
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+                            $rand = rand(0, 1000000);
+                            if (!file_exists(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'])) {
+                                mkdir(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'], 0775);
+                            }
+
+                            $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']).$attachInfo['lbl']."-".md5($rand . time()).".xlsx";
+
+                            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                            $writer->setIncludeCharts(true);
+
+                            $writer->save(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $filename);
+
+                            $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+
+                            $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL.$fnumInfo[$fnum]['applicant_id'].'/',);
+                        }
+                        echo json_encode($res);
+                        break;
                 }
             }
         }
