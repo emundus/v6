@@ -3941,7 +3941,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                             $pdf->logo = JPATH_BASE . DS . @$tab[1];
 
                             // Get footer
-                            preg_match('#src="(.*?)"#i', $letter->header, $tab);
+                            preg_match('#src="(.*?)"#i', $letter->footer, $tab);
                             $pdf->logo_footer = JPATH_BASE . DS . @$tab[1];
                             unset($logo, $logo_footer);
 
