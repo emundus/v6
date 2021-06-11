@@ -2275,7 +2275,7 @@ if (JFactory::getUser()->id == 63)
     }
 
     /// get letters by status
-    public function getLettersByFnums($fnums) {
+    public function getLettersByFnums($fnums, $attachments=false) {
         $query = $this->_db->getQuery(true);
         if(!empty($fnums) or !is_null($fnums)) {
             try {
@@ -2296,19 +2296,25 @@ if (JFactory::getUser()->id == 63)
                 }
 
                 $_letters = $this->getLettersByProgrammesStatus($_programs,$_status);
-                $_letters_ids = [];
 
-                foreach($_letters as $key => $value) {
-                    $_letters_ids[] = $value->attachment_id;
+                if($attachments == true) {
+                    /// from $_letters --> get distinct attachment_id
+                    $_letter_attachment_ids = [];
+                    foreach($_letters as $key => $value) {
+                        $_letter_attachment_ids[] = $value->attachment_id;
+                    }
+
+                    $_letter_attachment_ids = array_unique($_letter_attachment_ids);
+                    $_attachment_ids = $this->getAttachmentByIds($_letter_attachment_ids);
+                    return $_attachment_ids;
+                } else {
+                    /// from $_letters -> det distinct letter id
+                    $_letter_ids = [];
+                    foreach($_letters as $key => $value) {
+                        $_letter_ids[] = $value->id;
+                    }
+                    return $_letter_ids;
                 }
-
-                $_letters_ids = array_unique($_letters_ids);
-
-                /// from $_letters --> get distinct attachment_id
-                $_attachment_ids = $this->getAttachmentByIds($_letters_ids);
-
-                return $_attachment_ids;
-                
             } catch(Exception $e) {
                 return $e->getMessage();
             }

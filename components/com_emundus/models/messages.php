@@ -1145,4 +1145,17 @@ class EmundusModelMessages extends JModelList {
 
 	}
 
+	/// get letter template by fnums
+    public function getLetterTemplateByFnums($fnums = array()) {
+	    if(!empty($fnums)) {
+	        try {
+                /// :: first --> get letters by fnum ($attachments=false)
+
+            } catch(Exception $e) {
+
+            }
+        } else {
+	        return false;
+        }
+    }
 }
