@@ -3907,6 +3907,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                             $res->status = false;
                             $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
                         }
+                        break;
 
                     /// end of case 1 ///
 
@@ -3999,7 +4000,8 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                             $pdf->Output($path, 'F');
                             $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
                         }
-//                        unset($pdf, $path, $name, $url, $upIdn);
+                        unset($pdf, $path, $name, $url, $upIdn);
+                        break;
 
                     case 3:
                         //exit;
