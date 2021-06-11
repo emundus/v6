@@ -1155,7 +1155,6 @@ class EmundusModelMessages extends JModelList {
                 /// :: first --> get letters by fnum ($attachments=false)
                 require_once (JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
                 $_mEval = new EmundusModelEvaluation;
-                $fnums = implode(',', $fnums);
                 $_letter_ids = $_mEval->getLettersByFnums($fnums,false);        /// return type :: Array
 
                 /// :: second --> get distinct email template from $_letter_ids

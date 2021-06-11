@@ -79,15 +79,16 @@ if ($allowed_attachments !== true) {
             <!-- Dropdown to select the email template used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail">
                 <label for="select_template" ><?= JText::_('SELECT_TEMPLATE'); ?></label>
-                <select name="select_template" id="message_template" class="form-control" onChange="getTemplate(this);">
-                    <?php if (!$message_templates) :?>
-                        <option value="%"> <?= JText::_('NO_TEMPLATES_FOUND'); ?> </option>
-                    <?php else: ?>
-                        <option value="%"> <?= JText::_('SELECT_TEMPLATE'); ?> </option>
-                        <?php foreach ($message_templates as $message_template) :?>
-                            <option value="<?= $message_template->id; ?>"> <?= $message_template->subject; ?></option>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+<!--                <select name="select_template" id="message_template" class="form-control" onChange="getTemplate(this);">-->
+                <select name="select_template" id="message_template" class="form-control">
+<!--                    --><?php //if (!$message_templates) :?>
+<!--                        <option value="%"> --><?//= JText::_('NO_TEMPLATES_FOUND'); ?><!-- </option>-->
+<!--                    --><?php //else: ?>
+<!--                        <option value="%"> --><?//= JText::_('SELECT_TEMPLATE'); ?><!-- </option>-->
+<!--                        --><?php //foreach ($message_templates as $message_template) :?>
+<!--                            <option value="--><?//= $message_template->id; ?><!--"> --><?//= $message_template->subject; ?><!--</option>-->
+<!--                        --><?php //endforeach; ?>
+<!--                    --><?php //endif; ?>
                 </select>
             </div>
         </div>
@@ -252,25 +253,19 @@ if ($allowed_attachments !== true) {
         tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
     });
 
-    /// first load --> get all letter templates by fnums
-    var fnums_selector = $('#em-data').find(".em-check");
-    var fnums = [];
-    fnums_selector.each(function(fnum) {
-        if($(this).prop('checked') == true) {
-            if($(this).attr('id') == $(this).attr('name')) {
-                fnums.push($(this).attr('id').split('_check')[0]);
-            }
-        }
-    })
-
-    console.log(fnums);
+    var fnums = $('input:hidden[name="fnums"]').val();
     $.ajax({
         type: 'post',
         url: 'index.php?option=com_emundus&controller=messages&task=getlettertemplatesbyfnums',
         dataType: 'json',
         data: { fnums : fnums},
         success: function(data) {
-            console.log(data);
+            let templates = data.templates;
+            console.log(templates);
+            templates.forEach(tmpl => {
+                $('#message_template').append('<option value="' + tmpl.id + '">' + tmpl.subject + '</option>');
+                $('#message_template').trigger("chosen:updated");
+            })
         }, error: function(jqXHR) {
             console.log(jqXHR.responseText);
         }

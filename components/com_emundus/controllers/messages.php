@@ -1465,6 +1465,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $_mMessages = new EmundusModelMessages;
         $_templates = $_mMessages->getLetterTemplateByFnums($fnums);
 
-        var_dump($_templates);die;
+        echo json_encode((object)['status' => 'true', 'templates' => $_templates]);
+        exit;
     }
 }
