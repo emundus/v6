@@ -1146,13 +1146,29 @@ class EmundusModelMessages extends JModelList {
 	}
 
 	/// get letter template by fnums
-    public function getLetterTemplateByFnums($fnums = array()) {
+    public function getLetterTemplateByFnums($fnums = array()) {        /// $fnums :: String
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
 	    if(!empty($fnums)) {
 	        try {
                 /// :: first --> get letters by fnum ($attachments=false)
+                require_once (JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+                $_mEval = new EmundusModelEvaluation;
+                $fnums = implode(',', $fnums);
+                $_letter_ids = $_mEval->getLettersByFnums($fnums,false);        /// return type :: Array
 
+                /// :: second --> get distinct email template from $_letter_ids
+                $query = "SELECT DISTINCT #__emundus_setup_emails.* 
+                            FROM #__emundus_setup_emails
+                                LEFT JOIN #__emundus_setup_emails_repeat_letter_attachment ON #__emundus_setup_emails_repeat_letter_attachment.parent_id = #__emundus_setup_emails.id 
+                                    WHERE #__emundus_setup_emails.id IN (SELECT #__emundus_setup_emails_repeat_letter_attachment.parent_id FROM #__emundus_setup_emails_repeat_letter_attachment WHERE #__emundus_setup_emails_repeat_letter_attachment.letter_attachment IN (" . implode(',', $_letter_ids) . ' ))';
+
+                $db->setQuery($query);
+                $templates = $db->loadObjectList();
+                return $templates;
             } catch(Exception $e) {
-
+                return $e->getMessage();
             }
         } else {
 	        return false;

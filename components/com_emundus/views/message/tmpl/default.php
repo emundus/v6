@@ -252,6 +252,30 @@ if ($allowed_attachments !== true) {
         tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
     });
 
+    /// first load --> get all letter templates by fnums
+    var fnums_selector = $('#em-data').find(".em-check");
+    var fnums = [];
+    fnums_selector.each(function(fnum) {
+        if($(this).prop('checked') == true) {
+            if($(this).attr('id') == $(this).attr('name')) {
+                fnums.push($(this).attr('id').split('_check')[0]);
+            }
+        }
+    })
+
+    console.log(fnums);
+    $.ajax({
+        type: 'post',
+        url: 'index.php?option=com_emundus&controller=messages&task=getlettertemplatesbyfnums',
+        dataType: 'json',
+        data: { fnums : fnums},
+        success: function(data) {
+            console.log(data);
+        }, error: function(jqXHR) {
+            console.log(jqXHR.responseText);
+        }
+    })
+
     // Change file upload string to selected file and reset the progress bar.
     $('#em-file_to_upload').change(function() {
         $('#em-filename').html(this.value.match(/([^\/\\]+)$/)[1]);

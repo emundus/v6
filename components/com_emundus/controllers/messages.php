@@ -1454,4 +1454,17 @@ class EmundusControllerMessages extends JControllerLegacy {
         return $db->loadObjectList() ;
     }
 
+    /// get letter templates by fnums
+    public function getlettertemplatesbyfnums() {
+        // call to jinput to get form variable (fnums)
+        $jinput = JFactory::getApplication()->input;
+
+        $fnums = $jinput->post->getRaw('fnums', null);
+
+        /// call to models/messages.php/getLetterTemplateByFnums
+        $_mMessages = new EmundusModelMessages;
+        $_templates = $_mMessages->getLetterTemplateByFnums($fnums);
+
+        var_dump($_templates);die;
+    }
 }
