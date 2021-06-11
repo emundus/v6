@@ -8,7 +8,7 @@
     />
     <div>
       <img class="em-messages-modal" style="max-width: 35px; cursor: pointer;" @click="openModal" src="/images/emundus/menus/email.png" />
-      <p v-if="notifications > 0" class="notifications__counter">{{counter}}</p>
+      <p v-if="counter > 0" class="notifications__counter">{{counter}}</p>
     </div>
   </div>
 </template>
@@ -64,6 +64,9 @@ export default {
 
   created(){
     this.getNotifications();
+    setInterval(() => {
+      this.getNotifications();
+    },20000);
   }
 }
 </script>

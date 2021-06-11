@@ -141,6 +141,7 @@ hr{
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 25px;
 }
 
 .loader {
@@ -166,5 +167,17 @@ hr{
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+.messages__date-section {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    hr {
+        width: 100%;
+    }
+    p{
+        padding: 0 20px;
+    }
 }
 

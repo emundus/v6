@@ -43,23 +43,44 @@ class EmundusmessengerModelmessages extends JModelList
         }
     }
 
-    function getMessagesByFnum($fnum) {
+    function getMessagesByFnum($fnum,$offset = 0) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
 
         $user = JFactory::getSession()->get('emundusUser');
 
         try {
+            $query = "SELECT distinct(CAST(m.date_time AS DATE)) as dates,group_concat(m.message_id) as messages
+                FROM `jos_messages` AS `m`
+                LEFT JOIN `jos_emundus_chatroom` AS `c` ON `c`.`id` = `m`.`page`
+                LEFT JOIN `jos_users` AS `u` ON `u`.`id` = `m`.`user_id_from`
+                WHERE `c`.`fnum` LIKE ".$db->quote($fnum).
+                " group by CAST(m.date_time AS DATE)
+                ORDER BY m.date_time";
+            $db->setQuery($query);
+            $dates = $db->loadObjectList();
+
+            foreach ($dates as $key => $date){
+                $dates[$key]->messages = explode(',',$date->messages);
+            }
+
+            $query = $db->getQuery(true);
+
             $query->select('m.*,u.name')
                 ->from($db->quoteName('#__messages','m'))
                 ->leftJoin($db->quoteName('#__emundus_chatroom','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('m.page'))
                 ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('m.user_id_from'))
                 ->where($db->quoteName('c.fnum') .' LIKE ' . $db->quote($fnum))
-                ->group('m.date_time');
-            $db->setQuery($query);
-            return $db->loadObjectList();
+                ->order('m.date_time DESC');
+                //->setLimit(10);
+            $db->setQuery($query,$offset);
+
+            $datas = new stdClass;
+            $datas->dates = $dates;
+            $datas->messages = array_reverse($db->loadObjectList());
+
+            return $datas;
         } catch (Exception $e){
-            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id .'and to campaign : '.$cid . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
         }
     }

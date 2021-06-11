@@ -11,9 +11,11 @@
     "axios": "^0.21.1",
     "bootstrap": "^5.0.1",
     "core-js": "^3.6.5",
+    "moment": "^2.29.1",
     "sass": "^1.34.1",
     "sass-loader": "^10.0.0",
     "vue": "^2.6.11",
+    "vue-infinite-loading": "^2.4.5",
     "vue-spinners-css": "^1.1.5"
   },
   "devDependencies": {

@@ -3,10 +3,18 @@
     <div class="messages__list col-md-12">
       <label class="text-center" style="width: 100%">{{translations.messages}}</label>
       <div class="messages__list-block" id="messages__list">
-        <div v-for="message in messages" class="messages__message-item" :class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'">
-          <div class="messages__message-item-block" :class="user == message.user_id_from ? 'messages__text-align-right' : 'messages__text-align-left'">
-            <p><em class="messages__message-item-from">{{message.name}}</em></p>
-            <span class="messages__message-item-span" :class="user == message.user_id_from ? 'messages__message-item-span_current-user' : 'messages__message-item-span_other-user'">{{message.message}}</span>
+        <div v-for="date in dates">
+          <div class="messages__date-section">
+            <hr>
+            <p>{{ moment(date.dates).format("DD/MM/YYYY") }}</p>
+            <hr>
+          </div>
+          <div v-for="message in messages" v-if="date.messages.includes(message.message_id)" class="messages__message-item" :class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'">
+            <div class="messages__message-item-block" @click="showDate != message.message_id ? showDate = message.message_id : showDate = 0" :class="user == message.user_id_from ? 'messages__text-align-right' : 'messages__text-align-left'">
+              <p><em class="messages__message-item-from">{{message.name}}</em></p>
+              <span class="messages__message-item-span" :class="user == message.user_id_from ? 'messages__message-item-span_current-user' : 'messages__message-item-span_other-user'">{{message.message}}</span>
+              <p><em class="messages__message-item-from" v-if="showDate == message.message_id">{{ moment(message.date_time).format("DD/MM/YYYY HH:mm") }}</em></p>
+            </div>
           </div>
         </div>
       </div>
@@ -21,6 +29,7 @@
 
 <script>
 import axios from "axios";
+import moment from 'moment';
 
 import "../assets/css/bootstrap.css";
 import "../assets/css/messenger.scss";
@@ -36,10 +45,12 @@ export default {
   components: {},
   data() {
     return {
+      dates: [],
       messages: [],
       campaignSelected: 0,
       message: '',
       loading: false,
+      showDate: 0,
       translations:{
         messages: Joomla.JText._("COM_EMUNDUS_MESSENGER_TITLE"),
       }
@@ -47,8 +58,12 @@ export default {
   },
 
   methods: {
-    getMessagesByFnum(){
-      this.loading = true;
+    moment(date) {
+      return moment(date);
+    },
+
+    getMessagesByFnum(loader = true){
+      this.loading = loader;
       axios({
         method: "get",
         url: "index.php?option=com_emundus_messenger&controller=messages&task=getmessagesbyfnum",
@@ -59,7 +74,8 @@ export default {
            return qs.stringify(params);
         }
       }).then(response => {
-        this.messages = response.data.data;
+        this.messages = response.data.data.messages;
+        this.dates = response.data.data.dates;
         this.scrollToBottom();
         this.loading = false;
       });
@@ -80,6 +96,12 @@ export default {
           })
         }).then(response => {
           this.message = '';
+          var message_date = response.data.date_time.split(' ')[0];
+          this.dates.forEach((elt,index) => {
+            if(elt.dates == message_date){
+              this.dates[index].messages.push(response.data.message_id);
+            }
+          });
           this.messages.push(response.data);
           this.scrollToBottom();
         });
@@ -97,12 +119,15 @@ export default {
   created(){
     if(typeof this.fnum != 'undefined'){
       this.campaignSelected = this.fnum;
+      setInterval(() => {
+        this.getMessagesByFnum(false);
+      },20000);
     }
   },
 
   watch: {
     campaignSelected: function(){
-      this.getMessagesByFnum();
+      this.getMessagesByFnum(true);
     }
   }
 }

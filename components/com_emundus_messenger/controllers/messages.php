@@ -56,8 +56,9 @@ class EmundusmessengerControllermessages extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
 
         $fnum = $jinput->getString('fnum');
+        $offset = $jinput->getString('offset',0);
 
-        $messages = $m_messages->getMessagesByFnum($fnum);
+        $messages = $m_messages->getMessagesByFnum($fnum,$offset);
 
         $data = array('data' => $messages);
 
