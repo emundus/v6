@@ -74,6 +74,7 @@ export default {
     },
 
     evaluationBuilder() {
+
       this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=&index=0&cid=' +
               this.prog +
               '&evaluation=' +

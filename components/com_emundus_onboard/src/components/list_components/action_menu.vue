@@ -11,14 +11,14 @@
           <img src="/images/emundus/menus/email.png" class="tchooz-icon-title" alt="email">
           <h1 class="tchooz-section-titles">{{ Emails }}</h1>
         </div>
-        <div class="d-flex" v-if="data.type === 'form'">
+        <div class="d-flex" v-if="data.type === 'form' ||data.type === 'grilleEval' ||data.type === 'formulaire'">
           <img src="/images/emundus/menus/form.png" class="tchooz-icon-title" alt="form">
           <h1 class="tchooz-section-titles">{{ Forms }}</h1>
         </div>
 
         <div class="actions-add-block">
             <p v-if="data.type === 'campaign'" class="tchooz-section-description">{{ CampaignsDesc }}</p>
-            <p v-if="data.type === 'form'" class="tchooz-section-description">{{ FormsDesc }}</p>
+            <p v-if="data.type === 'form' ||data.type === 'grilleEval' ||data.type === 'formulaire'" class="tchooz-section-description">{{ FormsDesc }}</p>
             <p v-if="data.type === 'email'" class="tchooz-section-description">{{ EmailsDesc }}</p>
             <a @click="redirectToAdd" class="bouton-ajouter pointer" v-if="!addHidden">
 <!--              <div v-if="data.type === 'program'" class="add-button-div">
@@ -33,7 +33,7 @@
                 <em class="fas fa-plus mr-1"></em>
                 {{ AddEmail }}
               </div>
-              <div v-if="data.type === 'form'" class="add-button-div">
+              <div v-if="data.type === 'form' ||data.type === 'grilleEval' ||data.type === 'formulaire'" class="add-button-div">
                 <em class="fas fa-plus mr-1"></em>
                 {{ AddForm }}
               </div>
