@@ -4099,7 +4099,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                             }
 
                             $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE . $letter->file);
-                            if (isset($fnumsInfos[$fnum])) {
+                            if (isset($fnumInfo[$fnum])) {
                                 foreach ($setupTags as $tag) {
                                     $val = "";
                                     $lowerTag = strtolower($tag);
@@ -4302,8 +4302,8 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
             }
         }
 
-        echo json_encode($res);
-        exit;
+//        echo json_encode($res);
+//        exit;
     }
 }
 
