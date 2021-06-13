@@ -143,8 +143,8 @@ if ($allowed_attachments !== true) {
 
 		<div class="form-inline row em-form-attachments">
 			<div class="form-group col-sm-12 col-md-5">
-				<label for="em-select_attachment_type" ><?= JText::_('SELECT_ATTACHMENT_TYPE'); ?></label>
-				<select name="em-select_attachment_type" id="em-select_attachment_type" class="form-control download" onChange="toggleAttachmentType(this);">
+				<label for="em-select_attachment_type" id="em-select_attachment_type_label" style="display:none"><?= JText::_('SELECT_ATTACHMENT_TYPE'); ?></label>
+				<select name="em-select_attachment_type" id="em-select_attachment_type" style="display:none !important" class="form-control download" onChange="toggleAttachmentType(this);">
 					<option value=""> <?= JText::_('PLEASE_SELECT'); ?> </option>
 					<option value="upload"> <?= JText::_('UPLOAD'); ?> </option>
 					<?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
@@ -280,113 +280,124 @@ if ($allowed_attachments !== true) {
     // Loads the template and updates the WYSIWYG editor
     function getTemplate(select) {
 
-        $.ajax({
-            type: "POST",
-            url : "index.php?option=com_emundus&controller=messages&task=gettemplate",
-            data : {
-                select : select.value
-            },
-            success: function (email) {
+        var tmpl = $('#message_template').val();
 
-                email = JSON.parse(email);
+        if(tmpl != '%') {
+            console.log(tmpl);
+            $('#em-select_attachment_type').show();
+            $('#em-select_attachment_type_label').show();
 
-                if(email.tmpl.cci != null){
-                    let cci_emails = email.tmpl.cci.split(',');
-                    cci_emails.forEach((elt) => {
-                        cci.createItem("BCC: Bcc: <"+elt+">");
-                    });
-                } else {
-                    cci.clear();
-                }
+            $.ajax({
+                type: "POST",
+                url: "index.php?option=com_emundus&controller=messages&task=gettemplate",
+                data: {
+                    select: select.value
+                },
+                success: function (email) {
 
-                $("#tags").val(email.tmpl.tags);
+                    email = JSON.parse(email);
 
-                var email_block = document.getElementById("em_email_block");
-                $("#mail_subject").text(email.tmpl.subject);
-                $("#mail_from").text(email.tmpl.emailfrom);
-                $("#mail_from_name").text(email.tmpl.name);
-                $("#mail_body").val(email.tmpl.message);
-                tinyMCE.execCommand("mceSetContent", false, email.tmpl.message);
-                tinyMCE.execCommand("mceRepaint");
-
-                //Reset attachments.
-                $('#em-attachment-list').each(function(idx, li) {
-                    var attachment = $(li);
-
-                    if (attachment.hasClass('candidate_file')) {
-
-                        // Remove 'disabled' attr from select options.
-                        $('#em-select_candidate_file option[value="'+attachment.find('.value').text()+'"]').prop('disabled', false);
-
-                    } else if (attachment.hasClass('setup_letters')) {
-
-                        // Remove 'disabled' attr from select options.
-                        $('#em-select_setup_letters option[value="'+attachment.find('.value').text()+'"]').prop('disabled', false);
-
+                    if (email.tmpl.cci != null) {
+                        let cci_emails = email.tmpl.cci.split(',');
+                        cci_emails.forEach((elt) => {
+                            cci.createItem("BCC: Bcc: <" + elt + ">");
+                        });
+                    } else {
+                        cci.clear();
                     }
-                });
 
-                // Get the attached uploaded file if there is one.
-                if (typeof(email.tmpl.attachment) != 'undefined' && email.tmpl.attachment != null) {
-                    $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+email.tmpl.attachment+'</div>'+ email.tmpl.attachment.split('\\').pop().split('/').pop() +'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
-                }
+                    $("#tags").val(email.tmpl.tags);
 
-                <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
-                // Get the attached candidate files if there are any.
-                if (typeof(email.tmpl.candidate_attachments) != 'undefined' && email.tmpl.candidate_attachments != null) {
+                    var email_block = document.getElementById("em_email_block");
+                    $("#mail_subject").text(email.tmpl.subject);
+                    $("#mail_from").text(email.tmpl.emailfrom);
+                    $("#mail_from_name").text(email.tmpl.name);
+                    $("#mail_body").val(email.tmpl.message);
+                    tinyMCE.execCommand("mceSetContent", false, email.tmpl.message);
+                    tinyMCE.execCommand("mceRepaint");
 
-                    // We need another AJAX to get the info about the attachments, we only have the IDs and we need the names.
-                    $.ajax({
-                        type: 'POST',
-                        url: 'index.php?option=com_emundus&controller=messages&task=getcandidatefilenames',
-                        data : {
-                            attachments : email.tmpl.candidate_attachments
-                        },
-                        success: function (attachments) {
-                            attachments = JSON.parse(attachments);
-                            if (attachments.status) {
+                    //Reset attachments.
+                    $('#em-attachment-list').each(function (idx, li) {
+                        var attachment = $(li);
 
-                                // Add the attachments to the list and deselect the corresponding selects from the option.
-                                attachments.attachments.forEach(function(attachment) {
-                                    $('#em-attachment-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+attachment.id+'</div>'+attachment.value+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
-                                    $('#em-select_candidate_file option[value="'+attachment.id+'"]').prop('disabled', true);
-                                });
-                            }
+                        if (attachment.hasClass('candidate_file')) {
+
+                            // Remove 'disabled' attr from select options.
+                            $('#em-select_candidate_file option[value="' + attachment.find('.value').text() + '"]').prop('disabled', false);
+
+                        } else if (attachment.hasClass('setup_letters')) {
+
+                            // Remove 'disabled' attr from select options.
+                            $('#em-select_setup_letters option[value="' + attachment.find('.value').text() + '"]').prop('disabled', false);
+
                         }
-                    })
-                }
-                <?php endif; ?>
+                    });
 
-                // TODO: Rights?
-                // Get the attached candidate files if there are any.
-                if (typeof(email.tmpl.letter_attachments) != 'undefined' && email.tmpl.letter_attachments != null) {
+                    // Get the attached uploaded file if there is one.
+                    if (typeof (email.tmpl.attachment) != 'undefined' && email.tmpl.attachment != null) {
+                        $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">' + email.tmpl.attachment + '</div>' + email.tmpl.attachment.split('\\').pop().split('/').pop() + '<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+                    }
 
-                    // We need another AJAX to get the info about the letter, we only have the IDs and we need the names.
-                    $.ajax({
-                        type: 'POST',
-                        url: 'index.php?option=com_emundus&controller=messages&task=getletterfilenames',
-                        data : {
-                            attachments : email.tmpl.letter_attachments
-                        },
-                        success: function (attachments) {
-                            attachments = JSON.parse(attachments);
-                            if (attachments.status) {
+                    <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
+                    // Get the attached candidate files if there are any.
+                    if (typeof (email.tmpl.candidate_attachments) != 'undefined' && email.tmpl.candidate_attachments != null) {
 
-                                // Add the attachments to the list and deselect the corresponding selects from the option.
-                                attachments.attachments.forEach(function(attachment) {
-                                    $('#em-attachment-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+attachment.id+'</div>'+attachment.title+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
-                                    $('#em-select_setup_letters option[value="'+attachment.id+'"]').prop('disabled', true);
-                                });
+                        // We need another AJAX to get the info about the attachments, we only have the IDs and we need the names.
+                        $.ajax({
+                            type: 'POST',
+                            url: 'index.php?option=com_emundus&controller=messages&task=getcandidatefilenames',
+                            data: {
+                                attachments: email.tmpl.candidate_attachments
+                            },
+                            success: function (attachments) {
+                                attachments = JSON.parse(attachments);
+                                if (attachments.status) {
+
+                                    // Add the attachments to the list and deselect the corresponding selects from the option.
+                                    attachments.attachments.forEach(function (attachment) {
+                                        $('#em-attachment-list').append('<li class="list-group-item candidate_file"><div class="value hidden">' + attachment.id + '</div>' + attachment.value + '<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
+                                        $('#em-select_candidate_file option[value="' + attachment.id + '"]').prop('disabled', true);
+                                    });
+                                }
                             }
-                        }
-                    })
+                        })
+                    }
+                    <?php endif; ?>
+
+                    // TODO: Rights?
+                    // Get the attached candidate files if there are any.
+                    // if (typeof(email.tmpl.letter_attachments) != 'undefined' && email.tmpl.letter_attachments != null) {
+                    //
+                    //     // We need another AJAX to get the info about the letter, we only have the IDs and we need the names.
+                    //     $.ajax({
+                    //         type: 'POST',
+                    //         url: 'index.php?option=com_emundus&controller=messages&task=getletterfilenames',
+                    //         data : {
+                    //             attachments : email.tmpl.letter_attachments
+                    //         },
+                    //         success: function (attachments) {
+                    //             attachments = JSON.parse(attachments);
+                    //             if (attachments.status) {
+                    //
+                    //                 // Add the attachments to the list and deselect the corresponding selects from the option.
+                    //                 attachments.attachments.forEach(function(attachment) {
+                    //                     $('#em-attachment-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+attachment.id+'</div>'+attachment.title+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
+                    //                     $('#em-select_setup_letters option[value="'+attachment.id+'"]').prop('disabled', true);
+                    //                 });
+                    //             }
+                    //         }
+                    //     })
+                    // }
+                },
+                error: function () {
+                    // handle error
+                    $("#message_template").append('<span class="alert"> <?= JText::_('ERROR'); ?> </span>')
                 }
-            },
-            error: function () {
-                // handle error
-                $("#message_template").append('<span class="alert"> <?= JText::_('ERROR'); ?> </span>')
-            }
-        });
+            });
+        } else {
+            $('#em-select_attachment_type_label').hide();
+            $('#em-select_attachment_type').css('visibility','hidden');
+        }
     }
 
     // Used for toggling the options dipslayed in the message templates dropdown.
@@ -439,6 +450,12 @@ if ($allowed_attachments !== true) {
     // Change the attachment type being uploaded.
     function toggleAttachmentType(toggle) {
 
+        // $('#em-select_attachment_type option:selected').remove();
+        // $('#em-select_attachment_type').trigger('chosen:updated');
+
+        $('#setup_letters').empty();
+        $('#em-attachment-list').empty();
+
         switch (toggle.value) {
 
             case 'upload' :
@@ -477,7 +494,12 @@ if ($allowed_attachments !== true) {
                             tmplId: tmplId,
                         },
                         success: function(data) {
-                            console.log(data);
+                            let letters = data.letters;
+
+                            console.log(tmplId);
+                            console.log(letters);
+
+                            $('#setup_letters').append();
                         }, error: function(jqXHR) {
                             console.log(jqXHR.responseText);
                         }

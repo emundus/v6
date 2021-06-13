@@ -1152,6 +1152,8 @@ class EmundusModelMessages extends JModelList {
 	    try {
 	        /// first, get fnum info
             $letter_ids = [];
+            $attachment_ids = [];
+
             $fnum_Array = explode(',', $fnums); /// split
 
             require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
@@ -1160,7 +1162,7 @@ class EmundusModelMessages extends JModelList {
             foreach($fnum_Array as $key => $fnum) {
                 $fnum_Info = $_mFile->getFnumInfos($fnum);
                 ///
-                $query = "select #__emundus_setup_letters.id 
+                $query = "select #__emundus_setup_letters.* 
                             from #__emundus_setup_letters
                             left join #__emundus_setup_emails_repeat_letter_attachment on #__emundus_setup_letters.id = #__emundus_setup_emails_repeat_letter_attachment.letter_attachment
                             left join #__emundus_setup_letters_repeat_training on #__emundus_setup_letters.id = #__emundus_setup_letters_repeat_training.parent_id
@@ -1173,9 +1175,25 @@ class EmundusModelMessages extends JModelList {
                             ") and #__emundus_setup_letters_repeat_training.training = " . $db->quote($fnum_Info['training']);
                             
                 $db->setQuery($query);
-                $letter_ids[] = implode(',', $db->loadColumn($query));
+
+                foreach($db->loadObjectList() as $key => $value) {
+                    $letter_ids[] = $value->id;
+                    $attachment_ids[] = $value->attachment_id;
+                }
             }
+
             $letter_ids = array_unique(array_filter($letter_ids));
+            $attachment_ids = array_unique(array_filter($attachment_ids));
+
+            /// get attachment type from attachment_ids
+            $query = "SELECT DISTINCT #__emundus_setup_attachments.*
+                        FROM #__emundus_setup_attachments
+                        WHERE #__emundus_setup_attachments.id IN (" . implode(',', $attachment_ids) . ")";
+
+            $db->setQuery($query);
+
+            $attachments = $db->loadObjectList();
+            return $attachments;
         } catch(Exception $e) {
 	        return $e->getMessage();
         }

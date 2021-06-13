@@ -1476,10 +1476,12 @@ class EmundusControllerMessages extends JControllerLegacy {
         $fnums = $jinput->post->getRaw('fnums', null);
         $tmpl = $jinput->post->getRaw('tmplId', null);
 
+
         /// call to models/messages.php/getGeneratedLettersByFnumsAndTemplate
         $_mMessages = new EmundusModelMessages;
         $_mLetters = $_mMessages->getGeneratedLettersByFnumsAndTemplate($fnums,$tmpl);
 
-        var_dump($_mLetters);die;
+        echo json_encode((object)['status' => 'true', 'letters' => $_mLetters]);
+        exit;
     }
 }
