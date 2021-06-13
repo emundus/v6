@@ -79,16 +79,15 @@ if ($allowed_attachments !== true) {
             <!-- Dropdown to select the email template used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail">
                 <label for="select_template" ><?= JText::_('SELECT_TEMPLATE'); ?></label>
-<!--                <select name="select_template" id="message_template" class="form-control" onChange="getTemplate(this);">-->
-                <select name="select_template" id="message_template" class="form-control">
-<!--                    --><?php //if (!$message_templates) :?>
-<!--                        <option value="%"> --><?//= JText::_('NO_TEMPLATES_FOUND'); ?><!-- </option>-->
-<!--                    --><?php //else: ?>
-<!--                        <option value="%"> --><?//= JText::_('SELECT_TEMPLATE'); ?><!-- </option>-->
-<!--                        --><?php //foreach ($message_templates as $message_template) :?>
-<!--                            <option value="--><?//= $message_template->id; ?><!--"> --><?//= $message_template->subject; ?><!--</option>-->
-<!--                        --><?php //endforeach; ?>
-<!--                    --><?php //endif; ?>
+                <select name="select_template" id="message_template" class="form-control" onChange="getTemplate(this);">
+                    <?php if (!$message_templates) :?>
+                        <option value="%"> <?= JText::_('NO_TEMPLATES_FOUND'); ?> </option>
+                    <?php else: ?>
+                        <option value="%"> <?= JText::_('SELECT_TEMPLATE'); ?> </option>
+                        <?php foreach ($message_templates as $message_template) :?>
+                            <option value="<?= $message_template->id; ?>"> <?= $message_template->subject; ?></option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </select>
             </div>
         </div>
@@ -253,23 +252,23 @@ if ($allowed_attachments !== true) {
         tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
     });
 
-    var fnums = $('input:hidden[name="fnums"]').val();
-    $.ajax({
-        type: 'post',
-        url: 'index.php?option=com_emundus&controller=messages&task=getlettertemplatesbyfnums',
-        dataType: 'json',
-        data: { fnums : fnums},
-        success: function(data) {
-            let templates = data.templates;
-            console.log(templates);
-            templates.forEach(tmpl => {
-                $('#message_template').append('<option value="' + tmpl.id + '">' + tmpl.subject + '</option>');
-                $('#message_template').trigger("chosen:updated");
-            })
-        }, error: function(jqXHR) {
-            console.log(jqXHR.responseText);
-        }
-    })
+    // var fnums = $('input:hidden[name="fnums"]').val();
+    // $.ajax({
+    //     type: 'post',
+    //     url: 'index.php?option=com_emundus&controller=messages&task=getlettertemplatesbyfnums',
+    //     dataType: 'json',
+    //     data: { fnums : fnums},
+    //     success: function(data) {
+    //         let templates = data.templates;
+    //         console.log(templates);
+    //         templates.forEach(tmpl => {
+    //             $('#message_template').append('<option value="' + tmpl.id + '">' + tmpl.subject + '</option>');
+    //             $('#message_template').trigger("chosen:updated");
+    //         })
+    //     }, error: function(jqXHR) {
+    //         console.log(jqXHR.responseText);
+    //     }
+    // })
 
     // Change file upload string to selected file and reset the progress bar.
     $('#em-file_to_upload').change(function() {
@@ -463,6 +462,29 @@ if ($allowed_attachments !== true) {
                 $('#candidate_file').addClass('hidden');
                 $('#setup_letters').removeClass('hidden');
                 $('#uploadButton').removeClass('hidden');
+
+                /// in this case, we will deduct all of available letters based on selected fnums :: call to api
+                var fnums = $('input:hidden[name="fnums"]').val();
+                var tmplId = $('#message_template').val();
+
+                if(tmplId != "%") {
+                    $.ajax({
+                        type: 'post',
+                        url: 'index.php?option=com_emundus&controller=messages&task=getavailablelettersbyfnum',
+                        dataType: 'json',
+                        data: {
+                            fnums: fnums,
+                            tmplId: tmplId,
+                        },
+                        success: function(data) {
+                            console.log(data);
+                        }, error: function(jqXHR) {
+                            console.log(jqXHR.responseText);
+                        }
+                    })
+                } else {
+                    console.log('error');   /// change to sweet alert box
+                }
                 break;
 
             default :
@@ -521,28 +543,29 @@ if ($allowed_attachments !== true) {
                 break;
 
             case 'setup_letters' :
+                /// nothing
 
-                // We need to note the reference to the setup_letters file.
-                var file = $('#em-select_setup_letters :selected');
-
-                var alreadyPicked = $('#em-attachment-list li.setup_letters').find('.value:contains("'+file.val()+'")');
-
-                if (alreadyPicked.text() != '') {
-
-                    // Flash the line a certain color to show it's already picked.
-                    alreadyPicked.parent().attr("style", "background-color: #C5EFF7");
-                    setTimeout(function(){
-                        alreadyPicked.parent().attr("style", "");
-                    }, 500);
-
-                } else {
-
-                    // Disable the file from the dropdown.
-                    file.prop('disabled', true);
-                    // Add the file to the list.
-                    $('#em-attachment-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
-
-                }
+                // // We need to note the reference to the setup_letters file.
+                // var file = $('#em-select_setup_letters :selected');
+                //
+                // var alreadyPicked = $('#em-attachment-list li.setup_letters').find('.value:contains("'+file.val()+'")');
+                //
+                // if (alreadyPicked.text() != '') {
+                //
+                //     // Flash the line a certain color to show it's already picked.
+                //     alreadyPicked.parent().attr("style", "background-color: #C5EFF7");
+                //     setTimeout(function(){
+                //         alreadyPicked.parent().attr("style", "");
+                //     }, 500);
+                //
+                // } else {
+                //
+                //     // Disable the file from the dropdown.
+                //     file.prop('disabled', true);
+                //     // Add the file to the list.
+                //     $('#em-attachment-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
+                //
+                // }
 
                 break;
 
