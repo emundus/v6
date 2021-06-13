@@ -1176,24 +1176,33 @@ class EmundusModelMessages extends JModelList {
                             
                 $db->setQuery($query);
 
-                foreach($db->loadObjectList() as $key => $value) {
-                    $letter_ids[] = $value->id;
-                    $attachment_ids[] = $value->attachment_id;
+                if(!empty($db->loadObjectList())) {
+                    foreach ($db->loadObjectList() as $key => $value) {
+                        $letter_ids[] = $value->id;
+                        $attachment_ids[] = $value->attachment_id;
+                    }
+                } else {
+                    $letter_ids[] = "";
+                    $attachment_ids[] = "";
                 }
             }
 
             $letter_ids = array_unique(array_filter($letter_ids));
             $attachment_ids = array_unique(array_filter($attachment_ids));
 
-            /// get attachment type from attachment_ids
-            $query = "SELECT DISTINCT #__emundus_setup_attachments.*
+            if(!empty($letter_ids) and !empty($attachment_ids)) {
+                /// get attachment type from attachment_ids
+                $query = "SELECT DISTINCT #__emundus_setup_attachments.*
                         FROM #__emundus_setup_attachments
                         WHERE #__emundus_setup_attachments.id IN (" . implode(',', $attachment_ids) . ")";
 
-            $db->setQuery($query);
+                $db->setQuery($query);
 
-            $attachments = $db->loadObjectList();
-            return $attachments;
+                $attachments = $db->loadObjectList();
+                return $attachments;
+            } else {
+                return "";
+            }
         } catch(Exception $e) {
 	        return $e->getMessage();
         }

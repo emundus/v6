@@ -284,7 +284,7 @@ if ($allowed_attachments !== true) {
 
         if(tmpl != '%') {
             console.log(tmpl);
-            $('#em-select_attachment_type').show();
+            $('#em-select_attachment_type').attr('style','display: block !important');
             $('#em-select_attachment_type_label').show();
 
             $.ajax({
@@ -367,6 +367,10 @@ if ($allowed_attachments !== true) {
                     // TODO: Rights?
 
                     if($('#em-select_attachment_type').val() == 'setup_letters') {
+
+                        // reset attachment
+                        $('#em-attachment-list').empty();
+
                         var fnums = $('input:hidden[name="fnums"]').val();
                         var tmplId = $('#message_template').val();
 
@@ -380,25 +384,26 @@ if ($allowed_attachments !== true) {
                                     tmplId: tmplId,
                                 },
                                 success: function(data) {
-                                    let letters = data.letters;
+                                    console.log(data);
+                                    if(data.status) {
+                                        let letters = data.letters;
+                                        $('#em-attachment-list').empty();
 
-                                    console.log(tmplId);
-                                    console.log(letters);
-
-                                    $('#em-attachment-list').empty();
-
-                                    letters.forEach(letter => {
-                                        $('#em-attachment-list').append('' +
-                                            '<li class="list-group-item setup_letters">' +
-                                            '<div class="value hidden">' + letter.id + '</div>' + letter.value +
-                                            '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
-                                            '<span class="glyphicon glyphicon-remove"></span>' +
-                                            '</span>' +
-                                            '<span class="badge">' +
-                                            '<span class="glyphicon glyphicon-envelope">' + '</span>' +
-                                            '</span>' +
-                                            '</li>');
-                                    })
+                                        letters.forEach(letter => {
+                                            $('#em-attachment-list').append('' +
+                                                '<li class="list-group-item setup_letters">' +
+                                                '<div class="value hidden">' + letter.id + '</div>' + letter.value +
+                                                '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
+                                                '<span class="glyphicon glyphicon-remove"></span>' +
+                                                '</span>' +
+                                                '<span class="badge">' +
+                                                '<span class="glyphicon glyphicon-envelope">' + '</span>' +
+                                                '</span>' +
+                                                '</li>');
+                                        })
+                                    } else {
+                                        $('#em-attachment-list').append('ERROR_HERE');
+                                    }
                                 }, error: function(jqXHR) {
                                     console.log(jqXHR.responseText);
                                 }
@@ -539,23 +544,24 @@ if ($allowed_attachments !== true) {
                             tmplId: tmplId,
                         },
                         success: function(data) {
-                            let letters = data.letters;
-
-                            console.log(tmplId);
-                            console.log(letters);
-
-                            letters.forEach(letter => {
-                                $('#em-attachment-list').append('' +
-                                    '<li class="list-group-item setup_letters">' +
+                            console.log(data);
+                            if(data.status) {
+                                let letters = data.letters;
+                                letters.forEach(letter => {
+                                    $('#em-attachment-list').append('' +
+                                        '<li class="list-group-item setup_letters">' +
                                         '<div class="value hidden">' + letter.id + '</div>' + letter.value +
-                                            '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
-                                                '<span class="glyphicon glyphicon-remove"></span>' +
-                                            '</span>' +
-                                            '<span class="badge">' +
-                                                '<span class="glyphicon glyphicon-envelope">' + '</span>' +
-                                            '</span>' +
-                                    '</li>');
-                            })
+                                        '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
+                                        '<span class="glyphicon glyphicon-remove"></span>' +
+                                        '</span>' +
+                                        '<span class="badge">' +
+                                        '<span class="glyphicon glyphicon-envelope">' + '</span>' +
+                                        '</span>' +
+                                        '</li>');
+                                })
+                            } else {
+                                $('#em-attachment-list').append('ERROR_HERE');
+                            }
                         }, error: function(jqXHR) {
                             console.log(jqXHR.responseText);
                         }

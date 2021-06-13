@@ -1481,7 +1481,11 @@ class EmundusControllerMessages extends JControllerLegacy {
         $_mMessages = new EmundusModelMessages;
         $_mLetters = $_mMessages->getGeneratedLettersByFnumsAndTemplate($fnums,$tmpl);
 
-        echo json_encode((object)['status' => 'true', 'letters' => $_mLetters]);
+        if(!empty($_mLetters)) {
+            echo json_encode((object)['status' => true, 'letters' => $_mLetters]);
+        } else {
+            echo json_encode((object)['status' => false, 'letters' => JText::_("CANNOT_FIND_LETTERS")]);
+        }
         exit;
     }
 }
