@@ -365,6 +365,51 @@ if ($allowed_attachments !== true) {
                     <?php endif; ?>
 
                     // TODO: Rights?
+
+                    if($('#em-select_attachment_type').val() == 'setup_letters') {
+                        var fnums = $('input:hidden[name="fnums"]').val();
+                        var tmplId = $('#message_template').val();
+
+                        if(tmplId != "%") {
+                            $.ajax({
+                                type: 'post',
+                                url: 'index.php?option=com_emundus&controller=messages&task=getavailablelettersbyfnum',
+                                dataType: 'json',
+                                data: {
+                                    fnums: fnums,
+                                    tmplId: tmplId,
+                                },
+                                success: function(data) {
+                                    let letters = data.letters;
+
+                                    console.log(tmplId);
+                                    console.log(letters);
+
+                                    $('#em-attachment-list').empty();
+
+                                    letters.forEach(letter => {
+                                        $('#em-attachment-list').append('' +
+                                            '<li class="list-group-item setup_letters">' +
+                                            '<div class="value hidden">' + letter.id + '</div>' + letter.value +
+                                            '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
+                                            '<span class="glyphicon glyphicon-remove"></span>' +
+                                            '</span>' +
+                                            '<span class="badge">' +
+                                            '<span class="glyphicon glyphicon-envelope">' + '</span>' +
+                                            '</span>' +
+                                            '</li>');
+                                    })
+                                }, error: function(jqXHR) {
+                                    console.log(jqXHR.responseText);
+                                }
+                            })
+                        } else {
+                            console.log('error');   /// change to sweet alert box
+                        }
+                    }
+
+
+
                     // Get the attached candidate files if there are any.
                     // if (typeof(email.tmpl.letter_attachments) != 'undefined' && email.tmpl.letter_attachments != null) {
                     //
@@ -499,7 +544,18 @@ if ($allowed_attachments !== true) {
                             console.log(tmplId);
                             console.log(letters);
 
-                            $('#setup_letters').append();
+                            letters.forEach(letter => {
+                                $('#em-attachment-list').append('' +
+                                    '<li class="list-group-item setup_letters">' +
+                                        '<div class="value hidden">' + letter.id + '</div>' + letter.value +
+                                            '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
+                                                '<span class="glyphicon glyphicon-remove"></span>' +
+                                            '</span>' +
+                                            '<span class="badge">' +
+                                                '<span class="glyphicon glyphicon-envelope">' + '</span>' +
+                                            '</span>' +
+                                    '</li>');
+                            })
                         }, error: function(jqXHR) {
                             console.log(jqXHR.responseText);
                         }
