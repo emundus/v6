@@ -96,7 +96,8 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
             <script>
                 Swal.fire({
                     type: 'info',
-                    title: 'test ducplicate',
+                    title: '" . JText::_('DATA_FOUND') . "',
+                    text: '" . JText::_('DO_YOU_WISH_TO_DUPLICATE') . "',
                     showCancelButton: true,
                 })
                 .then(() => {
