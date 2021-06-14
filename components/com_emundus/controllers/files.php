@@ -3893,7 +3893,12 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                             /// get fnum info from fnum
 
                             // get file name
-                            $name = $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . '.' . pathinfo($file)['extension'];
+                            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+                            if (!$anonymize_data) {
+                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . '.' . pathinfo($file)['extension'];    ;
+                            } else {
+                                $name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . '.' . pathinfo($file)['extension'];
+                            }
 
                             // get file path
                             $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $name;
@@ -3988,9 +3993,9 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
-                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']).$attachInfo['lbl']."-".md5($rand.time()).".pdf";
+                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".pdf";
                             } else {
-                                $name = $this->sanitize_filename($fnum).$attachInfo['lbl']."-".md5($rand.time()).".pdf";
+                                $name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".pdf";
                             }
 
                             $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $name;
