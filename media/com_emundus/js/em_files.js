@@ -5218,7 +5218,7 @@ $(document).ready(function() {
                     success: function(result) {
                         $('.modal-body').empty();
                         if(result.status) {
-                            console.log('here');
+                            // console.log('here');
                             var files = result.files;
 
                             var table = "<h3>" +

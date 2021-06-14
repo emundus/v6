@@ -3889,6 +3889,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                     case 1:     // simple file
                         $file = JPATH_BASE . $letter->file;
                         if(file_exists($file)) {
+                            $res->status = true;
                             /// get fnum info from fnum
 
                             // get file name
@@ -3898,7 +3899,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                             $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $name;
 
                             if (copy($file, $path)) {
-                                $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo['applicant_id'] . '/';
+                                $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
                                 $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
 
                                 $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
@@ -4170,12 +4171,9 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                                 $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/',);
                             }
                             unset($preprocess);
-                            echo json_encode($res);
                         } catch(Exception $e) {
                             $res->status = false;
                             $res->msg = JText::_("AN_ERROR_OCURRED") . ':' . $e->getMessage();
-                            echo json_encode($res);
-                            exit();
                         }
                         break;
 
@@ -4296,13 +4294,12 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
                             $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL.$fnumInfo[$fnum]['applicant_id'].'/',);
                         }
-                        echo json_encode($res);
                         break;
                 }
             }
         }
 
-        echo json_encode((object)$res);
+        echo json_encode($res);
         exit;
     }
 }
