@@ -81,7 +81,8 @@ export default {
       });
     },
 
-    sendMessage(){
+    sendMessage(e){
+      e.stopImmediatePropagation();
       if(this.message !== '') {
         axios({
           method: "post",

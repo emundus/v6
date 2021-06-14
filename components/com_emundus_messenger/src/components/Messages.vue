@@ -114,6 +114,10 @@ export default {
         } else {
           this.campaignSelected = this.campaigns[0].fnum;
         }
+        this.getMessagesByFnum(true);
+        this.interval = setInterval(() => {
+          this.getMessagesByFnum(false);
+        },20000);
       });
     },
 
@@ -153,6 +157,7 @@ export default {
     },
 
     sendMessage(){
+      e.stopImmediatePropagation();
       if(this.message !== '') {
         axios({
           method: "post",
@@ -205,13 +210,6 @@ export default {
         container.scrollTop = container.scrollHeight;
       },500);
     }
-  },
-
-  created(){
-    //this.getCampaignsByUser();
-    this.interval = setInterval(() => {
-      this.getMessagesByFnum(false);
-    },20000);
   },
 
   watch: {
