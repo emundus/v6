@@ -156,8 +156,10 @@ export default {
       });
     },
 
-    sendMessage(){
-      e.stopImmediatePropagation();
+    sendMessage(e){
+      if(typeof e != 'undefined') {
+        e.stopImmediatePropagation();
+      }
       if(this.message !== '') {
         axios({
           method: "post",

@@ -82,7 +82,9 @@ export default {
     },
 
     sendMessage(e){
-      e.stopImmediatePropagation();
+      if(typeof e != 'undefined') {
+        e.stopImmediatePropagation();
+      }
       if(this.message !== '') {
         axios({
           method: "post",
