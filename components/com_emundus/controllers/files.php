@@ -4054,12 +4054,12 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                                 $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
 
                                 if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
-                                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, $fnum_Array, $params, $groupParams->repeat_group_button == 1);
+                                    $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
                                 } else {
                                     if ($isDate) {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue($fnum_Array, $elt['db_table_name'], $elt['name'], $params->date_form_format);                   /// $fnum_Array or $fnum ???
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);                   /// $fnum_Array or $fnum ???
                                     } else {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue($fnum_Array, $elt['db_table_name'], $elt['name']);                                              /// $fnum_Array or $fnum ???
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);                                              /// $fnum_Array or $fnum ???
                                     }
                                 }
 
@@ -4159,7 +4159,11 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                                     mkdir(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'], 0775);
                                 }
 
-                                $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']).$attachInfo['lbl']."-".md5($rand . time()).".docx";
+//                                $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']).$attachInfo['lbl']."-".md5($rand . time()).".docx";
+
+                                $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".docx";
+
+                                var_dump($filename);die;
 
                                 $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumInfo[$fnum]['applicant_id'].DS.$filename);
 
@@ -4175,7 +4179,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
                                 $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/',);
                             }
-                            unset($preprocess);
+                            //unset($preprocess);
                         } catch(Exception $e) {
                             $res->status = false;
                             $res->msg = JText::_("AN_ERROR_OCURRED") . ':' . $e->getMessage();
