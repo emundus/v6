@@ -355,7 +355,7 @@ if ($allowed_attachments !== true) {
 
                                     // Add the attachments to the list and deselect the corresponding selects from the option.
                                     attachments.attachments.forEach(function (attachment) {
-                                        $('#em-attachment-list').append('<li class="list-group-item candidate_file"><div class="value hidden">' + attachment.id + '</div>' + attachment.value + '<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
+                                        $('#em-attachment-list').append('<li class="list-group-item candidate_file" style="padding: 10px 15px;"><div class="value hidden">' + attachment.id + '</div>' + attachment.value + '<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
                                         $('#em-select_candidate_file option[value="' + attachment.id + '"]').prop('disabled', true);
                                     });
                                 }
@@ -391,7 +391,7 @@ if ($allowed_attachments !== true) {
 
                                         letters.forEach(letter => {
                                             $('#em-attachment-list').append('' +
-                                                '<li class="list-group-item setup_letters" style="padding: 10px 15px">' +
+                                                '<li class="list-group-item setup_letters" style="padding: 15px 15px">' +
                                                 '<div class="value hidden">' + letter.id + '</div>' + letter.value +
                                                 '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
                                                 '<span class="glyphicon glyphicon-remove"></span>' +
@@ -549,7 +549,7 @@ if ($allowed_attachments !== true) {
                                 let letters = data.letters;
                                 letters.forEach(letter => {
                                     $('#em-attachment-list').append('' +
-                                        '<li class="list-group-item setup_letters" style="padding: 10px 15px">' +
+                                        '<li class="list-group-item setup_letters" style="padding: 15px 15px">' +
                                         '<div class="value hidden">' + letter.id + '</div>' + letter.value +
                                         '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
                                         '<span class="glyphicon glyphicon-remove"></span>' +
@@ -620,7 +620,7 @@ if ($allowed_attachments !== true) {
                     // Disable the file from the dropdown.
                     file.prop('disabled', true);
                     // Add the file to the list.
-                    $('#em-attachment-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
+                    $('#em-attachment-list').append('<li class="list-group-item candidate_file" style="padding: 10px 15px;"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
 
                 }
 
