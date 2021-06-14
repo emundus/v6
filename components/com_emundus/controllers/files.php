@@ -4097,9 +4097,9 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
                                 } else {
                                     if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, $fnum_Array, $params, $groupParams->repeat_group_button == 1);              /// $fnum_Array or $fnum ???
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);              /// $fnum_Array or $fnum ???
                                     } else {
-                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue($fnum_Array, $elt['db_table_name'], $elt['name']);                                                  /// $fnum_Array or $fnum ???
+                                        $fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);                                                  /// $fnum_Array or $fnum ???
                                     }
                                 }
                             }
@@ -4159,11 +4159,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                                     mkdir(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'], 0775);
                                 }
 
-//                                $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']).$attachInfo['lbl']."-".md5($rand . time()).".docx";
-
                                 $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".docx";
-
-                                var_dump($filename);die;
 
                                 $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumInfo[$fnum]['applicant_id'].DS.$filename);
 
