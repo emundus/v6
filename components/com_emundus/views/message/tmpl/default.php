@@ -369,7 +369,7 @@ if ($allowed_attachments !== true) {
                     if($('#em-select_attachment_type').val() == 'setup_letters') {
 
                         // reset attachment
-                        $('#em-attachment-list').empty();
+                        // $('#em-attachment-list').empty();
 
                         var fnums = $('input:hidden[name="fnums"]').val();
                         var tmplId = $('#message_template').val();
@@ -387,11 +387,11 @@ if ($allowed_attachments !== true) {
                                     console.log(data);
                                     if(data.status) {
                                         let letters = data.letters;
-                                        $('#em-attachment-list').empty();
+                                        //$('#em-attachment-list').empty();
 
                                         letters.forEach(letter => {
                                             $('#em-attachment-list').append('' +
-                                                '<li class="list-group-item setup_letters">' +
+                                                '<li class="list-group-item setup_letters" style="padding: 10px 15px">' +
                                                 '<div class="value hidden">' + letter.id + '</div>' + letter.value +
                                                 '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
                                                 '<span class="glyphicon glyphicon-remove"></span>' +
@@ -504,7 +504,7 @@ if ($allowed_attachments !== true) {
         // $('#em-select_attachment_type').trigger('chosen:updated');
 
         $('#setup_letters').empty();
-        $('#em-attachment-list').empty();
+        //$('#em-attachment-list').empty();
 
         switch (toggle.value) {
 
@@ -549,7 +549,7 @@ if ($allowed_attachments !== true) {
                                 let letters = data.letters;
                                 letters.forEach(letter => {
                                     $('#em-attachment-list').append('' +
-                                        '<li class="list-group-item setup_letters">' +
+                                        '<li class="list-group-item setup_letters" style="padding: 10px 15px">' +
                                         '<div class="value hidden">' + letter.id + '</div>' + letter.value +
                                         '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
                                         '<span class="glyphicon glyphicon-remove"></span>' +
