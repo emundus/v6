@@ -548,16 +548,28 @@ if ($allowed_attachments !== true) {
                             if(data.status) {
                                 let letters = data.letters;
                                 letters.forEach(letter => {
-                                    $('#em-attachment-list').append('' +
-                                        '<li class="list-group-item setup_letters" style="padding: 15px 15px">' +
-                                        '<div class="value hidden">' + letter.id + '</div>' + letter.value +
-                                        '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
-                                        '<span class="glyphicon glyphicon-remove"></span>' +
-                                        '</span>' +
-                                        '<span class="badge">' +
-                                        '<span class="glyphicon glyphicon-envelope">' + '</span>' +
-                                        '</span>' +
-                                        '</li>');
+                                    /// check if letters already exist in #em-attachment-list or not
+
+                                    if($('#em-attachment-list li.setup_letters > div:contains("' + letter.id + '")').length == 0){
+                                        console.log('yes');
+                                        $('#em-attachment-list').append('' +
+                                            '<li class="list-group-item setup_letters" style="padding: 15px 15px">' +
+                                            '<div class="value hidden">' + letter.id + '</div>' + letter.value +
+                                            '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
+                                            '<span class="glyphicon glyphicon-remove"></span>' +
+                                            '</span>' +
+                                            '<span class="badge">' +
+                                            '<span class="glyphicon glyphicon-envelope">' + '</span>' +
+                                            '</span>' +
+                                            '</li>');
+                                    } else {
+                                        console.log('ko');
+                                        $('#em-attachment-list li.setup_letters > div:contains("' + letter.id + '")').parent().attr("style", "background-color: #C5EFF7");
+                                        setTimeout(function(){
+                                            $('#em-attachment-list li.setup_letters > div:contains("' + letter.id + '")').parent().attr("style", "padding: 15px 15px");
+                                        }, 500);
+                                    }
+
                                 })
                             } else {
                                 $('#em-attachment-list').append('ERROR_HERE');
