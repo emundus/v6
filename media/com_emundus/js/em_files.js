@@ -5237,7 +5237,7 @@ $(document).ready(function() {
 
                             files.forEach(file => {
                                 table += "<tr id='" + file.upload + "'>" +
-                                    "<td>" + file.filename + " <a id='em_zip_" + file.upload + "' class='btn btn-success btn-xs pull-right em-doc-dl'><span class='glyphicon glyphicon-save'></span></a></td>" +
+                                    "<td>" + file.filename + " <a id='em_zip_letter" + file.upload + "' class='btn btn-success btn-xs pull-right em-doc-dl'><span class='glyphicon glyphicon-save'></span></a></td>" +
                                     "</tr>";
                             })
 
