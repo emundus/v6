@@ -4307,26 +4307,13 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         // group letters by candidat
         $fnumsInfos = $_mFile->getFnumsInfos($fnum_Array);
 
-        $applicant_id = [];
+        $res->zip_data_by_candidat = [];
+
         foreach($fnumsInfos as $key => $value) {
-            $applicant_id[] = $value['applicant_id'];
+            $_zipName = $value['applicant_id'] . '_' . date("Y-m-d") . '_' . uniqid() .'_x.zip';
+            $this->ZipLetter(EMUNDUS_PATH_ABS . $value['applicant_id'], JPATH_BASE.DS.'tmp'.DS . $_zipName, 'true');
+            $res->zip_data_by_candidat[] = array('applicant_id' => $value['applicant_id'], 'applicant_name' => $value['name'], 'zip_url' => JPATH_BASE.DS . 'tmp' . DS . $_zipName);
         }
-
-        $applicant_id = array_unique(array_filter($applicant_id));
-        $zip_Url = [];
-
-        /// applicant_id = [95,164,165,166,167]
-        foreach($applicant_id as $key => $value) {
-
-            $_zipName = $value . '_' . date("Y-m-d") . '_' . uniqid() .'_x.zip';
-            $zip_Url[$value] = JPATH_BASE.DS . 'tmp' . DS . $_zipName;
-
-            $this->ZipLetter(EMUNDUS_PATH_ABS . $value, JPATH_BASE.DS.'tmp'.DS . $_zipName, 'true');
-
-        }
-
-        $res->zip_url = $zip_Url;
-
         // group letters by document type
 
         echo json_encode($res);
