@@ -5206,6 +5206,9 @@ $(document).ready(function() {
                 var idsTmpl = $('#em-doc-tmpl').val();
                 var cansee = $('#em-doc-cansee').val();
 
+                var showMode = $('#em-doc-export-mode').val();          /// show by candidats (0) or show by document type (1)
+                var mergeMode = $('#em-doc-pdf-merge').val();           /// unmerge pdf (0) or merge pdf (1)
+
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' +
                     '<img src="'+loadingLine+'" alt="loading"/>' +
@@ -5234,7 +5237,7 @@ $(document).ready(function() {
 
                             files.forEach(file => {
                                 table += "<tr id='" + file.upload + "'>" +
-                                    "<td>" + file.filename + " <a class='btn btn-success btn-xs pull-right em-doc-dl'><span class='glyphicon glyphicon-save'></span></a></td>" +
+                                    "<td>" + file.filename + " <a id='em_zip_" + file.upload + "' class='btn btn-success btn-xs pull-right em-doc-dl'><span class='glyphicon glyphicon-save'></span></a></td>" +
                                     "</tr>";
                             })
 
