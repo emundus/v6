@@ -5221,28 +5221,46 @@ $(document).ready(function() {
                     success: function(result) {
                         $('.modal-body').empty();
                         if(result.status) {
-                            // console.log('here');
                             var files = result.files;
 
-                            var table = "<h3>" +
-                                Joomla.JText._('FILES_GENERATED')+
-                                "</h3>" +
-                                "<table class='table table-striped' id='em-generated-docs'>" +
-                                "<thead>" +
-                                "<tr>" +
-                                "<th>"+Joomla.JText._('FILE_NAME')+" <a class='btn btn-small pull-right' id='em-doc-zip' href=''>"+Joomla.JText._('COM_EMUNDUS_ACCESS_EXPORT_ZIP')+"</a></th>" +
-                                "</tr>" +
-                                "</thead>" +
-                                "<tbody>";
+                            if(showMode == 0) {
+                                // show results by candidats --> using fnum to find name // id candidat
+                                var zip = result.zip_data_by_candidat;
 
-                            files.forEach(file => {
-                                table += "<tr id='" + file.upload + "'>" +
-                                    "<td>" + file.filename + " <a id='em_zip_letter" + file.upload + "' class='btn btn-success btn-xs pull-right em-doc-dl'><span class='glyphicon glyphicon-save'></span></a></td>" +
-                                    "</tr>";
-                            })
+                                var table = "<h3>" +
+                                    Joomla.JText._('FILES_GENERATED')+
+                                    "</h3>" +
+                                    "<table class='table table-striped' id='em-generated-docs'>" +
+                                    "<thead>" +
+                                    "<tr>" +
+                                    "<th>"+Joomla.JText._('FILE_NAME')+" <a class='btn btn-small pull-right' id='em-doc-zip' href=''>"+Joomla.JText._('COM_EMUNDUS_ACCESS_EXPORT_ZIP')+"</a></th>" +
+                                    "</tr>" +
+                                    "</thead>" +
+                                    "<tbody>";
 
-                            table += "</tbody></table>";
-                            $('.modal-body').append(table);
+
+                                var test = "/Applications/MAMP/htdocs/core/tmp/95_2021-06-14_60c788c5e3fd2_x.zip";
+                                zip.forEach(file => {
+                                    table += "<tr>" +
+                                            "<td>"+ file.applicant_name +
+                                                "<a target='_parent' class='btn btn-success btn-xs pull-right em-doc-dl' href='"+ file.zip_url +"'>" +
+                                                    "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                                "</a>" +
+                                            "</td>" +
+                                        "</tr>";
+                                })
+
+                                /// http://localhost:8888/Applications/MAMP/htdocs/core/tmp/95_2021-06-14_60c788c5e3fd2_x.zip
+                                table += "</tbody></table>";
+                                $('.modal-body').append(table);
+
+                                $('#em_zip_letter').attr('href', '/Applications/MAMP/htdocs/core/tmp/95_2021-06-14_60c788c5e3fd2_x.zip');
+                            } else {
+                                // show results by document types --> using template ids
+
+                            }
+
+
                         } else {
 
                         }
