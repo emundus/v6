@@ -5216,7 +5216,33 @@ $(document).ready(function() {
                     dataType:'json',
                     data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee},
                     success: function(result) {
-                        console.log(result);
+                        $('.modal-body').empty();
+                        if(result.status) {
+                            console.log('here');
+                            var files = result.files;
+
+                            var table = "<h3>" +
+                                Joomla.JText._('FILES_GENERATED')+
+                                "</h3>" +
+                                "<table class='table table-striped' id='em-generated-docs'>" +
+                                "<thead>" +
+                                "<tr>" +
+                                "<th>"+Joomla.JText._('FILE_NAME')+" <a class='btn btn-small pull-right' id='em-doc-zip' href=''>"+Joomla.JText._('COM_EMUNDUS_ACCESS_EXPORT_ZIP')+"</a></th>" +
+                                "</tr>" +
+                                "</thead>" +
+                                "<tbody>";
+
+                            files.forEach(file => {
+                                table += "<tr id='" + file.upload + "'>" +
+                                    "<td>" + file.filename + " <a class='btn btn-success btn-xs pull-right em-doc-dl'><span class='glyphicon glyphicon-save'></span></a></td>" +
+                                    "</tr>";
+                            })
+
+                            table += "</tbody></table>";
+                            $('.modal-body').append(table);
+                        } else {
+
+                        }
                         // $('.modal-body').empty();
                         // if (result.status) {
                         //     var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';

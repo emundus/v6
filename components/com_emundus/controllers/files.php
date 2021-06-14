@@ -4302,8 +4302,8 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
             }
         }
 
-//        echo json_encode($res);
-//        exit;
+        echo json_encode((object)$res);
+        exit;
     }
 }
 
