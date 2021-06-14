@@ -18,6 +18,8 @@ administrator/cache/*
 templates/rt_afterburner2/css/rt_afterburner2-custom.css
 templates/g5_helium/templatesDetails.xml
 /templates/g5_helium/templatesDetails.xml
+templates/emundus_vanilla/*
+/templates/emundus_vanilla/*
 /images/emundus/files/*
 /images/emundus/letters/*
 /image/logo.png
