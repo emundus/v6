@@ -4324,7 +4324,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
             $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() .'_x.zip';
             $this->ZipLetter(EMUNDUS_PATH_ABS . $uid, JPATH_BASE.DS.'tmp'.DS . $_zipName, 'true');
-            $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . $user_info[0]->lastname, 'candidat_fnum' => $key, 'zip_url' => DS . 'tmp/' . $_zipName);
+            $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'zip_url' => DS . 'tmp/' . $_zipName);
         }
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id

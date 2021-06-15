@@ -5237,7 +5237,7 @@ $(document).ready(function() {
 
                                 zip.forEach(file => {
                                     table += "<tr>" +
-                                            "<td>"+ file.applicant_name + '_' + file.candidat_fnum +
+                                            "<td>"+ file.applicant_name +
                                                 "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='"+ file.zip_url +"'>" +
                                                     "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
                                                 "</a>" +
