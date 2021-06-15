@@ -377,25 +377,25 @@
             id: 8,
             value: 'nom',
             icon: 'fas fa-font',
-            name: 'nom'
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_LASTNAME")
           },
           prenom: {
             id: 9,
             value: 'prenom',
             icon: 'fas fa-font',
-            name: 'prénom'
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FIRSTNAME")
           },
           email:{
             id:10,
             value: 'email',
             icon: 'fas fa-font',
-            name: 'email'
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_EMAIL")
           },
           yesno:{
             id:12,
             value: 'yesno',
             icon: 'fas fa-font',
-            name: 'yesno'
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_YESNO")
           },
           textarea: {
             id: 5,

@@ -1,5 +1,35 @@
 @import "variables";
 
+// YES NO
+.fabrikgrid_0.btn-default{
+  background-color: #bd362f;
+  padding: 8px 12px;
+  height: 38px;
+  span{
+    color: #fff;
+    font-size: 14px;
+  }
+}
+
+.fabrikgrid_1.btn-default{
+  padding: 8px 12px;
+  height: 35px;
+  background-image: linear-gradient(rgb(255, 255, 255), rgb(230, 230, 230));
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  span{
+    color: #848181;
+    font-size: 14px;
+  }
+}
+
+fieldset.radio.btn-group{
+  display: flex;
+  align-items: center;
+}
+//
+
 .fabrikgrid_radio {
   display: flex !important;
   align-items: center !important;
