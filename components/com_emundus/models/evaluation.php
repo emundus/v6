@@ -2397,4 +2397,25 @@ if (JFactory::getUser()->id == 63)
         }
         return $letter_ids;
     }
+
+    /// get uploaded files by document type and fnums
+    public function getFilesByAttachmentFnums($attachment, $fnums=array()) {
+        $query = $this->_db->getQuery(true);
+
+        if(!empty($attachment) and !empty($fnums)) {
+            try {
+                $query->clear()
+                    ->select('#__emundus_uploads.*')
+                    ->from($this->_db->quoteName('#__emundus_uploads'))
+                    ->where($this->_db->quoteName('#__emundus_uploads.attachment_id') . ' = ' . (int)$attachment)
+                    ->andWhere($this->_db->quoteName('#__emundus_uploads.fnum') . ' IN (' . implode(',', $fnums) . ')');
+                $this->_db->setQuery($query);
+                return $this->_db->loadObjectList();
+            } catch(Exception $e) {
+                return $e->getMessage();
+            }
+        } else {
+            return false;
+        }
+    }
 }

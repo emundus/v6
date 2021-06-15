@@ -4356,6 +4356,45 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         }
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
+        // $templates is already an array
+        $res->letter_dir = [];
+
+        foreach($templates as $index => $template) {
+            $attachInfos = $_mFile->getAttachmentInfos($template);
+
+            $dir_Name = $attachInfos['id'];
+
+            /// check if this $dir_Name exists or not --> if not --> mkdir
+            if(!file_exists($dir_Name)) {
+                mkdir(JPATH_BASE.DS.'tmp'.DS . $dir_Name, 0775);
+            } else {
+                unlink($dir_Name);
+            }
+
+            $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);
+
+            /// copy all uploaded_Files --> $dir_Name
+            foreach($uploaded_Files as $key => $file) {
+                $source = EMUNDUS_PATH_ABS . $file->user_id . DS . $file->filename;
+                $destination = JPATH_BASE.DS.'tmp'. DS . $dir_Name . DS . $file->filename;
+                copy($source, $destination);
+            }
+
+            $_new_DirName = $attachInfos['lbl'] . '_' . uniqid();
+
+            if(!file_exists(JPATH_BASE.DS.'tmp'.DS . $_new_DirName)) {
+                rename(JPATH_BASE.DS.'tmp'.DS . $dir_Name, JPATH_BASE.DS.'tmp'.DS . $_new_DirName);
+            } else {
+                continue;
+            }
+
+            /// zip all letter dir in the same parent directory (tmp)
+            $zip_dirName = $_new_DirName . '_' . date("Y-m-d") . '_x.zip';          /// zip name
+            $this->ZipLetter(JPATH_BASE.DS.'tmp'.DS . $_new_DirName, JPATH_BASE.DS.'tmp'.DS . $zip_dirName, 'true');
+
+            $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => DS . 'tmp/' . $zip_dirName);           /// return the letter dir
+        }
+
         echo json_encode($res);
         exit;
     }
@@ -4415,22 +4454,6 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         }
 
         return $zip->close();
-
-//        $mime_type = $this->get_mime_type($destination);
-//        header('Content-type: application/'.$mime_type);
-//        header('Content-Disposition: inline; filename='.basename($destination));
-//        header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
-//        header('Cache-Control: no-store, no-cache, must-revalidate');
-//        header('Cache-Control: pre-check=0, post-check=0, max-age=0');
-//        header('Pragma: anytextexeptno-cache', true);
-//        header('Cache-control: private');
-//        header('Expires: 0');
-//        ob_clean();
-//        flush();
-//        readfile($destination);
-//        exit;
-//
-////        return $zip->close();
     }
 }
 
