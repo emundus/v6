@@ -2377,4 +2377,13 @@ if (JFactory::getUser()->id == 63)
             return false;
         }
     }
+
+    /// get affected letters by [fnums] and [templates]
+    public function getLettersByFnumsTemplates($fnums=array(), $templates=array()) {
+        if(!empty($fnums) and !empty($templates)) {
+
+        } else {
+            return false;
+        }
+    }
 }
