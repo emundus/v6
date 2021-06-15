@@ -263,7 +263,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
                     // check if data stored for current user
                     try {
-                        $query = 'SELECT '.implode(',', $elements).' FROM '.$table->db_table_name.' WHERE user='.$user->id;
+                        $query = 'SELECT '.implode(',', $db->quoteName($elements)).' FROM '.$table->db_table_name.' WHERE user='.$user->id;
                         $db->setQuery($query);
                         $stored = $db->loadAssoc();
                         if (count($stored) > 0) {
@@ -311,7 +311,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                                     foreach ($data as $key => $d) {
 
                                         try {
-                                            $query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
+                                            $query = 'SELECT '.implode(',', $db->quoteName($d['element_name'])).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
                                             $db->setQuery( $query );
                                             $stored = $db->loadAssoc();
 
