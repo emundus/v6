@@ -3856,10 +3856,12 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'users.php');
 
         $_mEval = new EmundusModelEvaluation;
         $_mFile = new EmundusModelFiles;
         $_mEmail = new EmundusModelEmails;
+        $_mUser = new EmundusModelUsers;
 
         $user = JFactory::getUser();
 
@@ -4309,17 +4311,23 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         $res->zip_data_by_candidat = [];
 
+        $applicant_id = [];
+
         foreach($fnumsInfos as $key => $value) {
-            $_zipName = $value['applicant_id'] . '_' . date("Y-m-d") . '_' . uniqid() .'_x.zip';
-            $this->ZipLetter(EMUNDUS_PATH_ABS . $value['applicant_id'], JPATH_BASE.DS.'tmp'.DS . $_zipName, 'true');
-            $res->zip_data_by_candidat[] = array('applicant_id' => $value['applicant_id'], 'applicant_name' => $value['name'], 'candidat_fnum' => $key, 'zip_url' => DS . 'tmp/' . $_zipName);         ///// remove localhost:8888 when deploying
+            $applicant_id[] = $value['applicant_id'];
+        }
+
+        $applicant_id = array_unique(array_filter($applicant_id));
+
+        foreach($applicant_id as $key => $uid) {
+            $user_info = $_mUser->getUserById($uid);
+
+            $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() .'_x.zip';
+            $this->ZipLetter(EMUNDUS_PATH_ABS . $uid, JPATH_BASE.DS.'tmp'.DS . $_zipName, 'true');
+            $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . $user_info[0]->lastname, 'candidat_fnum' => $key, 'zip_url' => DS . 'tmp/' . $_zipName);
         }
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
-
-
-
-
         echo json_encode($res);
         exit;
     }
