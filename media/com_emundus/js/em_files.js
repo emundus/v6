@@ -5225,23 +5225,32 @@ $(document).ready(function() {
 
                             if(showMode == 0) {
                                 // show results by candidats --> using fnum to find name // id candidat
-                                var zip = result.zip_data_by_candidat;
+                                //var zip = result.zip_data_by_candidat;
 
-                                var table = "<h3>" +
-                                    Joomla.JText._('FILES_GENERATED')+
-                                    "</h3>" +
+                                var table =
+                                    "<h2>" +
+                                        Joomla.JText._('FILES_GENERATED')+
+                                    "</h2>" +
+
+                                    "<b>"+
+                                        Joomla.JText._('AFFECTED_CANDIDATS') + result.affected_users +
+                                    "</b>" +
+
                                     "<table class='table table-striped' id='em-generated-docs'>" +
-                                    "<thead>" +
-                                    "</thead>" +
+                                        "<thead>" +
+                                            "<tr>" +
+                                                "<th>"+Joomla.JText._('GENERATED_DOCUMENTS_LABEL') + "</th>" +
+                                                "<th>"+Joomla.JText._('GENERATED_DOCUMENTS_COUNT') + "</th>" +
+                                            "</tr>" +
+                                        "</thead>" +
                                     "<tbody>";
 
-                                zip.forEach(file => {
+                                var recapitulatif = result.recapitulatif_count;
+
+                                recapitulatif.forEach(recal => {
                                     table += "<tr>" +
-                                            "<td>"+ file.applicant_name +
-                                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='"+ file.zip_url +"'>" +
-                                                    "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
-                                                "</a>" +
-                                            "</td>" +
+                                            "<td>"+ recal.document + "</td>" +
+                                            "<td>"+ recal.count + "</td>" +
                                         "</tr>";
                                 })
 
