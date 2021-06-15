@@ -34,6 +34,10 @@
 					<option value="1">JYES</option>
 					<option value="0">JNO</option>
 				</field>
+				<field name="showsend" type="list" default="1" label="COM_EMUNDUS_SEND_APP_SHOW_SEND_LABEL" description="COM_EMUNDUS_SEND_APP_SHOW_SEND_DESC">
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
 			</fieldset>
 			<fieldset name="advanced">
 				<field

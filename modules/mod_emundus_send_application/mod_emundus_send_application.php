@@ -18,9 +18,11 @@ if (!empty($user->fnum)) {
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
     require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
 	$layout = $params->get('layout', 'default');
 	$print = $params->get('showprint', 1);
+    $send = $params->get('showsend', 1);
 	$moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
 	$eMConfig = JComponentHelper::getParams('com_emundus');
@@ -35,10 +37,18 @@ if (!empty($user->fnum)) {
 	$m_application = new EmundusModelApplication;
 	$m_checklist = new EmundusModelChecklist;
     $m_profile = new EmundusModelProfile;
+    $m_files = new EmundusModelFiles;
 
 	$attachments = $m_application->getAttachmentsProgress($user->fnum);
 	$forms 	= $m_application->getFormsProgress($user->fnum);
     $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
+
+    if ($application_fee) {
+        $fnumInfos = $m_files->getFnumInfos($user->fnum);
+
+        $order = $m_application->getHikashopOrder($fnumInfos);
+        $paid = !empty($order);
+    }
 
 	// We redirect to the "send application" form, this form will redirect to payment if required.
 	$confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
