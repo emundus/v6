@@ -3381,8 +3381,8 @@ $(document).ready(function() {
                                 '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option>' +
                             '</select>'+
 
-                        '<button class="w3-button w3-tiny btn-warning" id="savePDFfilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
-                        '<button class="w3-button w3-tiny" id="delPDFfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'"><i class="icon-trash"></i></button></div></div>'+
+                        '<button class="w3-button w3-tiny btn-success" id="savePDFfilter" title="'+Joomla.JText._('SAVE_FILTER')+'">'+Joomla.JText._('SAVE_FILTER')+'</button>'+
+                        '<button class="w3-button w3-tiny" id="delPDFfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'">'+Joomla.JText._('DELETE')+'</button></div></div>'+
 
                         '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
                             '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
@@ -3808,7 +3808,7 @@ $(document).ready(function() {
                                                 success: function (answer) {
                                                     /// using Virtual DOM to render DOM --> append #formelement and #felts
                                                     $('#form-element').append(
-                                                        '<h5>' +
+                                                        '<h5 style="margin-bottom: 0;">' +
                                                         '<button type="button" id="showelements_' + id + '" class="btn btn-info btn-xs" title="' + id + '">' +
                                                         '<span class="glyphicon glyphicon-plus"></span>' +
                                                         '</button> &ensp;' + labels +
@@ -4203,7 +4203,7 @@ $(document).ready(function() {
 
                 $('#em-export-prg').chosen({width: "95%"});
                 $('#em-export-camp').chosen({width: "95%"});
-                $('#filt_save_pdf').chosen({width: "85%"});
+                $('#filt_save_pdf').chosen({width: "95%"});
 
                 // $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px", 'border-radius':"4px"});
                 $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});

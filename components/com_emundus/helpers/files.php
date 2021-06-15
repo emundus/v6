@@ -2735,7 +2735,8 @@ class EmundusHelperFiles
                 $db->execute();
                 return $db->insertid();
             } catch (Exception $e) {
-                return $e->getMessage();
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                return false;
             }
         }
         else {
