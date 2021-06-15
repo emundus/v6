@@ -3877,6 +3877,33 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         $res->status = true;
         $res->files = [];
 
+        $letters_ids = $_mEval->getLettersByFnumsTemplates($fnums,$templates);
+
+        $letter_count = [];
+
+       foreach($letters_ids as $key => $letter) {
+           foreach($letter as $data => $value) {
+               $letter_count[] = $value->id;
+           }
+       }
+
+       $query = "SELECT #__emundus_setup_letters.attachment_id, COUNT(#__emundus_setup_letters.attachment_id) AS count_ 
+                    FROM #__emundus_setup_letters
+                        WHERE #__emundus_setup_letters.id IN ("
+                            . implode(',', $letter_count) .
+                            ") GROUP BY (#__emundus_setup_letters.attachment_id)";
+
+       $this->_db->setQuery($query);
+       $_document_count = $this->_db->loadAssocList();
+
+       $res->recapitulatif_count = [];
+
+       foreach($_document_count as $key => $document) {
+           $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $document['attachment_id'];
+           $this->_db->setQuery($query);
+           $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $document['count_']);
+       }
+
         /// a partit de $fnums + $templates --> generer les lettres qui correspondent
         foreach($fnum_Array as $key => $fnum) {
             $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates); // return :: Array
@@ -4318,6 +4345,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         }
 
         $applicant_id = array_unique(array_filter($applicant_id));
+        $res->affected_users = count($applicant_id);
 
         foreach($applicant_id as $key => $uid) {
             $user_info = $_mUser->getUserById($uid);

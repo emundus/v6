@@ -2381,9 +2381,20 @@ if (JFactory::getUser()->id == 63)
     /// get affected letters by [fnums] and [templates]
     public function getLettersByFnumsTemplates($fnums=array(), $templates=array()) {
         if(!empty($fnums) and !empty($templates)) {
-
+            /// from each fnum --> get fnum infos
+            $_mFile = new EmundusModelFiles;
+            $letter_ids = [];
+            try {
+                $fnum_Array = explode(',', $fnums);
+                foreach($fnum_Array as $data => $fnum) {
+                    $letter_ids[] = $this->getLetterTemplateForFnum($fnum,$templates);
+                }
+            } catch(Exception $e) {
+                return $e->getMessage();
+            }
         } else {
             return false;
         }
+        return $letter_ids;
     }
 }
