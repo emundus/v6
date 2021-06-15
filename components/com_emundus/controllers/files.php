@@ -4366,7 +4366,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
             /// check if this $dir_Name exists or not --> if not --> mkdir
             if(!file_exists($dir_Name)) {
-                mkdir(JPATH_BASE.DS.'tmp'.DS . $dir_Name, 0775);
+                mkdir(JPATH_BASE.DS.'tmp'.DS . $dir_Name, 0777, true);
             } else {
                 unlink($dir_Name);
             }
@@ -4377,7 +4377,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
             foreach($uploaded_Files as $key => $file) {
                 $source = EMUNDUS_PATH_ABS . $file->user_id . DS . $file->filename;
                 $destination = JPATH_BASE.DS.'tmp'. DS . $dir_Name . DS . $file->filename;
-                copy($source, $destination);
+                move_uploaded_file($source, $destination);
             }
 
             $_new_DirName = $attachInfos['lbl'] . '_' . uniqid();
