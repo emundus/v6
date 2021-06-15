@@ -84,12 +84,16 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
             if (empty($formModel->getRowId())) {
 
                 $rowid = $formModel->data["rowid"];
-                $form_id = $formModel->getId();
+                $file_to_duplicate_data = $this->checkData($rowid);
+
+                if (empty($file_to_duplicate_data)) {
+                    return;
+                }
+                
                 $listModel =  $formModel->getListModel();
                 $table = $listModel->getTable()->db_table_name;
                 $table_elements = $formModel->getElementOptions(false, 'name', false, false, array(), '', true);
                 $table_elements = json_encode($table_elements);
-                $itemid = $mainframe->input->get('Itemid');
                 $groups = json_encode($formModel->getFormGroups(true));
 
                 echo "
@@ -100,31 +104,39 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
                     text: '" . JText::_('DO_YOU_WISH_TO_DUPLICATE') . "',
                     showCancelButton: true,
                 })
-                .then(() => {
-                    var xhr = new XMLHttpRequest();
-                    var myFormData = new FormData();
-                    myFormData.append('fnum', '$rowid');
-                    myFormData.append('form_id', '$form_id');
-                    myFormData.append('itemId', $itemid);
-                    myFormData.append('table', '$table');
-                    myFormData.append('groups', JSON.stringify($groups));
-                    myFormData.append('table_elements', JSON.stringify($table_elements));
-                    
-                    xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&g=form&plugin=emundusduplicatedata&method=ajax_duplicate', true);
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState == 4 && xhr.status == 200 && xhr.responseText != '') {
-                            document.location.reload();
+                .then((confirm) => {
+                    if (confirm.value) {
+                        var xhr = new XMLHttpRequest();
+                        var myFormData = new FormData();
+                        myFormData.append('fnum', '$rowid');
+                        myFormData.append('file_to_duplicate_data', '$file_to_duplicate_data');
+                        myFormData.append('table', '$table');
+                        myFormData.append('groups', JSON.stringify($groups));
+                        myFormData.append('table_elements', JSON.stringify($table_elements));
+                        
+                        xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&g=form&plugin=emundusduplicatedata&method=ajax_duplicate', true);
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4 && xhr.status === 200) {
+                                if (JSON.parse(xhr.responseText).status === 200) {
+                                    document.location.reload();
+                                } else {
+                                    Swal.fire({
+                                        type: 'warning',
+                                        title: JSON.parse(xhr.responseText).message
+                                    });
+                                }
+                            }
                         }
+                        xhr.send(myFormData);
                     }
-                    xhr.send(myFormData);
-                }).catch(() => {
+                })
+                .catch(() => {
                   Swal.fire({
                     type: 'warning',
                     title: '" . JText::_('ERROR_ON_DUPLCATION') . "'
                     });
                 });
             </script>
-        
         ";
             }
         }
@@ -135,6 +147,7 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
 
         $jinput = $this->app->input;
         $fnum = $jinput->post->get('fnum');
+        $file_to_duplicate_data = $jinput->post->get('file_to_duplicate_data');
         $table = $jinput->post->get('table');
         $groups = json_decode($jinput->post->getString('groups'));
         $table_elements = json_decode($jinput->post->getString('table_elements'));
@@ -150,17 +163,12 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
                 $elements[] = $element->value;
             }
 
-
-
-            $aid = intval(substr($fnum, 21, 7));
-            
-            $query = 'SELECT '.implode(',', $elements).' FROM '.$table.' WHERE user='.$aid . ' ORDER BY id DESC';
+            $query = 'SELECT '.implode(',', $elements).' FROM '.$table.' WHERE fnum like '.$db->quote($file_to_duplicate_data) . ' ORDER BY id DESC';
             $db->setQuery($query);
 
             $stored = $db->loadAssoc();
-            
-            
-            if (count($stored) > 0) {
+
+            if (!empty($stored)) {
                 // update form data
                 $parent_id = $stored['id'];
                 unset($stored['id']);
@@ -173,8 +181,9 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
                     $id = $db->insertid();
 
                 } catch (Exception $e) {
-                    $error = JUri::getInstance().' :: USER ID : '.$aid.' -> '.$e->getMessage();
-                    JLog::add($error, JLog::ERROR, 'com_emundus');
+                    JLog::add('Duplicate data plugin, error at query : ' . $query, JLog::ERROR, 'com_emundus');
+                    $data = ['status' => 500, 'message' => JText::_('ERROR_ON_DUPLCATION')];
+                    echo json_encode($data);
                 }
 
                 // get data and update current form
@@ -182,7 +191,8 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
                 $data = array();
                 
                 if (count($groups) > 0) {
-                    foreach ($groups as $key => $group) {
+                    foreach ($groups as $group) {
+
                         $group_params = json_decode($group->gparams);
                         if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
 
@@ -191,8 +201,7 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
                             try {
                                 $repeat_table = $db->loadResult();
                             } catch (Exception $e) {
-                                $error = JUri::getInstance().' :: USER ID : '.$aid.' -> '.$e->getMessage();
-                                JLog::add($error, JLog::ERROR, 'com_emundus');
+                                JLog::add($e, JLog::ERROR, 'com_emundus');
                                 $repeat_table = $table.'_'.$group->group_id.'_repeat';
                             }
 
@@ -202,32 +211,40 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
                             $data[$group->group_id]['table'] = $repeat_table;
                         }
                     }
-                    if (count($data) > 0) {
-                        foreach ($data as $key => $d) {
+                    if (!empty($data)) {
+
+                        foreach ($data as $d) {
 
                             try {
                                 $query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
                                 $db->setQuery( $query );
-                                $stored = $db->loadAssoc();
+                                $stored = $db->loadAssocList();
+                                
+                                if (!empty($stored)) {
 
-                                if (count($stored) > 0) {
-                                    // update form data
-                                    unset($stored['id']);
-                                    unset($stored['parent_id']);
+                                    foreach ($stored as $values) {
+                                        // update form data
+                                        unset($values['id']);
+                                        unset($values['parent_id']);
 
-                                    try {
-                                        $query = 'INSERT INTO '.$d['table'].' (`parent_id`, `'.implode('`,`', array_keys($stored)).'`) VALUES('.$id.', '.implode(',', $db->Quote($stored)).')';
-                                        $db->setQuery( $query );
-                                        $db->execute();
-                                    } catch (Exception $e) {
-                                        $error = JUri::getInstance().' :: USER ID : '.$aid.' -> '.$e->getMessage();
-                                        JLog::add($error, JLog::ERROR, 'com_emundus');
+                                        try {
+                                            $query = 'INSERT INTO '.$d['table'].' (`parent_id`, `'.implode('`,`', array_keys($values)).'`) VALUES('.$id.', '.implode(',', $db->Quote($values)).')';
+                                            $db->setQuery( $query );
+
+                                            $db->execute();
+                                        } catch (Exception $e) {
+                                            JLog::add('Duplicate data plugin, error at query : ' . $query, JLog::ERROR, 'com_emundus');
+                                            $data = ['status' => 500, 'message' => JText::_('ERROR_ON_DUPLCATION')];
+                                            echo json_encode($data);
+                                        }
                                     }
+
                                 }
 
                             } catch (Exception $e) {
-                                $error = JUri::getInstance().' :: USER ID : '.$aid.' -> '.$e->getMessage();
-                                JLog::add($error, JLog::ERROR, 'com_emundus');
+                                JLog::add('Duplicate data plugin, error at query : ' . $query, JLog::ERROR, 'com_emundus');
+                                $data = ['status' => 500, 'message' => JText::_('ERROR_ON_DUPLCATION')];
+                                return json_encode($data);
                             }
                         }
                     }
@@ -236,13 +253,34 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
 
             $data = ['status' => 200];
             echo json_encode($data);
-            return json_encode($data);
         } catch (Exception $e) {
-            JLog::add($error, JLog::ERROR, 'com_emundus');
+            JLog::add($e, JLog::ERROR, 'com_emundus');
+            $data = ['status' => 500, 'message' => JText::_('ERROR_ON_DUPLCATION')];
+            echo json_encode($data);
         }
+        return json_encode($data);
     }
 
-    private function checkData($params) {
+    private function checkData(string $fnum) : string {
+        $user = JFactory::getSession()->get('emundusUser');
+
+        $fnum = $fnum ?: $user->fnum;
+
+        if (!empty($fnum)) {
+            $program_code = $user->fnums[$fnum]->training;
+
+            $program_files = array_filter($user->fnums, function($file) use ($fnum, $program_code) {
+                return ($file->fnum != $fnum && $file->training === $program_code);
+            });
+
+            if (!empty($program_files)) {
+                return key(array_slice($program_files, -1));
+            } else {
+                return '';
+            }
+        } else {
+            return '';
+        }
 
     }
 }
