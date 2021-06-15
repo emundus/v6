@@ -722,11 +722,23 @@ class EmundusModelApplication extends JModelList {
                 }
 
 
+                $allowEmbed = $this->allowEmbed(JURI::base().'index.php?lang=en');
                 if ($cpt > 0) {
-                    $form .= '<button type="button" id="'.$table[$i]->form_id.'" class="btn btn btn-info btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
+
+                    if ($allowEmbed) {
+                        $form .= '<button type="button" id="'.$table[$i]->form_id.'" class="btn btn btn-info btn-sm " url="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
+                    } else {
+                        $form .= ' <a id="'.$table[$i]->form_id.'" class="btn btn btn-info btn-sm " href="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&usekey=fnum&rowid='.$fnum.'" alt="'.JText::_('EDIT').'" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></a>';
+                    }
+
                 } else {
-                    $form .= '<button type="button" id="'.$table[$i]->form_id.'" class="btn btn-default btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&'.$table[$i]->db_table_name.'___fnum='.$fnum.'&'.$table[$i]->db_table_name.'___user_raw='.$aid.'&'.$table[$i]->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
+                    if ($allowEmbed) {
+                        $form .= '<button type="button" id="'.$table[$i]->form_id.'" class="btn btn-default btn-sm " url="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&'.$table[$i]->db_table_name.'___fnum='.$fnum.'&'.$table[$i]->db_table_name.'___user_raw='.$aid.'&'.$table[$i]->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
+                    } else {
+                        $form .= ' <a type="button" id="'.$table[$i]->form_id.'" class="btn btn-default btn-sm " href="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&'.$table[$i]->db_table_name.'___fnum='.$fnum.'&'.$table[$i]->db_table_name.'___user_raw='.$aid.'&'.$table[$i]->db_table_name.'___user='.$aid.'&sid='.$aid.'" alt="'.JText::_('EDIT').'" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></a>';
+                    }
                 }
+                
             }
             $form .= '</div>';
 
