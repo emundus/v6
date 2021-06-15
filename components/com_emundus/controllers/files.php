@@ -4312,17 +4312,19 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         foreach($fnumsInfos as $key => $value) {
             $_zipName = $value['applicant_id'] . '_' . date("Y-m-d") . '_' . uniqid() .'_x.zip';
             $this->ZipLetter(EMUNDUS_PATH_ABS . $value['applicant_id'], JPATH_BASE.DS.'tmp'.DS . $_zipName, 'true');
-            $res->zip_data_by_candidat[] = array('applicant_id' => $value['applicant_id'], 'applicant_name' => $value['name'], 'zip_url' => JPATH_BASE.DS . 'tmp' . DS . $_zipName);
+            $res->zip_data_by_candidat[] = array('applicant_id' => $value['applicant_id'], 'applicant_name' => $value['name'], 'zip_url' => 'localhost:8888/tmp/' . $_zipName);         ///// remove localhost:8888 when deploying
         }
-        // group letters by document type
+
+        // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
+
+
+
 
         echo json_encode($res);
         exit;
     }
 
-    public static function ZipLetter($source, $destination, $include_dir = false)
-    {
-
+    public function ZipLetter($source, $destination, $include_dir = false) {
         if (!extension_loaded('zip') || !file_exists($source)) {
             return false;
         }
@@ -4337,13 +4339,10 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         }
         $source = str_replace('\\', '/', realpath($source));
 
-        if (is_dir($source) === true)
-        {
-
+        if (is_dir($source) === true) {
             $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source), RecursiveIteratorIterator::SELF_FIRST);
 
             if ($include_dir) {
-
                 $arr = explode("/",$source);
                 $maindir = $arr[count($arr)- 1];
 
@@ -4358,8 +4357,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
             }
 
-            foreach ($files as $file)
-            {
+            foreach ($files as $file) {
                 $file = str_replace('\\', '/', $file);
 
                 // Ignore "." and ".." folders
@@ -4368,22 +4366,35 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
                 $file = realpath($file);
 
-                if (is_dir($file) === true)
-                {
+                if (is_dir($file) === true) {
                     $zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
                 }
-                else if (is_file($file) === true)
-                {
+                else if (is_file($file) === true) {
                     $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
                 }
             }
         }
-        else if (is_file($source) === true)
-        {
+        else if (is_file($source) === true) {
             $zip->addFromString(basename($source), file_get_contents($source));
         }
 
         return $zip->close();
+
+//        $mime_type = $this->get_mime_type($destination);
+//        header('Content-type: application/'.$mime_type);
+//        header('Content-Disposition: inline; filename='.basename($destination));
+//        header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+//        header('Cache-Control: no-store, no-cache, must-revalidate');
+//        header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+//        header('Pragma: anytextexeptno-cache', true);
+//        header('Cache-control: private');
+//        header('Expires: 0');
+//        ob_clean();
+//        flush();
+//        readfile($destination);
+//        exit;
+//
+////        return $zip->close();
     }
 }
 

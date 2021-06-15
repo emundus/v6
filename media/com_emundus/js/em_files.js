@@ -5232,18 +5232,13 @@ $(document).ready(function() {
                                     "</h3>" +
                                     "<table class='table table-striped' id='em-generated-docs'>" +
                                     "<thead>" +
-                                    "<tr>" +
-                                    "<th>"+Joomla.JText._('FILE_NAME')+" <a class='btn btn-small pull-right' id='em-doc-zip' href=''>"+Joomla.JText._('COM_EMUNDUS_ACCESS_EXPORT_ZIP')+"</a></th>" +
-                                    "</tr>" +
                                     "</thead>" +
                                     "<tbody>";
 
-
-                                var test = "/Applications/MAMP/htdocs/core/tmp/95_2021-06-14_60c788c5e3fd2_x.zip";
                                 zip.forEach(file => {
                                     table += "<tr>" +
                                             "<td>"+ file.applicant_name +
-                                                "<a target='_parent' class='btn btn-success btn-xs pull-right em-doc-dl' href='"+ file.zip_url +"'>" +
+                                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='"+ file.zip_url +"'>" +
                                                     "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
                                                 "</a>" +
                                             "</td>" +
@@ -5253,8 +5248,6 @@ $(document).ready(function() {
                                 /// http://localhost:8888/Applications/MAMP/htdocs/core/tmp/95_2021-06-14_60c788c5e3fd2_x.zip
                                 table += "</tbody></table>";
                                 $('.modal-body').append(table);
-
-                                $('#em_zip_letter').attr('href', '/Applications/MAMP/htdocs/core/tmp/95_2021-06-14_60c788c5e3fd2_x.zip');
                             } else {
                                 // show results by document types --> using template ids
 
