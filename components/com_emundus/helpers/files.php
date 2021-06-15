@@ -550,12 +550,12 @@ class EmundusHelperFiles
         if(!is_null($profile)) {
             /// get profile id from $profile --> using split
 
-            $prfiles = $m_user->getApplicantProfiles();
+            $profiles = $m_user->getApplicantProfiles();
 
-            foreach($prfiles as$k=>$v) {
+            foreach($profiles as$k=>$v) {
                 if($v->menutype == $profile) {
                     $prid = $v->id;
-                } else {}
+                }
             }
 
             $menu_list = $h_menu->buildMenuQuery($prid);
@@ -581,17 +581,11 @@ class EmundusHelperFiles
                     LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
                     INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
                     INNER JOIN #__emundus_setup_profiles as p on p.menutype=menu.menutype ';
-            $where = 'WHERE tab.published = 1 AND groupe.published = 1 ';
-
-
-            if ($profile) {
-                $where .= ' AND p.id = ' . $prid;
-            }
+            $where = 'WHERE tab.published = 1 AND groupe.published = 1 AND p.id = ' . $prid;
 
             if (count($fabrik_elements) > 0) {
                 $where .= ' AND element.id IN (' . implode(',', $fabrik_elements) . ') ';
                 $order = '';
-
             } else {
                 $where .= ' AND (tab.id IN ( ' . implode(',', $fl) . ' ))         
                         AND element.published=1
@@ -629,9 +623,7 @@ class EmundusHelperFiles
                 echo $e->getMessage();
                 return array();
             }
-        }
-
-        else if ($plist) {
+        } else if ($plist) {
             // get Fabrik list ID for profile_id$where .= ' AND (tab.id IN ( ' . implode(',', $fl) . ' ))
             $fl = array();
             $menutype = array();

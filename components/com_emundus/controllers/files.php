@@ -2021,10 +2021,11 @@ class EmundusControllerFiles extends JControllerLegacy
                         $campaign_id = $infos['campaign_id'];
 
                         ///  campaign_id --> menu-profile
-                        $query = "SELECT jesp.menutype
-                                    FROM #__emundus_setup_profiles AS jesp
-                                        LEFT JOIN #__emundus_setup_campaigns ON jesp.id =  #__emundus_setup_campaigns.profile_id
-                                            WHERE #__emundus_setup_campaigns.id = " . $campaign_id;
+                        $query = $db->getQuery(true);
+                        $query->select('jesp.menutype')
+                            ->from($db->quoteName('#__emundus_setup_profiles','jesp'))
+                            ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('jesp.id').' = '.$db->quoteName('sc.profile_id'))
+                            ->where($db->quoteName('sc.id') . ' = ' . $campaign_id);
                         $db->setQuery($query);
                         $_return_menutype = $db->loadResult();
 

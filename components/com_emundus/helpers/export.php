@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
 jimport('joomla.application.component.model');
-JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
+JModelLegacy::addIncludePath(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models');
 
 
 /**
@@ -27,17 +27,17 @@ JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
  * @subpackage	eMundus
  * @since 1.5
  */
- 
+
 class EmundusHelperExport
 {
-	
+
 	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 0, $form_ids = null, $options = null, $application_form_order = null, $elements = null) {
 		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
-        
+
 		if (!file_exists($file)) {
 			$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
 		}
-		
+
 		if (!file_exists(EMUNDUS_PATH_ABS.$sid)) {
 			mkdir(EMUNDUS_PATH_ABS.$sid);
 			chmod(EMUNDUS_PATH_ABS.$sid, 0755);
@@ -87,21 +87,21 @@ class EmundusHelperExport
 
     public static function buildHeaderPDF($fnumInfos, $sid, $fnum, $options = null) {
 		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
-        
+
 		if (!file_exists($file)) {
 			$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
 		}
-		
+
 		if (!file_exists(EMUNDUS_PATH_ABS.$sid)) {
 			mkdir(EMUNDUS_PATH_ABS.$sid);
 			chmod(EMUNDUS_PATH_ABS.$sid, 0755);
 		}
-		
+
 		require_once($file);
-        
+
         application_header_pdf($sid, $fnum, false, $options);
-        
-       
+
+
 		return EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_header.pdf';
     }
 
@@ -199,7 +199,7 @@ class EmundusHelperExport
                             $exports[] = $fn;
                             $tmpArray[] = $fn;
                         } else {
-                            if (EmundusHelperExport::isEncrypted($filePath)) { 
+                            if (EmundusHelperExport::isEncrypted($filePath)) {
                                 $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
                                 $exports[] = $fn;
                                 $tmpArray[] = $fn;
@@ -217,7 +217,7 @@ class EmundusHelperExport
 				return false;
 	        }
         }
-		
+
 		return $exports;
 	}
 
@@ -338,9 +338,9 @@ class EmundusHelperExport
 		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 		$pdf->SetFont('helvetica', '', 8);
         $pdf->AddPage();
-        
+
 		/*if (in_array(strtolower($ext), $imgExt)) {
-           
+
 			$pdf->setJPEGQuality(75);
 			if ($ext == 'svg')
 				$pdf->ImageSVG(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
@@ -350,10 +350,10 @@ class EmundusHelperExport
             $pdf->startTransaction();
             $start_y = $pdf->GetY();
             $start_page = $pdf->getPage();
-            $pdf->writeHTMLCell(0,'','',$start_y,$htmlData,'B', 1);     
-        
+            $pdf->writeHTMLCell(0,'','',$start_y,$htmlData,'B', 1);
+
 		} else {
-            if (EmundusHelperExport::isEncrypted(EMUNDUS_PATH_ABS.$aid.DS.$fileName)) { 
+            if (EmundusHelperExport::isEncrypted(EMUNDUS_PATH_ABS.$aid.DS.$fileName)) {
 			    $htmlData .= JText::_('ENCRYPTED_FILE').' : ';
                 $htmlData .= '<a href="'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
             }

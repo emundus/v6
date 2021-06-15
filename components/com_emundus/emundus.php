@@ -279,7 +279,6 @@ JText::script('PROGRAM_NAME');
 JText::script('CHOOSE_YOUR_OPTION');
 JText::script('RESTRICTED_ACCESS_OTHERS_EVAL');
 JText::script('GENERATE_EXCEL');
-JText::script('COM_EMUNDUS_CHOOSE_LETTER');
 
 
 //Export PDF
