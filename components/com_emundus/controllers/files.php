@@ -4335,20 +4335,21 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         // group letters by candidat
+
+        $fnumsInfos = $_mFile->getFnumsInfos($fnum_Array);
+
+        $res->zip_data_by_candidat = [];
+
+        $applicant_id = [];
+
+        foreach ($fnumsInfos as $key => $value) {
+            $applicant_id[] = $value['applicant_id'];
+        }
+
+        $applicant_id = array_unique(array_filter($applicant_id));
+        $res->affected_users = count($applicant_id);
+
         if($showMode == 0) {
-            $fnumsInfos = $_mFile->getFnumsInfos($fnum_Array);
-
-            $res->zip_data_by_candidat = [];
-
-            $applicant_id = [];
-
-            foreach ($fnumsInfos as $key => $value) {
-                $applicant_id[] = $value['applicant_id'];
-            }
-
-            $applicant_id = array_unique(array_filter($applicant_id));
-            $res->affected_users = count($applicant_id);
-
             foreach ($applicant_id as $key => $uid) {
                 $user_info = $_mUser->getUserById($uid);
 
@@ -4361,6 +4362,8 @@ class EmundusControllerFiles extends JControllerLegacy
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
         // $templates is already an array
         elseif ($showMode == 1) {
+            require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+
             $res->letter_dir = [];
 
             $zip_dir = [];
@@ -4372,7 +4375,8 @@ class EmundusControllerFiles extends JControllerLegacy
 
                 /// check if this $dir_Name exists or not --> if not --> mkdir
                 if (!file_exists($dir_Name)) {
-                    mkdir(EMUNDUS_PATH_ABS . $dir_Name, 0777, true);            /// create new directory
+                    mkdir(EMUNDUS_PATH_ABS . $dir_Name, 0777, true);                                    /// create new directory -- no merge
+                    mkdir(JPATH_BASE . DS . 'tmp' . DS  . $dir_Name . '--merge', 0777, true);            /// create new directory in /  tmp  / -- with merge
                 } else {
                     continue;
                 }
@@ -4381,10 +4385,39 @@ class EmundusControllerFiles extends JControllerLegacy
 
                 foreach ($uploaded_Files as $key => $file) {
                     $source = EMUNDUS_PATH_ABS . $file->user_id . DS . $file->filename;
-                    copy($source, EMUNDUS_PATH_ABS . $dir_Name . DS . $file->filename);
+                    copy($source, EMUNDUS_PATH_ABS . $dir_Name . DS . $file->filename);                         /// copy file to no merge folder
+
                     $_zipName = $dir_Name . '_' . date("Y-m-d") . '_x.zip';
                     $this->ZipLetter(EMUNDUS_PATH_ABS . $dir_Name, JPATH_BASE . DS . 'tmp' . DS . $_zipName, 'true');
                     $zip_dir = DS . 'tmp/' . $_zipName;
+
+                    $pdf_files = array();
+                    $fileList = glob(EMUNDUS_PATH_ABS . $dir_Name . DS . '*');
+                    foreach($fileList as $filename){
+                        // if extension is pdf --> push into the array $pdf_files
+                        $_name = explode(EMUNDUS_PATH_ABS . $dir_Name . DS, $filename)[1];
+                        $_file_extension = pathinfo($filename)['extension'];
+                        if($_file_extension == "pdf") {
+                            $pdf_files[] = $filename;
+                        } else {
+                            // if not, just copy it to --merge directory
+                            copy($filename,JPATH_BASE . DS . 'tmp' . DS  . $dir_Name . '--merge' . DS . $_name);
+                        }
+                    }
+
+                    /// from $pdf_files --> concat them
+                    $pdf = new ConcatPdf();
+                    $pdf->setFiles($pdf_files);
+                    $pdf->concat();
+
+                    $pdf->Output(JPATH_BASE . DS . 'tmp' . DS  . $dir_Name . '--merge' . DS . $attachInfos['lbl'] . '.pdf', 'F');          /// export the merged pdf
+
+                    /// last one --> zip this --merge into / tmp /
+                    $_mergeZipName = $dir_Name . '--merge' . '_' .date("Y-m-d"). '_x.zip';
+                    $this->ZipLetter(JPATH_BASE . DS . 'tmp' . DS  . $dir_Name . '--merge', JPATH_BASE . DS . 'tmp' . DS . $_mergeZipName, true);
+
+                    // return the merge zip url
+
                 }
                 $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => $zip_dir);
             }
