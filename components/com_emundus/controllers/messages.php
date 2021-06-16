@@ -1465,7 +1465,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $_mMessages = new EmundusModelMessages;
         $_templates = $_mMessages->getLetterTemplateByFnums($fnums);
 
-        echo json_encode((object)['status' => 'true', 'templates' => $_templates]);
+        echo json_encode((object)['status' => true, 'templates' => $_templates]);
         exit;
     }
 
@@ -1480,6 +1480,8 @@ class EmundusControllerMessages extends JControllerLegacy {
         $_mMessages = new EmundusModelMessages;
 
         $_attached_letters = $_mMessages->getAvailableAttachmentByFnumMessage($fnums, $tmpl);
-        var_dump($_attached_letters);die;
+
+        echo json_encode((object)array('status' => true, 'attached_letters' => $_attached_letters));
+        exit;
     }
 }

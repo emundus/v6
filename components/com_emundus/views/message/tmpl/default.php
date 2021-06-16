@@ -347,11 +347,30 @@ if ($allowed_attachments !== true) {
                     $.ajax({
                         type: 'POST',
                         url: 'index.php?option=com_emundus&controller=messages&task=getavailableletters',
+                        dataType: 'JSON',
                         data : {
                             fnums : fnums,
                             tmplId : $('#message_template').val(),
                         },
-                        success: function (attachments) {
+                        success: function (letter_tmpls) {
+                            if(letter_tmpls.status) {
+                                let letters = letter_tmpls.attached_letters;
+
+                                letters.forEach(letter => {
+                                    $('#em-attachment-list').append('' +
+                                        '<li class="list-group-item setup_letters" style="padding: 15px 15px">' +
+                                        '<div class="value hidden">' + letter.id + '</div>' + letter.value +
+                                        '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
+                                        '<span class="glyphicon glyphicon-remove"></span>' +
+                                        '</span>' +
+                                        '<span class="badge">' +
+                                        '<span class="glyphicon glyphicon-envelope">' + '</span>' +
+                                        '</span>' +
+                                        '</li>');
+                                })
+                            } else {
+                                $('#em-attachment-list').append('ERROR_HERE');
+                            }
 
                         }, error: function(jqXHR) {
                             console.log(jqXHR.responseText);

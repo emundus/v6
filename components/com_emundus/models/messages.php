@@ -1154,7 +1154,10 @@ class EmundusModelMessages extends JModelList {
         $query = $db->getQuery(true);
 
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+
         $_mEval = new EmundusModelEvaluation;
+        $_mFile = new EmundusModelFiles;
 
 	    if(!empty($fnums) and !empty($message)) {
 	        try {
@@ -1180,10 +1183,9 @@ class EmundusModelMessages extends JModelList {
                 }
 
                 $attachment_ids = array_unique(array_filter($attachment_ids));
+                $attachment_infos = $_mFile->getSetupAttachmentsById($attachment_ids);
 
-                /// get attachment name from attachment ids
-
-                return $attachment_ids;
+                return $attachment_infos;
             } catch(Exception $e) {
                 JLog::add('Error get available attachments by fnum and message : '.$e->getMessage(), JLog::ERROR, 'com_emundus.message');
                 return false;
