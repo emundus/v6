@@ -5217,7 +5217,7 @@ $(document).ready(function() {
                     type:'post',
                     url:'index.php?option=com_emundus&controller=files&task=generateletter',
                     dataType:'json',
-                    data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee, showMode: showMode},
+                    data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee, showMode: showMode, mergeMode: mergeMode},
                     success: function(result) {
                         $('.modal-body').empty();
                         if(result.status) {

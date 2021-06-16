@@ -3871,6 +3871,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $templates = $jinput->post->getRaw('ids_tmpl');
         $canSee = $jinput->post->getRaw('cansee', 0);
         $showMode = $jinput->post->getRaw('showMode', 0);
+        $mergeMode = $jinput->post->getRaw('mergeMode', 0);
 
         $fnum_Array = explode(',', $fnums);
 
@@ -4391,35 +4392,42 @@ class EmundusControllerFiles extends JControllerLegacy
                     $this->ZipLetter(EMUNDUS_PATH_ABS . $dir_Name, JPATH_BASE . DS . 'tmp' . DS . $_zipName, 'true');
                     $zip_dir = DS . 'tmp/' . $_zipName;
 
-                    $pdf_files = array();
-                    $fileList = glob(EMUNDUS_PATH_ABS . $dir_Name . DS . '*');
-                    foreach($fileList as $filename){
-                        // if extension is pdf --> push into the array $pdf_files
-                        $_name = explode(EMUNDUS_PATH_ABS . $dir_Name . DS, $filename)[1];
-                        $_file_extension = pathinfo($filename)['extension'];
-                        if($_file_extension == "pdf") {
-                            $pdf_files[] = $filename;
-                        } else {
-                            // if not, just copy it to --merge directory
-                            copy($filename,JPATH_BASE . DS . 'tmp' . DS  . $dir_Name . '--merge' . DS . $_name);
+                    if($mergeMode == 1) {
+                        $pdf_files = array();
+                        $fileList = glob(EMUNDUS_PATH_ABS . $dir_Name . DS . '*');
+                        foreach ($fileList as $filename) {
+                            // if extension is pdf --> push into the array $pdf_files
+                            $_name = explode(EMUNDUS_PATH_ABS . $dir_Name . DS, $filename)[1];
+                            $_file_extension = pathinfo($filename)['extension'];
+                            if ($_file_extension == "pdf") {
+                                $pdf_files[] = $filename;
+                            } else {
+                                // if not, just copy it to --merge directory
+                                copy($filename, JPATH_BASE . DS . 'tmp' . DS . $dir_Name . '--merge' . DS . $_name);
+                            }
                         }
-                    }
 
-                    /// from $pdf_files --> concat them
-                    $pdf = new ConcatPdf();
-                    $pdf->setFiles($pdf_files);
-                    $pdf->concat();
+                        /// from $pdf_files --> concat them
+                        $pdf = new ConcatPdf();
+                        $pdf->setFiles($pdf_files);
+                        $pdf->concat();
 
-                    $pdf->Output(JPATH_BASE . DS . 'tmp' . DS  . $dir_Name . '--merge' . DS . $attachInfos['lbl'] . '.pdf', 'F');          /// export the merged pdf
+                        $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $dir_Name . '--merge' . DS . $attachInfos['lbl'] . '.pdf', 'F');          /// export the merged pdf
 
-                    /// last one --> zip this --merge into / tmp /
-                    $_mergeZipName = $dir_Name . '--merge' . '_' .date("Y-m-d"). '_x.zip';
-                    $this->ZipLetter(JPATH_BASE . DS . 'tmp' . DS  . $dir_Name . '--merge', JPATH_BASE . DS . 'tmp' . DS . $_mergeZipName, true);
+                        /// last one --> zip this --merge into / tmp /
+                        $_mergeZipName = $dir_Name . '--merge' . '_' . date("Y-m-d") . '_x.zip';
+                        $this->ZipLetter(JPATH_BASE . DS . 'tmp' . DS . $dir_Name . '--merge', JPATH_BASE . DS . 'tmp' . DS . $_mergeZipName, true);
+                    } else { }
 
                     // return the merge zip url
 
                 }
-                $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => $zip_dir);
+
+                if($mergeMode == 1) {
+                    $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => $zip_dir, 'zip_merge_dir' => $_mergeZipName);
+                } else {
+                    $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => $zip_dir);
+                }
             }
         }
 
