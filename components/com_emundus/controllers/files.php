@@ -3870,39 +3870,13 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         $fnums = $jinput->post->getRaw('fnums');
         $templates = $jinput->post->getRaw('ids_tmpl');
         $canSee = $jinput->post->getRaw('cansee', 0);
+        $showMode = $jinput->post->getRaw('showMode', 0);
 
         $fnum_Array = explode(',', $fnums);
 
         $res = new stdClass();
         $res->status = true;
         $res->files = [];
-
-        $letters_ids = $_mEval->getLettersByFnumsTemplates($fnums,$templates);
-
-        $letter_count = [];
-
-       foreach($letters_ids as $key => $letter) {
-           foreach($letter as $data => $value) {
-               $letter_count[] = $value->id;
-           }
-       }
-
-       $query = "SELECT #__emundus_setup_letters.attachment_id, COUNT(#__emundus_setup_letters.attachment_id) AS count_ 
-                    FROM #__emundus_setup_letters
-                        WHERE #__emundus_setup_letters.id IN ("
-                            . implode(',', $letter_count) .
-                            ") GROUP BY (#__emundus_setup_letters.attachment_id)";
-
-       $this->_db->setQuery($query);
-       $_document_count = $this->_db->loadAssocList();
-
-       $res->recapitulatif_count = [];
-
-       foreach($_document_count as $key => $document) {
-           $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $document['attachment_id'];
-           $this->_db->setQuery($query);
-           $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $document['count_']);
-       }
 
         /// a partit de $fnums + $templates --> generer les lettres qui correspondent
         foreach($fnum_Array as $key => $fnum) {
@@ -3924,23 +3898,33 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                             // get file name
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
-                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . '.' . pathinfo($file)['extension'];    ;
+                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H') . '.' . pathinfo($file)['extension'];;
                             } else {
-                                $name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . '.' . pathinfo($file)['extension'];
+                                $name = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . date('Y-m-d_H') . '.' . pathinfo($file)['extension'];
                             }
 
                             // get file path
                             $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $name;
 
-                            if (copy($file, $path)) {
-                                $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
-                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                            /// check if this file exists --> if not :: copy -- otherwise --> return the result
+                            $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
 
-                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
+                            if (!file_exists($path)) {
+                                if (copy($file, $path)) {
+                                    $res->status = true;
+                                    $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+
+                                    $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
+                                }
+                                else {
+                                    $res->status = false;
+                                    $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
+                                }
                             }
                         } else {
-                            $res->status = false;
-                            $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
+                            /// do not copy, return directly to res
+                            $res->status = true;
+                            $res->files[] = array('filename' => $name, 'upload' => null, 'url' => $url);
                         }
                         break;
 
@@ -4022,15 +4006,19 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
-                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".pdf";
+                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H') . ".pdf";
                             } else {
-                                $name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".pdf";
+                                $name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . date('Y-m-d_H') . ".pdf";
                             }
 
                             $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $name;
                             $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
 
-                            $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
+                            if(!file_exists($path)) {
+                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
+                            } else {
+                                $upId = null;
+                            }
 
                             $pdf->Output($path, 'F');
                             $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
@@ -4188,7 +4176,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                                     mkdir(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'], 0775);
                                 }
 
-                                $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".docx";
+                                $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H') . ".docx";
 
                                 $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumInfo[$fnum]['applicant_id'].DS.$filename);
 
@@ -4200,7 +4188,11 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                                     $res = $m_Export->toPdf($src, $dest, $fnum);
                                 }
 
-                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                if(!file_exists(EMUNDUS_PATH_ABS.$fnumInfo[$fnum]['applicant_id'].DS.$filename)) {
+                                    $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                } else {
+                                    $upId = null;
+                                }
 
                                 $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/',);
                             }
@@ -4334,61 +4326,93 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         }
 
         // group letters by candidat
-        $fnumsInfos = $_mFile->getFnumsInfos($fnum_Array);
+        $letters_ids = $_mEval->getLettersByFnumsTemplates($fnums,$templates);
 
-        $res->zip_data_by_candidat = [];
+        $letter_count = [];
 
-        $applicant_id = [];
-
-        foreach($fnumsInfos as $key => $value) {
-            $applicant_id[] = $value['applicant_id'];
+        foreach($letters_ids as $key => $letter) {
+            foreach($letter as $data => $value) {
+                $letter_count[] = $value->id;
+            }
         }
 
-        $applicant_id = array_unique(array_filter($applicant_id));
-        $res->affected_users = count($applicant_id);
+        $query = "SELECT #__emundus_setup_letters.attachment_id, COUNT(#__emundus_setup_letters.attachment_id) AS count_ 
+                    FROM #__emundus_setup_letters
+                        WHERE #__emundus_setup_letters.id IN ("
+            . implode(',', $letter_count) .
+            ") GROUP BY (#__emundus_setup_letters.attachment_id)";
 
-        foreach($applicant_id as $key => $uid) {
-            $user_info = $_mUser->getUserById($uid);
+        $this->_db->setQuery($query);
+        $_document_count = $this->_db->loadAssocList();
 
-            $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() .'_x.zip';
-            $this->ZipLetter(EMUNDUS_PATH_ABS . $uid, JPATH_BASE.DS.'tmp'.DS . $_zipName, 'true');
-            $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'zip_url' => DS . 'tmp/' . $_zipName);
+        $res->recapitulatif_count = [];
+
+        foreach($_document_count as $key => $document) {
+            $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $document['attachment_id'];
+            $this->_db->setQuery($query);
+            $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $document['count_']);
+        }
+
+
+        if($showMode == 0) {
+            $fnumsInfos = $_mFile->getFnumsInfos($fnum_Array);
+
+            $res->zip_data_by_candidat = [];
+
+            $applicant_id = [];
+
+            foreach ($fnumsInfos as $key => $value) {
+                $applicant_id[] = $value['applicant_id'];
+            }
+
+            $applicant_id = array_unique(array_filter($applicant_id));
+            $res->affected_users = count($applicant_id);
+
+            foreach ($applicant_id as $key => $uid) {
+                $user_info = $_mUser->getUserById($uid);
+
+                $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() . '_x.zip';
+                $this->ZipLetter(EMUNDUS_PATH_ABS . $uid, JPATH_BASE . DS . 'tmp' . DS . $_zipName, 'true');
+                $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'zip_url' => DS . 'tmp/' . $_zipName);
+            }
         }
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
         // $templates is already an array
-        $res->letter_dir = [];
+        else if($showMode == 1) {
+            $res->letter_dir = [];
 
-        foreach($templates as $index => $template) {
-            $attachInfos = $_mFile->getAttachmentInfos($template);
+            foreach ($templates as $index => $template) {
+                $attachInfos = $_mFile->getAttachmentInfos($template);
 
-            $dir_Name = $attachInfos['id'] . '_' . 'emundus';
+                $dir_Name = $attachInfos['id'] . '_' . 'emundus';
 
-            /// check if this $dir_Name exists or not --> if not --> mkdir
-            if(!file_exists($dir_Name)) {
-                mkdir(EMUNDUS_PATH_ABS . $dir_Name, 0777, true);            /// create new directory
-            } else {
-                unlink($dir_Name);
-            }
-
-            $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);
-
-            /// zip all
-            foreach($uploaded_Files as $key => $file) {
-                $source = EMUNDUS_PATH_ABS . $file->user_id . DS . $file->filename;
-
-                copy($source, EMUNDUS_PATH_ABS . $dir_Name . DS . $file->filename);
-                $_zipName = explode('_', $dir_Name)[0] . '_' . date("Y-m-d") .'_x.zip';
-                $this->ZipLetter(EMUNDUS_PATH_ABS . $dir_Name, JPATH_BASE.DS.'tmp'.DS . $_zipName, 'true');
-
-                $_new_DirName = $attachInfos['lbl'] . '_' . uniqid() . '.zip';
-
-                if(!file_exists(JPATH_BASE.DS.'tmp'.DS . $_new_DirName)) {
-                    rename(JPATH_BASE.DS.'tmp'.DS . $_zipName, JPATH_BASE.DS.'tmp'.DS . $_new_DirName);
-                    $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => DS . 'tmp/' . $_new_DirName);
-                    break;
+                /// check if this $dir_Name exists or not --> if not --> mkdir
+                if (!file_exists($dir_Name)) {
+                    mkdir(EMUNDUS_PATH_ABS . $dir_Name, 0777, true);            /// create new directory
                 } else {
-                    continue;
+                    unlink($dir_Name);
+                }
+
+                $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);
+
+                /// zip all
+                foreach ($uploaded_Files as $key => $file) {
+                    $source = EMUNDUS_PATH_ABS . $file->user_id . DS . $file->filename;
+
+                    copy($source, EMUNDUS_PATH_ABS . $dir_Name . DS . $file->filename);
+                    $_zipName = explode('_', $dir_Name)[0] . '_' . date("Y-m-d") . '_x.zip';
+                    $this->ZipLetter(EMUNDUS_PATH_ABS . $dir_Name, JPATH_BASE . DS . 'tmp' . DS . $_zipName, 'true');
+
+                    $_new_DirName = $attachInfos['lbl'] . '_' . uniqid() . '.zip';
+
+                    if (!file_exists(JPATH_BASE . DS . 'tmp' . DS . $_new_DirName)) {
+                        rename(JPATH_BASE . DS . 'tmp' . DS . $_zipName, JPATH_BASE . DS . 'tmp' . DS . $_new_DirName);
+                        $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => DS . 'tmp/' . $_new_DirName);
+                        break;
+                    } else {
+                        continue;
+                    }
                 }
             }
         }

@@ -5217,12 +5217,10 @@ $(document).ready(function() {
                     type:'post',
                     url:'index.php?option=com_emundus&controller=files&task=generateletter',
                     dataType:'json',
-                    data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee},
+                    data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee, showMode: showMode},
                     success: function(result) {
                         $('.modal-body').empty();
                         if(result.status) {
-                            var files = result.files;
-
                             if(showMode == 0) {
                                 // show results by candidats --> using fnum to find name // id candidat
                                 //var zip = result.zip_data_by_candidat;
@@ -5279,7 +5277,8 @@ $(document).ready(function() {
                                 table += "</tbody></table>";
                                 $('.modal-body').append(table);
 
-                            } else {
+                            }
+                            else if (showMode == 1){
                                 let letters = result.letter_dir;
 
                                 var table =
@@ -5307,7 +5306,38 @@ $(document).ready(function() {
                                 $('.modal-body').append(table);
                             }
 
-                        } else {
+                            else {
+                                /// showMode == 2 (classic way)
+                                var files = result.files;
+
+                                console.log(files);
+
+                                var table = "<h3>" +
+                                    Joomla.JText._('FILES_GENERATED')+
+                                    "</h3>" +
+                                    "<table class='table table-striped' id='em-generated-docs'>" +
+                                    "<thead>" +
+                                    "<tr>" +
+                                    "<th>"+Joomla.JText._('FILE_NAME')+" <a class='btn btn-small pull-right' id='em-doc-zip' href=''>"+Joomla.JText._('COM_EMUNDUS_ACCESS_EXPORT_ZIP')+"</a></th>" +
+                                    "</tr>" +
+                                    "</thead>" +
+                                    "<tbody>";
+
+                                files.forEach(file => {
+                                    table +=
+                                        "<tr id='" + file.upload + "'>" +
+                                            "<td>" + file.filename +
+                                                " <a class='btn btn-success btn-xs pull-right em-doc-dl' href='"+ file.url + file.filename +"'>" +
+                                                    "<span class='glyphicon glyphicon-save'></span>" +
+                                                "</a>" +
+                                            "</td>" +
+                                        "</tr>";
+                                })
+
+                                table += "</tbody></table>";
+                                $('.modal-body').append(table);
+
+                            }
 
                         }
                     },
