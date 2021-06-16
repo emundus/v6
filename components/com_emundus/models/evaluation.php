@@ -2405,8 +2405,9 @@ if (JFactory::getUser()->id == 63)
         if(!empty($attachment) and !empty($fnums)) {
             try {
                 $query->clear()
-                    ->select('#__emundus_uploads.*')
+                    ->select('#__emundus_uploads.*, #__emundus_setup_attachments.lbl, #__emundus_setup_attachments.value')
                     ->from($this->_db->quoteName('#__emundus_uploads'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_setup_attachments') . 'ON' . $this->_db->quoteName('#__emundus_setup_attachments.id') . ' = ' . $this->_db->quoteName('#__emundus_uploads.attachment_id'))
                     ->where($this->_db->quoteName('#__emundus_uploads.attachment_id') . ' = ' . (int)$attachment)
                     ->andWhere($this->_db->quoteName('#__emundus_uploads.fnum') . ' IN (' . implode(',', $fnums) . ')');
                 $this->_db->setQuery($query);
