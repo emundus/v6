@@ -8,16 +8,14 @@ hr{
 
 .messages__block{
     padding: 8px 16px;
-    height: 50px;
+    height: 60px;
     align-items: center;
     display: flex;
-    margin-bottom: 15px;
     cursor: pointer;
 }
 
 .messages__block:hover{
-    background: #f3f3f4;
-    border-radius: 5px;
+    background: #F0F4F5;
 }
 
 .messages__campaign-block{
@@ -28,13 +26,11 @@ hr{
 }
 
 .messages__active-campaign{
-    background: #d1dbfa;
-    border-radius: 5px;
+    background: #F0F4F5;
 }
 
 .messages__list{
     min-height: 60vh;
-    background: #F3F3F4;
     padding: 20px 0;
 }
 
@@ -114,7 +110,9 @@ hr{
 }
 
 .messages__campaigns-list{
-    padding: 32px !important;
+    min-height: 62vh !important;
+    box-shadow: inset -1px 0px 0px rgba(203, 214, 214, 0.5);
+    background: #FCFCFC;
 }
 
 .messages__campaigns_title{

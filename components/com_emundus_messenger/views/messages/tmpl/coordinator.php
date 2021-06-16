@@ -11,7 +11,7 @@
 defined('_JEXEC') or die('Restricted Access');
 
 $document = JFactory::getDocument();
-$document->addStyleSheet('media/com_emundus_messenger/app.css');
+$document->addStyleSheet('media/com_emundus_messenger/app_messenger.css');
 
 JText::script('COM_EMUNDUS_MESSENGER_TITLE');
 
@@ -21,5 +21,5 @@ $user = JFactory::getUser()->id;
 ?>
 <div id="em-messages-coordinator-vue" fnum="<?= $fnum ?>" user="<?= $user ?>"></div>
 
-<script src="/media/com_emundus_messenger/app.js"></script>
-<script src="/media/com_emundus_messenger/chunk-vendors.js"></script>
+<script src="/media/com_emundus_messenger/app_messenger.js"></script>
+<script src="/media/com_emundus_messenger/chunk-vendors_messenger.js"></script>

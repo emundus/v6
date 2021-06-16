@@ -7,7 +7,7 @@
         @removeNotifications="removeNotifications"
     />
     <div>
-      <img class="em-messages-modal" style="max-width: 35px; cursor: pointer;" @click="openModal" src="/images/emundus/menus/email.png" />
+      <img class="em-messages-modal" style="width: 30px; cursor: pointer;" @click="openModal" src="/images/emundus/messenger/messenger.svg" />
       <p v-if="counter > 0" class="notifications__counter">{{counter}}</p>
     </div>
   </div>

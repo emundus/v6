@@ -8,14 +8,14 @@ module.exports = {
     css: {
         modules: false,
         extract: {
-            filename: '[name].css',
-            chunkFilename: '[name].css',
+            filename: '[name]_messenger.css',
+            chunkFilename: '[name]_messenger.css',
         },
     },
     configureWebpack: {
         output: {
-            filename: '[name].js',
-            chunkFilename: '[name].js',
+            filename: '[name]_messenger.js',
+            chunkFilename: '[name]_messenger.js',
         },
     },
 };
