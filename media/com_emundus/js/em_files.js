@@ -3426,7 +3426,7 @@ $(document).ready(function() {
                         '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('FORMS_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
 
-                '<div id = "form-element" style="overflow:auto"></div>' +
+                '<div id="form-element" style="overflow:auto"></div>' +
                 // '<div class="panel-body" id="felts" style="overflow:auto;display:none;"></div>'+
 
                 '</div>'+
@@ -3516,11 +3516,7 @@ $(document).ready(function() {
                                                 $('#filt_save_pdf').append('<option value="' + model.id + '">' + model.name + '</option>');
                                                 $('#filt_save_pdf').trigger("chosen:updated");
                                             });
-                                        } else {
-                                            // do nothing
                                         }
-                                    } else {
-                                        /// add some events here
                                     }
                                 }, error: function(jqXHR) {
                                     console.log(jqXHR.responseText);
@@ -3598,6 +3594,8 @@ $(document).ready(function() {
                 $('#filt_save_pdf').on('change', function() {
                    var model = $('#filt_save_pdf').val();
 
+                    //$('#data').before('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+
                    if(model != 0) {
                        $.ajax({
                            type: 'post',
@@ -3630,7 +3628,7 @@ $(document).ready(function() {
                                            $('#em-export-prg').trigger("chosen:updated");
                                            $('#em-export-prg').trigger("click");
                                            $('#em-export-prg').trigger("change");
-                                       } else {}
+                                       }
 
                                        setTimeout(function(){
                                            if($("#em-export-camp option[value='" + campCode + "']").length > 0 === true) {
@@ -3653,55 +3651,55 @@ $(document).ready(function() {
                                                            let profiles = returnData.fabrik_data.profiles;
 
                                                            // show 'felts' + profile
-                                                           setTimeout(function () {
-                                                                   profiles.forEach(prf => {
-                                                                       $('#felts' + prf.id).show();
+                                                               setTimeout(function () {
+                                                           profiles.forEach(prf => {
+                                                               $('#felts' + prf.id).show();
 
-                                                                       $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
-                                                                       $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
+                                                               $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
+                                                               $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
 
-                                                                   })
-                                                               }, 3000
-                                                           );
+                                                           })
+                                                                   }, 3000
+                                                               );
 
                                                            if (checkAllTables !== null || checkAllTables !== undefined || checkAllTables[0] !== "") {
                                                                //render tables
-                                                               setTimeout(function () {
-                                                                   checkAllTables.forEach(tbl => {
-                                                                       $('#emundus_checkall_tbl_' + tbl).attr('checked', true);
-                                                                   })
-                                                               }, 3000);
+                                                                   setTimeout(function () {
+                                                               checkAllTables.forEach(tbl => {
+                                                                   $('#emundus_checkall_tbl_' + tbl).attr('checked', true);
+                                                               })
+                                                                   }, 3000);
                                                            }
 
                                                            if (checkAllGroups !== null || checkAllGroups !== undefined || checkAllGroups[0] !== "") {
                                                                // render groups
-                                                               setTimeout(function () {
-                                                                   checkAllGroups.forEach(grp => {
-                                                                       $('#emundus_checkall_grp_' + grp).attr('checked', true);
-                                                                   })
-                                                               }, 3000);
+                                                                   setTimeout(function () {
+                                                               checkAllGroups.forEach(grp => {
+                                                                   $('#emundus_checkall_grp_' + grp).attr('checked', true);
+                                                               })
+                                                                   }, 3000);
                                                            }
 
                                                            if (elements !== null || elements !== undefined || elements[0] !== "") {
                                                                // render elements
-                                                               setTimeout(function () {
-                                                                   elements.forEach(elt => {
-                                                                       $('#emundus_elm_' + elt).attr('checked', true);
-                                                                   })
-                                                               }, 3000);
+                                                                   setTimeout(function () {
+                                                               elements.forEach(elt => {
+                                                                   $('#emundus_elm_' + elt).attr('checked', true);
+                                                               })
+                                                                   }, 3000);
                                                            }
-                                                       }, error: function (jqXHR) {
+                                                           }, error: function (jqXHR) {
                                                            console.log(jqXHR.responseText);
                                                        }
-                                                   })
-                                               } else {}
-                                           } else {}
-                                       }, 4500);
-                                   } else { }
+                                                   });
+                                               }
+                                           }
+                                   }, 4500);
                                }
-                           }, error: function(jqXHR) {console.log(jqXHR.responseText);}
-                       })
-                   } else {}
+                           }
+                       }, error: function(jqXHR) {console.log(jqXHR.responseText);}
+                   });
+                   }
                 });
 
                 $('#em-export-prg').on('change', function() {
@@ -3918,7 +3916,6 @@ $(document).ready(function() {
                     }
                 });
 
-                //// changer ici un peu pour bien s'adapter
                 $('#em-ex-forms').click(function(e) {
                     let feltsObj = $('[id^=felts]');
                     var feltsArr = Array.prototype.slice.call(feltsObj);
@@ -3939,7 +3936,6 @@ $(document).ready(function() {
                 });
 
                 $('#em-ex-forms').click(function(e) {
-                    //console.log('clicked');
                     if ($('#em-ex-forms').is(":checked")){
                         $('[id^=felts-]').hide();
                         $('#felts input').attr('checked', false);
@@ -4205,8 +4201,7 @@ $(document).ready(function() {
                 $('#em-export-camp').chosen({width: "95%"});
                 $('#filt_save_pdf').chosen({width: "95%"});
 
-                // $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px", 'border-radius':"4px"});
-                $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px"});
+                $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px", 'border-radius':"4px"});
 
                 $('#can-val').empty();
                 $('#can-val').append('<a class="btn-large btn-success btn-attach"  id="em_generate" href="'+url+'">'+Joomla.JText._('GENERATE_PDF')+'</a><div id="attachement_res"></div>');
@@ -4837,77 +4832,6 @@ $(document).ready(function() {
                 pdf_elements['elements'].push(elt.value);
             }
         })
-
-        // at least one element is selected
-        // $('[id^=felts]').each(function (flt) {
-        //     if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
-        //         /// get associated #felts
-        //         $('[id^=emundus_elm_]').each(function (elt) {
-        //             if ($(this).prop('checked') == true) {
-        //                 let elt_id = $(this).attr('id').split('emundus_elm_')[1];
-        //
-        //                 let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
-        //                 let felts_id = felts.split('felts')[1];
-        //
-        //                 selectedElements['menu-profile' + felts_id] = {};
-        //             }
-        //         })
-        //
-        //         /// get associated tables
-        //         $('[id^=emundus_elm_]').each(function (elt) {
-        //             if ($(this).prop('checked') == true) {
-        //                 let elt_id = $(this).attr('id').split('emundus_elm_')[1];
-        //
-        //                 let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
-        //                 let felts_id = felts.split('felts')[1];
-        //
-        //                 let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
-        //                 let table_id = table.split('emundus_table_')[1];
-        //
-        //                 selectedElements['menu-profile' + felts_id][table_id] = {};
-        //             }
-        //         })
-        //
-        //         /// get associated group
-        //         $('[id^=emundus_elm_]').each(function (elt) {
-        //             if ($(this).prop('checked') == true) {
-        //                 let elt_id = $(this).attr('id').split('emundus_elm_')[1];
-        //
-        //                 let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
-        //                 let felts_id = felts.split('felts')[1];
-        //
-        //                 let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
-        //                 let table_id = table.split('emundus_table_')[1];
-        //
-        //                 let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
-        //                 let group_id = group.split('emundus_grp_')[1];
-        //
-        //                 selectedElements['menu-profile' + felts_id][table_id][group_id] = [];
-        //             }
-        //         })
-        //
-        //         /// push element to array
-        //         $('[id^=emundus_elm_]').each(function (elt) {
-        //             if ($(this).prop('checked') == true) {
-        //                 let elt_id = $(this).attr('id').split('emundus_elm_')[1];
-        //                 // get group_id, table_id (using parent())
-        //
-        //                 let felts = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().parent().parent().attr('id');     /// using querySelector later
-        //                 let felts_id = felts.split('felts')[1];
-        //
-        //                 let table = $('#emundus_elm_' + elt_id).parent().parent().parent().parent().attr('id');     /// using querySelector later
-        //                 let table_id = table.split('emundus_table_')[1];
-        //
-        //                 let group = $('#emundus_elm_' + elt_id).parent().parent().attr('id');       /// using querySelector later
-        //                 let group_id = group.split('emundus_grp_')[1];
-        //
-        //                 selectedElements['menu-profile' + felts_id][table_id][group_id].push(elt_id);
-        //             }
-        //         })
-        //     } else {
-        //
-        //     }
-        // })
 
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
