@@ -1470,22 +1470,16 @@ class EmundusControllerMessages extends JControllerLegacy {
     }
 
     /// get available letter by fnums
-    public function getavailablelettersbyfnum() {
+    public function getavailableletters() {
         $jinput = JFactory::getApplication()->input;
 
         $fnums = $jinput->post->getRaw('fnums', null);
         $tmpl = $jinput->post->getRaw('tmplId', null);
 
-
-        /// call to models/messages.php/getGeneratedLettersByFnumsAndTemplate
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
         $_mMessages = new EmundusModelMessages;
-        $_mLetters = $_mMessages->getGeneratedLettersByFnumsAndTemplate($fnums,$tmpl);
 
-        if(!empty($_mLetters)) {
-            echo json_encode((object)['status' => true, 'letters' => $_mLetters]);
-        } else {
-            echo json_encode((object)['status' => false, 'letters' => JText::_("CANNOT_FIND_LETTERS")]);
-        }
-        exit;
+        $_attached_letters = $_mMessages->getAvailableAttachmentByFnumMessage($fnums, $tmpl);
+        var_dump($_attached_letters);die;
     }
 }

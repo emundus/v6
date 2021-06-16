@@ -1153,7 +1153,7 @@ class EmundusModelMessages extends JModelList {
 	    $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
         $_mEval = new EmundusModelEvaluation;
 
 	    if(!empty($fnums) and !empty($message)) {
@@ -1162,7 +1162,7 @@ class EmundusModelMessages extends JModelList {
                     ->select('jeu.*')
                     ->from($db->quoteName('#__emundus_uploads', 'jeu'))
                     ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment', 'jeserla') . ' ON ' . $db->quoteName('jeu.attachment_id') . ' = ' . $db->quoteName('jeserla.letter_attachment'))
-                    ->where($db->quoteName('jeu.fnum') . 'IN (' . implode(',', $fnums))
+                    ->where($db->quoteName('jeu.fnum') . 'IN (' . $fnums . ')')
                     ->andWhere($db->quoteName('jeserla.parent_id') . '=' . (int)$message);
                 $db->setQuery($query);
 
