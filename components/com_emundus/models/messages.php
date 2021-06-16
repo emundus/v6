@@ -1145,66 +1145,51 @@ class EmundusModelMessages extends JModelList {
 
 	}
 
-	/// get letter template by fnums
-    public function getGeneratedLettersByFnumsAndTemplate($fnums,$tmplId) {
+	/// get available letter attachment by fnums
+    /// case 1 --> from fnum --> detect the upload file --> get attachment_ids
+    /// case 2 --> from fnum --> none upload file --> get all available attachment_ids
+    /// ::: params : [fnums] , [email_template_id]]
+    public function getAvailableAttachmentByFnumMessage($fnums=array(), $message) {
 	    $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-	    try {
-	        /// first, get fnum info
-            $letter_ids = [];
-            $attachment_ids = [];
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        $_mEval = new EmundusModelEvaluation;
 
-            $fnum_Array = explode(',', $fnums); /// split
-
-            require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
-            $_mFile = new EmundusModelFiles;
-
-            foreach($fnum_Array as $key => $fnum) {
-                $fnum_Info = $_mFile->getFnumInfos($fnum);
-                ///
-                $query = "select #__emundus_setup_letters.* 
-                            from #__emundus_setup_letters
-                            left join #__emundus_setup_emails_repeat_letter_attachment on #__emundus_setup_letters.id = #__emundus_setup_emails_repeat_letter_attachment.letter_attachment
-                            left join #__emundus_setup_letters_repeat_training on #__emundus_setup_letters.id = #__emundus_setup_letters_repeat_training.parent_id
-                            where #__emundus_setup_emails_repeat_letter_attachment.parent_id in (
-                                select #__emundus_setup_emails.id
-                                from #__emundus_setup_emails
-                                left join #__emundus_setup_emails_repeat_status on #__emundus_setup_emails.id = #__emundus_setup_emails_repeat_status.parent_id
-                                where #__emundus_setup_emails_repeat_status.status = " . $fnum_Info['status'] .
-                            " and #__emundus_setup_emails_repeat_status.parent_id = " . $tmplId .
-                            ") and #__emundus_setup_letters_repeat_training.training = " . $db->quote($fnum_Info['training']);
-                            
+	    if(!empty($fnums) and !empty($message)) {
+	        try {
+                $query->clear()
+                    ->select('jeu.*')
+                    ->from($db->quoteName('#__emundus_uploads', 'jeu'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment', 'jeserla') . ' ON ' . $db->quoteName('jeu.attachment_id') . ' = ' . $db->quoteName('jeserla.letter_attachment'))
+                    ->where($db->quoteName('jeu.fnum') . 'IN (' . implode(',', $fnums))
+                    ->andWhere($db->quoteName('jeserla.parent_id') . '=' . (int)$message);
                 $db->setQuery($query);
 
-                if(!empty($db->loadObjectList())) {
-                    foreach ($db->loadObjectList() as $key => $value) {
-                        $letter_ids[] = $value->id;
+                $uploaded_attachments = $db->loadObjectList();
+
+                $attachment_ids = [];
+
+                /// if $uploaded_attachments is empty --> get all attachment ids from fnums
+                if(empty($uploaded_attachments)) {
+                    $attachment_ids = $_mEval->getLettersByFnums($fnums, $attachments = true);
+                } else {
+                    foreach($uploaded_attachments as $key => $value) {
                         $attachment_ids[] = $value->attachment_id;
                     }
-                } else {
-                    $letter_ids[] = "";
-                    $attachment_ids[] = "";
                 }
+
+                $attachment_ids = array_unique(array_filter($attachment_ids));
+
+                /// get attachment name from attachment ids
+
+                return $attachment_ids;
+            } catch(Exception $e) {
+                JLog::add('Error get available attachments by fnum and message : '.$e->getMessage(), JLog::ERROR, 'com_emundus.message');
+                return false;
             }
-
-            $letter_ids = array_unique(array_filter($letter_ids));
-            $attachment_ids = array_unique(array_filter($attachment_ids));
-
-            if(!empty($letter_ids) and !empty($attachment_ids)) {
-                /// get attachment type from attachment_ids
-                $query = "SELECT DISTINCT #__emundus_setup_attachments.*
-                        FROM #__emundus_setup_attachments
-                        WHERE #__emundus_setup_attachments.id IN (" . implode(',', $attachment_ids) . ")";
-
-                $db->setQuery($query);
-
-                $attachments = $db->loadObjectList();
-                return $attachments;
-            } else {
-                return "";
-            }
-        } catch(Exception $e) {
-	        return $e->getMessage();
+        } else {
+	        return false;
         }
     }
 }
