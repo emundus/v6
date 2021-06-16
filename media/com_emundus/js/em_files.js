@@ -5215,7 +5215,7 @@ $(document).ready(function() {
                     '</div>');
                 $.ajax({
                     type:'post',
-                    url:'index.php?option=com_emundus&controller=files&task=generateletter&format=raw',
+                    url:'index.php?option=com_emundus&controller=files&task=generateletter',
                     dataType:'json',
                     data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee},
                     success: function(result) {
@@ -5276,7 +5276,6 @@ $(document).ready(function() {
                                         "</tr>";
                                 })
 
-                                /// http://localhost:8888/Applications/MAMP/htdocs/core/tmp/95_2021-06-14_60c788c5e3fd2_x.zip
                                 table += "</tbody></table>";
                                 $('.modal-body').append(table);
 
@@ -5314,8 +5313,6 @@ $(document).ready(function() {
                     },
                     error: function (jqXHR) {
                         console.log(jqXHR.responseText);
-                        if (jqXHR.status === 302)
-                            window.location.replace('/user');
                     }
                 });
                 break;

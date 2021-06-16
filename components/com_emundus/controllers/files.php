@@ -4362,37 +4362,35 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         foreach($templates as $index => $template) {
             $attachInfos = $_mFile->getAttachmentInfos($template);
 
-            $dir_Name = $attachInfos['id'];
+            $dir_Name = $attachInfos['id'] . '_' . 'emundus';
 
             /// check if this $dir_Name exists or not --> if not --> mkdir
             if(!file_exists($dir_Name)) {
-                mkdir(JPATH_BASE.DS.'tmp'.DS . $dir_Name, 0777, true);
+                mkdir(EMUNDUS_PATH_ABS . $dir_Name, 0777, true);            /// create new directory
             } else {
                 unlink($dir_Name);
             }
 
             $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);
 
-            /// copy all uploaded_Files --> $dir_Name
+            /// zip all
             foreach($uploaded_Files as $key => $file) {
                 $source = EMUNDUS_PATH_ABS . $file->user_id . DS . $file->filename;
-                $destination = JPATH_BASE.DS.'tmp'. DS . $dir_Name . DS . $file->filename;
-                move_uploaded_file($source, $destination);
+
+                copy($source, EMUNDUS_PATH_ABS . $dir_Name . DS . $file->filename);
+                $_zipName = explode('_', $dir_Name)[0] . '_' . date("Y-m-d") .'_x.zip';
+                $this->ZipLetter(EMUNDUS_PATH_ABS . $dir_Name, JPATH_BASE.DS.'tmp'.DS . $_zipName, 'true');
+
+                $_new_DirName = $attachInfos['lbl'] . '_' . uniqid() . '.zip';
+
+                if(!file_exists(JPATH_BASE.DS.'tmp'.DS . $_new_DirName)) {
+                    rename(JPATH_BASE.DS.'tmp'.DS . $_zipName, JPATH_BASE.DS.'tmp'.DS . $_new_DirName);
+                    $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => DS . 'tmp/' . $_new_DirName);
+                    break;
+                } else {
+                    continue;
+                }
             }
-
-            $_new_DirName = $attachInfos['lbl'] . '_' . uniqid();
-
-            if(!file_exists(JPATH_BASE.DS.'tmp'.DS . $_new_DirName)) {
-                rename(JPATH_BASE.DS.'tmp'.DS . $dir_Name, JPATH_BASE.DS.'tmp'.DS . $_new_DirName);
-            } else {
-                continue;
-            }
-
-            /// zip all letter dir in the same parent directory (tmp)
-            $zip_dirName = $_new_DirName . '_' . date("Y-m-d") . '_x.zip';          /// zip name
-            $this->ZipLetter(JPATH_BASE.DS.'tmp'.DS . $_new_DirName, JPATH_BASE.DS.'tmp'.DS . $zip_dirName, 'true');
-
-            $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => DS . 'tmp/' . $zip_dirName);           /// return the letter dir
         }
 
         echo json_encode($res);
