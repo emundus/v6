@@ -3870,6 +3870,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = $jinput->post->getRaw('fnums');
         $templates = $jinput->post->getRaw('ids_tmpl');
         $canSee = $jinput->post->getRaw('cansee', 0);
+        $showMode = $jinput->post->getRaw('showMode', 0);
 
         $fnum_Array = explode(',', $fnums);
 
@@ -4334,55 +4335,59 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         // group letters by candidat
-        $fnumsInfos = $_mFile->getFnumsInfos($fnum_Array);
+        if($showMode == 0) {
+            $fnumsInfos = $_mFile->getFnumsInfos($fnum_Array);
 
-        $res->zip_data_by_candidat = [];
+            $res->zip_data_by_candidat = [];
 
-        $applicant_id = [];
+            $applicant_id = [];
 
-        foreach($fnumsInfos as $key => $value) {
-            $applicant_id[] = $value['applicant_id'];
-        }
+            foreach ($fnumsInfos as $key => $value) {
+                $applicant_id[] = $value['applicant_id'];
+            }
 
-        $applicant_id = array_unique(array_filter($applicant_id));
-        $res->affected_users = count($applicant_id);
+            $applicant_id = array_unique(array_filter($applicant_id));
+            $res->affected_users = count($applicant_id);
 
-        foreach($applicant_id as $key => $uid) {
-            $user_info = $_mUser->getUserById($uid);
+            foreach ($applicant_id as $key => $uid) {
+                $user_info = $_mUser->getUserById($uid);
 
-            $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() .'_x.zip';
-            $this->ZipLetter(EMUNDUS_PATH_ABS . $uid, JPATH_BASE.DS.'tmp'.DS . $_zipName, 'true');
-            $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'zip_url' => DS . 'tmp/' . $_zipName);
+                $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() . '_x.zip';
+                $this->ZipLetter(EMUNDUS_PATH_ABS . $uid, JPATH_BASE . DS . 'tmp' . DS . $_zipName, 'true');
+                $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'zip_url' => DS . 'tmp/' . $_zipName);
+            }
         }
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
         // $templates is already an array
-        $res->letter_dir = [];
+        elseif ($showMode == 1) {
+            $res->letter_dir = [];
 
-        $zip_dir = [];
+            $zip_dir = [];
 
-        foreach($templates as $index => $template) {
-            $attachInfos = $_mFile->getAttachmentInfos($template);
+            foreach ($templates as $index => $template) {
+                $attachInfos = $_mFile->getAttachmentInfos($template);
 
-            $dir_Name = $attachInfos['lbl'];
+                $dir_Name = $attachInfos['lbl'];
 
-            /// check if this $dir_Name exists or not --> if not --> mkdir
-            if(!file_exists($dir_Name)) {
-                mkdir(EMUNDUS_PATH_ABS . $dir_Name, 0777, true);            /// create new directory
-            } else {
-                continue;
+                /// check if this $dir_Name exists or not --> if not --> mkdir
+                if (!file_exists($dir_Name)) {
+                    mkdir(EMUNDUS_PATH_ABS . $dir_Name, 0777, true);            /// create new directory
+                } else {
+                    continue;
+                }
+
+                $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);
+
+                foreach ($uploaded_Files as $key => $file) {
+                    $source = EMUNDUS_PATH_ABS . $file->user_id . DS . $file->filename;
+                    copy($source, EMUNDUS_PATH_ABS . $dir_Name . DS . $file->filename);
+                    $_zipName = $dir_Name . '_' . date("Y-m-d") . '_x.zip';
+                    $this->ZipLetter(EMUNDUS_PATH_ABS . $dir_Name, JPATH_BASE . DS . 'tmp' . DS . $_zipName, 'true');
+                    $zip_dir = DS . 'tmp/' . $_zipName;
+                }
+                $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => $zip_dir);
             }
-
-            $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);
-
-            foreach($uploaded_Files as $key => $file) {
-                $source = EMUNDUS_PATH_ABS . $file->user_id . DS . $file->filename;
-                copy($source, EMUNDUS_PATH_ABS . $dir_Name . DS . $file->filename);
-                $_zipName = $dir_Name . '_' . date("Y-m-d") .'_x.zip';
-                $this->ZipLetter(EMUNDUS_PATH_ABS . $dir_Name, JPATH_BASE.DS.'tmp'.DS. $_zipName , 'true');
-                $zip_dir = DS . 'tmp/' . $_zipName;
-            }
-            $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => $zip_dir);
         }
 
         echo json_encode($res);

@@ -5310,8 +5310,6 @@ $(document).ready(function() {
                                 /// showMode == 2 (classic way)
                                 var files = result.files;
 
-                                console.log(files);
-
                                 var table = "<h3>" +
                                     Joomla.JText._('FILES_GENERATED')+
                                     "</h3>" +
@@ -5327,7 +5325,7 @@ $(document).ready(function() {
                                     table +=
                                         "<tr id='" + file.upload + "'>" +
                                             "<td>" + file.filename +
-                                                " <a class='btn btn-success btn-xs pull-right em-doc-dl' href='"+ file.url + file.filename +"'>" +
+                                                " <a target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='"+ file.url + file.filename +"'>" +
                                                     "<span class='glyphicon glyphicon-save'></span>" +
                                                 "</a>" +
                                             "</td>" +
