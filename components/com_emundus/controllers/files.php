@@ -3857,6 +3857,7 @@ class EmundusControllerFiles extends JControllerLegacy
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'users.php');
+        require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
 
         $_mEval = new EmundusModelEvaluation;
         $_mFile = new EmundusModelFiles;
@@ -4401,22 +4402,23 @@ class EmundusControllerFiles extends JControllerLegacy
         $res->affected_users = count($applicant_id);
 
         if($showMode == 0) {
-            require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+
             foreach ($applicant_id as $key => $uid) {
                 $user_info = $_mUser->getUserById($uid);
 
                 $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() . '_x.zip';
                 $this->ZipLetter(EMUNDUS_PATH_ABS . $uid, JPATH_BASE . DS . 'tmp' . DS . $_zipName, 'true');
-                $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'zip_url' => DS . 'tmp/' . $_zipName);
 
                 // merge pdf by candidats
                 if($mergeMode == 1){
 
                     /// if merge mode --> 1, mkdir new directory in / tmp / with suffix "--merge"
 
-                    $mergeDir = JPATH_BASE . DS . 'tmp' . DS . $uid . '--merge';
-                    if(!file_exists($mergeDir)) {
-                        mkdir($mergeDir, 0777, true);
+                    $mergeDirName = $uid . '--merge';                                   // for example: 95--merge
+                    $mergeDirPath = JPATH_BASE . DS . 'tmp' . DS . $mergeDirName;       // for example: /tmp/95--merge
+
+                    if(!file_exists($mergeDirPath)) {
+                        mkdir($mergeDirPath, 0777, true);
                     }
 
                     $pdf_files = array();
@@ -4430,36 +4432,45 @@ class EmundusControllerFiles extends JControllerLegacy
                             $pdf_files[] = $filename;
                         } else {
                             // if not, just copy it to --merge directory
-                            copy($filename, $mergeDir . DS . $_name);
+                            copy($filename, $mergeDirPath . DS . $_name);
                         }
                     }
 
                     /// check if the merged file exists
-                    $mergeName = $mergeDir . DS. $uid . '--merge.pdf';
-                    if(!file_exists($mergeName, 'F')) {
+                    $mergePdfName = $mergeDirPath . DS. $uid . '--merge.pdf';
+                    if(!file_exists($mergePdfName, 'F')) {
                         $pdf = new ConcatPdf();
                         $pdf->setFiles($pdf_files);
                         $pdf->concat();
-                        $pdf->Output($mergeName, 'F');            /// test
+                        $pdf->Output($mergePdfName, 'F');
                     } else {
                         // unlink it
-                        unlink($mergeDir . DS. $uid . '--merge.pdf');
+                        unlink($mergePdfName);
 
                         ///redo
                         $pdf = new ConcatPdf();
                         $pdf->setFiles($pdf_files);
                         $pdf->concat();
-                        $pdf->Output($mergeDir . DS . $uid . '--merge.pdf', 'F');            /// test
+                        $pdf->Output($mergePdfName, 'F');
                     }
-                } else { }
+
+                    // last one :: make a zip folder of merge
+                    $_mergeZipName = $mergeDirName . '_' . date("Y-m-d") . '_x.zip';            // for example: 95--merge.zip
+                    $_mergeZipPath = JPATH_BASE . DS . 'tmp' . DS . $_mergeZipName;                     // for example: / tmp / 95--merge.zip
+                    $this->ZipLetter($mergeDirPath, $_mergeZipPath, true);
+                }
+
+                if($mergeMode == 1) {
+                    $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'merge_zip_url' => DS . 'tmp/' . $_mergeZipName);
+                } else {
+                    $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'zip_url' => DS . 'tmp/' . $_zipName);
+                }
             }
         }
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
         // $templates is already an array
         elseif ($showMode == 1) {
-            require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
-
             $res->letter_dir = [];
 
             $zip_dir = [];
