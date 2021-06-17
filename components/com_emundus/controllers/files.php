@@ -4517,11 +4517,25 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
 
                         /// from $pdf_files --> concat them
-                        $pdf = new ConcatPdf();
-                        $pdf->setFiles($pdf_files);
-                        $pdf->concat();
+                        if (count($pdf_files) >= 1) {
+                            $mergeFileName = JPATH_BASE . DS . 'tmp' . DS . $dir_Name . '--merge' . DS . $attachInfos['lbl'] . '.pdf';
+                            if (!file_exists($mergeFileName)) {
+                                $pdf = new ConcatPdf();
+                                $pdf->setFiles($pdf_files);
+                                $pdf->concat();
 
-                        $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $dir_Name . '--merge' . DS . $attachInfos['lbl'] . '.pdf', 'F');          /// export the merged pdf
+                                $pdf->Output($mergeFileName, 'F');          /// export the merged pdf
+                            } else {
+                                // remove
+                                unlink($mergeFileName);
+
+                                // redo
+                                $pdf = new ConcatPdf();
+                                $pdf->setFiles($pdf_files);
+                                $pdf->concat();
+                                $pdf->Output($mergeFileName, 'F');          /// export the merged pdf
+                            }
+                        }
 
                         /// last one --> zip this --merge into / tmp /
                         $_mergeZipName = $dir_Name . '--merge' . '_' . date("Y-m-d") . '_x.zip';
