@@ -5226,6 +5226,7 @@ $(document).ready(function() {
                     dataType:'json',
                     data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee, showMode: showMode, mergeMode: mergeMode},
                     success: function(result) {
+                        console.log(result);
                         $('.modal-body').empty();
                         if(result.status) {
                             if(showMode == 0) {
@@ -5263,8 +5264,10 @@ $(document).ready(function() {
 
                                 table += "</tbody></table>";
                                 $('.modal-body').append(table);
-
+                                console.log(result);
+                                $('#em-download-all').attr('href', result.zip_all_data_by_candidat);
                             }
+
                             else if (showMode == 1){
                                 let letters = result.letter_dir;
 

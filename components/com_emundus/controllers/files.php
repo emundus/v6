@@ -4391,6 +4391,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnumsInfos = $_mFile->getFnumsInfos($fnum_Array);
 
         $res->zip_data_by_candidat = [];
+        $res->zip_all_data_by_candidat = [];
 
         $applicant_id = [];
 
@@ -4483,7 +4484,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'zip_url' => DS . 'tmp/' . $_zipName);
                 }
             }
-            $res->zip_data_by_candidat['zip_candidat_zip_merge_all_url'] = DS . 'tmp/' . $mergeZipAllName;
+            $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '_x.zip';
         }
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
