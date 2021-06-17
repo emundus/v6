@@ -354,6 +354,8 @@ JText::script('COM_EMUNDUS_VOTE_ACCEPTED');
 JText::script('AFFECTED_CANDIDATS');
 JText::script('GENERATED_DOCUMENTS_LABEL');
 JText::script('GENERATED_DOCUMENTS_COUNT');
+JText::script('GENERATE_DOC');
+JText::script('DOWNLOAD_DOC');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');

@@ -4134,7 +4134,7 @@ $(document).ready(function() {
             case 27:
                 $('#can-val').empty();
                 $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
-                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOC')+'</button>');
                 $('#can-val').show();
 
                 $('#em-modal-actions .modal-body').empty();
@@ -5201,6 +5201,11 @@ $(document).ready(function() {
             case 27:
                 if ($(this).hasClass('em-doc-dl'))
                     return;
+
+                $('#can-val').empty();
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
+                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('DOWNLOAD_DOC')+'</button>');
+                $('#can-val').show();
 
                 var fnums = $('input:hidden[name="em-doc-fnums"]').val();
                 var idsTmpl = $('#em-doc-tmpl').val();
