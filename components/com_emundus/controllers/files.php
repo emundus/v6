@@ -4483,8 +4483,10 @@ class EmundusControllerFiles extends JControllerLegacy
 
                 /// check if this $dir_Name exists or not --> if not --> mkdir
                 if (!file_exists($dir_Name)) {
-                    mkdir(EMUNDUS_PATH_ABS . $dir_Name, 0777, true);                                    /// create new directory -- no merge
-                    mkdir(JPATH_BASE . DS . 'tmp' . DS  . $dir_Name . '--merge', 0777, true);            /// create new directory in /  tmp  / -- with merge
+                    mkdir(EMUNDUS_PATH_ABS . $dir_Name, 0777, true);                                      /// create new directory -- no merge
+                    if($mergeMode == 1) {
+                        mkdir(JPATH_BASE . DS . 'tmp' . DS . $dir_Name . '--merge', 0777, true);            /// create new directory in /  tmp  / -- with merge
+                    }
                 } else {
                     continue;
                 }
