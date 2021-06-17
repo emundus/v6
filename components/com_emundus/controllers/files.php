@@ -3889,6 +3889,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
 
+        /// section 1 -- recapitulatif pour chaque type du document
         $query = "SELECT #__emundus_setup_letters.attachment_id, COUNT(#__emundus_setup_letters.attachment_id) AS count_ 
                     FROM #__emundus_setup_letters
                         WHERE #__emundus_setup_letters.id IN ("
@@ -3900,13 +3901,16 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $res->recapitulatif_count = [];
 
+
+
         foreach($_document_count as $key => $document) {
             $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $document['attachment_id'];
             $this->_db->setQuery($query);
             $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $document['count_']);
         }
+        /// end of section 1
 
-        /// a partit de $fnums + $templates --> generer les lettres qui correspondent
+        /// a partir de $fnums + $templates --> generer les lettres qui correspondent
         foreach($fnum_Array as $key => $fnum) {
             $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates); // return :: Array
             $fnumInfo = $_mFile->getFnumsTagsInfos([$fnum]);
@@ -3923,21 +3927,46 @@ class EmundusControllerFiles extends JControllerLegacy
                             $res->status = true;
                             /// get fnum info from fnum
 
-                            // get file name
+                            // make file name --- logically, we should avoid to generate many files which have same contents but different name --> fnum will distinguish the file name
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
-                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . '.' . pathinfo($file)['extension'];    ;
+                                //$name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . '.' . pathinfo($file)['extension'];    ;
+                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];    ;
                             } else {
-                                $name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . '.' . pathinfo($file)['extension'];
+                                //$name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . '.' . pathinfo($file)['extension'];
+                                $name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_.' .pathinfo($file)['extension'];
                             }
 
                             // get file path
                             $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $name;
 
-                            if (copy($file, $path)) {
-                                $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
-                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                            $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
 
+                            if(!file_exists($path)) {
+                                if (copy($file, $path)) {
+                                    //$url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
+                                    $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+
+                                    $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
+                                }
+                            } else {
+                                /// just return the url or we will remove this file and then create new file (good idea?)
+                                unlink($path);
+
+                                /// remove it in database
+                                $query = $this->_db->getQuery(true);
+                                $query->clear()
+                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
+                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
+                                $this->_db->setQuery($query);
+                                $this->_db->execute();
+
+                                /// recopy
+                                copy($file, $path);
+
+                                /// reupdate in database
+                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
                                 $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
                             }
                         } else {
@@ -4365,21 +4394,21 @@ class EmundusControllerFiles extends JControllerLegacy
                     $fileList = glob(EMUNDUS_PATH_ABS . $uid . DS . '*');
 
                     foreach ($fileList as $filename) {
-//                        // if extension is pdf --> push into the array $pdf_files
+                        // if extension is pdf --> push into the array $pdf_files
                         $_name = explode(EMUNDUS_PATH_ABS . $uid . DS, $filename)[1];
                         $_file_extension = pathinfo($filename)['extension'];
                         if ($_file_extension == "pdf") {
                             $pdf_files[] = $filename;
                         } else {
-//                            // if not, just copy it to --merge directory
+                            // if not, just copy it to --merge directory
                             copy($filename, JPATH_BASE . DS . 'tmp' . DS . $uid . '--merge' . DS . $_name);
                         }
                     }
-//
+
                     $pdf = new ConcatPdf();
                     $pdf->setFiles($pdf_files);
                     $pdf->concat();
-//
+
                     //$pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $dir_Name . '--merge' . DS . $attachInfos['lbl'] . '.pdf', 'F');
                     $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $uid . '--merge' . '.pdf', 'F');            /// test
                 } else { }
