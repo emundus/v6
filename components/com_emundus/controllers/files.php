@@ -4496,7 +4496,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         // last one :: make a zip folder of merge
                     $_mergeZipName = $mergeDirName . '_' . date("Y-m-d") . '.zip';            // for example: 95--merge.zip
 
-                    $_mergeZipPath = $tmp_path . $_mergeZipName;                     // for example: / tmp / 95--merge.zip
+                    $_mergeZipPath = $tmp_path . $_mergeZipName;                                     // for example: / tmp / 95--merge.zip
                     $this->ZipLetter($mergeDirPath, $_mergeZipPath, true);
 
                     /// copy all merge files into a single folder
@@ -4505,6 +4505,24 @@ class EmundusControllerFiles extends JControllerLegacy
                     /// lastly, zip this folder
                     $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '.zip', true);
 
+                    /// remove all unzipped files -- no merge files
+                    $delete_untotal_files = glob($mergeDirPath . DS . '*');
+                    foreach($delete_untotal_files as $_file) {
+                        if(is_file($_file)) {
+                            unlink($_file);
+                        }
+                    }
+                    rmdir($mergeDirPath);
+
+                    /// remove unzipped files -- total files
+                    $delete_total_Files = glob($mergeZipAllPath . DS . '*');
+
+                    foreach($delete_total_Files as $_file) {
+                        if(is_file($_file)) {
+                            unlink($_file);
+                        }
+                    }
+                    rmdir($mergeZipAllPath);
                 }
                 $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'merge_zip_url' => DS . 'tmp/' . $_mergeZipName);
             }
