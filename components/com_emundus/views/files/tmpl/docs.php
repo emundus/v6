@@ -26,7 +26,7 @@ $template_type = array(
     <label for="em-export-mode"><?= JText::_('COM_EMUNDUS_EXPORT_MODE'); ?></label>
     <select name="mode" id="em-doc-export-mode" class="form-control">
         <option value="0"><?= JText::_('COM_EMUNDUS_EXPORT_BY_FNUM'); ?></option>
-        <option value="1"><?= JText::_('COM_EMUNDUS_EXPORT_BY_DOCUMMENT'); ?></option>
+        <option value="1"><?= JText::_('COM_EMUNDUS_EXPORT_BY_DOCUMENT'); ?></option>
         <option value="2"><?= JText::_('COM_EMUNDUS_EXPORT_BY_FILES'); ?></option>
     </select>
 
