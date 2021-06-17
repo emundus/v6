@@ -4410,10 +4410,10 @@ class EmundusControllerFiles extends JControllerLegacy
                 $user_info = $_mUser->getUserById($uid);
 
                 if($mergeMode == 0) {
-                    $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() . '_x.zip';                                         // make zip file name
+                    $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() . '.zip';                                         // make zip file name
                     $this->ZipLetter(EMUNDUS_PATH_ABS . $uid, $tmp_path . $_zipName, 'true');             // zip file (for example: ../95 --> tmp/95xxxx.zip
 
-                    $mergeZipAllName = date("Y-m-d") . '-all';                                                            // make zip --all file name
+                    $mergeZipAllName = date("Y-m-d") . '-total';                                                            // make zip --all file name
                     $mergeZipAllPath = $tmp_path . $mergeZipAllName;                                                                   // make the zip --all path
 
                     if(!file_exists($mergeZipAllPath)) {
@@ -4423,7 +4423,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     copy($tmp_path . $_zipName,$mergeZipAllPath . DS . $_zipName);                                          // copy old zip name to zip --all folder
 
                     /// lastly, zip this folder
-                    $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '_x.zip', true);                       // zip this new file
+                    $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '.zip', true);                       // zip this new file
 
                     /// delete unzip file
                     $delete_files = glob($mergeZipAllPath . '/*');
@@ -4442,7 +4442,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                     /// if merge mode --> 1, mkdir new directory in / tmp / with suffix "--merge"
 
-                    $mergeDirName = $uid . '--merge';                                   // for example: 95--merge
+                    $mergeDirName = $uid . '--merge';                 // for example: 95--merge
                     $mergeDirPath = $tmp_path . $mergeDirName;       // for example: /tmp/95--merge
 
                     if (!file_exists($mergeDirPath)) {
@@ -4450,7 +4450,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
 
                     /// begin -- merge zip all
-                    $mergeZipAllName = date("Y-m-d") . '--merge-all';
+                    $mergeZipAllName = date("Y-m-d") . '--merge-total';
                     $mergeZipAllPath = $tmp_path . $mergeZipAllName;
 
                     if(!file_exists($mergeZipAllPath)) {
@@ -4491,23 +4491,24 @@ class EmundusControllerFiles extends JControllerLegacy
                             $pdf->concat();
                             $pdf->Output($mergePdfName, 'F');
                         }
+                    }
 
                         // last one :: make a zip folder of merge
-                        $_mergeZipName = $mergeDirName . '_' . date("Y-m-d") . '_x.zip';            // for example: 95--merge.zip
-                        $_mergeZipPath = $tmp_path . $_mergeZipName;                     // for example: / tmp / 95--merge.zip
-                        $this->ZipLetter($mergeDirPath, $_mergeZipPath, true);
+                    $_mergeZipName = $mergeDirName . '_' . date("Y-m-d") . '.zip';            // for example: 95--merge.zip
 
-                        /// copy all merge files into a single folder
-                        copy($_mergeZipPath,$mergeZipAllPath . DS . $_mergeZipName);
+                    $_mergeZipPath = $tmp_path . $_mergeZipName;                     // for example: / tmp / 95--merge.zip
+                    $this->ZipLetter($mergeDirPath, $_mergeZipPath, true);
 
-                        /// lastly, zip this folder
-                        $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '_x.zip', true);
+                    /// copy all merge files into a single folder
+                    copy($_mergeZipPath,$mergeZipAllPath . DS . $_mergeZipName);
 
-                    }
-                    $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'merge_zip_url' => DS . 'tmp/' . $_mergeZipName);
+                    /// lastly, zip this folder
+                    $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '.zip', true);
+
                 }
+                $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'merge_zip_url' => DS . 'tmp/' . $_mergeZipName);
             }
-            $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '_x.zip';
+            $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
         }
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
@@ -4537,7 +4538,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     $source = EMUNDUS_PATH_ABS . $file->user_id . DS . $file->filename;
                     copy($source, EMUNDUS_PATH_ABS . $dir_Name . DS . $file->filename);                         /// copy file to no merge folder
 
-                    $_zipName = $dir_Name . '_' . date("Y-m-d") . '_x.zip';
+                    $_zipName = $dir_Name . '_' . date("Y-m-d") . '.zip';
                     $this->ZipLetter(EMUNDUS_PATH_ABS . $dir_Name, $tmp_path . $_zipName, 'true');
                     $zip_dir = DS . 'tmp/' . $_zipName;
 
@@ -4578,7 +4579,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
 
                         /// last one --> zip this --merge into / tmp /
-                        $_mergeZipName = $dir_Name . '--merge' . '_' . date("Y-m-d") . '_x.zip';
+                        $_mergeZipName = $dir_Name . '--merge' . '_' . date("Y-m-d") . '.zip';
                         $this->ZipLetter($tmp_path . $dir_Name . '--merge', $tmp_path . $_mergeZipName, true);
                     } else { }
 
