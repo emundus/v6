@@ -4411,6 +4411,14 @@ class EmundusControllerFiles extends JControllerLegacy
 
                 // merge pdf by candidats
                 if($mergeMode == 1){
+
+                    /// if merge mode --> 1, mkdir new directory in / tmp / with suffix "--merge"
+
+                    $mergeDir = JPATH_BASE . DS . 'tmp' . DS . $uid . '--merge';
+                    if(!file_exists($mergeDir)) {
+                        mkdir($mergeDir, 0777, true);
+                    }
+
                     $pdf_files = array();
                     $fileList = glob(EMUNDUS_PATH_ABS . $uid . DS . '*');
 
@@ -4422,16 +4430,27 @@ class EmundusControllerFiles extends JControllerLegacy
                             $pdf_files[] = $filename;
                         } else {
                             // if not, just copy it to --merge directory
-                            copy($filename, JPATH_BASE . DS . 'tmp' . DS . $uid . '--merge' . DS . $_name);
+                            copy($filename, $mergeDir . DS . $_name);
                         }
                     }
 
-                    $pdf = new ConcatPdf();
-                    $pdf->setFiles($pdf_files);
-                    $pdf->concat();
+                    /// check if the merged file exists
+                    $mergeName = $mergeDir . DS. $uid . '--merge.pdf';
+                    if(!file_exists($mergeName, 'F')) {
+                        $pdf = new ConcatPdf();
+                        $pdf->setFiles($pdf_files);
+                        $pdf->concat();
+                        $pdf->Output($mergeName, 'F');            /// test
+                    } else {
+                        // unlink it
+                        unlink($mergeDir . DS. $uid . '--merge.pdf');
 
-                    //$pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $dir_Name . '--merge' . DS . $attachInfos['lbl'] . '.pdf', 'F');
-                    $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $uid . '--merge' . '.pdf', 'F');            /// test
+                        ///redo
+                        $pdf = new ConcatPdf();
+                        $pdf->setFiles($pdf_files);
+                        $pdf->concat();
+                        $pdf->Output($mergeDir . DS . $uid . '--merge.pdf', 'F');            /// test
+                    }
                 } else { }
             }
         }
