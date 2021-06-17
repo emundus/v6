@@ -5204,7 +5204,9 @@ $(document).ready(function() {
 
                 $('#can-val').empty();
                 $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
-                    '<button id="em-download-all" style="margin-left:5px;color:blue;" type="button" class="btn btn-danger">'+Joomla.JText._('DOWNLOAD_DOC')+'</button>');
+                    '<button style="margin-left:5px;color:blue;" type="button" class="btn btn-danger">' +
+                        '<a id="em-download-all" href="">'+ Joomla.JText._('DOWNLOAD_DOC') + '</a>' +
+                    '</button>');
                 $('#can-val').show();
 
                 var fnums = $('input:hidden[name="em-doc-fnums"]').val();
@@ -5305,9 +5307,8 @@ $(document).ready(function() {
 
                             else {
                                 /// showMode == 2 (classic way)
-                                var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
                                 var files = result.files;
-
+                                var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
                                 var table = "<h3>" +
                                     Joomla.JText._('FILES_GENERATED')+
                                     "</h3>" +
@@ -5340,9 +5341,7 @@ $(document).ready(function() {
                                     urls.push(url.id.split('em_download_doc_')[1]);
                                 })
 
-                                console.log(urls.toString());
-
-                                $('#em-download-all').attr('href', urls.toString());
+                                $('#em-download-all').attr('href', zipUrl + urls.toString());
                             }
 
                         }
