@@ -930,6 +930,24 @@ div#em-synthesis .panel-heading h3 {
     padding: 6px 20px;
 }
 
+.list-item-notifications{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.notifications-counter{
+    background: red;
+    padding: 10px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .list-group-item b {
     font-size: 15px;
 }

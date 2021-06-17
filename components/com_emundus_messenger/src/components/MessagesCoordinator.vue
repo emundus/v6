@@ -51,6 +51,7 @@ export default {
       message: '',
       loading: false,
       showDate: 0,
+      counter: 0,
       translations:{
         messages: Joomla.JText._("COM_EMUNDUS_MESSENGER_TITLE"),
       }
@@ -76,8 +77,27 @@ export default {
       }).then(response => {
         this.messages = response.data.data.messages;
         this.dates = response.data.data.dates;
+        this.markAsRead();
+        if(typeof document.getElementsByClassName('notifications-counter')[0] != 'undefined') {
+          document.getElementsByClassName('notifications-counter')[0].remove();
+        }
         this.scrollToBottom();
         this.loading = false;
+      });
+    },
+
+    markAsRead(){
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_messenger&controller=messages&task=markasread",
+        params: {
+          fnum: this.campaignSelected,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        this.$emit('removeNotifications',response.data.data);
       });
     },
 

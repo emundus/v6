@@ -99,6 +99,23 @@ class EmundusmessengerControllermessages extends JControllerLegacy
         exit;
     }
 
+    public function getnotificationsbyfnum(){
+        $user = JFactory::getUser();
+
+        $m_messages = $this->model;
+
+        $jinput = JFactory::getApplication()->input;
+
+        $fnum = $jinput->getString('fnum');
+
+        $notifications = $m_messages->getNotificationsByFnum($fnum);
+
+        $data = array('data' => $notifications, 'status' => true);
+
+        echo json_encode((object)$data);
+        exit;
+    }
+
     public function markasread(){
         $user = JFactory::getUser();
 

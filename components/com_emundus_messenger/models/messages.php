@@ -92,12 +92,6 @@ class EmundusmessengerModelmessages extends JModelList
 
         $user = JFactory::getSession()->get('emundusUser');
 
-        if (!EmundusonboardHelperAccess::asPartnerAccessLevel($user->id)) {
-            $state = 1;
-        } else {
-            $state = 0;
-        }
-
         $m_messages = new EmundusModelMessages;
 
         try {
@@ -115,7 +109,7 @@ class EmundusmessengerModelmessages extends JModelList
                 ->set($db->quoteName('user_id_from') . ' = ' . $db->quote($user->id))
                 ->set($db->quoteName('folder_id') . ' = 2')
                 ->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('state') . ' = ' . $state)
+                ->set($db->quoteName('state') . ' = 0')
                 ->set($db->quoteName('message') . ' = ' . $db->quote($message))
                 ->set($db->quoteName('page') . ' = ' . $db->quote($chatroom));
             $db->setQuery($query);
@@ -157,9 +151,31 @@ class EmundusmessengerModelmessages extends JModelList
                 ->leftJoin($db->quoteName('#__emundus_campaign_candidature','cc').' ON '.$db->quoteName('cc.fnum').' = '.$db->quoteName('ec.fnum'))
                 ->where($db->quoteName('cc.applicant_id') . ' = ' . $db->quote($user))
                 ->andWhere($db->quoteName('m.state') . ' = 0')
+                ->andWhere($db->quoteName('m.user_id_from') . ' <> ' . $user)
                 ->group('ec.fnum');
             $db->setQuery($query);
             return $db->loadObject();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id .'and to campaign : '.$cid . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return 0;
+        }
+    }
+
+    function getNotificationsByFnum($fnum){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $user = JFactory::getUser();
+
+        try {
+            $query->select('count(m.message_id)')
+                ->from($db->quoteName('#__messages','m'))
+                ->leftJoin($db->quoteName('#__emundus_chatroom','ec').' ON '.$db->quoteName('ec.id').' = '.$db->quoteName('m.page'))
+                ->where($db->quoteName('ec.fnum') . ' = ' . $db->quote($fnum))
+                ->andWhere($db->quoteName('m.state') . ' = 0')
+                ->andWhere($db->quoteName('m.user_id_from') . ' <> ' . $user->id);
+            $db->setQuery($query);
+            return $db->loadResult();
         } catch (Exception $e){
             JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id .'and to campaign : '.$cid . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return 0;
@@ -170,12 +186,15 @@ class EmundusmessengerModelmessages extends JModelList
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
+        $user = JFactory::getUser();
+
         try {
             $query->select('m.message_id')
                 ->from($db->quoteName('#__messages','m'))
                 ->leftJoin($db->quoteName('#__emundus_chatroom','ec').' ON '.$db->quoteName('ec.id').' = '.$db->quoteName('m.page'))
                 ->where($db->quoteName('ec.fnum') . ' LIKE ' . $db->quote($fnum))
-                ->andWhere($db->quoteName('m.state') . ' = 0');
+                ->andWhere($db->quoteName('m.state') . ' = 0')
+                ->andWhere($db->quoteName('m.user_id_from') . ' <> ' . $user->id);
             $db->setQuery($query);
             $messages_readed = $db->loadColumn();
 
