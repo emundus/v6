@@ -1,21 +1,6 @@
 <?php
-function age($naiss) {
-    @list($annee, $mois, $jour) = preg_split('[-.]', $naiss);
-    $today['mois'] = date('n');
-    $today['jour'] = date('j');
-    $today['annee'] = date('Y');
-    $annees = $today['annee'] - $annee;
-    if ($today['mois'] <= $mois) {
-        if ($mois == $today['mois']) {
-            if ($jour > $today['jour']) {
-	            $annees--;
-            }
-        } else {
-	        $annees--;
-        }
-    }
-    return $annees;
-}
+use setasign\Fpdi\Tcpdf\Fpdi;
+require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
 function get_mime_type($filename, $mimePath = '../etc') {
     $fileext = substr(strrchr($filename, '.'), 1);
@@ -40,7 +25,7 @@ function get_mime_type($filename, $mimePath = '../etc') {
 }
 
 function is_image_ext($filename) {
-	return array_key_exists(strtolower(array_pop(explode('.', $filename))), ['png', 'jpe', 'jpeg', 'jpg', 'gif', 'bmp', 'ico', 'tiff', 'tif', 'svg', 'svgz']);
+	return array_key_exists(strtolower(array_pop(...explode('.', $filename))), ['png', 'jpe', 'jpeg', 'jpg', 'gif', 'bmp', 'ico', 'tiff', 'tif', 'svg', 'svgz']);
 }
 
 
@@ -243,7 +228,6 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
  */
 function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluation_id, $output = true, $fnum = null) {
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
@@ -791,7 +775,6 @@ function data_to_img($match) {
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
@@ -830,7 +813,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     }
 
     // Create PDF object
-    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf = new Fpdi();
 
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor('eMundus');
@@ -976,6 +959,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             
 
             h2 {
+                font-family: 'Roboto'
                font-size:40px;
                color: ".$cTitle.";
                font-weight:500;
@@ -1043,7 +1027,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	        }
         }
 
-        $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted, JText::_('DATE_FORMAT_LC2')):JText::_('NOT_SENT');
+        $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted, JText::_('DATE_FORMAT_LC2'), null):JText::_('NOT_SENT');
 
         // create a $dt object with the UTC timezone
         $dt = new DateTime('NOW', new DateTimeZone('UTC'));
@@ -1243,7 +1227,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 function application_header_pdf($user_id, $fnum = null, $output = true, $options = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
+
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
@@ -1270,7 +1254,8 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     $htmldata = '';
 
     // Create PDF object
-    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    //$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf = new Fpdi();
 
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor('eMundus');
@@ -1527,7 +1512,6 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 function generatePDFfromHTML($html, $path = null, $footer = '') {
 
     set_time_limit(0);
-    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
     require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
 
