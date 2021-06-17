@@ -5222,38 +5222,6 @@ $(document).ready(function() {
                         $('.modal-body').empty();
                         if(result.status) {
                             if(showMode == 0) {
-                                // show results by candidats --> using fnum to find name // id candidat
-                                //var zip = result.zip_data_by_candidat;
-
-                                // var table =
-                                //     "<h2>" +
-                                //         Joomla.JText._('FILES_GENERATED')+
-                                //     "</h2>" +
-                                //
-                                //     "<b>"+
-                                //         Joomla.JText._('AFFECTED_CANDIDATS') + result.affected_users +
-                                //     "</b>" +
-                                //
-                                //     "<table class='table table-striped' id='em-generated-docs'>" +
-                                //         "<thead>" +
-                                //             "<tr>" +
-                                //                 "<th>"+Joomla.JText._('GENERATED_DOCUMENTS_LABEL') + "</th>" +
-                                //                 "<th>"+Joomla.JText._('GENERATED_DOCUMENTS_COUNT') + "</th>" +
-                                //             "</tr>" +
-                                //         "</thead>" +
-                                //     "<tbody>";
-                                //
-                                // var recapitulatif = result.recapitulatif_count;
-                                //
-                                // recapitulatif.forEach(recal => {
-                                //     table += "<tr>" +
-                                //             "<td>"+ recal.document + "</td>" +
-                                //             "<td>"+ recal.count + "</td>" +
-                                //         "</tr>";
-                                // })
-                                //
-                                // table += "</tbody></table>";
-                                // $('.modal-body').append(table);
                                 var zip = result.zip_data_by_candidat;
 
                                 var table = "<h3>" +
@@ -5264,15 +5232,27 @@ $(document).ready(function() {
                                     "</thead>" +
                                     "<tbody>";
 
-                                zip.forEach(file => {
-                                    table += "<tr>" +
-                                        "<td>"+ file.applicant_name +
-                                        "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='"+ file.zip_url +"'>" +
-                                        "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
-                                        "</a>" +
-                                        "</td>" +
-                                        "</tr>";
-                                })
+                                if(mergeMode == 0) {
+                                    zip.forEach(file => {
+                                        table += "<tr>" +
+                                            "<td>" + file.applicant_name +
+                                            "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.zip_url + "'>" +
+                                            "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                            "</a>" +
+                                            "</td>" +
+                                            "</tr>";
+                                    })
+                                } else {
+                                    zip.forEach(file => {
+                                        table += "<tr>" +
+                                            "<td>" + file.applicant_name +
+                                            "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.merge_zip_url + "'>" +
+                                            "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                            "</a>" +
+                                            "</td>" +
+                                            "</tr>";
+                                    })
+                                }
 
                                 table += "</tbody></table>";
                                 $('.modal-body').append(table);
@@ -5290,17 +5270,29 @@ $(document).ready(function() {
                                             "</thead>" +
                                         "<tbody>";
 
-
-                                letters.forEach(letter => {
-                                    table +=
-                                        "<tr>" +
-                                            "<td>"+ letter.letter_name +
-                                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='"+ letter.zip_dir +"'>" +
-                                                    "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
-                                                "</a>" +
+                                if(mergeMode == 0) {
+                                    letters.forEach(letter => {
+                                        table +=
+                                            "<tr>" +
+                                            "<td>" + letter.letter_name +
+                                            "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + letter.zip_dir + "'>" +
+                                            "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                            "</a>" +
                                             "</td>" +
-                                        "</tr>";
-                                })
+                                            "</tr>";
+                                    })
+                                } else {
+                                    letters.forEach(letter => {
+                                        table +=
+                                            "<tr>" +
+                                            "<td>" + letter.letter_name +
+                                            "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + letter.zip_merge_dir + "'>" +
+                                            "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                            "</a>" +
+                                            "</td>" +
+                                            "</tr>";
+                                    })
+                                }
 
                                 table += "</tbody></table>";
                                 $('.modal-body').append(table);
