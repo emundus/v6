@@ -4410,14 +4410,14 @@ class EmundusControllerFiles extends JControllerLegacy
                 $this->ZipLetter(EMUNDUS_PATH_ABS . $uid, JPATH_BASE . DS . 'tmp' . DS . $_zipName, 'true');
 
                 // merge pdf by candidats
-                if($mergeMode == 1){
+                if($mergeMode == 1) {
 
                     /// if merge mode --> 1, mkdir new directory in / tmp / with suffix "--merge"
 
                     $mergeDirName = $uid . '--merge';                                   // for example: 95--merge
                     $mergeDirPath = JPATH_BASE . DS . 'tmp' . DS . $mergeDirName;       // for example: /tmp/95--merge
 
-                    if(!file_exists($mergeDirPath)) {
+                    if (!file_exists($mergeDirPath)) {
                         mkdir($mergeDirPath, 0777, true);
                     }
 
@@ -4436,28 +4436,30 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
                     }
 
-                    /// check if the merged file exists
-                    $mergePdfName = $mergeDirPath . DS. $uid . '--merge.pdf';
-                    if(!file_exists($mergePdfName, 'F')) {
-                        $pdf = new ConcatPdf();
-                        $pdf->setFiles($pdf_files);
-                        $pdf->concat();
-                        $pdf->Output($mergePdfName, 'F');
-                    } else {
-                        // unlink it
-                        unlink($mergePdfName);
+                    if (count($pdf_files) >= 1) {
+                        /// check if the merged file exists
+                        $mergePdfName = $mergeDirPath . DS . $uid . '--merge.pdf';
+                        if (!file_exists($mergePdfName, 'F')) {
+                            $pdf = new ConcatPdf();
+                            $pdf->setFiles($pdf_files);
+                            $pdf->concat();
+                            $pdf->Output($mergePdfName, 'F');
+                        } else {
+                            // unlink it
+                            unlink($mergePdfName);
 
-                        ///redo
-                        $pdf = new ConcatPdf();
-                        $pdf->setFiles($pdf_files);
-                        $pdf->concat();
-                        $pdf->Output($mergePdfName, 'F');
+                            ///redo
+                            $pdf = new ConcatPdf();
+                            $pdf->setFiles($pdf_files);
+                            $pdf->concat();
+                            $pdf->Output($mergePdfName, 'F');
+                        }
+
+                        // last one :: make a zip folder of merge
+                        $_mergeZipName = $mergeDirName . '_' . date("Y-m-d") . '_x.zip';            // for example: 95--merge.zip
+                        $_mergeZipPath = JPATH_BASE . DS . 'tmp' . DS . $_mergeZipName;                     // for example: / tmp / 95--merge.zip
+                        $this->ZipLetter($mergeDirPath, $_mergeZipPath, true);
                     }
-
-                    // last one :: make a zip folder of merge
-                    $_mergeZipName = $mergeDirName . '_' . date("Y-m-d") . '_x.zip';            // for example: 95--merge.zip
-                    $_mergeZipPath = JPATH_BASE . DS . 'tmp' . DS . $_mergeZipName;                     // for example: / tmp / 95--merge.zip
-                    $this->ZipLetter($mergeDirPath, $_mergeZipPath, true);
                 }
 
                 if($mergeMode == 1) {
@@ -4469,7 +4471,6 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
-        // $templates is already an array
         elseif ($showMode == 1) {
             $res->letter_dir = [];
 
