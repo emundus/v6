@@ -4051,20 +4051,41 @@ class EmundusControllerFiles extends JControllerLegacy
                                 mkdir(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'], 0775);
                             }
 
+                            // make file name --- logically, we should avoid to generate many files which have same contents but different name --> fnum will distinguish the file name
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
-                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".pdf";
+                                //$name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".pdf";
+                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf";
                             } else {
-                                $name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".pdf";
+                                //$name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".pdf";
+                                $name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . ".pdf";
                             }
 
                             $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $name;
                             $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
 
-                            $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
+                            if(!file_exists($path)) {
+                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
 
-                            $pdf->Output($path, 'F');
-                            $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
+                                $pdf->Output($path, 'F');
+                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
+                            } else {
+                                // remove old file and reupdate in database
+                                unlink($path);
+                                $query = $this->_db->getQuery(true);
+
+                                $query->clear()
+                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
+                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
+                                $this->_db->setQuery($query);
+                                $this->_db->execute();
+
+                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
+
+                                $pdf->Output($path, 'F');
+                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
+                            }
                         }
                         unset($pdf, $path, $name, $url, $upIdn);
                         break;
