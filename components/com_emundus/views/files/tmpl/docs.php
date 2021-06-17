@@ -34,7 +34,7 @@ $template_type = array(
 
     <label for="em-combine-pdf"><?= JText::_('COM_EMUNDUS_PDF_MERGE'); ?></label>
     <select name="merge" id="em-doc-pdf-merge" class="form-control">
-        <option value="0" selected><?= JText::_('JNO'); ?></option>
+        <option value="0"><?= JText::_('JNO'); ?></option>
         <option value="1"><?= JText::_('JYES'); ?></option>
     </select>
 

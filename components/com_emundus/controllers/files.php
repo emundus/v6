@@ -4351,12 +4351,38 @@ class EmundusControllerFiles extends JControllerLegacy
         $res->affected_users = count($applicant_id);
 
         if($showMode == 0) {
+            require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
             foreach ($applicant_id as $key => $uid) {
                 $user_info = $_mUser->getUserById($uid);
 
                 $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() . '_x.zip';
                 $this->ZipLetter(EMUNDUS_PATH_ABS . $uid, JPATH_BASE . DS . 'tmp' . DS . $_zipName, 'true');
                 $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'zip_url' => DS . 'tmp/' . $_zipName);
+
+                // merge pdf by candidats
+                if($mergeMode == 1){
+                    $pdf_files = array();
+                    $fileList = glob(EMUNDUS_PATH_ABS . $uid . DS . '*');
+
+                    foreach ($fileList as $filename) {
+//                        // if extension is pdf --> push into the array $pdf_files
+                        $_name = explode(EMUNDUS_PATH_ABS . $uid . DS, $filename)[1];
+                        $_file_extension = pathinfo($filename)['extension'];
+                        if ($_file_extension == "pdf") {
+                            $pdf_files[] = $filename;
+                        } else {
+//                            // if not, just copy it to --merge directory
+                            copy($filename, JPATH_BASE . DS . 'tmp' . DS . $uid . '--merge' . DS . $_name);
+                        }
+                    }
+//
+                    $pdf = new ConcatPdf();
+                    $pdf->setFiles($pdf_files);
+                    $pdf->concat();
+//
+                    //$pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $dir_Name . '--merge' . DS . $attachInfos['lbl'] . '.pdf', 'F');
+                    $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $uid . '--merge' . '.pdf', 'F');            /// test
+                } else { }
             }
         }
 
