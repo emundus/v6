@@ -4413,7 +4413,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() . '_x.zip';                                         // make zip file name
                     $this->ZipLetter(EMUNDUS_PATH_ABS . $uid, $tmp_path . $_zipName, 'true');             // zip file (for example: ../95 --> tmp/95xxxx.zip
 
-                    $mergeZipAllName = date("Y-m-d") . '_' . '-all';                                                            // make zip --all file name
+                    $mergeZipAllName = date("Y-m-d") . '-all';                                                            // make zip --all file name
                     $mergeZipAllPath = $tmp_path . $mergeZipAllName;                                                                   // make the zip --all path
 
                     if(!file_exists($mergeZipAllPath)) {
@@ -4450,7 +4450,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
 
                     /// begin -- merge zip all
-                    $mergeZipAllName = date("Y-m-d") . '_' . 'merge-all';
+                    $mergeZipAllName = date("Y-m-d") . '--merge-all';
                     $mergeZipAllPath = $tmp_path . $mergeZipAllName;
 
                     if(!file_exists($mergeZipAllPath)) {
