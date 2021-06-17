@@ -444,7 +444,7 @@ class EmundusModelApplication extends JModelList {
             $profile = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
             $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $profile && $current_user->applicant === 1) ? $current_user->profile : $profile;
 
-            $forms = @EmundusHelperMenu::buildMenuQuery($profile_id);
+            $forms = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
             $nb = 0;
             $formLst = array();
 
