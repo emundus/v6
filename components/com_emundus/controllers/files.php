@@ -4421,6 +4421,15 @@ class EmundusControllerFiles extends JControllerLegacy
                         mkdir($mergeDirPath, 0777, true);
                     }
 
+                    /// begin -- merge zip all
+                    $mergeZipAllName = date("Y-m-d") . '_' . 'merge-all';
+                    $mergeZipAllPath = JPATH_BASE . DS . 'tmp' . DS . $mergeZipAllName;
+
+                    if(!file_exists($mergeZipAllPath)) {
+                        mkdir($mergeZipAllPath, 0777, true);
+                    }
+                    /// end -- merge zip all
+
                     $pdf_files = array();
                     $fileList = glob(EMUNDUS_PATH_ABS . $uid . DS . '*');
 
@@ -4459,6 +4468,12 @@ class EmundusControllerFiles extends JControllerLegacy
                         $_mergeZipName = $mergeDirName . '_' . date("Y-m-d") . '_x.zip';            // for example: 95--merge.zip
                         $_mergeZipPath = JPATH_BASE . DS . 'tmp' . DS . $_mergeZipName;                     // for example: / tmp / 95--merge.zip
                         $this->ZipLetter($mergeDirPath, $_mergeZipPath, true);
+
+                        /// copy all merge files into a single folder
+                        copy($_mergeZipPath,$mergeZipAllPath . DS . $_mergeZipName);
+
+                        /// lastly, zip this folder
+                        $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '_x.zip', true);
                     }
                 }
 
@@ -4468,6 +4483,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'zip_url' => DS . 'tmp/' . $_zipName);
                 }
             }
+            $res->zip_data_by_candidat['zip_candidat_zip_merge_all_url'] = DS . 'tmp/' . $mergeZipAllName;
         }
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
