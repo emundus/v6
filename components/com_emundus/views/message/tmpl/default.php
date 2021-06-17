@@ -261,6 +261,7 @@ if ($allowed_attachments !== true) {
 
     // Loads the template and updates the WYSIWYG editor
     function getTemplate(select) {
+        $('#em-attachment-list').empty();
 
         $.ajax({
             type: "POST",
