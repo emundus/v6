@@ -368,6 +368,11 @@ JText::script('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP');
 JText::script('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP');
 JText::script('COM_EMUNDUS_SELECT_IMPOSSIBLE');
 
+JText::script('CANDIDAT_GENERATED');
+JText::script('DOCUMENT_GENERATED');
+JText::script('CANDIDATE_NAME');
+JText::script('DOCUMENT_NAME');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');
 //JHtml::script('media/com_emundus/lib/jquery-ui-1.8.18.min.js');

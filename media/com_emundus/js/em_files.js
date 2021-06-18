@@ -5233,11 +5233,14 @@ $(document).ready(function() {
                                 var zip = result.zip_data_by_candidat;
 
                                 var table = "<h3>" +
-                                    Joomla.JText._('FILES_GENERATED')+
+                                    Joomla.JText._('CANDIDAT_GENERATED')+
                                     "</h3>" +
-                                    "<table class='table table-striped' id='em-generated-docs'>" +
-                                    "<thead>" +
-                                    "</thead>" +
+                                        "<table class='table table-striped' id='em-generated-docs'>" +
+                                        "<thead>" +
+                                            "<tr>" +
+                                                "<th>"+Joomla.JText._('CANDIDATE_NAME') + "</th>" +
+                                            "</tr>" +
+                                        "</thead>" +
                                     "<tbody>";
 
                                 if(mergeMode == 0) {
@@ -5273,10 +5276,13 @@ $(document).ready(function() {
 
                                 var table =
                                     "<h3>" +
-                                        Joomla.JText._('FILES_GENERATED')+
+                                        Joomla.JText._('DOCUMENT_GENERATED')+
                                     "</h3>" +
                                         "<table class='table table-striped' id='em-generated-docs'>" +
                                             "<thead>" +
+                                            "<tr>" +
+                                                "<th>"+Joomla.JText._('DOCUMENT_NAME') + "</th>" +
+                                            "</tr>" +
                                             "</thead>" +
                                         "<tbody>";
 
