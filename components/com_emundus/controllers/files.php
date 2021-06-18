@@ -4659,7 +4659,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         unlink($_file);
                     }
                 }
-                rmdir($zip_All_Path);
+                rmdir($zip_All_Merge_Path);
                 $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name;
 
             } else {
