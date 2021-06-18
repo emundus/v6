@@ -4509,16 +4509,6 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
                     }
                     rmdir($mergeDirPath);
-
-                    /// remove unzipped files -- total files
-                    $delete_total_Files = glob($mergeZipAllPath . DS . '*');
-
-                    foreach($delete_total_Files as $_file) {
-                        if(is_file($_file)) {
-                            unlink($_file);
-                        }
-                    }
-                    rmdir($mergeZipAllPath);
                     $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'merge_zip_url' => DS . 'tmp/' . $_mergeZipName);
                 }
             }
@@ -4660,7 +4650,6 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
 
                 rmdir($dir_Name_Path);
-                $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => DS. 'tmp/' . $_zipName);
             }
 
             if($mergeMode == 1) {
