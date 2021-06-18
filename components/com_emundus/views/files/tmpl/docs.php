@@ -25,7 +25,7 @@ $template_type = array(
 
     <label for="em-export-mode"><?= JText::_('COM_EMUNDUS_EXPORT_MODE'); ?></label>
     <select name="mode" id="em-doc-export-mode" class="form-control">
-        <option value="0"><?= JText::_('COM_EMUNDUS_EXPORT_BY_FNUM'); ?></option>
+        <option value="0"><?= JText::_('COM_EMUNDUS_EXPORT_BY_CANDIDAT'); ?></option>
         <option value="1"><?= JText::_('COM_EMUNDUS_EXPORT_BY_DOCUMENT'); ?></option>
         <option value="2"><?= JText::_('COM_EMUNDUS_EXPORT_BY_FILES'); ?></option>
     </select>
@@ -48,7 +48,7 @@ $template_type = array(
 </div>
 <script type="text/javascript">
     $('#em-doc-tmpl').chosen({width:'100%'});
-    $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: 1rem; color: cornflowerblue">Exporter par candidats : Export des documents du candidat dans un dossier portant comme nom l\'identifiant du candidat</div>');
+    $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: 1rem; color: cornflowerblue">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP') + '</div>');
 
     // get all letters from fnums
     var fnums = $('input:hidden[name="em-doc-fnums"]').val();

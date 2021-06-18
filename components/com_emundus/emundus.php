@@ -357,6 +357,17 @@ JText::script('GENERATED_DOCUMENTS_COUNT');
 JText::script('GENERATE_DOC');
 JText::script('DOWNLOAD_DOC');
 
+JText::script('COM_EMUNDUS_EXPORT_MODE');
+JText::script('COM_EMUNDUS_EXPORT_BY_CANDIDAT');
+JText::script('COM_EMUNDUS_EXPORT_BY_DOCUMENT');
+JText::script('COM_EMUNDUS_EXPORT_BY_FILES');
+JText::script('COM_EMUNDUS_PDF_MERGE');
+JText::script('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP');
+JText::script('COM_EMUNDUS_DOCUMENT_EXPORT_TOOLTIP');
+JText::script('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP');
+JText::script('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP');
+JText::script('COM_EMUNDUS_SELECT_IMPOSSIBLE');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');
 //JHtml::script('media/com_emundus/lib/jquery-ui-1.8.18.min.js');
