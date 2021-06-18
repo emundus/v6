@@ -4650,11 +4650,37 @@ class EmundusControllerFiles extends JControllerLegacy
                 } else {
                     $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => DS. 'tmp/' . $_zipName);
                 }
+
+                $delete_files = glob($dir_Name_Path . DS . '*');
+
+                foreach($delete_files as $_file) {
+                    if(is_file($_file)) {
+                        unlink($_file);
+                    }
+                }
+
+                rmdir($dir_Name_Path);
+                $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => DS. 'tmp/' . $_zipName);
             }
 
-            if($mergeMode == 0) {
+            if($mergeMode == 1) {
+                $delete_total_files = glob($zip_All_Merge_Path . DS . '*');
+                foreach($delete_total_files as $_file) {
+                    if(is_file($_file)) {
+                        unlink($_file);
+                    }
+                }
+                rmdir($zip_All_Path);
                 $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name;
+
             } else {
+                $delete_total_files = glob($zip_All_Path . DS . '*');
+                foreach($delete_total_files as $_file) {
+                    if(is_file($_file)) {
+                        unlink($_file);
+                    }
+                }
+                rmdir($zip_All_Path);
                 $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name;
             }
         }
