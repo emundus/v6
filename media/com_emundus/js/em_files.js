@@ -5691,6 +5691,7 @@ $(document).ready(function() {
     /// handle event when changing show mode
     $(document).on('change', '#em-doc-export-mode', function() {
         let showMode = $('#em-doc-export-mode').val();
+        $('#tooltips').empty();
 
         if(showMode == 2) {
             $("label[for='em-combine-pdf']").css('color', 'red');
@@ -5699,6 +5700,11 @@ $(document).ready(function() {
             $('#em-doc-pdf-merge').append('<option value="0" selected="">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</option>');
             $('#em-doc-pdf-merge').css('background-color', '#5352524a');
         } else {
+            if(showMode == 0) {
+                $('#tooltips').append('<div id="candidat-export-tooltip" style="font-size: smaller; color: cornflowerblue">Exporter par candidats : Export des documents du candidat dans un dossier portant comme nom l\'identifiant du candidat</div>');
+            } else if(showMode == 1) {
+                $('#tooltips').append('<div id="document-export-tooltip" style="font-size: smaller; color: cornflowerblue">Export par type de document : Export de l\'ensemble des documents du même type dans un dossier du même nom</div>');
+            }
             $('#em-doc-pdf-merge').empty();
             $("label[for='em-combine-pdf']").css('color', 'black');
             $('#em-doc-pdf-merge').append('<option value="0" selected="">' + Joomla.JText._('JNO') + '</option>');

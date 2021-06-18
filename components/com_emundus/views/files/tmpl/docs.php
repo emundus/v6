@@ -32,6 +32,10 @@ $template_type = array(
 
     </br>
 
+    <div id="tooltips"></div>
+
+    </br>
+
     <label for="em-combine-pdf"><?= JText::_('COM_EMUNDUS_PDF_MERGE'); ?></label>
     <select name="merge" id="em-doc-pdf-merge" class="form-control">
         <option value="0"><?= JText::_('JNO'); ?></option>
@@ -41,6 +45,7 @@ $template_type = array(
 </div>
 <script type="text/javascript">
     $('#em-doc-tmpl').chosen({width:'100%'});
+    $('#tooltips').append('<div id="candidat-export-tooltip" style="font-size: smaller; color: cornflowerblue">Exporter par candidats : Export des documents du candidat dans un dossier portant comme nom l\'identifiant du candidat</div>');
     // get all letters from fnums
     var fnums = $('input:hidden[name="em-doc-fnums"]').val();
 
