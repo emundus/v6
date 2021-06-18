@@ -5696,6 +5696,7 @@ $(document).ready(function() {
 
         if(showMode == 2) {
             $("label[for='em-combine-pdf']").css('color', 'red');
+            $("label[for='em-combine-pdf']").css('text-decoration', 'line-through');
             $('#merge-tooltips').empty();
             $('#em-doc-pdf-merge').prop('disabled', true);
             $('#em-doc-pdf-merge').empty();
