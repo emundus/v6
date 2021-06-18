@@ -4394,6 +4394,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $res->zip_data_by_candidat = [];
         $res->zip_all_data_by_candidat = [];
+        $res->zip_all_data_by_document = [];
 
         $applicant_id = [];
 
@@ -4405,6 +4406,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $res->affected_users = count($applicant_id);
 
         if($showMode == 0) {
+            unset($res->zip_all_data_by_document);
 
             foreach ($applicant_id as $key => $uid) {
                 $user_info = $_mUser->getUserById($uid);
@@ -4531,6 +4533,9 @@ class EmundusControllerFiles extends JControllerLegacy
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
         elseif ($showMode == 1) {
+            unset($res->zip_data_by_candidat);
+            unset($res->zip_all_data_by_candidat);
+
             $res->letter_dir = [];
 
             $zip_dir = [];
@@ -4634,12 +4639,20 @@ class EmundusControllerFiles extends JControllerLegacy
                         $this->ZipLetter($zip_All_Path, $zip_All_Path . '_' . '.zip', true);
                     }
                 }
-//
-//                if($mergeMode == 1) {
-//                    $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => $zip_dir, 'zip_merge_dir' => DS . 'tmp/' . $_mergeZipName);
-//                } else {
-//                    $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => $zip_dir);
-                //}
+
+                if($mergeMode == 1) {
+                    $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_merge_dir' => DS . 'tmp/' . $_mergeZipName);
+
+                } else {
+                    $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => $zip_dir);
+
+                }
+            }
+
+            if($mergeMode == 0) {
+                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name;
+            } else {
+                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name;
             }
         }
 
