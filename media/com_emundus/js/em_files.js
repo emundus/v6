@@ -5688,6 +5688,26 @@ $(document).ready(function() {
         }
     });
 
+    /// handle event when changing show mode
+    $(document).on('change', '#em-doc-export-mode', function() {
+        let showMode = $('#em-doc-export-mode').val();
+
+        if(showMode == 2) {
+            $("label[for='em-combine-pdf']").css('color', 'red');
+            $('#em-doc-pdf-merge').prop('disabled', true);
+            $('#em-doc-pdf-merge').empty();
+            $('#em-doc-pdf-merge').append('<option value="0" selected="">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</option>');
+            $('#em-doc-pdf-merge').css('background-color', '#5352524a');
+        } else {
+            $('#em-doc-pdf-merge').empty();
+            $("label[for='em-combine-pdf']").css('color', 'black');
+            $('#em-doc-pdf-merge').append('<option value="0" selected="">' + Joomla.JText._('JNO') + '</option>');
+            $('#em-doc-pdf-merge').append('<option value="1" selected="">' + Joomla.JText._('JYES') + '</option>');
+            $('#em-doc-pdf-merge').prop('disabled', false);
+            $('#em-doc-pdf-merge').css('background-color', 'white');
+        }
+    })
+
     $(document).on('click', '#showevalelements', function() {
         if ($(this).hasClass("btn-info")) {
 
