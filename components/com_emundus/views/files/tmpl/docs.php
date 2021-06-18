@@ -7,7 +7,7 @@ $template_type = array(
 );
 ?>
 <input name="em-doc-fnums" type="hidden" value="<?= $this->fnums ?>"/>
-<div style="padding-left:30px" id="em-documents">
+<br style="padding-left:30px" id="em-documents">
     <label for="em-doc-tmpl-label"><?= JText::_('DOCUMENT_TYPE'); ?></label>
     <div id="exp-document" >
         <select name="docs" id="em-doc-tmpl" class="chzn-select" multiple></select>
@@ -32,7 +32,7 @@ $template_type = array(
 
     </br>
 
-    <div id="tooltips"></div>
+    <div id="export-tooltips"></div>
 
     </br>
 
@@ -42,10 +42,14 @@ $template_type = array(
         <option value="1"><?= JText::_('JYES'); ?></option>
     </select>
 
+    </br>
+    <div id="merge-tooltips"></div>
+
 </div>
 <script type="text/javascript">
     $('#em-doc-tmpl').chosen({width:'100%'});
-    $('#tooltips').append('<div id="candidat-export-tooltip" style="font-size: smaller; color: cornflowerblue">Exporter par candidats : Export des documents du candidat dans un dossier portant comme nom l\'identifiant du candidat</div>');
+    $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: smaller; color: cornflowerblue">Exporter par candidats : Export des documents du candidat dans un dossier portant comme nom l\'identifiant du candidat</div>');
+
     // get all letters from fnums
     var fnums = $('input:hidden[name="em-doc-fnums"]').val();
 
