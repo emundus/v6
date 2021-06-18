@@ -5701,25 +5701,25 @@ $(document).ready(function() {
             $('#em-doc-pdf-merge').empty();
             $('#em-doc-pdf-merge').append('<option value="-1" selected="">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</option>');
             $('#em-doc-pdf-merge').css('background-color', '#5352524a');
-            $('#merge-tooltips').append('<div id="forbidden-merge-tooltip" style="font-size: smaller; color: darkorange">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</div>');
+            $('#merge-tooltips').append('<div id="forbidden-merge-tooltip" style="font-size: .8rem; color: darkorange">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</div>');
         }
 
         else {
             if(showMode == 0) {
-                $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: 1rem; color: cornflowerblue">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP') + '</div>');
+                $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP') + '</div>');
                 $('#em-doc-pdf-merge').val("0");
 
                 if($('#em-doc-pdf-merge').val() == "1") {
-                    setTimeout(function() {$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: 1rem; color: lightseagreen">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
+                    setTimeout(function() {$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
                 } else {
                     $('#merge-tooltips').empty();
                 }
             } else if(showMode == 1) {
-                $('#export-tooltips').append('<div id="document-export-tooltip" style="font-size: 1rem; color: cornflowerblue">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_EXPORT_TOOLTIP') + '</div>');
+                $('#export-tooltips').append('<div id="document-export-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_EXPORT_TOOLTIP') + '</div>');
                 $('#em-doc-pdf-merge').val("0");
 
                 if($('#em-doc-pdf-merge').val() == "1") {
-                    setTimeout(function() {$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: 1rem; color: lightseagreen">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
+                    setTimeout(function() {$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: 1rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
                 } else {
                     $('#merge-tooltips').empty();
                 }
@@ -5739,10 +5739,10 @@ $(document).ready(function() {
         if ($('#em-doc-pdf-merge').val() == 1) {
             setTimeout(function() {$('#merge-tooltips').empty();}, 100);
             if ($('#em-doc-export-mode').val() == 0) {
-                setTimeout(function(){$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: 1rem; color: lightseagreen">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
+                setTimeout(function(){$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
                 $('#merge-tooltips').fadeIn();
             } else if ($('#em-doc-export-mode').val() == 1) {
-                setTimeout(function(){$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: 1rem; color: lightseagreen">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
+                setTimeout(function(){$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
                 $('#merge-tooltips').fadeIn();
             }
         } else {

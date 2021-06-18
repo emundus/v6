@@ -24,6 +24,13 @@ $template_type = array(
     </br>
 
     <label for="em-export-mode"><?= JText::_('COM_EMUNDUS_EXPORT_MODE'); ?></label>
+
+    </br>
+
+    <div id="export-tooltips"></div>
+
+    </br>
+
     <select name="mode" id="em-doc-export-mode" class="form-control">
         <option value="0"><?= JText::_('COM_EMUNDUS_EXPORT_BY_CANDIDAT'); ?></option>
         <option value="1"><?= JText::_('COM_EMUNDUS_EXPORT_BY_DOCUMENT'); ?></option>
@@ -32,23 +39,23 @@ $template_type = array(
 
     </br>
 
-    <div id="export-tooltips"></div>
+    <label for="em-combine-pdf"><?= JText::_('COM_EMUNDUS_PDF_MERGE'); ?></label>
 
     </br>
 
-    <label for="em-combine-pdf"><?= JText::_('COM_EMUNDUS_PDF_MERGE'); ?></label>
+    <div id="merge-tooltips"></div>
+
+    </br>
     <select name="merge" id="em-doc-pdf-merge" class="form-control">
         <option value="0"><?= JText::_('JNO'); ?></option>
         <option value="1"><?= JText::_('JYES'); ?></option>
     </select>
 
-    </br>
-    <div id="merge-tooltips"></div>
-
 </div>
+
 <script type="text/javascript">
     $('#em-doc-tmpl').chosen({width:'100%'});
-    $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: 1rem; color: cornflowerblue">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP') + '</div>');
+    $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP') + '</div>');
 
     // get all letters from fnums
     var fnums = $('input:hidden[name="em-doc-fnums"]').val();
