@@ -48,7 +48,7 @@ $template_type = array(
 </div>
 <script type="text/javascript">
     $('#em-doc-tmpl').chosen({width:'100%'});
-    $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: smaller; color: cornflowerblue">Exporter par candidats : Export des documents du candidat dans un dossier portant comme nom l\'identifiant du candidat</div>');
+    $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: 1rem; color: cornflowerblue">Exporter par candidats : Export des documents du candidat dans un dossier portant comme nom l\'identifiant du candidat</div>');
 
     // get all letters from fnums
     var fnums = $('input:hidden[name="em-doc-fnums"]').val();

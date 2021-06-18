@@ -5698,29 +5698,29 @@ $(document).ready(function() {
             $("label[for='em-combine-pdf']").css('color', 'red');
             $('#em-doc-pdf-merge').prop('disabled', true);
             $('#em-doc-pdf-merge').empty();
-            $('#em-doc-pdf-merge').append('<option value="0" selected="">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</option>');
+            $('#em-doc-pdf-merge').append('<option value="-1" selected="">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</option>');
             $('#em-doc-pdf-merge').css('background-color', '#5352524a');
             $('#merge-tooltips').append('<div id="forbidden-merge-tooltip" style="font-size: smaller; color: darkorange">Fusionner impossible</div>');
         }
 
         else {
             if(showMode == 0) {
-                $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: smaller; color: cornflowerblue">Exporter par candidats : Export des documents du candidat dans un dossier portant comme nom l\'identifiant du candidat</div>');
+                $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: 1rem; color: cornflowerblue">Exporter par candidats : Export des documents du candidat dans un dossier portant comme nom l\'identifiant du candidat</div>');
 
                 if($('#em-doc-pdf-merge').val() == 1) {
-                    $('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: smaller; color: lightseagreen">Fusionner par candidats: Export d’un fichier pdf unique comportant tout les documents fusionner du candidat</div>');
+                    $('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: 1rem; color: lightseagreen">Fusionner par candidats: Export d’un fichier pdf unique comportant tout les documents fusionner du candidat</div>');
                 }
             } else if(showMode == 1) {
-                $('#export-tooltips').append('<div id="document-export-tooltip" style="font-size: smaller; color: cornflowerblue">Export par type de document : Export de l\'ensemble des documents du même type dans un dossier du même nom</div>');
+                $('#export-tooltips').append('<div id="document-export-tooltip" style="font-size: 1rem; color: cornflowerblue">Export par type de document : Export de l\'ensemble des documents du même type dans un dossier du même nom</div>');
 
                 if($('#em-doc-pdf-merge').val() == 1) {
-                    $('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: smaller; color: lightseagreen">Fusionner par type de document : Export d’un fichier pdf unique comportant tous les documents fusionner du même type</div>');
+                    $('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: 1rem; color: lightseagreen">Fusionner par type de document : Export d’un fichier pdf unique comportant tous les documents fusionner du même type</div>');
                 }
             }
             $('#em-doc-pdf-merge').empty();
             $("label[for='em-combine-pdf']").css('color', 'black');
-            $('#em-doc-pdf-merge').append('<option value="0" selected="">' + Joomla.JText._('JNO') + '</option>');
-            $('#em-doc-pdf-merge').append('<option value="1" selected="">' + Joomla.JText._('JYES') + '</option>');
+            $('#em-doc-pdf-merge').append('<option value="0">' + Joomla.JText._('JNO') + '</option>');
+            $('#em-doc-pdf-merge').append('<option value="1">' + Joomla.JText._('JYES') + '</option>');
             $('#em-doc-pdf-merge').prop('disabled', false);
             $('#em-doc-pdf-merge').css('background-color', 'white');
         }
@@ -5731,9 +5731,9 @@ $(document).ready(function() {
 
         if($('#em-doc-pdf-merge').val() == 1) {
             if($('#em-doc-export-mode').val() == 0) {
-                $('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: smaller; color: lightseagreen">Fusionner par candidats: Export d’un fichier pdf unique comportant tout les documents fusionner du candidat</div>');
+                $('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: 1rem; color: lightseagreen">Fusionner par candidats: Export d’un fichier pdf unique comportant tout les documents fusionner du candidat</div>');
             } else if($('#em-doc-export-mode').val() == 1) {
-                $('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: smaller; color: lightseagreen">Fusionner par type de document : Export d’un fichier pdf unique comportant tous les documents fusionner du même type</div>');
+                $('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: 1rem; color: lightseagreen">Fusionner par type de document : Export d’un fichier pdf unique comportant tous les documents fusionner du même type</div>');
             }
         }
     })
