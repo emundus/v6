@@ -5701,7 +5701,8 @@ $(document).ready(function() {
             $('#em-doc-pdf-merge').empty();
             $('#em-doc-pdf-merge').append('<option value="-1" selected="">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</option>');
             $('#em-doc-pdf-merge').css('background-color', '#5352524a');
-            $('#merge-tooltips').append('<div id="forbidden-merge-tooltip" style="font-size: .8rem; color: darkorange">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</div>');
+            $('#em-doc-pdf-merge').css('color', 'red');
+            //$('#merge-tooltips').append('<div id="forbidden-merge-tooltip" style="font-size: .8rem; color: darkorange">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</div>');
         }
 
         else {
@@ -5730,6 +5731,7 @@ $(document).ready(function() {
             $('#em-doc-pdf-merge').append('<option value="1">' + Joomla.JText._('JYES') + '</option>');
             $('#em-doc-pdf-merge').prop('disabled', false);
             $('#em-doc-pdf-merge').css('background-color', 'white');
+            $('#em-doc-pdf-merge').css('color', 'black');
         }
     })
 
