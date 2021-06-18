@@ -4576,11 +4576,11 @@ class EmundusControllerFiles extends JControllerLegacy
                         if (!file_exists($dir_Merge_Path)) {
                             mkdir($dir_Merge_Path, 0777, true);
                         } else {
-                            continue;
+
                         }
                     }
                 } else {
-                    continue;
+
                 }
 
                 $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                       /// get uploaded file by fnums
@@ -4648,8 +4648,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_merge_dir' => DS . 'tmp/' . $_mergeZipName);
 
                 } else {
-                    $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => $zip_dir);
-
+                    $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => DS. 'tmp/' . $_zipName);
                 }
             }
 
