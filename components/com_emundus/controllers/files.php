@@ -4637,6 +4637,16 @@ class EmundusControllerFiles extends JControllerLegacy
                 if($mergeMode == 1) {
                     $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_merge_dir' => DS . 'tmp/' . $_mergeZipName);
 
+                    // remove --merge path
+                    $delete_merge_files = glob($dir_Merge_Path . DS . '*');
+                    foreach($delete_merge_files as $_file) {
+                        if(is_file($_file)) {
+                            unlink($_file);
+                        }
+                    }
+                    rmdir($dir_Merge_Path);
+                    unlink($zip_dir);
+
                 } else {
                     $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => DS. 'tmp/' . $_zipName);
                 }
