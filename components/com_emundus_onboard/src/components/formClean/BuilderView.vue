@@ -53,7 +53,7 @@
                @mouseover="enableGroupHover(group.group_id)"
                @mouseleave="disableGroupHover()">
             <fieldset :class="[group.group_class]" :id="'group_'+group.group_id" :style="group.group_css" style="background-size: 20px; width: 100%">
-              <div class="d-flex justify-content-between" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%">
+              <div class="d-flex justify-content-between" @click="handleGroup(group.group_id)" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%">
                 <div class="d-flex">
                   <span v-show="hoverGroup && indexGroup == group.group_id" class="icon-handle-group">
                     <em class="fas fa-grip-vertical handle"></em>
@@ -71,14 +71,14 @@
                     <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
                   </a>
                 </div>
-<!--                <div>
-                  <div v-show="!openGroup[group.group_id]">
+                <div>
+                  <div v-show="!openGroup[group.group_id]" @click="handleGroup(group.group_id)">
                     <em class="fas fa-chevron-right"></em>
                   </div>
-                  <div v-show="openGroup[group.group_id]">
+                  <div v-show="openGroup[group.group_id]" @click="handleGroup(group.group_id)">
                     <em class="fas fa-chevron-down"></em>
                   </div>
-                </div>-->
+                </div>
               </div>
               <div style="width: max-content" v-show="updateGroup && indexGroup == group.group_id">
                 <div class="input-can-translate">
@@ -1232,6 +1232,7 @@ export default {
     handleGroup(gid){
       if(!this.updateGroup) {
         this.openGroup[gid] ? this.$set(this.openGroup,gid,false) : this.$set(this.openGroup,gid,true)
+        this.$forceUpdate()
       }
     },
     startGroupDrag() {
