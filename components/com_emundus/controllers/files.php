@@ -4428,14 +4428,6 @@ class EmundusControllerFiles extends JControllerLegacy
                     /// lastly, zip this folder
                     $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '.zip', true);                       // zip this new file
 
-                    /// delete unzip file
-                    $delete_files = glob($mergeZipAllPath . '/*');
-                    foreach($delete_files as $_file) {
-                        if(is_file($_file)) {
-                            unlink($_file);
-                        }
-                    }
-                    rmdir($mergeZipAllPath);
 
                     $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'zip_url' => DS . 'tmp/' . $_zipName);
                 }
@@ -4529,8 +4521,16 @@ class EmundusControllerFiles extends JControllerLegacy
                     rmdir($mergeZipAllPath);
                     $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'merge_zip_url' => DS . 'tmp/' . $_mergeZipName);
                 }
-
             }
+
+            /// delete unzip file
+            $delete_files = glob($mergeZipAllPath . '/*');
+            foreach($delete_files as $_file) {
+                if(is_file($_file)) {
+                    unlink($_file);
+                }
+            }
+            rmdir($mergeZipAllPath);
 
             $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
         }
