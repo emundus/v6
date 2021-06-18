@@ -4416,7 +4416,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() . '.zip';                                         // make zip file name
                     $this->ZipLetter(EMUNDUS_PATH_ABS . $uid, $tmp_path . $_zipName, 'true');             // zip file (for example: ../95 --> tmp/95xxxx.zip
 
-                    $mergeZipAllName = date("Y-m-d") . '-total';                                                            // make zip --all file name
+                    $mergeZipAllName = date("Y-m-d") . '-total-by-candidats';                                                            // make zip --all file name
                     $mergeZipAllPath = $tmp_path . $mergeZipAllName;                                                                   // make the zip --all path
 
                     if(!file_exists($mergeZipAllPath)) {
@@ -4446,7 +4446,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
 
                     /// begin -- merge zip all
-                    $mergeZipAllName = date("Y-m-d") . '--merge-total';
+                    $mergeZipAllName = date("Y-m-d") . '--merge-total-by-candidats';
                     $mergeZipAllPath = $tmp_path . $mergeZipAllName;
 
                     if(!file_exists($mergeZipAllPath)) {
@@ -4535,10 +4535,10 @@ class EmundusControllerFiles extends JControllerLegacy
             $zip_dir = [];
 
             // mkdir --total files
-            $zip_All_Name = date("Y-m-d") . '-total';
+            $zip_All_Name = date("Y-m-d") . '-total-by-documents';
             $zip_All_Path = $tmp_path . $zip_All_Name;
 
-            $zip_All_Merge_Name = date("Y-m-d") . '--merge-total';
+            $zip_All_Merge_Name = date("Y-m-d") . '--merge-total-by-documents';
             $zip_All_Merge_Path = $tmp_path . $zip_All_Merge_Name;
 
             if($mergeMode == 0) {
