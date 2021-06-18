@@ -4535,49 +4535,73 @@ class EmundusControllerFiles extends JControllerLegacy
 
             $zip_dir = [];
 
+            // mkdir --total files
+            $zip_All_Name = date("Y-m-d") . '-total';
+            $zip_All_Path = $tmp_path . $zip_All_Name;
+
+            $zip_All_Merge_Name = date("Y-m-d") . '--merge-total';
+            $zip_All_Merge_Path = $tmp_path . $zip_All_Merge_Name;
+
+            if($mergeMode == 0) {
+                if(!file_exists($zip_All_Path)) {
+                    mkdir($zip_All_Path, 0777, true);
+                }
+            } else {
+                if(!file_exists($zip_All_Merge_Path)) {
+                    mkdir($zip_All_Merge_Path, 0777, true);
+                }
+            }
+
             foreach ($templates as $index => $template) {
                 $attachInfos = $_mFile->getAttachmentInfos($template);
 
-                $dir_Name = $attachInfos['lbl'];
+                $dir_Name = $attachInfos['lbl'];                                                // unmere file name
+                $dir_Name_Path = $tmp_path . $dir_Name;                                         // unmerge file path
 
-                /// check if this $dir_Name exists or not --> if not --> mkdir
-                if (!file_exists($dir_Name)) {
-                    mkdir(EMUNDUS_PATH_ABS . $dir_Name, 0777, true);                                      /// create new directory -- no merge
+                $dir_Merge_Name = $dir_Name . '--merge';                            // merge file name
+                $dir_Merge_Path = $tmp_path . $dir_Merge_Name;                                  // merge file path
+
+                if(!file_exists($dir_Name_Path)) {
+                    mkdir($dir_Name_Path, 0777, true);
                     if($mergeMode == 1) {
-                        mkdir($tmp_path . $dir_Name . '--merge', 0777, true);            /// create new directory in /  tmp  / -- with merge
+                        if (!file_exists($dir_Merge_Path)) {
+                            mkdir($dir_Merge_Path, 0777, true);
+                        } else {
+                            continue;
+                        }
                     }
                 } else {
                     continue;
                 }
 
-                $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);
+                $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                       /// get uploaded file by fnums
 
                 foreach ($uploaded_Files as $key => $file) {
                     $source = EMUNDUS_PATH_ABS . $file->user_id . DS . $file->filename;
-                    copy($source, EMUNDUS_PATH_ABS . $dir_Name . DS . $file->filename);                         /// copy file to no merge folder
+                    copy($source, $dir_Name_Path . DS . $file->filename);                                       /// copy file
 
-                    $_zipName = $dir_Name . '_' . date("Y-m-d") . '.zip';
-                    $this->ZipLetter(EMUNDUS_PATH_ABS . $dir_Name, $tmp_path . $_zipName, 'true');
-                    $zip_dir = DS . 'tmp/' . $_zipName;
+                    $_zipName = $dir_Name . '_' . date("Y-m-d") . '.zip';                                   // zip file name
+                    $this->ZipLetter($dir_Name_Path, $tmp_path . $_zipName, 'true');
+                    $zip_dir = $tmp_path . $_zipName;                                                               // get zip url
 
                     if($mergeMode == 1) {
                         $pdf_files = array();
-                        $fileList = glob(EMUNDUS_PATH_ABS . $dir_Name . DS . '*');
+                        $fileList = glob($dir_Name_Path . DS . '*');
                         foreach ($fileList as $filename) {
                             // if extension is pdf --> push into the array $pdf_files
-                            $_name = explode(EMUNDUS_PATH_ABS . $dir_Name . DS, $filename)[1];
+                            $_name = explode($dir_Name_Path . DS, $filename)[1];
                             $_file_extension = pathinfo($filename)['extension'];
                             if ($_file_extension == "pdf") {
                                 $pdf_files[] = $filename;
                             } else {
                                 // if not, just copy it to --merge directory
-                                copy($filename, $tmp_path . $dir_Name . '--merge' . DS . $_name);
+                                copy($filename, $dir_Merge_Path . DS . $_name);
                             }
                         }
 
                         /// from $pdf_files --> concat them
                         if (count($pdf_files) >= 1) {
-                            $mergeFileName = $tmp_path . $dir_Name . '--merge' . DS . $attachInfos['lbl'] . '.pdf';
+                            $mergeFileName = $dir_Merge_Path . DS . $attachInfos['lbl'] . '.pdf';
                             if (!file_exists($mergeFileName)) {
                                 $pdf = new ConcatPdf();
                                 $pdf->setFiles($pdf_files);
@@ -4585,7 +4609,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                                 $pdf->Output($mergeFileName, 'F');          /// export the merged pdf
                             } else {
-                                // remove
+                                // remove old file
                                 unlink($mergeFileName);
 
                                 // redo
@@ -4597,19 +4621,25 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
 
                         /// last one --> zip this --merge into / tmp /
-                        $_mergeZipName = $dir_Name . '--merge' . '_' . date("Y-m-d") . '.zip';
-                        $this->ZipLetter($tmp_path . $dir_Name . '--merge', $tmp_path . $_mergeZipName, true);
-                    } else { }
+                        $_mergeZipName = $dir_Merge_Name . '_' . date("Y-m-d") . '.zip';
+                        $this->ZipLetter($dir_Merge_Path, $tmp_path . $_mergeZipName, true);
 
-                    // return the merge zip url
+                        /// copy all --merge.zip to --merge-total
+                        copy($tmp_path . $_mergeZipName, $zip_All_Merge_Path . DS . $_mergeZipName);         /// copy
 
+                        /// last one, zip this --total file
+                        $this->ZipLetter($zip_All_Merge_Path, $zip_All_Merge_Path . '_' . '.zip', true);
+                    } else {
+                        copy($zip_dir, $zip_All_Path . DS . $_zipName);
+                        $this->ZipLetter($zip_All_Path, $zip_All_Path . '_' . '.zip', true);
+                    }
                 }
-
-                if($mergeMode == 1) {
-                    $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => $zip_dir, 'zip_merge_dir' => DS . 'tmp/' . $_mergeZipName);
-                } else {
-                    $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => $zip_dir);
-                }
+//
+//                if($mergeMode == 1) {
+//                    $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => $zip_dir, 'zip_merge_dir' => DS . 'tmp/' . $_mergeZipName);
+//                } else {
+//                    $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => $zip_dir);
+                //}
             }
         }
 
