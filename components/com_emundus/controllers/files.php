@@ -4412,6 +4412,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $user_info = $_mUser->getUserById($uid);
 
                 if($mergeMode == 0) {
+                    //unset($res->zip_data_by_candidat);
                     $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() . '.zip';                                         // make zip file name
                     $this->ZipLetter(EMUNDUS_PATH_ABS . $uid, $tmp_path . $_zipName, 'true');             // zip file (for example: ../95 --> tmp/95xxxx.zip
 
@@ -4441,6 +4442,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                 // merge pdf by candidats
                 if($mergeMode == 1) {
+                    //unset($res->zip_data_by_candidat);
 
                     /// if merge mode --> 1, mkdir new directory in / tmp / with suffix "--merge"
 
@@ -4525,9 +4527,11 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
                     }
                     rmdir($mergeZipAllPath);
+                    $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'merge_zip_url' => DS . 'tmp/' . $_mergeZipName);
                 }
-                $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'merge_zip_url' => DS . 'tmp/' . $_mergeZipName);
+
             }
+
             $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
         }
 
@@ -4563,7 +4567,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $dir_Name = $attachInfos['lbl'];                                                // unmere file name
                 $dir_Name_Path = $tmp_path . $dir_Name;                                         // unmerge file path
 
-                $dir_Merge_Name = $dir_Name . '--merge';                            // merge file name
+                $dir_Merge_Name = $dir_Name . '--merge';                                        // merge file name
                 $dir_Merge_Path = $tmp_path . $dir_Merge_Name;                                  // merge file path
 
                 if(!file_exists($dir_Name_Path)) {
