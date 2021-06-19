@@ -4670,7 +4670,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                 }
                 rmdir($zip_All_Merge_Path);
-                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name;
+                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name . '_.zip';
 
             } else {
                 $delete_total_files = glob($zip_All_Path . DS . '*');
@@ -4680,7 +4680,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                 }
                 rmdir($zip_All_Path);
-                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name;
+                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name . '_.zip';
             }
         }
 

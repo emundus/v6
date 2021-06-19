@@ -5335,6 +5335,7 @@ $(document).ready(function() {
 
                                 table += "</tbody></table>";
                                 $('.modal-body').append(table);
+                                $('#em-download-all').attr('href', result.zip_all_data_by_document);
                             }
 
                             else {
