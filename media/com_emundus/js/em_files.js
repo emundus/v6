@@ -5226,8 +5226,32 @@ $(document).ready(function() {
                     dataType:'json',
                     data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee, showMode: showMode, mergeMode: mergeMode},
                     success: function(result) {
-                        console.log(result);
                         $('.modal-body').empty();
+
+                        /// render recapitulatif
+                        let recal = result.recapitulatif_count;
+                        var recal_table =
+                            "<h4 style='color:#12db42 !important'>" +
+                                Joomla.JText._('AFFECTED_CANDIDATS') + result.affected_users +
+                            "</h4>" +
+                                "<table class='table table-striped' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
+                                    "<thead>" +
+                                        "<th>"+Joomla.JText._('GENERATED_DOCUMENTS_LABEL') + "</th>" +
+                                        "<th>"+Joomla.JText._('GENERATED_DOCUMENTS_COUNT') + "</th>" +
+                                    "</thead>" +
+                                    "<tbody>";
+
+                        recal.forEach(data => {
+                            recal_table +=
+                                "<tr style='background: #c1c7d0'>" +
+                                    "<td>" + data.document + "</td>" +
+                                    "<td>" + data.count + "</td>" +
+                                "</tr>"
+                        })
+
+                        recal_table += "</tbody></table>";
+                        $('.modal-body').append(recal_table);
+
                         if(result.status) {
                             if(showMode == 0) {
                                 var zip = result.zip_data_by_candidat;
@@ -5267,7 +5291,6 @@ $(document).ready(function() {
 
                                 table += "</tbody></table>";
                                 $('.modal-body').append(table);
-                                console.log(result);
                                 $('#em-download-all').attr('href', result.zip_all_data_by_candidat);
                             }
 
