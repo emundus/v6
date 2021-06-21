@@ -4275,7 +4275,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                     $query->clear()
                                         ->delete($this->_db->quoteName('#__emundus_uploads'))
                                         ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
-                                        ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
+                                        ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($filename));
                                     $this->_db->setQuery($query);
                                     $this->_db->execute();
 
