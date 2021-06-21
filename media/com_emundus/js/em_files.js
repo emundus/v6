@@ -4273,6 +4273,9 @@ $(document).ready(function() {
                                                 "<th>" + Joomla.JText._('EMAIL_BODY') + "</th>" +
                                                 "<td>" + message_recap.message + "</td>" +
                                             "</tr>" +
+                                        "<tr>" +
+                                            "<th>" + Joomla.JText._('ATTACHMENT_LETTER') + "</th>" +
+                                        "</tr>" +
                                         "</thead>";
 
                                 message_table += "</table>";
