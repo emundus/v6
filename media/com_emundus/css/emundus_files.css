@@ -193,6 +193,19 @@ table .btn-group > .btn {
     border: 0 solid;
 }
 
+#em-candidat-panel th {
+    border:1px solid;
+    width: 25%;
+}
+
+#em-candidat-panel td {
+    border:1px solid;
+}
+
+#em-candidat-panel tr:nth-child(even){background-color: #fafafa;}
+
+#em-candidat-panel tr:hover {background-color: #ddd;}
+
 .em-cell a:focus {
     color: #2a363b;
 }

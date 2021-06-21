@@ -4227,27 +4227,26 @@ $(document).ready(function() {
                             "<h3>" +
                                 Joomla.JText._('CANDIDAT_INFORMATION')+
                             "</h3>" +
-                            "<table class='table table table-striped' id='em-candidat-panel' style='border-style: 1px solid'>" +
+                            "<table class='table' id='em-candidat-panel' style='border: 1px solid'>" +
                                 "<thead>" +
                                     "<tr>" +
-                                        "<td>" + Joomla.JText._('CANDIDATE_NAME') + "</td>" +
-                                        "<th>" + recap.name + "</th>" +
+                                        "<th>" + Joomla.JText._('CANDIDATE_NAME') + "</th>" +
+                                        "<td>" + recap.name + "</td>" +
                                     "</tr>" +
                                     "<tr>" +
-                                        "<td>" + Joomla.JText._('PROGRAM_NAME') + "</td>" +
+                                        "<th>" + Joomla.JText._('PROGRAM_NAME') + "</th>" +
                                         "<td>" + recap.label + "</td>" +
                                     "</tr>" +
                                     "<tr>" +
-                                        "<td>" + Joomla.JText._('CANDIDAT_STATUS') + "</td>" +
+                                        "<th>" + Joomla.JText._('CANDIDAT_STATUS') + "</th>" +
                                         "<td>" +
                                                 "<div style='color:" + recap.class + "'>"
                                                     + recap.value + 
                                                 "</div>" +
                                         "</td>" +
                                     "</tr>" +
-                                "</thead>" +
-                                "<tbody>";
-                        table += "</tbody></table>";
+                                "</thead>";
+                        table += "</table>";
                         $('.modal-body').append(table);
 
 
