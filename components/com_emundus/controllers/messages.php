@@ -1469,22 +1469,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         exit;
     }
 
-    /// get available letter by fnums
-    public function getavailableletters() {
-        $jinput = JFactory::getApplication()->input;
-
-        $fnums = $jinput->post->getRaw('fnums', null);
-        $tmpl = $jinput->post->getRaw('tmplId', null);
-
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
-        $_mMessages = new EmundusModelMessages;
-
-        $_attached_letters = $_mMessages->getAvailableAttachmentByFnumMessage($fnums, $tmpl);
-
-        echo json_encode((object)array('status' => true, 'attached_letters' => $_attached_letters));
-        exit;
-    }
-
     // get recap info by fnum
     public function getrecapbyfnum() {
         $jinput = JFactory::getApplication()->input;
@@ -1496,6 +1480,20 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $_recap = $_mMessages->getFnumInfos($fnum);
         echo json_encode((object)['status' => true, 'recap' => $_recap]);
+        exit;
+    }
+
+    // get message (subject, preview) + all attached documents by fnums
+    public function getmessagerecapbyfnum() {
+        $jinput = JFactory::getApplication()->input;
+
+        $fnum = $jinput->post->getRaw('fnum', null);
+
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $_mMessages = new EmundusModelMessages;
+        $_messages = $_mMessages->getMessageRecapByFnum($fnum);
+
+        echo json_encode((object)['status' => true, 'message_recap' => $_messages]);
         exit;
     }
 }

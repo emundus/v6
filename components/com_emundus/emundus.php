@@ -378,6 +378,7 @@ JText::script('CANDIDAT_STATUS');
 JText::script('EMAIL_SUBJECT');
 JText::script('EMAIL_BODY');
 JText::script('ATTACHMENT_LETTER');
+JText::script('MESSAGE_INFORMATION');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');

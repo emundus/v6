@@ -4222,7 +4222,7 @@ $(document).ready(function() {
                     data: { fnum : fnum.toString() },
                     success: function(result) {
                         let recap = result.recap;
-                        console.log(recap);
+                        /// first table --> recap table
                         var table =
                             "<h3>" +
                                 Joomla.JText._('CANDIDAT_INFORMATION')+
@@ -4245,15 +4245,48 @@ $(document).ready(function() {
                                                 "</div>" +
                                         "</td>" +
                                     "</tr>" +
-                                "</thead>";
+                            "</thead>";
                         table += "</table>";
                         $('.modal-body').append(table);
 
+                        // second table --> message table
+                        $.ajax({
+                            type: 'post',
+                            url: 'index.php?option=com_emundus&controller=messages&task=getmessagerecapbyfnum',
+                            dataType: 'JSON',
+                            data: { fnum : fnum },
+                            success: function(data) {
+                                let message_recap = data.message_recap[0];
+                                var message_table =
+                                    "<h3>" +
+                                    Joomla.JText._('MESSAGE_INFORMATION')+
+                                    "</h3>" +
+                                    "<table class='table' id='em-candidat-panel' style='border: 1px solid'>" +
+                                        "<thead>" +
+                                            "<tr>" +
+                                                "<th>" + Joomla.JText._('EMAIL_SUBJECT') + "</th>" +
+                                                "<td>" +
+                                                    "<div style='color:" + recap.class + "'>" + message_recap.subject + "</div>" +
+                                                "</td>" +
+                                            "</tr>" +
+                                            "<tr>" +
+                                                "<th>" + Joomla.JText._('EMAIL_BODY') + "</th>" +
+                                                "<td>" + message_recap.message + "</td>" +
+                                            "</tr>" +
+                                        "</thead>";
 
+                                message_table += "</table>";
+                                $('.modal-body').append(message_table);
+                            }, error: function(jqXHR) {
+
+                            }
+                        })
                     }, error: function(jqXHR) {
                         console.log(jqXHR.responseText);
                     }
                 })
+
+
 
                 //$('.modal-body').append(fnums);
                 break;
