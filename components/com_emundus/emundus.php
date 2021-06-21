@@ -373,6 +373,12 @@ JText::script('DOCUMENT_GENERATED');
 JText::script('CANDIDATE_NAME');
 JText::script('DOCUMENT_NAME');
 
+JText::script('CANDIDAT_INFORMATION');
+JText::script('CANDIDAT_STATUS');
+JText::script('EMAIL_SUBJECT');
+JText::script('EMAIL_BODY');
+JText::script('ATTACHMENT_LETTER');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');
 //JHtml::script('media/com_emundus/lib/jquery-ui-1.8.18.min.js');

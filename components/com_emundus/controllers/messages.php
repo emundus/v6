@@ -1484,4 +1484,18 @@ class EmundusControllerMessages extends JControllerLegacy {
         echo json_encode((object)array('status' => true, 'attached_letters' => $_attached_letters));
         exit;
     }
+
+    // get recap info by fnum
+    public function getrecapbyfnum() {
+        $jinput = JFactory::getApplication()->input;
+
+        $fnum = $jinput->post->getRaw('fnum', null);
+
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $_mMessages = new EmundusModelFiles;
+
+        $_recap = $_mMessages->getFnumInfos($fnum);
+        echo json_encode((object)['status' => true, 'recap' => $_recap]);
+        exit;
+    }
 }

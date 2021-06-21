@@ -4206,6 +4206,59 @@ $(document).ready(function() {
                 $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
                 break;
 
+                // send email --> test
+            case 37:
+                /// first get the selected fnum from main vue
+                let fnum = "";
+                $('#em-data > tbody .em-cell input:checked').each(function() {
+                    fnum = $(this).attr('id').split('_')[0];
+                })
+
+                /// second, from fnum --> detect the candidat info
+                $.ajax({
+                    type: 'post',
+                    url: 'index.php?option=com_emundus&controller=messages&task=getrecapbyfnum',
+                    dataType: 'JSON',
+                    data: { fnum : fnum.toString() },
+                    success: function(result) {
+                        let recap = result.recap;
+                        console.log(recap);
+                        var table =
+                            "<h3>" +
+                                Joomla.JText._('CANDIDAT_INFORMATION')+
+                            "</h3>" +
+                            "<table class='table table table-striped' id='em-candidat-panel' style='border-style: 1px solid'>" +
+                                "<thead>" +
+                                    "<tr>" +
+                                        "<td>" + Joomla.JText._('CANDIDATE_NAME') + "</td>" +
+                                        "<th>" + recap.name + "</th>" +
+                                    "</tr>" +
+                                    "<tr>" +
+                                        "<td>" + Joomla.JText._('PROGRAM_NAME') + "</td>" +
+                                        "<td>" + recap.label + "</td>" +
+                                    "</tr>" +
+                                    "<tr>" +
+                                        "<td>" + Joomla.JText._('CANDIDAT_STATUS') + "</td>" +
+                                        "<td>" +
+                                                "<div style='color:" + recap.class + "'>"
+                                                    + recap.value + 
+                                                "</div>" +
+                                        "</td>" +
+                                    "</tr>" +
+                                "</thead>" +
+                                "<tbody>";
+                        table += "</tbody></table>";
+                        $('.modal-body').append(table);
+
+
+                    }, error: function(jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                })
+
+                //$('.modal-body').append(fnums);
+                break;
+
             default:
                 break;
         }
