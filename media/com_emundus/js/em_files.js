@@ -5204,8 +5204,8 @@ $(document).ready(function() {
 
                 $('#can-val').empty();
                 $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
-                    '<button style="margin-left:5px;color:blue;" type="button" class="btn btn-danger">' +
-                        '<a id="em-download-all" href="">'+ Joomla.JText._('DOWNLOAD_DOC') + '</a>' +
+                    '<button style="margin-left:5px;background: #16afe1; border: 2px solid #16afe1; border-radius: 25px !important; color: #fff" type="button" class="btn btn-danger">' +
+                        '<a style="color:#fff" id="em-download-all" href="">'+ Joomla.JText._('DOWNLOAD_DOC') + '</a>' +
                     '</button>');
                 $('#can-val').show();
 
@@ -5231,7 +5231,7 @@ $(document).ready(function() {
                         /// render recapitulatif
                         let recal = result.recapitulatif_count;
                         var recal_table =
-                            "<h4 style='color:#12db42 !important'>" +
+                            "<h4 style='color:#16afe1 !important'>" +
                                 Joomla.JText._('AFFECTED_CANDIDATS') + result.affected_users +
                             "</h4>" +
                                 "<table class='table table-striped' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
