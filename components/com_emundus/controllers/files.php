@@ -4243,9 +4243,16 @@ class EmundusControllerFiles extends JControllerLegacy
                                     mkdir(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'], 0775);
                                 }
 
-                                $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".docx";
+                                /// check if the filename is anonymized -- logically, we should avoid to generate many files which have the same contents, but different name --> bad performance
+                                $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+                                if (!$anonymize_data) {
+                                    $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".docx";
+                                } else {
+                                    $filename = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".docx";
+                                }
 
-                                $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumInfo[$fnum]['applicant_id'].DS.$filename);
+                                $path = EMUNDUS_PATH_ABS.$fnumInfo[$fnum]['applicant_id'].DS.$filename;
+                                $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
 
                                 if($gotenberg_activation == 1 && $letter->pdf == 1){
                                     //convert to PDF
@@ -4255,11 +4262,29 @@ class EmundusControllerFiles extends JControllerLegacy
                                     $res = $m_Export->toPdf($src, $dest, $fnum);
                                 }
 
-                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                /// check if file exists or not
+                                if(!file_exists($path)) {
+                                    $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                    $preprocess->saveAs($path);             /// save docx
+                                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $url);
+                                } else {
+                                    // remove old file and update the database
+                                    unlink($path);
+                                    $query = $this->_db->getQuery(true);
 
-                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/',);
+                                    $query->clear()
+                                        ->delete($this->_db->quoteName('#__emundus_uploads'))
+                                        ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+                                        ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
+                                    $this->_db->setQuery($query);
+                                    $this->_db->execute();
+
+                                    $preprocess->saveAs($path);             /// save docx
+                                    $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $url);
+                                }
                             }
-                            //unset($preprocess);
+                            //unset($preprocess);           // need to unset or not?
                         } catch(Exception $e) {
                             $res->status = false;
                             $res->msg = JText::_("AN_ERROR_OCURRED") . ':' . $e->getMessage();
