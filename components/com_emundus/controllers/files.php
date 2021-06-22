@@ -4064,17 +4064,25 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . ".pdf";
                             }
 
-                            $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $name;
-                            $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
+                            $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . '--letters';
+                            $path_name = $path . DS . $name;
+                            $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
+
+                            ///@ mkdir new folder which contains only the generated documents
 
                             if(!file_exists($path)) {
+                                mkdir($path, 0777, true);
+                            }
+
+                            if (!file_exists($path_name)) {
+                                /// copy generated letter to --letters folder
                                 $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
 
-                                $pdf->Output($path, 'F');
+                                $pdf->Output($path_name, 'F');
                                 $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
                             } else {
                                 // remove old file and reupdate in database
-                                unlink($path);
+                                unlink($path_name);
                                 $query = $this->_db->getQuery(true);
 
                                 $query->clear()
@@ -4086,11 +4094,11 @@ class EmundusControllerFiles extends JControllerLegacy
 
                                 $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
 
-                                $pdf->Output($path, 'F');
+                                $pdf->Output($path_name, 'F');
                                 $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
                             }
                         }
-                        unset($pdf, $path, $name, $url, $upIdn);
+                        unset($pdf, $path_name, $name, $url, $upIdn);
                         break;
 
                     /// end of case 2
