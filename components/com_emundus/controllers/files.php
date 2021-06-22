@@ -4307,18 +4307,14 @@ class EmundusControllerFiles extends JControllerLegacy
                                 }
 
                                 /// check if file exists or not
-                                if(!file_exists($path_name) or !file_exists($original_name)) {
+                                if(!file_exists($path_name)) {
                                     $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
 
                                     $preprocess->saveAs($path_name);             /// save docx
-                                    $preprocess->saveAs($original_name);             /// save docx
-
-                                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
+                                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $url);
                                 } else {
                                     // remove old file and update the database
                                     unlink($path_name);
-                                    unlink($original_name);
-
                                     $query = $this->_db->getQuery(true);
 
                                     $query->clear()
@@ -4329,10 +4325,9 @@ class EmundusControllerFiles extends JControllerLegacy
                                     $this->_db->execute();
 
                                     $preprocess->saveAs($path_name);             /// save docx
-                                    $preprocess->saveAs($original_name);             /// save docx
 
                                     $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
+                                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $url);
                                 }
                             }
                             //unset($preprocess);           // need to unset or not?
@@ -4723,15 +4718,6 @@ class EmundusControllerFiles extends JControllerLegacy
                         copy($zip_dir, $zip_All_Path . DS . $_zipName);
                         $this->ZipLetter($zip_All_Path, $zip_All_Path . '_' . '.zip', true);
                     }
-
-                    $original_folder = glob(EMUNDUS_PATH_ABS . $file->user_id . '--letters' . DS . '*');
-
-                    foreach($original_folder as $original_file) {
-                        if(is_file($original_file)) {
-                            unlink($original_file);
-                        }
-                    }
-                    rmdir(EMUNDUS_PATH_ABS . $file->user_id . '--letters');
                 }
 
                 if($mergeMode == 1) {
@@ -4750,6 +4736,15 @@ class EmundusControllerFiles extends JControllerLegacy
                 } else {
                     $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => DS. 'tmp/' . $_zipName);
                 }
+
+//                $original_folder = glob(EMUNDUS_PATH_ABS . $file->user_id . '--letters' . DS . '*');
+//
+//                foreach($original_folder as $original_file) {
+//                    if(is_file($original_file)) {
+//                        unlink($original_file);
+//                    }
+//                }
+//                rmdir(EMUNDUS_PATH_ABS . $file->user_id . '--letters');
 
                 $delete_files = glob($dir_Name_Path . DS . '*');
 
