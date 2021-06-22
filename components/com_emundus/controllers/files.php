@@ -3955,25 +3955,30 @@ class EmundusControllerFiles extends JControllerLegacy
                             }
 
                             // get file path
+                            $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
+                            $original_name = $original_path . DS . $name;
+
                             $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . '--letters';
                             $path_name = $path . DS . $name;
 
+                            $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'];
                             $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
 
                             if(!file_exists($path)) {
                                 mkdir($path, 0777, true);
                             }
 
-                            if(!file_exists($path_name)) {
-                                if (copy($file, $path_name)) {
+                            if(!file_exists($path_name) and !file_exists($original_name)) {
+                                if (copy($file, $path_name) and copy($file, $original_name)) {
                                     //$url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
                                     $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
 
-                                    $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
+                                    $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_path);
                                 }
                             } else {
                                 /// just return the url or we will remove this file and then create new file (good idea?)
                                 unlink($path_name);
+                                unlink($original_name);
 
                                 /// remove it in database
                                 $query = $this->_db->getQuery(true);
@@ -3985,11 +3990,12 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $this->_db->execute();
 
                                 /// recopy
-                                copy($file, $path);
+                                copy($file, $path_name);
+                                copy($file, $original_name);
 
                                 /// reupdate in database
                                 $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
+                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_path);
                             }
                         } else {
                             $res->status = false;
@@ -4473,16 +4479,6 @@ class EmundusControllerFiles extends JControllerLegacy
                         $this->ZipLetter(EMUNDUS_PATH_ABS . $uid . '--letters', $tmp_path . $_zipName, 'true');
                     }
 
-                    // remove the original letter
-                    $original_folder = glob(EMUNDUS_PATH_ABS . $uid . '--letters' . DS . '*');
-
-                    foreach($original_folder as $original_file) {
-                        if(is_file($original_file)) {
-                            unlink($original_file);
-                        }
-                    }
-                    rmdir(EMUNDUS_PATH_ABS . $uid . '--letters');
-
                     $mergeZipAllName = date("Y-m-d") . '-total-by-candidats';                                                            // make zip --all file name
                     $mergeZipAllPath = $tmp_path . $mergeZipAllName;                                                                   // make the zip --all path
 
@@ -4522,11 +4518,11 @@ class EmundusControllerFiles extends JControllerLegacy
                     /// end -- merge zip all
 
                     $pdf_files = array();
-                    $fileList = glob(EMUNDUS_PATH_ABS . $uid . DS . '*');
+                    $fileList = glob(EMUNDUS_PATH_ABS . $uid . '--letters'. DS . '*');
 
                     foreach ($fileList as $filename) {
                         // if extension is pdf --> push into the array $pdf_files
-                        $_name = explode(EMUNDUS_PATH_ABS . $uid . DS, $filename)[1];
+                        $_name = explode(EMUNDUS_PATH_ABS . $uid . '--letters' . DS, $filename)[1];
                         $_file_extension = pathinfo($filename)['extension'];
                         if ($_file_extension == "pdf") {
                             $pdf_files[] = $filename;
@@ -4578,6 +4574,15 @@ class EmundusControllerFiles extends JControllerLegacy
                     rmdir($mergeDirPath);
                     $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'merge_zip_url' => DS . 'tmp/' . $_mergeZipName);
                 }
+                // remove the original letter
+                $original_folder = glob(EMUNDUS_PATH_ABS . $uid . '--letters' . DS . '*');
+
+                foreach($original_folder as $original_file) {
+                    if(is_file($original_file)) {
+                        unlink($original_file);
+                    }
+                }
+                rmdir(EMUNDUS_PATH_ABS . $uid . '--letters');
             }
 
             /// delete unzip file
