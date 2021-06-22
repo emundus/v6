@@ -3961,7 +3961,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . '--letters';
                             $path_name = $path . DS . $name;
 
-                            $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'];
+                            $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
                             $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
 
                             if(!file_exists($path)) {
@@ -3973,7 +3973,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                     //$url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
                                     $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
 
-                                    $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_path);
+                                    $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
                                 }
                             } else {
                                 /// just return the url or we will remove this file and then create new file (good idea?)
@@ -3995,7 +3995,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                                 /// reupdate in database
                                 $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_path);
+                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
                             }
                         } else {
                             $res->status = false;
@@ -4086,8 +4086,13 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . ".pdf";
                             }
 
+                            $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
+                            $original_name = $original_path . DS . $name;
+
                             $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . '--letters';
                             $path_name = $path . DS . $name;
+
+                            $original_url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
                             $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
 
                             ///@ mkdir new folder which contains only the generated documents
@@ -4096,12 +4101,13 @@ class EmundusControllerFiles extends JControllerLegacy
                                 mkdir($path, 0777, true);
                             }
 
-                            if (!file_exists($path_name)) {
+                            if (!file_exists($path_name) and !file_exists($original_name)) {
                                 /// copy generated letter to --letters folder
                                 $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
 
                                 $pdf->Output($path_name, 'F');
-                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
+                                $pdf->Output($original_name, 'F');
+                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
                             } else {
                                 // remove old file and reupdate in database
                                 unlink($path_name);
@@ -4117,10 +4123,12 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
 
                                 $pdf->Output($path_name, 'F');
-                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $url);
+                                $pdf->Output($original_name, 'F');
+                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
                             }
                         }
                         unset($pdf, $path_name, $name, $url, $upIdn);
+                        unset($pdf, $original_name, $name, $original_url, $upIdn);
                         break;
 
                     /// end of case 2
