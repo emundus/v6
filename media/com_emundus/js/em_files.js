@@ -4209,6 +4209,10 @@ $(document).ready(function() {
                 // send email --> test
             case 37:
                 /// first get the selected fnum from main vue
+                $('#can-val').empty();
+                $('#can-val').append('<a class="btn btn-success" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL').replace(/\\/g, '')+'</a>');
+                $('#can-val').show();
+
                 let fnum = "";
                 $('#em-data > tbody .em-cell input:checked').each(function() {
                     fnum = $(this).attr('id').split('_')[0];
@@ -5694,6 +5698,11 @@ $(document).ready(function() {
                         console.log(jqXHR.responseText);
                     }
                 });
+                break;
+
+            case 37:
+                /// get fnum from vue
+
                 break;
         }
     });
