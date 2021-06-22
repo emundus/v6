@@ -380,6 +380,7 @@ JText::script('EMAIL_BODY');
 JText::script('ATTACHMENT_LETTER');
 JText::script('MESSAGE_INFORMATION');
 JText::script('EMAIL_FAILED');
+JText::script('CAMPAIGN_YEAR');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');

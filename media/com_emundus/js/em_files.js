@@ -4238,6 +4238,10 @@ $(document).ready(function() {
                                         "<td>" + recap.label + "</td>" +
                                     "</tr>" +
                                     "<tr>" +
+                                        "<th>" + Joomla.JText._('CAMPAIGN_YEAR') + "</th>" +
+                                        "<td>" + recap.year + "</td>" +
+                                    "</tr>" +
+                                    "<tr>" +
                                         "<th>" + Joomla.JText._('CANDIDAT_STATUS') + "</th>" +
                                         "<td>" +
                                                 "<div style='color:" + recap.class + "'>"
