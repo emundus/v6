@@ -4311,7 +4311,10 @@ class EmundusControllerFiles extends JControllerLegacy
                                     $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
 
                                     $preprocess->saveAs($path_name);             /// save docx
-                                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $url);
+                                    /// copy this file to $original path
+                                    copy($path_name, $original_name);
+
+                                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
                                 } else {
                                     // remove old file and update the database
                                     unlink($path_name);
@@ -4325,9 +4328,10 @@ class EmundusControllerFiles extends JControllerLegacy
                                     $this->_db->execute();
 
                                     $preprocess->saveAs($path_name);             /// save docx
+                                    copy($path_name, $original_name);
 
                                     $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $url);
+                                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
                                 }
                             }
                             //unset($preprocess);           // need to unset or not?

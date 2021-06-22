@@ -1496,7 +1496,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         if($_emails) {
             echo json_encode((object)['status' => true, 'email_recap' => $_emails]);
         } else {
-            echo json_encode((object)['status' => false, 'email_recap' => null]);
+            echo json_encode((object)['status' => false, 'email_recap' => $_emails]);
         }
         exit;
     }
