@@ -1183,9 +1183,8 @@ class EmundusModelMessages extends JModelList {
 
                     $upload_files = $_mEval->getFilesByAttachmentFnums($attach, [$fnum]);
 
-
                     if(!empty($upload_files)) {
-                        $uploads[] = array('is_existed' => true, 'id' => $upload_files[$key]->id, 'value' => $upload_files[$key]->value, 'label' => $upload_files[$key]->lbl, 'dest' => JURI::base().EMUNDUS_PATH_REL . $upload_files[$key]->user_id . DS. $upload_files[$key]->filename);
+                        $uploads[] = array('is_existed' => true, 'id' => $upload_files[$key]->id, 'value' => $upload_files[0]->value, 'label' => $upload_files[0]->lbl, 'dest' => JURI::base().EMUNDUS_PATH_REL . $upload_files[0]->user_id . DS. $upload_files[0]->filename);
                     } else {
                         /// if upload file does not exist --> get the default letter
                         $letter = $_mEval->getLetterTemplateForFnum($fnum, [$attach]);
