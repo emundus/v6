@@ -132,4 +132,51 @@ class EmundusmessengerControllermessages extends JControllerLegacy
         echo json_encode((object)$data);
         exit;
     }
+
+    public function uploaddocument(){
+        $m_messages = $this->model;
+
+        $jinput = JFactory::getApplication()->input;
+
+        $file = $jinput->files->get('file');
+        $fnum = $jinput->get('fnum');
+
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+
+        $m_files = new EmundusModelFiles();
+
+        $fnumInfos = $m_files->getFnumInfos($fnum);
+
+        $applicant_id = $fnumInfos['applicant_id'];
+
+        if(isset($file)) {
+            $path = $file["name"];
+            $ext = pathinfo($path, PATHINFO_EXTENSION);
+            $filename = pathinfo($path, PATHINFO_FILENAME);
+
+
+            $target_root = "images/emundus/files/";
+            $target_dir = $target_root . $applicant_id . "/";
+            if(!file_exists($target_root)){
+                mkdir($target_root);
+            }
+            if(!file_exists($target_dir)){
+                mkdir($target_dir);
+            }
+
+            do{
+                $target_file = $target_dir . rand(1000,90000) . '.' . $ext;
+            } while (file_exists($target_file));
+
+            if (move_uploaded_file($file["tmp_name"], $target_file)) {
+                $message = '<a href="'.$target_file.'" download><img src="/images/emundus/messenger/file_download.svg" class="messages__download_icon" alt="'.$filename.'">'.$filename.'</a>';
+                $new_message = $m_messages->sendMessage($message,$fnum);
+                echo json_encode(array('msg' => 'SUCCESS','data' => $new_message));
+            } else {
+                echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
+            }
+        }
+
+        exit;
+    }
 }

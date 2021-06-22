@@ -351,6 +351,13 @@ JText::script('JGLOBAL_SELECT_AN_OPTION');
 JText::script('COM_EMUNDUS_VOTE_NON_ACCEPTED');
 JText::script('COM_EMUNDUS_VOTE_ACCEPTED');
 
+//Messenger
+JText::script('COM_EMUNDUS_MESSENGER_TITLE');
+JText::script('COM_EMUNDUS_MESSENGER_SEND_DOCUMENT');
+JText::script('COM_EMUNDUS_MESSENGER_ASK_DOCUMENT');
+JText::script('COM_EMUNDUS_MESSENGER_DROP_HERE');
+JText::script('COM_EMUNDUS_MESSENGER_SEND');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');
 //JHtml::script('media/com_emundus/lib/jquery-ui-1.8.18.min.js');

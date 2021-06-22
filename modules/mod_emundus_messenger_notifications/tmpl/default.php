@@ -3,6 +3,10 @@
 defined('_JEXEC') or die('Restricted Access');
 
 JText::script('COM_EMUNDUS_MESSENGER_TITLE');
+JText::script('COM_EMUNDUS_MESSENGER_SEND_DOCUMENT');
+JText::script('COM_EMUNDUS_MESSENGER_ASK_DOCUMENT');
+JText::script('COM_EMUNDUS_MESSENGER_DROP_HERE');
+JText::script('COM_EMUNDUS_MESSENGER_SEND');
 
 $user = JFactory::getSession()->get('emundusUser')->id;
 

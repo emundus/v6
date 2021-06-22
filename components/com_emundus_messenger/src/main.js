@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Messages from "./components/Messages";
 import MessagesCoordinator from "./components/MessagesCoordinator";
 import * as VueSpinnersCss from 'vue-spinners-css';
+import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 
 Vue.config.productionTip = false;
 Vue.config.devtools = true;

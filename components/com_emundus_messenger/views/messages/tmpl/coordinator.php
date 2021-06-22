@@ -14,6 +14,10 @@ $document = JFactory::getDocument();
 $document->addStyleSheet('media/com_emundus_messenger/app_messenger.css');
 
 JText::script('COM_EMUNDUS_MESSENGER_TITLE');
+JText::script('COM_EMUNDUS_MESSENGER_SEND_DOCUMENT');
+JText::script('COM_EMUNDUS_MESSENGER_ASK_DOCUMENT');
+JText::script('COM_EMUNDUS_MESSENGER_DROP_HERE');
+JText::script('COM_EMUNDUS_MESSENGER_SEND');
 
 $jinput = JFactory::getApplication()->input;
 $fnum 	= $jinput->getString('fnum', null);

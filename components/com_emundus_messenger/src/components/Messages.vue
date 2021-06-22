@@ -13,7 +13,7 @@
           @closed="beforeClose"
           @opened="getCampaignsByUser"
       >
-
+        <AttachDocument :user="user" :fnum="fnum" :applicant="true"/>
         <div class="drag-window">
           <div class="col-md-3 messages__campaigns-list">
             <div v-for="campaign in campaigns" @click="campaignSelected = campaign.fnum" :class="campaign.fnum == campaignSelected ? 'messages__active-campaign' : ''" class="messages__block">
@@ -40,7 +40,7 @@
                 <div v-for="message in messages" v-if="date.messages.includes(message.message_id)" class="messages__message-item" :class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'">
                   <div class="messages__message-item-block" @click="showDate != message.message_id ? showDate = message.message_id : showDate = 0" :class="user == message.user_id_from ? 'messages__text-align-right' : 'messages__text-align-left'">
                     <p><em class="messages__message-item-from">{{message.name}}</em></p>
-                    <span class="messages__message-item-span" :class="user == message.user_id_from ? 'messages__message-item-span_current-user' : 'messages__message-item-span_other-user'">{{message.message}}</span>
+                    <span class="messages__message-item-span" :class="user == message.user_id_from ? 'messages__message-item-span_current-user' : 'messages__message-item-span_other-user'" v-html="message.message"></span>
                     <p><em class="messages__message-item-from" v-if="showDate == message.message_id">{{ moment(message.date_time).format("DD/MM/YYYY HH:mm") }}</em></p>
                   </div>
                 </div>
@@ -49,6 +49,7 @@
             <div class="messages__bottom-input">
               <input type="text" class="messages__input_text" v-model="message" @keyup.enter.exact.prevent="sendMessage($event)"/>
               <img class="messages__send-icon" src="/images/emundus/messenger/send.svg" @click="sendMessage" />
+              <img class="messages__send-icon" src="/images/emundus/messenger/attached.svg" @click="attachDocument"/>
             </div>
           </div>
         </div>
@@ -66,6 +67,8 @@ import moment from 'moment';
 import "../assets/css/bootstrap.css";
 import "../assets/css/messenger.scss";
 
+import AttachDocument from "../modals/AttachDocument";
+
 const qs = require("qs");
 
 export default {
@@ -76,7 +79,8 @@ export default {
     notifications: Object,
   },
   components: {
-    InfiniteLoading
+    InfiniteLoading,
+    AttachDocument
   },
   data() {
     return {
@@ -116,12 +120,12 @@ export default {
         }
         this.getMessagesByFnum(true);
         this.interval = setInterval(() => {
-          this.getMessagesByFnum(false);
+          this.getMessagesByFnum(false,false);
         },20000);
       });
     },
 
-    getMessagesByFnum(loader = true){
+    getMessagesByFnum(loader = true,scroll = true){
       this.loading = loader;
       axios({
         method: "get",
@@ -136,7 +140,9 @@ export default {
         this.messages = response.data.data.messages;
         this.dates = response.data.data.dates;
         this.markAsRead();
-        this.scrollToBottom();
+        if(scroll) {
+          this.scrollToBottom();
+        }
         this.loading = false;
       });
     },
@@ -211,6 +217,10 @@ export default {
         const container = document.getElementById("messages__list");
         container.scrollTop = container.scrollHeight;
       },500);
+    },
+
+    attachDocument(){
+      this.$modal.show('attach_documents');
     }
   },
 
