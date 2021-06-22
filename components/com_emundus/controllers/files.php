@@ -4454,7 +4454,17 @@ class EmundusControllerFiles extends JControllerLegacy
                 if($mergeMode == 0) {
                     //unset($res->zip_data_by_candidat);
                     $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() . '.zip';                                         // make zip file name
-                    $this->ZipLetter(EMUNDUS_PATH_ABS . $uid, $tmp_path . $_zipName, 'true');             // zip file (for example: ../95 --> tmp/95xxxx.zip
+                    $this->ZipLetter(EMUNDUS_PATH_ABS . $uid . '--letters', $tmp_path . $_zipName, 'true');             // zip file (for example: ../95 --> tmp/95xxxx.zip
+
+                    // remove the original letter
+                    $original_folder = glob(EMUNDUS_PATH_ABS . $uid . '--letters' . DS . '*');
+
+                    foreach($original_folder as $original_file) {
+                        if(is_file($original_file)) {
+                            unlink($original_file);
+                        }
+                    }
+                    rmdir(EMUNDUS_PATH_ABS . $uid . '--letters');
 
                     $mergeZipAllName = date("Y-m-d") . '-total-by-candidats';                                                            // make zip --all file name
                     $mergeZipAllPath = $tmp_path . $mergeZipAllName;                                                                   // make the zip --all path
