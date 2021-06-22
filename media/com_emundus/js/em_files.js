@@ -4256,43 +4256,68 @@ $(document).ready(function() {
                             dataType: 'JSON',
                             data: { fnum : fnum },
                             success: function(data) {
-                                let email_recap = data.email_recap.message_recap[0];
-                                let letter_recap = data.email_recap.attached_letter;
+                                console.log(data);
+                                if(data.status == true){
+                                    let email_recap = data.email_recap.message_recap[0];
+                                    let letter_recap = data.email_recap.attached_letter;
 
-                                var message_table =
-                                    "<h3>" +
-                                    Joomla.JText._('MESSAGE_INFORMATION')+
-                                    "</h3>" +
-                                    "<table class='table' id='em-candidat-panel' style='border: 1px solid'>" +
+                                    var message_table =
+                                        "<h3>" +
+                                        Joomla.JText._('MESSAGE_INFORMATION') +
+                                        "</h3>" +
+                                        "<table class='table' id='em-candidat-panel' style='border: 1px solid'>" +
                                         "<thead>" +
-                                            "<tr>" +
-                                                "<th>" + Joomla.JText._('EMAIL_SUBJECT') + "</th>" +
-                                                "<td>" +
-                                                    "<div style='color:" + recap.class + "'>" + email_recap.subject + "</div>" +
-                                                "</td>" +
-                                            "</tr>" +
-                                            "<tr>" +
-                                                "<th>" + Joomla.JText._('EMAIL_BODY') + "</th>" +
-                                                "<td>" + email_recap.message + "</td>" +
-                                            "</tr>" +
                                         "<tr>" +
-                                            "<th>" + Joomla.JText._('ATTACHMENT_LETTER') + "</th>" +
-                                            "<td>";
+                                        "<th>" + Joomla.JText._('EMAIL_SUBJECT') + "</th>" +
+                                        "<td>" +
+                                        "<div style='color:" + recap.class + "'>" + email_recap.subject + "</div>" +
+                                        "</td>" +
+                                        "</tr>" +
+                                        "<tr>" +
+                                        "<th>" + Joomla.JText._('EMAIL_BODY') + "</th>" +
+                                        "<td>" + email_recap.message + "</td>" +
+                                        "</tr>" +
+                                        "<tr>" +
+                                        "<th>" + Joomla.JText._('ATTACHMENT_LETTER') + "</th>" +
+                                        "<td>";
 
-                                letter_recap.forEach(letter => {
-                                    message_table +=
+                                    letter_recap.forEach(letter => {
+                                        message_table +=
                                             "<li>" +
-                                                    "<a id='em_letter_preview' target='_blank' href='" + letter.dest + "'>" +
-                                                        "<span style='font-size: medium; padding: 10px 0px; color:" + recap.class + "'>" +
-                                                            letter.value  + "<span class='glyphicon glyphicon-envelope' style='padding-left: 10px;'>" + "</span>" +
-                                                        "</span>" +
-                                                    "</a>" +
+                                            "<a id='em_letter_preview' target='_blank' href='" + letter.dest + "'>" +
+                                            "<span style='font-size: medium; padding: 10px 0px; color:" + recap.class + "'>" +
+                                            letter.value + "<span class='glyphicon glyphicon-envelope' style='padding-left: 10px;'>" + "</span>" +
+                                            "</span>" +
+                                            "</a>" +
                                             "</li>";
-                                })
+                                    })
 
 
-                                message_table += "</td></tr></thead></table>";
-                                $('.modal-body').append(message_table);
+                                    message_table += "</td></tr></thead></table>";
+                                    $('.modal-body').append(message_table);
+                                } else {
+                                    var message_table =
+                                        "<h3>" +
+                                            Joomla.JText._('MESSAGE_INFORMATION') +
+                                        "</h3>" +
+                                        "<table class='table' id='em-candidat-panel' style='border: 1px solid'>" +
+                                            "<thead>" +
+                                                "<tr>" +
+                                                    "<th>" + Joomla.JText._('EMAIL_SUBJECT') + "</th>" +
+                                                    "<td>" + Joomla.JText._('EMAIL_FAILED') + "</td>" +
+                                                "</tr>" +
+                                                "<tr>" +
+                                                    "<th>" + Joomla.JText._('EMAIL_BODY') + "</th>" +
+                                                    "<td>" + Joomla.JText._('EMAIL_FAILED') + "</td>" +
+                                                "</tr>" +
+                                                "<tr>" +
+                                                    "<th>" + Joomla.JText._('ATTACHMENT_LETTER') + "</th>" +
+                                                    "<td>" + Joomla.JText._('EMAIL_FAILED') + "</td>" +
+                                                "</tr>" +
+                                            "</thead>" +
+                                        "</table>";
+                                    $('.modal-body').append(message_table);
+                                }
                             }, error: function(jqXHR) {
 
                             }

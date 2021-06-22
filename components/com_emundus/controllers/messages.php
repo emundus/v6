@@ -1493,7 +1493,11 @@ class EmundusControllerMessages extends JControllerLegacy {
         $_mEmails = new EmundusModelMessages;
         $_emails = $_mEmails->getMessageRecapByFnum($fnum);
 
-        echo json_encode((object)['status' => true, 'email_recap' => $_emails]);
+        if($_emails) {
+            echo json_encode((object)['status' => true, 'email_recap' => $_emails]);
+        } else {
+            echo json_encode((object)['status' => false, 'email_recap' => null]);
+        }
         exit;
     }
 }
