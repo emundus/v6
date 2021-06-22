@@ -4256,7 +4256,9 @@ $(document).ready(function() {
                             dataType: 'JSON',
                             data: { fnum : fnum },
                             success: function(data) {
-                                let message_recap = data.message_recap[0];
+                                let email_recap = data.email_recap.message_recap[0];
+                                let letter_recap = data.email_recap.attached_letter;
+
                                 var message_table =
                                     "<h3>" +
                                     Joomla.JText._('MESSAGE_INFORMATION')+
@@ -4266,19 +4268,30 @@ $(document).ready(function() {
                                             "<tr>" +
                                                 "<th>" + Joomla.JText._('EMAIL_SUBJECT') + "</th>" +
                                                 "<td>" +
-                                                    "<div style='color:" + recap.class + "'>" + message_recap.subject + "</div>" +
+                                                    "<div style='color:" + recap.class + "'>" + email_recap.subject + "</div>" +
                                                 "</td>" +
                                             "</tr>" +
                                             "<tr>" +
                                                 "<th>" + Joomla.JText._('EMAIL_BODY') + "</th>" +
-                                                "<td>" + message_recap.message + "</td>" +
+                                                "<td>" + email_recap.message + "</td>" +
                                             "</tr>" +
                                         "<tr>" +
                                             "<th>" + Joomla.JText._('ATTACHMENT_LETTER') + "</th>" +
-                                        "</tr>" +
-                                        "</thead>";
+                                            "<td>";
 
-                                message_table += "</table>";
+                                letter_recap.forEach(letter => {
+                                    message_table +=
+                                            "<li>" +
+                                                    "<a id='em_letter_preview' target='_blank' href='" + letter.dest + "'>" +
+                                                        "<span style='font-size: medium; padding: 10px 0px; color:" + recap.class + "'>" +
+                                                            letter.value  + "<span class='glyphicon glyphicon-envelope' style='padding-left: 10px;'>" + "</span>" +
+                                                        "</span>" +
+                                                    "</a>" +
+                                            "</li>";
+                                })
+
+
+                                message_table += "</td></tr></thead></table>";
                                 $('.modal-body').append(message_table);
                             }, error: function(jqXHR) {
 

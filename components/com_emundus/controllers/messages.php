@@ -1490,10 +1490,10 @@ class EmundusControllerMessages extends JControllerLegacy {
         $fnum = $jinput->post->getRaw('fnum', null);
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        $_mMessages = new EmundusModelMessages;
-        $_messages = $_mMessages->getMessageRecapByFnum($fnum);
+        $_mEmails = new EmundusModelMessages;
+        $_emails = $_mEmails->getMessageRecapByFnum($fnum);
 
-        echo json_encode((object)['status' => true, 'message_recap' => $_messages]);
+        echo json_encode((object)['status' => true, 'email_recap' => $_emails]);
         exit;
     }
 }
