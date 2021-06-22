@@ -3941,12 +3941,17 @@ class EmundusControllerFiles extends JControllerLegacy
                             }
 
                             // get file path
-                            $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $name;
+                            $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . '--letters';
+                            $path_name = $path . DS . $name;
 
-                            $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
+                            $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
 
                             if(!file_exists($path)) {
-                                if (copy($file, $path)) {
+                                mkdir($path, 0777, true);
+                            }
+
+                            if(!file_exists($path_name)) {
+                                if (copy($file, $path_name)) {
                                     //$url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
                                     $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
 
@@ -3954,7 +3959,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 }
                             } else {
                                 /// just return the url or we will remove this file and then create new file (good idea?)
-                                unlink($path);
+                                unlink($path_name);
 
                                 /// remove it in database
                                 $query = $this->_db->getQuery(true);
