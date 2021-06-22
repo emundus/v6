@@ -1174,8 +1174,26 @@ class EmundusModelMessages extends JModelList {
                     ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
 
                 $db->setQuery($query);
-                return $db->loadObjectList();
+                $_message_Info = $db->loadObjectList();
 
+                /// third, for each $attachment ids --> detect the uploaded letters (if any), otherwise, detect the letter (default)
+                $uploads = array();
+
+                foreach($attachment_list as $key => $attach) {
+
+                    $upload_files = $_mEval->getFilesByAttachmentFnums($attach, [$fnum]);
+
+
+                    if(!empty($upload_files)) {
+                        $uploads[] = array('is_existed' => true, 'id' => $upload_files[$key]->id, 'value' => $upload_files[$key]->value, 'label' => $upload_files[$key]->lbl, 'dest' => EMUNDUS_PATH_ABS . $upload_files[$key]->user_id . DS . $upload_files[$key]->filename);
+                    } else {
+                        /// if upload file does not exist --> get the default letter
+                        $letter = $_mEval->getLetterTemplateForFnum($fnum, [$attach]);
+                        $uploads[] = array('is_existed' => false, 'id' => $letter[0]->id, 'value' => $letter[0]->title, 'label' => "", 'dest' => JPATH_BASE . $letter[0]->file);
+                    }
+                }
+
+                return array('message_recap' => $_message_Info, 'attached_letter' => $uploads);
             } catch(Exception $e) {
                 JLog::add('Error get available message by fnums : '.$e->getMessage(), JLog::ERROR, 'com_emundus.message');
                 return false;
