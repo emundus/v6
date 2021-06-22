@@ -4252,9 +4252,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 }
 
                                 $rand = rand(0, 1000000);
-                                if (!file_exists(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'])) {
-                                    mkdir(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'], 0775);
-                                }
+
 
                                 /// check if the filename is anonymized -- logically, we should avoid to generate many files which have the same contents, but different name --> bad performance
                                 $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
@@ -4264,25 +4262,29 @@ class EmundusControllerFiles extends JControllerLegacy
                                     $filename = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".docx";
                                 }
 
-                                $path = EMUNDUS_PATH_ABS.$fnumInfo[$fnum]['applicant_id'].DS.$filename;
-                                $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
+                                $path = EMUNDUS_PATH_ABS.$fnumInfo[$fnum]['applicant_id'] . '--letters';
+                                $path_name = $path . DS . $filename;
+                                $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
+
+                                if(!file_exists($path)) {
+                                    mkdir($path, 0777, true);
+                                }
 
                                 if($gotenberg_activation == 1 && $letter->pdf == 1){
                                     //convert to PDF
-                                    $src = EMUNDUS_PATH_ABS.$fnumInfo[$fnum]['applicant_id'].DS.$filename;
-                                    $dest = str_replace('.docx', '.pdf', $src);
+                                    $dest = str_replace('.docx', '.pdf', $path_name);
                                     $filename = str_replace('.docx', '.pdf', $filename);
-                                    $res = $m_Export->toPdf($src, $dest, $fnum);
+                                    $res = $m_Export->toPdf($path_name, $dest, $fnum);
                                 }
 
                                 /// check if file exists or not
-                                if(!file_exists($path)) {
+                                if(!file_exists($path_name)) {
                                     $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                    $preprocess->saveAs($path);             /// save docx
+                                    $preprocess->saveAs($path_name);             /// save docx
                                     $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $url);
                                 } else {
                                     // remove old file and update the database
-                                    unlink($path);
+                                    unlink($path_name);
                                     $query = $this->_db->getQuery(true);
 
                                     $query->clear()
@@ -4292,7 +4294,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                     $this->_db->setQuery($query);
                                     $this->_db->execute();
 
-                                    $preprocess->saveAs($path);             /// save docx
+                                    $preprocess->saveAs($path_name);             /// save docx
                                     $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
                                     $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $url);
                                 }
