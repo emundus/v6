@@ -3918,6 +3918,20 @@ class EmundusControllerFiles extends JControllerLegacy
             $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates); // return :: Array
             $fnumInfo = $_mFile->getFnumsTagsInfos([$fnum]);
 
+            if(empty($generated_letters) or empty($generated_letters)) {
+                $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . '--letters';
+                $path_name = $path . DS . $name;
+                $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
+
+                ///@ mkdir new folder which contains only the generated documents
+
+                if(!file_exists($path)) {
+                    mkdir($path, 0777, true);
+                }
+
+                /////////////////////////////////
+            }
+
             foreach($generated_letters as $key => $letter) {
                 // get attachment info
                 $attachInfo = $_mFile->getAttachmentInfos($letter->attachment_id);
@@ -4055,9 +4069,6 @@ class EmundusControllerFiles extends JControllerLegacy
                             $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $htmldata, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
 
                             $rand = rand(0, 1000000);
-                            if (!file_exists(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'])) {
-                                mkdir(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'], 0775);
-                            }
 
                             // make file name --- logically, we should avoid to generate many files which have same contents but different name --> fnum will distinguish the file name
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
@@ -4453,8 +4464,14 @@ class EmundusControllerFiles extends JControllerLegacy
 
                 if($mergeMode == 0) {
                     //unset($res->zip_data_by_candidat);
-                    $_zipName = $uid . '_' . date("Y-m-d") . '_' . uniqid() . '.zip';                                         // make zip file name
-                    $this->ZipLetter(EMUNDUS_PATH_ABS . $uid . '--letters', $tmp_path . $_zipName, 'true');             // zip file (for example: ../95 --> tmp/95xxxx.zip
+                    $_zipName = $uid . '_' . date("Y-m-d") . '_' . '.zip';                                         // make zip file name
+
+                    if(!file_exists($tmp_path . $_zipName)) {
+                        $this->ZipLetter(EMUNDUS_PATH_ABS . $uid . '--letters', $tmp_path . $_zipName, 'true');             // zip file (for example: ../95 --> tmp/95xxxx.zip
+                    } else {
+                        unlink($tmp_path . $_zipName);
+                        $this->ZipLetter(EMUNDUS_PATH_ABS . $uid . '--letters', $tmp_path . $_zipName, 'true');
+                    }
 
                     // remove the original letter
                     $original_folder = glob(EMUNDUS_PATH_ABS . $uid . '--letters' . DS . '*');
