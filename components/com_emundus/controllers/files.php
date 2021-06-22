@@ -4626,7 +4626,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                       /// get uploaded file by fnums
 
                 foreach ($uploaded_Files as $key => $file) {
-                    $source = EMUNDUS_PATH_ABS . $file->user_id . DS . $file->filename;
+                    $source = EMUNDUS_PATH_ABS . $file->user_id . '--letters' . DS . $file->filename;
                     copy($source, $dir_Name_Path . DS . $file->filename);                                       /// copy file
 
                     $_zipName = $dir_Name . '_' . date("Y-m-d") . '.zip';                                   // zip file name
@@ -4682,6 +4682,15 @@ class EmundusControllerFiles extends JControllerLegacy
                         copy($zip_dir, $zip_All_Path . DS . $_zipName);
                         $this->ZipLetter($zip_All_Path, $zip_All_Path . '_' . '.zip', true);
                     }
+
+                    $original_folder = glob(EMUNDUS_PATH_ABS . $file->user_id . '--letters' . DS . '*');
+
+                    foreach($original_folder as $original_file) {
+                        if(is_file($original_file)) {
+                            unlink($original_file);
+                        }
+                    }
+                    rmdir(EMUNDUS_PATH_ABS . $file->user_id . '--letters');
                 }
 
                 if($mergeMode == 1) {
