@@ -1590,11 +1590,14 @@ class EmundusModelApplication extends JModelList {
 			                                    $ret = $element->content;
 		                                    }
 		                                    $elt = JText::_($ret);
-	                                    }
-	                                    elseif ($element->plugin == 'checkbox') {
-	                                        $elt = implode(", ", json_decode (@$element->content));
-	                                    }
-	                                    elseif (($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') && isset($element->content)) {
+	                                    } elseif ($element->plugin == 'checkbox') {
+                                            $params = json_decode($element->params);
+                                            $index = array_intersect(json_decode (@$element->content), $params->sub_options->sub_values);
+                                            foreach($index as $key => $value) {
+                                                $elm[] = $params->sub_options->sub_labels[$key];
+                                            }
+                                            $elt = implode(', ', JText::_($elm));
+                                        } elseif (($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') && isset($element->content)) {
                                             $params = json_decode($element->params);
                                             $index = array_search($element->content, $params->sub_options->sub_values);
 
@@ -2277,8 +2280,13 @@ class EmundusModelApplication extends JModelList {
 
                                         } elseif ($element->plugin == 'textarea') {
                                             $elt = JText::_($element->content);
-                                        } elseif ($element->plugin == 'checkbox') {
-                                            $elt = JText::_(implode(", ", json_decode (@$element->content)));
+                                        }  elseif ($element->plugin == 'checkbox') {
+                                            $params = json_decode($element->params);
+                                            $index = array_intersect(json_decode (@$element->content), $params->sub_options->sub_values);
+                                            foreach($index as $key => $value) {
+                                                $elm[] = $params->sub_options->sub_labels[$key];
+                                            }
+                                            $elt = implode(', ', JText::_($elm));
                                         } elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
                                             $index = array_search($element->content, $params->sub_options->sub_values);
                                             if (strlen($index) > 0) {
