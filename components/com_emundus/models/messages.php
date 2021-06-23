@@ -1206,4 +1206,50 @@ class EmundusModelMessages extends JModelList {
 	        return false;
         }
     }
+
+//    // lock or unlock action for fnum
+    public function getActionByFnum($fnum) {
+	    if(!empty($fnum)) {
+            /// from fnum --> detect the message
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+            require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+
+            $_mEval = new EmundusModelEvaluation;
+            $_mFile = new EmundusModelFiles;
+
+            try {
+                $attachment_ids = $_mEval->getLettersByFnums($fnum, $attachments = true);
+
+                $attachment_list = array();
+                foreach ($attachment_ids as $key => $value) {
+                    $attachment_list[] = $value['id'];
+                }
+
+                $attachment_list = array_unique(array_filter($attachment_list));            /// this line ensures that all attachment ids will appear once
+
+                /// get message template from attachment list
+                $query->clear()
+                    ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
+                    ->from($db->quoteName('#__emundus_setup_emails'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $db->quoteName('#__emundus_setup_emails.id'))
+                    ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
+
+                $db->setQuery($query);
+                $_message_Info = $db->loadObjectList();
+                if(!empty($_message_Info)) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            } catch(Exception $e) {
+                /// if in catch --> return false
+            }
+        } else {
+	        return false;
+        }
+    }
 }
