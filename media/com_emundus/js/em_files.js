@@ -4350,6 +4350,166 @@ $(document).ready(function() {
     });
 
 
+    $(document).on('click', '[id^=candidat_]', function(e){
+        let fnum = $(this).attr('id').split('candidat_')[1];
+        console.log($(this).attr('id'));
+
+        $('#em-modal-actions').modal({backdrop:true,keyboard:true},'toggle');
+        $('.modal-title').empty();
+        $('.modal-title').append($(this).children('a').text());
+        $('.modal-body').empty();
+
+        if ($('.modal-dialog').hasClass('modal-lg')) {
+            $('.modal-dialog').removeClass('modal-lg');
+        }
+
+        $('.modal-body').attr('act-id', 37);
+        $('.modal-footer').show();
+        $('.modal-lg').css({ width: '80%' });
+        $('.modal-dialog').css({ width: '80%' });
+
+        $('#can-val').empty();
+        $('#can-val').append('<a class="btn btn-success" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL').replace(/\\/g, '')+'</a>');
+        $('#can-val').show();
+
+        /// second, from fnum --> detect the candidat info
+        $.ajax({
+            type: 'post',
+            url: 'index.php?option=com_emundus&controller=messages&task=getrecapbyfnum',
+            dataType: 'JSON',
+            data: { fnum : fnum.toString() },
+            success: function(result) {
+                let recap = result.recap;
+                /// first table --> recap table
+                var table =
+                    "<h3>" +
+                    Joomla.JText._('CANDIDAT_INFORMATION')+
+                    "</h3>" +
+                    "<table class='table' id='em-candidat-panel' style='border: 1px solid'>" +
+                    "<thead>" +
+                    "<tr>" +
+                    "<th>" + Joomla.JText._('CANDIDATE_NAME') + "</th>" +
+                    "<td>" + recap.name + "</td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<th>" + Joomla.JText._('CANDIDATE_EMAIL') + "</th>" +
+                    "<td>" + recap.email + "</td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<th>" + Joomla.JText._('PROGRAM_NAME') + "</th>" +
+                    "<td>" + recap.label + "</td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<th>" + Joomla.JText._('CAMPAIGN_YEAR') + "</th>" +
+                    "<td>" + recap.year + "</td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<th>" + Joomla.JText._('CANDIDAT_STATUS') + "</th>" +
+                    "<td>" +
+                    "<div style='color:" + recap.class + "'>"
+                    + recap.value +
+                    "</div>" +
+                    "</td>" +
+                    "</tr>" +
+                    "</thead>";
+                table += "</table>";
+                $('.modal-body').append(table);
+
+                // second table --> message table
+                $.ajax({
+                    type: 'post',
+                    url: 'index.php?option=com_emundus&controller=messages&task=getmessagerecapbyfnum',
+                    dataType: 'JSON',
+                    data: { fnum : fnum },
+                    success: function(data) {
+                        console.log(data);
+                        if(data.status == true){
+                            let email_recap = data.email_recap.message_recap[0];
+                            let letter_recap = data.email_recap.attached_letter;
+
+                            var message_table =
+                                "<h3>" +
+                                Joomla.JText._('MESSAGE_INFORMATION') +
+                                "</h3>" +
+                                "<table class='table' id='em-candidat-panel' style='border: 1px solid'>" +
+                                "<thead>" +
+                                "<tr>" +
+                                "<th>" + Joomla.JText._('EMAIL_SUBJECT') + "</th>" +
+                                "<td>" +
+                                "<div style='color:" + recap.class + "'>" + email_recap.subject + "</div>" +
+                                "</td>" +
+                                "</tr>" +
+                                "<tr>" +
+                                "<th>" + Joomla.JText._('EMAIL_BODY') + "</th>" +
+                                "<td>" + email_recap.message + "</td>" +
+                                "</tr>" +
+                                "<tr>" +
+                                "<th>" + Joomla.JText._('ATTACHMENT_LETTER') + "</th>" +
+                                "<td>";
+
+                            letter_recap.forEach(letter => {
+                                message_table +=
+                                    "<li>" +
+                                    "<a id='em_letter_preview' target='_blank' href='" + letter.dest + "'>" +
+                                    "<span style='font-size: medium; padding: 10px 0px; color:" + recap.class + "'>" +
+                                    "<span class='glyphicon glyphicon-paperclip' style='padding-right: 10px;'></span>" + letter.value +
+                                    "</span>" +
+                                    "</a>" +
+                                    "</li>";
+                            })
+
+
+                            message_table += "</td></tr></thead></table>";
+                            $('.modal-body').append(message_table);
+                        } else {
+                            var message_table =
+                                "<h3>" +
+                                Joomla.JText._('MESSAGE_INFORMATION') +
+                                "</h3>" +
+                                "<table class='table' id='em-candidat-panel' style='border: 1px solid'>" +
+                                "<thead>" +
+                                "<tr>" +
+                                "<th>" + Joomla.JText._('EMAIL_SUBJECT') + "</th>" +
+                                "<td>" + Joomla.JText._('EMAIL_FAILED') + "</td>" +
+                                "</tr>" +
+                                "<tr>" +
+                                "<th>" + Joomla.JText._('EMAIL_BODY') + "</th>" +
+                                "<td>" + Joomla.JText._('EMAIL_FAILED') + "</td>" +
+                                "</tr>" +
+                                "<tr>" +
+                                "<th>" + Joomla.JText._('ATTACHMENT_LETTER') + "</th>" +
+                                "<td>" + Joomla.JText._('EMAIL_FAILED') + "</td>" +
+                                "</tr>" +
+                                "</thead>" +
+                                "</table>";
+                            $('.modal-body').append(message_table);
+                        }
+                    }, error: function(jqXHR) {
+
+                    }
+                })
+
+                $(document).on('click', '#em-modal-actions .btn.btn-success', function(e) {
+                    $.ajax({
+                        type: 'post',
+                        url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
+                        dataType: 'JSON',
+                        data: { fnum: fnum },
+                        success: function(result) {
+                            console.log(result);
+                        }, error: function(jqXHR) {
+                            console.log(jqXHR.responseText);
+                        }
+                    })
+                })
+
+            }, error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        })
+    })
+
+
     // zip file generation
     $(document).on('click', '#em_zip', function(e) {
         e.preventDefault();
@@ -5706,22 +5866,22 @@ $(document).ready(function() {
 
             case 37:
                 /// get fnum from vue
-                let fnum = "";
-                $('#em-data > tbody .em-cell input:checked').each(function() {
-                    fnum = $(this).attr('id').split('_')[0];
-                })
-
-                $.ajax({
-                    type: 'post',
-                    url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
-                    dataType: 'JSON',
-                    data: { fnum: fnum },
-                    success: function(result) {
-                        console.log(result);
-                    }, error: function(jqXHR) {
-                        console.log(jqXHR.responseText);
-                    }
-                })
+                // let fnum = "";
+                // $('#em-data > tbody .em-cell input:checked').each(function() {
+                //     fnum = $(this).attr('id').split('_')[0];
+                // })
+                //
+                // $.ajax({
+                //     type: 'post',
+                //     url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
+                //     dataType: 'JSON',
+                //     data: { fnum: fnum },
+                //     success: function(result) {
+                //         console.log(result);
+                //     }, error: function(jqXHR) {
+                //         console.log(jqXHR.responseText);
+                //     }
+                // })
 
                 break;
         }
