@@ -1507,7 +1507,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $fnum = $jinput->post->getRaw('fnum', null);
 
-        if (!EmundusHelperAccess::asAccessAction(37, 'c')) {
+        if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
             die(JText::_("ACCESS_DENIED"));
         }
 
@@ -1616,8 +1616,30 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mailer->addAttachment($file_path);
         $send = $mailer->Send();
 
-        /// test
+        /// track the log of email
+//        if ($send !== true) {
+//            $failed[] = $fnum_info['email'];
+//            echo 'Error sending email: ' . $send->__toString();
+//            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+//        } else {
+//            $sent[] = $fnum_info['email'];
+//            $log = [
+//                'user_id_from' => $user->id,
+//                'user_id_to' => $fnum_info['applicant_id'],
+//                'subject' => $subject,
+//                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $fnum_info['email'] . '</i><br>' . $body . $file_path,
+//                'type' => $email_recap[0]->id,
+//            ];
+//            $m_emails->logEmail($log);
+//            // Log the email in the eMundus logging system.
+//            EmundusModelLogs::log($user->id, $fnum_info['applicant_id'], $fnum_info['fnum'], 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+//        }
+//        // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
+//        if ($config->get('smtphost') === 'smtp.mailtrap.io') {
+//            sleep(5);
+//        }
 
-//        echo '<pre>'; var_dump($mailer); echo '</pre>'; die;
+//        echo json_encode(['status' => true, 'sent' => $sent, 'failed' => $failed]);
+//        exit;
     }
 }
