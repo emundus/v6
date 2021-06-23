@@ -4238,6 +4238,10 @@ $(document).ready(function() {
                                         "<td>" + recap.name + "</td>" +
                                     "</tr>" +
                                     "<tr>" +
+                                        "<th>" + Joomla.JText._('CANDIDATE_EMAIL') + "</th>" +
+                                        "<td>" + recap.email + "</td>" +
+                                    "</tr>" +
+                                    "<tr>" +
                                         "<th>" + Joomla.JText._('PROGRAM_NAME') + "</th>" +
                                         "<td>" + recap.label + "</td>" +
                                     "</tr>" +
@@ -5702,6 +5706,22 @@ $(document).ready(function() {
 
             case 37:
                 /// get fnum from vue
+                let fnum = "";
+                $('#em-data > tbody .em-cell input:checked').each(function() {
+                    fnum = $(this).attr('id').split('_')[0];
+                })
+
+                $.ajax({
+                    type: 'post',
+                    url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
+                    dataType: 'JSON',
+                    data: { fnum: fnum },
+                    success: function(result) {
+                        console.log(result);
+                    }, error: function(jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                })
 
                 break;
         }

@@ -1500,4 +1500,31 @@ class EmundusControllerMessages extends JControllerLegacy {
         }
         exit;
     }
+
+    /// send email to candidat with attached letters
+    public function sendemailtocandidat() {
+        $jinput = JFactory::getApplication()->input;
+
+        $fnum = $jinput->post->getRaw('fnum', null);
+
+        if (!EmundusHelperAccess::asAccessAction(37, 'c')) {
+            die(JText::_("ACCESS_DENIED"));
+        }
+
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+
+        $m_messages = new EmundusModelMessages();
+        $m_emails = new EmundusModelEmails();
+        $m_files = new EmundusModelFiles();
+        $m_campaign = new EmundusModelCampaign();
+
+        $user = JFactory::getUser();
+        $config = JFactory::getConfig();
+
+        /// from fnum --> detect candidat email
+
+    }
 }
