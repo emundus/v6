@@ -1476,9 +1476,9 @@ class EmundusControllerMessages extends JControllerLegacy {
         $fnum = $jinput->post->getRaw('fnum', null);
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        $_mMessages = new EmundusModelFiles;
+        $_mFiles = new EmundusModelFiles;
 
-        $_recap = $_mMessages->getFnumInfos($fnum);
+        $_recap = $_mFiles->getFnumInfos($fnum);
         echo json_encode((object)['status' => true, 'recap' => $_recap]);
         exit;
     }
@@ -1524,7 +1524,80 @@ class EmundusControllerMessages extends JControllerLegacy {
         $user = JFactory::getUser();
         $config = JFactory::getConfig();
 
-        /// from fnum --> detect candidat email
+        // Get default mail sender info
+        $mail_from_sys = $config->get('mailfrom');
+        $mail_from_sys_name = $config->get('fromname');
 
+        // If no mail sender info is provided, we use the system global config.
+        $mail_from_name = $jinput->post->getString('mail_from_name', $mail_from_sys_name);
+        $mail_from = $jinput->post->getString('mail_from', $mail_from_sys);
+
+        /// end of default mail sender
+
+        /// from fnum --> detect candidat email
+        $fnum_info = $m_files->getFnumInfos($fnum);
+
+        $candidat_email = $fnum_info['email'];
+
+        /// get message recap by fnum --> reuse the function models/messages.php/getMessageRecapByFnum($fnum)
+        $message = $m_messages->getMessageRecapByFnum($fnum);
+
+        $email_recap = $message['message_recap'];                   /// length = 1
+        $letter_recap = $message['attached_letter'];                /// length >= 1
+
+        // get programme info
+        $programme = $m_campaign->getProgrammeByTraining($fnum_info['training']);
+
+        $toAttach = [];
+        $post = [
+            'FNUM' => $fnum_info['fnum'],
+            'USER_NAME' => $fnum_info['name'],
+            'COURSE_LABEL' => $programme->label,
+            'CAMPAIGN_LABEL' => $fnum_info['label'],
+            'CAMPAIGN_YEAR' => $fnum_info['year'],
+            'CAMPAIGN_START' => $fnum_info['start_date'],
+            'CAMPAIGN_END' => $fnum_info['end_date'],
+            'SITE_URL' => JURI::base(),
+            'USER_EMAIL' => $fnum_info['email'],
+        ];
+
+        $tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum_info['fnum']);
+        $body = $m_emails->setTagsFabrik($email_recap[0]->message, [$fnum_info['fnum']]);
+        $subject = $m_emails->setTagsFabrik($email_recap[0]->subject, [$fnum_info['fnum']]);
+
+        // Tags are replaced with their corresponding values using the PHP preg_replace function.
+        $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
+        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+
+        $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
+        $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
+
+        // If the email sender has the same domain as the system sender address.
+        if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+            $mail_from_address = $mail_from;
+        } else {
+            $mail_from_address = $mail_from_sys;
+        }
+
+        // Set sender
+        $sender = [
+            $mail_from_address,
+            $mail_from_name
+        ];
+
+        // Configure email sender
+        $mailer = JFactory::getMailer();
+        $mailer->setSender($sender);
+        $mailer->addReplyTo($mail_from, $mail_from_name);
+        $mailer->addRecipient($fnum['email']);
+        $mailer->setSubject($subject);
+        $mailer->isHTML(true);
+        $mailer->Encoding = 'base64';
+        $mailer->setBody($body);
+
+        echo '<pre>'; var_dump($mailer); echo '</pre>'; die;
+
+
+        /// get all attachment files by fnum
     }
 }
