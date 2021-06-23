@@ -1515,11 +1515,13 @@ class EmundusControllerMessages extends JControllerLegacy {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 
         $m_messages = new EmundusModelMessages();
         $m_emails = new EmundusModelEmails();
         $m_files = new EmundusModelFiles();
         $m_campaign = new EmundusModelCampaign();
+        $_meval = new EmundusModelEvaluation;
 
         $user = JFactory::getUser();
         $config = JFactory::getConfig();
@@ -1589,15 +1591,33 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mailer = JFactory::getMailer();
         $mailer->setSender($sender);
         $mailer->addReplyTo($mail_from, $mail_from_name);
-        $mailer->addRecipient($fnum['email']);
+        $mailer->addRecipient($fnum_info['email']);
         $mailer->setSubject($subject);
         $mailer->isHTML(true);
         $mailer->Encoding = 'base64';
         $mailer->setBody($body);
 
-        echo '<pre>'; var_dump($mailer); echo '</pre>'; die;
+        $attachments = $_meval->getLettersByFnums($fnum, $attachments = true);
 
+        $attachment_ids = array();
+        foreach ($attachments as $key => $value) {
+            $attachment_ids[] = $value['id'];
+        }
 
-        /// get all attachment files by fnum
+        $attachment_ids = array_unique(array_filter($attachment_ids));
+
+        /// get attachment letters by fnum
+        $file_path = [];
+        foreach($attachment_ids as $key => $value) {
+            $attached_letters = $_meval->getFilesByAttachmentFnums($value, [$fnum]);
+            $file_path[] = EMUNDUS_PATH_ABS . $attached_letters[0]->user_id . DS . $attached_letters[0]->filename;
+        }
+
+        $mailer->addAttachment($file_path);
+        $send = $mailer->Send();
+
+        /// test
+
+//        echo '<pre>'; var_dump($mailer); echo '</pre>'; die;
     }
 }

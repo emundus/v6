@@ -4298,7 +4298,7 @@ $(document).ready(function() {
                                             "<li>" +
                                             "<a id='em_letter_preview' target='_blank' href='" + letter.dest + "'>" +
                                             "<span style='font-size: medium; padding: 10px 0px; color:" + recap.class + "'>" +
-                                            letter.value + "<span class='glyphicon glyphicon-envelope' style='padding-left: 10px;'>" + "</span>" +
+                                            "<span class='glyphicon glyphicon-paperclip' style='padding-right: 10px;'></span>" + letter.value +
                                             "</span>" +
                                             "</a>" +
                                             "</li>";

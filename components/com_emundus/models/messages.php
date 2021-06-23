@@ -1166,6 +1166,8 @@ class EmundusModelMessages extends JModelList {
                     $attachment_list[] = $value['id'];
                 }
 
+                $attachment_list = array_unique(array_filter($attachment_list));            /// this line ensures that all attachment ids will appear once
+
                 /// get message template from attachment list
                 $query->clear()
                     ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
@@ -1184,7 +1186,7 @@ class EmundusModelMessages extends JModelList {
                     $upload_files = $_mEval->getFilesByAttachmentFnums($attach, [$fnum]);
 
                     if(!empty($upload_files)) {
-                        $uploads[] = array('is_existed' => true, 'id' => $upload_files[$key]->id, 'value' => $upload_files[0]->value, 'label' => $upload_files[0]->lbl, 'dest' => JURI::base().EMUNDUS_PATH_REL . $upload_files[0]->user_id . DS. $upload_files[0]->filename);
+                        $uploads[] = array('is_existed' => true, 'id' => $upload_files[0]->id, 'value' => $upload_files[0]->value, 'label' => $upload_files[0]->lbl, 'dest' => JURI::base().EMUNDUS_PATH_REL . $upload_files[0]->user_id . DS. $upload_files[0]->filename);
                     } else {
                         /// if upload file does not exist --> generate this file
                         //$letter = $_mEval->getLetterTemplateForFnum($fnum, [$attach]);
