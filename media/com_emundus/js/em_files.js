@@ -4270,9 +4270,7 @@ $(document).ready(function() {
                     "<tr>" +
                     "<th>" + Joomla.JText._('CANDIDAT_STATUS') + "</th>" +
                     "<td>" +
-                    "<div style='color:" + color + "'>"
-                    + recap.value +
-                    "</div>" +
+                    "<span style='width:100%' class='label label-"  + recap.class + "'>" + recap.value + "</span>" +
                     "</td>" +
                     "</tr>" +
                     "</thead>";
