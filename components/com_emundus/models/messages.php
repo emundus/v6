@@ -1198,15 +1198,7 @@ class EmundusModelMessages extends JModelList {
                 }
 
                 /// get tags by email
-                $query->clear()
-                    ->select('#__emundus_setup_action_tag.*')
-                    ->from($db->quoteName('#__emundus_setup_action_tag'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags') . ' ON ' . $db->quoteName('#__emundus_setup_action_tag.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_tags.tags'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_emails') . ' ON ' . $db->quoteName('#__emundus_setup_emails.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id'))
-                    ->where($db->quoteName('#__emundus_setup_emails.id') . ' = ' . $_message_Info[0]->id);
-
-                $db->setQuery($query);
-                $_tags = $db->loadObjectList();
+                $_tags = $this->getTagsByEmail($_message_Info[0]->id);
 
                 return array('message_recap' => $_message_Info, 'attached_letter' => $uploads, 'tags' => $_tags);
             } catch(Exception $e) {
@@ -1218,7 +1210,33 @@ class EmundusModelMessages extends JModelList {
         }
     }
 
-//    // lock or unlock action for fnum
+    // get tags by email
+    public function getTagsByEmail($eid) {
+	    if(!empty($eid)) {
+	        try {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->clear()
+                    ->select('#__emundus_setup_action_tag.*')
+                    ->from($db->quoteName('#__emundus_setup_action_tag'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags') . ' ON ' . $db->quoteName('#__emundus_setup_action_tag.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_tags.tags'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_emails') . ' ON ' . $db->quoteName('#__emundus_setup_emails.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id'))
+                    ->where($db->quoteName('#__emundus_setup_emails.id') . ' = ' . (int) $eid);
+
+                $db->setQuery($query);
+                return $db->loadObjectList();
+
+            } catch(Exception $e) {
+                JLog::add('Error get tags by fnum : '.$e->getMessage(), JLog::ERROR, 'com_emundus.message');
+                return false;
+            }
+        } else {
+	        return false;
+        }
+    }
+
+    // lock or unlock action for fnum
     public function getActionByFnum($fnum) {
 	    if(!empty($fnum)) {
             /// from fnum --> detect the message
