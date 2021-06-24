@@ -4232,7 +4232,7 @@ $(document).ready(function() {
         $('.modal-dialog').css({ width: '80%' });
 
         $('#can-val').empty();
-        $('#can-val').append('<a class="btn btn-success" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL').replace(/\\/g, '')+'</a>');
+        $('#can-val').append('<a id="send-email" class="btn btn-success" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL').replace(/\\/g, '')+'</a>');
         $('#can-val').show();
 
         /// second, from fnum --> detect the candidat info
@@ -4367,24 +4367,23 @@ $(document).ready(function() {
 
                     }
                 })
-
-                $(document).on('click', '#em-modal-actions .btn.btn-success', function(e) {
-                    $.ajax({
-                        type: 'post',
-                        url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
-                        dataType: 'JSON',
-                        data: { fnum: fnum },
-                        success: function(result) {
-                            console.log(result);
-                        }, error: function(jqXHR) {
-                            console.log(jqXHR.responseText);
-                        }
-                    })
-                })
-
             }, error: function(jqXHR) {
                 console.log(jqXHR.responseText);
             }
+        })
+
+        $('#send-email').on('click', function(e) {
+            $.ajax({
+                type: 'post',
+                url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
+                dataType: 'JSON',
+                data: { fnum: fnum },
+                success: function(result) {
+                    console.log(result);
+                }, error: function(jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            })
         })
     })
 
