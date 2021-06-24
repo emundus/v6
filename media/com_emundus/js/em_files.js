@@ -4330,8 +4330,8 @@ $(document).ready(function() {
 
                             tags.forEach(tag => {
                                 message_table +=
-                                    "<li style='color:" + color + "'>" +
-                                        "<span class='glyphicon glyphicon-tag' style='padding-right: 10px;'></span><b>" + (tag.label).toUpperCase() +
+                                    "<li class='ui mini " + tag.class + " horizontal label'>" +
+                                        "<span class='glyphicon glyphicon-tag' style='padding-right: 10px;'></span><b>" + tag.label +
                                     "</b></li>";
                             })
 
