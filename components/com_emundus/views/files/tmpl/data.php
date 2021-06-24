@@ -94,7 +94,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                         <?php foreach ($line as $k => $value) :?>
                             <?php
                                 if($k == 'status') { ?>
-                                    <tr class="<?php echo($value->status_class); ?>">
+                                    <tr class="label-<?php echo($value->status_class); ?>">
                                 <?php }
                             ?>
 
