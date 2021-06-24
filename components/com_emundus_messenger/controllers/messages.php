@@ -35,14 +35,14 @@ class EmundusmessengerControllermessages extends JControllerLegacy
     /**
      * Get campaigns by fnums of current user
      */
-    public function getcampaignsbyuser() {
+    public function getfilesbyuser() {
         $user = JFactory::getUser();
 
         $m_messages = $this->model;
 
-        $campaigns = $m_messages->getCampaignsByUser();
+        $files = $m_messages->getFilesByUser();
 
-        $data = array('data' => $campaigns, 'current_user' => $user->id);
+        $data = array('data' => $files, 'current_user' => $user->id);
 
         echo json_encode((object)$data);
         exit;
@@ -140,6 +140,7 @@ class EmundusmessengerControllermessages extends JControllerLegacy
 
         $file = $jinput->files->get('file');
         $fnum = $jinput->get('fnum');
+        $message_input = $jinput->get('message');
 
         require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 
@@ -165,11 +166,11 @@ class EmundusmessengerControllermessages extends JControllerLegacy
             }
 
             do{
-                $target_file = $target_dir . rand(1000,90000) . '.' . $ext;
+                $target_file = $target_dir . $fnum . '_' . rand(1000,90000) . '.' . $ext;
             } while (file_exists($target_file));
 
             if (move_uploaded_file($file["tmp_name"], $target_file)) {
-                $message = '<a href="'.$target_file.'" download><img src="/images/emundus/messenger/file_download.svg" class="messages__download_icon" alt="'.$filename.'">'.$filename.'</a>';
+                $message = '<p>' . $message_input . '</p><a href="'.$target_file.'" download><img src="/images/emundus/messenger/file_download.svg" class="messages__download_icon" alt="'.$filename.'">'.$filename.'</a>';
                 $new_message = $m_messages->sendMessage($message,$fnum);
                 echo json_encode(array('msg' => 'SUCCESS','data' => $new_message));
             } else {
@@ -177,6 +178,23 @@ class EmundusmessengerControllermessages extends JControllerLegacy
             }
         }
 
+        exit;
+    }
+
+    public function getdocumentsbycampaign(){
+        $user = JFactory::getUser();
+
+        $m_messages = $this->model;
+
+        $jinput = JFactory::getApplication()->input;
+
+        $fnum = $jinput->getString('fnum');
+
+        $messages_readed = $m_messages->getDocumentsByCampaign($fnum);
+
+        $data = array('data' => $messages_readed);
+
+        echo json_encode((object)$data);
         exit;
     }
 }

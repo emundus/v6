@@ -6,25 +6,31 @@
           transition="nice-modal-fade"
           :adaptive="true"
           height="auto"
-          width="70%"
+          width="45%"
           :scrollable="true"
           :delay="100"
           :clickToClose="true"
+          :draggable="'.drag-window'"
           @closed="beforeClose"
-          @opened="getCampaignsByUser"
+          @opened="getFilesByUser"
       >
         <AttachDocument :user="user" :fnum="fnum" :applicant="true"/>
         <div class="drag-window">
-          <div class="col-md-3 messages__campaigns-list">
-            <div v-for="campaign in campaigns" @click="campaignSelected = campaign.fnum" :class="campaign.fnum == campaignSelected ? 'messages__active-campaign' : ''" class="messages__block">
+          <div class="col-md-5 messages__campaigns-list">
+            <div v-for="file in files" @click="fileSelected = file.fnum" :class="file.fnum == fileSelected ? 'messages__active-campaign' : ''" class="messages__block">
               <div class="messages__campaign-block">
                 <img class="messages__campaigns_folder-icon" src="/images/emundus/messenger/folder.svg" />
-                <span class="messages__campaigns_title">{{campaign.label}}</span>
+                <div style="margin-left: 10px;">
+                  <p class="messages__campaigns_title">{{file.label}}</p>
+                  <p class="messages__campaigns_fnum messages__campaigns_title">N° {{file.fnum}}</p>
+                  <p class="messages__campaigns_fnum messages__campaigns_title">{{file.year}}</p>
+                </div>
               </div>
+              <div></div>
             </div>
           </div>
 
-          <div class="messages__list col-md-9">
+          <div class="messages__list col-md-7">
             <div class="message__header">
               <label class="text-center" style="width: 100%">{{translations.messages}}</label>
               <i class="fas fa-times pointer" @click="$modal.hide('messages')"></i>
@@ -39,17 +45,23 @@
                 </div>
                 <div v-for="message in messages" v-if="date.messages.includes(message.message_id)" class="messages__message-item" :class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'">
                   <div class="messages__message-item-block" @click="showDate != message.message_id ? showDate = message.message_id : showDate = 0" :class="user == message.user_id_from ? 'messages__text-align-right' : 'messages__text-align-left'">
-                    <p><em class="messages__message-item-from">{{message.name}}</em></p>
+                    <p><span class="messages__message-item-from">{{message.name}} - {{ moment(message.date_time).format("HH:mm") }}</span></p>
                     <span class="messages__message-item-span" :class="user == message.user_id_from ? 'messages__message-item-span_current-user' : 'messages__message-item-span_other-user'" v-html="message.message"></span>
-                    <p><em class="messages__message-item-from" v-if="showDate == message.message_id">{{ moment(message.date_time).format("DD/MM/YYYY HH:mm") }}</em></p>
+                    <p><span class="messages__message-item-from" v-if="showDate == message.message_id">{{ moment(message.date_time).format("DD/MM/YYYY HH:mm") }}</span></p>
                   </div>
                 </div>
               </div>
             </div>
             <div class="messages__bottom-input">
-              <input type="text" class="messages__input_text" v-model="message" @keyup.enter.exact.prevent="sendMessage($event)"/>
-              <img class="messages__send-icon" src="/images/emundus/messenger/send.svg" @click="sendMessage" />
-              <img class="messages__send-icon" src="/images/emundus/messenger/attached.svg" @click="attachDocument"/>
+              <input type="text" class="messages__input_text" :placeholder="translations.writeMessage" v-model="message" @keyup.enter.exact.prevent="sendMessage($event)"/>
+            </div>
+            <div class="messages__bottom-input-actions">
+              <div class="messages__actions_bar">
+                <img class="messages__send-icon" src="/images/emundus/messenger/attached.svg" @click="attachDocument"/>
+              </div>
+              <button type="button" class="messages__send_button" @click="sendMessage">
+                  {{ translations.send }}
+              </button>
             </div>
           </div>
         </div>
@@ -86,14 +98,16 @@ export default {
     return {
       dates: [],
       messages: [],
-      campaigns: [],
-      campaignSelected: 0,
+      files: [],
+      fileSelected: 0,
       message: '',
       loading: false,
       interval: 0,
       showDate: 0,
       translations:{
         messages: Joomla.JText._("COM_EMUNDUS_MESSENGER_TITLE"),
+        send: Joomla.JText._("COM_EMUNDUS_MESSENGER_SEND"),
+        writeMessage: Joomla.JText._("COM_EMUNDUS_MESSENGER_WRITE_MESSAGE"),
       }
     };
   },
@@ -107,16 +121,16 @@ export default {
       clearInterval(this.interval);
     },
 
-    getCampaignsByUser(){
+    getFilesByUser(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_messenger&controller=messages&task=getcampaignsbyuser",
+        url: "index.php?option=com_emundus_messenger&controller=messages&task=getfilesbyuser",
       }).then(response => {
-        this.campaigns = response.data.data;
+        this.files = response.data.data;
         if(this.fnum != ''){
-          this.campaignSelected = this.fnum;
+          this.fileSelected = this.fnum;
         } else {
-          this.campaignSelected = this.campaigns[0].fnum;
+          this.fileSelected = this.files[0].fnum;
         }
         this.getMessagesByFnum(true);
         this.interval = setInterval(() => {
@@ -131,7 +145,7 @@ export default {
         method: "get",
         url: "index.php?option=com_emundus_messenger&controller=messages&task=getmessagesbyfnum",
         params: {
-          fnum: this.campaignSelected,
+          fnum: this.fileSelected,
         },
         paramsSerializer: params => {
           return qs.stringify(params);
@@ -152,7 +166,7 @@ export default {
         method: "get",
         url: "index.php?option=com_emundus_messenger&controller=messages&task=markasread",
         params: {
-          fnum: this.campaignSelected,
+          fnum: this.fileSelected,
         },
         paramsSerializer: params => {
           return qs.stringify(params);
@@ -176,7 +190,7 @@ export default {
           },
           data: qs.stringify({
             message: this.message,
-            fnum: this.campaignSelected
+            fnum: this.fileSelected
           })
         }).then(response => {
           this.message = '';
@@ -225,7 +239,7 @@ export default {
   },
 
   watch: {
-    campaignSelected: function(){
+    fileSelected: function(){
       this.getMessagesByFnum(true);
     }
   }

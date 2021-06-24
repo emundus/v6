@@ -17,17 +17,17 @@ jimport('joomla.log.log');
 jimport('joomla.methods');
 JLog::addLogger(
     array(
-        'text_file' => 'com_emundus_messenger.error.php'
+        'text_file' => 'com_emundus.error.php'
     ),
     JLog::ALL,
-    array('com_emundus_messenger')
+    array('com_emundus')
 );
 JLog::addLogger(
     array(
-        'text_file' => 'com_emundus_messenger.email.php'
+        'text_file' => 'com_emundus.email.php'
     ),
     JLog::ALL,
-    array('com_emundus_messenger.email')
+    array('com_emundus.email')
 );
 
 $current_user = JFactory::getUser();

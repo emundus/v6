@@ -8,7 +8,8 @@ hr{
 
 .messages__block{
     padding: 8px 16px;
-    height: 60px;
+    min-height: 60px;
+    height: auto;
     align-items: center;
     display: flex;
     cursor: pointer;
@@ -32,6 +33,7 @@ hr{
 .messages__list{
     min-height: 60vh;
     padding: 20px 0;
+    border-left: 1px solid rgba(203,214,214,.5);
 }
 
 .messages__list-block{
@@ -39,7 +41,13 @@ hr{
     max-height: 60vh;
     overflow-y: auto;
     overflow-x: hidden;
-    padding-right: 50px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding: 0 15px;
+}
+
+.messages__list-block::-webkit-scrollbar {
+    display: none;
 }
 
 .messages__list-block li{
@@ -55,8 +63,16 @@ hr{
     justify-content: center;
 }
 
+.messages__bottom-input-actions{
+    margin: 10px auto 0 auto;
+    display: flex;
+    align-items: center;
+    width: 90%;
+    justify-content: space-between;
+}
+
 .messages__input_text{
-    width: 80% !important;
+    width: 90% !important;
 }
 
 .messages__bottom-input input:focus,.messages__bottom-input input:hover{
@@ -64,7 +80,6 @@ hr{
 }
 
 .messages__send-icon{
-    margin-left: 25px;
     width: 25px;
     height: 25px;
     cursor: pointer;
@@ -108,20 +123,22 @@ hr{
 
 .messages__message-item-from{
     font-size: 12px;
+    font-weight: bold;
 }
 
 .messages__campaigns-list{
-    min-height: 62vh !important;
-    box-shadow: inset -1px 0px 0px rgba(203, 214, 214, 0.5);
     background: #FCFCFC;
 }
 
 .messages__campaigns_title{
     margin-left: 10px;
-    text-overflow: ellipsis;
-    max-width: 100px;
-    overflow: hidden;
-    white-space: nowrap;
+    max-width: 100%;
+    white-space: break-spaces;
+    text-align: left;
+}
+
+.messages__campaigns_fnum{
+    font-size: 14px;
 }
 
 .messages__campaigns_folder-icon{
@@ -141,6 +158,13 @@ hr{
     justify-content: space-between;
     align-items: center;
     padding: 0 25px;
+}
+
+.messages__send_button{
+    border-radius: 4px;
+    background: #052F37;
+    padding: 8px 16px;
+    color: white;
 }
 
 .loader {

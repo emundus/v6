@@ -11,22 +11,26 @@
           </div>
           <div v-for="message in messages" v-if="date.messages.includes(message.message_id)" class="messages__message-item" :class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'">
             <div class="messages__message-item-block" @click="showDate != message.message_id ? showDate = message.message_id : showDate = 0" :class="user == message.user_id_from ? 'messages__text-align-right' : 'messages__text-align-left'">
-              <p><em class="messages__message-item-from">{{message.name}}</em></p>
+              <p><span class="messages__message-item-from">{{message.name}} - {{ moment(message.date_time).format("HH:mm") }}</span></p>
               <span class="messages__message-item-span" :class="user == message.user_id_from ? 'messages__message-item-span_current-user' : 'messages__message-item-span_other-user'" v-html="message.message"></span>
-              <p><em class="messages__message-item-from" v-if="showDate == message.message_id">{{ moment(message.date_time).format("DD/MM/YYYY HH:mm") }}</em></p>
+              <p><span class="messages__message-item-from" v-if="showDate == message.message_id">{{ moment(message.date_time).format("DD/MM/YYYY HH:mm") }}</span></p>
             </div>
           </div>
         </div>
       </div>
       <transition :name="'slide-up'" type="transition">
-        <AttachDocument :user="user" :fnum="fnum" :applicant="false" v-if="attachOpen" @pushAttachmentMessage="pushAttachmentMessage"/>
+        <AttachDocument :user="user" :fnum="fnum" :applicant="false" v-if="attachOpen" @pushAttachmentMessage="pushAttachmentMessage" ref="attachment"/>
       </transition>
       <div class="messages__bottom-input">
-        <input type="text" class="messages__input_text" v-model="message" @keyup.enter.exact.prevent="sendMessage($event)"/>
+        <input type="text" class="messages__input_text" v-model="message" :placeholder="translations.writeMessage" @keyup.enter.exact.prevent="sendMessage($event)"/>
+      </div>
+      <div class="messages__bottom-input-actions">
         <div class="messages__actions_bar">
-          <img class="messages__send-icon" src="/images/emundus/messenger/send.svg" @click="sendMessage" />
           <img class="messages__send-icon" src="/images/emundus/messenger/attached.svg" @click="attachDocument"/>
         </div>
+        <button type="button" class="messages__send_button" @click="sendMessage">
+          {{ translations.send }}
+        </button>
       </div>
     </div>
     <div class="loader" v-if="loading"></div>
@@ -57,7 +61,7 @@ export default {
     return {
       dates: [],
       messages: [],
-      campaignSelected: 0,
+      fileSelected: 0,
       message: '',
       loading: false,
       showDate: 0,
@@ -65,6 +69,8 @@ export default {
       attachOpen: false,
       translations:{
         messages: Joomla.JText._("COM_EMUNDUS_MESSENGER_TITLE"),
+        send: Joomla.JText._("COM_EMUNDUS_MESSENGER_SEND"),
+        writeMessage: Joomla.JText._("COM_EMUNDUS_MESSENGER_WRITE_MESSAGE"),
       }
     };
   },
@@ -80,7 +86,7 @@ export default {
         method: "get",
         url: "index.php?option=com_emundus_messenger&controller=messages&task=getmessagesbyfnum",
         params: {
-          fnum: this.campaignSelected,
+          fnum: this.fileSelected,
         },
         paramsSerializer: params => {
            return qs.stringify(params);
@@ -104,7 +110,7 @@ export default {
         method: "get",
         url: "index.php?option=com_emundus_messenger&controller=messages&task=markasread",
         params: {
-          fnum: this.campaignSelected,
+          fnum: this.fileSelected,
         },
         paramsSerializer: params => {
           return qs.stringify(params);
@@ -118,29 +124,34 @@ export default {
       if(typeof e != 'undefined') {
         e.stopImmediatePropagation();
       }
-      if(this.message !== '') {
-        axios({
-          method: "post",
-          url:
-              "index.php?option=com_emundus_messenger&controller=messages&task=sendmessage",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
-            message: this.message,
-            fnum: this.campaignSelected
-          })
-        }).then(response => {
-          this.message = '';
-          var message_date = response.data.date_time.split(' ')[0];
-          this.dates.forEach((elt,index) => {
-            if(elt.dates == message_date){
-              this.dates[index].messages.push(response.data.message_id);
-            }
+      if(this.attachOpen) {
+        this.$refs.attachment.sendMessage(this.message);
+        this.message = '';
+      } else {
+        if (this.message !== '') {
+          axios({
+            method: "post",
+            url:
+                "index.php?option=com_emundus_messenger&controller=messages&task=sendmessage",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              message: this.message,
+              fnum: this.fileSelected
+            })
+          }).then(response => {
+            this.message = '';
+            var message_date = response.data.date_time.split(' ')[0];
+            this.dates.forEach((elt, index) => {
+              if (elt.dates == message_date) {
+                this.dates[index].messages.push(response.data.message_id);
+              }
+            });
+            this.messages.push(response.data);
+            this.scrollToBottom();
           });
-          this.messages.push(response.data);
-          this.scrollToBottom();
-        });
+        }
       }
     },
 
@@ -153,6 +164,11 @@ export default {
 
     attachDocument(){
       this.attachOpen = !this.attachOpen;
+      setTimeout(() => {
+        if(this.attachOpen){
+          this.$refs.attachment.getTypesByCampaign();
+        }
+      },500);
     },
 
     pushAttachmentMessage(message){
@@ -170,7 +186,7 @@ export default {
 
   created(){
     if(typeof this.fnum != 'undefined'){
-      this.campaignSelected = this.fnum;
+      this.fileSelected = this.fnum;
       setInterval(() => {
         this.getMessagesByFnum(false);
       },20000);
@@ -178,7 +194,7 @@ export default {
   },
 
   watch: {
-    campaignSelected: function(){
+    fileSelected: function(){
       this.getMessagesByFnum(true);
     }
   }
@@ -190,6 +206,13 @@ export default {
   width: 100%;
   position: absolute;
   background: #f8f8f8;
-  bottom: 70px;
+  bottom: 120px;
+}
+.messages__list-block{
+  padding: 0px 55px;
+}
+
+.messages__attach_content {
+  padding: 0 70px;
 }
 </style>

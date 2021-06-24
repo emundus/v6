@@ -30,18 +30,20 @@
                 v-on:vdropzone-thumbnail="thumbnail"
                 v-on:vdropzone-removed-file="afterRemoved"
                 v-on:vdropzone-complete="onComplete"
-                v-on:vdropzone-error="catchError">
+                v-on:vdropzone-error="catchError"
+                v-on:vdropzone-sending="sendingEvent">
               <div class="dropzone-custom-content" id="dropzone-message">
                 <em class="fas fa-file-image"></em>
                 {{translations.DropHere}}
               </div>
             </vue-dropzone>
           </div>
-          <div v-if="action === 2"></div>
-          <button type="button" class="messages__button_send"
-                  @click.prevent="sendMessage()">
-            {{ translations.send }}
-          </button>
+          <div v-if="action === 2">
+            <label for="attachment_input">{{translations.typeAttachment}}</label>
+            <select v-model="attachment_input" id="attachment_input">
+              <option v-for="type in types" :value="type.id">{{type.value}}</option>
+            </select>
+          </div>
         </div>
       </modal>
     </span>
@@ -62,7 +64,7 @@ const qs = require("qs");
 const getTemplate = () => `
 <div class="dz-preview dz-file-preview">
   <div class="dz-image">
-    <div data-dz-thumbnail-bg></div>
+    <img src="/images/emundus/messenger/file_download.svg" style="max-width: 50px"/>
   </div>
   <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
   <div class="dz-error-message"><span data-dz-errormessage></span></div>
@@ -88,21 +90,23 @@ export default {
         askDocument: Joomla.JText._("COM_EMUNDUS_MESSENGER_ASK_DOCUMENT"),
         DropHere: Joomla.JText._("COM_EMUNDUS_MESSENGER_DROP_HERE"),
         send: Joomla.JText._("COM_EMUNDUS_MESSENGER_SEND"),
+        typeAttachment: Joomla.JText._("COM_EMUNDUS_MESSENGER_TYPE_ATTACHMENT"),
       },
+      types: [],
+      message_input: '',
+      attachment_input: '',
+      loading: false,
+      action: 1,
       dropzoneOptions: {
         url: 'index.php?option=com_emundus_messenger&controller=messages&task=uploaddocument&fnum=' + this.fnum,
         maxFilesize: 10,
-        maxFiles: 1,
+        maxFiles: 5,
         autoProcessQueue: false,
         addRemoveLinks: true,
         thumbnailWidth: null,
         thumbnailHeight: null,
         previewTemplate: getTemplate(),
       },
-      types: [],
-      message: '',
-      loading: false,
-      action: 1,
     };
   },
 
@@ -123,6 +127,10 @@ export default {
       if(response.status == 'success'){
         this.$emit("pushAttachmentMessage",JSON.parse(response.xhr.response).data);
       }
+    },
+
+    sendingEvent(file, xhr, formData){
+      formData.append('message', this.message_input);
     },
 
     catchError: function(file, message, xhr){
@@ -159,12 +167,19 @@ export default {
       axios({
         method: "get",
         url: "index.php?option=com_emundus_messenger&controller=messages&task=getdocumentsbycampaign",
+        params: {
+          fnum: this.fnum,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
       }).then(response => {
         this.types = response.data.data;
       });
     },
 
-    sendMessage(){
+    sendMessage(message){
+      this.message_input = message;
       this.$refs.dropzone.processQueue();
     },
   },

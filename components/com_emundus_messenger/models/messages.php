@@ -23,14 +23,14 @@ class EmundusmessengerModelmessages extends JModelList
         parent::__construct($config);
     }
 
-    function getCampaignsByUser() {
+    function getFilesByUser() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         $user = JFactory::getSession()->get('emundusUser');
 
         try {
-            $query->select('sc.*,cc.fnum')
+            $query->select('sc.*,cc.fnum,cc.published as file_publish')
                 ->from($db->quoteName('#__emundus_campaign_candidature','cc'))
                 ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
                 ->where($db->quoteName('cc.applicant_id') .' = ' . $user->id)
@@ -38,7 +38,7 @@ class EmundusmessengerModelmessages extends JModelList
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e){
-            JLog::add('component/com_emundus_messages/models/messages | Error when try to get campaigns associated to user : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_messages/models/messages | Error when try to get files associated to user : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
         }
     }
@@ -198,16 +198,44 @@ class EmundusmessengerModelmessages extends JModelList
             $db->setQuery($query);
             $messages_readed = $db->loadColumn();
 
-            $query->clear()
-                ->update($db->quoteName('#__messages'))
-                ->set($db->quoteName('state') . ' = 1')
-                ->where($db->quoteName('message_id') . ' IN (' . implode(',',$messages_readed) . ')');
-            $db->setQuery($query);
-            $db->execute();
+            if(!empty($messages_readed)) {
+                $query->clear()
+                    ->update($db->quoteName('#__messages'))
+                    ->set($db->quoteName('state') . ' = 1')
+                    ->where($db->quoteName('message_id') . ' IN (' . implode(',', $messages_readed) . ')');
+                $db->setQuery($query);
+                $db->execute();
+            }
 
             return sizeof($messages_readed);
         } catch (Exception $e){
             JLog::add('component/com_emundus_messages/models/messages | Error when try to mark messages as read with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function getDocumentsByCampaign($fnum){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('sc.profile_id')
+                ->from($db->quoteName('#__emundus_setup_campaigns','sc'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature','cc').' ON '.$db->quoteName('cc.campaign_id').' = '.$db->quoteName('sc.id'))
+                ->where($db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum));
+            $db->setQuery($query);
+            $profile_id = $db->loadResult();
+
+            $query->clear()
+                ->select('sa.id,sa.value')
+                ->from($db->quoteName('#__emundus_setup_attachments','sa'))
+                ->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles','sap').' ON '.$db->quoteName('sap.attachment_id').' = '.$db->quoteName('sa.id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_profiles','sp').' ON '.$db->quoteName('sp.id').' = '.$db->quoteName('sap.profile_id'))
+                ->where($db->quoteName('sp.id') . ' = ' . $db->quote($profile_id));
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_messages/models/messages | Error when try to get documents with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
