@@ -133,7 +133,7 @@ var lastIndex = 0;
 var loading;
 
 // load applicant list
-function reloadData(view)
+async function reloadData(view)
 {
     view = (typeof view === 'undefined') ? 'files' : view;
 
@@ -177,7 +177,7 @@ function reloadFilter(view)
 }
 */
 // load Menu action
-function reloadActions(view, fnum, onCheck, async) {
+async function reloadActions(view, fnum, onCheck, async) {
 
     view = (typeof view === 'undefined') ? 'files' : view;
     fnum = (typeof fnum === 'undefined') ? 0 : fnum;
@@ -4383,8 +4383,8 @@ $(document).ready(function() {
                     if(textStatus == 'abort') {
                         $('#em-modal-actions').modal('hide');
                         addDimmer();
-                        setTimeout(function() {reloadData();}, 2500);
-                        reloadActions($('#view').val(), undefined, false);
+
+                        setTimeout(function() {reloadData();}, 3000);
                         $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
                         $('body').removeClass('modal-open');
                     } else {
