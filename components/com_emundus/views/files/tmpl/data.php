@@ -90,8 +90,18 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 				<tbody>
 				<?php foreach ($this->datas as $key => $line):?>
 					<?php if ($key != 0): ?>
-						<tr>
+
+                        <?php foreach ($line as $k => $value) :?>
+                            <?php
+                                if($k == 'status') { ?>
+                                    <tr class="<?php echo($value->status_class); ?>">
+                                <?php }
+                            ?>
+
+                        <?php endforeach; ?>
+
 							<?php foreach ($line as $k => $value) :?>
+
 								<td <?php if ($k == 'check'&& $value->class != null) { echo 'class="'.$value->class.'"'; } ?>>
 									<div class="em-cell" >
 										<?php if ($k == 'check'): ?>
