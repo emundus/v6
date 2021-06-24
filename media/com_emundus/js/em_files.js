@@ -4289,26 +4289,27 @@ $(document).ready(function() {
                         if(data.status == true){
                             let email_recap = data.email_recap.message_recap[0];
                             let letter_recap = data.email_recap.attached_letter;
+                            let tags = data.email_recap.tags;
 
                             var message_table =
                                 "<h3>" +
-                                Joomla.JText._('MESSAGE_INFORMATION') +
+                                    Joomla.JText._('MESSAGE_INFORMATION') +
                                 "</h3>" +
                                 "<table class='table' id='em-candidat-panel' style='border: 1px solid'>" +
-                                "<thead>" +
-                                "<tr>" +
-                                "<th>" + Joomla.JText._('EMAIL_SUBJECT') + "</th>" +
-                                "<td>" +
-                                "<div style='color:" + recap.class + "'>" + email_recap.subject + "</div>" +
-                                "</td>" +
-                                "</tr>" +
-                                "<tr>" +
-                                "<th>" + Joomla.JText._('EMAIL_BODY') + "</th>" +
-                                "<td>" + email_recap.message + "</td>" +
-                                "</tr>" +
-                                "<tr>" +
-                                "<th>" + Joomla.JText._('ATTACHMENT_LETTER') + "</th>" +
-                                "<td>";
+                                    "<thead>" +
+                                        "<tr>" +
+                                            "<th>" + Joomla.JText._('EMAIL_SUBJECT') + "</th>" +
+                                            "<td>" +
+                                                "<div style='color:" + recap.class + "'>" + email_recap.subject + "</div>" +
+                                            "</td>" +
+                                        "</tr>" +
+                                         "<tr>" +
+                                            "<th>" + Joomla.JText._('EMAIL_BODY') + "</th>" +
+                                            "<td>" + email_recap.message + "</td>" +
+                                        "</tr>" +
+                                        "<tr>" +
+                                            "<th>" + Joomla.JText._('ATTACHMENT_LETTER') + "</th>" +
+                                            "<td>";
 
                             letter_recap.forEach(letter => {
                                 message_table +=
@@ -4321,6 +4322,21 @@ $(document).ready(function() {
                                     "</li>";
                             })
 
+                            message_table += "</td></tr>";
+
+                            /// end of attachments
+
+                            /// begin of tags
+                            message_table += "<tr>" + "<th>" + Joomla.JText._('EMAIL_TAGS') + "</th>" +  "<td>";
+
+                            tags.forEach(tag => {
+                                message_table +=
+                                    "<li>" +
+                                        "<span class='glyphicon glyphicon-tag' style='padding-right: 10px;'></span>" + (tag.label).toUpperCase() +
+                                    "</li>";
+                            })
+
+                            /// end of tags
 
                             message_table += "</td></tr></thead></table>";
                             $('.modal-body').append(message_table);
