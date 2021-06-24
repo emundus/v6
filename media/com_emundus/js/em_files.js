@@ -4373,14 +4373,23 @@ $(document).ready(function() {
 
         $('#send-email').on('click', function(e) {
             $.ajax({
-                type: 'post',
+                type: 'POST',
                 url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
                 dataType: 'JSON',
                 data: { fnum: fnum },
                 success: function(result) {
-                    console.log(result);
-                }, error: function(jqXHR) {
-                    console.log(jqXHR.responseText);
+                    //console.log(result);
+                }, error: function(jqXHR, textStatus) {
+                    if(textStatus == 'abort') {
+                        $('#em-modal-actions').modal('hide');
+                        addDimmer();
+                        setTimeout(function() {reloadData();}, 2500);
+                        reloadActions($('#view').val(), undefined, false);
+                        $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
+                        $('body').removeClass('modal-open');
+                    } else {
+
+                    }
                 }
             })
         })
