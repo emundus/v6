@@ -1197,7 +1197,18 @@ class EmundusModelMessages extends JModelList {
                     }
                 }
 
-                return array('message_recap' => $_message_Info, 'attached_letter' => $uploads);
+                /// get tags by email
+                $query->clear()
+                    ->select('#__emundus_setup_action_tag.*')
+                    ->from($db->quoteName('#__emundus_setup_action_tag'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags') . ' ON ' . $db->quoteName('#__emundus_setup_action_tag.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_tags.tags'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_emails') . ' ON ' . $db->quoteName('#__emundus_setup_emails.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id'))
+                    ->where($db->quoteName('#__emundus_setup_emails.id') . ' = ' . $_message_Info[0]->id);
+
+                $db->setQuery($query);
+                $_tags = $db->loadObjectList();
+
+                return array('message_recap' => $_message_Info, 'attached_letter' => $uploads, 'tags' => $_tags);
             } catch(Exception $e) {
                 JLog::add('Error get available message by fnum : '.$e->getMessage(), JLog::ERROR, 'com_emundus.message');
                 return false;
