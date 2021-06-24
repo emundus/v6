@@ -4243,6 +4243,7 @@ $(document).ready(function() {
             data: { fnum : fnum.toString() },
             success: function(result) {
                 let recap = result.recap;
+                let color = result.color;
                 /// first table --> recap table
                 var table =
                     "<h3>" +
@@ -4269,7 +4270,7 @@ $(document).ready(function() {
                     "<tr>" +
                     "<th>" + Joomla.JText._('CANDIDAT_STATUS') + "</th>" +
                     "<td>" +
-                    "<div style='color:" + recap.class + "'>"
+                    "<div style='color:" + color + "'>"
                     + recap.value +
                     "</div>" +
                     "</td>" +
@@ -4300,7 +4301,7 @@ $(document).ready(function() {
                                         "<tr>" +
                                             "<th>" + Joomla.JText._('EMAIL_SUBJECT') + "</th>" +
                                             "<td>" +
-                                                "<div style='color:" + recap.class + "'>" + email_recap.subject + "</div>" +
+                                                "<div style='color:" + color + "'>" + email_recap.subject + "</div>" +
                                             "</td>" +
                                         "</tr>" +
                                          "<tr>" +
@@ -4315,7 +4316,7 @@ $(document).ready(function() {
                                 message_table +=
                                     "<li>" +
                                     "<a id='em_letter_preview' target='_blank' href='" + letter.dest + "'>" +
-                                    "<span style='font-size: medium; padding: 10px 0px; color:" + recap.class + "'>" +
+                                    "<span style='font-size: medium; padding: 10px 0px; color:" + color + "'>" +
                                     "<span class='glyphicon glyphicon-paperclip' style='padding-right: 10px;'></span>" + letter.value +
                                     "</span>" +
                                     "</a>" +
@@ -4331,9 +4332,9 @@ $(document).ready(function() {
 
                             tags.forEach(tag => {
                                 message_table +=
-                                    "<li>" +
-                                        "<span class='glyphicon glyphicon-tag' style='padding-right: 10px;'></span>" + (tag.label).toUpperCase() +
-                                    "</li>";
+                                    "<li style='color:" + color + "'>" +
+                                        "<span class='glyphicon glyphicon-tag' style='padding-right: 10px;'></span><b>" + (tag.label).toUpperCase() +
+                                    "</b></li>";
                             })
 
                             /// end of tags
@@ -6084,4 +6085,14 @@ function getXMLHttpRequest() {
     }
 
     return xhr;
+}
+
+/// convert rgb to hex
+function componentToHex(c) {
+    let hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
