@@ -113,7 +113,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 												?>
 											</label>
 										<?php elseif ($k == 'status'):?>
-											<span class="label label-<?= $value->status_class; ?>" title="<?= $value->val; ?>"><?= $value->val; ?></span>
+											<span style="width: 100%" class="label label-<?= $value->status_class; ?>" title="<?= $value->val; ?>"><?= $value->val; ?></span>
 										<?php elseif ($k == 'fnum'):?>
 											<a href="#<?= $value->val; ?>|open" id="<?= $value->val; ?>" class="em_file_open">
 												<?php if (isset($value->photo) && !$anonymize_data) :?>
