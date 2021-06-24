@@ -1929,10 +1929,17 @@ class EmundusHelperFiles
         $tagsList = array();
         foreach ($tags as $tag) {
             $fnum = $tag['fnum'];
+
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $_mFiles = new EmundusModelFiles;
+
+            /// from fnum --> get the status
+            $_fnumInfo = $_mFiles->getFnumInfos($fnum);
+
             if (!isset($tagsList[$fnum])) {
-	            $tagsList[$fnum] = '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+	            $tagsList[$fnum] = '<a class="item"><div class="label label-' . $_fnumInfo['class'] . '">' . $tag['label'].'</div></a> ';
             } else {
-	            $tagsList[$fnum] .= '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+                $tagsList[$fnum] .= '<a class="item"><div class="label label-' . $_fnumInfo['class'] . '">' . $tag['label'].'</div></a> ';
             }
         }
         return $tagsList;
