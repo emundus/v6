@@ -4213,6 +4213,9 @@ $(document).ready(function() {
     });
 
 
+    // show tooltips when hovering the butto
+    $(document).on('mouseover', '[id^=candidat_]', function(e){ $(this).css('cursor', 'pointer').attr('title', 'Send emails');})
+
     $(document).on('click', '[id^=candidat_]', function(e){
         let fnum = $(this).attr('id').split('candidat_')[1];
         console.log($(this).attr('id'));
@@ -4384,7 +4387,7 @@ $(document).ready(function() {
                         $('#em-modal-actions').modal('hide');
                         addDimmer();
 
-                        setTimeout(function() {reloadData();}, 3000);
+                        setTimeout(function() {reloadData();}, 3500);
                         $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
                         $('body').removeClass('modal-open');
                     } else {
