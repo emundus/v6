@@ -2564,3 +2564,55 @@ a.copy-0:focus {
 .email___candidat .email___message_body .email___message_body_item {
     padding: 0px;
 }
+
+/* email editor */
+.email___editor {
+    display: flex;
+    padding: 0px;
+}
+
+.email___editor .email___editor_category {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    background: #FCFCFC;
+    box-shadow: 0px 6px 10px rgba(5, 47, 55, 0.07), 0px 1px 18px rgba(5, 47, 55, 0.06), 0px 3px 5px rgba(5, 47, 55, 0.1);
+    border-radius: 4px;
+    margin-right: 32px;
+}
+
+.email___editor .email___editor_category .email___editor_category_item {
+    padding: 0px;
+}
+
+.email__editor .email___editor_sending {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    background: #FCFCFC;
+    box-shadow: 0px 6px 10px rgba(5, 47, 55, 0.07), 0px 1px 18px rgba(5, 47, 55, 0.06), 0px 3px 5px rgba(5, 47, 55, 0.1);
+    border-radius: 4px;
+    max-width: 500px !important;
+    overflow-y: scroll;
+}
+
+.email__editor .email___editor_sending .email___editor_sending_input {
+    padding: 0px;
+}
+
+.email__editor .email___editor_sending .email___editor_sending_input .email___editor_sending_input_label {
+    width: 85px;
+    height: 40px;
+    text-align: right;
+}
+
+.email__editor .email___editor_sending .email___editor_sending_input .email___editor_sending_input_input {
+    width: 100%;
+    heigth: 40px;
+}
+
+.email__editor .email___editor_sending .email___editor_sending_wysiwyg {
+    width: auto;
+    height: 300px;
+    overflow-y: scroll;
+}

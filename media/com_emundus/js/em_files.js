@@ -4492,28 +4492,28 @@ $(document).ready(function() {
         //     }
         // })
         //
-        // $('#send-email').on('click', function(e) {
-        //     $.ajax({
-        //         type: 'POST',
-        //         url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
-        //         dataType: 'JSON',
-        //         data: { fnum: fnum },
-        //         success: function(result) {
-        //             //console.log(result);
-        //         }, error: function(jqXHR, textStatus) {
-        //             if(textStatus == 'abort') {
-        //                 $('#em-modal-actions').modal('hide');
-        //                 addDimmer();
-        //
-        //                 setTimeout(function() {reloadData();}, 3500);
-        //                 $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
-        //                 $('body').removeClass('modal-open');
-        //             } else {
-        //
-        //             }
-        //         }
-        //     })
-        // })
+        $('#send-email').on('click', function(e) {
+            $.ajax({
+                type: 'POST',
+                url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
+                dataType: 'JSON',
+                data: { fnum: fnum },
+                success: function(result) {
+                    //console.log(result);
+                }, error: function(jqXHR, textStatus) {
+                    if(textStatus == 'abort') {
+                        $('#em-modal-actions').modal('hide');
+                        addDimmer();
+
+                        setTimeout(function() {reloadData();}, 3500);
+                        $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
+                        $('body').removeClass('modal-open');
+                    } else {
+
+                    }
+                }
+            })
+        })
     })
 
 
