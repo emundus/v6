@@ -4242,58 +4242,15 @@ $(document).ready(function() {
         $('.modal-body').css('align-items', 'center');
         $('.modal-body').css('justify-content', 'center');
 
-
-        /// append modal-body to email___candidat
         $('.modal-body').append('<div id="email-candidat-preview" class="email___candidat"></div>');
-        $('#email-candidat-preview').append('<div id="email-candidat-panel-preview" class="email___candidat_panel"></div>');
-        $('#email-candidat-preview').append('<div id="email-candidat-message-preview" class="email___message_body"></div>');
+        $('#email-candidat-preview').append('<div id="email-candidat-panel-preview" class="email___candidat_panel" style="display: none"></div>');
+        $('#email-candidat-preview').append('<div id="email-candidat-message-preview" class="email___message_body" style="display: none"></div>');
 
-        // candidate name + email
-        $('#email-candidat-panel-preview').append(
-            '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
-            '<label for="candidat-name-label">' + Joomla.JText._('CANDIDATE_NAME') + '</label>' +
-            '<div id="candidat-name"></div>' +
-            '<div id="candidat-email"></div>' +
-            '</div>'
-        );
 
-        // candidate program
-        $('#email-candidat-panel-preview').append(
-            '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
-            '<label for="candidat-program-label">' + Joomla.JText._('PROGRAM_NAME') + '</label>' +
-            '<div id="candidat-program"></div>' +
-            '<div id="candidat-program-year"></div>' +
-            '</div>'
-        );
+        $('#email-candidat-preview').prepend('<div id="loadingimg-candidat"><img src="'+loadingLine+'" alt="loading"/></div>');
 
-        // candidate status
-        $('#email-candidat-panel-preview').append(
-            '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
-                '<label for="candidat-status-label">' + Joomla.JText._('CANDIDAT_STATUS') + '</label>' +
-                '<div id="candidat-status" style="margin-bottom: 8px !important">' +
-                    '<span id="status-class"></span>' +
-                '</div>' +
-            '</div>'
-        );
+        $('#loadingimg-candidat').show();
 
-        // attachment letters
-        $('#email-candidat-panel-preview').append(
-            '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
-            '<label for="candidat-attachment-label">' + Joomla.JText._('ATTACHMENT_LETTER') + '</label>' +
-            '<div id="candidat-letters"></div>' +
-            '</div>'
-        );
-
-        // message preview
-        $('#email-candidat-message-preview').append(
-            '<div id="email-preview" class="email___message_body_item">' +
-            '<label for="email-preview-label">' + Joomla.JText._('EMAIL_SUBJECT') + ' : </label>' +
-            '<div id="message-subject"></div>' +
-            '<div id="message-body"></div>' +
-            '</div>'
-        );
-
-        // "<span style='width:100%' class='label label-"  + recap.class + "'>" + recap.value + "</span>" +
 
         $.ajax({
             type: 'post',
@@ -4301,32 +4258,77 @@ $(document).ready(function() {
             dataType: 'JSON',
             data: { fnum : fnum.toString() },
             success: function(result) {
-                let recap = result.recap;
-                let color = result.color;
 
-                console.log(recap);
-
-                $('#candidat-name').append(recap.name);
-                $('#candidat-email').append(recap.email);
-                $('#candidat-program').append(recap.label);
-                $('#candidat-program-year').append(recap.year);
-
-                $('#status-class').addClass('label label-' + recap.class);
-                $('#status-class').append(recap.value);
-
-                /// get attachment letters
                 $.ajax({
                     type: 'post',
                     url: 'index.php?option=com_emundus&controller=messages&task=getmessagerecapbyfnum',
                     dataType: 'JSON',
                     data: { fnum : fnum },
                     success: function(data) {
-                        console.log(data);
                         if(data.status == true) {
+                            let recap = result.recap;
+                            let color = result.color;
+
+                            $('#loadingimg-candidat').hide();
+
+                            $('#email-candidat-panel-preview').show();
+                            $('#email-candidat-message-preview').show();
+                            $('#email-candidat-panel-preview').append(
+                                '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
+                                '<label for="candidat-name-label">' + Joomla.JText._('CANDIDATE_NAME') + '</label>' +
+                                '<div id="candidat-name"></div>' +
+                                '<div id="candidat-email"></div>' +
+                                '</div>'
+                            );
+
+                            // candidate program
+                            $('#email-candidat-panel-preview').append(
+                                '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
+                                '<label for="candidat-program-label">' + Joomla.JText._('PROGRAM_NAME') + '</label>' +
+                                '<div id="candidat-program"></div>' +
+                                '<div id="candidat-program-year"></div>' +
+                                '</div>'
+                            );
+
+                            // candidate status
+                            $('#email-candidat-panel-preview').append(
+                                '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
+                                '<label for="candidat-status-label">' + Joomla.JText._('CANDIDAT_STATUS') + '</label>' +
+                                '<div id="candidat-status" style="margin-bottom: 8px !important">' +
+                                '<span id="status-class"></span>' +
+                                '</div>' +
+                                '</div>'
+                            );
+
+                            // attachment letters
+                            $('#email-candidat-panel-preview').append(
+                                '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
+                                '<label for="candidat-attachment-label">' + Joomla.JText._('ATTACHMENT_LETTER') + '</label>' +
+                                '<div id="candidat-letters"></div>' +
+                                '</div>'
+                            );
+
+                            $('#candidat-name').append(recap.name);
+                            $('#candidat-email').append(recap.email);
+                            $('#candidat-program').append(recap.label);
+                            $('#candidat-program-year').append(recap.year);
+
+                            $('#status-class').addClass('label label-' + recap.class);
+                            $('#status-class').append(recap.value);
+
+
                             let email_recap = data.email_recap.message_recap[0];
                             let letter_recap = data.email_recap.attached_letter;
 
-
+                            // message preview
+                            $('#email-candidat-message-preview').append(
+                                '<div id="email-preview" class="email___message_body_item">' +
+                                '<label for="email-preview-label">' + Joomla.JText._('EMAIL_SUBJECT') + ' : </label>' +
+                                '<div id="message-subject"></div>' +
+                                '<div id="message-body"></div>' +
+                                '</div>'
+                            );
+                            
                             /// render attachment letters to candidat preview
                             letter_recap.forEach(letter => {
                                 $('#candidat-letters').append(
@@ -4356,156 +4358,19 @@ $(document).ready(function() {
             }
         })
 
-        /// second, from fnum --> detect the candidat info
-        // $.ajax({
-        //     type: 'post',
-        //     url: 'index.php?option=com_emundus&controller=messages&task=getrecapbyfnum',
-        //     dataType: 'JSON',
-        //     data: { fnum : fnum.toString() },
-        //     success: function(result) {
-        //         let recap = result.recap;
-        //         let color = result.color;
-        //         /// first table --> recap table
-        //         var table =
-        //             "<h3>" +
-        //             Joomla.JText._('CANDIDAT_INFORMATION')+
-        //             "</h3>" +
-        //             "<table class='table' id='em-candidat-panel' style='border: 1px solid'>" +
-        //             "<thead>" +
-        //             "<tr>" +
-        //             "<th>" + Joomla.JText._('CANDIDATE_NAME') + "</th>" +
-        //             "<td>" + recap.name + "</td>" +
-        //             "</tr>" +
-        //             "<tr>" +
-        //             "<th>" + Joomla.JText._('CANDIDATE_EMAIL') + "</th>" +
-        //             "<td>" + recap.email + "</td>" +
-        //             "</tr>" +
-        //             "<tr>" +
-        //             "<th>" + Joomla.JText._('PROGRAM_NAME') + "</th>" +
-        //             "<td>" + recap.label + "</td>" +
-        //             "</tr>" +
-        //             "<tr>" +
-        //             "<th>" + Joomla.JText._('CAMPAIGN_YEAR') + "</th>" +
-        //             "<td>" + recap.year + "</td>" +
-        //             "</tr>" +
-        //             "<tr>" +
-        //             "<th>" + Joomla.JText._('CANDIDAT_STATUS') + "</th>" +
-        //             "<td>" +
-        //             "<span style='width:100%' class='label label-"  + recap.class + "'>" + recap.value + "</span>" +
-        //             "</td>" +
-        //             "</tr>" +
-        //             "</thead>";
-        //         table += "</table>";
-        //         $('.modal-body').append(table);
-        //
-        //         // second table --> message table
-        //         $.ajax({
-        //             type: 'post',
-        //             url: 'index.php?option=com_emundus&controller=messages&task=getmessagerecapbyfnum',
-        //             dataType: 'JSON',
-        //             data: { fnum : fnum },
-        //             success: function(data) {
-        //                 console.log(data);
-        //                 if(data.status == true){
-        //                     let email_recap = data.email_recap.message_recap[0];
-        //                     let letter_recap = data.email_recap.attached_letter;
-        //                     let tags = data.email_recap.tags;
-        //
-        //                     var message_table =
-        //                         "<h3>" +
-        //                             Joomla.JText._('MESSAGE_INFORMATION') +
-        //                         "</h3>" +
-        //                         "<table class='table' id='em-candidat-panel' style='border: 1px solid'>" +
-        //                             "<thead>" +
-        //                                 "<tr>" +
-        //                                     "<th>" + Joomla.JText._('EMAIL_SUBJECT') + "</th>" +
-        //                                     "<td>" +
-        //                                         "<div style='color:" + color + "'>" + email_recap.subject + "</div>" +
-        //                                     "</td>" +
-        //                                 "</tr>" +
-        //                                  "<tr>" +
-        //                                     "<th>" + Joomla.JText._('EMAIL_BODY') + "</th>" +
-        //                                     "<td>" + email_recap.message + "</td>" +
-        //                                 "</tr>" +
-        //                                 "<tr>" +
-        //                                     "<th>" + Joomla.JText._('ATTACHMENT_LETTER') + "</th>" +
-        //                                     "<td>";
-        //
-        //                     letter_recap.forEach(letter => {
-        //                         message_table +=
-        //                             "<li>" +
-        //                             "<a id='em_letter_preview' target='_blank' href='" + letter.dest + "'>" +
-        //                             "<span style='font-size: medium; padding: 10px 0px; color:" + color + "'>" +
-        //                             "<span class='glyphicon glyphicon-paperclip' style='padding-right: 10px;'></span>" + letter.value +
-        //                             "</span>" +
-        //                             "</a>" +
-        //                             "</li>";
-        //                     })
-        //
-        //                     message_table += "</td></tr>";
-        //
-        //                     /// end of attachments
-        //
-        //                     /// begin of tags
-        //                     message_table += "<tr>" + "<th>" + Joomla.JText._('EMAIL_TAGS') + "</th>" +  "<td>";
-        //
-        //                     tags.forEach(tag => {
-        //                         message_table +=
-        //                             "<li class='ui mini " + tag.class + " horizontal label'>" +
-        //                                 "<span class='glyphicon glyphicon-tag' style='padding-right: 10px;'></span><b>" + tag.label +
-        //                             "</b></li>";
-        //                     })
-        //
-        //                     /// end of tags
-        //
-        //                     message_table += "</td></tr></thead></table>";
-        //                     $('.modal-body').append(message_table);
-        //                 } else {
-        //                     var message_table =
-        //                         "<h3>" +
-        //                         Joomla.JText._('MESSAGE_INFORMATION') +
-        //                         "</h3>" +
-        //                         "<table class='table' id='em-candidat-panel' style='border: 1px solid'>" +
-        //                         "<thead>" +
-        //                         "<tr>" +
-        //                         "<th>" + Joomla.JText._('EMAIL_SUBJECT') + "</th>" +
-        //                         "<td>" + Joomla.JText._('EMAIL_FAILED') + "</td>" +
-        //                         "</tr>" +
-        //                         "<tr>" +
-        //                         "<th>" + Joomla.JText._('EMAIL_BODY') + "</th>" +
-        //                         "<td>" + Joomla.JText._('EMAIL_FAILED') + "</td>" +
-        //                         "</tr>" +
-        //                         "<tr>" +
-        //                         "<th>" + Joomla.JText._('ATTACHMENT_LETTER') + "</th>" +
-        //                         "<td>" + Joomla.JText._('EMAIL_FAILED') + "</td>" +
-        //                         "</tr>" +
-        //                         "</thead>" +
-        //                         "</table>";
-        //                     $('.modal-body').append(message_table);
-        //                 }
-        //             }, error: function(jqXHR) {
-        //
-        //             }
-        //         })
-        //     }, error: function(jqXHR) {
-        //         console.log(jqXHR.responseText);
-        //     }
-        // })
-        //
-        $('#send-email').on('click', function(e) {
+        $('#send-email').on('click', async function(e) {
             $.ajax({
                 type: 'POST',
                 url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
                 dataType: 'JSON',
                 data: { fnum: fnum },
                 success: function(result) {
-                    //console.log(result);
                 }, error: function(jqXHR, textStatus) {
                     if(textStatus == 'abort') {
                         $('#em-modal-actions').modal('hide');
                         addDimmer();
 
-                        setTimeout(function() {reloadData();}, 3500);
+                        setTimeout(function() {reloadData();}, 1500);
                         $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
                         $('body').removeClass('modal-open');
                     } else {
