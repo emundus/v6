@@ -14,7 +14,6 @@
           @closed="beforeClose"
           @opened="getFilesByUser"
       >
-        <AttachDocument :user="user" :fnum="fnum" :applicant="true"/>
         <div class="drag-window">
           <div class="col-md-5 messages__campaigns-list">
             <div v-for="file in files" @click="fileSelected = file.fnum" :class="file.fnum == fileSelected ? 'messages__active-campaign' : ''" class="messages__block">
@@ -27,6 +26,7 @@
                 </div>
               </div>
               <div></div>
+              <AttachDocument :user="user" :fnum="file.fnum" :applicant="true" @pushAttachmentMessage="pushAttachmentMessage"/>
             </div>
           </div>
 
@@ -234,7 +234,19 @@ export default {
     },
 
     attachDocument(){
-      this.$modal.show('attach_documents');
+      this.$modal.show('attach_documents' + this.fileSelected);
+    },
+
+    pushAttachmentMessage(message){
+      this.$modal.hide('attach_documents' + this.fileSelected);
+      var message_date = message.date_time.split(' ')[0];
+      this.dates.forEach((elt,index) => {
+        if(elt.dates == message_date){
+          this.dates[index].messages.push(message.message_id);
+        }
+      });
+      this.messages.push(message);
+      this.scrollToBottom();
     }
   },
 

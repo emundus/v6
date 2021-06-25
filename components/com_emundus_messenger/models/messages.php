@@ -214,28 +214,134 @@ class EmundusmessengerModelmessages extends JModelList
         }
     }
 
-    function getDocumentsByCampaign($fnum){
+    function getDocumentsByCampaign($fnum,$applicant){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        try {
-            $query->select('sc.profile_id')
-                ->from($db->quoteName('#__emundus_setup_campaigns','sc'))
-                ->leftJoin($db->quoteName('#__emundus_campaign_candidature','cc').' ON '.$db->quoteName('cc.campaign_id').' = '.$db->quoteName('sc.id'))
-                ->where($db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum));
-            $db->setQuery($query);
-            $profile_id = $db->loadResult();
 
-            $query->clear()
-                ->select('sa.id,sa.value')
-                ->from($db->quoteName('#__emundus_setup_attachments','sa'))
-                ->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles','sap').' ON '.$db->quoteName('sap.attachment_id').' = '.$db->quoteName('sa.id'))
-                ->leftJoin($db->quoteName('#__emundus_setup_profiles','sp').' ON '.$db->quoteName('sp.id').' = '.$db->quoteName('sap.profile_id'))
-                ->where($db->quoteName('sp.id') . ' = ' . $db->quote($profile_id));
-            $db->setQuery($query);
+        try {
+            if($applicant){
+                $query->select('attachments')
+                    ->from($db->quoteName('#__emundus_chatroom'))
+                    ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+                $db->setQuery($query);
+                $attachment_allowed = $db->loadResult();
+
+                $query->clear()
+                    ->select('id,value')
+                    ->from($db->quoteName('#__emundus_setup_attachments'))
+                    ->where($db->quoteName('id') . ' IN (' . $attachment_allowed . ')');
+                $db->setQuery($query);
+            } else {
+                $query->select('sc.profile_id')
+                    ->from($db->quoteName('#__emundus_setup_campaigns', 'sc'))
+                    ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $db->quoteName('cc.campaign_id') . ' = ' . $db->quoteName('sc.id'))
+                    ->where($db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum));
+                $db->setQuery($query);
+                $profile_id = $db->loadResult();
+
+                $query->clear()
+                    ->select('sa.id,sa.value')
+                    ->from($db->quoteName('#__emundus_setup_attachments', 'sa'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles', 'sap') . ' ON ' . $db->quoteName('sap.attachment_id') . ' = ' . $db->quoteName('sa.id'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'sp') . ' ON ' . $db->quoteName('sp.id') . ' = ' . $db->quoteName('sap.profile_id'))
+                    ->where($db->quoteName('sp.id') . ' = ' . $db->quote($profile_id));
+                $db->setQuery($query);
+            }
             return $db->loadObjectList();
         } catch (Exception $e){
             JLog::add('component/com_emundus_messages/models/messages | Error when try to get documents with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function askAttachment($fnum, $attachment, $message){
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $m_messages = new EmundusModelMessages;
+
+        try{
+            $new_message = $this->sendMessage($message,$fnum);
+
+            $query->select('id')
+                ->from($db->quoteName('#__emundus_chatroom'))
+                ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+            $db->setQuery($query);
+            $chatroom = $db->loadResult();
+
+            if(empty($chatroom)){
+                $chatroom = $m_messages->createChatroom($fnum);
+            }
+
+            $query->clear()
+                ->select('attachments')
+                ->from($db->quoteName('#__emundus_chatroom'))
+                ->where($db->quoteName('id') . ' LIKE ' . $db->quote($chatroom));
+            $db->setQuery($query);
+            $attachment_exist = $db->loadResult();
+
+            if(!empty($attachment_exist)){
+                $attachment .= ',' . $attachment_exist;
+            }
+
+            $query->clear()
+                ->update($db->quoteName('#__emundus_chatroom'))
+                ->set($db->quoteName('attachments') . ' = ' . $db->quote($attachment))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($chatroom));
+            $db->setQuery($query);
+            $db->execute();
+            return $new_message;
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_messages/models/messages | Error when try to ask attachment with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function moveToUploadedFile($fnumInfos,$attachment,$filesrc,$target_file){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $user = JFactory::getUser();
+
+        try{
+            $query->insert($db->quoteName('#__emundus_uploads'))
+                ->set($db->quoteName('user_id') . ' = ' . $db->quote($user->id))
+                ->set($db->quoteName('fnum') . ' = ' . $db->quote($fnumInfos['fnum']))
+                ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($fnumInfos['id']))
+                ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($attachment))
+                ->set($db->quoteName('filename') . ' = ' . $db->quote($filesrc));
+            $db->setQuery($query);
+            $result = $db->execute();
+
+            $query->clear()
+                ->select('attachments')
+                ->from($db->quoteName('#__emundus_chatroom'))
+                ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
+            $db->setQuery($query);
+            $attachment_exist = $db->loadResult();
+
+            $attachments_ask = explode(',',$attachment_exist);
+            foreach ($attachments_ask as $key => $attach){
+                if($attach == $attachment){
+                    unset($attachments_ask[$key]);
+                }
+            }
+
+            if(!empty($attachments_ask)){
+                $attachs = implode(',',$attachments_ask);
+            } else {
+                $attachs = $db->quote(null);
+            }
+            $query->clear()
+                ->update($db->quoteName('#__emundus_chatroom'))
+                ->set($db->quoteName('attachments') . ' = ' . $attachs)
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnumInfos['fnum']));
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_messages/models/messages | Error when try to move file to emundus upload with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }

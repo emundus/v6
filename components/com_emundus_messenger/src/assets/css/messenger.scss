@@ -248,6 +248,15 @@ hr{
     height: 25px;
 }
 
+.messages__attach_applicant_doc{
+    display: flex;
+    margin: 20px 0;
+    align-items: center;
+    label{
+        margin-right: 10px;
+    }
+}
+
 /**** CUSTOM VUE DROPZONE ****/
 #customdropzone {
     letter-spacing: 0.2px;

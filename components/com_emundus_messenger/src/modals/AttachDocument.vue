@@ -1,8 +1,8 @@
 <template>
   <div class="messages__vue_attach_document">
-    <span :id="'attach_documents'">
+    <span :id="'attach_documents' + fnum">
       <modal
-          :name="'attach_documents'"
+          :name="'attach_documents' + fnum"
           transition="nice-modal-fade"
           :adaptive="true"
           height="auto"
@@ -11,6 +11,7 @@
           :delay="100"
           :clickToClose="true"
           @closed="beforeClose"
+          @opened="getTypesByCampaign"
       >
         <div class="messages__attach_content">
           <ul class="messages__attach_actions_tabs" v-if="!applicant">
@@ -20,6 +21,13 @@
 
           <div v-if="action === 1">
             <label v-if="applicant">{{translations.sendDocument}}</label>
+            <div v-if="applicant" class="messages__attach_applicant_doc">
+              <label for="applicant_attachment_input">{{translations.typeAttachment}}</label>
+              <select v-model="attachment_input" id="applicant_attachment_input">
+                <option :value="0"></option>
+                <option v-for="type in types" :value="type.id">{{type.value}}</option>
+              </select>
+            </div>
             <vue-dropzone
                 ref="dropzone"
                 id="customdropzone"
@@ -37,10 +45,14 @@
                 {{translations.DropHere}}
               </div>
             </vue-dropzone>
+            <button type="button" class="messages__send_button" @click="sendMessage" v-if="applicant">
+                  {{ translations.send }}
+            </button>
           </div>
           <div v-if="action === 2">
             <label for="attachment_input">{{translations.typeAttachment}}</label>
             <select v-model="attachment_input" id="attachment_input">
+              <option :value="0"></option>
               <option v-for="type in types" :value="type.id">{{type.value}}</option>
             </select>
           </div>
@@ -94,11 +106,11 @@ export default {
       },
       types: [],
       message_input: '',
-      attachment_input: '',
+      attachment_input: 0,
       loading: false,
       action: 1,
       dropzoneOptions: {
-        url: 'index.php?option=com_emundus_messenger&controller=messages&task=uploaddocument&fnum=' + this.fnum,
+        url: 'index.php?option=com_emundus_messenger&controller=messages&task=uploaddocument&fnum=' + this.fnum + '&applicant=' + this.applicant,
         maxFilesize: 10,
         maxFiles: 5,
         autoProcessQueue: false,
@@ -124,6 +136,8 @@ export default {
     },
 
     onComplete: function(response){
+      this.message_input = '';
+      console.log(response);
       if(response.status == 'success'){
         this.$emit("pushAttachmentMessage",JSON.parse(response.xhr.response).data);
       }
@@ -131,6 +145,7 @@ export default {
 
     sendingEvent(file, xhr, formData){
       formData.append('message', this.message_input);
+      formData.append('attachment', this.attachment_input);
     },
 
     catchError: function(file, message, xhr){
@@ -169,6 +184,7 @@ export default {
         url: "index.php?option=com_emundus_messenger&controller=messages&task=getdocumentsbycampaign",
         params: {
           fnum: this.fnum,
+          applicant: this.applicant
         },
         paramsSerializer: params => {
           return qs.stringify(params);
@@ -178,10 +194,42 @@ export default {
       });
     },
 
+    askAttachment(){
+      axios({
+        method: "post",
+        url: "index.php?option=com_emundus_messenger&controller=messages&task=askattachment",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          fnum: this.fnum,
+          attachment: this.attachment_input,
+          message: this.message_input,
+        })
+      }).then(response => {
+        this.$emit("pushAttachmentMessage",response.data.data);
+      });
+    },
+
     sendMessage(message){
-      this.message_input = message;
-      this.$refs.dropzone.processQueue();
+      if(this.action === 1) {
+        if(!this.applicant) {
+          this.message_input = message;
+        }
+        this.$refs.dropzone.processQueue();
+      } else {
+        this.message_input = 'Demande de document : ';
+        this.message_input += message;
+        this.askAttachment();
+      }
     },
   },
 }
 </script>
+
+<style scoped>
+.messages__send_button{
+  margin: 20px 0;
+  float: right;
+}
+</style>

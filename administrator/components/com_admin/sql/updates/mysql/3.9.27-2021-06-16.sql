@@ -11,3 +11,5 @@ VALUES (0, 'Notifications', '', null, 3, 'header-c', 0, '2021-06-16 18:36:12', '
 
 INSERT INTO jos_menu (menutype, title, alias, note, path, link, type, published, parent_id, level, component_id, checked_out, checked_out_time, browserNav, access, img, template_style_id, params, lft, rgt, home, language, client_id)
 VALUES ('application', 'Messages', 'messages', '36|c', 'messages', 'index.php?option=com_emundus_messenger&view=messages&format=raw&layout=coordinator', 'url', 1, 1, 1, 0, 0, '2021-06-16 18:36:12', 0, 1, ' ', 24, '{"menu-anchor_title":"","menu-anchor_css":"","menu-anchor_rel":"","menu_image":"","menu_image_css":"","menu_text":1,"menu_show":1}', 547, 548, 0, '*', 0);
+
+alter table jos_emundus_chatroom add attachments varchar(20) null;

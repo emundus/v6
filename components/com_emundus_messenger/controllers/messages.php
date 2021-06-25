@@ -140,7 +140,9 @@ class EmundusmessengerControllermessages extends JControllerLegacy
 
         $file = $jinput->files->get('file');
         $fnum = $jinput->get('fnum');
-        $message_input = $jinput->get('message');
+        $message_input = $jinput->getString('message');
+        $applicant = $jinput->getBool('applicant');
+        $attachment = $jinput->getInt('attachment');
 
         require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 
@@ -165,14 +167,33 @@ class EmundusmessengerControllermessages extends JControllerLegacy
                 mkdir($target_dir);
             }
 
+            if($applicant && !empty($attachment)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('lbl')
+                    ->from($db->quoteName('#__emundus_setup_attachments'))
+                    ->where($db->quoteName('id') . ' = ' . $attachment);
+                $db->setQuery($query);
+                $lbl = $db->loadResult();
+            }
+
             do{
-                $target_file = $target_dir . $fnum . '_' . rand(1000,90000) . '.' . $ext;
+                if($applicant && !empty($attachment)){
+                    $filesrc = $fnumInfos['applicant_id'].'-'.$fnumInfos['id'].'-'.trim($lbl, ' _').'-'.rand().'.'.$ext;
+                } else {
+                    $filesrc = $fnum . '_' . rand(1000,90000) . '.' . $ext;
+                }
+                $target_file = $target_dir . $filesrc;
             } while (file_exists($target_file));
 
             if (move_uploaded_file($file["tmp_name"], $target_file)) {
                 $message = '<p>' . $message_input . '</p><a href="'.$target_file.'" download><img src="/images/emundus/messenger/file_download.svg" class="messages__download_icon" alt="'.$filename.'">'.$filename.'</a>';
                 $new_message = $m_messages->sendMessage($message,$fnum);
-                echo json_encode(array('msg' => 'SUCCESS','data' => $new_message));
+                if($applicant && !empty($attachment)){
+                    $upload_emundus = $m_messages->moveToUploadedFile($fnumInfos,$attachment,$filesrc,$target_file);
+                }
+                echo json_encode(array('msg' => $upload_emundus,'data' => $new_message));
             } else {
                 echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
             }
@@ -189,10 +210,30 @@ class EmundusmessengerControllermessages extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
 
         $fnum = $jinput->getString('fnum');
+        $applicant = $jinput->getBool('applicant');
 
-        $messages_readed = $m_messages->getDocumentsByCampaign($fnum);
+        $messages_readed = $m_messages->getDocumentsByCampaign($fnum, $applicant);
 
         $data = array('data' => $messages_readed);
+
+        echo json_encode((object)$data);
+        exit;
+    }
+
+    public function askattachment(){
+        $user = JFactory::getUser();
+
+        $m_messages = $this->model;
+
+        $jinput = JFactory::getApplication()->input;
+
+        $fnum = $jinput->getString('fnum');
+        $attachment = $jinput->getString('attachment');
+        $message = $jinput->getString('message');
+
+        $new_message = $m_messages->askAttachment($fnum,$attachment,$message);
+
+        $data = array('data' => $new_message);
 
         echo json_encode((object)$data);
         exit;
