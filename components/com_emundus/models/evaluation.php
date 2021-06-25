@@ -2951,7 +2951,11 @@ if (JFactory::getUser()->id == 63)
                                             $fabrikElts = array();
                                         }
 
-                                        $fabrikValues = $this->getValueByFabrikElts($fabrikElts, $fnum_Array);
+                                        /// call to file controller
+                                        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'files.php');
+                                        $_cFiles = new EmundusControllerFiles;
+
+                                        $fabrikValues = $_cFiles->getValueByFabrikElts($fabrikElts, [$fnum]);
 
                                         foreach ($setupTags as $tag) {
                                             $val = "";
