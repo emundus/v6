@@ -4265,6 +4265,9 @@ $(document).ready(function() {
                     dataType: 'JSON',
                     data: { fnum : fnum },
                     success: function(data) {
+                        let email_recap = data.email_recap.message_recap[0];
+                        let letter_recap = data.email_recap.attached_letter;
+
                         if(data.status == true) {
                             let recap = result.recap;
                             let color = result.color;
@@ -4316,10 +4319,6 @@ $(document).ready(function() {
                             $('#status-class').addClass('label label-' + recap.class);
                             $('#status-class').append(recap.value);
 
-
-                            let email_recap = data.email_recap.message_recap[0];
-                            let letter_recap = data.email_recap.attached_letter;
-
                             // message preview
                             $('#email-candidat-message-preview').append(
                                 '<div id="email-preview" class="email___message_body_item">' +
@@ -4348,6 +4347,42 @@ $(document).ready(function() {
                         } else {
                             console.log(false);
                         }
+
+                        /// send email
+                        $('#send-email').on('click', function(e) {
+                            let tmpl = email_recap;
+                            console.log(tmpl);
+                            $.ajax({
+                                type: 'POST',
+                                url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
+                                dataType: 'JSON',
+                                data: { fnum: fnum },
+                                success: function(result) {
+                                    /// never success ???
+                                }, error: function(jqXHR, textStatus) {
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnum',
+                                        dataType: 'JSON',
+                                        data: { fnum: fnum , tmpl: email_recap.id },
+                                        success: function(value) {
+                                            addDimmer();
+                                            $('#em-modal-actions').modal('hide');
+
+                                            reloadData();
+                                            reloadActions($('#view').val(), undefined, false);
+                                            $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                            $('body').removeClass('modal-open');
+                                            
+                                        }, error: function(jqXHR) {
+                                            console.log(jqXHR.responseText);
+                                        }}
+                                    )
+                                }
+                            })
+                        })
+
+
                     }, error: function(jqXHR) {
                         console.log(jqXHR.responseText);
                     }
@@ -4358,27 +4393,7 @@ $(document).ready(function() {
             }
         })
 
-        $('#send-email').on('click', async function(e) {
-            $.ajax({
-                type: 'POST',
-                url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
-                dataType: 'JSON',
-                data: { fnum: fnum },
-                success: function(result) {
-                }, error: function(jqXHR, textStatus) {
-                    if(textStatus == 'abort') {
-                        $('#em-modal-actions').modal('hide');
-                        addDimmer();
 
-                        setTimeout(function() {reloadData();}, 1500);
-                        $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
-                        $('body').removeClass('modal-open');
-                    } else {
-
-                    }
-                }
-            })
-        })
     })
 
 

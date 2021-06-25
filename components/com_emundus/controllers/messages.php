@@ -1647,24 +1647,39 @@ class EmundusControllerMessages extends JControllerLegacy {
 //        }
 
         /// get tags by this email id
-        $_tags = $m_messages->getTagsByEmail($email_recap[0]->id);
-
-        if(!empty($tags)) {
-            /// if tags is defined, check if this tag is assigned to $fnum or not
-            foreach($_tags as $key => $value) {
-                /// get tag by id fnum user
-                $assoc_tag = $m_files->getTagsByIdFnumUser($value->id, $fnum_info['fnum'], $fnum_info['applicant_id']);             /// return true, false
-                if($assoc_tag == false) {
-                    $fnum_tag = $m_files->tagFile([$fnum_info['fnum']], [$value->id]);
-                } else {
-                    /// do nothing
-                }
-            }
-        } else {
-            /// tag is undefined --> next step :::
-        }
+//        $_tags = $m_messages->getTagsByEmail($email_recap[0]->id);
+//
+//        if(!empty($tags)) {
+//            /// if tags is defined, check if this tag is assigned to $fnum or not
+//            foreach($_tags as $key => $value) {
+//                /// get tag by id fnum user
+//                $assoc_tag = $m_files->getTagsByIdFnumUser($value->id, $fnum_info['fnum'], $fnum_info['applicant_id']);             /// return true, false
+//                if($assoc_tag == false) {
+//                    $fnum_tag = $m_files->tagFile([$fnum_info['fnum']], [$value->id]);
+//                } else {
+//                    /// do nothing
+//                }
+//            }
+//        } else {
+//            /// tag is undefined --> next step :::
+//        }
 
         //echo json_encode(['status' => true, 'sent' => $sent, 'failed' => $failed]);
+        exit;
+    }
+
+    /// set tags to fnum --> params :: fnum
+    public function addtagsbyfnum() {
+        $jinput = JFactory::getApplication()->input;
+
+        $fnum = $jinput->post->getRaw('fnum');
+        $tmpl = $jinput->post->getRaw('tmpl');
+
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+        $_mMessages = new EmundusModelMessages;
+
+        $_tags = $_mMessages->addTagsByFnum($fnum,$tmpl);
+        echo json_encode(['status'=>true]);
         exit;
     }
 }
