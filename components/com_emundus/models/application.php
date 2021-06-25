@@ -738,7 +738,7 @@ class EmundusModelApplication extends JModelList {
                         $form .= ' <a type="button" id="'.$table[$i]->form_id.'" class="btn btn-default btn-sm " href="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&'.$table[$i]->db_table_name.'___fnum='.$fnum.'&'.$table[$i]->db_table_name.'___user_raw='.$aid.'&'.$table[$i]->db_table_name.'___user='.$aid.'&sid='.$aid.'" alt="'.JText::_('EDIT').'" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></a>';
                     }
                 }
-                
+
             }
             $form .= '</div>';
 
@@ -3267,16 +3267,17 @@ class EmundusModelApplication extends JModelList {
      * @param $fnum_from String the fnum of the source
      * @param $fnum_to String the fnum of the duplicated application
      * @param $pid Int the profile_id to get list of forms
+     * @param $copy_attachment Boolean copy attachments or not
      * @return bool
      */
-    public function copyApplication($fnum_from, $fnum_to, $pid = null) {
+    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0) {
         $db = JFactory::getDbo();
 
         try {
-            if (empty($pid)) {
-                $m_profiles = new EmundusModelProfile();
+            $m_profiles = new EmundusModelProfile();
+            $fnumInfos = $m_profiles->getFnumDetails($fnum_from);
 
-                $fnumInfos = $m_profiles->getFnumDetails($fnum_from);
+            if (empty($pid)) {
                 $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
             }
 
@@ -3351,6 +3352,60 @@ class EmundusModelApplication extends JModelList {
                                     $db->execute();
                                 }
                             }
+                        }
+                    }
+                }
+            }
+
+            // sync documents uploaded
+            // 1. get list of uploaded documents for previous file defined as duplicated
+            if ($copy_attachment) {
+                $query = 'SELECT eu.*, esa.nbmax
+											FROM #__emundus_uploads as eu
+											LEFT JOIN #__emundus_setup_attachments as esa on esa.id=eu.attachment_id
+											LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id='.$pid.'
+											WHERE eu.user_id='.$fnumInfos['applicant_id'].'
+											AND eu.fnum like '.$db->Quote($fnum_from).'
+											AND esap.duplicate=1';
+                $db->setQuery( $query );
+                $stored = $db->loadAssocList();
+
+                if (count($stored) > 0) {
+                    // 2. copy DB définition and duplicate files in applicant directory
+                    foreach ($stored as $key => $row) {
+                        $src = $row['filename'];
+                        $ext = explode('.', $src);
+                        $ext = $ext[count($ext)-1];;
+                        $cpt = 0-(int)(strlen($ext)+1);
+                        $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
+                        $nbmax = $row['nbmax'];
+                        $row['filename'] = $dest;
+                        unset($row['id']);
+                        unset($row['fnum']);
+                        unset($row['nbmax']);
+
+                        try {
+                            $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$fnumInfos['applicant_id'].' AND attachment_id='.$row['attachment_id'].' AND fnum like '.$db->Quote($fnum_to);
+                            $db->setQuery($query);
+                            $cpt = $db->loadResult();
+
+                            if ($cpt < $nbmax) {
+                                $query = 'INSERT INTO #__emundus_uploads (`fnum`, `'.implode('`,`', array_keys($row)).'`) VALUES('.$db->Quote($fnum_to).', '.implode(',', $db->Quote($row)).')';
+                                $db->setQuery($query);
+                                $db->execute();
+                                $id = $db->insertid();
+                                $path = EMUNDUS_PATH_ABS.$fnumInfos['applicant_id'].DS;
+
+                                if (!copy($path.$src, $path.$dest)) {
+                                    $query = 'UPDATE #__emundus_uploads SET filename='.$src.' WHERE id='.$id;
+                                    $db->setQuery($query);
+                                    $db->execute();
+                                }
+                            }
+
+                        } catch (Exception $e) {
+                            $error = JUri::getInstance().' :: USER ID : '.$fnumInfos['applicant_id'].' -> '.$e->getMessage();
+                            JLog::add($error, JLog::ERROR, 'com_emundus');
                         }
                     }
                 }
