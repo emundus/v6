@@ -2500,7 +2500,7 @@ if (JFactory::getUser()->id == 63)
                 switch ((int)$type) {
                     case 1:     // simple file
                         $file = JPATH_BASE . $letter->file;
-                        if(file_exists($file)) {
+                        if (file_exists($file)) {
                             $res->status = true;
                             /// get fnum info from fnum
 
@@ -2508,10 +2508,10 @@ if (JFactory::getUser()->id == 63)
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
                                 //$name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . '.' . pathinfo($file)['extension'];    ;
-                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];    ;
+                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];;
                             } else {
                                 //$name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . '.' . pathinfo($file)['extension'];
-                                $name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_.' .pathinfo($file)['extension'];
+                                $name = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];
                             }
 
                             // get file path
@@ -2524,11 +2524,11 @@ if (JFactory::getUser()->id == 63)
                             $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
                             $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
 
-                            if(!file_exists($path)) {
+                            if (!file_exists($path)) {
                                 mkdir($path, 0777, true);
                             }
 
-                            if(!file_exists($path_name) or !file_exists($original_name)) {
+                            if (!file_exists($path_name) or !file_exists($original_name)) {
                                 if (copy($file, $path_name) and copy($file, $original_name)) {
                                     //$url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
                                     $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
@@ -2566,7 +2566,7 @@ if (JFactory::getUser()->id == 63)
                     /// end of case 1 ///
 
                     case 2:     /// pdf file from html (tinymce)
-                        if(isset($fnumInfo)) {
+                        if (isset($fnumInfo)) {
                             $post = [
                                 'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
                                 'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
@@ -2616,7 +2616,7 @@ if (JFactory::getUser()->id == 63)
                             $htmldata = preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $htmldata))));
 
                             // base64 images to link
-                            $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', function($match) {
+                            $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', function ($match) {
                                 list(, $img, $type, $base64, $end) = $match;
 
                                 $bin = base64_decode($base64);
@@ -2643,7 +2643,7 @@ if (JFactory::getUser()->id == 63)
                                 $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf";
                             } else {
                                 //$name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".pdf";
-                                $name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . ".pdf";
+                                $name = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".pdf";
                             }
 
                             $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
@@ -2652,12 +2652,12 @@ if (JFactory::getUser()->id == 63)
                             $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . '--letters';
                             $path_name = $path . DS . $name;
 
-                            $original_url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
-                            $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
+                            $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
+                            $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
 
                             ///@ mkdir new folder which contains only the generated documents
 
-                            if(!file_exists($path)) {
+                            if (!file_exists($path)) {
                                 mkdir($path, 0777, true);
                             }
 
@@ -2694,8 +2694,8 @@ if (JFactory::getUser()->id == 63)
                     /// end of case 2
 
                     case 3: /// generate pdf from docx --> using Gotenberg
-                        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-                        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'export.php');
+                        require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+                        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'export.php');
 
                         $m_Export = new EmundusModelExport;
                         $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -2794,8 +2794,7 @@ if (JFactory::getUser()->id == 63)
 
                                     if (array_key_exists($lowerTag, $const)) {
                                         $preprocess->setValue($tag, $const[$lowerTag]);
-                                    }
-                                    elseif (in_array($lowerTag, $special)) {
+                                    } elseif (in_array($lowerTag, $special)) {
                                         switch ($lowerTag) {
 
                                             // dd-mm-YYYY (YY)
@@ -2808,11 +2807,9 @@ if (JFactory::getUser()->id == 63)
                                                 $preprocess->setValue($tag, '');
                                                 break;
                                         }
-                                    }
-                                    elseif(!empty(@$fnumInfo[$fnum][$lowerTag])) {
+                                    } elseif (!empty(@$fnumInfo[$fnum][$lowerTag])) {
                                         $preprocess->setValue($tag, @$fnumInfo[$fnum][$lowerTag]);
-                                    }
-                                    else {
+                                    } else {
                                         $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
                                         $i = 0;
                                         foreach ($tags['patterns'] as $value) {
@@ -2847,20 +2844,20 @@ if (JFactory::getUser()->id == 63)
                                     $filename = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".docx";
                                 }
 
-                                $original_path = EMUNDUS_PATH_ABS.$fnumInfo[$fnum]['applicant_id'];
+                                $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
                                 $original_name = $original_path . DS . $filename;
 
-                                $path = EMUNDUS_PATH_ABS.$fnumInfo[$fnum]['applicant_id'] . '--letters';
+                                $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . '--letters';
                                 $path_name = $path . DS . $filename;
 
-                                $original_url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
-                                $url = JURI::base().EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
+                                $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
+                                $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
 
-                                if(!file_exists($path)) {
+                                if (!file_exists($path)) {
                                     mkdir($path, 0777, true);
                                 }
 
-                                if($gotenberg_activation == 1 && $letter->pdf == 1){
+                                if ($gotenberg_activation == 1 && $letter->pdf == 1) {
                                     //convert to PDF
                                     $dest = str_replace('.docx', '.pdf', $path_name);
                                     $filename = str_replace('.docx', '.pdf', $filename);
@@ -2868,7 +2865,7 @@ if (JFactory::getUser()->id == 63)
                                 }
 
                                 /// check if file exists or not
-                                if(!file_exists($path_name)) {
+                                if (!file_exists($path_name)) {
                                     $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
 
                                     $preprocess->saveAs($path_name);             /// save docx
@@ -2896,7 +2893,7 @@ if (JFactory::getUser()->id == 63)
                                 }
                             }
                             //unset($preprocess);           // need to unset or not?
-                        } catch(Exception $e) {
+                        } catch (Exception $e) {
                             $res->status = false;
                             $res->msg = JText::_("AN_ERROR_OCURRED") . ':' . $e->getMessage();
                         }
@@ -2905,7 +2902,7 @@ if (JFactory::getUser()->id == 63)
                     /// end of case 3
 
                     case 4:
-                        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+                        require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
                         $inputFileName = JPATH_BASE . $letter->file;
                         $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
@@ -2952,7 +2949,7 @@ if (JFactory::getUser()->id == 63)
                                         }
 
                                         /// call to file controller
-                                        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'files.php');
+                                        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'files.php');
                                         $_cFiles = new EmundusControllerFiles;
 
                                         $fabrikValues = $_cFiles->getValueByFabrikElts($fabrikElts, [$fnum]);
@@ -3008,22 +3005,65 @@ if (JFactory::getUser()->id == 63)
 
                             }
                             $rand = rand(0, 1000000);
-                            if (!file_exists(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'])) {
-                                mkdir(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'], 0775);
+
+                            /// check if the filename is anonymized -- logically, we should avoid to generate many files which have the same contents, but different name --> bad performance
+                            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+                            if (!$anonymize_data) {
+                                $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".xlsx";
+                            } else {
+                                $filename = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".xlsx";
                             }
 
-                            $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']).$attachInfo['lbl']."-".md5($rand . time()).".xlsx";
+                            $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
+                            $original_name = $original_path . DS . $filename;
 
-                            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-                            $writer->setIncludeCharts(true);
+                            $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . '--letters';
+                            $path_name = $path . DS . $filename;
 
-                            $writer->save(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $filename);
+                            $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
+                            $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
 
-                            $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                            if (!file_exists($path)) {
+                                mkdir($path, 0777, true);
+                            }
 
-                            $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL.$fnumInfo[$fnum]['applicant_id'].'/',);
+                            if (!file_exists($original_path)) {
+                                mkdir($original_path, 0775, true);
+                            }
+
+                                /// check if file exists or not
+                            if (!file_exists($original_name)) {
+                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+
+                                $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                                $writer->setIncludeCharts(true);
+                                $writer->save($original_name);
+
+                                copy($original_name, $path_name);
+
+                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
+                            } else {
+                                unlink($original_name);
+                                $query = $this->_db->getQuery(true);
+
+                                $query->clear()
+                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
+                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($filename));
+                                $this->_db->setQuery($query);
+                                $this->_db->execute();
+
+                                $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                                $writer->setIncludeCharts(true);
+                                $writer->save($original_name);
+
+                                copy($original_name, $path_name);
+
+                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
+                            }
+                            break;
                         }
-                        break;
                 }
             }
         }
