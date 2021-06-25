@@ -1185,8 +1185,18 @@ class EmundusModelMessages extends JModelList {
 
                     $upload_files = $_mEval->getFilesByAttachmentFnums($attach, [$fnum]);
 
+                    /// $uploaded_files is not empty --> get this file
                     if(!empty($upload_files)) {
-                        $uploads[] = array('is_existed' => true, 'id' => $upload_files[0]->id, 'value' => $upload_files[0]->value, 'label' => $upload_files[0]->lbl, 'dest' => JURI::base().EMUNDUS_PATH_REL . $upload_files[0]->user_id . DS. $upload_files[0]->filename);
+                        /// check this file exist on disk or not
+                        $file_path = EMUNDUS_PATH_ABS . $upload_files[0]->user_id . DS. $upload_files[0]->filename;
+                        if(file_exists($file_path)) {
+                            $uploads[] = array('is_existed' => true, 'id' => $upload_files[0]->id, 'value' => $upload_files[0]->value, 'label' => $upload_files[0]->lbl, 'dest' => JURI::base() . EMUNDUS_PATH_REL . $upload_files[0]->user_id . DS . $upload_files[0]->filename);
+                        } else {
+                            /// generate document
+                            $letter = $_mEval->generateLetters($fnum, [$attach], 0,0,0);
+                            $_generated_letter = $_mEval->getFilesByAttachmentFnums($attach, [$fnum]);
+                            $uploads[] = array('is_existed' => true, 'id' => $_generated_letter[0]->id, 'value' => $_generated_letter[0]->value, 'label' => $_generated_letter[0]->lbl, 'dest' => JURI::base().EMUNDUS_PATH_REL . $_generated_letter[0]->user_id . DS. $_generated_letter[0]->filename);
+                        }
                     } else {
                         /// if upload file does not exist --> generate this file
                         //$letter = $_mEval->getLetterTemplateForFnum($fnum, [$attach]);
