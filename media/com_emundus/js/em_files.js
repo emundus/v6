@@ -4134,7 +4134,7 @@ $(document).ready(function() {
             case 27:
                 $('#can-val').empty();
                 $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
-                    '<button id="em-generate" style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOC')+'</button>');
+                    '<button id="em-generate" style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOCUMENT')+'</button>');
                 $('#can-val').show();
 
                 $('#em-modal-actions .modal-body').empty();
@@ -4278,7 +4278,7 @@ $(document).ready(function() {
                             $('#email-candidat-message-preview').show();
                             $('#email-candidat-panel-preview').append(
                                 '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
-                                '<label for="candidat-name-label">' + Joomla.JText._('CANDIDATE_NAME') + '</label>' +
+                                '<label for="candidat-name-label">' + Joomla.JText._('CANDIDATE') + '</label>' +
                                 '<div id="candidat-name"></div>' +
                                 '<div id="candidat-email"></div>' +
                                 '</div>'
@@ -5390,7 +5390,7 @@ $(document).ready(function() {
                 $('#can-val').empty();
                 $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
                     '<button style="margin-left:5px;background: #16afe1; border: 2px solid #16afe1; border-radius: 25px !important; color: #fff" type="button" class="btn btn-danger">' +
-                        '<a style="color:#fff" id="em-download-all" href="">'+ Joomla.JText._('DOWNLOAD_DOC') + '</a>' +
+                        '<a style="color:#fff" id="em-download-all" href="">'+ Joomla.JText._('DOWNLOAD_DOCUMENT') + '</a>' +
                     '</button>');
                 $('#can-val').show();
 
@@ -5925,6 +5925,7 @@ $(document).ready(function() {
         }
 
         else {
+            $("label[for='em-combine-pdf']").css('text-decoration', 'none');
             if(showMode == 0) {
                 $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP') + '</div>');
                 $('#em-doc-pdf-merge').val("0");
