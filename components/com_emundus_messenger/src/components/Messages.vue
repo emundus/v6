@@ -194,16 +194,30 @@ export default {
           })
         }).then(response => {
           this.message = '';
-          var message_date = response.data.date_time.split(' ')[0];
-          this.dates.forEach((elt,index) => {
-            if(elt.dates == message_date){
-              this.dates[index].messages.push(response.data.message_id);
-            }
-          });
-          this.messages.push(response.data);
+          this.pushToDatesArray(response.data);
           this.scrollToBottom();
         });
       }
+    },
+
+    pushToDatesArray(message){
+      var pushToDate = false;
+      var message_date = message.date_time.split(' ')[0];
+      this.dates.forEach((elt,index) => {
+        if(elt.dates == message_date){
+          this.dates[index].messages.push(message.message_id);
+          pushToDate = true;
+        }
+      });
+      if(!pushToDate){
+        var new_date = {
+          dates: this.moment().format("YYYY-MM-DD"),
+          messages: []
+        }
+        new_date.messages.push(message.message_id);
+        this.dates.push(new_date);
+      }
+      this.messages.push(message);
     },
 
     /*infiniteHandler($state){
@@ -239,13 +253,7 @@ export default {
 
     pushAttachmentMessage(message){
       this.$modal.hide('attach_documents' + this.fileSelected);
-      var message_date = message.date_time.split(' ')[0];
-      this.dates.forEach((elt,index) => {
-        if(elt.dates == message_date){
-          this.dates[index].messages.push(message.message_id);
-        }
-      });
-      this.messages.push(message);
+      this.pushToDatesArray(message);
       this.scrollToBottom();
     }
   },
