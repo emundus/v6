@@ -465,8 +465,13 @@ class EmundusModelEmails extends JModelList {
                     if ($tag['tag'] == 'PHOTO') {
                         if (empty($result))
                             $result = 'media/com_emundus/images/icones/personal.png';
-                        else
-                            $result = EMUNDUS_PATH_REL.$user_id.'/tn_'.$result;
+                        else {
+                            if(file_exists(EMUNDUS_PATH_REL.$user_id.'/tn_'.$result)) {
+                                $result = EMUNDUS_PATH_REL.$user_id.'/tn_'.$result;
+                            } else {
+                                $result = EMUNDUS_PATH_REL.$user_id.'/'.$result;
+                            }
+                        }
                     }
                     $replacements[] = $result;
 
