@@ -2465,8 +2465,6 @@ if (JFactory::getUser()->id == 63)
 
         $res->recapitulatif_count = [];
 
-
-
         foreach($_document_count as $key => $document) {
             $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $document['attachment_id'];
             $this->_db->setQuery($query);
@@ -2507,36 +2505,36 @@ if (JFactory::getUser()->id == 63)
                             // make file name --- logically, we should avoid to generate many files which have same contents but different name --> fnum will distinguish the file name
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
-                                //$name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . '.' . pathinfo($file)['extension'];    ;
                                 $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];;
                             } else {
-                                //$name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . '.' . pathinfo($file)['extension'];
                                 $name = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];
                             }
 
-                            // get file path
+                            // get file path --> original path + file path, e.g: images/emundus/files/95
                             $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
                             $original_name = $original_path . DS . $name;
 
+                            // get file path --> letter path + letter file path, e.g: images/emundus/files/95--letters (they will be removed after using)
                             $path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . '--letters';
                             $path_name = $path . DS . $name;
 
+                            // get url of both original and letter cases
                             $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
                             $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
 
+                            // mkdir original folder if does not exist
+                            if(!file_exists($original_path)) {
+                                mkdir($original_path, 0777, true);
+                            }
+
+                            // mkdir letter folder if does not exist
                             if (!file_exists($path)) {
                                 mkdir($path, 0777, true);
                             }
 
-                            if (!file_exists($path_name) or !file_exists($original_name)) {
-                                if (copy($file, $path_name) and copy($file, $original_name)) {
-                                    //$url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
-                                    $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-
-                                    $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
-                                }
-                            } else {
-                                /// just return the url or we will remove this file and then create new file (good idea?)
+                            /// if exists
+                            if (file_exists($original_name) or file_exists($path_name))   {
+                                /// remove this file and then create new file (good idea?)
                                 unlink($path_name);
                                 unlink($original_name);
 
@@ -2556,6 +2554,13 @@ if (JFactory::getUser()->id == 63)
                                 /// reupdate in database
                                 $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
                                 $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
+                            } else {
+                                if (copy($file, $path_name) and copy($file, $original_name)) {
+                                    //$url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
+                                    $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+
+                                    $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
+                                }
                             }
                         } else {
                             $res->status = false;
