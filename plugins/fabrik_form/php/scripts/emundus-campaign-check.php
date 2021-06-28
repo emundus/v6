@@ -34,6 +34,11 @@ if (EmundusHelperAccess::asAccessAction(1, 'c')) {
     }
 }
 
+$config = JFactory::getConfig();
+
+$timezone = new DateTimeZone( $config->get('offset') );
+$now = JFactory::getDate()->setTimezone($timezone);
+
 switch ($applicant_can_renew) {
 
     // Cannot create new campaigns at all.
@@ -48,9 +53,9 @@ switch ($applicant_can_renew) {
         $query = 'SELECT id
 					FROM #__emundus_setup_campaigns
 					WHERE published = 1
-					AND end_date >= NOW()
-					AND start_date <= NOW()
-					AND id NOT IN (
+					AND end_date >= ' . $db->quote($now) .
+					'AND start_date <= ' . $db->quote($now) .
+					'AND id NOT IN (
 						select campaign_id
 						from #__emundus_campaign_candidature
 						where applicant_id='. $user->id.'
@@ -77,9 +82,9 @@ switch ($applicant_can_renew) {
         $query = 'SELECT id
 					FROM #__emundus_setup_campaigns
 					WHERE published = 1
-					AND end_date >= NOW()
-					AND start_date <= NOW()
-					AND year NOT IN (
+					AND end_date >= ' . $db->quote($now) .
+					'AND start_date <= ' . $db->quote($now) .
+					'AND year NOT IN (
 						select sc.year
 						from #__emundus_campaign_candidature as cc
 						LEFT JOIN #__emundus_setup_campaigns as sc ON sc.id = cc.campaign_id

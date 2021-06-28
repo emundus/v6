@@ -10,45 +10,6 @@
         :cid="campaignId"
     />
     <div class="w-row">
-      <!--<div class="tchooz-sidebar-menu">
-        <transition name="slide-right">
-          <div class="col-md-12 tchooz-sidebar-menus">
-            <div class="container-menu-funnel">
-              <div v-if="profileId == null && loading == false" style="display: flex;" class="required">
-                <em class="fas fa-exclamation-circle icon-warning-margin"></em>
-                <p>{{chooseProfileWarning}}</p>
-              </div>-->
-              <!--                  <a class="close-submenu pointer" @click="closeSubmenu = !closeSubmenu" :class="!closeSubmenu ? 'rotate-icon' : ''">
-                                  <img src="/images/emundus/menus/exit.png">
-                                </a>-->
-             <!-- <div>
-                <label class="tchooz-dark-blue" style="font-size: 16px">{{form.label}}</label>
-                <p>{{From}} {{form.start_date}}</p>
-                <p>{{To}} {{form.end_date}}</p>
-              </div>
-              <hr>
-              <transition-group name="slide-right">
-                <div v-for="(formCat, index) in formCategories[langue]" :key="index" v-show="closeSubmenu">
-                  <a @click="profileId != null ? changeToCampMenu(index): ''"
-                     class="menu-item"
-                     :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]"
-                  >{{ formCat }}</a>
-                </div>
-              </transition-group>
-              <hr>
-              <transition-group name="slide-right">
-                <div v-for="(formProg, index) in formPrograms[langue]" :key="index" v-show="closeSubmenu">
-                  <a @click="profileId != null ? changeToProgMenu(index) : ''"
-                     class="menu-item"
-                     :class="[(menuHighlightProg == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]"
-                  >{{ formProg }}</a>
-                </div>
-              </transition-group>
-            </div>
-          </div>
-        </transition>
-      </div>-->
-
       <div class="col-md-12 col-sm-10 p-1" style="padding-left: 2em !important">
         <div class="section-sub-menu">
           <div class="container-2 w-container" style="max-width: unset">

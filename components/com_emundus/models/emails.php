@@ -134,7 +134,8 @@ class EmundusModelEmails extends JModelList {
 
                     if (isset($tmpl['to']['group'])) {
                         if (count($tmpl['to']['group']) > 0) {
-                            $where = ' eg.group_id IN ('.implode(',', $tmpl['to']['group']).')';
+                            $where .= $as_where?' OR ':'';
+                            $where .= ' eg.group_id IN ('.implode(',', $tmpl['to']['group']).')';
                             $as_where = true;
                         }
                     }
@@ -567,9 +568,11 @@ class EmundusModelEmails extends JModelList {
                 if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
                     $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, @$groupParams->repeat_group_button == 1);
 
-                    if (empty($fabrikValues[$elt['id']]['val'])) {
+
+                    if (empty($fabrikValues[$elt['id']])) {
                         $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
                     }
+
 
                 } else {
                     if ($isDate) {

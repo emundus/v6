@@ -25,11 +25,15 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 					<div style="float:left; position:absolute">
 						<h3 class="panel-title"><?php echo JText::_('FILTERS')?></h3> &ensp;&ensp;
 					</div>
-					<div class="buttons" style="float:right; margin-top:0px">
-                        <input value="&#xf0e2" type="button" class="btn btn-sm btn-danger" id="clear-search" style="font-family: 'FontAwesome';" title="<?php echo JText::_('CLEAR_BTN');?>"/>
-					</div>
+                    <div class="buttons" style="float:right; margin-top:0px">
+                        <label for="clear-search">
+                            <img src="/media/com_emundus/images/icones/clear-filters.png" style="width: 30px;filter: invert(1);"/>
+                        </label>
+
+                        <input type="button" style="display: none" id="clear-search" title="<?php echo JText::_('CLEAR_BTN');?>"/>
+                    </div>
 				</div>
-				
+
 				<div class="panel-body em-containerFilter-body">
 					<?php echo @$this->filters ?>
 				</div>
@@ -151,26 +155,26 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
             }
         }
 	}
-	
+
 	$(document).ready(function()
 	{
 		$('.chzn-select').chosen({width:'75%'});
 		checkurl();
 		refreshFilter();
 		reloadActions();
-		
+
         //search();
         //reloadData('evaluation');
-	
+
         $('#rt-mainbody-surround').children().addClass('mainemundus');
         $('#rt-main').children().addClass('mainemundus');
         $('#rt-main').children().children().addClass('mainemundus');
-        
+
 		$(document).on("hidden.bs.modal", function (e) {
 		    $(e.target).removeData("bs.modal").find("#basicModal .modal-content").empty();
 		    $('#basicModal .modal-content').replaceWith('<div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><?php echo JText::_("LOADING");?></h4></div><div class="modal-body"><img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_("CANCEL")?></button></div></div>');
 		});
-		
+
 	})
 
 </script>

@@ -3316,15 +3316,14 @@ if (JFactory::getUser()->id == 63)
 	 */
     public function getFabrikValueRepeat($elt, $fnums, $params = null, $groupRepeat) {
 
-        if (!is_array($fnums))
+        if (!is_array($fnums)) {
             $fnums = [$fnums];
+        }
 
-        //$gid = $elt['group_id'];
         $tableName = $elt['db_table_name'];
         $tableJoin = $elt['table_join'];
         $name = $elt['name'];
         $plugin = $elt['plugin'];
-//var_dump($elt);
         $isFnumsNull = ($fnums === null);
         $isDatabaseJoin = ($plugin === 'databasejoin');
         $isMulti = (@$params->database_join_display_type == "multilist" || @$params->database_join_display_type == "checkbox");
@@ -3735,5 +3734,25 @@ if (JFactory::getUser()->id == 63)
             ->where($db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
         $db->setQuery($query);
         return $db->loadAssocList();
+    }
+    public function getTagsAssocStatus($status){
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $conditions = $db->quoteName('ss.step') . ' = ' . $db->quote($status);
+
+        $query->select('ssrt.tags')
+            ->from($db->quoteName('#__emundus_setup_status_repeat_tags', 'ssrt'))
+            ->leftJoin($db->quoteName('#__emundus_setup_status', 'ss') . ' ON ' . $db->quoteName('ss.id') . ' = ' . $db->quoteName('ssrt.parent_id'))
+            ->where($conditions);
+
+        $db->setQuery($query);
+
+        try{
+            return $db->loadColumn();
+        }
+        catch (Exception $e){
+            JLog::add($query->__toString(), JLog::ERROR, 'com_emundus');
+        }
     }
 }

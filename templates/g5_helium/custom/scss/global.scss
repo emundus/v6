@@ -1,13 +1,11 @@
-@import "dependencies";
-
 /*CSS base*/
 /*IMPORT POLICE*/
 @import url("https://use.typekit.net/czx4mrf.css");
 
 @import "dependencies";
 
-// Here you can add Anything you want to be present on the entire site AND with variables
-// - Laura.scss
+/* Here you can add Anything you want to be present on the entire site AND with variables */
+/* - Laura.scss */
 
 /** VARIABLES **/
 $light-blue: #26CAEA;
@@ -24,8 +22,8 @@ $white: #FFFFFF;
 
 $red: #e5283B;
 
-$complete-gradient: linear-gradient(rgba(240,238,109,10), rgba(50,238,95,50), rgba(240,238,109,96));
-$simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
+$complete-gradient: linear-gradient(rgba(240, 238, 109, 10), rgba(50, 238, 95, 50), rgba(240, 238, 109, 96));
+$simple-gradient: linear-gradient(rgba(240, 238, 109, 5), rgba(240, 238, 109, 120));
 
 
 /* GENERAL */
@@ -35,8 +33,6 @@ $simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
 }
 
 body {
-  //font-family: "Lato", sans-serif;
-  //border-top: 5px solid $base-secondary-color;
   line-height: normal;
 
   p {
@@ -58,7 +54,6 @@ h6 {
   margin-top: 50px;
   margin-bottom: 50px;
   font-weight: 700;
-  //font-family: "Lato", sans-serif;
 }
 
 h1 {
@@ -78,11 +73,12 @@ h1 {
   margin: 10px 0 20px 0;
 }
 
-button.swal2-styled{
+button.swal2-styled {
   padding: 5px 20px;
   border-radius: 25px !important;
 }
-button.swal2-confirm{
+
+button.swal2-confirm {
   background: #12DB42 !important;
 }
 
@@ -291,6 +287,7 @@ ul {
   h1, h2, h3, h4, h5, h6 {
     color: $dark-blue !important;
   }
+
   form legend {
     color: $dark-blue !important;
   }
@@ -309,21 +306,7 @@ ul {
   border: 2px solid $dark-blue !important;
   border-radius: 25px !important;
   color: #fff;
-  &:active, &:focus, &:hover {
-    background: transparent!important;
-    background-color: transparent!important;
-    border: 2px solid $dark-blue !important;
-    border-radius: 25px !important;
-    color: $dark-blue !important;
-  }
-}
 
-.files-board form.em-form-message .toggle-editor .btn-group a.btn, .modal-body form .em_email_block input.btn.btn-success[name="expert"]  {
-  background: $dark-blue !important;
-  background-color: $dark-blue !important;
-  border: 2px solid $dark-blue !important;
-  border-radius: 25px !important;
-  color: #fff !important;
   &:active, &:focus, &:hover {
     background: transparent !important;
     background-color: transparent !important;
@@ -333,11 +316,28 @@ ul {
   }
 }
 
-.modal-body .xclsform-filters button#delfilter , .modal-body .xclsform-filters button#savefilter , .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs  {
+.files-board form.em-form-message .toggle-editor .btn-group a.btn, .modal-body form .em_email_block input.btn.btn-success[name="expert"] {
+  background: $dark-blue !important;
+  background-color: $dark-blue !important;
+  border: 2px solid $dark-blue !important;
+  border-radius: 25px !important;
+  color: #fff !important;
+
+  &:active, &:focus, &:hover {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 2px solid $dark-blue !important;
+    border-radius: 25px !important;
+    color: $dark-blue !important;
+  }
+}
+
+.modal-body .xclsform-filters button#delfilter, .modal-body .xclsform-filters button#savefilter, .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs {
   background: $dark-blue !important;
   background-color: $dark-blue !important;
   border: 1px solid $dark-blue !important;
   color: #fff !important;
+
   &:active, &:focus, &:hover {
     background: transparent !important;
     background-color: transparent !important;
@@ -358,7 +358,7 @@ ul {
   }
 }
 
-#system-message{
+#system-message {
   position: relative;
   width: 80%;
   left: 10%;
@@ -385,28 +385,17 @@ legend {
   margin: 0 !important;
 }
 
-#g-utility{
+#g-utility {
   background: transparent;
 }
 
-#g-sidebar{
+#g-sidebar {
   border-radius: 5px;
 }
 
 #g-page-surround {
   min-height: auto;
   overflow: visible;
-}
-
-p,
-a,
-legend,
-select,
-textarea,
-label,
-input[type="text"],
-.ui.warning.message {
-  //font-family: "Lato", sans-serif;
 }
 
 p,
@@ -418,7 +407,8 @@ input[type="text"],
 .ui.warning.message {
   color: #000;
 }
-#g-container-main{
+
+#g-container-main {
   height: auto;
   margin: 0 auto auto;
   width: 100%;
@@ -434,7 +424,7 @@ input[type="text"],
   left: 75px;
 }
 
-.g-container.g-flushed{
+.g-container.g-flushed {
   width: calc(100% - 75px) !important;
   margin: unset;
 }
@@ -486,7 +476,7 @@ input[type="text"],
   max-width: 180px;
 }
 
-#g-navigation .g-main-nav{
+#g-navigation .g-main-nav {
   margin-top: 20px;
 }
 
@@ -517,6 +507,7 @@ input[type="text"],
         padding: 0px;
 
       }
+
       .platform-content:nth-child(2) {
         order: 3;
       }
@@ -525,7 +516,6 @@ input[type="text"],
 }
 
 #g-navigation {
-  //border-bottom: 1px solid #eeeeee;
   width: 100vw;
   position: sticky;
   max-height: 100px;
@@ -574,6 +564,7 @@ input[type="text"],
 
       li {
         list-style: none;
+
         a {
           text-decoration: none;
         }
@@ -603,7 +594,6 @@ footer#g-footer {
   z-index: 1;
   padding-left: 75px;
   padding-right: 75px;
-  //margin-top: auto !important;
   margin-top: 75px !important;
   transition: all 0.3s ease-in-out;
 }
@@ -625,22 +615,22 @@ footer#g-footer img {
   overflow-y: auto;
 }
 
-#g-page-surround>.g-container:not(.g-flushed) {
+#g-page-surround > .g-container:not(.g-flushed) {
   width: 100vw;
   margin-top: auto;
   height: 180px;
 }
 
-.g-container>#g-footer {
+.g-container > #g-footer {
   width: 100vw;
   margin-top: auto !important;
 }
 
-footer#g-footer>.g-container {
+footer#g-footer > .g-container {
   width: 100%;
 }
 
-body>.g-container {
+body > .g-container {
   width: 100vw;
 }
 
@@ -754,9 +744,6 @@ body>.g-container {
 
   #userDropdownIcon {
     background-color: white;
-    //border: 2px solid $base-primary-color;
-    //color: $base-primary-color;
-    //box-shadow: none;
     font-size: 1.5em;
     width: 30px !important;
     height: 30px !important;
@@ -765,19 +752,12 @@ body>.g-container {
     justify-content: center;
     border: unset !important;
     margin: 0 10px 10px 10px;
-
-    // &:hover,
-    // &:active,
-    //&:hover:active {
-    //  background-color: transparent;
-    //  color: $base-primary-color;
-    //  }
   }
 
   #userDropdownMenu {
 
-    li>a:hover,
-    .active>a {
+    li > a:hover,
+    .active > a {
       background: $base-primary-color;
       color: #ffffff;
     }
@@ -825,6 +805,49 @@ body>.g-container {
   }
 }
 
+/* CAS */
+.container-module-cas .sous-container-module-cas #login-form .control-group button.login-button {
+  background: $base-secondary-color;
+  border-color: $base-secondary-color;
+  color: #fff;
+
+  &:hover, &:focus, &:active {
+    background: transparent;
+    border-color: $base-secondary-color;
+    color: $base-secondary-color;
+  }
+}
+
+.container-module-cas .sous-container-module-cas #connexion .btn-cas a.btn.btn-primary:not(.logo) {
+  background: $base-primary-color;
+  border-color: $base-primary-color;
+  color: #fff;
+
+  &:hover, &:focus, &:active {
+    background: transparent;
+    border-color: $base-primary-color;
+    color: $base-primary-color;
+  }
+}
+
+.container-module-cas .sous-container-module-cas #inscription a.btn.btn-primary {
+  background: $base-primary-color;
+  border-color: $base-primary-color;
+  color: #fff;
+
+  &:hover, &:focus, &:active {
+    background: transparent;
+    border-color: $base-primary-color;
+    color: $base-primary-color;
+  }
+}
+
+.container-module-cas .sous-container-module-cas #connexion a.btn.btn-primary {
+  background: $base-primary-color;
+  border-color: $base-primary-color;
+}
+
+
 /* BOUTON RADIO SELECTIONNE- COULEUR */
 .view-form input[type='radio']:checked {
   background: $base-secondary-color;
@@ -869,7 +892,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 .view-programme {
 
-  #g-sidebar{
+  #g-sidebar {
     margin-top: 50px;
     width: max-content !important;
     padding: 0 !important;
@@ -960,6 +983,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 .homepage-background-relative {
   margin-bottom: 5% !important;
+
   .homepage-background {
     position: absolute;
     top: 80px;
@@ -971,7 +995,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     width: 100%;
     height: 220px;
   }
-  .welcome-message{
+
+  .welcome-message {
     z-index: 10;
     display: inline-block;
     position: relative;
@@ -980,7 +1005,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     filter: grayscale(1) invert(1) brightness(100);
   }
 }
-
 
 
 .view-checklist #attachment_list #attachment_list_mand .em-titleDocMand {
@@ -1029,7 +1053,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       background-color: $base-secondary-color;
       border-color: $base-secondary-color;
       color: #fff;
-      //font-family: "Lato", sans-serif;
 
       &:hover,
       &:active,
@@ -1044,7 +1067,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       background-color: transparent;
       border-color: $base-primary-color;
       color: $base-primary-color;
-      //font-family: "Lato", sans-serif;
 
       &:hover,
       &:active,
@@ -1077,7 +1099,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .campaign-title {
     color: $base-primary-color;
-    //font-family: "Lato", sans-serif;
   }
 
   h3.g-title {
@@ -1098,6 +1119,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     border-bottom-right-radius: 0 !important;
     left: 0;
   }
+
   .btn:last-child {
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
@@ -1119,41 +1141,52 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     opacity: 1;
     color: white;
     border-color: $base-primary-color;
-    &:hover{
+
+    &:hover {
       background: $base-primary-color;
       color: white;
     }
   }
 }
+
 .tchooz-single-campaign {
   margin-top: 3%;
-  .single-campaign{
+
+  .single-campaign {
     flex-direction: row;
     flex-wrap: wrap;
   }
-  #faq,#documents {
+
+  #faq, #documents {
     flex-direction: column;
   }
-  #faq h2{
+
+  #faq h2 {
     margin-bottom: 20px;
   }
+
   .right-side-tchooz {
     display: flex;
     flex-direction: column;
   }
-  .right-side{
+
+  .right-side {
     width: 100%;
   }
-  .below-content{
+
+  .below-content {
     width: 100%;
   }
-  .campaingapply{
+
+  .campaingapply {
     padding-right: 50px;
   }
-  .campaign-documents{
+
+  .campaign-documents {
     display: none;
   }
 }
+
 /** END **/
 
 #navfilter {
@@ -1196,7 +1229,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background-color: $base-secondary-color;
     border-color: $base-secondary-color;
     color: #fff;
-    //font-family: "Lato", sans-serif;
 
     &:hover,
     &:active,
@@ -1220,7 +1252,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 .need_missing.active a::before {
   color: $base-primary-color;
 }
-
 
 
 /*BOUTONS + ET _ */
@@ -1292,6 +1323,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   color: #fff;
   background: $base-primary-color;
   border-color: $base-primary-color;
+
   &:hover, &:active, &:focus {
     color: $base-primary-color;
     background: transparent;
@@ -1655,9 +1687,9 @@ button.close {
 .btn-warning:active.focus,
 .btn-warning:active:focus,
 .btn-warning:active:hover,
-.open>.dropdown-toggle.btn-warning.focus,
-.open>.dropdown-toggle.btn-warning:focus,
-.open>.dropdown-toggle.btn-warning:hover {
+.open > .dropdown-toggle.btn-warning.focus,
+.open > .dropdown-toggle.btn-warning:focus,
+.open > .dropdown-toggle.btn-warning:hover {
   color: #ffffff;
   background-color: #D5855A;
   border-color: #D5855A;
@@ -1882,7 +1914,7 @@ a#em-doc-zip:focus,
   border: 1px solid $base-primary-color;
 }
 
-.span4.offset1>.btn-group>button.button {
+.span4.offset1 > .btn-group > button.button {
   background: $base-primary-color;
   border: 1px solid $base-primary-color;
   border-radius: 4px;
@@ -1896,8 +1928,8 @@ a#em-doc-zip:focus,
   }
 }
 
-.span4>.btn-group>button.save-btn,
-.span4>.btn-group>button.save {
+.span4 > .btn-group > button.save-btn,
+.span4 > .btn-group > button.save {
   background: $base-primary-color;
   background-color: $base-primary-color;
   border: 1px solid $base-primary-color;
@@ -1962,6 +1994,7 @@ button#back,
   text-shadow: none;
   text-transform: initial;
   border-radius: 25px !important;
+
   &:hover,
   &:focus,
   &:active {
@@ -1978,6 +2011,7 @@ button#back,
   text-shadow: none;
   text-transform: initial;
   border-radius: 25px;
+
   &:hover,
   &:focus,
   &:active {
@@ -2001,7 +2035,7 @@ button#back,
   }
 }
 
-#em_select_filter #del-filter{
+#em_select_filter #del-filter {
   background-color: transparent;
   color: $red;
   border: none;
@@ -2029,7 +2063,7 @@ button#back,
   }
 }
 
-#em-files-filters .em-filter .em_label label a, #em-user-filters .em-filter .em_label label a, #em-user-filters .em_label label a  {
+#em-files-filters .em-filter .em_label label a, #em-user-filters .em-filter .em_label label a, #em-user-filters .em_label label a {
   color: $dark-green;
 }
 
@@ -2053,6 +2087,7 @@ button#back,
 
 .files-board .em-container-tags .em-container-tags-heading #add-tags {
   color: #fff;
+
   &:hover, &:active, &:focus {
     color: darken($base-secondary-color, 10%);
   }
@@ -2094,7 +2129,6 @@ button#back,
 }
 
 
-
 input[type="color"]:hover,
 input[type="date"]:hover,
 input[type="datetime"]:hover,
@@ -2131,10 +2165,9 @@ textarea:hover {
   border: 1px solid $base-primary-color;
 }
 
-.step a[title="Retour à mes dossiers"]:hover, .step a[title="Retour à mes dossiers"]:focus, .step a[title="Retour à mes dossiers"]:active  {
+.step a[title="Retour à mes dossiers"]:hover, .step a[title="Retour à mes dossiers"]:focus, .step a[title="Retour à mes dossiers"]:active {
   color: $base-secondary-color;
 }
-
 
 .candidacy-files-list h1,
 #em-panel h1 {
@@ -2152,10 +2185,12 @@ textarea:hover {
 
 .em-actions {
   padding: 5px;
-  a{
+
+  a {
     padding: 5px !important;
     color: #fff;
-    &:hover{
+
+    &:hover {
       border-radius: 4px;
       background: $dark-blue !important;
     }
@@ -2228,11 +2263,13 @@ textarea:hover {
 .alert {
   a {
     font-size: 16px;
+
     &:hover {
       font-size: 16px;
     }
   }
 }
+
 .has-error {
 
   .help-block,
@@ -2338,8 +2375,8 @@ ul.g-dropdown.g-dropdown-right.g-fade {
   color: $base-primary-color;
 }
 
-.g-main-nav .g-toplevel>li.active .g-menu-parent-indicator::after,
-.g-main-nav .g-toplevel>li:hover .g-menu-parent-indicator::after {
+.g-main-nav .g-toplevel > li.active .g-menu-parent-indicator::after,
+.g-main-nav .g-toplevel > li:hover .g-menu-parent-indicator::after {
   color: $base-primary-color;
 }
 
@@ -2380,7 +2417,6 @@ ul.nav.nav-tabs.nav-stacked li a {
   background-color: $base-secondary-color;
   border-color: $base-secondary-color;
   color: #fff;
-  //font-family: "Lato", sans-serif;
   text-transform: capitalize;
 
   &:hover,
@@ -2428,10 +2464,11 @@ ul.unstyled.em-linkForgot li a {
   background: $base-secondary-color !important;
 }
 
-.edit-comment-container button.edit-comment  {
+.edit-comment-container button.edit-comment {
   color: white;
   background: $base-primary-color;
   border: 1px solid $base-primary-color;
+
   &:hover, &:active, &:focus {
     color: $base-primary-color;
     background: transparent;
@@ -2439,11 +2476,12 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
-.import-csv-page  .fabrikActions.form-actions  button.importation {
+.import-csv-page .fabrikActions.form-actions button.importation {
   padding: 5px 30px;
   border: 2px solid $dark-blue;
   background: $dark-blue;
   border-radius: 25px !important;
+
   &:hover, &:active, &:focus {
     border: 2px solid $dark-blue;
     background: transparent;
@@ -2456,6 +2494,7 @@ ul.unstyled.em-linkForgot li a {
   border: 2px solid $dark-blue;
   background: $dark-blue;
   border-radius: 25px !important;
+
   &:hover, &:active, &:focus {
     border: 2px solid $dark-blue;
     background: transparent;
@@ -2468,6 +2507,7 @@ ul.unstyled.em-linkForgot li a {
   background: $base-secondary-color;
   border: 1px solid $base-secondary-color;
   border-radius: 4px !important;
+
   &:hover, &:active, &:focus {
     color: $base-secondary-color;
     background: transparent;
@@ -2481,24 +2521,24 @@ ul.unstyled.em-linkForgot li a {
   background: $base-primary-color;
 }
 
-.g-back-office-emundus-tableau .panel-info>.panel-heading {
+.g-back-office-emundus-tableau .panel-info > .panel-heading {
   background: #f2F2F2;
 }
 
-.g-back-office-emundus-tableau.files-page .panel-info>.panel-heading {
+.g-back-office-emundus-tableau.files-page .panel-info > .panel-heading {
   background: $base-secondary-color;
 }
 
-.g-back-office-emundus-tableau.experts-page .panel-info>.panel-heading h3.panel-title {
+.g-back-office-emundus-tableau.experts-page .panel-info > .panel-heading h3.panel-title {
   color: $dark-blue !important;
 }
 
-.g-back-office-emundus-tableau.files-board .panel-info>.panel-heading {
+.g-back-office-emundus-tableau.files-board .panel-info > .panel-heading {
   background: $dark-green;
 }
 
-#em_filters fieldset.em_filters_filedset>p,
-#em-user-filters fieldset.em_filters_filedset>p {
+#em_filters fieldset.em_filters_filedset > p,
+#em-user-filters fieldset.em_filters_filedset > p {
   color: #12DB42;
 }
 
@@ -2513,7 +2553,7 @@ ul.unstyled.em-linkForgot li a {
 
 #em-files-filters #em_filters fieldset input#save-filter {
   margin-top: 10px;
-  background:  $dark-blue;
+  background: $dark-blue;
   border: 1px solid $dark-blue !important;
   width: 100%;
   width: -moz-available;
@@ -2607,9 +2647,11 @@ ul.unstyled.em-linkForgot li a {
 .em-container-attachment .em-collapse-container .borderContentCollapse {
   .btn.btn-danger.btn-attach {
     border: none;
+
     &:hover, &:focus, &:active {
       background: transparent;
     }
+
     span {
       color: $red;
     }
@@ -2633,7 +2675,7 @@ ul.unstyled.em-linkForgot li a {
 
 /* DOSSIER CANDIDAT */
 
-.em-personalInfo>a {
+.em-personalInfo > a {
   background-color: $base-primary-color;
 }
 
@@ -2693,6 +2735,7 @@ div#em-appli-block {
   #add-tags {
     background: $dark-blue;
     color: #fff;
+
     &:hover, &:active, &:focus {
       color: $dark-blue;
       background: #fff;
@@ -2787,6 +2830,7 @@ div#em-appli-block {
   .page-header h1 {
     color: #000;
   }
+
   form .filtertable input.fabrik_filter_submit {
     border-radius: 25px;
     padding: 5px 30px;
@@ -2816,7 +2860,7 @@ div#em-appli-block {
       }
     }
 
-    tbody tr>td {
+    tbody tr > td {
       color: $dark-blue;
     }
   }
@@ -2835,6 +2879,7 @@ div#em-appli-block {
     b.caret {
       color: $dark-blue;
     }
+
     a:hover b.caret,
     a:hover b.caret,
     a:hover b.caret {
@@ -2842,10 +2887,13 @@ div#em-appli-block {
       border-top-color: $dark-blue;
       border-bottom-color: $dark-blue;
     }
+
     ul.dropdown-menu li a {
       color: $dark-blue;
+
       &:hover, &:focus, &:active {
         color: #fff;
+
         i {
           color: #fff;
         }
@@ -2889,8 +2937,8 @@ div#em-appli-block {
   background: #ECEFF3 !important;
 }
 
-.table-hover tbody tr:nth-child(2n)>td,
-.table-hover tbody tr:nth-child(2n)>th {
+.table-hover tbody tr:nth-child(2n) > td,
+.table-hover tbody tr:nth-child(2n) > th {
   background: #dddddd !important;
 }
 
@@ -2905,7 +2953,7 @@ div#em-appli-block {
   .informationStatistique {
     background-color: #fff;
     color: #000 !important;
-    box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);
+    box-shadow: 0 1px 2px 0 hsla(0, 0%, 41.2%, .19);
     border-radius: 4px;
   }
 
@@ -2926,6 +2974,7 @@ div#em-appli-block {
   #validation {
     background: $dark-green;
     border: 2px solid $dark-green;
+
     &:hover, &:active, &:focus {
       background: transparent;
       border: 2px solid $dark-green;
@@ -2983,12 +3032,12 @@ div#em-appli-block {
     background: $dark-blue;
   }
 
-  .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line {
+  .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step-line {
     border-top: 1px solid $dark-blue;
     border-bottom: 1px solid $dark-blue;
   }
 
-  .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step {
+  .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step {
     color: $dark-blue;
     border: 1px solid $dark-blue;
   }
@@ -3098,8 +3147,9 @@ div#em-appli-block {
   height: 30px;
 }
 
-.experts-page ul.contact-group li.contact-group-item.bg-warning  a.row {
+.experts-page ul.contact-group li.contact-group-item.bg-warning a.row {
   color: $dark-blue !important;
+
   &:hover,
   &:active,
   &:focus {
@@ -3164,21 +3214,23 @@ div#em-appli-block {
 
 @media all and (max-width: 479px) {
 
-  #g-navigation .g-container #header-c{
+  #g-navigation .g-container #header-c {
     justify-content: center;
-    .platform-content{
+
+    .platform-content {
       text-align: center;
     }
-    a.forgotten_password_header{
+
+    a.forgotten_password_header {
       float: unset;
     }
   }
 
-  #g-container-main .g-container{
+  #g-container-main .g-container {
     padding: 0 0 0 40px;
   }
 
-  .gantry #g-feature{
+  .gantry #g-feature {
     margin-top: 50px;
   }
 
@@ -3188,6 +3240,7 @@ div#em-appli-block {
       margin-bottom: 30px;
       margin-top: 30px;
     }
+
     p {
       text-align: justify;
     }
@@ -3196,6 +3249,7 @@ div#em-appli-block {
   .gantry.view-registration, .gantry.view-form.em-formRegistrationCenter {
     main#g-main-mainbody {
       padding: 0;
+
       .login.em-formRegistrationCenter, .em-formRegistrationCenter:not(.componentheading) {
 
         width: 100% !important;
@@ -3217,7 +3271,7 @@ div#em-appli-block {
     }
   }
 
-  .gantry footer#g-footer .logo a  {
+  .gantry footer#g-footer .logo a {
     display: flex;
     justify-content: center;
   }
@@ -3228,7 +3282,7 @@ div#em-appli-block {
   }
 
 
-  .g-back-office-emundus-tableau.view-syncs.experts-synchro-page .app-container.ng-scope  {
+  .g-back-office-emundus-tableau.view-syncs.experts-synchro-page .app-container.ng-scope {
     overflow-x: scroll;
   }
 
@@ -3265,6 +3319,7 @@ div#em-appli-block {
         text-transform: initial;
         padding: 8px 12px;
       }
+
       .btn[title="Basculer l'éditeur"] {
         border-radius: 4px;
         text-transform: initial;
@@ -3274,6 +3329,7 @@ div#em-appli-block {
 
     .g-block.size-25 {
       padding-left: 20px;
+
       #g-sidebar {
         padding: 0px;
         margin-top: 50px;
@@ -3307,12 +3363,13 @@ div#em-appli-block {
     flex-direction: column;
 
     .mod-languages.advanced-dropdown {
-      margin:  15px 15px 15px 0px;
+      margin: 15px 15px 15px 0px;
     }
   }
   #g-navigation #header-c.without-lang-switcher {
     max-width: 30rem !important;
     min-height: 67px;
+
     .g-content {
       display: flex;
       align-items: center;
@@ -3331,10 +3388,11 @@ div#em-appli-block {
   /* BURGER OUVERT */
   #g-offcanvas {
     background: #F2F2F2;
+
     .g-grid {
       margin: 50px 0px;
 
-      .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
+      .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul {
         background: #F2F2F2;
         margin: 0;
         padding: 0;
@@ -3347,14 +3405,17 @@ div#em-appli-block {
           justify-content: space-between;
           background: #F2F2F2;
           width: 100% !important;
+
           span {
             width: 10%;
             margin-top: 15px;
+
             &::after {
               color: #000;
               opacity: initial;
             }
           }
+
           a {
             color: $base-primary-color;
             padding: 15px 30px;
@@ -3366,6 +3427,7 @@ div#em-appli-block {
         li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module).active {
           background: #FAFAFA;
           border-left: 6px solid $base-secondary-color;
+
           a {
             color: $base-primary-color;
           }
@@ -3373,8 +3435,9 @@ div#em-appli-block {
 
         li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module):hover {
           background: #ccc;
+
           a {
-            color:#fff;
+            color: #fff;
           }
         }
       }
@@ -3382,16 +3445,16 @@ div#em-appli-block {
   }
 
 
-
-
   /* FOOTER */
 
   footer#g-footer .g-grid {
     .bas-footer {
       justify-content: center;
+
       .em-containerAdresseLogo {
         justify-content: center;
         width: 100% !important;
+
         .adresse {
           align-items: center;
 
@@ -3420,8 +3483,8 @@ div#em-appli-block {
 
 }
 
-@media all and (min-width: 480px) and (max-width: 767px)  {
-  .gantry #g-feature{
+@media all and (min-width: 480px) and (max-width: 767px) {
+  .gantry #g-feature {
     margin-top: 100px;
   }
 
@@ -3433,10 +3496,11 @@ div#em-appli-block {
   /* BURGER OUVERT */
   #g-offcanvas {
     background: #F2F2F2;
+
     .g-grid {
       margin: 50px 0px;
 
-      .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
+      .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul {
         background: #F2F2F2;
         margin: 0;
         padding: 0;
@@ -3449,14 +3513,17 @@ div#em-appli-block {
           justify-content: space-between;
           background: #F2F2F2;
           width: 100% !important;
+
           span {
             width: 10%;
             margin-top: 15px;
+
             &::after {
               color: #000;
               opacity: initial;
             }
           }
+
           a {
             color: $base-primary-color;
             padding: 15px 30px;
@@ -3468,6 +3535,7 @@ div#em-appli-block {
         li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module).active {
           background: #FAFAFA;
           border-left: 6px solid $base-secondary-color;
+
           a {
             color: $base-primary-color;
           }
@@ -3475,8 +3543,9 @@ div#em-appli-block {
 
         li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module):hover {
           background: #ccc;
+
           a {
-            color:#fff;
+            color: #fff;
           }
         }
       }
@@ -3495,7 +3564,7 @@ div#em-appli-block {
 
   /* FOOTER */
 
-  .gantry footer#g-footer .logo a  {
+  .gantry footer#g-footer .logo a {
     display: flex;
     justify-content: center;
   }
@@ -3507,15 +3576,15 @@ div#em-appli-block {
 
   .em-containerAdresseLogo {
     width: 100% !important;
-    justify-content: center !important ;
+    justify-content: center !important;
   }
 
   .bas-footer .adresse {
-    align-items : center;
+    align-items: center;
   }
 
-  .bas-footer .adresse  p{
-    text-align : center !important;
+  .bas-footer .adresse p {
+    text-align: center !important;
   }
 
   #g-page-surround > .g-container:not(.g-flushed) {
@@ -3551,7 +3620,7 @@ div#em-appli-block {
     justify-content: center;
   }
 
-  #g-navigation #header-c,  #g-navigation #header-c.without-tchooz-and-lang-switcher, #g-navigation #header-c.without-lang-switcher, #g-navigation #header-c.without-tchooz {
+  #g-navigation #header-c, #g-navigation #header-c.without-tchooz-and-lang-switcher, #g-navigation #header-c.without-lang-switcher, #g-navigation #header-c.without-tchooz {
     max-width: 100%;
   }
 
@@ -3739,6 +3808,7 @@ div#em-appli-block {
     padding: 5px 30px !important;
     font-weight: 500 !important;
     border-radius: 25px !important;
+
     &:active, &:focus, &:hover {
       background: transparent;
       border: 2px solid $dark-blue;
@@ -3800,7 +3870,7 @@ div#em-appli-block {
       padding: 0 !important;
     }
 
-    #g-mobilemenu-container ul>li>.g-menu-item-container {
+    #g-mobilemenu-container ul > li > .g-menu-item-container {
       padding: 0;
     }
 
@@ -3840,7 +3910,6 @@ div#em-appli-block {
 
     #header-a {
       justify-content: center;
-      //margin-bottom: 18px;
       left: 0;
     }
   }

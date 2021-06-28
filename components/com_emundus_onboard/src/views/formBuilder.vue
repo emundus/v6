@@ -1,8 +1,5 @@
 <template>
   <div class="container-fluid">
-    <!---<modal name="my-first-modal">
-      <v-dialog />
-    </modal>-->
     <notifications
             group="foo-velocity"
             animation-type="velocity"
@@ -128,7 +125,7 @@
       <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
         <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-offset-2 col-md-6' : 'col-md-8'">
           <div class="d-flex" v-show="!updateFormLabel">
-            <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="profileLabel">{{profileLabel}}  </h2>
+            <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="profileLabel">{{profileLabel}}</h2>
             <a @click="enableUpdatingForm" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
               <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
             </a>
@@ -722,7 +719,6 @@
 
       // Update component dynamically
       UpdateName(index, label) {
-
         this.formObjectArray[index].object.show_title.value = label;
       },
       UpdateIntro(index, intro) {
@@ -891,7 +887,6 @@
       },
 
       async getDataObject() {
-
         await this.asyncForEach(this.formList, async (element) => {
           let ellink = element.link.replace("fabrik","emundus_onboard");
           await axios.get(ellink + "&format=vue_jsonclean")
@@ -925,7 +920,6 @@
           await axios.get(ellink + "&format=vue_jsonclean")
               .then(response => {
                 this.formObjectArray[index].object = response.data;
-                // console.log(response.data)
                 /*this.formObjectArray.push({
                 object: response.data,
                 rgt: this.formList[index].rgt,
@@ -1024,11 +1018,7 @@
             return qs.stringify(params);
           }
         }).then(response => {
-
-
           this.formList = response.data.data;
-          //if(this.formList.length>0){
-
           setTimeout(() => {
             //this.getDataObject();
             if (this.formList.length > 0){
@@ -1048,8 +1038,6 @@
             this.getProfileLabel(this.prid);
 
           }, 100);
-
-
         }).catch(e => {
           console.log(e);
         });
@@ -1350,7 +1338,6 @@
       this.getDocuments();
       this.getSubmittionPage();
       this.getFilesByForm();
-
     },
 
     computed: {
