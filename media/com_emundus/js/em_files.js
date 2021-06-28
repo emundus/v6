@@ -4213,8 +4213,8 @@ $(document).ready(function() {
     });
 
 
-    // show tooltips when hovering the butto
-    $(document).on('mouseover', '[id^=candidat_]', function(e){ $(this).css('cursor', 'pointer').attr('title', 'Send emails');})
+    // show tooltips when hovering the button --> using JText
+    $(document).on('mouseover', '[id^=candidat_]', function(e){ $(this).css('cursor', 'pointer').attr('title', Joomla.JText._('SEND_EMAIL_TOOLTIPS'));})
 
     $(document).on('click', '[id^=candidat_]', function(e){
         let fnum = $(this).attr('id').split('candidat_')[1];
