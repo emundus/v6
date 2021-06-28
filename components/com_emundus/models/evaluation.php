@@ -2679,14 +2679,14 @@ if (JFactory::getUser()->id == 63)
                                 $this->_db->setQuery($query);
                                 $this->_db->execute();
 
-                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
+                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         ////
 
                                 $pdf->Output($path_name, 'F');
                                 $pdf->Output($original_name, 'F');
                                 $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
                             } else {
                                 /// copy generated letter to --letters folder
-                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
+                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         ////
 
                                 $pdf->Output($path_name, 'F');
                                 $pdf->Output($original_name, 'F');
@@ -3209,15 +3209,6 @@ if (JFactory::getUser()->id == 63)
                     rmdir($mergeDirPath);
                     $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'merge_zip_url' => DS . 'tmp/' . $_mergeZipName);
                 }
-                // remove the original letter
-                $original_folder = glob(EMUNDUS_PATH_ABS . $uid . '--letters' . DS . '*');
-
-                foreach($original_folder as $original_file) {
-                    if(is_file($original_file)) {
-                        unlink($original_file);
-                    }
-                }
-                rmdir(EMUNDUS_PATH_ABS . $uid . '--letters');
             }
 
             /// delete unzip file
@@ -3358,15 +3349,6 @@ if (JFactory::getUser()->id == 63)
                     $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => DS. 'tmp/' . $_zipName);
                 }
 
-//                $original_folder = glob(EMUNDUS_PATH_ABS . $file->user_id . '--letters' . DS . '*');
-//
-//                foreach($original_folder as $original_file) {
-//                    if(is_file($original_file)) {
-//                        unlink($original_file);
-//                    }
-//                }
-//                rmdir(EMUNDUS_PATH_ABS . $file->user_id . '--letters');
-
                 $delete_files = glob($dir_Name_Path . DS . '*');
 
                 foreach($delete_files as $_file) {
@@ -3398,6 +3380,20 @@ if (JFactory::getUser()->id == 63)
                 rmdir($zip_All_Path);
                 $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name . '_.zip';
             }
+        }
+
+        // remove temporary folder for letters
+
+        foreach($fnum_Array as $key => $fnum) {
+            $fnum_info = $_mFile->getFnumInfos($fnum);
+
+            $tmp_letter_folder = glob(EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . '--letters' . DS . '*');
+            foreach($tmp_letter_folder as $file) {
+                if(is_file($file)) {
+                    unlink($file);
+                }
+            }
+            rmdir(EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . '--letters');
         }
 
         return json_encode($res);
