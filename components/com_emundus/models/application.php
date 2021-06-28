@@ -1584,20 +1584,17 @@ class EmundusModelApplication extends JModelList {
 	                                        $query = preg_replace('#{my->id}#', $aid, $query);
                                             $query  = preg_replace('#{shortlang}#', $this->locales, $query);
 
-	                                        $this->_db->setQuery( $query );
-		                                    $ret = $this->_db->loadResult();
-		                                    if (empty($ret)) {
-			                                    $ret = $element->content;
-		                                    }
-		                                    $elt = JText::_($ret);
-	                                    } elseif ($element->plugin == 'checkbox') {
-                                            $params = json_decode($element->params);
-                                            $index = array_intersect(json_decode (@$element->content), $params->sub_options->sub_values);
-                                            foreach($index as $key => $value) {
-                                                $elm[] = $params->sub_options->sub_labels[$key];
+                                            $this->_db->setQuery( $query );
+                                            $ret = $this->_db->loadResult();
+                                            if (empty($ret)) {
+                                                $ret = $element->content;
                                             }
-                                            $elt = implode(', ', JText::_($elm));
-                                        } elseif (($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') && isset($element->content)) {
+                                            $elt = JText::_($ret);
+                                        }
+                                        elseif ($element->plugin == 'checkbox') {
+                                            $elt = implode(", ", json_decode (@$element->content));
+                                        }
+                                        elseif (($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') && isset($element->content)) {
                                             $params = json_decode($element->params);
                                             $index = array_search($element->content, $params->sub_options->sub_values);
 
@@ -1737,8 +1734,8 @@ class EmundusModelApplication extends JModelList {
 		                continue;
 	                }
 
-                	// liste des items par groupe
-                    $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
+                    // liste des items par groupe
+                    $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params, fe.default, fe.eval
                                 FROM #__fabrik_elements fe
                                 WHERE fe.published=1 AND
                                     fe.hidden=0 AND
