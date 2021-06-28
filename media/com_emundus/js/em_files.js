@@ -5552,7 +5552,7 @@ $(document).ready(function() {
                                 table += "</tbody></table>";
                                 $('.modal-body').append(table);
 
-                                let href_collections = $('#em-generated-docs').find($('[id^=em_download_doc_]'));
+                                let href_collections = $('[id^=em_download_doc_]');
                                 var href_array = Array.prototype.slice.call(href_collections);
                                 let urls = [];
                                 href_array.forEach(url => {

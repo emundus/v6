@@ -2875,15 +2875,7 @@ if (JFactory::getUser()->id == 63)
                                 }
 
                                 /// check if file exists or not
-                                if (!file_exists($path_name)) {
-                                    $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-
-                                    $preprocess->saveAs($path_name);             /// save docx
-                                    /// copy this file to $original path
-                                    copy($path_name, $original_name);
-
-                                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
-                                } else {
+                                if (file_exists($path_name) or file_exists($original_path)) {
                                     // remove old file and update the database
                                     unlink($path_name);
                                     unlink($original_name);
@@ -2900,6 +2892,15 @@ if (JFactory::getUser()->id == 63)
                                     copy($path_name, $original_name);
 
                                     $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
+
+                                } else {
+                                    $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+
+                                    $preprocess->saveAs($path_name);             /// save docx
+                                    /// copy this file to $original path
+                                    copy($path_name, $original_name);
+
                                     $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
                                 }
                             }
@@ -3043,17 +3044,7 @@ if (JFactory::getUser()->id == 63)
                             }
 
                                 /// check if file exists or not
-                            if (!file_exists($original_name)) {
-                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-
-                                $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-                                $writer->setIncludeCharts(true);
-                                $writer->save($original_name);
-
-                                copy($original_name, $path_name);
-
-                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
-                            } else {
+                            if (file_exists($original_name) or file_exists($path_name)) {
                                 unlink($original_name);
                                 unlink($path_name);
                                 $query = $this->_db->getQuery(true);
@@ -3072,6 +3063,17 @@ if (JFactory::getUser()->id == 63)
                                 copy($original_name, $path_name);
 
                                 $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
+
+                            } else {
+                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+
+                                $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                                $writer->setIncludeCharts(true);
+                                $writer->save($original_name);
+
+                                copy($original_name, $path_name);
+
                                 $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
                             }
                             break;
