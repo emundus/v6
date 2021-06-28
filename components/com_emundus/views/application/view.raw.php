@@ -339,8 +339,13 @@ class EmundusViewApplication extends JViewLegacy {
                         $m_files = new EmundusModelFiles();
                         $tags = $m_files->getTagsByFnum(array($fnum));
                         $alltags = $m_files->getAllTags();
+                        $groupedTags = [];
+                        foreach ($alltags as $tag) {
+                            $groupedTags[$tag["category"]][] = ["id" => $tag["id"],"label" => $tag["label"]];
+                        }
+
                         $this->assignRef('tags', $tags);
-                        $this->assignRef('alltags', $alltags);
+                        $this->assignRef('groupedTags', $groupedTags);
                         $this->assignRef('fnum', $fnum);
 
                     } else {
