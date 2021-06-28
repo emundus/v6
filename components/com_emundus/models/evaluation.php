@@ -2500,7 +2500,6 @@ if (JFactory::getUser()->id == 63)
                         $file = JPATH_BASE . $letter->file;
                         if (file_exists($file)) {
                             $res->status = true;
-                            /// get fnum info from fnum
 
                             // make file name --- logically, we should avoid to generate many files which have same contents but different name --> fnum will distinguish the file name
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
@@ -2556,7 +2555,6 @@ if (JFactory::getUser()->id == 63)
                                 $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
                             } else {
                                 if (copy($file, $path_name) and copy($file, $original_name)) {
-                                    //$url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '/';
                                     $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
 
                                     $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
@@ -2644,10 +2642,8 @@ if (JFactory::getUser()->id == 63)
                             // make file name --- logically, we should avoid to generate many files which have same contents but different name --> fnum will distinguish the file name
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
-                                //$name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".pdf";
                                 $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf";
                             } else {
-                                //$name = $this->sanitize_filename($fnum). $attachInfo['lbl'] . '_' . date('Y-m-d_H-i-s') . uniqid() . ".pdf";
                                 $name = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".pdf";
                             }
 
@@ -2660,21 +2656,19 @@ if (JFactory::getUser()->id == 63)
                             $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
                             $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
 
-                            ///@ mkdir new folder which contains only the generated documents
+                            ///@ mkdir original folder if does not exists
+                            if(!file_exists($original_path)) {
+                                mkdir($original_path, 0777, true);
+                            }
 
+                            ///@ mkdir new folder which contains only the generated documents
                             if (!file_exists($path)) {
                                 mkdir($path, 0777, true);
                             }
 
-                            if (!file_exists($path_name) or !file_exists($original_name)) {
-                                /// copy generated letter to --letters folder
-                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
-
-                                $pdf->Output($path_name, 'F');
-                                $pdf->Output($original_name, 'F');
-                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
-                            } else {
+                            if (file_exists($path_name) or file_exists($original_name)) {
                                 // remove old file and reupdate in database
+                                unlink($original_name);
                                 unlink($path_name);
                                 $query = $this->_db->getQuery(true);
 
@@ -2685,6 +2679,13 @@ if (JFactory::getUser()->id == 63)
                                 $this->_db->setQuery($query);
                                 $this->_db->execute();
 
+                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
+
+                                $pdf->Output($path_name, 'F');
+                                $pdf->Output($original_name, 'F');
+                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
+                            } else {
+                                /// copy generated letter to --letters folder
                                 $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         //// error here
 
                                 $pdf->Output($path_name, 'F');
