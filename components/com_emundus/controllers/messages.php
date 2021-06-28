@@ -1623,7 +1623,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mailer->addAttachment($file_path);
         $send = $mailer->Send();
 
-        /// track the log of email
+//        /// track the log of email
 //        if ($send !== true) {
 //            $failed[] = $fnum_info['email'];
 //            echo 'Error sending email: ' . $send->__toString();
@@ -1646,25 +1646,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 //            sleep(5);
 //        }
 
-        /// get tags by this email id
-//        $_tags = $m_messages->getTagsByEmail($email_recap[0]->id);
-//
-//        if(!empty($tags)) {
-//            /// if tags is defined, check if this tag is assigned to $fnum or not
-//            foreach($_tags as $key => $value) {
-//                /// get tag by id fnum user
-//                $assoc_tag = $m_files->getTagsByIdFnumUser($value->id, $fnum_info['fnum'], $fnum_info['applicant_id']);             /// return true, false
-//                if($assoc_tag == false) {
-//                    $fnum_tag = $m_files->tagFile([$fnum_info['fnum']], [$value->id]);
-//                } else {
-//                    /// do nothing
-//                }
-//            }
-//        } else {
-//            /// tag is undefined --> next step :::
-//        }
-
-        //echo json_encode(['status' => true, 'sent' => $sent, 'failed' => $failed]);
+        echo json_encode(['status' => true]);
         exit;
     }
 
