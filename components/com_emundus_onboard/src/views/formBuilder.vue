@@ -236,7 +236,7 @@
                 </a>
               </li>
             </draggable>
-            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalAddDocuments');optionsModal = true" style="margin-left: 30px" :title="AddNewDocument">{{AddNewDocument}}</button>
+            <button class="bouton-sauvergarder-et-continuer" @click="currentDoc = null;$modal.show('modalAddDocuments');optionsModal = true" style="margin-left: 30px" :title="AddNewDocument">{{AddNewDocument}}</button>
 
           </div>
           <div class="form-pages" style="padding-top: 20px" v-if="submittionPages">

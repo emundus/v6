@@ -1455,25 +1455,7 @@ class EmundusonboardModelform extends JModelList {
 
         try {
             // Create the menu
-            $menu_form = array(
-                'id' => 0,
-                'title' => "Documents",
-                'alias' => "checklist-" . $prid,
-                'note' => "",
-                'link' => "index.php?option=com_emundus&view=checklist",
-                'menutype' => "menu-profile" . $prid,
-                'type' => "component",
-                'published' => 1,
-                'parent_id' => 1,
-                'component_id' => 11369,
-                'browserNav' => 0,
-                'access' => 1,
-                'template_style_id' => 22,
-                'home' => 0,
-                'language' => "*",
-                'toggle_modules_assigned' => 1,
-                'toggle_modules_published' => 1,
-                'params' => array(
+                $params = array(
                     'custom_title' => "",
                     'show_info_panel' => "0",
                     'show_info_legend' => "1",
@@ -1497,13 +1479,41 @@ class EmundusonboardModelform extends JModelList {
                     'meta_keywords' => "",
                     'robots' => "",
                     'secure' => 0,
-                )
-            );
-            $this->model_menus->setState('item.id', 0);
+                );
+                $datas = array(
+                    'menutype' => "menu-profile" . $prid,
+                    'title' => 'Documents',
+                    'alias' => 'checklist-' . $prid,
+                    'note' => '',
+                    'path' => 'checklist-' . $prid,
+                    'link' => 'index.php?option=com_emundus&view=checklist',
+                    'type' => 'component',
+                    'published' => 1,
+                    'parent_id' => 1,
+                    'level' => 1,
+                    'component_id' => 11369,
+                    'checked_out' => 0,
+                    'checked_out_time' => date('Y-m-d h:i:s'),
+                    'browserNav' => 0,
+                    'access' => 1,
+                    'img' => '',
+                    'template_style_id' => 22,
+                    'params' => json_encode($params),
+                    'lft' => 0,
+                    'rgt' => 0,
+                    'home' => 0,
+                    'language' => '*',
+                    'client_id' => 0,
+                );
 
-            if ($this->model_menus->save($menu_form)) {
-                $newmenuid = $this->model_menus->getstate('item.id');
+            $query->clear()
+                ->insert($db->quoteName('#__menu'))
+                ->columns($db->quote(array_keys($datas)))
+                ->values($db->quote(array_values($datas)));
+            $db->setQuery($query);
 
+            if ($db->execute()) {
+                $newmenuid = $db->insertid();
                 $submittion_page = $this->getSubmittionPage($prid);
 
                 $query->clear()
@@ -1928,4 +1938,31 @@ class EmundusonboardModelform extends JModelList {
             return false;
         }
     }
+
+    function deleteModelDocument($did){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('count(id)')
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('attachment_id') . ' = ' . $db->quote($did));
+            $db->setQuery($query);
+            $attachment_used = $db->loadResult();
+
+            if($attachment_used == 0) {
+                $query->clear()
+                    ->delete($db->quoteName('#__emundus_setup_attachments'))
+                    ->where($db->quoteName('id') . ' = ' . (int)$did);
+                $db->setQuery($query);
+                return $db->execute();
+            } else {
+                return false;
+            }
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/form | Error cannot delete document template : ' . $did . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
 }

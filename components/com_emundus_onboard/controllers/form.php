@@ -762,6 +762,7 @@ class EmundusonboardControllerform extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+
     public function getActualLanguage(){
 
         $lang = JFactory::getLanguage();
@@ -769,12 +770,30 @@ class EmundusonboardControllerform extends JControllerLegacy {
         if ($lang) {
             $response = array('status' => 1, 'msg' => substr($lang->getTag(), 0, 2));
         }
-        else{
-                $response = array('status' => 0, 'msg' =>  JText::_("ACCESS_REFUSED"));
-            }
+        else {
+            $response = array('status' => 0, 'msg' =>  JText::_("ACCESS_REFUSED"));
+        }
 
         echo json_encode((object)$response);
         exit;
+    }
+
+    public function deletemodeldocument(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_form = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $did = $jinput->getInt('did');
+
+            $result = $m_form->deleteModelDocument($did);
+            $changeresponse = array('allowed' => $result, 'msg' => 'worked');
         }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
 }
 
