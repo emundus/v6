@@ -1612,8 +1612,9 @@ class EmundusModelApplication extends JModelList {
                                             }
 	                                    } elseif ($element->plugin == 'internalid') {
 		                                    $elt = '';
-	                                    }
-                                        elseif ($element->plugin == 'field') {
+	                                    } elseif ($element->plugin == 'yesno') {
+                                            $elt = ($element->content == 1) ? JText::_('JYES') : JText::_('JNO');
+                                        } elseif ($element->plugin == 'field') {
                                             $params = json_decode($element->params);
 
                                             if ($params->password == 1) {
@@ -2187,7 +2188,7 @@ class EmundusModelApplication extends JModelList {
 	                            }
 
                                 $params = json_decode($element->params);
-                                if (!empty($element->content) || (isset($params->database_join_display_type) && $params->database_join_display_type == 'checkbox')) {
+                                if (!empty($element->content) || (isset($params->database_join_display_type) && $params->database_join_display_type == 'checkbox') || $element->plugin == 'yesno') {
 
                                     if (!empty($element->label) && $element->label!=' ') {
 
@@ -2298,6 +2299,8 @@ class EmundusModelApplication extends JModelList {
                                             }
                                         } elseif ($element->plugin == 'internalid') {
 		                                    $elt = '';
+                                        } elseif ($element->plugin == 'yesno') {
+                                            $elt = ($element->content == 1) ? JText::_('JYES') : JText::_('JNO');
                                         } elseif ($element->plugin == 'field') {
                                             $params = json_decode($element->params);
 
