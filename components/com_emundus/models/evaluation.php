@@ -2484,7 +2484,7 @@ if (JFactory::getUser()->id == 63)
                 ///@ mkdir new folder which contains only the generated documents
 
                 if(!file_exists($path)) {
-                    mkdir($path, 0777, true);
+                    mkdir($path, 0755, true);
                 }
 
                 /////////////////////////////////
@@ -2523,12 +2523,12 @@ if (JFactory::getUser()->id == 63)
 
                             // mkdir original folder if does not exist
                             if(!file_exists($original_path)) {
-                                mkdir($original_path, 0777, true);
+                                mkdir($original_path, 0755, true);
                             }
 
                             // mkdir letter folder if does not exist
                             if (!file_exists($path)) {
-                                mkdir($path, 0777, true);
+                                mkdir($path, 0755, true);
                             }
 
                             /// if exists
@@ -2658,12 +2658,12 @@ if (JFactory::getUser()->id == 63)
 
                             ///@ mkdir original folder if does not exists
                             if(!file_exists($original_path)) {
-                                mkdir($original_path, 0777, true);
+                                mkdir($original_path, 0755, true);
                             }
 
                             ///@ mkdir new folder which contains only the generated documents
                             if (!file_exists($path)) {
-                                mkdir($path, 0777, true);
+                                mkdir($path, 0755, true);
                             }
 
                             if (file_exists($path_name) or file_exists($original_name)) {
@@ -2860,11 +2860,11 @@ if (JFactory::getUser()->id == 63)
                                 $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
 
                                 if(!file_exists($original_path)) {
-                                    mkdir($original_path, 0777, true);
+                                    mkdir($original_path, 0755, true);
                                 }
 
                                 if (!file_exists($path)) {
-                                    mkdir($path, 0777, true);
+                                    mkdir($path, 0755, true);
                                 }
 
                                 if ($gotenberg_activation == 1 && $letter->pdf == 1) {
@@ -3036,11 +3036,11 @@ if (JFactory::getUser()->id == 63)
                             $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
 
                             if (!file_exists($path)) {
-                                mkdir($path, 0777, true);
+                                mkdir($path, 0755, true);
                             }
 
                             if (!file_exists($original_path)) {
-                                mkdir($original_path, 0775, true);
+                                mkdir($original_path, 0755, true);
                             }
 
                                 /// check if file exists or not
@@ -3120,7 +3120,7 @@ if (JFactory::getUser()->id == 63)
                     $mergeZipAllPath = $tmp_path . $mergeZipAllName;                                                                   // make the zip --all path
 
                     if(!file_exists($mergeZipAllPath)) {
-                        mkdir($mergeZipAllPath, 0777, true);
+                        mkdir($mergeZipAllPath, 0755, true);
                     }
 
                     copy($tmp_path . $_zipName,$mergeZipAllPath . DS . $_zipName);                                          // copy old zip name to zip --all folder
@@ -3142,7 +3142,7 @@ if (JFactory::getUser()->id == 63)
                     $mergeDirPath = $tmp_path . $mergeDirName;       // for example: /tmp/95--merge
 
                     if (!file_exists($mergeDirPath)) {
-                        mkdir($mergeDirPath, 0777, true);
+                        mkdir($mergeDirPath, 0755, true);
                     }
 
                     /// begin -- merge zip all
@@ -3150,7 +3150,7 @@ if (JFactory::getUser()->id == 63)
                     $mergeZipAllPath = $tmp_path . $mergeZipAllName;
 
                     if(!file_exists($mergeZipAllPath)) {
-                        mkdir($mergeZipAllPath, 0777, true);
+                        mkdir($mergeZipAllPath, 0755, true);
                     }
                     /// end -- merge zip all
 
@@ -3243,11 +3243,11 @@ if (JFactory::getUser()->id == 63)
 
             if($mergeMode == 0) {
                 if(!file_exists($zip_All_Path)) {
-                    mkdir($zip_All_Path, 0777, true);
+                    mkdir($zip_All_Path, 0755, true);
                 }
             } else {
                 if(!file_exists($zip_All_Merge_Path)) {
-                    mkdir($zip_All_Merge_Path, 0777, true);
+                    mkdir($zip_All_Merge_Path, 0755, true);
                 }
             }
 
@@ -3261,10 +3261,10 @@ if (JFactory::getUser()->id == 63)
                 $dir_Merge_Path = $tmp_path . $dir_Merge_Name;                                  // merge file path
 
                 if(!file_exists($dir_Name_Path)) {
-                    mkdir($dir_Name_Path, 0777, true);
+                    mkdir($dir_Name_Path, 0755, true);
                     if($mergeMode == 1) {
                         if (!file_exists($dir_Merge_Path)) {
-                            mkdir($dir_Merge_Path, 0777, true);
+                            mkdir($dir_Merge_Path, 0755, true);
                         } else {
 
                         }
