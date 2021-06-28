@@ -2859,6 +2859,10 @@ if (JFactory::getUser()->id == 63)
                                 $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
                                 $url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . '--letters' . DS;
 
+                                if(!file_exists($original_path)) {
+                                    mkdir($original_path, 0777, true);
+                                }
+
                                 if (!file_exists($path)) {
                                     mkdir($path, 0777, true);
                                 }
@@ -2882,6 +2886,7 @@ if (JFactory::getUser()->id == 63)
                                 } else {
                                     // remove old file and update the database
                                     unlink($path_name);
+                                    unlink($original_name);
                                     $query = $this->_db->getQuery(true);
 
                                     $query->clear()
@@ -3050,6 +3055,7 @@ if (JFactory::getUser()->id == 63)
                                 $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
                             } else {
                                 unlink($original_name);
+                                unlink($path_name);
                                 $query = $this->_db->getQuery(true);
 
                                 $query->clear()
