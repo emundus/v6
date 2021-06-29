@@ -2453,25 +2453,6 @@ if (JFactory::getUser()->id == 63)
             }
         }
 
-        /// section 1 -- recapitulatif pour chaque type du document
-        $query = "SELECT #__emundus_setup_letters.attachment_id, COUNT(#__emundus_setup_letters.attachment_id) AS count_ 
-                    FROM #__emundus_setup_letters
-                        WHERE #__emundus_setup_letters.id IN ("
-            . implode(',', $letter_count) .
-            ") GROUP BY (#__emundus_setup_letters.attachment_id)";
-
-        $this->_db->setQuery($query);
-        $_document_count = $this->_db->loadAssocList();
-
-        $res->recapitulatif_count = [];
-
-        foreach($_document_count as $key => $document) {
-            $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $document['attachment_id'];
-            $this->_db->setQuery($query);
-            $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $document['count_']);
-        }
-        /// end of section 1
-
         /// a partir de $fnums + $templates --> generer les lettres qui correspondent
         foreach($fnum_Array as $key => $fnum) {
             $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates); // return :: Array
@@ -3396,6 +3377,25 @@ if (JFactory::getUser()->id == 63)
                 }
             }
             rmdir(EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . '--letters');
+        }
+
+        // build the recap table
+        $query = 'SELECT #__emundus_uploads.attachment_id, COUNT(#__emundus_uploads.attachment_id) AS _count 
+                    FROM #__emundus_uploads
+                    WHERE #__emundus_uploads.fnum in (' . $fnums . ') 
+                    AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ')
+                    GROUP BY #__emundus_uploads.attachment_id';
+
+        $this->_db->setQuery($query);
+
+        $document_count = $this->_db->loadAssocList();
+
+        $res->recapitulatif_count = [];
+
+        foreach($document_count as $key => $document) {
+            $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $document['attachment_id'];
+            $this->_db->setQuery($query);
+            $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $document['_count']);
         }
 
         return json_encode($res);
