@@ -13,3 +13,10 @@ INSERT INTO jos_menu (menutype, title, alias, note, path, link, type, published,
 VALUES ('application', 'Messages', 'messages', '36|c', 'messages', 'index.php?option=com_emundus_messenger&view=messages&format=raw&layout=coordinator', 'url', 1, 1, 1, 0, 0, '2021-06-16 18:36:12', 0, 1, ' ', 24, '{"menu-anchor_title":"","menu-anchor_css":"","menu-anchor_rel":"","menu_image":"","menu_image_css":"","menu_text":1,"menu_show":1}', 547, 548, 0, '*', 0);
 
 alter table jos_emundus_chatroom add attachments varchar(20) null;
+
+INSERT INTO jos_emundus_setup_emails (lbl, subject, emailfrom, message, name, type, published, email_tmpl, letter_attachment, candidate_attachment, category, cci, tags)
+VALUES ('messenger_reminder', 'Messages not read', '', '<p>Vous avez des messages non lus sur <a href="[SITE_URL]">[SITE_URL]</a>. Veuillez vous reconnecter afin d''en prendre connaissances.</p>
+<p>Cordialement,</p>
+<hr />
+<p>You have unread messages on <a href="[SITE_URL]">[SITE_URL]</a>. Please log in again to read them.</p>
+<p>Sincerely,</p>', '', 2, 1, 1, null, null, '', null, null);
