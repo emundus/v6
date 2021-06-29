@@ -1322,4 +1322,22 @@ class EmundusModelMessages extends JModelList {
 	        return false;
         }
     }
+
+    /// get all documents being letter
+    public function getAllDocumentsLetters() {
+	    $db = JFactory::getDbo();
+	    $query = $db->getQuery(true);
+
+	    try {
+            $query->clear()
+                ->select('#__emundus_setup_attachments.*')
+                ->from($db->quoteName('#__emundus_setup_attachments'))
+                ->where($db->quoteName('#__emundus_setup_attachments.id') . ' IN (SELECT DISTINCT #__emundus_setup_letters.attachment_id FROM #__emundus_setup_letters)');
+
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch(Exception $e) {
+	        return $e->getMessage();            /// add logs later
+        }
+    }
 }

@@ -1664,4 +1664,14 @@ class EmundusControllerMessages extends JControllerLegacy {
         echo json_encode(['status'=>true]);
         exit;
     }
+
+    // get all documents being letters
+    public function getalldocumentsletters() {
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+        $_mMessages = new EmundusModelMessages;
+
+        $_documents = $_mMessages->getAllDocumentsLetters();
+        echo json_encode(['status'=>true, 'documents'=>$_documents]);
+        exit;
+    }
 }
