@@ -151,7 +151,7 @@ JText::script('PDF_TAGS');
 JText::script('PDF_STATUS');
 JText::script('ADD_HEADER');
 JText::script('DELETE_TAGS');
-JText::script('DELETE_TAG_CATEGORIES');
+JText::script('TAG_CATEGORIES');
 JText::script('DELETE_TAGS_CONFIRM');
 JText::script('TAGS_DELETE_SUCCESS');
 JText::script('CONFIRM_DELETE_FILTER');

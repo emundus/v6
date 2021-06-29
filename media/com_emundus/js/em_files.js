@@ -4063,7 +4063,7 @@ $(document).ready(function() {
                                 '&ensp;&ensp;&ensp;<input type="radio" name="em-tags" id="em-tags" value="1">' +Joomla.JText._('DELETE_TAGS')+ '<br>'+
                                 '</form></div></div>'+
 
-                                '<label class="col-lg-2 control-label">' +Joomla.JText._('DELETE_TAG_CATEGORIES')+ '</label>' +
+                                '<label class="col-lg-2 control-label">' +Joomla.JText._('TAG_CATEGORIES')+ '</label>' +
                                 '<select class="col-lg-7 modal-chzn-select" name="em-action-tag-category" id="em-action-tag-category"></select>' +
 
                                 '<label class="col-lg-2 control-label">'+result.tag+'</label>' +
