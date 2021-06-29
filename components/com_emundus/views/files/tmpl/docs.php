@@ -66,11 +66,16 @@ $template_type = array(
         dataType: 'JSON',
         data: { fnums: fnums },
         success: function(result) {
-            let attachment_letters = result.attachment_letters;
-            attachment_letters.forEach(letter => {
-                $('#em-doc-tmpl').append('<option value="' + letter.id + '">' + letter.value + '</option>');
+            if(result.status) {
+                let attachment_letters = result.attachment_letters;
+                attachment_letters.forEach(letter => {
+                    $('#em-doc-tmpl').append('<option value="' + letter.id + '">' + letter.value + '</option>');
+                    $('#em-doc-tmpl').trigger("chosen:updated");
+                })
+            } else {
+                $('#em-doc-tmpl').append('<option value="-1" selected>' + Joomla.JText._('NO_LETTER_FOUND') + '</option>');
                 $('#em-doc-tmpl').trigger("chosen:updated");
-            })
+            }
         }
     })
 </script>

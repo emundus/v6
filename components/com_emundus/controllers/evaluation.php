@@ -1842,7 +1842,12 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $fnums = $jinput->getRaw('fnums', null);
 
         $attachment_letters = $this->getModel('Evaluation')->getLettersByFnums($fnums,true);
-        $result = array('status' => true, 'attachment_letters' => $attachment_letters);
+
+        if($attachment_letters) {
+            $result = array('status' => true, 'attachment_letters' => $attachment_letters);
+        } else {
+            $result = array('status' => false, 'attachment_letters' => null);
+        }
         echo json_encode((object) $result);
         exit;
     }

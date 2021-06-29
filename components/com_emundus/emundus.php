@@ -385,6 +385,7 @@ JText::script('CANDIDATE_EMAIL');
 JText::script('EMAIL_TAGS');
 
 JText::script('SEND_EMAIL_TOOLTIPS');
+JText::script('NO_LETTER_FOUND');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');

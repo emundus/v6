@@ -2297,23 +2297,27 @@ if (JFactory::getUser()->id == 63)
 
                 $_letters = $this->getLettersByProgrammesStatus($_programs,$_status);
 
-                if($attachments == true) {
-                    /// from $_letters --> get distinct attachment_id
-                    $_letter_attachment_ids = [];
-                    foreach($_letters as $key => $value) {
-                        $_letter_attachment_ids[] = $value->attachment_id;
-                    }
+                if(!empty($_letters)) {
+                    if ($attachments == true) {
+                        /// from $_letters --> get distinct attachment_id
+                        $_letter_attachment_ids = [];
+                        foreach ($_letters as $key => $value) {
+                            $_letter_attachment_ids[] = $value->attachment_id;
+                        }
 
-                    $_letter_attachment_ids = array_unique($_letter_attachment_ids);
-                    $_attachment_ids = $this->getAttachmentByIds($_letter_attachment_ids);
-                    return $_attachment_ids;
-                } else {
-                    /// from $_letters -> det distinct letter id
-                    $_letter_ids = [];
-                    foreach($_letters as $key => $value) {
-                        $_letter_ids[] = $value->id;
+                        $_letter_attachment_ids = array_unique($_letter_attachment_ids);
+                        $_attachment_ids = $this->getAttachmentByIds($_letter_attachment_ids);
+                        return $_attachment_ids;
+                    } else {
+                        /// from $_letters -> det distinct letter id
+                        $_letter_ids = [];
+                        foreach ($_letters as $key => $value) {
+                            $_letter_ids[] = $value->id;
+                        }
+                        return $_letter_ids;
                     }
-                    return $_letter_ids;
+                } else {
+                    return false;
                 }
             } catch(Exception $e) {
                 return $e->getMessage();
