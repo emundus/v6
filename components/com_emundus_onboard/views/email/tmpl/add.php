@@ -60,6 +60,9 @@ JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
 ## END ##
 
+JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TAGS');
+JText::script('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT');
+
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0, 2);
 ?>
