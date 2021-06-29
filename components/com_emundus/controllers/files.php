@@ -1604,6 +1604,11 @@ class EmundusControllerFiles extends JControllerLegacy
                     		$date_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->date_form_format;
 	                    }
 
+                        if ($fLine->element_plugin == 'textarea') {
+                            $params = json_decode($fLine->element_attribs);
+                            $textarea_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->use_wysiwyg;
+                        }
+
                         $line .= preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                         $nbcol++;
                     }
@@ -1679,7 +1684,12 @@ class EmundusControllerFiles extends JControllerLegacy
 			                        $v = date($date_elements[$k], strtotime($v));
 		                        }
 								$line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
-	                        } elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
+	                        } elseif(!empty($textarea_elements[$k])){
+                                if($textarea_elements[$k] == 1){
+                                    $v = strip_tags($v);
+                                }
+                                $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
+                            } elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
                                 $line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v)))."\t";
                             } else {
                                 $line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
