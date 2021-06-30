@@ -82,7 +82,7 @@
           <div class="form-group">
             <label>{{ Tags }}</label>
             <select v-model="selectedTags" class="dropdown-toggle w-select" multiple>
-              <option v-for="tag in tags" :value="tag.id">{{tag.label}}</option>
+              <option v-for="tag in tags" :value="tag.id" :id="'tag_'+tag.id">{{tag.label}}</option>
             </select>
           </div>
 
@@ -533,18 +533,32 @@
       axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
               .then(rep => {
                 this.categories = rep.data.data;
+
                 if (this.email !== "") {
                   axios.get(`index.php?option=com_emundus_onboard&controller=email&task=getemailbyid&id=${this.email}`)
                           .then(resp => {
-                            this.form.lbl = resp.data.data.lbl;
-                            this.form.subject = resp.data.data.subject;
-                            this.form.name = resp.data.data.name;
-                            this.form.emailfrom = resp.data.data.emailfrom;
-                            this.form.message = resp.data.data.message;
-                            this.form.type = resp.data.data.type;
-                            this.form.category = resp.data.data.category;
-                            this.form.published = resp.data.data.published;
+                            this.form.lbl = resp.data.data.email.lbl;
+                            this.form.subject = resp.data.data.email.subject;
+                            this.form.name = resp.data.data.email.name;
+                            this.form.emailfrom = resp.data.data.email.emailfrom;
+                            this.form.message = resp.data.data.email.message;
+                            this.form.type = resp.data.data.email.type;
+                            this.form.category = resp.data.data.email.category;
+                            this.form.published = resp.data.data.email.published;
+
+                            // bind selected tags
                             this.dynamicComponent = true;
+
+                            let _tags = resp.data.data.tags;
+                            let _documents = resp.data.data.attachments;
+
+                            _tags.forEach((tag, index) => {
+                              this.selectedTags[index] = tag.id;
+                            })
+
+                            _documents.forEach((document, index) => {
+                              this.selectedDocuments[index] = document.id;
+                            })
                           }).catch(e => {
                             console.log(e);
                           });
