@@ -1152,9 +1152,11 @@ class EmundusModelMessages extends JModelList {
 
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
 
         $_mEval = new EmundusModelEvaluation;
         $_mFile = new EmundusModelFiles;
+        $_mEmail = new EmundusModelEmails;
 
 	    if(!empty($fnum)) {
 	        try {
@@ -1162,21 +1164,14 @@ class EmundusModelMessages extends JModelList {
                 $attachment_ids = $_mEval->getLettersByFnums($fnum, $attachments = true);
 
                 $attachment_list = array();
-                foreach ($attachment_ids as $key => $value) {
+                foreach ($attachment_ids['attachments'] as $key => $value) {
                     $attachment_list[] = $value['id'];
                 }
 
                 $attachment_list = array_unique(array_filter($attachment_list));            /// this line ensures that all attachment ids will appear once
+                $email_id = array_unique(array_filter($attachment_ids['emails']));
 
-                /// get message template from attachment list
-                $query->clear()
-                    ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
-                    ->from($db->quoteName('#__emundus_setup_emails'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $db->quoteName('#__emundus_setup_emails.id'))
-                    ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
-
-                $db->setQuery($query);
-                $_message_Info = $db->loadObjectList();
+                $email_Template = $_mEmail->getEmailById($email_id[0]);
 
                 /// third, for each $attachment ids --> detect the uploaded letters (if any), otherwise, detect the letter (default)
                 $uploads = array();
@@ -1208,9 +1203,9 @@ class EmundusModelMessages extends JModelList {
                 }
 
                 /// get tags by email
-                $_tags = $this->getTagsByEmail($_message_Info[0]->id);
+                $_tags = $this->getTagsByEmail($email_Template->id);
 
-                return array('message_recap' => $_message_Info, 'attached_letter' => $uploads, 'tags' => $_tags);
+                return array('message_recap' => $email_Template, 'attached_letter' => $uploads, 'tags' => $_tags);
             } catch(Exception $e) {
                 JLog::add('Error get available message by fnum : '.$e->getMessage(), JLog::ERROR, 'com_emundus.message');
                 return false;
@@ -1286,30 +1281,27 @@ class EmundusModelMessages extends JModelList {
 
             require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
             require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+            require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
 
             $_mEval = new EmundusModelEvaluation;
             $_mFile = new EmundusModelFiles;
+            $_mEmail = new EmundusModelEmails;
 
             try {
+                /// first --> get attachment ids from fnums
                 $attachment_ids = $_mEval->getLettersByFnums($fnum, $attachments = true);
 
                 $attachment_list = array();
-                foreach ($attachment_ids as $key => $value) {
+                foreach ($attachment_ids['attachments'] as $key => $value) {
                     $attachment_list[] = $value['id'];
                 }
 
                 $attachment_list = array_unique(array_filter($attachment_list));            /// this line ensures that all attachment ids will appear once
+                $email_id = array_unique(array_filter($attachment_ids['emails']));
 
-                /// get message template from attachment list
-                $query->clear()
-                    ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
-                    ->from($db->quoteName('#__emundus_setup_emails'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $db->quoteName('#__emundus_setup_emails.id'))
-                    ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
+                $email_Template = $_mEmail->getEmailById($email_id[0]);
 
-                $db->setQuery($query);
-                $_message_Info = $db->loadObjectList();
-                if(!empty($_message_Info)) {
+                if(!empty($email_Template)) {
                     return true;
                 }
                 else {
