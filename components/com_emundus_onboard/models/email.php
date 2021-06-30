@@ -257,7 +257,28 @@ class EmundusonboardModelemail extends JModelList {
 
         try {
             $db->setQuery($query);
-            return $db->loadObject();
+
+            $email_Info = $db->loadObject();                /// return email info
+
+            $query->clear()
+                ->select('#__emundus_setup_action_tag.*')
+                ->from($db->quoteName('#__emundus_setup_action_tag'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags') . ' ON ' . $db->quoteName('#__emundus_setup_action_tag.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_tags.tags'))
+                ->where($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' = ' . (int)$id);
+
+            $db->setQuery($query);
+            $tags_Info = $db->loadObjectList();         /// get tags info
+
+            $query->clear()
+                ->select('#__emundus_setup_attachments.*')
+                ->from($db->quoteName('#__emundus_setup_attachments'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_attachments.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment'))
+                ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . (int)$id);
+
+            $db->setQuery($query);
+            $attachment_Info = $db->loadObjectList();         /// get attachment info
+
+            return array('email' => $email_Info, 'tags' => $tags_Info, 'attachments' => $attachment_Info);
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/email | Cannot get the email by id ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
