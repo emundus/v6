@@ -54,8 +54,7 @@ class EmundusonboardModelform extends JModelList {
 			->from($db->quoteName('#__emundus_setup_profiles', 'sp'))
 			->where($filterId)
 			->andWhere($filterCount)
-			->andWhere($fullRecherche)
-            ->andWhere($db->quoteName('acl_aro_groups') . ' = ' . $db->quote(2));
+			->andWhere($fullRecherche);
 
 		try {
 			$db->setQuery($query);
@@ -70,7 +69,6 @@ class EmundusonboardModelform extends JModelList {
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_files = array();
         $Content_Folder = array();
-        $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
         $languages = JLanguageHelper::getLanguages();
         foreach ($languages as $language) {
             $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
@@ -120,7 +118,6 @@ class EmundusonboardModelform extends JModelList {
 			->where($filterDate)
 			->andWhere($fullRecherche)
 			->andWhere($filterId)
-            ->andWhere($db->quoteName('acl_aro_groups') . ' = ' . $db->quote(2))
 			->group($sortDb)
 			->order($sortDb . $sort);
 
@@ -194,7 +191,6 @@ class EmundusonboardModelform extends JModelList {
             ->where($filterDate)
             ->andWhere($fullRecherche)
             ->andWhere($filterId)
-            ->andWhere($db->quoteName('acl_aro_groups') . ' = ' . $db->quote(2))
             ->group($sortDb)
             ->order($sortDb . $sort);
 
@@ -294,8 +290,7 @@ class EmundusonboardModelform extends JModelList {
                 ->select('id')
                 ->from($db->quoteName('#__emundus_setup_profiles'))
                 ->where($db->quoteName('published') . ' = 1')
-                ->andWhere($db->quoteName('status') . ' = 1')
-                ->andWhere($db->quoteName('acl_aro_groups') . ' = ' . $db->quote(2));
+                ->andWhere($db->quoteName('status') . ' = 1');
             $db->setQuery($query);
             $access_profiles[] = $db->loadColumn();
 
@@ -1413,7 +1408,7 @@ class EmundusonboardModelform extends JModelList {
 
             return true;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error remove document ' . $did . ' associated to the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Error remove document ' . $did . ' associated to the campaign ' . $campaign . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
