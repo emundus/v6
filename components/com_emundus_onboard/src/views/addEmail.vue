@@ -80,18 +80,28 @@
 
           <!-- Email -- tags         -->
           <div class="form-group">
-            <label>{{ Tags }}</label>
-            <select v-model="selectedTags" class="dropdown-toggle w-select" multiple>
-              <option v-for="tag in tags" :value="tag.id">{{tag.label}}</option>
-            </select>
+            <label>{{ Receivers }}</label>
+            <input
+                type="text"
+                class="form__input field-general w-input"
+                v-model="selectedReceivers"
+            />
+<!--            <select v-model="selectedTags" class="dropdown-toggle w-select" multiple>-->
+<!--              <option v-for="tag in tags" :value="tag.id">{{tag.label}}</option>-->
+<!--            </select>-->
           </div>
 
           <!-- Email -- document type         -->
           <div class="form-group">
-            <label>{{ DocumentType }}</label>
-            <select v-model="selectedDocuments" class="dropdown-toggle w-select" multiple>
-              <option v-for="document in documents" :value="document.id">{{document.value}}</option>
-            </select>
+            <label>{{ FabrikTags }}</label>
+            <input
+                type="text"
+                class="form__input field-general w-input"
+                v-model="selectedFabrikTags"
+            />
+<!--            <select v-model="selectedDocuments" class="dropdown-toggle w-select" multiple>-->
+<!--              <option v-for="document in documents" :value="document.id">{{document.value}}</option>-->
+<!--            </select>-->
           </div>
 
         </div>
@@ -258,6 +268,8 @@
       Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS"),
       Tags: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TAGS"),
       DocumentType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
+      Receivers: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_BCC"),
+      FabrikTags: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_TAGS"),
 
       categories: [],
       programs: [],
@@ -273,6 +285,9 @@
 
       selectedTags: [],
       selectedDocuments: [],
+
+      selectedReceivers: [],
+      selectedFabrikTags: [],
 
       form: {
         lbl: "",
