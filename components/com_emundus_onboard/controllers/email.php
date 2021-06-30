@@ -200,7 +200,10 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 	        $data = $jinput->getRaw('body');
 	        $m_email = $this->model;
 
-            $result = $m_email->createEmail($data);
+            $tags = $jinput->getRaw('tags');
+            $documents = $jinput->getRaw('documents');
+
+            $result = $m_email->createEmail($data, $tags, $documents);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);
@@ -227,7 +230,10 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 	        $code = $jinput->getString('code');
 	        $m_email = $this->model;
 
-            $result = $m_email->updateEmail($code, $data);
+            $tags = $jinput->getRaw('tags');
+            $documents = $jinput->getRaw('documents');
+
+            $result = $m_email->updateEmail($code, $data, $tags, $documents);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);

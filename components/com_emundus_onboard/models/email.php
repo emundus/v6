@@ -264,9 +264,12 @@ class EmundusonboardModelemail extends JModelList {
         }
     }
 
-     public function createEmail($data) {
+     public function createEmail($data, $tags=null, $documents=null) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
+
+        $data['lbl'] = uniqid();
+        $data['category'] = null;
 
         if (!empty($data)) {
         	$query->insert($db->quoteName('#__emundus_setup_emails'))
@@ -277,6 +280,28 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
                 $newemail = $db->insertid();
+
+                // set email repeat tag
+                foreach($tags as $key => $tag) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_setup_emails_repeat_tags'))
+                        ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' =  ' . (int)$newemail)
+                        ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.tags') . ' = ' . (int)$tag);
+
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+
+                // set email repeat letter attachment
+                foreach($documents as $key => $document) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
+                        ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' =  ' . (int)$newemail)
+                        ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' = ' . (int)$document);
+
+                    $db->setQuery($query);
+                    $db->execute();
+                }
 
                 $query->clear()
                     ->update($db->quoteName('#__emundus_setup_emails'))
@@ -293,7 +318,7 @@ class EmundusonboardModelemail extends JModelList {
         }
     }
 
-    public function updateEmail($id, $data) {
+    public function updateEmail($id, $data, $tags=null, $documents=null) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -312,7 +337,48 @@ class EmundusonboardModelemail extends JModelList {
 
             try {
                 $db->setQuery($query);
-                return $db->execute();
+                $db->execute();         /// update email
+
+                /// remove and update new tags for an email
+                $query->clear()
+                    ->delete($db->quoteName('#__emundus_setup_emails_repeat_tags'))
+                    ->where($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . '=' . (int)$id);
+
+                $db->setQuery($query);
+                $db->execute();
+
+                foreach($tags as $key => $tag) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_setup_emails_repeat_tags'))
+                        ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' =  ' . (int)$id)
+                        ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.tags') . ' = ' . (int)$tag);
+
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+
+                /// end
+
+                /// remove and update new documents for an email
+                $query->clear()
+                    ->delete($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
+                    ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . '=' . (int)$id);
+
+                $db->setQuery($query);
+                $db->execute();
+
+                foreach($documents as $key => $document) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
+                        ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' =  ' . (int)$id)
+                        ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' = ' . (int)$document);
+
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+
+                return true;
+
             } catch(Exception $e) {
                 JLog::add('component/com_emundus_onboard/models/email | Cannot update the email ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;
