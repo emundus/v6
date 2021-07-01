@@ -352,8 +352,17 @@ class EmundusViewApplication extends JViewLegacy {
                 case 'form':
                     if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
 
+                        $step = $jinput->getString('step', 0);
+
                         EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_LOGS_FORM_BACKOFFICE');
-                        $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+
+                        if($step != 0){
+                            $pid = $m_profiles->getProfileByStep($fnum,$step);
+                        }
+
+                        if(empty($pid)){
+                            $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+                        }
 
                         $formsProgress = $m_application->getFormsProgress($fnum);
                         $this->assignRef('formsProgress', $formsProgress);
