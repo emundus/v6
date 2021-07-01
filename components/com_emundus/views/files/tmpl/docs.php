@@ -67,7 +67,7 @@ $template_type = array(
         data: { fnums: fnums },
         success: function(result) {
             if(result.status) {
-                let attachment_letters = result.attachment_letters;
+                let attachment_letters = result.attachment_letters.attachments;     /// get all letters
                 attachment_letters.forEach(letter => {
                     $('#em-doc-tmpl').append('<option value="' + letter.id + '">' + letter.value + '</option>');
                     $('#em-doc-tmpl').trigger("chosen:updated");
