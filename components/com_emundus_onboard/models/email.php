@@ -257,18 +257,31 @@ class EmundusonboardModelemail extends JModelList {
 
         try {
             $db->setQuery($query);
-            return $db->loadObject();
+            $email_Info = $db->loadObject();        // get email info
+
+            /// get receivers (cc/bcc)
+            $query->clear()
+                ->select('#__emundus_setup_emails_repeat_receiver.*')
+                ->from($db->quoteName('#__emundus_setup_emails_repeat_receiver'))
+                ->where($db->quoteName('#__emundus_setup_emails_repeat_receiver.parent_id') . ' = ' . (int)$id);
+
+            $db->setQuery($query);
+            $receiver_Info = $db->loadObjectList();         /// get receivers info
+
+            return array('email' => $email_Info, 'receivers' => $receiver_Info);
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/email | Cannot get the email by id ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
 
-     public function createEmail($data) {
+     public function createEmail($data, $emails=null, $tags=null) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        if (!empty($data)) {
+         $data['category'] = null;
+
+         if (!empty($data)) {
         	$query->insert($db->quoteName('#__emundus_setup_emails'))
                 ->columns($db->quoteName(array_keys($data)))
                 ->values(implode(',', $db->Quote(array_values($data))));
@@ -284,6 +297,19 @@ class EmundusonboardModelemail extends JModelList {
                     ->where($db->quoteName('id') . ' = ' . $db->quote($newemail));
                 $db->setQuery($query);
                 $db->execute();
+
+                // add cc/bcc for new email
+                foreach($emails as $key => $email) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_setup_emails_repeat_receiver'))
+                        ->set($db->quoteName('#__emundus_setup_emails_repeat_receiver.parent_id') . ' =  ' . (int)$newemail)
+                        ->set($db->quoteName('#__emundus_setup_emails_repeat_receiver.receiver') . ' = ' . $db->quote($email));
+
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+
+                return true;
             } catch(Exception $e) {
                 JLog::add('component/com_emundus_onboard/models/email | Cannot create an email: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;

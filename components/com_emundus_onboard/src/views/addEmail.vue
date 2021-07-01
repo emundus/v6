@@ -79,29 +79,16 @@
           </div>
 
           <!-- Email -- tags         -->
-          <div class="form-group">
+          <div class="form-group" id="receivers_tags">
             <label>{{ Receivers }}</label>
-            <input
-                type="text"
-                class="form__input field-general w-input"
-                v-model="selectedReceivers"
-            />
-<!--            <select v-model="selectedTags" class="dropdown-toggle w-select" multiple>-->
-<!--              <option v-for="tag in tags" :value="tag.id">{{tag.label}}</option>-->
-<!--            </select>-->
+<!--            <voerro-tags-input @focus="onFocus" @blur="onBlur" placeholder=""></voerro-tags-input>-->
+            <voerro-tags-input placeholder="Ajouter l'addresse mail" v-model="selectedReceivers"> 123 </voerro-tags-input>
           </div>
 
-          <!-- Email -- document type         -->
-          <div class="form-group">
+          <div class="form-group" id="tags_tags">
             <label>{{ FabrikTags }}</label>
-            <input
-                type="text"
-                class="form__input field-general w-input"
-                v-model="selectedFabrikTags"
-            />
-<!--            <select v-model="selectedDocuments" class="dropdown-toggle w-select" multiple>-->
-<!--              <option v-for="document in documents" :value="document.id">{{document.value}}</option>-->
-<!--            </select>-->
+<!--            <voerro-tags-input @focus="onFocus" @blur="onBlur"></voerro-tags-input>-->
+            <voerro-tags-input placeholder="Ajouter les balises de Fabrik"></voerro-tags-input>
           </div>
 
         </div>
@@ -210,6 +197,9 @@
   import axios from "axios";
   import Editor from "../components/editor";
   import Tasks from "@/views/tasks";
+  import VoerroTagsInput from "@voerro/vue-tagsinput";
+  import JQuery from 'jquery';
+  window.$ = JQuery;
 
   const qs = require("qs");
 
@@ -219,7 +209,8 @@
     components: {
       Tasks,
       Editor,
-      Autocomplete
+      Autocomplete,
+      VoerroTagsInput
     },
 
     props: {
@@ -438,7 +429,7 @@
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
-            data: qs.stringify({ body: this.form })
+            data: qs.stringify({ body: this.form, selectedReceivers: this.selectedReceivers, selectedFabrikTags: this.selectedFabrikTags })
           }).then(response => {
             this.trigger.model = response.data.data;
             axios({
@@ -452,7 +443,7 @@
                 users: this.selectedUsers
               })
             }).then((rep) => {
-              this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+              //this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
             });
           }).catch(error => {
             console.log(error);
@@ -539,7 +530,20 @@
         }).catch(error => {
           console.log(error);
         })
-      }
+      },
+
+      // onFocus() {
+      //   // get div parent
+      //   let _parent = $(this).parent().parent();
+      //   console.log(_parent);
+      //
+      //   $('div .tags-input-wrapper-default').css('border','2px solid #33b4de');
+      // },
+      //
+      // onBlur() {
+      //   console.log($(this));
+      //   $('div .tags-input-wrapper-default').css('border','2px solid #cccccc');
+      // },
     },
 
     created() {
@@ -551,15 +555,29 @@
                 if (this.email !== "") {
                   axios.get(`index.php?option=com_emundus_onboard&controller=email&task=getemailbyid&id=${this.email}`)
                           .then(resp => {
-                            this.form.lbl = resp.data.data.lbl;
-                            this.form.subject = resp.data.data.subject;
-                            this.form.name = resp.data.data.name;
-                            this.form.emailfrom = resp.data.data.emailfrom;
-                            this.form.message = resp.data.data.message;
-                            this.form.type = resp.data.data.type;
-                            this.form.category = resp.data.data.category;
-                            this.form.published = resp.data.data.published;
+                            this.form.lbl = resp.data.data.email.lbl;
+                            this.form.subject = resp.data.data.email.subject;
+                            this.form.name = resp.data.data.email.name;
+                            this.form.emailfrom = resp.data.data.email.emailfrom;
+                            this.form.message = resp.data.data.email.message;
+                            this.form.type = resp.data.data.email.type;
+                            this.form.category = resp.data.data.email.category;
+                            this.form.published = resp.data.data.email.published;
                             this.dynamicComponent = true;
+
+
+                            // bind receivers data to selectedReceivers
+                            let _receivers = resp.data.data.receivers;
+                            let receivers = [];
+                            for(let index = 0; index < _receivers.length; index++) {
+                              receivers[index] = {};
+                              receivers[index]['key'] = _receivers[index].id;
+                              receivers[index]['value'] = _receivers[index].receiver;
+                            }
+
+                            this.selectedReceivers = receivers;
+
+                            // bind tags data to selectedFabrikTags
                           }).catch(e => {
                             console.log(e);
                           });
@@ -585,5 +603,153 @@
   };
 </script>
 
-<style scoped>
+<style>
+
+.tags-input {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.tags-input input {
+  flex: 1;
+  background: transparent;
+  border: none;
+}
+
+.tags-input input:focus {
+  /*outline: unset !important;*/
+  /*box-shadow: #33B4DE;*/
+}
+
+.tags-input input[type="text"] {
+  color: #495057;
+  border: unset !important;
+  margin-bottom: unset !important;
+  height: 30px !important;
+}
+
+.tags-input-wrapper-default {
+  padding: .5em .25em;
+
+  background: #fff;
+
+  border: 2px solid #cccccc;
+  border-radius: .25em;
+}
+
+.tags-input-wrapper-default.active {
+  box-shadow: #33B4DE;
+  outline: 0 none;
+}
+
+/* The tag badges & the remove icon */
+.tags-input span {
+  margin-right: 0.3em;
+}
+
+.tags-input-remove {
+  cursor: pointer;
+  position: absolute;
+  display: inline-block;
+  right: 0.3em;
+  top: 0.3em;
+  padding: 0.5em;
+  overflow: hidden;
+}
+
+.tags-input-remove:focus {
+  outline: none;
+}
+
+.tags-input-remove:before, .tags-input-remove:after {
+  content: '';
+  position: absolute;
+  width: 75%;
+  left: 0.15em;
+  background: #5dc282;
+
+  height: 2px;
+  margin-top: -1px;
+}
+
+.tags-input-remove:before {
+  transform: rotate(45deg);
+}
+.tags-input-remove:after {
+  transform: rotate(-45deg);
+}
+
+/* Tag badge styles */
+.tags-input-badge {
+  position: relative;
+  display: inline-block;
+  padding: 0.25em 0.4em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tags-input-badge-pill {
+  padding-right: 1.25em;
+  padding-left: 0.6em;
+  border-radius: unset !important;
+}
+.tags-input-badge-pill.disabled {
+  padding-right: 0.6em;
+}
+
+.tags-input-badge-selected-default {
+  color: #212529;
+  background-color: #f0f1f2;
+}
+
+/* Typeahead */
+.typeahead-hide-btn {
+  color: #999 !important;
+  font-style: italic;
+}
+
+/* Typeahead - badges */
+.typeahead-badges > span {
+  margin-top: .5em;
+}
+
+.typeahead-badges > span {
+  cursor: pointer;
+  margin-right: 0.3em;
+}
+
+/* Typeahead - dropdown */
+.typeahead-dropdown {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 1000;
+}
+
+.typeahead-dropdown li {
+  padding: .25em 1em;
+  cursor: pointer;
+}
+
+/* Typeahead elements style/theme */
+.tags-input-typeahead-item-default {
+  color: #fff;
+  background-color: #343a40;
+}
+
+.tags-input-typeahead-item-highlighted-default {
+  color: #fff;
+  background-color: #007bff !important;
+}
+
 </style>

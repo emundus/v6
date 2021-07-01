@@ -197,10 +197,41 @@ class EmundusonboardControlleremail extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->getRaw('body');
+	        $email_data = $jinput->getRaw('body');
+
+//            var_dump($email_data);die;
+
 	        $m_email = $this->model;
 
-            $result = $m_email->createEmail($data);
+	        $receivers = $jinput->getRaw('selectedReceivers');
+	        $fabrikTags = $jinput->getRaw('selectedFabrikTags');
+
+            $email_list = [];
+            $tag_list = [];
+
+            // get emails from receiver list
+            foreach($receivers as $key => $value) {
+                foreach($value as $data => $receiver) {
+                    if(empty($receiver)) {
+                        continue;
+                    } else {
+                        $email_list[] = $receiver;
+                    }
+                }
+            }
+
+            // get fabrik tags from tags
+            foreach($fabrikTags as $key => $value) {
+                foreach($value as $data => $tag) {
+                    if(empty($tag)) {
+                        continue;
+                    } else {
+                        $tag_list[] = $tag;
+                    }
+                }
+            }
+
+            $result = $m_email->createEmail($email_data, $email_list, $tag_list);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);
@@ -252,6 +283,8 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 	        $m_email = $this->model;
 
             $email = $m_email->getEmailById($id);
+
+//            var_dump($email);die;
             if (!empty($email)) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $email);
             } else {
