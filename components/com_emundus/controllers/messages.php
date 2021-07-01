@@ -1571,8 +1571,9 @@ class EmundusControllerMessages extends JControllerLegacy {
         ];
 
         $tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum_info['fnum']);
-        $body = $m_emails->setTagsFabrik($email_recap[0]->message, [$fnum_info['fnum']]);
-        $subject = $m_emails->setTagsFabrik($email_recap[0]->subject, [$fnum_info['fnum']]);
+
+        $body = $m_emails->setTagsFabrik($email_recap->message, [$fnum_info['fnum']]);
+        $subject = $m_emails->setTagsFabrik($email_recap->subject, [$fnum_info['fnum']]);
 
         // Tags are replaced with their corresponding values using the PHP preg_replace function.
         $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
@@ -1606,8 +1607,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $attachments = $_meval->getLettersByFnums($fnum, $attachments = true);
 
-        $attachment_ids = array();
-        foreach ($attachments as $key => $value) {
+        foreach ($attachments['attachments'] as $key => $value) {
             $attachment_ids[] = $value['id'];
         }
 
