@@ -75,6 +75,8 @@ $template_type = array(
             } else {
                 $('#em-doc-tmpl').append('<option value="-1" selected>' + Joomla.JText._('NO_LETTER_FOUND') + '</option>');
                 $('#em-doc-tmpl').trigger("chosen:updated");
+                $('#em-generate').prop('disabled', 'true');
+                $('#can-val').css('cursor', 'not-allowed');
             }
         }
     })
