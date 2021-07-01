@@ -1190,7 +1190,7 @@ class EmundusModelApplication extends JModelList {
                     $forms .= '</h3>';
 	                if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training") {
 
-	                    $query = 'SELECT count(id) FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
+	                    $query = 'SELECT count(id) FROM `'.$itemt->db_table_name.'` WHERE fnum like '.$this->_db->Quote($fnum);
 	                    $this->_db->setQuery($query);
 	                    $cpt = $this->_db->loadResult();
 
@@ -1290,7 +1290,7 @@ class EmundusModelApplication extends JModelList {
 
                                     if ($itemg->group_id == 174) {
                                         $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
-	                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
+	                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
                                     } else {
                                         $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
 	                                    WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum).')';
@@ -1464,7 +1464,9 @@ class EmundusModelApplication extends JModelList {
                                                         } else {
                                                             $elt = JText::_($r_elt);
                                                         }
-                                                    }else {
+                                                    } elseif ($elements[$j]->plugin == 'yesno') {
+                                                        $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
+                                                    } else {
                                                         $elt = $r_elt;
                                                     }
 
@@ -1488,7 +1490,7 @@ class EmundusModelApplication extends JModelList {
 	                            foreach ($elements as &$element) {
 
 	                                if (!empty(trim($element->label))) {
-                                        $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
+                                        $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE fnum like '.$this->_db->Quote($fnum);
 	                                    $this->_db->setQuery( $query );
 	                                    $res = $this->_db->loadRow();
 
@@ -1623,6 +1625,9 @@ class EmundusModelApplication extends JModelList {
                                                 $elt = $element->content;
                                             }
                                         }
+                                        elseif ($element->plugin == 'yesno') {
+                                            $elt = ($element->content == 1) ? JText::_("JYES") : JText::_("JNO");
+                                        } 
                                         else {
 		                                    $elt = $element->content;
 	                                    }
@@ -1663,10 +1668,7 @@ class EmundusModelApplication extends JModelList {
 	    $eMConfig = JComponentHelper::getParams('com_emundus');
 	    $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
     	$em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
-
         $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25');
-
-
 
     	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
         $h_list = new EmundusHelperList;
@@ -1674,7 +1676,6 @@ class EmundusModelApplication extends JModelList {
         $tableuser  = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
 
         $forms = "";
-
 
         if (isset($tableuser)) {
 
@@ -1800,7 +1801,7 @@ class EmundusModelApplication extends JModelList {
 
                                 if ($itemg->group_id == 174) {
                                     $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
-                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
+                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
                                 } else {
                                     $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
                                     WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum).')';
@@ -1961,6 +1962,8 @@ class EmundusModelApplication extends JModelList {
                                                     } else {
                                                         $elt = JText::_($r_elt);
                                                     }
+                                                } elseif ($elements[$j]->plugin == 'yesno') {
+                                                    $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
                                                 } else {
                                                     $elt = JText::_($r_elt);
                                                 }
@@ -1999,10 +2002,10 @@ class EmundusModelApplication extends JModelList {
                             if($check_repeat_groups) {
                                 if ($itemg->group_id == 174) {
                                     $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
-                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
+                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
                                 } else {
                                     $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
-                                    WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).')';
+                                    WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum).')';
                                 }
 
                                 $this->_db->setQuery($query);
@@ -2025,7 +2028,7 @@ class EmundusModelApplication extends JModelList {
                                                 continue;
                                             }
 
-                                            if (!empty($r_elt) && $key != 'id' && $key != 'parent_id' && isset($elements[$j])  && $elements[$j]->plugin != 'display') {
+                                            if ((!empty($r_elt) || $r_elt == 0) && $key != 'id' && $key != 'parent_id' && isset($elements[$j])  && $elements[$j]->plugin != 'display') {
 
                                                 if ($elements[$j]->plugin == 'date') {
                                                     if(!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
@@ -2135,7 +2138,9 @@ class EmundusModelApplication extends JModelList {
                                                     } else {
                                                         $elt = JText::_($r_elt);
                                                     }
-                                                }else {
+                                                } elseif ($elements[$j]->plugin == 'yesno') {
+                                                    $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
+                                                } else {
                                                     $elt = JText::_($r_elt);
                                                 }
 
@@ -2156,12 +2161,12 @@ class EmundusModelApplication extends JModelList {
                             }
 
 
-                            // AFFICHAGE EN LIGNE
+                        // AFFICHAGE EN LIGNE
                         } else {
                             $forms .= '<table>';
                             foreach ($elements as $element) {
 
-                                $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
+                                $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE fnum like '.$this->_db->Quote($fnum);
                                 try {
                                     $this->_db->setQuery($query);
                                     $res = $this->_db->loadRow();
@@ -2184,7 +2189,8 @@ class EmundusModelApplication extends JModelList {
 	                            }
 
                                 $params = json_decode($element->params);
-                                if (!empty($element->content) || (isset($params->database_join_display_type) && $params->database_join_display_type == 'checkbox')) {
+
+                                if ((!empty($element->content) || $element->content == 0) || (isset($params->database_join_display_type) && $params->database_join_display_type == 'checkbox')) {
 
                                     if (!empty($element->label) && $element->label!=' ') {
 
@@ -2302,19 +2308,21 @@ class EmundusModelApplication extends JModelList {
                                             } else {
                                                 $elt = $element->content;
                                             }
-                                        }else {
+                                        } elseif ($element->plugin == 'yesno') {
+                                            $elt = ($element->content == 1) ? JText::_("JYES") : JText::_("JNO");
+                                        } else {
                                             $elt = JText::_($element->content);
                                         }
 
                                         if ($element->plugin == 'textarea') {
-                                            $forms .= '<tr><td   colspan="2" ><strong><span style="color: #000000;">'.JText::_($element->label).' : '.'</span></strong>'.JText::_($elt).'<br/></td></tr>';
+                                            $forms .= '<tr><td colspan="2" ><strong><span style="color: #000000;">'.JText::_($element->label).' '.'</span></strong>'.JText::_($elt).'<br/></td></tr>';
                                         } else {
-                                            $forms .= '<tr ><td ><span style="color: #000000;">'.JText::_($element->label).' : '.'</span></td> <td> '.JText::_($elt).'</td></tr>';
+                                            $forms .= '<tr ><td ><span style="color: #000000;">'.JText::_($element->label).' '.'</span></td> <td> '.JText::_($elt).'</td></tr>';
 										}
                                     }
                                 } elseif (empty($element->content)) {
                                     if (!empty($element->label) && $element->label!=' ') {
-                                        $forms .= '<tr><td ><span style="color: #000000;">'.JText::_($element->label).' : '.'</span></td> <td> </td></tr>';
+                                        $forms .= '<tr><td ><span style="color: #000000;">'.JText::_($element->label).' '.'</span></td> <td>'.$element->content.'</td></tr>';
                                     }
                                 }
                             }
@@ -2532,6 +2540,9 @@ class EmundusModelApplication extends JModelList {
                                             $filename = end(explode('/', $r_elt));
                                             $elt = '<a href="'.JUri::base().$elt.'" target="_blank">'.$filename.'</a>';
                                         }
+                                        elseif($elements[$j]->plugin == 'yesno') {
+                                            $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
+                                        }
                                         else
                                             $elt = $r_elt;
 
@@ -2647,6 +2658,9 @@ class EmundusModelApplication extends JModelList {
                                     elseif($element->plugin == 'fileupload') {
                                         $filename = end(explode('/', @$element->content));
                                         $elt = '<a href="'.JUri::base().$element->content.'" target="_blank">'.$filename.'</a>';
+                                    }
+                                    elseif ($element->plugin == 'yesno') {
+                                        $elt = ($element->content == 1) ? JText::_("JYES") : JText::_("JNO");
                                     }
                                     else {
                                         $elt = $element->content;
