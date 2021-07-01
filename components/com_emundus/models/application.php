@@ -838,7 +838,7 @@ class EmundusModelApplication extends JModelList {
                                             $res = $this->_db->loadColumn();
                                             $elt = implode(', ',$res);
                                         } catch (Exception $e) {
-                                            JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                            JLog::add('line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                             throw $e;
                                         }
                                     } else {
@@ -976,7 +976,7 @@ class EmundusModelApplication extends JModelList {
                                                     $res = $this->_db->loadColumn();
                                                     $elt = implode(', ',$res);
                                                 } catch (Exception $e) {
-                                                    JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                    JLog::add('line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                     throw $e;
                                                 }
                                             } else {
@@ -1377,7 +1377,7 @@ class EmundusModelApplication extends JModelList {
                                                                 $res = $this->_db->loadColumn();
                                                                 $elt = implode(', ',$res);
                                                             } catch (Exception $e) {
-                                                                JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                                JLog::add('line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                                 throw $e;
                                                             }
                                                         } else {
@@ -1550,7 +1550,7 @@ class EmundusModelApplication extends JModelList {
 	                                                $res = $this->_db->loadColumn();
 	                                                $elt = implode(', ',$res);
 	                                            } catch (Exception $e) {
-	                                                JLog::add('Line 997 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+	                                                JLog::add('Line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
 	                                                throw $e;
 	                                            }
 	                                        } else {
@@ -1785,7 +1785,7 @@ class EmundusModelApplication extends JModelList {
                                 $this->_db->setQuery($query);
                                 $table = $this->_db->loadResult();
                             } catch (Exception $e) {
-                                JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                JLog::add('Line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                 throw $e;
                             }
 
@@ -1810,7 +1810,7 @@ class EmundusModelApplication extends JModelList {
                                     $this->_db->setQuery($query);
                                     $repeated_elements = $this->_db->loadObjectList();
                                 } catch (Exception $e) {
-                                    JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                    JLog::add('Line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                     throw $e;
                                 }
 
@@ -1884,7 +1884,7 @@ class EmundusModelApplication extends JModelList {
                                                             $res = $this->_db->loadColumn();
                                                             $elt = implode(', ',$res);
                                                         } catch (Exception $e) {
-                                                            JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                            JLog::add('line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                             throw $e;
                                                         }
                                                     } else {
@@ -2078,7 +2078,7 @@ class EmundusModelApplication extends JModelList {
                                                             $res = $this->_db->loadColumn();
                                                             $elt = implode(', ',$res);
                                                         } catch (Exception $e) {
-                                                            JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                            JLog::add('Line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                             throw $e;
                                                         }
                                                     } else {
@@ -2179,7 +2179,7 @@ class EmundusModelApplication extends JModelList {
                                 }
 
 	                            // Do not display elements with no value inside them.
-	                            if ($show_empty_fields == 0 && trim($element->content) == '') {
+	                            if ($show_empty_fields == 0 && trim($element->content) == '' && trim($element->content_id) == '') {
 		                            continue;
 	                            }
 
@@ -2244,7 +2244,7 @@ class EmundusModelApplication extends JModelList {
                                                     $res = $this->_db->loadColumn();
                                                     $elt = implode(', ',$res);
                                                 } catch (Exception $e) {
-                                                    JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                    JLog::add('line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                     throw $e;
                                                 }
                                             } else {
@@ -2501,7 +2501,7 @@ class EmundusModelApplication extends JModelList {
                                                     $res = $this->_db->loadColumn();
                                                     $elt = implode(', ',$res);
                                                 } catch (Exception $e) {
-                                                    JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                    JLog::add('line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                     throw $e;
                                                 }
                                             } else {
@@ -2600,7 +2600,7 @@ class EmundusModelApplication extends JModelList {
                                                 $res = $this->_db->loadColumn();
                                                 $elt = implode(', ',$res);
                                             } catch (Exception $e) {
-                                                JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                JLog::add('line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                 throw $e;
                                             }
                                         } else {
