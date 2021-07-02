@@ -322,7 +322,7 @@ class EmundusonboardModelemail extends JModelList {
         }
     }
 
-    public function updateEmail($id, $data) {
+    public function updateEmail($id, $data, $receiver_cc=null) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -341,7 +341,33 @@ class EmundusonboardModelemail extends JModelList {
 
             try {
                 $db->setQuery($query);
-                return $db->execute();
+                $db->execute();             /// update email raw info
+
+                /// update receivers cc --> first :: delete old cc
+                $query->clear()
+                    ->delete($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
+                    ->where($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . '=' . (int)$id);
+
+                $db->setQuery($query);
+                $db->execute();
+
+                /// update receivers cc --> second :: re-create cc
+                if(!empty($receiver_cc) and !is_null($receiver_cc)) {
+                    foreach ($receiver_cc as $key => $receiver) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$id)
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.receivers') . ' = ' . $db->quote($receiver))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_cc'));
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+
+                /// update receivers bcc --> first :: delete old bcc
+                /// update receivers bcc --> second :: re-create bcc
+                return true;
             } catch(Exception $e) {
                 JLog::add('component/com_emundus_onboard/models/email | Cannot update the email ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;

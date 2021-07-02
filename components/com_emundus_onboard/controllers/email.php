@@ -245,7 +245,24 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 	        $code = $jinput->getString('code');
 	        $m_email = $this->model;
 
-            $result = $m_email->updateEmail($code, $data);
+            $receivers_cc = $jinput->getRaw('selectedReceiversCC');
+            $receivers_bcc = $jinput->getRaw('selectedReceiversBCC');
+
+            $cc_list = [];
+            $bcc_list = [];
+
+            // get receiver cc from cc list
+            foreach($receivers_cc as $key => $value) {
+                foreach($value as $data => $receiver_cc) {
+                    if(empty($receiver_cc)) {
+                        continue;
+                    } else {
+                        $cc_list[] = $receiver_cc;
+                    }
+                }
+            }
+
+            $result = $m_email->updateEmail($code, $data, $cc_list);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);
@@ -271,7 +288,6 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
             $email = $m_email->getEmailById($id);
 
-//            var_dump($email);die;
             if (!empty($email)) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $email);
             } else {
