@@ -1604,6 +1604,11 @@ class EmundusControllerFiles extends JControllerLegacy
                             $date_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->date_form_format;
                         }
 
+                        if ($fLine->element_plugin == 'textarea') {
+                            $params = json_decode($fLine->element_attribs);
+                            $textarea_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->use_wysiwyg;
+                        }
+
                         $line .= preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                         $nbcol++;
                     }
@@ -1672,11 +1677,16 @@ class EmundusControllerFiles extends JControllerLegacy
                             }
                         } else {
 
-                            if (!empty($date_elements[$k])) {
-                                if ($v === '0000-00-00 00:00:00') {
-                                    $v = '';
-                                } else {
-                                    $v = date($date_elements[$k], strtotime($v));
+                        	if (!empty($date_elements[$k])) {
+		                        if ($v === '0000-00-00 00:00:00') {
+			                        $v = '';
+		                        } else {
+			                        $v = date($date_elements[$k], strtotime($v));
+		                        }
+								$line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
+	                        } elseif(!empty($textarea_elements[$k])){
+                                if($textarea_elements[$k] == 1){
+                                    $v = strip_tags($v);
                                 }
                                 $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
                             } elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
