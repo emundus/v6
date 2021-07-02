@@ -2059,10 +2059,11 @@ class EmundusModelApplication extends JModelList {
                                                             $select = preg_replace('#{shortlang}#', $this->locales, $select);
                                                         }
 
-                                                        $query->select($db->quoteName($select))
-                                                            ->from($db->quoteName($params->join_db_name . '_repeat_' . $elements[$j]->name,'t'))
-                                                            ->leftJoin($db->quoteName($params->join_db_name,'jd').' ON '.$db->quoteName('jd.' . $params->join_key_column).' = '.$db->quoteName('t.' . $elements[$j]->name))
-                                                            ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
+                                                        $query->select($select)
+                                                            ->from($db->quoteName($params->join_db_name,'t'))
+                                                            ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id. '_repeat_repeat_'. $elements[$j]->name,'checkbox_repeat').' ON '.$db->quoteName('checkbox_repeat.' . $elements[$j]->name).' = '.$db->quoteName('t.id'))
+                                                            ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id.'_repeat','repeat_grp').' ON '.$db->quoteName('repeat_grp.id').' = '.$db->quoteName('checkbox_repeat.parent_id'))
+                                                            ->where($db->quoteName('checkbox_repeat.parent_id') . ' = ' . $r_element->id);
 
                                                         try {
                                                             $this->_db->setQuery($query);
