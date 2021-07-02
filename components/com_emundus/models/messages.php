@@ -1233,7 +1233,7 @@ class EmundusModelMessages extends JModelList {
                 return $db->loadObjectList();
 
             } catch(Exception $e) {
-                JLog::add('Error get tags by fnum : '.$e->getMessage(), JLog::ERROR, 'com_emundus.message');
+                JLog::add('Error get tags by email : '.$e->getMessage(), JLog::ERROR, 'com_emundus.message');
                 return false;
             }
         } else {
@@ -1308,7 +1308,8 @@ class EmundusModelMessages extends JModelList {
                     return false;
                 }
             } catch(Exception $e) {
-                /// if in catch --> return false
+                JLog::add('Cannot get action by fnum : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                return false;
             }
         } else {
 	        return false;
@@ -1329,7 +1330,8 @@ class EmundusModelMessages extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch(Exception $e) {
-	        return $e->getMessage();            /// add logs later
+            JLog::add('Cannot get all documents being letter : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 }

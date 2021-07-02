@@ -2414,7 +2414,7 @@ if (JFactory::getUser()->id == 63)
                 return $letter_ids;
             } catch(Exception $e) {
                 JLog::add('Cannot get letters template by multi fnums : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                return $e->getMessage();
+                return false;
             }
         } else {
             return false;
