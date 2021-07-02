@@ -261,9 +261,9 @@ class EmundusonboardModelemail extends JModelList {
 
             /// get receivers (cc/bcc)
             $query->clear()
-                ->select('#__emundus_setup_emails_repeat_receiver.*')
-                ->from($db->quoteName('#__emundus_setup_emails_repeat_receiver'))
-                ->where($db->quoteName('#__emundus_setup_emails_repeat_receiver.parent_id') . ' = ' . (int)$id);
+                ->select('#__emundus_setup_emails_repeat_receivers.*')
+                ->from($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
+                ->where($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' = ' . (int)$id);
 
             $db->setQuery($query);
             $receiver_Info = $db->loadObjectList();         /// get receivers info
@@ -275,7 +275,7 @@ class EmundusonboardModelemail extends JModelList {
         }
     }
 
-     public function createEmail($data, $emails=null, $tags=null) {
+     public function createEmail($data, $receiver_cc=null) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -299,14 +299,17 @@ class EmundusonboardModelemail extends JModelList {
                 $db->execute();
 
                 // add cc/bcc for new email
-                foreach($emails as $key => $email) {
-                    $query->clear()
-                        ->insert($db->quoteName('#__emundus_setup_emails_repeat_receiver'))
-                        ->set($db->quoteName('#__emundus_setup_emails_repeat_receiver.parent_id') . ' =  ' . (int)$newemail)
-                        ->set($db->quoteName('#__emundus_setup_emails_repeat_receiver.receiver') . ' = ' . $db->quote($email));
+                if(!empty($receiver_cc) and !is_null($receiver_cc)) {
+                    foreach ($receiver_cc as $key => $receiver) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.receivers') . ' = ' . $db->quote($receiver))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_cc'));
 
-                    $db->setQuery($query);
-                    $db->execute();
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
                 }
 
                 return true;

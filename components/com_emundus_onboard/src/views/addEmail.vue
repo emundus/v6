@@ -80,14 +80,12 @@
 
           <!-- Email -- tags         -->
           <div class="form-group" id="receivers_tags">
-            <label>{{ Receivers }}</label>
-<!--            <voerro-tags-input @focus="onFocus" @blur="onBlur" placeholder=""></voerro-tags-input>-->
-            <voerro-tags-input placeholder="Ajouter l'addresse mail" v-model="selectedReceivers"> 123 </voerro-tags-input>
+            <label>{{ ReceiversCC }}</label>
+            <voerro-tags-input placeholder="Ajouter l'addresse mail" v-model="selectedReceiversCC"></voerro-tags-input>
           </div>
 
           <div class="form-group" id="tags_tags">
-            <label>{{ FabrikTags }}</label>
-<!--            <voerro-tags-input @focus="onFocus" @blur="onBlur"></voerro-tags-input>-->
+            <label>{{ ReceiversBCC }}</label>
             <voerro-tags-input placeholder="Ajouter les balises de Fabrik"></voerro-tags-input>
           </div>
 
@@ -259,8 +257,8 @@
       Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS"),
       Tags: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TAGS"),
       DocumentType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
-      Receivers: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_BCC"),
-      FabrikTags: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_TAGS"),
+      ReceiversCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS"),
+      ReceiversBCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS"),
 
       categories: [],
       programs: [],
@@ -277,8 +275,8 @@
       selectedTags: [],
       selectedDocuments: [],
 
-      selectedReceivers: [],
-      selectedFabrikTags: [],
+      selectedReceiversCC: [],
+      selectedReceiversBCC: [],
 
       form: {
         lbl: "",
@@ -416,7 +414,7 @@
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
-            data: qs.stringify({ body: this.form, code: this.email })
+            data: qs.stringify({ body: this.form, code: this.email, selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC })
           }).then(response => {
             this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
           }).catch(error => {
@@ -429,7 +427,7 @@
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
-            data: qs.stringify({ body: this.form, selectedReceivers: this.selectedReceivers, selectedFabrikTags: this.selectedFabrikTags })
+            data: qs.stringify({ body: this.form, selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC })
           }).then(response => {
             this.trigger.model = response.data.data;
             axios({
@@ -566,16 +564,19 @@
                             this.dynamicComponent = true;
 
 
-                            // bind receivers data to selectedReceivers
+                            // bind receivers data to selectedReceiversCC
                             let _receivers = resp.data.data.receivers;
-                            let receivers = [];
-                            for(let index = 0; index < _receivers.length; index++) {
-                              receivers[index] = {};
-                              receivers[index]['key'] = _receivers[index].id;
-                              receivers[index]['value'] = _receivers[index].receiver;
-                            }
+                            if(_receivers !== null && _receivers !== "")
+                            {
+                              let receivers = [];
+                              for (let index = 0; index < _receivers.length; index++) {
+                                receivers[index] = {};
+                                receivers[index]['key'] = _receivers[index].id;
+                                receivers[index]['value'] = _receivers[index].receivers;
+                              }
 
-                            this.selectedReceivers = receivers;
+                              this.selectedReceiversCC = receivers;
+                            }
 
                             // bind tags data to selectedFabrikTags
                           }).catch(e => {

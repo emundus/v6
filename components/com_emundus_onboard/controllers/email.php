@@ -199,39 +199,26 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 	        $jinput = JFactory::getApplication()->input;
 	        $email_data = $jinput->getRaw('body');
 
-//            var_dump($email_data);die;
-
 	        $m_email = $this->model;
 
-	        $receivers = $jinput->getRaw('selectedReceivers');
-	        $fabrikTags = $jinput->getRaw('selectedFabrikTags');
+	        $receivers_cc = $jinput->getRaw('selectedReceiversCC');
+            $receivers_bcc = $jinput->getRaw('selectedReceiversBCC');
 
-            $email_list = [];
-            $tag_list = [];
+            $cc_list = [];
+            $bcc_list = [];
 
-            // get emails from receiver list
-            foreach($receivers as $key => $value) {
-                foreach($value as $data => $receiver) {
-                    if(empty($receiver)) {
+            // get receiver cc from cc list
+            foreach($receivers_cc as $key => $value) {
+                foreach($value as $data => $receiver_cc) {
+                    if(empty($receiver_cc)) {
                         continue;
                     } else {
-                        $email_list[] = $receiver;
+                        $cc_list[] = $receiver_cc;
                     }
                 }
             }
 
-            // get fabrik tags from tags
-            foreach($fabrikTags as $key => $value) {
-                foreach($value as $data => $tag) {
-                    if(empty($tag)) {
-                        continue;
-                    } else {
-                        $tag_list[] = $tag;
-                    }
-                }
-            }
-
-            $result = $m_email->createEmail($email_data, $email_list, $tag_list);
+            $result = $m_email->createEmail($email_data, $cc_list);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);
