@@ -4290,7 +4290,6 @@ $(document).ready(function() {
                     dataType: 'JSON',
                     data: { fnum : fnum },
                     success: function(data) {
-                        console.log(data);
                         let email_recap = data.email_recap.message_recap;
                         let letter_recap = data.email_recap.attached_letter;
 
