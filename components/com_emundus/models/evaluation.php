@@ -2240,16 +2240,21 @@ if (JFactory::getUser()->id == 63)
     public function getAttachmentByIds($ids) {
         $query = $this->_db->getQuery(true);
 
-        try {
-            $query->clear()
-                ->select('distinct #__emundus_setup_attachments.*')
-                ->from($this->_db->quoteName('#__emundus_setup_attachments'))
-                ->where($this->_db->quoteName('#__emundus_setup_attachments.id') . 'IN ('. implode(',', $ids) . ')');
+        if(!empty($ids) and !is_null($ids)) {
+            try {
+                $query->clear()
+                    ->select('distinct #__emundus_setup_attachments.*')
+                    ->from($this->_db->quoteName('#__emundus_setup_attachments'))
+                    ->where($this->_db->quoteName('#__emundus_setup_attachments.id') . 'IN (' . implode(',', $ids) . ')');
 
-            $this->_db->setQuery($query);
-            return $this->_db->loadAssocList();
-        } catch(Exception $e) {
-            return $e->getMessage();
+                $this->_db->setQuery($query);
+                return $this->_db->loadAssocList();
+            } catch (Exception $e) {
+                JLog::add('Cannot get attachment by ids : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                return false;
+            }
+        } else {
+            return false;
         }
     }
 
@@ -2257,7 +2262,7 @@ if (JFactory::getUser()->id == 63)
     public function getLettersByListID($lid) {
         $query = $this->_db->getQuery(true);
 
-        if(!empty($lid) or !is_null($lid)) {
+        if(!empty($lid) and !is_null($lid)) {
             try {
                 $query->clear()
                     ->select('#__emundus_setup_letters.id')
@@ -2267,7 +2272,8 @@ if (JFactory::getUser()->id == 63)
                 $this->_db->setQuery($query);
                 return $this->_db->loadAssocList();
             } catch(Exception $e) {
-                return $e->getMessage();
+                JLog::add('Cannot get letter by ids : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                return false;
             }
         } else {
             return false;
@@ -2325,7 +2331,8 @@ if (JFactory::getUser()->id == 63)
                     return false;
                 }
             } catch(Exception $e) {
-                return $e->getMessage();
+                JLog::add('Cannot get letters by fnums : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                return false;
             }
         } else {
             return false;
@@ -2336,26 +2343,31 @@ if (JFactory::getUser()->id == 63)
     public function getLettersByProgrammesStatus($programs=array(), $status=array()) {
         $query = $this->_db->getQuery(true);
 
-        try {
-            $query->clear()
-                ->select('jesl.*')
-                ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
-                ->where($this->_db->quoteName('jeslrs.status') . ' IN (' . implode(',', $status) . ')')
-                ->andWhere($this->_db->quoteName('jeslrt.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')');
+        if(!empty($programs) and !empty($status) and !is_null($programs) and !is_null($status)) {
+            try {
+                $query->clear()
+                    ->select('jesl.*')
+                    ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+                    ->where($this->_db->quoteName('jeslrs.status') . ' IN (' . implode(',', $status) . ')')
+                    ->andWhere($this->_db->quoteName('jeslrt.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')');
 
-            $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
+                $this->_db->setQuery($query);
+                return $this->_db->loadObjectList();
 
-        } catch(Exception $e) {
-            return $e->getMessage();
+            } catch (Exception $e) {
+                JLog::add('Cannot get letters by program and status : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                return false;
+            }
+        } else {
+            return false;
         }
     }
 
     /// get exactly letter id by fnum and template (32,33,34)
     public function getLetterTemplateForFnum($fnum,$templates=array()) {
-        if(!empty($fnum) and !empty($templates)) {
+        if(!empty($fnum) and !is_null($fnum) and !empty($templates) and !is_null($templates)) {
             $query = $this->_db->getQuery(true);
 
             try {
@@ -2380,7 +2392,8 @@ if (JFactory::getUser()->id == 63)
                 return $this->_db->loadObjectList();
 
             } catch(Exception $e) {
-                return $e->getMessage();
+                JLog::add('Cannot get letter template by single fnum : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                return false;
             }
         } else {
             return false;
@@ -2389,7 +2402,7 @@ if (JFactory::getUser()->id == 63)
 
     /// get affected letters by [fnums] and [templates]
     public function getLettersByFnumsTemplates($fnums=array(), $templates=array()) {
-        if(!empty($fnums) and !empty($templates)) {
+        if(!empty($fnums) and !is_null($fnums) and !empty($templates) and !is_null($templates)) {
             /// from each fnum --> get fnum infos
             $_mFile = new EmundusModelFiles;
             $letter_ids = [];
@@ -2398,20 +2411,21 @@ if (JFactory::getUser()->id == 63)
                 foreach($fnum_Array as $data => $fnum) {
                     $letter_ids[] = $this->getLetterTemplateForFnum($fnum,$templates);
                 }
+                return $letter_ids;
             } catch(Exception $e) {
+                JLog::add('Cannot get letters template by multi fnums : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                 return $e->getMessage();
             }
         } else {
             return false;
         }
-        return $letter_ids;
     }
 
     /// get uploaded files by document type and fnums
     public function getFilesByAttachmentFnums($attachment, $fnums=array()) {
         $query = $this->_db->getQuery(true);
 
-        if(!empty($attachment) and !empty($fnums)) {
+        if(!empty($attachment) and !is_null($attachment) and !empty($fnums) and !is_null($fnums)) {
             try {
                 $query->clear()
                     ->select('#__emundus_uploads.*, #__emundus_setup_attachments.lbl, #__emundus_setup_attachments.value')
@@ -2422,7 +2436,8 @@ if (JFactory::getUser()->id == 63)
                 $this->_db->setQuery($query);
                 return $this->_db->loadObjectList();
             } catch(Exception $e) {
-                return $e->getMessage();
+                JLog::add('Cannot get attachments by fnums : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                return false;
             }
         } else {
             return false;

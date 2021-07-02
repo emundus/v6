@@ -1465,7 +1465,11 @@ class EmundusControllerMessages extends JControllerLegacy {
         $_mMessages = new EmundusModelMessages;
         $_templates = $_mMessages->getLetterTemplateByFnums($fnums);
 
-        echo json_encode((object)['status' => true, 'templates' => $_templates]);
+        if($_templates) {
+            echo json_encode((object)['status' => true, 'templates' => $_templates]);
+        } else {
+            echo json_encode((object)['status' => false, 'templates' => null]);
+        }
         exit;
     }
 
@@ -1480,13 +1484,19 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $_recap = $_mFiles->getFnumInfos($fnum);
 
-
-
         /// call to com_emundus_onbooard/settings
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'settings.php');
         $_mSettings = new EmundusonboardModelsettings;
 
-        echo json_encode((object)['status' => true, 'recap' => $_recap, 'color' => $_mSettings->getColorClasses()[$_recap['class']]]);
+        if($_recap) {
+            if($_mSettings->getColorClasses()[$_recap['class']]) {
+                echo json_encode((object)['status' => true, 'recap' => $_recap, 'color' => $_mSettings->getColorClasses()[$_recap['class']]]);
+            } else {
+                echo json_encode((object)['status' => true, 'recap' => $_recap, 'color' => '#000000']);         /// return default color
+            }
+        } else {
+            echo json_encode((object)['status' => false, 'recap' => null, 'color' => null]);
+        }
         exit;
     }
 
@@ -1671,7 +1681,12 @@ class EmundusControllerMessages extends JControllerLegacy {
         $_mMessages = new EmundusModelMessages;
 
         $_documents = $_mMessages->getAllDocumentsLetters();
-        echo json_encode(['status'=>true, 'documents'=>$_documents]);
+
+        if($_documents) {
+            echo json_encode(['status' => true, 'documents' => $_documents]);
+        } else {
+            echo json_encode(['status' => false, 'documents' => null]);
+        }
         exit;
     }
 }
