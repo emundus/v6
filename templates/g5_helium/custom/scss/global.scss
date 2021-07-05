@@ -522,9 +522,8 @@ input[type="text"],
   width: 100vw;
   position: sticky;
   max-height: 100px;
-  height: 100px;
+  height: 87px;
   background: transparent;
-  margin-bottom: 30px;
 
   .g-container {
     padding: 10px;
@@ -2486,7 +2485,7 @@ ul.unstyled.em-linkForgot li a {
   color: $dark-blue !important;
 }
 
-.g-back-office-emundus-tableau.files-board .panel-info>.panel-heading {
+.g-back-office-emundus-tableau .side-panel .panel-info>.panel-heading {
   background: $dark-green;
 }
 
@@ -2701,20 +2700,28 @@ div#em-appli-block {
 
 
 /* PAGE INDICATEUR */
-.indicateurs-page .btn a {
-  color: #fff;
 
-  &:hover,
+.indicateurs-page #g-container-main {
+  padding-left:  5% !important;
+}
+
+
+.indicateurs-page  {
+  .btn a {
+    color: #fff;
+
+    &:hover,
   &:focus,
   &:active {
     color: $base-secondary-color;
   }
-}
+  }
 
 
-/* ??? - menu déroulant */
 
-.open .dropdown-toggle.btn-danger {
+  /* ??? - menu déroulant */
+
+  .open .dropdown-toggle.btn-danger {
   color: #ffffff !important;
   background-color: darken($base-primary-color, 10%) !important;
   border-color: darken($base-primary-color, 10%) !important;
@@ -3165,13 +3172,13 @@ div#em-appli-block {
     a.forgotten_password_header{
       float: unset;
     }
-  }
+    }
 
-  #g-container-main .g-container{
-    padding: 0 0 0 40px;
-  }
+    #g-container-main .g-container{
+      padding: 0px;
+    }
 
-  .gantry #g-feature{
+    .gantry #g-feature{
     margin-top: 50px;
   }
 
@@ -3943,6 +3950,7 @@ div#em-appli-block {
   /* GENERAL */
   #gototop div {
     display: none !important;
-  }
+    }
 
+  }
 }
