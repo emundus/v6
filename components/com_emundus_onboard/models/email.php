@@ -326,7 +326,33 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
 
-                // add cc/bcc for new email
+                if(!empty($tags) and !is_null($tags)) {
+                    // add action tags for new email --> table jos_emundus_setup_emails_repeat_tags
+                    foreach ($tags as $key => $tag) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_tags'))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' =  ' . (int)$newemail)
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.tags') . ' = ' . (int)$tag);
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+
+                // add attached documents for new email --> table jos_emundus_setup_emails_repeat_letter_attachment
+                if(!empty($documents) and !is_null($documents)) {
+                    foreach ($documents as $key => $document) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' =  ' . (int)$newemail)
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' = ' . (int)$document);
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+
+                // add cc for new email
                 if(!empty($receiver_cc) and !is_null($receiver_cc)) {
                     foreach ($receiver_cc as $key => $receiver) {
 
@@ -354,8 +380,36 @@ class EmundusonboardModelemail extends JModelList {
                             $db->execute();
                         }
                     }
-                } else {
+                }
 
+                // add bcc for new email
+                if(!empty($receiver_bcc) and !is_null($receiver_bcc)) {
+                    foreach ($receiver_bcc as $key => $receiver) {
+
+                        /// if fabrik tags --> then, receiver type = 'receiver_cc_fabrik', otherwise, 'receivers_cc_email'
+                        $fabrik_matching_dollar_sign = preg_match($fabrik_pattern_start_dollar_sign,$receiver) and preg_match($fabrik_pattern_end_dollar_sign,$receiver);
+                        $fabrik_matching_bracket_sign = preg_match($fabrik_pattern_start_bracket_sign,$receiver) and preg_match($fabrik_pattern_end_bracket_sign,$receiver);
+
+                        if($fabrik_matching_dollar_sign == true or $fabrik_matching_bracket_sign == true) {
+                            $query->clear()
+                                ->insert($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
+                                ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
+                                ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.receivers') . ' = ' . $db->quote($receiver))
+                                ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_bcc_fabrik'));
+
+                            $db->setQuery($query);
+                            $db->execute();
+                        } else {
+                            $query->clear()
+                                ->insert($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
+                                ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
+                                ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.receivers') . ' = ' . $db->quote($receiver))
+                                ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_bcc_email'));
+
+                            $db->setQuery($query);
+                            $db->execute();
+                        }
+                    }
                 }
                 return true;
             } catch(Exception $e) {
@@ -367,7 +421,7 @@ class EmundusonboardModelemail extends JModelList {
         }
     }
 
-    public function updateEmail($id, $data, $receiver_cc=null) {
+    public function updateEmail($id, $data, $tags=null, $documents=null, $receiver_cc=null, $receiver_bcc=null) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -387,6 +441,46 @@ class EmundusonboardModelemail extends JModelList {
             try {
                 $db->setQuery($query);
                 $db->execute();             /// update email raw info
+
+                /// remove and update new tags for an email
+                $query->clear()
+                    ->delete($db->quoteName('#__emundus_setup_emails_repeat_tags'))
+                    ->where($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . '=' . (int)$id);
+
+                $db->setQuery($query);
+                $db->execute();
+
+                if(!empty($tags) and !is_null($tags)) {
+                    foreach($tags as $key => $tag) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_tags'))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' =  ' . (int)$id)
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.tags') . ' = ' . (int)$tag);
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+
+                /// remove and update new documents for an email
+                $query->clear()
+                    ->delete($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
+                    ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . '=' . (int)$id);
+
+                $db->setQuery($query);
+                $db->execute();
+
+                if(!empty($documents) and !is_null($documents)) {
+                    foreach($documents as $key => $document) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' =  ' . (int)$id)
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' = ' . (int)$document);
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
 
                 /// update receivers cc --> first :: delete old cc
                 $query->clear()

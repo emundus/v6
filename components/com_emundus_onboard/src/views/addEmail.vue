@@ -79,14 +79,32 @@
           </div>
 
           <!-- Email -- tags         -->
+          <div class="form-group">
+            <label>{{ Tags }}</label>
+            <select v-model="selectedTags" class="dropdown-toggle w-select" multiple>
+              <option v-for="tag in tags" :value="tag.id" :id="'tag_'+tag.id">{{tag.label}}</option>
+            </select>
+          </div>
+
+          <!-- Email -- tags         -->
           <div class="form-group" id="receivers_tags">
             <label>{{ ReceiversCC }}</label>
-            <voerro-tags-input placeholder="Ajouter l'addresse mail" v-model="selectedReceiversCC"></voerro-tags-input>
+            <div id="cc-tooltips" style="font-size: .8rem; color: #16afe1"> Format : ${id} ou [id] </div>
+            <voerro-tags-input placeholder="" v-model="selectedReceiversCC"></voerro-tags-input>
           </div>
 
           <div class="form-group" id="tags_tags">
             <label>{{ ReceiversBCC }}</label>
-            <voerro-tags-input placeholder="Ajouter les balises de Fabrik"></voerro-tags-input>
+            <div id="bcc-tooltips" style="font-size: .8rem; color: #16afe1"> Format : ${id} ou [id] </div>
+            <voerro-tags-input></voerro-tags-input>
+          </div>
+
+          <!-- Email -- document type         -->
+          <div class="form-group">
+            <label>{{ DocumentType }}</label>
+            <select v-model="selectedDocuments" class="dropdown-toggle w-select" multiple>
+              <option v-for="document in documents" :value="document.id">{{document.value}}</option>
+            </select>
           </div>
 
         </div>
@@ -258,7 +276,9 @@
       Tags: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TAGS"),
       DocumentType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
       ReceiversCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS"),
+      ReceiversCCPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER"),
       ReceiversBCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS"),
+      ReceiversBCCPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER"),
 
       categories: [],
       programs: [],
@@ -441,7 +461,7 @@
                 users: this.selectedUsers
               })
             }).then((rep) => {
-              //this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+              this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
             });
           }).catch(error => {
             console.log(error);
@@ -563,11 +583,24 @@
                             this.form.published = resp.data.data.email.published;
                             this.dynamicComponent = true;
 
+                            if(resp.data.data.tags !== null && resp.data.data.tags !== undefined && resp.data.data.tags !== "") {
+                              let _tags = resp.data.data.tags;
+                              _tags.forEach((tag, index) => {
+                                this.selectedTags[index] = tag.id;
+                              })
+                            }
+
+                            if(resp.data.data.attachments !== null && resp.data.data.attachments !== undefined && resp.data.data.attachments !== "") {
+                              let _documents = resp.data.data.attachments;
+
+                              _documents.forEach((document, index) => {
+                                this.selectedDocuments[index] = document.id;
+                              })
+                            }
 
                             // bind receivers data to selectedReceiversCC
-                            let _receivers = resp.data.data.receivers;
-                            if(_receivers !== null && _receivers !== "")
-                            {
+                            if(resp.data.data.receivers !== null && resp.data.data.receivers !== undefined && resp.data.data.receivers !== "") {
+                              let _receivers = resp.data.data.receivers;
                               let receivers = [];
                               for (let index = 0; index < _receivers.length; index++) {
                                 receivers[index] = {};
@@ -640,7 +673,7 @@
 }
 
 .tags-input-wrapper-default.active {
-  box-shadow: #33B4DE;
+  /*box-shadow: #33B4DE;*/
   outline: 0 none;
 }
 
