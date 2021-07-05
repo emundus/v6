@@ -2121,10 +2121,11 @@ if (JFactory::getUser()->id == 63)
     public static function getFnumInfos($fnum) {
         try {
             $db = JFactory::getDBO();
-            $query = 'select u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, c.*
+            $query = 'select u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, ss.value, ss.class, c.*
                         from #__emundus_campaign_candidature as cc
                         left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id 
-                        left join #__users as u on u.id = cc.applicant_id 
+                        left join #__users as u on u.id = cc.applicant_id
+                        left join #__emundus_setup_status as ss on ss.step = cc.status
                         where cc.fnum like '.$db->Quote($fnum);
             $db->setQuery($query);
             $fnumInfos = $db->loadAssoc();
@@ -3316,15 +3317,14 @@ if (JFactory::getUser()->id == 63)
 	 */
     public function getFabrikValueRepeat($elt, $fnums, $params = null, $groupRepeat) {
 
-        if (!is_array($fnums))
+        if (!is_array($fnums)) {
             $fnums = [$fnums];
+        }
 
-        //$gid = $elt['group_id'];
         $tableName = $elt['db_table_name'];
         $tableJoin = $elt['table_join'];
         $name = $elt['name'];
         $plugin = $elt['plugin'];
-//var_dump($elt);
         $isFnumsNull = ($fnums === null);
         $isDatabaseJoin = ($plugin === 'databasejoin');
         $isMulti = (@$params->database_join_display_type == "multilist" || @$params->database_join_display_type == "checkbox");
@@ -3735,5 +3735,25 @@ if (JFactory::getUser()->id == 63)
             ->where($db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
         $db->setQuery($query);
         return $db->loadAssocList();
+    }
+    public function getTagsAssocStatus($status){
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $conditions = $db->quoteName('ss.step') . ' = ' . $db->quote($status);
+
+        $query->select('ssrt.tags')
+            ->from($db->quoteName('#__emundus_setup_status_repeat_tags', 'ssrt'))
+            ->leftJoin($db->quoteName('#__emundus_setup_status', 'ss') . ' ON ' . $db->quoteName('ss.id') . ' = ' . $db->quoteName('ssrt.parent_id'))
+            ->where($conditions);
+
+        $db->setQuery($query);
+
+        try{
+            return $db->loadColumn();
+        }
+        catch (Exception $e){
+            JLog::add($query->__toString(), JLog::ERROR, 'com_emundus');
+        }
     }
 }

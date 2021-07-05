@@ -134,7 +134,29 @@ export default {
   data() {
     return {
       doc: null,
-      model: null,
+      model: {
+        allowed_types: '',
+        can_be_deleted: false,
+        category: "",
+        description: {
+          'fr': "",
+          'en': "",
+
+        },
+        id: "",
+        lbl: "",
+        mandatory: "",
+        name: {
+          'fr':'',
+          'en':'',
+        },
+        nbmax: "",
+        ocr_keywords: null,
+        ordering: "",
+        published: "",
+        value: "",
+        video_max_length:''
+      },
       form: {
         name: {
           fr: '',

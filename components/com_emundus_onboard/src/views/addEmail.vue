@@ -77,6 +77,23 @@
                     :year="this.form.category"
             />
           </div>
+
+          <!-- Email -- tags         -->
+          <div class="form-group">
+            <label>{{ Tags }}</label>
+            <select v-model="selectedTags" class="dropdown-toggle w-select" multiple>
+              <option v-for="tag in tags" :value="tag.id">{{tag.label}}</option>
+            </select>
+          </div>
+
+          <!-- Email -- document type         -->
+          <div class="form-group">
+            <label>{{ DocumentType }}</label>
+            <select v-model="selectedDocuments" class="dropdown-toggle w-select" multiple>
+              <option v-for="document in documents" :value="document.id">{{document.value}}</option>
+            </select>
+          </div>
+
         </div>
         <div class="divider"></div>
         <div class="sous-container last-container" v-if="email == ''">
@@ -239,6 +256,8 @@
       TheCandidate: Joomla.JText._("COM_EMUNDUS_ONBOARD_THE_CANDIDATE"),
       Manual: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL"),
       Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS"),
+      Tags: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TAGS"),
+      DocumentType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
 
       categories: [],
       programs: [],
@@ -248,6 +267,12 @@
       enableTip: false,
       searchTerm: '',
       selectall: false,
+
+      tags: [],         /// email --- tags
+      documents: [],    /// email -- document types
+
+      selectedTags: [],
+      selectedDocuments: [],
 
       form: {
         lbl: "",
@@ -468,9 +493,43 @@
       clean(group) {
         this.$notify({ group, clean: true });
       },
+
+      /// get all tags
+      getAllTags: function() {
+        axios({
+          method: 'post',
+          url: 'index.php?option=com_emundus_onboard&controller=settings&task=gettags',
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+        }).then(response => {
+          let _tags = response.data.data;
+          this.tags = _tags;
+        }).catch(error => {
+          console.log(error);
+        })
+      },
+
+      getAllDocumentLetter: function() {
+        axios({
+          method: 'post',
+          url: 'index.php?option=com_emundus&controller=messages&task=getalldocumentsletters',
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+        }).then(response => {
+          console.log(response);
+          let _documents = response.data.documents;
+          this.documents = _documents;
+        }).catch(error => {
+          console.log(error);
+        })
+      }
     },
 
     created() {
+      this.getAllTags();
+      this.getAllDocumentLetter();
       axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
               .then(rep => {
                 this.categories = rep.data.data;

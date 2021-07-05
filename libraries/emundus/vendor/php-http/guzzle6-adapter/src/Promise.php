@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Http\Adapter\Guzzle6;
 
 use GuzzleHttp\Exception as GuzzleExceptions;
@@ -42,10 +44,6 @@ final class Promise implements HttpPromise
      */
     private $request;
 
-    /**
-     * @param PromiseInterface $promise
-     * @param RequestInterface $request
-     */
     public function __construct(PromiseInterface $promise, RequestInterface $request)
     {
         $this->request = $request;
@@ -106,13 +104,8 @@ final class Promise implements HttpPromise
 
     /**
      * Converts a Guzzle exception into an Httplug exception.
-     *
-     * @param GuzzleExceptions\GuzzleException $exception
-     * @param RequestInterface                 $request
-     *
-     * @return HttplugException
      */
-    private function handleException(GuzzleExceptions\GuzzleException $exception, RequestInterface $request)
+    private function handleException(GuzzleExceptions\GuzzleException $exception, RequestInterface $request): HttplugException
     {
         if ($exception instanceof GuzzleExceptions\SeekException) {
             return new HttplugException\RequestException($exception->getMessage(), $request, $exception);

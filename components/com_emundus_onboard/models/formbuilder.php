@@ -717,7 +717,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         unset($params['sub_options']);
 
         $params['join_conn_id'] = '1';
-        $params['database_join_where_sql'] = 'order by id';
+        $params['database_join_where_sql'] = 'order by ' . $params['join_key_column'];
         $params['database_join_where_access'] = '1';
         $params['database_join_where_when'] = '3';
         $params['databasejoin_where_ajax'] = '0';

@@ -1017,6 +1017,7 @@ export default {
                   this.update
               );
               page.show_title.value = page.show_title.label[this.actualLanguage];
+              page.label = page.show_title.label[this.actualLanguage];
               this.updatePage = false;
             });
       }).catch(e => {

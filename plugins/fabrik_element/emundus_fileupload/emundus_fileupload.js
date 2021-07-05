@@ -321,6 +321,15 @@ var FbFileUpload = {
                     }
                 }
                 watch(elementId, attachId);
+            } else if(xhr.status == 500){
+                Swal.fire({
+                    type: 'error',
+                    title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
+                    text: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR_TEXT'),
+                    confirmButtonClass: 'btn btn-primary save-btn sauvegarder button save_continue'
+                });
+                input.value = '';
+                deleteButton.style.display = 'none';
             }
         };
         xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_upload', true);

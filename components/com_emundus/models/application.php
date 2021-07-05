@@ -444,7 +444,7 @@ class EmundusModelApplication extends JModelList {
             $profile = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
             $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $profile && $current_user->applicant === 1) ? $current_user->profile : $profile;
 
-            $forms = @EmundusHelperMenu::buildMenuQuery($profile_id);
+            $forms = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
             $nb = 0;
             $formLst = array();
 
@@ -722,11 +722,23 @@ class EmundusModelApplication extends JModelList {
                 }
 
 
+                $allowEmbed = $this->allowEmbed(JURI::base().'index.php?lang=en');
                 if ($cpt > 0) {
-                    $form .= '<button type="button" id="'.$table[$i]->form_id.'" class="btn btn btn-info btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
+
+                    if ($allowEmbed) {
+                        $form .= '<button type="button" id="'.$table[$i]->form_id.'" class="btn btn btn-info btn-sm " url="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
+                    } else {
+                        $form .= ' <a id="'.$table[$i]->form_id.'" class="btn btn btn-info btn-sm " href="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&usekey=fnum&rowid='.$fnum.'" alt="'.JText::_('EDIT').'" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></a>';
+                    }
+
                 } else {
-                    $form .= '<button type="button" id="'.$table[$i]->form_id.'" class="btn btn-default btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&'.$table[$i]->db_table_name.'___fnum='.$fnum.'&'.$table[$i]->db_table_name.'___user_raw='.$aid.'&'.$table[$i]->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
+                    if ($allowEmbed) {
+                        $form .= '<button type="button" id="'.$table[$i]->form_id.'" class="btn btn-default btn-sm " url="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&'.$table[$i]->db_table_name.'___fnum='.$fnum.'&'.$table[$i]->db_table_name.'___user_raw='.$aid.'&'.$table[$i]->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
+                    } else {
+                        $form .= ' <a type="button" id="'.$table[$i]->form_id.'" class="btn btn-default btn-sm " href="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&'.$table[$i]->db_table_name.'___fnum='.$fnum.'&'.$table[$i]->db_table_name.'___user_raw='.$aid.'&'.$table[$i]->db_table_name.'___user='.$aid.'&sid='.$aid.'" alt="'.JText::_('EDIT').'" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></a>';
+                    }
                 }
+
             }
             $form .= '</div>';
 
@@ -954,10 +966,11 @@ class EmundusModelApplication extends JModelList {
                                                     $select = preg_replace('#{shortlang}#', $this->locales, $select);
                                                 }
 
-                                                $query->select($db->quoteName($select))
-                                                    ->from($db->quoteName($params->join_db_name . '_repeat_' . $elements[$j]->name,'t'))
-                                                    ->leftJoin($db->quoteName($params->join_db_name,'jd').' ON '.$db->quoteName('jd.' . $params->join_key_column).' = '.$db->quoteName('t.' . $elements[$j]->name))
-                                                    ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
+                                                $query->select($select)
+                                                    ->from($db->quoteName($params->join_db_name,'t'))
+                                                    ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id. '_repeat_repeat_'. $elements[$j]->name,'checkbox_repeat').' ON '.$db->quoteName('checkbox_repeat.' . $elements[$j]->name).' = '.$db->quoteName('t.id'))
+                                                    ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id.'_repeat','repeat_grp').' ON '.$db->quoteName('repeat_grp.id').' = '.$db->quoteName('checkbox_repeat.parent_id'))
+                                                    ->where($db->quoteName('checkbox_repeat.parent_id') . ' = ' . $r_element->id);
 
                                                 try {
                                                     $this->_db->setQuery($query);
@@ -1348,17 +1361,18 @@ class EmundusModelApplication extends JModelList {
                                                             $query = $db->getQuery(true);
 
                                                             $parent_id = strlen($element->content_id)>0?$element->content_id:0;
-                                                            $select = $params->join_val_column;
+                                                            $select = "CONCAT(".$params->join_val_column.")";
                                                             if(!empty($params->join_val_column_concat)){
                                                                 $select = $params->join_val_column_concat;
                                                                 $select = preg_replace('#{thistable}#', 'jd', $select);
                                                                 $select = preg_replace('#{shortlang}#', $this->locales, $select);
                                                             }
 
-                                                            $query->select($db->quoteName($select))
-                                                                ->from($db->quoteName($params->join_db_name . '_repeat_' . $element->name,'t'))
-                                                                ->leftJoin($db->quoteName($params->join_db_name,'jd').' ON '.$db->quoteName('jd.' . $params->join_key_column).' = '.$db->quoteName('t.' . $element->name))
-                                                                ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
+                                                            $query->select($select)
+                                                                ->from($db->quoteName($params->join_db_name,'t'))
+                                                                ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id. '_repeat_repeat_'. $elements[$j]->name,'checkbox_repeat').' ON '.$db->quoteName('checkbox_repeat.' . $elements[$j]->name).' = '.$db->quoteName('t.id'))
+                                                                ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id.'_repeat','repeat_grp').' ON '.$db->quoteName('repeat_grp.id').' = '.$db->quoteName('checkbox_repeat.parent_id'))
+                                                                ->where($db->quoteName('checkbox_repeat.parent_id') . ' = ' . $r_element->id);
 
                                                             try {
                                                                 $this->_db->setQuery($query);
@@ -1862,10 +1876,11 @@ class EmundusModelApplication extends JModelList {
                                                             $select = preg_replace('#{shortlang}#', $this->locales, $select);
                                                         }
 
-                                                        $query->select($db->quoteName($select))
-                                                            ->from($db->quoteName($itemt->db_table_name . '_repeat_' . $elements[$j]->name,'t'))
-                                                            ->leftJoin($db->quoteName($params->join_db_name,'jd').' ON '.$db->quoteName('jd.' . $params->join_key_column).' = '.$db->quoteName('t.' . $elements[$j]->name))
-                                                            ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
+                                                        $query->select($select)
+                                                            ->from($db->quoteName($params->join_db_name,'t'))
+                                                            ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id. '_repeat_repeat_'. $elements[$j]->name,'checkbox_repeat').' ON '.$db->quoteName('checkbox_repeat.' . $elements[$j]->name).' = '.$db->quoteName('t.id'))
+                                                            ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id.'_repeat','repeat_grp').' ON '.$db->quoteName('repeat_grp.id').' = '.$db->quoteName('checkbox_repeat.parent_id'))
+                                                            ->where($db->quoteName('checkbox_repeat.parent_id') . ' = ' . $r_element->id);
 
                                                         try {
                                                             $this->_db->setQuery($query);
@@ -2056,10 +2071,11 @@ class EmundusModelApplication extends JModelList {
                                                             $select = preg_replace('#{shortlang}#', $this->locales, $select);
                                                         }
 
-                                                        $query->select($db->quoteName($select))
-                                                            ->from($db->quoteName($params->join_db_name . '_repeat_' . $elements[$j]->name,'t'))
-                                                            ->leftJoin($db->quoteName($params->join_db_name,'jd').' ON '.$db->quoteName('jd.' . $params->join_key_column).' = '.$db->quoteName('t.' . $elements[$j]->name))
-                                                            ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
+                                                        $query->select($select)
+                                                            ->from($db->quoteName($params->join_db_name,'t'))
+                                                            ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id. '_repeat_repeat_'. $elements[$j]->name,'checkbox_repeat').' ON '.$db->quoteName('checkbox_repeat.' . $elements[$j]->name).' = '.$db->quoteName('t.id'))
+                                                            ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id.'_repeat','repeat_grp').' ON '.$db->quoteName('repeat_grp.id').' = '.$db->quoteName('checkbox_repeat.parent_id'))
+                                                            ->where($db->quoteName('checkbox_repeat.parent_id') . ' = ' . $r_element->id);
 
                                                         try {
                                                             $this->_db->setQuery($query);
@@ -3255,16 +3271,17 @@ class EmundusModelApplication extends JModelList {
      * @param $fnum_from String the fnum of the source
      * @param $fnum_to String the fnum of the duplicated application
      * @param $pid Int the profile_id to get list of forms
+     * @param $copy_attachment Boolean copy attachments or not
      * @return bool
      */
-    public function copyApplication($fnum_from, $fnum_to, $pid = null) {
+    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0) {
         $db = JFactory::getDbo();
 
         try {
-            if (empty($pid)) {
-                $m_profiles = new EmundusModelProfile();
+            $m_profiles = new EmundusModelProfile();
+            $fnumInfos = $m_profiles->getFnumDetails($fnum_from);
 
-                $fnumInfos = $m_profiles->getFnumDetails($fnum_from);
+            if (empty($pid)) {
                 $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
             }
 
@@ -3339,6 +3356,60 @@ class EmundusModelApplication extends JModelList {
                                     $db->execute();
                                 }
                             }
+                        }
+                    }
+                }
+            }
+
+            // sync documents uploaded
+            // 1. get list of uploaded documents for previous file defined as duplicated
+            if ($copy_attachment) {
+                $query = 'SELECT eu.*, esa.nbmax
+											FROM #__emundus_uploads as eu
+											LEFT JOIN #__emundus_setup_attachments as esa on esa.id=eu.attachment_id
+											LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id='.$pid.'
+											WHERE eu.user_id='.$fnumInfos['applicant_id'].'
+											AND eu.fnum like '.$db->Quote($fnum_from).'
+											AND esap.duplicate=1';
+                $db->setQuery( $query );
+                $stored = $db->loadAssocList();
+
+                if (count($stored) > 0) {
+                    // 2. copy DB définition and duplicate files in applicant directory
+                    foreach ($stored as $key => $row) {
+                        $src = $row['filename'];
+                        $ext = explode('.', $src);
+                        $ext = $ext[count($ext)-1];;
+                        $cpt = 0-(int)(strlen($ext)+1);
+                        $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
+                        $nbmax = $row['nbmax'];
+                        $row['filename'] = $dest;
+                        unset($row['id']);
+                        unset($row['fnum']);
+                        unset($row['nbmax']);
+
+                        try {
+                            $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$fnumInfos['applicant_id'].' AND attachment_id='.$row['attachment_id'].' AND fnum like '.$db->Quote($fnum_to);
+                            $db->setQuery($query);
+                            $cpt = $db->loadResult();
+
+                            if ($cpt < $nbmax) {
+                                $query = 'INSERT INTO #__emundus_uploads (`fnum`, `'.implode('`,`', array_keys($row)).'`) VALUES('.$db->Quote($fnum_to).', '.implode(',', $db->Quote($row)).')';
+                                $db->setQuery($query);
+                                $db->execute();
+                                $id = $db->insertid();
+                                $path = EMUNDUS_PATH_ABS.$fnumInfos['applicant_id'].DS;
+
+                                if (!copy($path.$src, $path.$dest)) {
+                                    $query = 'UPDATE #__emundus_uploads SET filename='.$src.' WHERE id='.$id;
+                                    $db->setQuery($query);
+                                    $db->execute();
+                                }
+                            }
+
+                        } catch (Exception $e) {
+                            $error = JUri::getInstance().' :: USER ID : '.$fnumInfos['applicant_id'].' -> '.$e->getMessage();
+                            JLog::add($error, JLog::ERROR, 'com_emundus');
                         }
                     }
                 }
