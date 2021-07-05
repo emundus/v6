@@ -1528,6 +1528,7 @@ body.error-page p {
   }
   &:hover, &:focus, &:active {
     text-decoration: none;
+    color: $base-primary-color !important;
     span {
       color: $base-primary-color !important;
     }
@@ -2725,7 +2726,7 @@ div#em-appli-block {
 }
 
 
-.indicateurs-page  {
+.indicateurs-page {
   .btn a {
     color: #fff;
 
@@ -2735,7 +2736,6 @@ div#em-appli-block {
       color: $base-secondary-color;
     }
   }
-
 
 
   /* ??? - menu déroulant */
@@ -2806,6 +2806,7 @@ div#em-appli-block {
     .page-header h1 {
       color: #000;
     }
+
     form .filtertable input.fabrik_filter_submit {
       border-radius: 25px;
       padding: 5px 30px;
@@ -2835,7 +2836,7 @@ div#em-appli-block {
         }
       }
 
-      tbody tr>td {
+      tbody tr > td {
         color: $dark-blue;
       }
     }
@@ -2854,6 +2855,7 @@ div#em-appli-block {
       b.caret {
         color: $dark-blue;
       }
+
       a:hover b.caret,
       a:hover b.caret,
       a:hover b.caret {
@@ -2861,10 +2863,13 @@ div#em-appli-block {
         border-top-color: $dark-blue;
         border-bottom-color: $dark-blue;
       }
+
       ul.dropdown-menu li a {
         color: $dark-blue;
+
         &:hover, &:focus, &:active {
           color: #fff;
+
           i {
             color: #fff;
           }
@@ -2908,8 +2913,8 @@ div#em-appli-block {
     background: #ECEFF3 !important;
   }
 
-  .table-hover tbody tr:nth-child(2n)>td,
-  .table-hover tbody tr:nth-child(2n)>th {
+  .table-hover tbody tr:nth-child(2n) > td,
+  .table-hover tbody tr:nth-child(2n) > th {
     background: #dddddd !important;
   }
 
@@ -2924,7 +2929,7 @@ div#em-appli-block {
     .informationStatistique {
       background-color: #fff;
       color: #000 !important;
-      box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);
+      box-shadow: 0 1px 2px 0 hsla(0, 0%, 41.2%, .19);
       border-radius: 4px;
     }
 
@@ -2945,6 +2950,7 @@ div#em-appli-block {
     #validation {
       background: $dark-green;
       border: 2px solid $dark-green;
+
       &:hover, &:active, &:focus {
         background: transparent;
         border: 2px solid $dark-green;
@@ -3002,12 +3008,12 @@ div#em-appli-block {
       background: $dark-blue;
     }
 
-    .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line {
+    .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step-line {
       border-top: 1px solid $dark-blue;
       border-bottom: 1px solid $dark-blue;
     }
 
-    .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step {
+    .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step {
       color: $dark-blue;
       border: 1px solid $dark-blue;
     }
@@ -3117,8 +3123,9 @@ div#em-appli-block {
     height: 30px;
   }
 
-  .experts-page ul.contact-group li.contact-group-item.bg-warning  a.row {
+  .experts-page ul.contact-group li.contact-group-item.bg-warning a.row {
     color: $dark-blue !important;
+
     &:hover,
     &:active,
     &:focus {
@@ -3182,10 +3189,6 @@ div#em-appli-block {
   /* MOBILE */
 
   @media all and (max-width: 479px) {
-
-    .gantry  #g-container-main .g-container {
-      padding: 10px 40px 0px 40px !important;
-    }
 
     #g-navigation .g-container #header-c{
       justify-content: center;
