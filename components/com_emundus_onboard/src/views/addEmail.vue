@@ -518,7 +518,6 @@
             "Content-Type": "application/x-www-form-urlencoded"
           },
         }).then(response => {
-          console.log(response);
           let _documents = response.data.documents;
           this.documents = _documents;
         }).catch(error => {
@@ -549,16 +548,20 @@
                             // bind selected tags
                             this.dynamicComponent = true;
 
-                            let _tags = resp.data.data.tags;
-                            let _documents = resp.data.data.attachments;
+                            if(resp.data.data.tags !== null && resp.data.data.tags !== undefined && resp.data.data.tags !== "") {
+                              let _tags = resp.data.data.tags;
+                              _tags.forEach((tag, index) => {
+                                this.selectedTags[index] = tag.id;
+                              })
+                            }
 
-                            _tags.forEach((tag, index) => {
-                              this.selectedTags[index] = tag.id;
-                            })
+                            if(resp.data.data.attachments !== null && resp.data.data.attachments !== undefined && resp.data.data.attachments !== "") {
+                              let _documents = resp.data.data.attachments;
+                              _documents.forEach((document, index) => {
+                                this.selectedDocuments[index] = document.id;
+                              })
+                            }
 
-                            _documents.forEach((document, index) => {
-                              this.selectedDocuments[index] = document.id;
-                            })
                           }).catch(e => {
                             console.log(e);
                           });
