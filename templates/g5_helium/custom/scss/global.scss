@@ -1528,6 +1528,7 @@ body.error-page p {
   }
   &:hover, &:focus, &:active {
     text-decoration: none;
+    color: $base-secondary-color !important;
     span {
       color: $base-secondary-color !important;
     }
@@ -3193,8 +3194,8 @@ div#em-appli-block {
       }
     }
 
-    #g-container-main .g-container{
-      padding: 0px 40px;
+   .gantry  #g-container-main .g-container {
+      padding: 10px 40px 0px 40px;
     }
 
     .gantry #g-feature{
