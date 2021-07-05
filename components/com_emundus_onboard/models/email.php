@@ -263,14 +263,24 @@ class EmundusonboardModelemail extends JModelList {
             $query->clear()
                 ->select('#__emundus_setup_emails_repeat_receivers.*')
                 ->from($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
-                ->where($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' = ' . (int)$id)
-                ->andWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_cc_email'))
-                ->orWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_cc_fabrik'))
-                ->orWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_bcc_email'))
-                ->orWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_bcc_fabrik'));
+                ->where($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' = ' . (int)$id);
 
             $db->setQuery($query);
-            $receiver_Info = $db->loadObjectList();         /// get receivers info
+            $receiver_count = $db->loadObjectList();
+
+            if(!empty($receiver_count)) {
+                $query->clear()
+                    ->select('#__emundus_setup_emails_repeat_receivers.*')
+                    ->from($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
+                    ->where($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' = ' . (int)$id)
+                    ->andWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_cc_email'))
+                    ->orWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_cc_fabrik'))
+                    ->orWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_bcc_email'))
+                    ->orWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_bcc_fabrik'));
+
+                $db->setQuery($query);
+                $receiver_Info = $db->loadObjectList();         /// get receivers info
+            }
 
             /// get associated tags
             $query->clear()
