@@ -1528,9 +1528,8 @@ body.error-page p {
   }
   &:hover, &:focus, &:active {
     text-decoration: none;
-    color: $base-secondary-color !important;
     span {
-      color: $base-secondary-color !important;
+      color: $base-primary-color !important;
     }
   }
 }
@@ -3184,6 +3183,10 @@ div#em-appli-block {
 
   @media all and (max-width: 479px) {
 
+    .gantry  #g-container-main .g-container {
+      padding: 10px 40px 0px 40px !important;
+    }
+
     #g-navigation .g-container #header-c{
       justify-content: center;
       .platform-content{
@@ -3192,10 +3195,6 @@ div#em-appli-block {
       a.forgotten_password_header{
         float: unset;
       }
-    }
-
-   .gantry  #g-container-main .g-container {
-      padding: 10px 40px 0px 40px;
     }
 
     .gantry #g-feature{
