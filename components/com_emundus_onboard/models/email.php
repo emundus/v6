@@ -303,25 +303,29 @@ class EmundusonboardModelemail extends JModelList {
                 $newemail = $db->insertid();
 
                 // set email repeat tag
-                foreach($tags as $key => $tag) {
-                    $query->clear()
-                        ->insert($db->quoteName('#__emundus_setup_emails_repeat_tags'))
-                        ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' =  ' . (int)$newemail)
-                        ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.tags') . ' = ' . (int)$tag);
+                if(!empty($tags) and !is_null($tags)) {
+                    foreach ($tags as $key => $tag) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_tags'))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' =  ' . (int)$newemail)
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.tags') . ' = ' . (int)$tag);
 
-                    $db->setQuery($query);
-                    $db->execute();
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
                 }
 
                 // set email repeat letter attachment
-                foreach($documents as $key => $document) {
-                    $query->clear()
-                        ->insert($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
-                        ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' =  ' . (int)$newemail)
-                        ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' = ' . (int)$document);
+                if(!empty($documents) and !is_null($documents)) {
+                    foreach ($documents as $key => $document) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' =  ' . (int)$newemail)
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' = ' . (int)$document);
 
-                    $db->setQuery($query);
-                    $db->execute();
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
                 }
 
                 $query->clear()
@@ -368,14 +372,16 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
 
-                foreach($tags as $key => $tag) {
-                    $query->clear()
-                        ->insert($db->quoteName('#__emundus_setup_emails_repeat_tags'))
-                        ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' =  ' . (int)$id)
-                        ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.tags') . ' = ' . (int)$tag);
+                if(!empty($tags) and !is_null($tags)) {
+                    foreach ($tags as $key => $tag) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_tags'))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' =  ' . (int)$id)
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.tags') . ' = ' . (int)$tag);
 
-                    $db->setQuery($query);
-                    $db->execute();
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
                 }
 
                 /// end
@@ -388,14 +394,16 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
 
-                foreach($documents as $key => $document) {
-                    $query->clear()
-                        ->insert($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
-                        ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' =  ' . (int)$id)
-                        ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' = ' . (int)$document);
+                if(!empty($documents) and !is_null($documents)) {
+                    foreach ($documents as $key => $document) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' =  ' . (int)$id)
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' = ' . (int)$document);
 
-                    $db->setQuery($query);
-                    $db->execute();
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
                 }
 
                 return true;
