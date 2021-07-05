@@ -310,11 +310,11 @@ if ($allowed_attachments !== true) {
 
                     // from cc_filtered and bcc_filterd --> render to text box Cc/Bcc
                     receiver_cc.forEach(cc => {
-                        $('.selectize-input').append('<div class="cc-emails" data-value="CC: Cc:<' + cc + '>">' + "Cc:" + cc + '<a id="' + Math.random().toString(36).substring(2,10) + '" onClick="removeElement(this)" class="remove" tabindex="-1" title="Remove">' + 'x' + '</a></div>');
+                        $('.selectize-input').append('<div id="elements_" class="cc-emails" data-value="CC: Cc:<' + cc + '>">' + "Cc:" + cc + '<a id="element_remove" onclick="removeElement(this)" class="remove" tabindex="-1" title="Remove">' + 'x' + '</a></div>');
                     })
 
                     receiver_bcc.forEach(bcc => {
-                        $('.selectize-input').append('<div class="cc-emails" data-value="BCC: Bcc:<' + bcc + '>">' + "Bcc:" + bcc + '<a id="' + Math.random().toString(36).substring(2,10) + '" onClick="removeElement(this)" class="remove" tabindex="-1" title="Remove">' + 'x' + '</a></div>');
+                        $('.selectize-input').append('<div id="elements_" class="cc-emails" data-value="BCC: Bcc:<' + bcc + '>">' + "Bcc:" + bcc + '<a id="elements" class="remove" tabindex="-1" title="Remove">' + 'x' + '</a></div>');
                     })
                 }
             }, error: function(jqXHR) {
@@ -442,6 +442,12 @@ if ($allowed_attachments !== true) {
                 // handle error
                 $("#message_template").append('<span class="alert"> <?= JText::_('ERROR'); ?> </span>')
             }
+        });
+    }
+
+    function removeElement(element) {
+        $('.remove').on('click', function(e) {
+            $(this).parent().remove();
         });
     }
 
