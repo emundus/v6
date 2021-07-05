@@ -207,18 +207,23 @@ class EmundusonboardControlleremail extends JControllerLegacy {
             $cc_list = [];
             $bcc_list = [];
 
+            $tags = $jinput->getRaw('tags');
+            $documents = $jinput->getRaw('documents');
+
             // get receiver cc from cc list
-            foreach($receivers_cc as $key => $value) {
-                foreach($value as $data => $receiver_cc) {
-                    if(empty($receiver_cc)) {
-                        continue;
-                    } else {
-                        $cc_list[] = $receiver_cc;
+            if(!empty($receiver_cc) and !is_null($receiver_cc)) {
+                foreach ($receivers_cc as $key => $value) {
+                    foreach ($value as $data => $receiver_cc) {
+                        if (empty($receiver_cc)) {
+                            continue;
+                        } else {
+                            $cc_list[] = $receiver_cc;
+                        }
                     }
                 }
             }
 
-            $result = $m_email->createEmail($email_data, $cc_list);
+            $result = $m_email->createEmail($email_data, $cc_list, null, $tags, $documents);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);
@@ -248,21 +253,26 @@ class EmundusonboardControlleremail extends JControllerLegacy {
             $receivers_cc = $jinput->getRaw('selectedReceiversCC');
             $receivers_bcc = $jinput->getRaw('selectedReceiversBCC');
 
+            $tags = $jinput->getRaw('tags');
+            $documents = $jinput->getRaw('documents');
+
             $cc_list = [];
             $bcc_list = [];
 
             // get receiver cc from cc list
-            foreach($receivers_cc as $key => $value) {
-                foreach($value as $data => $receiver_cc) {
-                    if(empty($receiver_cc)) {
-                        continue;
-                    } else {
-                        $cc_list[] = $receiver_cc;
+            if(!empty($receivers_cc) and !is_null($receivers_cc)) {
+                foreach ($receivers_cc as $key => $value) {
+                    foreach ($value as $data => $receiver_cc) {
+                        if (empty($receiver_cc)) {
+                            continue;
+                        } else {
+                            $cc_list[] = $receiver_cc;
+                        }
                     }
                 }
             }
 
-            $result = $m_email->updateEmail($code, $data, $cc_list);
+            $result = $m_email->updateEmail($code, $data, $tags, $documents, $cc_list, $bcc_list);      /// call to updateEmail model
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);

@@ -96,7 +96,7 @@
           <div class="form-group" id="tags_tags">
             <label>{{ ReceiversBCC }}</label>
             <div id="bcc-tooltips" style="font-size: .8rem; color: #16afe1"> Format : ${id} ou [id] </div>
-            <voerro-tags-input></voerro-tags-input>
+            <voerro-tags-input placeholder="" v-model="selectedReceiversBCC"></voerro-tags-input>
           </div>
 
           <!-- Email -- document type         -->
@@ -434,7 +434,10 @@
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
-            data: qs.stringify({ body: this.form, code: this.email, selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC })
+            data: qs.stringify({ body: this.form, code: this.email,
+                                        selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC,
+                                        tags: this.selectedTags, documents: this.selectedDocuments
+            })
           }).then(response => {
             this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
           }).catch(error => {
