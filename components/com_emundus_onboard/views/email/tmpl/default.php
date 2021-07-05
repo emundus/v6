@@ -78,6 +78,9 @@ JText::script('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT');
 JText::script('COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS');
 JText::script('COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS');
 
+JText::script('COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER');
+JText::script('COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER');
+
 $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>

@@ -66,6 +66,9 @@ JText::script('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT');
 JText::script('COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS');
 JText::script('COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS');
 
+JText::script('COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER');
+JText::script('COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER');
+
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0, 2);
 ?>
