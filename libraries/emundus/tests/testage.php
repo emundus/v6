@@ -34,7 +34,7 @@ class ageTest extends TestCase {
   }
   public function testage2() {
           $myage = '1996-13-33';
-          $this->assertSame(25, age($myage));
+          $this->assertSame(24, age($myage));
   }
   public function testage3() {
           $myage = '07-06-1996';
@@ -44,7 +44,7 @@ class ageTest extends TestCase {
           $myage = '15 juin 1996';
           $this->assertSame(25, age($myage));
   }
-  public function testage4() {
+  public function testage5() {
         $myage = 'juin 06 1996';
         $this->assertSame(25, age($myage));
   }
