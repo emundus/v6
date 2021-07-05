@@ -1517,6 +1517,18 @@ body.error-page p {
 
 /* BOUTONS */
 
+.modal-dialog .modal-body a.btn.btn-link[title*="Télécharger"]  {
+  span {
+    color: #fff !important
+  }
+  &:hover, &:focus, &:active {
+    text-decoration: none;
+    span {
+      color: $base-secondary-color !important;
+    }
+  }
+}
+
 .view-form p.select-program a {
   border: 1px solid $base-secondary-color !important;
   color: $base-secondary-color !important;
