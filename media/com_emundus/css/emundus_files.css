@@ -193,6 +193,19 @@ table .btn-group > .btn {
     border: 0 solid;
 }
 
+#em-candidat-panel th {
+    border:1px solid;
+    width: 25%;
+}
+
+#em-candidat-panel td {
+    border:1px solid;
+}
+
+#em-candidat-panel tr:nth-child(even){background-color: #fafafa;}
+
+#em-candidat-panel tr:hover {background-color: #ddd;}
+
 .em-cell a:focus {
     color: #2a363b;
 }
@@ -2533,4 +2546,91 @@ a.copy-0:focus {
     #em_select_filter label {
         font-size: 0.8rem;
     }
+}
+
+.email___candidat {
+    display: flex;
+    padding: 0px;
+}
+
+.email___candidat .email___candidat_panel {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    background: #FCFCFC;
+    box-shadow: 0px 6px 10px rgba(5, 47, 55, 0.07), 0px 1px 18px rgba(5, 47, 55, 0.06), 0px 3px 5px rgba(5, 47, 55, 0.1);
+    border-radius: 4px;
+    margin-right: 32px;
+}
+
+.email___candidat .email___candidat_panel .email___candidat_panel_item {
+    padding: 0px;
+    margin-bottom: 24px;
+}
+
+.email___candidat .email___message_body {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    background: #FCFCFC;
+    box-shadow: 0px 6px 10px rgba(5, 47, 55, 0.07), 0px 1px 18px rgba(5, 47, 55, 0.06), 0px 3px 5px rgba(5, 47, 55, 0.1);
+    border-radius: 4px;
+    max-width: 500px !important;
+    overflow-y: scroll;
+}
+
+.email___candidat .email___message_body .email___message_body_item {
+    padding: 0px;
+}
+
+/* email editor */
+.email___editor {
+    display: flex;
+    padding: 0px;
+}
+
+.email___editor .email___editor_category {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    background: #FCFCFC;
+    box-shadow: 0px 6px 10px rgba(5, 47, 55, 0.07), 0px 1px 18px rgba(5, 47, 55, 0.06), 0px 3px 5px rgba(5, 47, 55, 0.1);
+    border-radius: 4px;
+    margin-right: 32px;
+}
+
+.email___editor .email___editor_category .email___editor_category_item {
+    padding: 0px;
+}
+
+.email__editor .email___editor_sending {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    background: #FCFCFC;
+    box-shadow: 0px 6px 10px rgba(5, 47, 55, 0.07), 0px 1px 18px rgba(5, 47, 55, 0.06), 0px 3px 5px rgba(5, 47, 55, 0.1);
+    border-radius: 4px;
+    max-width: 500px !important;
+    overflow-y: scroll;
+}
+
+.email__editor .email___editor_sending .email___editor_sending_input {
+    padding: 0px;
+}
+
+.email__editor .email___editor_sending .email___editor_sending_input .email___editor_sending_input_label {
+    width: 85px;
+    height: 40px;
+    text-align: right;
+}
+
+.email__editor .email___editor_sending .email___editor_sending_input .email___editor_sending_input_input {
+    width: 100%;
+    heigth: 40px;
+}
+
+.email__editor .email___editor_sending .email___editor_sending_wysiwyg {
+    width: auto;
+    height: 300px;
+    overflow-y: scroll;
 }

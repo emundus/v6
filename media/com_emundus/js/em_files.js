@@ -611,7 +611,32 @@ function getUserCheck() {
 function getUserCheckArray() {
 
     if ($('#em-check-all-all').is(':checked')) {
-        return 'all';
+        var fnums = [];
+
+        if ($('.em-check:checked').length === 0) {
+            var hash = $(location).attr('hash');
+            var fnum = hash.replace("#", "");
+            fnum = fnum.replace("|open", "");
+
+            if (fnum == "") {
+                return null;
+            } else {
+                let cid = parseInt(fnum.substr(14, 7));
+                let sid = parseInt(fnum.substr(21, 7));
+                fnums.push({fnum: fnum, cid: cid, sid:sid});
+            }
+        } else {
+            let cid = ''
+            let sid = ''
+            $('.em-check:checked').each(function() {
+                fnum = $(this).attr('id').split('_')[0];
+                cid = parseInt(fnum.substr(14, 7));
+                sid = parseInt(fnum.substr(21, 7));
+                fnums.push({fnum: fnum, cid: cid, sid:sid});
+            });
+        }
+
+        // return 'all';
     } else {
         var fnums = [];
 
@@ -4143,7 +4168,7 @@ $(document).ready(function() {
             case 27:
                 $('#can-val').empty();
                 $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
-                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+                    '<button id="em-generate" style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOCUMENT')+'</button>');
                 $('#can-val').show();
 
                 $('#em-modal-actions .modal-body').empty();
@@ -4215,10 +4240,195 @@ $(document).ready(function() {
                 $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
                 break;
 
+                // send email --> test
             default:
                 break;
         }
     });
+
+
+    // show tooltips when hovering the button --> using JText
+    $(document).on('mouseover', '[id^=candidat_]', function(e){ $(this).css('cursor', 'pointer').attr('title', Joomla.JText._('SEND_EMAIL_TOOLTIPS'));})
+
+    $(document).on('click', '[id^=candidat_]', function(e){
+        let fnum = $(this).attr('id').split('candidat_')[1];
+        console.log($(this).attr('id'));
+
+        $('#em-modal-actions').modal({backdrop:true,keyboard:true},'toggle');
+        $('.modal-title').empty();
+        $('.modal-title').append($(this).children('a').text());
+        $('.modal-body').empty();
+
+        if ($('.modal-dialog').hasClass('modal-lg')) {
+            $('.modal-dialog').removeClass('modal-lg');
+        }
+
+        $('.modal-body').attr('act-id', 37);
+        $('.modal-footer').show();
+        $('.modal-lg').css({ width: '80%' });
+        $('.modal-dialog').css({ width: '80%' });
+
+        $('#can-val').empty();
+        $('#can-val').append('<a id="send-email" class="btn btn-success" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL').replace(/\\/g, '')+'</a>');
+        $('#can-val').show();
+
+        $('.modal-body').css('display', 'flex');
+        $('.modal-body').css('align-items', 'center');
+        $('.modal-body').css('justify-content', 'center');
+
+        $('.modal-body').append('<div id="email-candidat-preview" class="email___candidat"></div>');
+        $('#email-candidat-preview').append('<div id="email-candidat-panel-preview" class="email___candidat_panel" style="display: none"></div>');
+        $('#email-candidat-preview').append('<div id="email-candidat-message-preview" class="email___message_body" style="display: none"></div>');
+
+
+        $('#email-candidat-preview').prepend('<div id="loadingimg-candidat"><img src="'+loadingLine+'" alt="loading"/></div>');
+
+        $('#loadingimg-candidat').show();
+
+
+        $.ajax({
+            type: 'post',
+            url: 'index.php?option=com_emundus&controller=messages&task=getrecapbyfnum',
+            dataType: 'JSON',
+            data: { fnum : fnum.toString() },
+            success: function(result) {
+
+                $.ajax({
+                    type: 'post',
+                    url: 'index.php?option=com_emundus&controller=messages&task=getmessagerecapbyfnum',
+                    dataType: 'JSON',
+                    data: { fnum : fnum },
+                    success: function(data) {
+                        let email_recap = data.email_recap.message_recap[0];
+                        let letter_recap = data.email_recap.attached_letter;
+
+                        if(data.status == true) {
+                            let recap = result.recap;
+                            let color = result.color;
+
+                            $('#loadingimg-candidat').hide();
+
+                            $('#email-candidat-panel-preview').show();
+                            $('#email-candidat-message-preview').show();
+                            $('#email-candidat-panel-preview').append(
+                                '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
+                                '<label for="candidat-name-label">' + Joomla.JText._('CANDIDATE') + '</label>' +
+                                '<div id="candidat-name"></div>' +
+                                '<div id="candidat-email"></div>' +
+                                '</div>'
+                            );
+
+                            // candidate program
+                            $('#email-candidat-panel-preview').append(
+                                '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
+                                '<label for="candidat-program-label">' + Joomla.JText._('PROGRAM_NAME') + '</label>' +
+                                '<div id="candidat-program"></div>' +
+                                '<div id="candidat-program-year"></div>' +
+                                '</div>'
+                            );
+
+                            // candidate status
+                            $('#email-candidat-panel-preview').append(
+                                '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
+                                '<label for="candidat-status-label">' + Joomla.JText._('CANDIDAT_STATUS') + '</label>' +
+                                '<div id="candidat-status" style="margin-bottom: 8px !important">' +
+                                '<span id="status-class"></span>' +
+                                '</div>' +
+                                '</div>'
+                            );
+
+                            // attachment letters
+                            $('#email-candidat-panel-preview').append(
+                                '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
+                                '<label for="candidat-attachment-label">' + Joomla.JText._('ATTACHMENT_LETTER') + '</label>' +
+                                '<div id="candidat-letters"></div>' +
+                                '</div>'
+                            );
+
+                            $('#candidat-name').append(recap.name);
+                            $('#candidat-email').append(recap.email);
+                            $('#candidat-program').append(recap.label);
+                            $('#candidat-program-year').append(recap.year);
+
+                            $('#status-class').addClass('label label-' + recap.class);
+                            $('#status-class').append(recap.value);
+
+                            // message preview
+                            $('#email-candidat-message-preview').append(
+                                '<div id="email-preview" class="email___message_body_item">' +
+                                '<label for="email-preview-label">' + Joomla.JText._('EMAIL_SUBJECT') + ' : </label>' +
+                                '<div id="message-subject"></div>' +
+                                '<div id="message-body"></div>' +
+                                '</div>'
+                            );
+                            
+                            /// render attachment letters to candidat preview
+                            letter_recap.forEach(letter => {
+                                $('#candidat-letters').append(
+                                    "<li>" +
+                                    "<a id='em_letter_preview' target='_blank' href='" + letter.dest + "'>" +
+                                    "<span style='font-size: medium; padding: 10px 0px; color:" + color + "'>" +
+                                    "<span class='glyphicon glyphicon-paperclip' style='padding-right: 10px;'></span>" + letter.value +
+                                    "</span>" +
+                                    "</a>" +
+                                    "</li>"
+                                );
+                            })
+
+                            $("label[for='email-preview-label']").append(email_recap.subject);
+                            $('#message-body').append(email_recap.message);
+
+                        } else {
+                            console.log(false);
+                        }
+
+                        /// send email
+                        $('#send-email').on('click', function(e) {
+                            let tmpl = email_recap;
+                            console.log(tmpl);
+                            $.ajax({
+                                type: 'POST',
+                                url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
+                                dataType: 'JSON',
+                                data: { fnum: fnum },
+                                success: function(result) {
+                                    /// never success ???
+                                }, error: function(jqXHR, textStatus) {
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnum',
+                                        dataType: 'JSON',
+                                        data: { fnum: fnum , tmpl: email_recap.id },
+                                        success: function(value) {
+                                            addDimmer();
+                                            $('#em-modal-actions').modal('hide');
+
+                                            reloadData();
+                                            reloadActions($('#view').val(), undefined, false);
+                                            $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                            $('body').removeClass('modal-open');
+                                            
+                                        }, error: function(jqXHR) {
+                                            console.log(jqXHR.responseText);
+                                        }}
+                                    )
+                                }
+                            })
+                        })
+
+
+                    }, error: function(jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                })
+
+            }, error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        })
+
+
+    })
 
 
     // zip file generation
@@ -5211,10 +5421,19 @@ $(document).ready(function() {
                 if ($(this).hasClass('em-doc-dl'))
                     return;
 
+                $('#can-val').empty();
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
+                    '<button style="margin-left:5px;background: #16afe1; border: 2px solid #16afe1; border-radius: 25px !important; color: #fff" type="button" class="btn btn-danger">' +
+                        '<a style="color:#fff" id="em-download-all" href="">'+ Joomla.JText._('DOWNLOAD_DOCUMENT') + '</a>' +
+                    '</button>');
+                $('#can-val').show();
+
                 var fnums = $('input:hidden[name="em-doc-fnums"]').val();
-                var code = $('#em-doc-trainings').val();
-                var idTmpl = $('#em-doc-tmpl').val();
+                var idsTmpl = $('#em-doc-tmpl').val();
                 var cansee = $('#em-doc-cansee').val();
+
+                var showMode = $('#em-doc-export-mode').val();          /// show by candidats (0) or show by document type (1)
+                var mergeMode = $('#em-doc-pdf-merge').val();           /// unmerge pdf (0) or merge pdf (1)
 
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' +
@@ -5222,45 +5441,165 @@ $(document).ready(function() {
                     '</div>');
                 $.ajax({
                     type:'post',
-                    url:'index.php?option=com_emundus&controller=files&task=generatedoc&format=raw',
+                    url:'index.php?option=com_emundus&controller=files&task=generateletter',
                     dataType:'json',
-                    data:{fnums: fnums, code:code, id_tmpl: idTmpl, cansee: cansee},
+                    data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee, showMode: showMode, mergeMode: mergeMode},
                     success: function(result) {
                         $('.modal-body').empty();
-                        if (result.status) {
-                            var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
 
-                            var table = "<h3>" +
-                                Joomla.JText._('FILES_GENERATED')+
-                                "</h3>" +
-                                "<table class='table table-striped' id='em-generated-docs'>" +
-                                "<thead>" +
-                                "<tr>" +
-                                "<th>"+Joomla.JText._('FILE_NAME')+" <a class='btn btn-small pull-right' id='em-doc-zip' href=''>"+Joomla.JText._('COM_EMUNDUS_ACCESS_EXPORT_ZIP')+"</a></th>" +
-                                "</tr>" +
-                                "</thead>" +
-                                "<tbody>";
-                            for (var i = 0; i < result.files.length; i++ ) {
-                                table += "<tr id='"+result.files[i].upload+"'>" +
-                                    "<td>"+result.files[i].filename+" <a class='btn btn-success btn-xs pull-right em-doc-dl'  href='"+result.files[i].url+result.files[i].filename+"'><span class='glyphicon glyphicon-save'></span></a></td>" +
-                                    "</tr>";
-                                if (i === 0) {
-                                    zipUrl += result.files[i].upload;
+                        /// render recapitulatif
+                        let recal = result.recapitulatif_count;
+                        var recal_table =
+                            "<h4 style='color:#16afe1 !important'>" +
+                                Joomla.JText._('AFFECTED_CANDIDATS') + result.affected_users +
+                            "</h4>" +
+                                "<table class='table table-striped' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
+                                    "<thead>" +
+                                        "<th>"+Joomla.JText._('GENERATED_DOCUMENTS_LABEL') + "</th>" +
+                                        "<th>"+Joomla.JText._('GENERATED_DOCUMENTS_COUNT') + "</th>" +
+                                    "</thead>" +
+                                    "<tbody>";
+
+                        recal.forEach(data => {
+                            recal_table +=
+                                "<tr style='background: #c1c7d0'>" +
+                                    "<td>" + data.document + "</td>" +
+                                    "<td>" + data.count + "</td>" +
+                                "</tr>"
+                        })
+
+                        recal_table += "</tbody></table>";
+                        $('.modal-body').append(recal_table);
+
+                        if(result.status) {
+                            if(showMode == 0) {
+                                var zip = result.zip_data_by_candidat;
+
+                                var table = "<h3>" +
+                                    Joomla.JText._('CANDIDAT_GENERATED')+
+                                    "</h3>" +
+                                        "<table class='table table-striped' id='em-generated-docs'>" +
+                                        "<thead>" +
+                                            "<tr>" +
+                                                "<th>"+Joomla.JText._('CANDIDATE_NAME') + "</th>" +
+                                            "</tr>" +
+                                        "</thead>" +
+                                    "<tbody>";
+
+                                if(mergeMode == 0) {
+                                    zip.forEach(file => {
+                                        table += "<tr>" +
+                                            "<td>" + file.applicant_name +
+                                            "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.zip_url + "'>" +
+                                            "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                            "</a>" +
+                                            "</td>" +
+                                            "</tr>";
+                                    })
                                 } else {
-                                    zipUrl += ','+result.files[i].upload;
+                                    zip.forEach(file => {
+                                        table += "<tr>" +
+                                            "<td>" + file.applicant_name +
+                                            "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.merge_zip_url + "'>" +
+                                            "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                            "</a>" +
+                                            "</td>" +
+                                            "</tr>";
+                                    })
                                 }
+
+                                table += "</tbody></table>";
+                                $('.modal-body').append(table);
+                                $('#em-download-all').attr('href', result.zip_all_data_by_candidat);
                             }
-                            table += "</tbody></table>";
-                            $('.modal-body').append(table);
-                            $('#em-doc-zip').attr('href', zipUrl);
-                        } else {
-                            $('.modal-body').append('<div class="alert alert-danger"><h4>'+result.msg+'</h4></div>');
+
+                            else if (showMode == 1){
+                                let letters = result.letter_dir;
+
+                                var table =
+                                    "<h3>" +
+                                        Joomla.JText._('DOCUMENT_GENERATED')+
+                                    "</h3>" +
+                                        "<table class='table table-striped' id='em-generated-docs'>" +
+                                            "<thead>" +
+                                            "<tr>" +
+                                                "<th>"+Joomla.JText._('DOCUMENT_NAME') + "</th>" +
+                                            "</tr>" +
+                                            "</thead>" +
+                                        "<tbody>";
+
+                                if(mergeMode == 0) {
+                                    letters.forEach(letter => {
+                                        table +=
+                                            "<tr>" +
+                                            "<td>" + letter.letter_name +
+                                            "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + letter.zip_dir + "'>" +
+                                            "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                            "</a>" +
+                                            "</td>" +
+                                            "</tr>";
+                                    })
+                                } else {
+                                    letters.forEach(letter => {
+                                        table +=
+                                            "<tr>" +
+                                            "<td>" + letter.letter_name +
+                                            "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + letter.zip_merge_dir + "'>" +
+                                            "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                            "</a>" +
+                                            "</td>" +
+                                            "</tr>";
+                                    })
+                                }
+
+                                table += "</tbody></table>";
+                                $('.modal-body').append(table);
+                                $('#em-download-all').attr('href', result.zip_all_data_by_document);
+                            }
+
+                            else {
+                                /// showMode == 2 (classic way)
+                                var files = result.files;
+                                var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
+                                var table = "<h3>" +
+                                    Joomla.JText._('FILES_GENERATED')+
+                                    "</h3>" +
+                                    "<table class='table table-striped' id='em-generated-docs'>" +
+                                    "<thead>" +
+                                    "<tr>" +
+                                    "<th>"+Joomla.JText._('FILE_NAME') + "</th>" +
+                                    "</tr>" +
+                                    "</thead>" +
+                                    "<tbody>";
+
+                                files.forEach(file => {
+                                    table +=
+                                        "<tr id='" + file.upload + "'>" +
+                                            "<td>" + file.filename +
+                                                " <a id='" + 'em_download_doc_' + file.upload + "' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='"+ file.url + file.filename +"'>" +
+                                                    "<span class='glyphicon glyphicon-save'></span>" +
+                                                "</a>" +
+                                            "</td>" +
+                                        "</tr>";
+                                })
+
+                                table += "</tbody></table>";
+                                $('.modal-body').append(table);
+
+                                let href_collections = $('[id^=em_download_doc_]');
+                                var href_array = Array.prototype.slice.call(href_collections);
+                                let urls = [];
+                                href_array.forEach(url => {
+                                    urls.push(url.id.split('em_download_doc_')[1]);
+                                })
+
+                                $('#em-download-all').attr('href', zipUrl + urls.toString());
+                            }
+
                         }
                     },
                     error: function (jqXHR) {
                         console.log(jqXHR.responseText);
-                        if (jqXHR.status === 302)
-                            window.location.replace('/user');
                     }
                 });
                 break;
@@ -5445,6 +5784,9 @@ $(document).ready(function() {
                     }
                 });
                 break;
+
+            default:
+                break;
         }
     });
 
@@ -5598,6 +5940,72 @@ $(document).ready(function() {
         }
     });
 
+    /// handle event when changing show mode
+    $(document).on('change', '#em-doc-export-mode', function() {
+        let showMode = $('#em-doc-export-mode').val();
+        $('#export-tooltips').empty();
+        // $('#merge-tooltips').empty();
+
+        if(showMode == 2) {
+            $("label[for='em-combine-pdf']").css('color', 'red');
+            $("label[for='em-combine-pdf']").css('text-decoration', 'line-through');
+            $('#merge-tooltips').empty();
+            $('#em-doc-pdf-merge').prop('disabled', true);
+            $('#em-doc-pdf-merge').empty();
+            $('#em-doc-pdf-merge').append('<option value="-1" selected="">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</option>');
+            $('#em-doc-pdf-merge').css('background-color', '#5352524a');
+            $('#em-doc-pdf-merge').css('color', 'red');
+            //$('#merge-tooltips').append('<div id="forbidden-merge-tooltip" style="font-size: .8rem; color: darkorange">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</div>');
+        }
+
+        else {
+            $("label[for='em-combine-pdf']").css('text-decoration', 'none');
+            if(showMode == 0) {
+                $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP') + '</div>');
+                $('#em-doc-pdf-merge').val("0");
+
+                if($('#em-doc-pdf-merge').val() == "1") {
+                    setTimeout(function() {$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
+                } else {
+                    $('#merge-tooltips').empty();
+                }
+            } else if(showMode == 1) {
+                $('#export-tooltips').append('<div id="document-export-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_EXPORT_TOOLTIP') + '</div>');
+                $('#em-doc-pdf-merge').val("0");
+
+                if($('#em-doc-pdf-merge').val() == "1") {
+                    setTimeout(function() {$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: 1rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
+                } else {
+                    $('#merge-tooltips').empty();
+                }
+            }
+            $('#em-doc-pdf-merge').empty();
+            $("label[for='em-combine-pdf']").css('color', 'black');
+            $('#em-doc-pdf-merge').append('<option value="0">' + Joomla.JText._('JNO') + '</option>');
+            $('#em-doc-pdf-merge').append('<option value="1">' + Joomla.JText._('JYES') + '</option>');
+            $('#em-doc-pdf-merge').prop('disabled', false);
+            $('#em-doc-pdf-merge').css('background-color', 'white');
+            $('#em-doc-pdf-merge').css('color', 'black');
+        }
+    })
+
+    $(document).on('change', '#em-doc-pdf-merge', function() {
+        // $('#merge-tooltips').empty();
+
+        if ($('#em-doc-pdf-merge').val() == 1) {
+            setTimeout(function() {$('#merge-tooltips').empty();}, 100);
+            if ($('#em-doc-export-mode').val() == 0) {
+                setTimeout(function(){$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
+                $('#merge-tooltips').fadeIn();
+            } else if ($('#em-doc-export-mode').val() == 1) {
+                setTimeout(function(){$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
+                $('#merge-tooltips').fadeIn();
+            }
+        } else {
+            setTimeout(function() {$('#merge-tooltips').empty();}, 100);
+        }
+    })
+
     $(document).on('click', '#showevalelements', function() {
         if ($(this).hasClass("btn-info")) {
 
@@ -5720,4 +6128,14 @@ function getXMLHttpRequest() {
     }
 
     return xhr;
+}
+
+/// convert rgb to hex
+function componentToHex(c) {
+    let hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
