@@ -439,7 +439,7 @@
                                         tags: this.selectedTags, documents: this.selectedDocuments
             })
           }).then(response => {
-            this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+            //this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
           }).catch(error => {
             console.log(error);
           });
@@ -450,7 +450,7 @@
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
-            data: qs.stringify({ body: this.form, selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC })
+            data: qs.stringify({ body: this.form, selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC, tags: this.selectedTags, documents:this.selectedDocuments })
           }).then(response => {
             this.trigger.model = response.data.data;
             axios({
@@ -464,7 +464,7 @@
                 users: this.selectedUsers
               })
             }).then((rep) => {
-              this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+              //this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
             });
           }).catch(error => {
             console.log(error);
@@ -601,20 +601,40 @@
                               })
                             }
 
-                            // bind receivers data to selectedReceiversCC
-                            if(resp.data.data.receivers !== null && resp.data.data.receivers !== undefined && resp.data.data.receivers !== "") {
-                              let _receivers = resp.data.data.receivers;
-                              let receivers = [];
-                              for (let index = 0; index < _receivers.length; index++) {
-                                receivers[index] = {};
-                                receivers[index]['key'] = _receivers[index].id;
-                                receivers[index]['value'] = _receivers[index].receivers;
-                              }
+                            //console.log(resp.data.data.receivers);
 
-                              this.selectedReceiversCC = receivers;
+                            if(resp.data.data.receivers !== null && resp.data.data.receivers !== undefined && resp.data.data.receivers !== "") {
+                              let receivers = resp.data.data.receivers;
+
+                              let receiver_cc = [];
+                              let receiver_bcc = [];
+
+                              for (let index = 0; index < receivers.length; index++) {
+                                receiver_cc[index] = {};
+                                receiver_bcc[index] = {};
+
+                                if(receivers[index].type == 'receiver_cc_email' || receivers[index].type == 'receiver_cc_fabrik') {
+                                  receiver_cc[index]['key'] = receivers[index].id;
+                                  receiver_cc[index]['value'] = receivers[index].receivers;
+                                }
+
+                                else if(receivers[index].type == 'receiver_bcc_email' || receivers[index].type == 'receiver_bcc_fabrik') {
+                                    receiver_bcc[index]['key'] = receivers[index].id;
+                                    receiver_bcc[index]['value'] = receivers[index].receivers;
+                                  }
+                                }
+
+                              const cc_filtered = receiver_cc.filter(el => {return el['key'] !== null && el['key'] !== undefined;})
+                              const bcc_filtered = receiver_bcc.filter(el => {return el['key'] !== null && el['key'] !== undefined;})
+
+                              // /// bind data with v-model
+                              // console.log(cc_filtered);
+                              // console.log(bcc_filtered);
+
+                              this.selectedReceiversCC = cc_filtered;
+                              this.selectedReceiversBCC = bcc_filtered;
                             }
 
-                            // bind tags data to selectedFabrikTags
                           }).catch(e => {
                             console.log(e);
                           });

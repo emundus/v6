@@ -211,7 +211,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
             $documents = $jinput->getRaw('documents');
 
             // get receiver cc from cc list
-            if(!empty($receiver_cc) and !is_null($receiver_cc)) {
+            if(!empty($receivers_cc) and !is_null($receivers_cc)) {
                 foreach ($receivers_cc as $key => $value) {
                     foreach ($value as $data => $receiver_cc) {
                         if (empty($receiver_cc)) {
@@ -223,7 +223,20 @@ class EmundusonboardControlleremail extends JControllerLegacy {
                 }
             }
 
-            $result = $m_email->createEmail($email_data, $cc_list, null, $tags, $documents);
+            // get receiver bcc from cc list
+            if(!empty($receivers_bcc) and !is_null($receivers_bcc)) {
+                foreach ($receivers_bcc as $key => $value) {
+                    foreach ($value as $data => $receiver_bcc) {
+                        if (empty($receiver_bcc)) {
+                            continue;
+                        } else {
+                            $bcc_list[] = $receiver_bcc;
+                        }
+                    }
+                }
+            }
+
+            $result = $m_email->createEmail($email_data, $cc_list, $bcc_list, $tags, $documents);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);

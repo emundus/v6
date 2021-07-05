@@ -259,11 +259,15 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             $email_Info = $db->loadObject();        // get email info
 
-            /// get receivers (cc/bcc)
+            /// get receivers cc
             $query->clear()
                 ->select('#__emundus_setup_emails_repeat_receivers.*')
                 ->from($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
-                ->where($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' = ' . (int)$id);
+                ->where($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' = ' . (int)$id)
+                ->andWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_cc_email'))
+                ->orWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_cc_fabrik'))
+                ->orWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_bcc_email'))
+                ->orWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' = ' . $db->quote('receiver_bcc_fabrik'));
 
             $db->setQuery($query);
             $receiver_Info = $db->loadObjectList();         /// get receivers info
@@ -379,6 +383,8 @@ class EmundusonboardModelemail extends JModelList {
                             $db->setQuery($query);
                             $db->execute();
                         }
+
+                        /// if not email and not fabrik --> return false
                     }
                 }
 
@@ -409,6 +415,8 @@ class EmundusonboardModelemail extends JModelList {
                             $db->setQuery($query);
                             $db->execute();
                         }
+
+                        /// if not email and not fabrik --> return false
                     }
                 }
                 return true;
