@@ -15,11 +15,6 @@
     padding: 10px 1.5rem;
 }
 
-.em-infoComp li i {
-    margin-left: 10px;
-    color:#de6339;
-}
-
 .em-infoComp li {
     align-self: center;
     list-style: none;

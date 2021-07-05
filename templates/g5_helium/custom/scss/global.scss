@@ -625,7 +625,6 @@ footer#g-footer img {
 
 .g-container>#g-footer {
   width: 100vw;
-  margin-top: auto !important;
 }
 
 footer#g-footer>.g-container {
@@ -1011,6 +1010,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   .blog-featuredhomepage {
     margin-bottom: 50px;
     margin-top: 50px;
+  }
+
+  /* DOCUMENTS PREALABLES */
+  .em-infoComp li i {
+    margin-left: 10px;
+    color: $base-priry-color;
   }
 
   /* MODULE EMUNDUS CAMPAIGN */
