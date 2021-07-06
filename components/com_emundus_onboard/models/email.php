@@ -303,7 +303,7 @@ class EmundusonboardModelemail extends JModelList {
                 $newemail = $db->insertid();
 
                 // set email repeat tag
-                if(!empty($tags) and !is_null($tags)) {
+                if(!empty($tags) and !is_null($tags) and $tags[0] !== '0') {
                     foreach ($tags as $key => $tag) {
                         $query->clear()
                             ->insert($db->quoteName('#__emundus_setup_emails_repeat_tags'))
@@ -316,7 +316,7 @@ class EmundusonboardModelemail extends JModelList {
                 }
 
                 // set email repeat letter attachment
-                if(!empty($documents) and !is_null($documents)) {
+                if(!empty($documents) and !is_null($documents) and $documents[0] !== '0') {
                     foreach ($documents as $key => $document) {
                         $query->clear()
                             ->insert($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
@@ -372,7 +372,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
 
-                if(!empty($tags) and !is_null($tags)) {
+                if(!empty($tags) and !is_null($tags) and $tags[0] !== '0') {
                     foreach ($tags as $key => $tag) {
                         $query->clear()
                             ->insert($db->quoteName('#__emundus_setup_emails_repeat_tags'))
@@ -394,7 +394,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
 
-                if(!empty($documents) and !is_null($documents)) {
+                if(!empty($documents) and !is_null($documents) and $documents[0] !== '0') {
                     foreach ($documents as $key => $document) {
                         $query->clear()
                             ->insert($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))

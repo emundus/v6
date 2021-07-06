@@ -79,9 +79,10 @@
           </div>
 
           <!-- Email -- tags         -->
-          <div class="form-group">
+          <div class="form-group" id='tags_assoc'>
             <label>{{ Tags }}</label>
             <select v-model="selectedTags" class="dropdown-toggle w-select" multiple>
+              <option value="0" style="font-weight:bold" @click="unselectAllTags()"> --- Tags --- </option>
               <option v-for="tag in tags" :value="tag.id" :id="'tag_'+tag.id" @dblclick="unselectTag(tag.id)">{{tag.label}}</option>
             </select>
           </div>
@@ -90,6 +91,7 @@
           <div class="form-group">
             <label>{{ DocumentType }}</label>
             <select v-model="selectedDocuments" class="dropdown-toggle w-select" multiple>
+              <option value="0" style="font-weight:bold" @click="unselectAllDocuments()"> -- Documents -- </option>
               <option v-for="document in documents" :value="document.id" :id="'document_'+document.id" @dblclick="unselectDocument(document.id)">{{document.value}}</option>
             </select>
           </div>
@@ -312,10 +314,20 @@
     methods: {
       unselectTag: function(element) {
         $('#tag_' + element).prop('selected', false); /// set unselected tag
+        $('#tag_' + element).trigger("chosen:updated"); /// set unselected tag
       },
 
       unselectDocument: function(element) {
         $('#document_' + element).prop('selected', false); /// set unselected document
+        $('#document_' + element).trigger("chosen:updated");  /// set unselected document
+      },
+
+      unselectAllTags: function () {
+        $('[id^=tag_]').prop('selected', false);
+      },
+
+      unselectAllDocuments: function() {
+        $('[id^=document_]').prop('selected', false);
       },
 
       getProgramsList() {
