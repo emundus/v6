@@ -1254,12 +1254,22 @@ class EmundusModelMessages extends JModelList {
             $_tags = $this->getTagsByEmail($tmpl);      // return type :: array
 
             if(!empty($_tags)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);       // make new query
+
+                $query->clear()
+                    ->delete($db->quoteName('#__emundus_tag_assoc'))
+                    ->where($db->quoteName('#__emundus_tag_assoc.fnum') . ' = '. $fnum)
+                    ->andWhere($db->quoteName('#__emundus_tag_assoc.tag_assoc_type') . ' = ' . $db->quote('email'));
+                $db->setQuery($query);
+                $db->execute();
+
                 foreach ($_tags as $key => $tag) {
 
                     $assoc_tag = $m_files->getTagsByIdFnumUser($tag->id, $fnum_info['fnum'], $fnum_info['applicant_id']);
 
                     if($assoc_tag == false) {
-                        $fnum_tag = $m_files->tagFile([$fnum_info['fnum']], [$tag->id]);
+                        $fnum_tag = $m_files->tagFile([$fnum_info['fnum']], [$tag->id], 'email');
                     } else {
                         /// do nothing
                     }
