@@ -98,12 +98,14 @@ if ($allowed_attachments !== true) {
 
         <!-- Add current user to Bcc -->
         <div id="cc-bcc" class="input-group form-inline col-md-12">
-            <input type="text" id="cc-mails" class="cc-bcc-mails" placeholder="<?= JText::_('COM_EMUNDUS_EMAILS_CC_BCC'); ?> ...">
+            <label for="cc-emails" ><?= JText::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?></label>
+            <input type="text" id="cc-mails" class="cc-bcc-mails" placeholder="<?= JText::_('COM_EMUNDUS_EMAILS_CC'); ?> ...">
         </div><!-- /input-group -->
 
         <!-- Add current user to Bcc -->
         <div id="cc-bcc" class="input-group form-inline col-md-12">
-            <input type="text" id="bcc-mails" class="cc-bcc-mails" placeholder="<?= JText::_('COM_EMUNDUS_EMAILS_CC_BCC'); ?> ...">
+            <label for="bcc-emails" ><?= JText::_('COM_EMUNDUS_EMAILS_BCC_LABEL'); ?></label>
+            <input type="text" id="bcc-mails" class="cc-bcc-mails" placeholder="<?= JText::_('COM_EMUNDUS_EMAILS_BCC'); ?> ...">
         </div><!-- /input-group -->
 
         <div class="form-group em-form-recipients">
@@ -236,22 +238,7 @@ if ($allowed_attachments !== true) {
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script type="text/javascript">
 
-    // var $selectize = $("#cc-bcc-mails").selectize({
-    //     plugins: ["remove_button"],
-    //     persist: false,
-    //     create: true,
-    //     render: {
-    //         item: function(data, escape) {
-    //             var val = data.value;
-    //             return "<div>" + escape(val.substring(val.indexOf(":") + 1)) + "</div>";
-    //         }
-    //     },
-    //     onDelete: function() {
-    //         return true;
-    //     }
-    // });
-    // var cci = $selectize[0].selectize;
-    $("#cc-mails").selectize({
+    var $selectize_cc = $("#cc-mails").selectize({
         plugins: ["remove_button"],
         create: true,
         preload:true,
@@ -267,7 +254,7 @@ if ($allowed_attachments !== true) {
         },
     });
 
-    $("#bcc-mails").selectize({
+    var $selectize_bcc = $("#bcc-mails").selectize({
         plugins: ["remove_button"],
         create: true,
         preload:true,
@@ -283,6 +270,7 @@ if ($allowed_attachments !== true) {
         },
     });
 
+    // var cci = $selectize_cc[0].selectize;
     var cci = null;
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
@@ -339,21 +327,23 @@ if ($allowed_attachments !== true) {
                                 break;
                         }
                     }
+                    var $select_cc = $(document.getElementById('cc-mails'));
+                    var selectize_cc = $select_cc[0].selectize;
 
-                    // console.log(receiver_cc);
-                    // console.log(receiver_bcc);
-                    // console.log(fabrik_tags);
-
-                    // jquery cc --> $('.selectize-input').append('<div data-value="CC: Cc: <'duy-tran@emundus.fr'>' class=""> Cc:duy-tran@emundus.fr <a href="javascript:void(0)" class="remove" tabindex="-1" title="Remove">×</a></div>');
-
-                    // from cc_filtered and bcc_filterd --> render to text box Cc/Bcc
                     receiver_cc.forEach(cc => {
-                        $('.selectize-input').append('<div id="elements_" class="cc-emails" data-value="CC: Cc:<' + cc + '>">' + "Cc:" + cc + '<a id="element_remove" onclick="removeElement(this)" class="remove" tabindex="-1" title="Remove">' + 'x' + '</a></div>');
+                        selectize_cc.addOption({ value: cc, text: cc });
+                        selectize_cc.addItem(cc);
                     })
+
+                    // bcc
+                    var $select_bcc = $(document.getElementById('bcc-mails'));
+                    var selectize_bcc = $select_bcc[0].selectize;
 
                     receiver_bcc.forEach(bcc => {
-                        $('.selectize-input').append('<div id="elements_" class="cc-emails" data-value="BCC: Bcc:<' + bcc + '>">' + "Bcc:" + bcc + '<a id="elements" class="remove" tabindex="-1" title="Remove">' + 'x' + '</a></div>');
+                        selectize_bcc.addOption({ value: bcc, text: bcc });
+                        selectize_bcc.addItem(bcc);
                     })
+
                 }
             }, error: function(jqXHR) {
                 console.log(jqXHR.responseText);
