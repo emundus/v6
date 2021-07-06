@@ -3189,12 +3189,13 @@ div#em-appli-block {
   /* MOBILE */
   @media all and (max-width: 479px) {
 
-    .view-reset .reset .page-header div.icon-title.resetpwd, .view-reset .reset-confirm .page-header div.icon-title.resetpwd, .view-reset .reset-complete .page-header div.icon-title.resetpwd {
+    .view-reset .reset .page-header div.icon-title.resetpwd, .view-reset .reset-confirm .page-header div.icon-title.resetpwd, .view-reset .reset-complete .page-header div.icon-title.resetpwd,
+    .view-registration .login div.em-heading-registration div.icon-title.registrationicon, .view-form .em-formRegistrationCenter div.em-heading-registration div.icon-title.registrationicon{
       display: none;
     }
 
     #g-container-main .g-container {
-      padding: 0px 45px;
+      padding: 0px 40px;
     }
 
     #g-navigation .g-container #header-c{
@@ -3418,7 +3419,10 @@ div#em-appli-block {
 
     /* FOOTER */
 
-    footer#g-footer .g-grid {
+    footer#g-footer  {
+      padding: 20px 20px 20px 20px !important;
+
+      .g-grid {
       .bas-footer {
         justify-content: center;
         .em-containerAdresseLogo {
@@ -3449,6 +3453,7 @@ div#em-appli-block {
         }
       }
     }
+  }
 
   }
 
