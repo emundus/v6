@@ -82,7 +82,7 @@
           <div class="form-group">
             <label>{{ Tags }}</label>
             <select v-model="selectedTags" class="dropdown-toggle w-select" multiple>
-              <option v-for="tag in tags" :value="tag.id" :id="'tag_'+tag.id">{{tag.label}}</option>
+              <option v-for="tag in tags" :value="tag.id" :id="'tag_'+tag.id" @dblclick="unselectTag(tag.id)">{{tag.label}}</option>
             </select>
           </div>
 
@@ -90,7 +90,7 @@
           <div class="form-group">
             <label>{{ DocumentType }}</label>
             <select v-model="selectedDocuments" class="dropdown-toggle w-select" multiple>
-              <option v-for="document in documents" :value="document.id">{{document.value}}</option>
+              <option v-for="document in documents" :value="document.id" :id="'document_'+document.id" @dblclick="unselectDocument(document.id)">{{document.value}}</option>
             </select>
           </div>
 
@@ -200,6 +200,9 @@
   import axios from "axios";
   import Editor from "../components/editor";
   import Tasks from "@/views/tasks";
+  import JQuery from 'jquery';
+
+  window.$ = JQuery;
 
   const qs = require("qs");
 
@@ -307,6 +310,14 @@
     }),
 
     methods: {
+      unselectTag: function(element) {
+        $('#tag_' + element).prop('selected', false); /// set unselected tag
+      },
+
+      unselectDocument: function(element) {
+        $('#document_' + element).prop('selected', false); /// set unselected document
+      },
+
       getProgramsList() {
         axios({
           method: "get",
