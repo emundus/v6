@@ -838,7 +838,7 @@ class EmundusModelApplication extends JModelList {
                                             $res = $this->_db->loadColumn();
                                             $elt = implode(', ',$res);
                                         } catch (Exception $e) {
-                                            JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                            JLog::add('line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                             throw $e;
                                         }
                                     } else {
@@ -966,17 +966,18 @@ class EmundusModelApplication extends JModelList {
                                                     $select = preg_replace('#{shortlang}#', $this->locales, $select);
                                                 }
 
-                                                $query->select($db->quoteName($select))
-                                                    ->from($db->quoteName($params->join_db_name . '_repeat_' . $elements[$j]->name,'t'))
-                                                    ->leftJoin($db->quoteName($params->join_db_name,'jd').' ON '.$db->quoteName('jd.' . $params->join_key_column).' = '.$db->quoteName('t.' . $elements[$j]->name))
-                                                    ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
+                                                $query->select($select)
+                                                    ->from($db->quoteName($params->join_db_name,'t'))
+                                                    ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id. '_repeat_repeat_'. $elements[$j]->name,'checkbox_repeat').' ON '.$db->quoteName('checkbox_repeat.' . $elements[$j]->name).' = '.$db->quoteName('t.id'))
+                                                    ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id.'_repeat','repeat_grp').' ON '.$db->quoteName('repeat_grp.id').' = '.$db->quoteName('checkbox_repeat.parent_id'))
+                                                    ->where($db->quoteName('checkbox_repeat.parent_id') . ' = ' . $r_element->id);
 
                                                 try {
                                                     $this->_db->setQuery($query);
                                                     $res = $this->_db->loadColumn();
                                                     $elt = implode(', ',$res);
                                                 } catch (Exception $e) {
-                                                    JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                    JLog::add('line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                     throw $e;
                                                 }
                                             } else {
@@ -1190,9 +1191,9 @@ class EmundusModelApplication extends JModelList {
                     $forms .= '</h3>';
                     if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training") {
 
-                        $query = 'SELECT count(id) FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
-                        $this->_db->setQuery($query);
-                        $cpt = $this->_db->loadResult();
+	                    $query = 'SELECT count(id) FROM `'.$itemt->db_table_name.'` WHERE fnum like '.$this->_db->Quote($fnum);
+	                    $this->_db->setQuery($query);
+	                    $cpt = $this->_db->loadResult();
 
                         if ($cpt > 0) {
 
@@ -1290,7 +1291,7 @@ class EmundusModelApplication extends JModelList {
 
                                     if ($itemg->group_id == 174) {
                                         $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
-	                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
+	                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
                                     } else {
                                         $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
 	                                    WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum).')';
@@ -1360,24 +1361,25 @@ class EmundusModelApplication extends JModelList {
                                                             $query = $db->getQuery(true);
 
                                                             $parent_id = strlen($element->content_id)>0?$element->content_id:0;
-                                                            $select = $params->join_val_column;
+                                                            $select = "CONCAT(".$params->join_val_column.")";
                                                             if(!empty($params->join_val_column_concat)){
                                                                 $select = $params->join_val_column_concat;
                                                                 $select = preg_replace('#{thistable}#', 'jd', $select);
                                                                 $select = preg_replace('#{shortlang}#', $this->locales, $select);
                                                             }
 
-                                                            $query->select($db->quoteName($select))
-                                                                ->from($db->quoteName($params->join_db_name . '_repeat_' . $element->name,'t'))
-                                                                ->leftJoin($db->quoteName($params->join_db_name,'jd').' ON '.$db->quoteName('jd.' . $params->join_key_column).' = '.$db->quoteName('t.' . $element->name))
-                                                                ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
+                                                            $query->select($select)
+                                                                ->from($db->quoteName($params->join_db_name,'t'))
+                                                                ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id. '_repeat_repeat_'. $elements[$j]->name,'checkbox_repeat').' ON '.$db->quoteName('checkbox_repeat.' . $elements[$j]->name).' = '.$db->quoteName('t.id'))
+                                                                ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id.'_repeat','repeat_grp').' ON '.$db->quoteName('repeat_grp.id').' = '.$db->quoteName('checkbox_repeat.parent_id'))
+                                                                ->where($db->quoteName('checkbox_repeat.parent_id') . ' = ' . $r_element->id);
 
                                                             try {
                                                                 $this->_db->setQuery($query);
                                                                 $res = $this->_db->loadColumn();
                                                                 $elt = implode(', ',$res);
                                                             } catch (Exception $e) {
-                                                                JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                                JLog::add('line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                                 throw $e;
                                                             }
                                                         } else {
@@ -1464,7 +1466,9 @@ class EmundusModelApplication extends JModelList {
                                                         } else {
                                                             $elt = JText::_($r_elt);
                                                         }
-                                                    }else {
+                                                    } elseif ($elements[$j]->plugin == 'yesno') {
+                                                        $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
+                                                    } else {
                                                         $elt = $r_elt;
                                                     }
 
@@ -1487,10 +1491,10 @@ class EmundusModelApplication extends JModelList {
                                 $modulo = 0;
                                 foreach ($elements as &$element) {
 
-                                    if (!empty(trim($element->label))) {
+	                                if (!empty(trim($element->label))) {
                                         $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
-                                        $this->_db->setQuery( $query );
-                                        $res = $this->_db->loadRow();
+	                                    $this->_db->setQuery( $query );
+	                                    $res = $this->_db->loadRow();
 
                                         $element->content = @$res[1];
                                         $element->content_id = @$res[0];
@@ -1547,16 +1551,16 @@ class EmundusModelApplication extends JModelList {
 
                                                 try {
                                                     $this->_db->setQuery($query);
-                                                    $res = $this->_db->loadColumn();
-                                                    $elt = implode(', ',$res);
-                                                } catch (Exception $e) {
-                                                    JLog::add('Line 997 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
-                                                    throw $e;
-                                                }
-                                            } else {
-                                                $from = $params->join_db_name;
-                                                $where = $params->join_key_column.'='.$this->_db->Quote($element->content);
-                                                $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+	                                                $res = $this->_db->loadColumn();
+	                                                $elt = implode(', ',$res);
+	                                            } catch (Exception $e) {
+	                                                JLog::add('Line 997 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+	                                                throw $e;
+	                                            }
+	                                        } else {
+	                                            $from = $params->join_db_name;
+	                                            $where = $params->join_key_column.'='.$this->_db->Quote($element->content);
+	                                            $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
@@ -1624,6 +1628,9 @@ class EmundusModelApplication extends JModelList {
                                                 $elt = $element->content;
                                             }
                                         }
+                                        elseif ($element->plugin == 'yesno') {
+                                            $elt = ($element->content == 1) ? JText::_("JYES") : JText::_("JNO");
+                                        } 
                                         else {
                                             $elt = $element->content;
                                         }
@@ -1660,22 +1667,18 @@ class EmundusModelApplication extends JModelList {
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
     function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) {
-        /* COULEURS*/
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
-        $em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
-
+           /* COULEURS*/
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+    	$em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
         $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25');
 
-
-
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+    	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
         $h_list = new EmundusHelperList;
 
         $tableuser  = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
 
         $forms = "";
-
 
         if (isset($tableuser)) {
 
@@ -1786,7 +1789,7 @@ class EmundusModelApplication extends JModelList {
                                 $this->_db->setQuery($query);
                                 $table = $this->_db->loadResult();
                             } catch (Exception $e) {
-                                JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                JLog::add('Line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                 throw $e;
                             }
 
@@ -1801,7 +1804,7 @@ class EmundusModelApplication extends JModelList {
 
                                 if ($itemg->group_id == 174) {
                                     $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
-                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
+                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
                                 } else {
                                     $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
                                     WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum).')';
@@ -1811,7 +1814,7 @@ class EmundusModelApplication extends JModelList {
                                     $this->_db->setQuery($query);
                                     $repeated_elements = $this->_db->loadObjectList();
                                 } catch (Exception $e) {
-                                    JLog::add('Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                    JLog::add('Line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                     throw $e;
                                 }
 
@@ -1875,17 +1878,18 @@ class EmundusModelApplication extends JModelList {
                                                             $select = preg_replace('#{shortlang}#', $this->locales, $select);
                                                         }
 
-                                                        $query->select($db->quoteName($select))
-                                                            ->from($db->quoteName($itemt->db_table_name . '_repeat_' . $elements[$j]->name,'t'))
-                                                            ->leftJoin($db->quoteName($params->join_db_name,'jd').' ON '.$db->quoteName('jd.' . $params->join_key_column).' = '.$db->quoteName('t.' . $elements[$j]->name))
-                                                            ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
+                                                        $query->select($select)
+                                                            ->from($db->quoteName($params->join_db_name,'t'))
+                                                            ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id. '_repeat_repeat_'. $elements[$j]->name,'checkbox_repeat').' ON '.$db->quoteName('checkbox_repeat.' . $elements[$j]->name).' = '.$db->quoteName('t.id'))
+                                                            ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id.'_repeat','repeat_grp').' ON '.$db->quoteName('repeat_grp.id').' = '.$db->quoteName('checkbox_repeat.parent_id'))
+                                                            ->where($db->quoteName('checkbox_repeat.parent_id') . ' = ' . $r_element->id);
 
                                                         try {
                                                             $this->_db->setQuery($query);
                                                             $res = $this->_db->loadColumn();
                                                             $elt = implode(', ',$res);
                                                         } catch (Exception $e) {
-                                                            JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                            JLog::add('line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                             throw $e;
                                                         }
                                                     } else {
@@ -1962,6 +1966,8 @@ class EmundusModelApplication extends JModelList {
                                                     } else {
                                                         $elt = JText::_($r_elt);
                                                     }
+                                                } elseif ($elements[$j]->plugin == 'yesno') {
+                                                    $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
                                                 } else {
                                                     $elt = JText::_($r_elt);
                                                 }
@@ -2000,10 +2006,10 @@ class EmundusModelApplication extends JModelList {
                             if($check_repeat_groups) {
                                 if ($itemg->group_id == 174) {
                                     $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
-                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
+                                        WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum).') OR applicant_id='.$aid;
                                 } else {
                                     $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.'
-                                    WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).')';
+                                    WHERE parent_id=(SELECT id FROM '.$itemt->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum).')';
                                 }
 
                                 $this->_db->setQuery($query);
@@ -2026,7 +2032,7 @@ class EmundusModelApplication extends JModelList {
                                                 continue;
                                             }
 
-                                            if (!empty($r_elt) && $key != 'id' && $key != 'parent_id' && isset($elements[$j])  && $elements[$j]->plugin != 'display') {
+                                            if ((!empty($r_elt) || $r_elt == 0) && $key != 'id' && $key != 'parent_id' && isset($elements[$j])  && $elements[$j]->plugin != 'display') {
 
                                                 if ($elements[$j]->plugin == 'date') {
                                                     if(!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
@@ -2069,17 +2075,18 @@ class EmundusModelApplication extends JModelList {
                                                             $select = preg_replace('#{shortlang}#', $this->locales, $select);
                                                         }
 
-                                                        $query->select($db->quoteName($select))
-                                                            ->from($db->quoteName($params->join_db_name . '_repeat_' . $elements[$j]->name,'t'))
-                                                            ->leftJoin($db->quoteName($params->join_db_name,'jd').' ON '.$db->quoteName('jd.' . $params->join_key_column).' = '.$db->quoteName('t.' . $elements[$j]->name))
-                                                            ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
+                                                        $query->select($select)
+                                                            ->from($db->quoteName($params->join_db_name,'t'))
+                                                            ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id. '_repeat_repeat_'. $elements[$j]->name,'checkbox_repeat').' ON '.$db->quoteName('checkbox_repeat.' . $elements[$j]->name).' = '.$db->quoteName('t.id'))
+                                                            ->leftJoin($db->quoteName($itemt->db_table_name.'_'.$itemg->id.'_repeat','repeat_grp').' ON '.$db->quoteName('repeat_grp.id').' = '.$db->quoteName('checkbox_repeat.parent_id'))
+                                                            ->where($db->quoteName('checkbox_repeat.parent_id') . ' = ' . $r_element->id);
 
                                                         try {
                                                             $this->_db->setQuery($query);
                                                             $res = $this->_db->loadColumn();
                                                             $elt = implode(', ',$res);
                                                         } catch (Exception $e) {
-                                                            JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                            JLog::add('Line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                             throw $e;
                                                         }
                                                     } else {
@@ -2136,7 +2143,9 @@ class EmundusModelApplication extends JModelList {
                                                     } else {
                                                         $elt = JText::_($r_elt);
                                                     }
-                                                }else {
+                                                } elseif ($elements[$j]->plugin == 'yesno') {
+                                                    $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
+                                                } else {
                                                     $elt = JText::_($r_elt);
                                                 }
 
@@ -2157,7 +2166,7 @@ class EmundusModelApplication extends JModelList {
                             }
 
 
-                            // AFFICHAGE EN LIGNE
+                        // AFFICHAGE EN LIGNE
                         } else {
                             $forms .= '<table>';
                             foreach ($elements as $element) {
@@ -2254,7 +2263,7 @@ class EmundusModelApplication extends JModelList {
                                                     $res = $this->_db->loadColumn();
                                                     $elt = implode(', ',$res);
                                                 } catch (Exception $e) {
-                                                    JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                    JLog::add('line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                     throw $e;
                                                 }
                                             } else {
@@ -2319,7 +2328,9 @@ class EmundusModelApplication extends JModelList {
                                             } else {
                                                 $elt = $element->content;
                                             }
-                                        }else {
+                                        } elseif ($element->plugin == 'yesno') {
+                                            $elt = ($element->content == 1) ? JText::_("JYES") : JText::_("JNO");
+                                        } else {
                                             $elt = JText::_($element->content);
                                         }
 
@@ -2331,7 +2342,7 @@ class EmundusModelApplication extends JModelList {
                                     }
                                 } elseif (empty($element->content)) {
                                     if (!empty($element->label) && $element->label!=' ') {
-                                        $forms .= '<tr><td ><span style="color: #000000;">'.JText::_($element->label).' : '.'</span></td> <td> </td></tr>';
+                                        $forms .= '<tr><td ><span style="color: #000000;">'.JText::_($element->label).' '.'</span></td> <td>'.$element->content.'</td></tr>';
                                     }
                                 }
                             }
@@ -2518,7 +2529,7 @@ class EmundusModelApplication extends JModelList {
                                                     $res = $this->_db->loadColumn();
                                                     $elt = implode(', ',$res);
                                                 } catch (Exception $e) {
-                                                    JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                    JLog::add('line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                     throw $e;
                                                 }
                                             } else {
@@ -2548,6 +2559,9 @@ class EmundusModelApplication extends JModelList {
                                         elseif($elements[$j]->plugin == 'fileupload') {
                                             $filename = end(explode('/', $r_elt));
                                             $elt = '<a href="'.JUri::base().$elt.'" target="_blank">'.$filename.'</a>';
+                                        }
+                                        elseif($elements[$j]->plugin == 'yesno') {
+                                            $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
                                         }
                                         else
                                             $elt = $r_elt;
@@ -2617,7 +2631,7 @@ class EmundusModelApplication extends JModelList {
                                                 $res = $this->_db->loadColumn();
                                                 $elt = implode(', ',$res);
                                             } catch (Exception $e) {
-                                                JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                JLog::add('line '. __LINE__ .' - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                 throw $e;
                                             }
                                         } else {
@@ -2664,6 +2678,9 @@ class EmundusModelApplication extends JModelList {
                                     elseif($element->plugin == 'fileupload') {
                                         $filename = end(explode('/', @$element->content));
                                         $elt = '<a href="'.JUri::base().$element->content.'" target="_blank">'.$filename.'</a>';
+                                    }
+                                    elseif ($element->plugin == 'yesno') {
+                                        $elt = ($element->content == 1) ? JText::_("JYES") : JText::_("JNO");
                                     }
                                     else {
                                         $elt = $element->content;
