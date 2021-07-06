@@ -97,13 +97,13 @@ if ($allowed_attachments !== true) {
         <input name="tags" type="hidden" class="inputbox" id="tags" value="" />
 
         <!-- Add current user to Cc -->
-        <div id="cc-bcc" class="input-group form-inline col-md-12" style="margin-bottom: 10px !important;">
+        <div id="cc-box" class="input-group form-inline col-md-12" style="margin-bottom: 10px !important;">
             <label for="cc-emails" ><?= JText::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?></label>
             <input type="text" id="cc-mails" class="cc-bcc-mails" placeholder="<?= JText::_('COM_EMUNDUS_EMAILS_CC'); ?> ...">
         </div><!-- /input-group -->
 
         <!-- Add current user to Bcc -->
-        <div id="cc-bcc" class="input-group form-inline col-md-12">
+        <div id="bcc-box" class="input-group form-inline col-md-12">
             <label for="bcc-emails" ><?= JText::_('COM_EMUNDUS_EMAILS_BCC_LABEL'); ?></label>
             <input type="text" id="bcc-mails" class="cc-bcc-mails" placeholder="<?= JText::_('COM_EMUNDUS_EMAILS_BCC'); ?> ...">
         </div><!-- /input-group -->
@@ -336,14 +336,14 @@ if ($allowed_attachments !== true) {
                     }
                     // cc
                     receiver_cc.forEach(cc => {
-                        selectize_cc.addOption({ value: cc, text: cc });
-                        selectize_cc.addItem(cc);
+                        selectize_cc.addOption({ value:"CC: " + cc, text: cc });
+                        selectize_cc.addItem("CC: " + cc);
                     })
 
                     // bcc
                     receiver_bcc.forEach(bcc => {
-                        selectize_bcc.addOption({ value: bcc, text: bcc });
-                        selectize_bcc.addItem(bcc);
+                        selectize_bcc.addOption({ value: "BCC: " + bcc, text: bcc });
+                        selectize_bcc.addItem("BCC: " + bcc);
                     })
 
                 }
