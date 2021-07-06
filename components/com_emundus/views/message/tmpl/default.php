@@ -98,7 +98,12 @@ if ($allowed_attachments !== true) {
 
         <!-- Add current user to Bcc -->
         <div id="cc-bcc" class="input-group form-inline col-md-12">
-            <input type="text" id="cc-bcc-mails" class="cc-bcc-mails" placeholder="<?= JText::_('COM_EMUNDUS_EMAILS_CC_BCC'); ?> ...">
+            <input type="text" id="cc-mails" class="cc-bcc-mails" placeholder="<?= JText::_('COM_EMUNDUS_EMAILS_CC_BCC'); ?> ...">
+        </div><!-- /input-group -->
+
+        <!-- Add current user to Bcc -->
+        <div id="cc-bcc" class="input-group form-inline col-md-12">
+            <input type="text" id="bcc-mails" class="cc-bcc-mails" placeholder="<?= JText::_('COM_EMUNDUS_EMAILS_CC_BCC'); ?> ...">
         </div><!-- /input-group -->
 
         <div class="form-group em-form-recipients">
@@ -231,21 +236,54 @@ if ($allowed_attachments !== true) {
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script type="text/javascript">
 
-    var $selectize = $("#cc-bcc-mails").selectize({
+    // var $selectize = $("#cc-bcc-mails").selectize({
+    //     plugins: ["remove_button"],
+    //     persist: false,
+    //     create: true,
+    //     render: {
+    //         item: function(data, escape) {
+    //             var val = data.value;
+    //             return "<div>" + escape(val.substring(val.indexOf(":") + 1)) + "</div>";
+    //         }
+    //     },
+    //     onDelete: function() {
+    //         return true;
+    //     }
+    // });
+    // var cci = $selectize[0].selectize;
+    $("#cc-mails").selectize({
         plugins: ["remove_button"],
-        persist: false,
         create: true,
+        preload:true,
         render: {
             item: function(data, escape) {
                 var val = data.value;
-                return "<div>" + escape(val.substring(val.indexOf(":") + 1)) + "</div>";
+                return '<div>' +
+                    '<span class="title">' +
+                    '<span class="name">' + escape(val.substring(val.indexOf(":") + 1))+'</span>' +
+                    '</span>' +
+                    '</div>';
             }
         },
-        onDelete: function() {
-            return true;
-        }
     });
-    var cci = $selectize[0].selectize;
+
+    $("#bcc-mails").selectize({
+        plugins: ["remove_button"],
+        create: true,
+        preload:true,
+        render: {
+            item: function(data, escape) {
+                var val = data.value;
+                return '<div>' +
+                    '<span class="title">' +
+                    '<span class="name">' + escape(val.substring(val.indexOf(":") + 1))+'</span>' +
+                    '</span>' +
+                    '</div>';
+            }
+        },
+    });
+
+    var cci = null;
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
     $(document).ready(function() {

@@ -2282,10 +2282,14 @@
 					$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') + Joomla.JText._('FIRST_NAME')}, 'FIRST_NAME'));
 					$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') + Joomla.JText._('LAST_NAME')}, 'LAST_NAME'));
 					$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') + Joomla.JText._('ALL')}, 'ALL'));
-				} else if (input_id === 'cc-bcc-mails') {
+				} else if (input_id === 'cc-mails') {
 					$dropdown_content.prepend(self.render('option_create', {input: 'Cc: <'+query+'>'}, 'CC'));
+					// $dropdown_content.prepend(self.render('option_create', {input: 'Bcc: <'+query+'>'}, 'BCC'));
+				} else if (input_id === 'bcc-mails') {
+					// $dropdown_content.prepend(self.render('option_create', {input: 'Cc: <'+query+'>'}, 'CC'));
 					$dropdown_content.prepend(self.render('option_create', {input: 'Bcc: <'+query+'>'}, 'BCC'));
-				} else if (input_id === 'mail_to') {
+				}
+				else if (input_id === 'mail_to') {
 					$dropdown_content.prepend(self.render('option_create', {input: query}));
 				}
 				$create = $($dropdown_content[0].childNodes[0]);
