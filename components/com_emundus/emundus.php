@@ -387,6 +387,9 @@ JText::script('EMAIL_TAGS');
 JText::script('SEND_EMAIL_TOOLTIPS');
 JText::script('NO_LETTER_FOUND');
 
+JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TAGS');
+JText::script('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');
 //JHtml::script('media/com_emundus/lib/jquery-ui-1.8.18.min.js');
