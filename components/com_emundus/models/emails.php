@@ -465,8 +465,13 @@ class EmundusModelEmails extends JModelList {
                     if ($tag['tag'] == 'PHOTO') {
                         if (empty($result))
                             $result = 'media/com_emundus/images/icones/personal.png';
-                        else
-                            $result = EMUNDUS_PATH_REL.$user_id.'/tn_'.$result;
+                        else {
+                            if(file_exists(EMUNDUS_PATH_REL.$user_id.'/tn_'.$result)) {
+                                $result = EMUNDUS_PATH_REL.$user_id.'/tn_'.$result;
+                            } else {
+                                $result = EMUNDUS_PATH_REL.$user_id.'/'.$result;
+                            }
+                        }
                     }
                     $replacements[] = $result;
 
@@ -568,9 +573,11 @@ class EmundusModelEmails extends JModelList {
                 if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
                     $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, @$groupParams->repeat_group_button == 1);
 
-                    if (empty($fabrikValues[$elt['id']]['val'])) {
+
+                    if (empty($fabrikValues[$elt['id']])) {
                         $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
                     }
+
 
                 } else {
                     if ($isDate) {

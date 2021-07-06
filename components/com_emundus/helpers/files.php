@@ -1930,9 +1930,9 @@ class EmundusHelperFiles
         foreach ($tags as $tag) {
             $fnum = $tag['fnum'];
             if (!isset($tagsList[$fnum])) {
-	            $tagsList[$fnum] = '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+                $tagsList[$fnum] = '<a class="item"><div style="width: 100%" class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
             } else {
-	            $tagsList[$fnum] .= '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+                $tagsList[$fnum] .= '<a class="item"><div style="width: 100%" class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
             }
         }
         return $tagsList;
@@ -2188,6 +2188,9 @@ class EmundusHelperFiles
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+
         $m_evaluation   = new EmundusModelEvaluation();
         $m_files        = new EmundusModelFiles;
         $h_files        = new EmundusHelperFiles;
@@ -2235,13 +2238,17 @@ class EmundusHelperFiles
                         $element->element_hidden == 0 &&
                         array_key_exists($k, $eval))
                     {
-                        $str .= '<tr>';
-                        if (strpos($element->element_name, 'comment') !== false) {
-	                        $str .= '<td colspan="2"><b>'.JText::_(trim($element->element_label)).'</b> <br>'.JText::_($eval[$k]).'</td>';
+                        if($show_empty_fields == 0 && empty($eval[$k])) {
+                            $str .= '';
                         } else {
-	                        $str .= '<td width="70%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="30%">'.JText::_($eval[$k]).'</td>';
+                            $str .= '<tr>';
+                            if (strpos($element->element_name, 'comment') !== false) {
+                                $str .= '<td colspan="2"><b>'.JText::_(trim($element->element_label)).'</b> <br>'.JText::_($eval[$k]).'</td>';
+                            } else {
+                                $str .= '<td width="70%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="30%">'.JText::_($eval[$k]).'</td>';
+                            }
+                            $str .= '</tr>';
                         }
-                        $str .= '</tr>';
                     }
                 }
 

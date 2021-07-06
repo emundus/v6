@@ -603,6 +603,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         JText::script('PLG_ELEMENT_FIELD_EXTENSION');
         JText::script('PLG_ELEMENT_FIELD_ENCRYPT');
         JText::script('PLG_ELEMENT_FIELD_ERROR');
+        JText::script('PLG_ELEMENT_FIELD_ERROR_TEXT');
         JText::script('PLG_ELEMENT_FIELD_SIZE');
         JText::script('PLG_ELEMENT_FIELD_LIMIT');
         JText::script('PLG_ELEMENT_FIELD_SURE');

@@ -239,7 +239,17 @@ class EmundusModelFiles extends JModelLegacy
                         }
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
-                } else {
+                } elseif ($def_elmt->element_plugin == 'yesno') { 
+                    if (@$group_params->repeat_group_button == 1) {
+                        $this->_elements_default[] = '(
+                                                        SELECT REPLACE(REPLACE(GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", "), "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")
+                                                        FROM '.$def_elmt->table_join.'
+                                                        WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                                      ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+                    } else {
+	                    $this->_elements_default[] = 'REPLACE(REPLACE('.$def_elmt->tab_name.'.'.$def_elmt->element_name.', "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")  AS '.$def_elmt->tab_name.'___'.$def_elmt->element_name;
+                    }
+                }else {
                     if (@$group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
                                                         SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
@@ -2121,10 +2131,11 @@ if (JFactory::getUser()->id == 63)
     public static function getFnumInfos($fnum) {
         try {
             $db = JFactory::getDBO();
-            $query = 'select u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, c.*
+            $query = 'select u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, ss.value, ss.class, c.*
                         from #__emundus_campaign_candidature as cc
                         left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id 
-                        left join #__users as u on u.id = cc.applicant_id 
+                        left join #__users as u on u.id = cc.applicant_id
+                        left join #__emundus_setup_status as ss on ss.step = cc.status
                         where cc.fnum like '.$db->Quote($fnum);
             $db->setQuery($query);
             $fnumInfos = $db->loadAssoc();
@@ -2489,6 +2500,19 @@ if (JFactory::getUser()->id == 63)
                         }
                         $select = implode(',', $if) . ',' . $select . $endif;
                     }
+                } elseif ($elt->element_plugin == 'yesno') { 
+                    if($raw == 1){
+                        $select = $select;
+                    }
+                    else{
+                        //for ($i=0 ; $i<2 ; $i++) {
+                            $if[] = 'IF(' . $select . '="0","' . JText::_('JNO') . '"';
+                            $endif .= ')';
+                            $if[] = 'IF(' . $select . '="1","' . JText::_('JYES') . '"';
+                            $endif .= ')';
+                        //}
+                        $select = implode(',', $if) . ',' . $select . $endif;
+                    }
                 } elseif ($elt->element_plugin == 'databasejoin') {
 
                     $element_attribs = json_decode($elt->element_attribs);
@@ -2581,7 +2605,7 @@ if (JFactory::getUser()->id == 63)
             $eval_query = $db->getQuery(true);
             $eval_query->select('id')
                     ->from($db->quoteName('#__emundus_evaluations'))
-                    ->where($db->quoteName('fnum') . ' IN (' . implode('","', $fnums) . ')')
+                    ->where($db->quoteName('fnum') . ' IN ("' . implode('","', $fnums) . '")')
                     ->andWhere($db->quoteName('user') . ' = ' . JFactory::getUser()->id);
             $db->setQuery($eval_query);
             $eval = $db->loadResult();
@@ -3316,15 +3340,14 @@ if (JFactory::getUser()->id == 63)
 	 */
     public function getFabrikValueRepeat($elt, $fnums, $params = null, $groupRepeat) {
 
-        if (!is_array($fnums))
+        if (!is_array($fnums)) {
             $fnums = [$fnums];
+        }
 
-        //$gid = $elt['group_id'];
         $tableName = $elt['db_table_name'];
         $tableJoin = $elt['table_join'];
         $name = $elt['name'];
         $plugin = $elt['plugin'];
-//var_dump($elt);
         $isFnumsNull = ($fnums === null);
         $isDatabaseJoin = ($plugin === 'databasejoin');
         $isMulti = (@$params->database_join_display_type == "multilist" || @$params->database_join_display_type == "checkbox");
@@ -3606,7 +3629,7 @@ if (JFactory::getUser()->id == 63)
         $query = $db->getQuery(true);
         $query->select($db->quoteName('fe.params'))
             ->from($db->quoteName('#__fabrik_elements' , 'fe'))
-            ->where($db->quoteName('fe.group_id') . ' = 47 AND '.$db->quoteName('fe.name').' LIKE '.$db->quote('category'));
+            ->where($db->quoteName('fe.published') . ' = 1 AND '.$db->quoteName('fe.group_id') . ' = 47 AND '.$db->quoteName('fe.name').' LIKE '.$db->quote('category'));
         $db->setQuery($query);
         $element = $db->loadColumn();
 
