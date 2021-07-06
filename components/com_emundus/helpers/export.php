@@ -262,8 +262,21 @@ class EmundusHelperExport
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
 
-        $name = $fnum.'-admission.pdf';
-        $tmpName = JPATH_SITE.DS.'tmp'.DS.$name;
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $fileName = $eMConfig->get('application_admission_name', null);
+
+        if (is_null($fileName)) {
+            $name = $fnum . '-admission.pdf';
+        } else {
+            require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
+            $m_checklist = new EmundusModelChecklist;
+            $post = array(
+                'FNUM' => $fnum,
+            );
+            $name = $m_checklist->formatFileName($fileName, $fnum, $post).'.pdf';
+        }
+
+        $tmpName = JPATH_SITE . DS . 'tmp' . DS . $name;
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);

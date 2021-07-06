@@ -1948,19 +1948,19 @@ class EmundusControllerFiles extends JControllerLegacy
         //
         if (count($validFnums) == 1) {
             $eMConfig = JComponentHelper::getParams('com_emundus');
-            $application_form_name = $eMConfig->get('application_form_name', "application_form_pdf");
+            $application_form_name = empty($admission) ? $eMConfig->get('application_form_name', "application_form_pdf") : $eMConfig->get('application_admission_name', "application_form_pdf");
 
             if ($application_form_name != "application_form_pdf") {
 
-                require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-                $m_emails = new EmundusModelEmails;
+                require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                $m_checklist = new EmundusModelChecklist;
 
                 $fnum = $validFnums[0];
                 $post = array(
                         'FNUM' => $fnum,
                         'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
                     );
-                $tags = $m_emails->setTags($fnumsInfo[$fnum]['applicant_id'], $post, $fnum);
+                $application_form_name = $m_checklist->formatFileName($application_form_name, $fnum, $post);
 
                 // Format filename
                 $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
@@ -2595,7 +2595,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
 
                 if ($admission) {
-	                $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
+                    $admission_file= EmundusHelperExport::getAdmissionPDF($fnum, $options);
                 }
 
                 if (count($files_list) > 0) {
@@ -2613,6 +2613,28 @@ class EmundusControllerFiles extends JControllerLegacy
                     if (!$zip->addFile($dossier . $application_pdf, $filename)) {
 	                    continue;
                     }
+                }
+
+                if (file_exists($admission_file)) {
+                    $eMConfig = JComponentHelper::getParams('com_emundus');
+                    $fileName = $eMConfig->get('application_admission_name', null);
+
+                    if (is_null($fileName)) {
+                        $name = $fnum . '-admission.pdf';
+                    } else {
+                        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
+                        $m_checklist = new EmundusModelChecklist;
+                        $post = array(
+                            'FNUM' => $fnum,
+                        );
+                        $name = $m_checklist->formatFileName($fileName, $fnum, $post).'.pdf';
+                    }
+                    $filename = $application_form_name . DS . $name;
+                    if (!$zip->addFile($admission_file, $filename )) {
+                        continue;
+                    }
+                } else {
+                    continue;
                 }
 
                 if ($attachment || !empty($attachids)) {
@@ -2963,7 +2985,16 @@ class EmundusControllerFiles extends JControllerLegacy
 
                         $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                         if (!$anonymize_data) {
-                            $name = $this->sanitize_filename($fnumsInfos[$fnum]['applicant_name']).$attachInfos['lbl']."-".md5($rand.time()).".pdf";
+                            $eMConfig = JComponentHelper::getParams('com_emundus');
+                            $generated_doc_name = $eMConfig->get('generated_doc_name', "");
+                            if (!empty($generated_doc_name)) {
+                                require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                                $m_checklist = new EmundusModelChecklist;
+                                $name = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
+                            } else {
+                                $name = $this->sanitize_filename($fnumsInfos[$fnum]['applicant_name']);
+                            }
+                            $name = $name.$attachInfos['lbl']."-".md5($rand.time()).".pdf";
                         } else {
                             $name = $this->sanitize_filename($fnumsInfos[$fnum]).$attachInfos['lbl']."-".md5($rand.time()).".pdf";
                         }
