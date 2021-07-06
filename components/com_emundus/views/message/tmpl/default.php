@@ -270,8 +270,7 @@ if ($allowed_attachments !== true) {
         },
     });
 
-    // var cci = $selectize_cc[0].selectize;
-    var cci = null;
+    // var cci = null;
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
     $(document).ready(function() {
@@ -287,6 +286,17 @@ if ($allowed_attachments !== true) {
 
     // Loads the template and updates the WYSIWYG editor
     function getTemplate(select) {
+
+        /// clear cc
+        var $select_cc = $(document.getElementById('cc-mails'));
+        var selectize_cc = $select_cc[0].selectize;
+        selectize_cc.clear();
+
+        /// clear bcc
+        var $select_bcc = $(document.getElementById('bcc-mails'));
+        var selectize_bcc = $select_bcc[0].selectize;
+        selectize_bcc.clear();
+
         $('#em-attachment-list').empty();
         // ajax to get all receivers when changing model email
         $.ajax({
@@ -324,18 +334,13 @@ if ($allowed_attachments !== true) {
                                 break;
                         }
                     }
-                    var $select_cc = $(document.getElementById('cc-mails'));
-                    var selectize_cc = $select_cc[0].selectize;
-
+                    // cc
                     receiver_cc.forEach(cc => {
                         selectize_cc.addOption({ value: cc, text: cc });
                         selectize_cc.addItem(cc);
                     })
 
                     // bcc
-                    var $select_bcc = $(document.getElementById('bcc-mails'));
-                    var selectize_bcc = $select_bcc[0].selectize;
-
                     receiver_bcc.forEach(bcc => {
                         selectize_bcc.addOption({ value: bcc, text: bcc });
                         selectize_bcc.addItem(bcc);
@@ -354,7 +359,7 @@ if ($allowed_attachments !== true) {
                 select : select.value
             },
             success: function (email) {
-
+                var cci = $selectize_cc[0].selectize;
                 email = JSON.parse(email);
 
                 if(email.tmpl.cci != null){
@@ -363,7 +368,7 @@ if ($allowed_attachments !== true) {
                         cci.createItem("BCC: Bcc: <"+elt+">");
                     });
                 } else {
-                    cci.clear();
+                    //cci.clear();
                 }
 
                 $("#tags").val(email.tmpl.tags);
