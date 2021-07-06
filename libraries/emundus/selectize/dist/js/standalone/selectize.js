@@ -2284,9 +2284,7 @@
 					$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') + Joomla.JText._('ALL')}, 'ALL'));
 				} else if (input_id === 'cc-mails') {
 					$dropdown_content.prepend(self.render('option_create', {input: query}, 'CC'));
-					// $dropdown_content.prepend(self.render('option_create', {input: 'Bcc: <'+query+'>'}, 'BCC'));
 				} else if (input_id === 'bcc-mails') {
-					// $dropdown_content.prepend(self.render('option_create', {input: 'Cc: <'+query+'>'}, 'CC'));
 					$dropdown_content.prepend(self.render('option_create', {input: query}, 'BCC'));
 				}
 				else if (input_id === 'mail_to') {
