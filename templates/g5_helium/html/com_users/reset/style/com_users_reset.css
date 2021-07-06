@@ -178,7 +178,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     .view-reset form#user-registration.form-validate.form-horizontal.well,
     .view-reset .form-validate.form-horizontal.well,
     .view-reset .reset-complete .form-validate.form-horizontal.well {
-        width: 90% !important;
+        width: 100% !important;
     }
 
     .view-reset #g-navigation .g-container {
