@@ -287,6 +287,8 @@ if ($allowed_attachments !== true) {
 
     // Loads the template and updates the WYSIWYG editor
     function getTemplate(select) {
+        /// clear tags
+        $('#tags').val("");
 
         /// clear cc
         var $select_cc = $(document.getElementById('cc-mails'));
