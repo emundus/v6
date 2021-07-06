@@ -420,13 +420,22 @@ function openFiles(fnum, page = 0) {
 							url = menus[m].link.fmt({ fnum: fnum.fnum, applicant_id: sid, campaign_id: cid });
 							url += '&fnum='+fnum.fnum;
 							url += '&Itemid='+itemId;
-							menuList += '<a href="'+url+'" class="list-group-item" title="'+menus[m].title+'" id="'+menus[m].id+'">';
+
+							if(typeof menus[m].notifications != 'undefined'){
+                                menuList += '<a href="'+url+'" class="list-group-item list-item-notifications" title="'+menus[m].title+'" id="'+menus[m].id+'">';
+                            } else {
+                                menuList += '<a href="' + url + '" class="list-group-item" title="' + menus[m].title + '" id="' + menus[m].id + '">';
+                            }
 
 							if (menus[m].hasSons) {
 								menuList += '<span class="glyphicon glyphicon-plus" id="'+menus[m].id+'"></span>';
 							}
 
-							menuList +=  '<strong>'+menus[m].title+'</strong></a>';
+                            if(typeof menus[m].notifications != 'undefined'){
+                                menuList +=  '<strong>'+menus[m].title+'</strong><span class="notifications-counter">'+menus[m].notifications+'</span></a>';
+                            } else {
+                                menuList +=  '<strong>'+menus[m].title+'</strong></a>';
+                            }
 						}
 						$('#em-appli-menu .list-group').append(menuList);
 

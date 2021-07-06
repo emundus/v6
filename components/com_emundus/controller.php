@@ -1212,8 +1212,9 @@ class EmundusController extends JControllerLegacy {
             $fileInfo = $db->loadObject();
 
             $first_part_of_filename = explode('_', $file)[0];
-            if (empty($fileInfo) && is_numeric($first_part_of_filename) && strlen($first_part_of_filename) === 21) {
+            if (empty($fileInfo) && is_numeric($first_part_of_filename) && strlen($first_part_of_filename) === 28) {
                 $fileInfo->fnum = $first_part_of_filename;
+                $fileInfo->can_be_viewed = 1;
             }
         }
 

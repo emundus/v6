@@ -8,14 +8,14 @@ module.exports = {
   css: {
     modules: false,
     extract: {
-      filename: '[name].css',
-      chunkFilename: '[name].css',
+      filename: '[name]_onboard.css',
+      chunkFilename: '[name]_onboard.css',
     },
   },
   configureWebpack: {
     output: {
-      filename: '[name].js',
-      chunkFilename: '[name].js',
+      filename: '[name]_onboard.js',
+      chunkFilename: '[name]_onboard.js',
     },
   },
 };

@@ -133,7 +133,7 @@ class EmundusControllerApplication extends JControllerLegacy
         else {
                 echo JText::_('ACCESS_DENIED').' : '.$attachment['value'].' : '.$upload['filename'];
         }
-       
+
     }
 
     /**
@@ -354,8 +354,8 @@ class EmundusControllerApplication extends JControllerLegacy
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
             }
         }
-       
-       
+
+
         echo json_encode((object)$tab);
         exit;
     }
@@ -409,10 +409,20 @@ class EmundusControllerApplication extends JControllerLegacy
                 $res = true;
                 $menu_application = array();
                 $i=0;
-                //var_dump($res);
+
                 foreach($menus as $k => $menu) {
                     $action = explode('|', $menu['note']);
                     if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
+                        if($action[0] == 36){
+                            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_messenger'.DS.'models'.DS.'messages.php');
+
+                            $messenger = new EmundusmessengerModelmessages;
+                            $notifications = $messenger->getNotificationsByFnum($fnum);
+                            if($notifications > 0) {
+                                $menu['notifications'] = $messenger->getNotificationsByFnum($fnum);
+                            }
+                        }
+
                         $menu_application[] = $menu;
                         if ((intval($menu['rgt']) - intval($menu['lft'])) == 1) {
                             $menu_application[$i++]['hasSons'] = false;

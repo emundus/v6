@@ -10,8 +10,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors.js');
-$document->addStyleSheet('media/com_emundus_onboard/app.css');
+$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
+$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
 JText::script('COM_EMUNDUS_ONBOARD_FROM');
 JText::script('COM_EMUNDUS_ONBOARD_TO');
@@ -51,4 +51,4 @@ JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
 
 <div id="em-addForm-vue" profileId="<?= $this->pid ?>" campaignId="<?= $this->cid ?>"></div>
 
-<script src="media/com_emundus_onboard/app.js"></script>
+<script src="media/com_emundus_onboard/app_onboard.js"></script>
