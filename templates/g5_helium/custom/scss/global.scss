@@ -553,6 +553,18 @@ input[type="text"],
 
 /* FOOTER */
 
+.footer-rgpd {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  height: 60px;
+  flex-wrap: wrap;
+  p {
+      padding: 0px 10px;
+  }
+}
+
 .footer-b {
   .container-link-footer {
     display: flex;
@@ -3210,6 +3222,18 @@ button#back,
 
   /* MOBILE */
   @media all and (max-width: 479px) {
+
+    /* FOOTER */
+
+    .footer-rgpd {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      height: auto;
+      p {
+        padding: 10px 0px;
+      }
+    }
 
     .view-reset .reset .page-header div.icon-title.resetpwd, .view-reset .reset-confirm .page-header div.icon-title.resetpwd, .view-reset .reset-complete .page-header div.icon-title.resetpwd,
     .view-registration .login div.em-heading-registration div.icon-title.registrationicon, .view-form .em-formRegistrationCenter div.em-heading-registration div.icon-title.registrationicon,
