@@ -4084,20 +4084,84 @@ $(document).ready(function() {
 
                         var tags = '<br/><div class="form-group" style="color:black !important">'+
                             '<div style="padding-left: 15.5%;"><form style="margin-left:15px; margin-bottom:6px">'+
-                            '<input type="radio" name="em-tags" id="em-tags" value="0" checked>' +Joomla.JText._('ADD_TAGS')+
-                            '&ensp;&ensp;&ensp;<input type="radio" name="em-tags" id="em-tags" value="1">' +Joomla.JText._('DELETE_TAGS')+ '<br>'+
-                            '</form></div></div>'+
-                            '<label class="col-lg-2 control-label">'+result.tag+'</label><select class="col-lg-7 modal-chzn-select" name="em-action-tag" id="em-action-tag" multiple="multiple" >';
+                                '<input type="radio" name="em-tags" id="em-tags" value="0" checked>' +Joomla.JText._('ADD_TAGS')+
+                                '&ensp;&ensp;&ensp;<input type="radio" name="em-tags" id="em-tags" value="1">' +Joomla.JText._('DELETE_TAGS')+ '<br>'+
+                                '</form></div></div>'+
 
-                        for (var i in result.tags) {
-                            if (isNaN(parseInt(i)))
-                                break;
-                            tags += '<option value="'+result.tags[i].id+'" >'+result.tags[i].label+'</option>';
-                        }
-                        tags += '</select></div>';
+                                '<label class="col-lg-2 control-label">' +Joomla.JText._('TAG_CATEGORIES')+ '</label>' +
+                                '<select class="col-lg-7 modal-chzn-select" name="em-action-tag-category" id="em-action-tag-category"></select>' +
+
+                                '<label class="col-lg-2 control-label">'+result.tag+'</label>' +
+                                '<select class="col-lg-7 modal-chzn-select" name="em-action-tag" id="em-action-tag" multiple="multiple"></select>' +
+                            '</div>';
+
                         $('.modal-body').append(tags);
+                        /** Create tags dropdown **/
+                        result.tags.forEach((tag) => {
+                            let added_option = document.createElement('option');
+                            let select1 = document.getElementById('em-action-tag');
+                            added_option.value = tag.id;
+                            added_option.innerHTML = tag.label;
+                            select1.append(added_option);
+                        });
+
+                        /** Create category dropdown **/
+                        let tag_categories = [... new Set(result.tags.filter(tag => {
+                            return (typeof tag.category == 'string' && tag.category !== '')
+                        }).map(cat => cat.category))];
+
+                        let added_option = document.createElement('option');
+                        let select1 = document.getElementById('em-action-tag-category');
+                        added_option.value = "";
+                        added_option.innerHTML =Joomla.JText._('PLEASE_SELECT');
+                        select1.append(added_option);
+
+                        tag_categories.forEach((tag_category)=> {
+                            let added_option = document.createElement('option');
+                            let select1 = document.getElementById('em-action-tag-category');
+                            added_option.value = tag_category;
+                            added_option.innerHTML = tag_category;
+                            select1.append(added_option);
+                        });
+
                         $('.modal-chzn-select').chosen({width:'75%'});
 
+                        /***
+                         * On Category change
+                         */
+                        $('#em-action-tag-category').chosen().change(function() {
+
+                            let cat = $(this).val();
+                            if (cat) {
+                                let allowed_cats = result.tags.filter((tag) => {
+                                    if(tag.category != cat) {
+                                        return tag.id;
+                                    }
+                                }).map((item) => {
+                                    return item.id;
+                                });
+
+                                document.querySelectorAll('#em-action-tag option').forEach((option) => {
+                                    if (!allowed_cats.contains(option.value)) {
+                                        option.disabled = false;
+                                        option.show();
+                                    } else {
+                                        option.disabled = true;
+                                        option.hide();
+                                    }
+                                })
+                            } else {
+                                document.querySelectorAll('#em-action-tag option').forEach((option) => {
+                                    option.disabled = false;
+                                    option.show();
+                                })
+                            }
+                            $("#em-action-tag").val('').trigger("chosen:updated");
+                        });
+
+                        /***
+                         * On Tag change
+                         */
                         $('#em-action-tag').on('change', function() {
                             if ($(this).val() != null)
                                 $('#success-ok').removeAttr("disabled");

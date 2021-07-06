@@ -151,6 +151,7 @@ JText::script('PDF_TAGS');
 JText::script('PDF_STATUS');
 JText::script('ADD_HEADER');
 JText::script('DELETE_TAGS');
+JText::script('TAG_CATEGORIES');
 JText::script('DELETE_TAGS_CONFIRM');
 JText::script('TAGS_DELETE_SUCCESS');
 JText::script('CONFIRM_DELETE_FILTER');
@@ -388,8 +389,6 @@ JText::script('SEND_EMAIL_TOOLTIPS');
 JText::script('NO_LETTER_FOUND');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
-//JHtml::script('media/jui/js/jquery.min.js');
-//JHtml::script('media/com_emundus/lib/jquery-ui-1.8.18.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
 JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
 JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
