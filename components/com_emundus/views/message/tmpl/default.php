@@ -96,8 +96,8 @@ if ($allowed_attachments !== true) {
         <input name="fnums" type="hidden" class="inputbox" id="fnums" value="<?= implode(',',$this->fnums); ?>" />
         <input name="tags" type="hidden" class="inputbox" id="tags" value="" />
 
-        <!-- Add current user to Bcc -->
-        <div id="cc-bcc" class="input-group form-inline col-md-12">
+        <!-- Add current user to Cc -->
+        <div id="cc-bcc" class="input-group form-inline col-md-12" style="margin-bottom: 10px !important;">
             <label for="cc-emails" ><?= JText::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?></label>
             <input type="text" id="cc-mails" class="cc-bcc-mails" placeholder="<?= JText::_('COM_EMUNDUS_EMAILS_CC'); ?> ...">
         </div><!-- /input-group -->
@@ -288,9 +288,6 @@ if ($allowed_attachments !== true) {
     // Loads the template and updates the WYSIWYG editor
     function getTemplate(select) {
         $('#em-attachment-list').empty();
-        $('.cc-emails').css('display','none');
-        $('.cc-emails').remove();
-
         // ajax to get all receivers when changing model email
         $.ajax({
             type: 'POST',
