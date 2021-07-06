@@ -298,6 +298,12 @@ if ($allowed_attachments !== true) {
         var selectize_bcc = $select_bcc[0].selectize;
         selectize_bcc.clear();
 
+        $("label[for='cc-emails']").empty();
+        $("label[for='bcc-emails']").empty();
+
+        $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #ccc; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_LABEL') + '</label>');
+        $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #ccc; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_LABEL') + '</label>');
+
         $('#em-attachment-list').empty();
         // ajax to get all receivers when changing model email
         $.ajax({
