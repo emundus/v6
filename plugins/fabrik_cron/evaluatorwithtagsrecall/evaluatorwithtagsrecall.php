@@ -56,14 +56,72 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
         $params = $this->getParams();
 
         $reminder_mail_id = $params->get('reminder_mail_id', 'share_with_evaluator');
-        $acl_aro_groups = explode(',',trim($params->get('acl_aro_groups', '13')));
+        $acl_aro_groups = explode(',',trim($params->get('acl_aro_groups', '')));
+        $emundus_profiles = explode(',',trim($params->get('reminder_profile', '')));
         $tags = explode(',',trim($params->get('reminder_tags', null)));
         $date_interval =  $params->get('remider_interval', 10);
         $now = new DateTime();
 
-        $users = $this->getEmundusUsers($acl_aro_groups);
+        // Check if profile is applicant
+        if(!empty($emundus_profiles)){
+            $applicant_profiles = $this->getApplicantProfiles();
+            if(!empty(array_intersect($applicant_profiles,$emundus_profiles))){
+                $tag_fnums = $this->getFnumsByTags($tags);
+                if (!empty($tag_fnums)) {
+
+                    // Now check if the tagged date is a modulo of our param $date_interval
+                    // We are filtering out the files that aren't a modulo of the $date_interval
+                    $applicants = [];
+                    foreach ($tag_fnums as $key => $fnum) {
+
+                        $createDate = new DateTime($fnum);
+                        $difference = $now->diff($createDate);
+                        $days = $difference->days;
+
+                        if((($days % $date_interval == 0) && $difference->days > 0)){
+                            $applicants[] = $key;
+                        }
+
+                        if (!empty($applicants)) {
+                            $cpt = 0;
+                            include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+                            include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+                            include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
+
+                            $m_files = new EmundusModelFiles();
+                            $c_messages = new EmundusControllerMessages();
+
+                            foreach ($applicants as $fnum) {
+                                // We send a email for each campaign for each user
+                                $fnumInfos = $m_files->getFnumInfos($fnum);
+
+                                $post = array(
+                                    'NAME' => $fnumInfos['name'],
+                                );
+
+                                $c_messages->sendEmail($fnum, $reminder_mail_id, $post);
+                                $cpt++;
+                            }
+                            JLog::add("\n process " . sizeof($applicants) . " emails sent", JLog::INFO, 'com_emundus_eval_recall');
+                            return $cpt;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Get users by Joomla group
+        $users_by_group = $this->getEmundusUsers($acl_aro_groups);
         $group_users = $this->getGroupsByProg($acl_aro_groups);
-        $users = array_unique(array_merge($users, $group_users));
+        if(!empty($group_users)) {
+            $users_by_group = array_unique(array_merge($users_by_group, $group_users));
+        }
+
+        // Get users by eMundus Profile
+        $users_by_profile = $this->getEmundusUsersByProfile($emundus_profiles);
+
+        // Merge users
+        $users = array_unique(array_merge($users_by_group,$users_by_profile));
         $tag_fnums = $this->getFnumsByTags($tags);
 
         if (!empty($users) && !empty($tag_fnums)) {
@@ -82,7 +140,7 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
                 $evaluators = array_filter($evaluators, function ($value) {
                     return !empty($value);
                 });
-                
+
 
                 // Check if the tagged fnums are in our list of evaluators
                 // If they are, we add the tagged date
@@ -106,7 +164,7 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
                         return (($days % $date_interval == 0) && $difference->days > 0);
                     });
                 }
-                
+
                 if (!empty($evaluators)) {
                     $cpt = 0;
                     include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
@@ -172,11 +230,11 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
     /**
      * Gets all eMundus users linked to the Joomla acl_groups set in XML params
      *
-     * @param array $profile Joomla acl_group
+     * @param array $groups Joomla acl_group
      * @return array
      *
      */
-    function getEmundusUsers(array $profile): array {
+    function getEmundusUsers(array $groups): array {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
@@ -185,7 +243,33 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
             ->from($db->quoteName('#__emundus_users', 'eu'))
             ->leftJoin($db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('eup.user_id'))
             ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON ' . $db->quoteName('esp.id') . ' = ' . $db->quoteName('eup.profile_id'))
-            ->where($db->quoteName('esp.acl_aro_groups') . ' IN (' . implode(', ', $profile) . ')');
+            ->where($db->quoteName('esp.acl_aro_groups') . ' IN (' . implode(', ', $groups) . ')');
+
+        try {
+            $db->setQuery($query);
+            return $db->loadColumn();
+        } catch (Exception $e) {
+            JLog::add('SQL Error -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus_eval_recall');
+            return [];
+        }
+    }
+
+    /**
+     * Gets all eMundus users linked to the eMundus profiles set in XML params
+     *
+     * @param array $profiles eMundus profiles
+     * @return array
+     *
+     */
+    function getEmundusUsersByProfile(array $profiles): array {
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select(['DISTINCT(eu.user_id)'])
+            ->from($db->quoteName('#__emundus_users', 'eu'))
+            ->leftJoin($db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('eup.user_id'))
+            ->where($db->quoteName('eup.profile_id') . ' IN (' . implode(', ', $profiles) . ')');
 
         try {
             $db->setQuery($query);
@@ -221,7 +305,7 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
             return $db->loadColumn();
         } catch (Exception $e) {
             JLog::add('SQL Error -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus_eval_recall');
-            return false;
+            return [];
         }
     }
 
@@ -299,6 +383,29 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
         try {
             return $db->loadAssocList('fnum', 'date_time');
 
+        } catch (Exception $e) {
+            JLog::add('SQL Error -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus_eval_recall');
+            return [];
+        }
+    }
+
+    /**
+     * Return list of applicant profiles
+     *
+     * @return array
+     */
+    public function getApplicantProfiles(): array{
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select($db->quoteName('id'))
+            ->from($db->quoteName('#__emundus_setup_profiles'))
+            ->where($db->quoteName('published') . ' = 1 AND ' . $db->quoteName('status') . ' = 1');
+
+        try {
+            $db->setQuery($query);
+            return $db->loadColumn();
         } catch (Exception $e) {
             JLog::add('SQL Error -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus_eval_recall');
             return [];
