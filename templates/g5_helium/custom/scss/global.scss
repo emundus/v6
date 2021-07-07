@@ -850,37 +850,6 @@ body>.g-container {
     justify-content: space-between;
     padding: 0px;
     margin-bottom: 50px;
-
-    .btn.btn-plein {
-
-      background-color: $base-secondary-color;
-      border-color: $base-secondary-color;
-      color: #fff;
-      font-size: 14px !important;
-
-      &:hover,
-      &:active,
-      &:focus {
-        background-color: #ffffff;
-        color: $base-secondary-color;
-        border-color: $base-secondary-color;
-      }
-    }
-
-    .btn.btn-creux {
-      background-color: transparent;
-      border-color: $base-primary-color;
-      color: $base-primary-color;
-      font-size: 14px !important;
-
-      &:hover,
-      &:active,
-      &:focus {
-        background-color: $base-primary-color;
-        color: #fff;
-        border-color: $base-primary-color;
-      }
-    }
   }
 }
 
@@ -3137,7 +3106,7 @@ div#em-appli-block {
     display: none;
   }
 
-  .homepage .campaigns-list .below-content a.btn.btn-primary.btn-creux.btn-orange {
+  .homepage .campaigns-list .below-content a.btn.btn-secondary {
     margin-bottom: 5px;
   }
 

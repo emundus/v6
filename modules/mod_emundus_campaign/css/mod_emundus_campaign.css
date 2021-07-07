@@ -133,7 +133,7 @@
   text-transform: inherit;
 }
 
-.campaigns-list .below-content a.btn.btn-primary.btn-plein.btn-blue {
+.campaigns-list .below-content a.btn.btn-primary {
     text-transform: initial;
 }
 
@@ -210,7 +210,7 @@
 ​
 @media all and (max-width: 767px) {
 
-    .homepage .campaigns-list .below-content a.btn.btn-primary.btn-plein.btn-blue {
+    .homepage .campaigns-list .below-content a.btn.btn-primary {
         margin-top: 10px !important;
     }
 
