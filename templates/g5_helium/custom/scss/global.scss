@@ -742,40 +742,6 @@ body>.g-container {
     float: right;
   }
 
-  .moduletable .header-right {
-    a.btn.btn-danger {
-
-      &.btn-creer-compte,
-      &.inscription {
-        background: $base-secondary-color;
-        border: 1px solid $base-secondary-color;
-        color: #fff;
-
-        &:hover,
-        &:active,
-        &:focus {
-          background: transparent;
-          color: $base-secondary-color;
-          border-color: $base-secondary-color;
-        }
-      }
-
-      &:not(btn-creer-compte) {
-        background: transparent;
-        border: 1px solid $base-primary-color;
-        color: $base-primary-color;
-
-        &:hover,
-        &:active,
-        &:focus {
-          background: $base-primary-color;
-          color: #fff;
-          border-color: $base-primary-color;
-        }
-      }
-    }
-  }
-
   #userDropdownIcon {
     background-color: white;
     font-size: 1.5em;
@@ -846,23 +812,6 @@ body>.g-container {
 }
 
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
-
-view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
-.view-form .em-formRegistrationCenter .row-fluid .span4 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
-  background-color: $base-secondary-color;
-  color: #ffffff;
-  border-color: $base-secondary-color;
-  text-transform: initial;
-  margin-left: 0px !important;
-
-  &:hover,
-  &active,
-  &:focus {
-    background-color: transparent;
-    color: $base-secondary-color;
-    border-color: $base-secondary-color;
-  }
-}
 
 .view-registration .em-register-warning {
   border: 1px solid $base-primary-color;
@@ -1182,21 +1131,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     font-weight: 300;
     font-size: 14px;
   }
-
-  button.btn.btn-primary.validate {
-    background-color: $base-secondary-color;
-    border-color: $base-secondary-color;
-    color: #fff;
-
-    &:hover,
-    &:active,
-    &:focus {
-      background-color: transparent;
-      color: $base-secondary-color;
-      border-color: $base-secondary-color;
-    }
-  }
-
 }
 
 /* LISTES  */
@@ -2391,22 +2325,6 @@ ul.nav.nav-tabs.nav-stacked li a {
   &:focus,
   &:active {
     color: $base-secondary-color;
-  }
-}
-
-.view-login button.btn.btn-primary {
-  background-color: $base-secondary-color;
-  border-color: $base-secondary-color;
-  color: #fff;
-  //font-family: "Lato", sans-serif;
-  text-transform: capitalize;
-
-  &:hover,
-  &:active,
-  &:focus {
-    background-color: transparent;
-    color: $base-secondary-color;
-    border-color: $base-secondary-color;
   }
 }
 

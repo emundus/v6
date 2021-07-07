@@ -87,7 +87,7 @@ li>a:hover {
     line-height: 1.15;
 }
 
-.view-reset #g-navigation .header-c header-right a.btn.btn-danger:not(btn-creer-compte) {
+.view-reset #g-navigation .header-c header-right a.btn.btn-secondary {
     margin-right: 0px;
 }
 
@@ -99,7 +99,7 @@ li>a:hover {
     position: relative;
 }
 
-#g-navigation #header-c .header-right a.btn.btn-danger {
+#g-navigation #header-c .header-right a.btn {
     font-weight: 300 !important;
     font-size: 14px !important;
     margin-bottom: 5px !important;
@@ -107,7 +107,7 @@ li>a:hover {
     padding: 8px 12px;
 }
 
-#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte, #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription {
+#g-navigation #header-c .header-right a.btn {
      color: #fff;
      border-radius: 4px;
      margin-bottom: 5px;
@@ -115,7 +115,7 @@ li>a:hover {
     letter-spacing: normal;
 }
 
-#g-navigation #header-c .header-right a.btn.btn-danger:not(btn-creer-compte) {
+#g-navigation #header-c .header-right a.btn.btn-secondary {
      color: #fff;
      border-radius: 4px;
      margin-bottom: 5px !important;
