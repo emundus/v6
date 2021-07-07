@@ -170,6 +170,13 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     }
                     //try to access detail view or other
                     else {
+                        if(!$can_edit && $is_app_sent){
+                            $mainframe->enqueueMessage(JText::_('APPLICATION_READ_ONLY'), 'error');
+                        } elseif ($is_dead_line_passed){
+                            $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
+                        } elseif (!$is_campaign_started){
+                            $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
+                        }
                         $reload_url = false;
                     }
                 }
@@ -204,9 +211,9 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     if (($is_dead_line_passed && $can_edit_after_deadline == 0) || !$is_campaign_started || $isLimitObtained === true) {
                         if ($reload_url) {
                             if ($isLimitObtained === true) {
-                                JError::raiseNotice(401, JText::_('LIMIT_OBTAINED'));
+                                $mainframe->enqueueMessage(JText::_('APPLICATION_LIMIT_OBTAINED'), 'error');
                             } else {
-                                JError::raiseNotice(401, JText::_('PERIOD'));
+                                $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
                             }
                             $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                         }
@@ -243,7 +250,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                             $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
                         }
                     } else {
-                        JError::raiseNotice('ACCESS_DENIED', JText::_('ACCESS_DENIED'));
+                        $mainframe->enqueueMessage(JText::_('ACCESS_DENIED'), 'error');
                         $mainframe->redirect("index.php");
                     }
                 }
