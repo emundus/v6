@@ -138,13 +138,19 @@ class EmundusViewFiles extends JViewLegacy {
 
 			case 'docs':
 				$fnumsObj = $app->input->getString('fnums', "");
+                $fnums = array();
+
+                if($fnumsObj === 'all') {
+                    $fnums = $m_files->getAllFnums();
+                }
+
 				$fnumsObj = json_decode(stripslashes($fnumsObj), false, 512, JSON_BIGINT_AS_STRING);
-				$fnums = array();
 				foreach ($fnumsObj as $fObj) {
 					if (EmundusHelperAccess::asAccessAction(27, 'c', JFactory::getUser()->id, $fObj->fnum)) {
 						$fnums[] = $fObj->fnum;
 					}
 				}
+
 				if (!empty($fnums)) {
 					$prgs = $m_files->getProgByFnums($fnums);
 					$docs = $m_files->getDocsByProg(key($prgs));
