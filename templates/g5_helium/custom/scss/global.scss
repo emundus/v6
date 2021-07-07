@@ -102,15 +102,66 @@ label {
   display: inline-block;
 }
 
+.hidden {
+  display: none;
+}
+
+/* BUTTONS */
+
+/* PRIMARY BUTTONS */
+
+.btn.btn-primary {
+  background: $base-secondary-color;
+  border: 1px solid $base-secondary-color;
+  color: #fff;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background: transparent;
+    color: $base-secondary-color;
+    border-color: $base-secondary-color;
+  }
+}
+
+/* SECONDARY BUTTONS */
+
+.btn.btn-secondary {
+  background: transparent;
+  border: 1px solid $base-primary-color;
+  color: $base-primary-color;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background: $base-primary-color;
+    color: #fff;
+    border-color: $base-primary-color;
+  }
+}
+
+/* GO BACK BUTTONS */
+
+/* DELETER BUTTONS */
+
+/*************************** TCHOOZ ***************************/
+
+
+button.swal2-styled{
+  padding: 5px 20px;
+  border-radius: 25px !important;
+}
+
+button.swal2-confirm{
+  background: #12DB42 !important;
+}
+
 .view-form label.fabrikLabel.fabrikTip {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.hidden {
-  display: none;
-}
 
 .moduletable .nav li {
   margin-bottom: 0;
@@ -983,39 +1034,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   .em-infoComp li i {
     margin-left: 10px;
     color: $base-primary-color;
-  }
-
-  /* MODULE EMUNDUS CAMPAIGN */
-  .campaigns-list .below-content {
-
-    /*COULEURS BTNS - PLUS D'INFO ET CANDIDATER */
-    a.btn.btn-primary.btn-plein.btn-blue {
-      background-color: $base-secondary-color;
-      border-color: $base-secondary-color;
-      color: #fff;
-
-      &:hover,
-      &:active,
-      &:focus {
-        background-color: transparent;
-        color: $base-secondary-color;
-        border-color: $base-secondary-color;
-      }
-    }
-
-    a.btn.btn-primary.btn-creux.btn-orange {
-      background-color: transparent;
-      border-color: $base-primary-color;
-      color: $base-primary-color;
-
-      &:hover,
-      &:active,
-      &:focus {
-        background-color: $base-primary-color;
-        color: #fff;
-        border-color: $base-primary-color;
-      }
-    }
   }
 
   /* COULEURS BARRE VERTICALE  */
@@ -3621,7 +3639,7 @@ div#em-appli-block {
       margin: 0px 51px 0px 0px !important;
     }
   }
-  
+
 
   ul.lang-inline {
     text-align: right;
