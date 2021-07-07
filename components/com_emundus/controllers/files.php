@@ -3921,15 +3921,26 @@ class EmundusControllerFiles extends JControllerLegacy
         $msg = '';
 
         if($res !== false) {
+            $message = JText::_('STATE_SUCCESS');
             /// next tick --> send email for each fnum in [fnums]
             foreach ($validFnums as $key => $fnum) {
                 $send = $m_messages->sendEmailByFnum($fnum, $mail_from_sys, $mail_from_sys_name);
+
+                // add assoc tag by fnum and $send['message_id']
+                $assoc_tag = $m_messages->addTagsByFnum($fnum, $send['message_id']);
             }
+
+            if($send['sending_status'] === true) {
+                echo json_encode(['status' => true, 'msg' => $message]);
+            } else {
+                echo json_encode(['status' => false, 'msg' => $message]);
+            }
+            exit;
         } else {
-            $message = JText::_('STATE_SUCCESS');
+            $message = JText::_('STATE_ERROR');
             echo json_encode(['status' => false, 'msg' => $message]);
+            exit;
         }
-        exit;
     }
 }
 

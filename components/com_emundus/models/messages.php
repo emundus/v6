@@ -1466,7 +1466,7 @@ class EmundusModelMessages extends JModelList {
                 JLog::add($candidat_email . ' ' . $body, JLog::INFO, 'com_emundus.email');
             }
 
-            return array('sending_status' => $send, 'log_message' => $logs);
+            return array('sending_status' => $send, 'log_message' => $logs, 'message_id' => $email_recap->id);
         } else {
             //// hint : sending default message if no email model found --> good idea?
             return false;
