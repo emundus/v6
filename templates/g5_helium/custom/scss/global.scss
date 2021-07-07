@@ -70,6 +70,11 @@ h6 {
   }
 }
 
+.box h2 {
+  font-size: 1.5rem;
+  margin-top: 20px !important;
+}
+
 .swal2-title {
   color: #000;
   margin: 10px 0 20px 0;
@@ -140,17 +145,12 @@ label {
   }
 }
 
-/* GO BACK BUTTONS */
-
-/* DELETER BUTTONS */
-
-/*************************** TCHOOZ ***************************/
-
-
 button.swal2-styled{
   padding: 5px 20px;
   border-radius: 25px !important;
 }
+
+/*************************** TCHOOZ ***************************/
 
 button.swal2-confirm{
   background: #12DB42 !important;
@@ -177,10 +177,7 @@ button.swal2-confirm{
   }
 }
 
-.box h2 {
-  font-size: 1.5rem;
-  margin-top: 20px !important;
-}
+
 
 .col-xs-1,
 .col-sm-1,
@@ -411,16 +408,6 @@ legend {
   overflow: visible;
 }
 
-p,
-a,
-legend,
-select,
-textarea,
-label,
-input[type="text"],
-.ui.warning.message {
-  //font-family: "Lato", sans-serif;
-}
 
 p,
 legend,
@@ -1680,107 +1667,6 @@ p.readmore .btn,
       color: $dark-blue;
     }
   }
-}
-
-button.save-btn,
-.btn-success,
-button.save,
-button.save_continue,
-button.send,
-a.btn-attach,
-#trombi_preview,
-#trombi_generate,
-.indicateurs-page .btn,
-.fabrik_filter_submit,
-button.importation,
-a.btn-warning,
-a.btn-info,
-button.btn-primary,
-.em-generated-docs .em-doc-zip,
-.xclsform .panel-body button#savefilter,
-.modal-dialog #chargement a.btn,
-a#em-doc-zip,
-.btn.advanced-search-apply,
-.toggle-addoption.btn,
-.candidacy-files-list a#send,
-.choice-statut-btn {
-  background: $base-primary-color;
-  border: 1px solid $base-primary-color;
-  text-shadow: none;
-  text-transform: initial;
-  padding: 8px 12px;
-}
-
-button.save-btn:hover,
-button.save-btn:active,
-button.save-btn:focus,
-.btn-success:hover,
-.btn-success:focus,
-.btn-success:active,
-button.save:hover,
-button.save:active,
-button.save:focus,
-button.save_continue:hover,
-button.save_continue:active,
-button.save_continue:focus,
-button.send:hover,
-button.send:active,
-button.send:focus,
-a.btn-attach:hover,
-a.btn-attach:active,
-a.btn-attach:focus,
-#trombi_preview:hover,
-#trombi_preview:active,
-#trombi_preview:focus,
-#trombi_generate:hover,
-#trombi_generate:active,
-#trombi_generate:focus,
-.indicateurs-page .btn:hover,
-.indicateurs-page .btn:active,
-.indicateurs-page .btn:focus,
-.fabrik_filter_submit:hover,
-.fabrik_filter_submit:active,
-.fabrik_filter_submit:focus,
-button.importation:hover,
-button.importation:active,
-button.importation:focus,
-a.btn-warning:hover,
-a.btn-warning:active,
-a.btn-warning:focus,
-a.btn-info:hover,
-a.btn-info:active,
-a.btn-info:focus,
-button.btn-primary:hover,
-button.btn-primary:active,
-button.btn-primary:focus,
-.em-generated-docs .em-doc-zip:hover,
-.em-generated-docs .em-doc-zip:active,
-.em-generated-docs .em-doc-zip:focus,
-.xclsform .panel-body button#savefilter:hover,
-.xclsform .panel-body button#savefilter:active,
-.xclsform .panel-body button#savefilter:focus,
-.modal-dialog #chargement a.btn:hover,
-.modal-dialog #chargement a.btn:active,
-.modal-dialog #chargement a.btn:focus,
-a#em-doc-zip:hover,
-a#em-doc-zip:active,
-a#em-doc-zip:focus,
-.btn.advanced-search-apply:hover,
-.btn.advanced-search-apply:active,
-.btn.advanced-search-apply:focus,
-.toggle-addoption.btn:hover,
-.toggle-addoption.btn:active,
-.toggle-addoption.btn:focus,
-.candidacy-files-list a#send:hover,
-.candidacy-files-list a#send:active,
-.candidacy-files-list a#send:focus,
-.choice-statut-btn:hover,
-.choice-statut-btn:active,
-.choice-statut-btn:focus {
-  background-color: transparent;
-  color: $base-primary-color;
-  outline: none;
-  border: 1px solid $base-primary-color;
 }
 
 .span4.offset1>.btn-group>button.button {
