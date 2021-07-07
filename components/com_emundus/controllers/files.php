@@ -1960,15 +1960,9 @@ class EmundusControllerFiles extends JControllerLegacy
                         'FNUM' => $fnum,
                         'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
                     );
-                $application_form_name = $m_checklist->formatFileName($application_form_name, $fnum, $post);
 
                 // Format filename
-                $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
-                $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
-                $application_form_name = $m_emails->stripAccents($application_form_name);
-                $application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
-                $application_form_name = preg_replace('/\s/', '', $application_form_name);
-                $application_form_name = strtolower($application_form_name);
+                $application_form_name = $m_checklist->formatFileName($application_form_name, $fnum, $post);
 
                 if ($file != $application_form_name.'.pdf' && file_exists(JPATH_BASE.DS.'tmp'.DS.$application_form_name.'.pdf')) {
                     unlink(JPATH_BASE.DS.'tmp'.DS.$application_form_name.'.pdf');
