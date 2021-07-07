@@ -8,26 +8,30 @@
             :classes="'vue-notification-custom'"
     />
     <div class="row">
-      <div class="sidebar-formbuilder">
+      <div class="sidebar-formbuilder" :style="actions_menu ? 'width: 250px' : ''">
         <transition name="move-right">
           <div class="actions-menu menu-block">
+            <a class="d-flex back-button-action pointer" style="padding: 0 15px" :title="Back">
+              {{ BuildYourForm }}
+            </a>
+            <hr style="width: 80%;margin: 10px auto;">
             <div>
               <div class="action-links">
-                <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')">
-                  <em class="add-page-icon col-md-offset-1 col-sm-offset-1"></em>
-                  <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu">{{addMenu}}</label>
+                <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="addMenu">
+                  <em class="add-page-icon"></em>
+                  <label class="action-label col-md-offset-1 col-sm-offset-1" v-show="actions_menu">{{addMenu}}</label>
                 </a>
-                <a class="d-flex action-link" @click="createGroup()">
-                  <em class="add-group-icon col-md-offset-1 col-sm-offset-1"></em>
-                  <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu">{{addGroup}}</label>
+                <a class="d-flex action-link" @click="createGroup()" :title="addGroup">
+                  <em class="add-group-icon"></em>
+                  <label class="action-label col-md-offset-1 col-sm-offset-1" v-show="actions_menu">{{addGroup}}</label>
                 </a>
-                <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements">
-                  <em class="add-element-icon col-md-offset-1 col-sm-offset-1"></em>
-                  <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
+                <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements" :title="addItem">
+                  <em class="add-element-icon"></em>
+                  <label class="action-label col-md-offset-1 col-sm-offset-1" v-show="actions_menu" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
                 </a>
                 <transition :name="'slide-right'" type="transition">
                   <div class="plugins-list" v-if="addingElement">
-                    <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingElement = !addingElement">
+                    <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingElement = !addingElement" :title="Back">
                       <em class="fas fa-arrow-left mr-1"></em>
                       {{ Back }}
                     </a>
@@ -63,14 +67,14 @@
         </transition>
       </div>
       <div :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
-        <div class="heading-block" :class="addingElement ? 'col-md-offset-2 col-lg-offset-1 col-md-10' : 'col-md-12'">
+        <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-offset-2 col-md-9' : 'col-md-12'">
           <h2 class="form-title" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1">Evaluation</h2>
           <div class="d-flex">
             <button class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green mt-1" @click="sendForm" style="margin-left: 10px" :title="Validate">{{Validate}}</button>
             <button class="bouton-sauvergarder-et-continuer mt-1" @click="sendForm" style="margin-left: 10px" :title="Validate">{{ExitFormbuilder}}</button>
           </div>
         </div>
-        <div class="form-viewer-builder" :class="[addingElement ? 'col-sm-offset-5 col-md-offset-2 col-lg-offset-1 col-sm-9 col-md-10' : 'col-md-12',optionsModal ? 'col-sm-7 col-md-9' : 'col-md-12']">
+        <div class="form-viewer-builder" :class="[addingElement || actions_menu ? 'col-sm-offset-5 col-md-offset-4 col-lg-offset-1 col-sm-7' : 'col-md-10',optionsModal ? 'col-sm-5 col-md-6' : 'col-md-10']">
           <Builder
                   :object="formObjectArray[indexHighlight]"
                   v-if="formObjectArray[indexHighlight]"
@@ -142,7 +146,7 @@
     data() {
       return {
         // UX variables
-        actions_menu: false,
+        actions_menu: true,
         optionsModal: false,
         UpdateUx: false,
         indexHighlight: 0,
@@ -219,6 +223,8 @@
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
         },
+        addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
+        addMenuAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU_ACTION"),
         addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
         addItem: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
         Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS"),
@@ -231,6 +237,7 @@
         Back: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
         Validate: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
         ExitFormbuilder: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EXIT_FORMBUILDER"),
+        BuildYourForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_BUILD_YOUR_FORM"),
       };
     },
 
@@ -481,8 +488,8 @@
     },
     created() {
       this.link = 'index.php?option=com_fabrik&view=form&formid=' + this.eval;
-      jQuery("#g-navigation .g-main-nav .tchooz-vertical-toplevel > li").css("transform", "translateX(-100px)")
-      jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)")
+      //jQuery("#g-navigation .g-main-nav .tchooz-vertical-toplevel > li").css("transform", "translateX(-100px)")
+      //jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)")
       this.getDataObject();
     },
 

@@ -166,6 +166,23 @@ export default {
 
       if(this.label[this.actualLanguage] != '' || this.model_id != -1) {
         this.submitted = true;
+
+        if(this.actualLanguage=='fr'&& this.label.en==''){
+          //this.label.fr=this.profileId+'-'+this.label.fr;
+          //this.label.en=this.profileId+'-'+'My new page'
+
+          this.label.en='My new page'
+
+        } else if(this.actualLanguage=='en'&& this.label.fr==''){
+          //this.label.en=this.profileId+'-'+this.label.en;
+          this.label.fr='Ma nouvelle page';
+        } else {
+          //this.label.en=this.profileId+'-'+this.label.en;
+          //this.label.fr=this.profileId+'-'+this.label.fr;
+          this.label.en=this.label.en;
+          this.label.fr=this.label.fr;
+        }
+
         axios({
           method: "post",
           url:

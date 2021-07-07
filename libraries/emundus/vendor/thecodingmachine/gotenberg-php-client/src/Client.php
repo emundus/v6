@@ -11,12 +11,11 @@ use Http\Discovery\HttpClientDiscovery;
 use Http\Discovery\MessageFactoryDiscovery;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Safe\Exceptions\FilesystemException;
-use function Safe\fclose;
-use function Safe\fopen;
-use function Safe\fwrite;
+use function fclose;
+use function fopen;
+use function fwrite;
 
-final class Client
+final class Client implements GotenbergClientInterface
 {
     /** @var HttpClient */
     private $client;
@@ -31,7 +30,7 @@ final class Client
     }
 
     /**
-     * Sends the given documents to the API and returns the response.
+     * {@inheritdoc}
      *
      * @throws ClientException
      * @throws Exception
@@ -42,7 +41,7 @@ final class Client
     }
 
     /**
-     * Sends the given documents to the API, stores the resulting PDF in the given destination.
+     * {@inheritdoc}
      *
      * @throws ClientException
      * @throws RequestException
@@ -57,8 +56,17 @@ final class Client
         $response = $this->handleResponse($this->client->sendRequest($this->makeMultipartFormDataRequest($request)));
         $fileStream = $response->getBody();
         $fp = fopen($destination, 'w');
-        fwrite($fp, $fileStream->getContents());
-        fclose($fp);
+        if ($fp === false) {
+            throw FilesystemException::createFromPhpError();
+        }
+
+        if (fwrite($fp, $fileStream->getContents()) === false) {
+            throw FilesystemException::createFromPhpError();
+        }
+
+        if (fclose($fp) === false) {
+            throw FilesystemException::createFromPhpError();
+        }
     }
 
     private function makeMultipartFormDataRequest(GotenbergRequestInterface $request): RequestInterface

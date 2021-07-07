@@ -33,9 +33,10 @@ form#user-registration.form-validate.form-horizontal.well,
 form#user-registration.form-validate.form-horizontal.well,
 .view-reset .reset-confirm form.form-validate.form-horizontal.well,
 .view-reset .reset-complete form.form-validate.form-horizontal.well {
-    background: #fafafa;
+    background: #fff;
     border: none;
     margin-top: 20px !important;
+    padding-bottom: 15px;
 }
 
 form#user-registration.form-validate.form-horizontal.well label,
@@ -177,9 +178,10 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     .view-reset form#user-registration.form-validate.form-horizontal.well,
     .view-reset .form-validate.form-horizontal.well,
     .view-reset .reset-complete .form-validate.form-horizontal.well {
-        width: 90% !important;
+        width: 100% !important;
+        padding: 20px !important;
     }
-    
+
     .view-reset #g-navigation .g-container {
         height: auto !important;
     }

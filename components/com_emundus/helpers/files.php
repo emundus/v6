@@ -1058,7 +1058,7 @@ class EmundusHelperFiles
                         <label for="select_filter" class="control-label em-user-personal-filter-label">'.JText::_('SELECT_FILTER').'</label>
                         <div class="em_select_filter_rapid_search">
                             <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" > 
-                                <option value="0" selected="true" >'.JText::_('CHOOSE_FILTER').'</option>';
+                                <option value="0" selected="true" style="font-style: italic;">'.JText::_('CHOOSE_FILTER').'</option>';
         if (!empty($research_filters)) {
             foreach ($research_filters as $filter) {
                 if ($select_id == $filter->id) {
@@ -1930,9 +1930,9 @@ class EmundusHelperFiles
         foreach ($tags as $tag) {
             $fnum = $tag['fnum'];
             if (!isset($tagsList[$fnum])) {
-	            $tagsList[$fnum] = '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+                $tagsList[$fnum] = '<a class="item"><div style="width: 100%" class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
             } else {
-	            $tagsList[$fnum] .= '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+                $tagsList[$fnum] .= '<a class="item"><div style="width: 100%" class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
             }
         }
         return $tagsList;
@@ -2188,6 +2188,9 @@ class EmundusHelperFiles
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+
         $m_evaluation   = new EmundusModelEvaluation();
         $m_files        = new EmundusModelFiles;
         $h_files        = new EmundusHelperFiles;
@@ -2235,13 +2238,17 @@ class EmundusHelperFiles
                         $element->element_hidden == 0 &&
                         array_key_exists($k, $eval))
                     {
-                        $str .= '<tr>';
-                        if (strpos($element->element_name, 'comment') !== false) {
-	                        $str .= '<td colspan="2"><b>'.JText::_(trim($element->element_label)).'</b> <br>'.JText::_($eval[$k]).'</td>';
+                        if($show_empty_fields == 0 && empty($eval[$k])) {
+                            $str .= '';
                         } else {
-	                        $str .= '<td width="70%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="30%">'.JText::_($eval[$k]).'</td>';
+                            $str .= '<tr>';
+                            if (strpos($element->element_name, 'comment') !== false) {
+                                $str .= '<td colspan="2"><b>'.JText::_(trim($element->element_label)).'</b> <br>'.JText::_($eval[$k]).'</td>';
+                            } else {
+                                $str .= '<td width="70%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="30%">'.JText::_($eval[$k]).'</td>';
+                            }
+                            $str .= '</tr>';
                         }
-                        $str .= '</tr>';
                     }
                 }
 
@@ -2652,6 +2659,62 @@ class EmundusHelperFiles
         }
     }
 
+    public function getExportExcelFilterById($fid) {
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        if(!empty($fid)) {
+            $query->clear()
+                ->select('#__emundus_filters.*')
+                ->from($db->quoteName('#__emundus_filters'))
+                ->where($db->quoteName('#__emundus_filters.id') . '=' . (int)$fid);
+            $db->setQuery($query);
+            return $db->loadObject();
+        } else {
+            return false;
+        }
+    }
+
+    public function getAllLetters() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('#__emundus_setup_letters.*')
+                ->from($db->quoteName('#__emundus_setup_letters'));
+            $db->setQuery($query);
+            return $db->loadObjectList();
+
+        } catch(Exception $e) {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+
+    public function getLetterById($lid) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($lid)) {
+            try {
+                $query->clear()
+                    ->select('#__emundus_setup_letters.*')
+                    ->from($db->quoteName('#__emundus_setup_letters'))
+                    ->where($db->quoteName('#__emundus_setup_letters.id') . '=' . (int)$lid)
+                    ->andWhere($db->quoteName('#__emundus_setup_letters.template_type') . '=' . 4);
+
+                $db->setQuery($query);
+                return $db->loadObject();
+            } catch(Exception $e) {
+                echo $e->getMessage();
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     public function checkadmission() {
         $db = JFactory::getDBO();
 
@@ -2666,4 +2729,22 @@ class EmundusHelperFiles
         }
     }
 
+    /// this code will be fixed in the future
+    public function getSelectedElements($selectedElts) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+
+            $_string = implode(',', $selectedElts);
+            $_find_in_set = "'" . $_string . "'";
+
+            $query = "SELECT jfe.* FROM #__fabrik_elements AS jfe WHERE jfe.id IN ($_string) ORDER BY find_in_set(jfe.id, $_find_in_set)";
+            $db->setQuery($query);
+            $selected_elts = $db->loadObjectList();
+            return array('selected_elements' => $selected_elts);
+        } catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

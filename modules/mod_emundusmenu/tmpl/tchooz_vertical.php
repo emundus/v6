@@ -77,7 +77,7 @@ defined('_JEXEC') or die;
     /*** END ***/
 
     /*** Sublevel parent ***/
-    .parent-active .item::before,.active .item::before{
+    ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before{
         background: #12DB42;
         width: 5px;
         height: 100%;
@@ -111,6 +111,8 @@ defined('_JEXEC') or die;
         display: flex;
         align-items: center;
         white-space: nowrap;
+        position: relative;
+        z-index: 2;
         transition: all 0.3s ease-in-out;
     }
     .tchooz-vertical-item a img{
@@ -149,28 +151,31 @@ defined('_JEXEC') or die;
     }
     /*** END ***/
     .message-tooltip{
-        background: #fff;
-        width: 12rem;
+        width: 20rem;
         height: auto;
         position: fixed;
-        margin-left: 60px;
+        margin-left: 0;
         color: black;
-        padding: 15px;
         align-items: center;
         font-weight: 600;
-        border-radius: 5px;
-        border: solid 2px #fff;
         display: none;
         margin-top: -38px;
-        box-shadow: 0 5px 10px rgb(0 0 0 / 10%);
+        z-index: 1;
     }
-    .message-tooltip p {
+    .message-tooltip-block p {
         font-weight: 600;
         border-bottom: 1px solid #e0e0e5;
         padding-bottom: 10px;
     }
-    
-    .message-tooltip::after {
+
+    .message-tooltip-block{
+        margin-left: 60px;
+        box-shadow: 0 5px 10px rgb(0 0 0 / 10%);
+        padding: 15px;
+        border-radius: 5px;
+        background: #fff;
+    }
+    .message-tooltip-block::after{
         content: "";
         position: absolute;
         height: 0;
@@ -182,6 +187,11 @@ defined('_JEXEC') or die;
         border-right-style: solid;
         border-right-width: 10px;
         border-right: 10px solid #fff;
+    }
+
+    .g-main-nav .g-standard .g-sublevel .g-menu-item a.g-menu-item-container:hover   {
+        background: #eeeeee;
+        border-radius: 5px;
     }
 
     .g-sublevel{
@@ -314,13 +324,13 @@ defined('_JEXEC') or die;
                 }
                 // The next item is shallower.
                 elseif ($item->shallower) {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'">'.$item->title.'</div>';
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block">'.$item->title.'</div>';
                     echo '</li>';
                     echo str_repeat('</ul></div></div></li></ul>', $item->level_diff);
                 }
                 // The next item is on the same level.
                 else {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><a'.$class.' href="'. $item->flink . '"'. $item->title .'>'.$item->title.'</a></div>';
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block"><a'.$class.' href="'. $item->flink . '"'. $item->title .'>'.$item->title.'</a></div></div>';
                     echo '</li>';
                 }
             endforeach;
@@ -380,7 +390,7 @@ defined('_JEXEC') or die;
 
                 // The next item is deeper.
                 if ($item->deeper) {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'" style="height: auto"><p>'.$item->title.'</p>';
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'" style="height: auto"><div class="message-tooltip-block"><p>'.$item->title.'</p>';
                     echo '<ul class="g-sublevel-list" id="sublevel_list_' . $item->id . '">';
                     echo '<li class="g-dropdown-column">';
                     echo '<div class="g-grid"><div class="g-block size-100"><ul class="g-sublevel">';
@@ -393,13 +403,13 @@ defined('_JEXEC') or die;
                 }
                 // The next item is on the same level.
                 else {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'">'.$item->title.'</div>';
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block">'.$item->title.'</div></div>';
                     echo '</li>';
                 }
             endif;
         endforeach;
 
-        echo '<hr id="menu_separator">';
+
 
         foreach ($help_list as $i => &$item) :
             if($item->params->get('menu_show') != 0) :
@@ -458,7 +468,7 @@ defined('_JEXEC') or die;
                 }
                 // The next item is on the same level.
                 else {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'">'.$item->title.'</div>';
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block">'.$item->title.'</div></div>';
                     echo '</li>';
                 }
             endif;
@@ -492,11 +502,11 @@ defined('_JEXEC') or die;
     function enableTooltip(menu){
         if(jQuery(".image-title").css("display") != 'none') {
             if(typeof jQuery("#sublevel_list_" + menu)[0] != 'undefined'){
-                jQuery("#tooltip-" + menu).css('margin-left', '250px');
+                jQuery("#tooltip-" + menu).css('margin-left', '200px');
                 jQuery("#tooltip-" + menu).css('display', 'block');
             }
         } else {
-            jQuery("#tooltip-" + menu).css('margin-left', '60px');
+            jQuery("#tooltip-" + menu).css('margin-left', '0');
             jQuery("#tooltip-" + menu).css('display', 'block');
         }
     }
@@ -511,6 +521,7 @@ defined('_JEXEC') or die;
             jQuery(".tchooz-vertical-toplevel").css("width","250px");
             jQuery(".tchooz-vertical-item").css("width","auto");
             jQuery(".grey-navbar-icons").css("opacity","1");
+            jQuery(".sidebar-formbuilder").css("opacity","0");
             if(window.innerWidth >= 1280) {
                 jQuery("#g-footer").css("padding-left", "300px");
                 jQuery("#g-container-main").css("padding-left", "180px");
@@ -519,6 +530,7 @@ defined('_JEXEC') or die;
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
                 jQuery(".image-title").css("opacity","1");
+                jQuery(".sidebar-formbuilder").css("display","none");
                 setTimeout(() => {
                     jQuery(".g-menu-parent-indicator").css("display","block");
                 },50);
@@ -527,6 +539,7 @@ defined('_JEXEC') or die;
             jQuery(".tchooz-vertical-toplevel").css("width","250px");
             jQuery(".tchooz-vertical-item").css("width","auto");
             jQuery(".grey-navbar-icons").css("opacity","1");
+            jQuery(".sidebar-formbuilder").css("opacity","0");
             if(window.innerWidth >= 1280) {
                 jQuery("#g-footer").css("padding-left", "300px");
                 jQuery("#g-container-main").css("padding-left", "180px");
@@ -535,6 +548,7 @@ defined('_JEXEC') or die;
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
                 jQuery(".image-title").css("opacity","1");
+                jQuery(".sidebar-formbuilder").css("display","none");
                 setTimeout(() => {
                     jQuery(".g-menu-parent-indicator").css("display","block");
                 },50);
@@ -544,6 +558,8 @@ defined('_JEXEC') or die;
             jQuery(".tchooz-vertical-toplevel").css("width","55px");
             jQuery(".image-title").css("opacity","0");
             jQuery(".g-menu-parent-indicator").css("display","none");
+            jQuery(".sidebar-formbuilder").css("display","block");
+            jQuery(".sidebar-formbuilder").css("opacity","1");
             if(window.innerWidth >= 1280) {
                 jQuery("#g-container-main").css("padding-left", "0");
                 jQuery("#g-footer").css("padding-left", "80px");

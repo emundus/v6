@@ -10,8 +10,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors.js');
-$document->addStyleSheet('media/com_emundus_onboard/app.css');
+$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
+$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
 JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM');
 JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG');
@@ -47,4 +47,4 @@ $actualLanguage = substr($lang->getTag(), 0, 2);
 
 <div id="em-addProgram-vue" prog="<?= $this->id ;?>" actualLanguage="<?= $actualLanguage ?>"></div>
 
-<script src="media/com_emundus_onboard/app.js"></script>
+<script src="media/com_emundus_onboard/app_onboard.js"></script>

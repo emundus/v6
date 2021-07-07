@@ -125,7 +125,19 @@ export default {
   },
   methods: {
     UpdateParams() {
+      //console.log("changes");
+      //console.log(this.element);
+      //let prid=(this.tempEl.show_title.titleraw.split("_"))[1];
+      //console.log("this is prid "+prid);
+      //console.log(this.label.en);
+      //console.log()
       this.changes = true;
+      //if(!((this.label.en).contains("___"+prid))) {
+        //this.label.en = prid+'_'+this.label.en
+      //}
+      //if(!this.label.fr.contains('___'+prid)) {
+        //this.label.fr = prid+'_'+this.label.fr
+      //}
       this.axioschange(this.intro, this.tempEl.intro_raw);
       this.axioschange(this.label, this.tempEl.show_title.titleraw);
       this.updatefalang(this.label);
@@ -151,6 +163,8 @@ export default {
       this.initialisation();
     },
     axioschange(label, labelraw) {
+
+
       axios({
         method: "post",
         url:
@@ -255,6 +269,8 @@ export default {
     },
     initialisation() {
       this.tempEl = JSON.parse(JSON.stringify(this.element));
+      //console.log("initialisation");
+      //console.log(this.tempEl.show_title.titleraw.split('_'));
       this.axiostrad(this.tempEl.intro_raw)
         .then(response => {
           this.intro.fr = response.data.fr;
@@ -265,8 +281,10 @@ export default {
         });
       this.axiostrad(this.tempEl.show_title.titleraw)
         .then(response => {
-          this.label.fr = response.data.fr;
-          this.label.en = response.data.en;
+          //this.label.fr = (response.data.fr.split('_'))[1];
+         // this.label.en = (response.data.en.split('_'))[1];
+          this.label.fr=response.data.fr
+          this.label.en=response.data.en
         })
         .catch(function(response) {
           console.log(response);

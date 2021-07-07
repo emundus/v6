@@ -1,6 +1,6 @@
 <template>
     <div class="w-row">
-      <div class="tchooz-sidebar-menu">
+      <!--<div class="tchooz-sidebar-menu">
         <transition name="slide-right">
           <div class="col-md-12 tchooz-sidebar-menus">
             <div class="container-menu-funnel">
@@ -13,9 +13,25 @@
             </div>
           </div>
         </transition>
-      </div>
+      </div>-->
 
-      <div class="col-md-10 col-md-offset-1 p-1" style="padding-left: 2em !important;">
+      <div class="col-md-12 p-1" style="padding-left: 2em !important;">
+        <!--- start Menu --->
+        <div class="d-flex" >
+          <ul class="nav nav-tabs topnav">
+
+            <li v-for="(settingsCat, index) in settingsCategories[langue]" :key="index">
+              <a @click="menuHighlight = index"
+                 class="menu-item"
+                 :class="menuHighlight == index ? 'w--current' : ''"
+              >{{ settingsCat }}</a>
+            </li>
+
+
+          </ul>
+          <br>
+        </div>
+
         <div class="d-flex justify-content-between" style="margin-bottom: 10px">
           <div class="d-flex" style="width: 100%;justify-content: end;margin-bottom: -90px;" v-if="menuHighlight != 0 && menuHighlight != 7  && menuHighlight != 8">
             <transition name="slide-right">
@@ -28,7 +44,7 @@
                 <i class="fas fa-check"></i><span class="mr-1">{{Saved}}</span>
               </div>
             </transition>
-            <button type="button" v-if="menuHighlight != 0 && menuHighlight != 7" @click="saveCurrentPage()" class="bouton-sauvergarder-et-continuer" :style="menuHighlight == 4 || menuHighlight == 5 ? 'right: 10%' : ''">{{ Save }}</button>
+            <button type="button" v-if="menuHighlight != 0 && menuHighlight != 7" @click="saveCurrentPage()" class="bouton-sauvergarder-et-continuer" :style="'right: 10%'">{{ Save }}</button>
           </div>
         </div>
         <transition name="slide-right">
@@ -334,10 +350,23 @@ export default {
   color: #12DB42;
 }
 .bouton-sauvergarder-et-continuer,.loading-form-save{
-  position: static;
+  position: fixed;
   z-index: 10;
   width: auto;
   margin-top: -14px;
   margin-right: 20px;
+}
+
+.topnav  {
+  /*background-color: #333;*/
+  overflow: hidden;
+  margin: 0 auto;
+  border-bottom: 1px solid #ddd
+}
+.w--current{
+  border: 1px solid #ddd;
+  background-color: white;
+  border-bottom-left-radius: unset;
+  border-bottom-right-radius: unset;
 }
 </style>

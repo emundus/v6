@@ -15,7 +15,7 @@
     </div>
     <div style="width: max-content;margin-left: 20px" v-show="updatePage && indexPage == object_json.id">
       <div class="input-can-translate" style="margin-top: 40px">
-        <input v-if="object_json.show_title" v-model="object_json.show_title.label[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.label_page ? '' : 'mb-1'" @keyup.enter="updateLabelPage(object_json)" :id="'update_input_' + object_json.id"/>
+        <input v-if="object_json.show_title" v-model="object_json.show_title.label[actualLanguage]"  class="form__input field-general w-input" style="width: 400px;" :class="translate.label_page ? '' : 'mb-1'" @keyup.enter="updateLabelPage(object_json)" :id="'update_input_' + object_json.id"/>
         <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPage(object_json.id)"></button>
         <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
           <a @click="updateLabelPage(object_json)" :title="Validate">
@@ -132,6 +132,7 @@
                             @show="show"
                             :id="element.id"
                             :key="keyElements['element' + element.id]"
+                            :profileId="prid"
                     />
                     <modalDuplicateElement
                             :ID="element.id"
@@ -143,7 +144,7 @@
                             @modalClosed="$emit('modalClosed')"
                             :key="keyElements['element' + element.id]"
                     />
-                    <div class="d-flex builder-item-element__properties handle" :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id}">
+                    <div class="d-flex builder-item-element__properties" :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id, 'handle': !clickUpdatingLabel}">
                       <div class="w-100">
                         <div class="d-flex" style="align-items: baseline" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''">
                           <span v-if="element.label_value" @click="enableLabelInput(element.id)" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
@@ -243,7 +244,8 @@ export default {
     eval: Number,
     prid: String,
     actualLanguage: String,
-    manyLanguages: Number
+    manyLanguages: Number,
+    pid: Number
   },
   components: {
     Editor,
@@ -289,6 +291,23 @@ export default {
         label_page: false,
         intro_page: false,
       },
+      elementAssociateDocUpdateForm: {
+        name: {
+          fr: '',
+          en: ''
+        },
+        description: {
+          fr: '',
+          en: ''
+        },
+        nbmax: 1,
+        selectedTypes: {
+          pdf: false,
+          'jpg;png;gif': false,
+          'doc;docx;odt': false,
+          'xls;xlsx;odf': false,
+        },
+      },
 
       // TRANSLATIONS
       update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
@@ -315,6 +334,10 @@ export default {
   },
   methods: {
     // Elements update
+    splitProfileIdFromLabel(label){
+      return (label.split(/-(.+)/))[1];
+    },
+
     async updateElementsOrder(group, list, elt) {
       var elements = list.map((element, index) => {
         return { id: element.id, order: index + 1 };
@@ -345,16 +368,7 @@ export default {
           });
         });
         elt.group_id = group;
-      }).catch(e => {
-        /*this.$emit(
-                "show",
-                "foo-velocity",
-                "error",
-                this.orderFailed,
-                this.updating
-        );
-        console.log(e);*/
-      });
+      }).catch(e => {});
     },
 
     updateRequireElement(element) {
@@ -382,7 +396,6 @@ export default {
               this.updateFailed,
               this.updating
           );
-          console.log(e);
         });
       }, 300);
     },
@@ -421,6 +434,49 @@ export default {
         document.getElementById('publish_icon_' + element.id).classList.remove('fa-eye-slash');
       }
     },
+    deleteAssociateElementDoc(docid){
+
+      //delete doc drop files
+      axios({
+        method: "post",
+        url:
+            "index.php?option=com_emundus_onboard&controller=campaign&task=deletedocumentdropfile",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          did: docid,
+        })
+      }).then((rep) => {});
+
+      // delete document form profile
+      axios({
+        method: "post",
+        url:
+            "index.php?option=com_emundus_onboard&controller=form&task=removeDocumentFromProfile",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          did: docid,
+        })
+      }).then((rep) => {});
+
+      // remove document
+      axios({
+        method: "post",
+        url:
+            "index.php?option=com_emundus_onboard&controller=form&task=removeDocument",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          did: docid,
+          prid: this.prid,
+          cid: this.cid
+        })
+      }).then((rep) => {});
+    },
 
     deleteElement(element,index) {
       if(this.clickUpdatingLabel) {
@@ -437,6 +493,10 @@ export default {
         reverseButtons: true
       }).then(result => {
         if (result.value) {
+
+          if(element.plugin=="emundus_fileupload") {
+            this.deleteAssociateElementDoc(element.params.attachmentId);
+          }
           axios({
             method: "post",
             url:
@@ -458,9 +518,7 @@ export default {
               delete this.object_json.Groups['group_' + element.group_id].elements['element' + element.id];
               this.$forceUpdate();
             });
-          }).catch(e => {
-            console.log(e);
-          });
+          }).catch(e => {});
         }
       });
     },
@@ -481,8 +539,66 @@ export default {
       this.$emit('modalOpen')
       this.$modal.show('modalEditElement' + element.id)
     },
+    retrieveAssociateElementDoc(docid){
+      axios({
+        method: "post",
+        url: 'index.php?option=com_emundus_onboard&controller=formbuilder&task=retriveElementFormAssociatedDoc',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          gid:2,
+          docid:docid
+        })
+      }).then((result)=>{
+        this.elementAssociateDocUpdateForm.description[this.actualLanguage]=result.data.description;
+
+        if (result.data.allowed_types.includes('pdf')) {
+          this.elementAssociateDocUpdateForm.selectedTypes.pdf = true;
+        } else {
+          this.elementAssociateDocUpdateForm.selectedTypes.pdf = false;
+        }
+        if (result.data.allowed_types.includes('jpg') || result.data.allowed_types.includes('png') || result.data.allowed_types.includes('gif')) {
+          this.elementAssociateDocUpdateForm.selectedTypes['jpg;png;gif'] = true;
+        } else {
+          this.elementAssociateDocUpdateForm.selectedTypes['jpg;png;gif'] = false;
+        }
+        if (result.data.allowed_types.includes('xls') || result.data.allowed_types.includes('xlsx') || result.data.allowed_types.includes('odf')) {
+          this.elementAssociateDocUpdateForm.selectedTypes['xls;xlsx;odf'] = true;
+        } else {
+          this.elementAssociateDocUpdateForm.selectedTypes['xls;xlsx;odf'] = false;
+        }
+
+
+        this.elementAssociateDocUpdateForm.nbmax=result.data.nbmax;
+      })
+    },
+
+    updateAssociateDocElement(params){
+      axios({
+        method: "post",
+        url: 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify(params)
+      }).then((rep) => {
+        axios({
+          method: "post",
+          url: 'index.php?option=com_emundus_onboard&controller=campaign&task=updateDocumentFalang',
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify(params)
+        }).then((rep)=>{})
+      });
+    },
 
     updateLabelElement(element) {
+      if(element.plugin=="emundus_fileupload") {
+        this.retrieveAssociateElementDoc(element.params.attachmentId);
+      }
+
       let labels = {
         fr: element.label.fr,
         en: element.label.en
@@ -491,6 +607,11 @@ export default {
         labels.en = labels.fr;
         element.label.en = labels.fr;
       }
+      if(element.plugin=="emundus_fileupload") {
+        this.elementAssociateDocUpdateForm.name.en=labels.en;
+        this.elementAssociateDocUpdateForm.name.fr=labels.fr
+      }
+
       axios({
         method: "post",
         url:
@@ -538,6 +659,26 @@ export default {
             });
           });
         } else {
+
+          if(element.plugin=="emundus_fileupload") {
+            let types = [];
+            Object.keys(this.elementAssociateDocUpdateForm.selectedTypes).forEach(key => {
+              if (this.elementAssociateDocUpdateForm.selectedTypes[key] == true) {
+                types.push(key);
+              }
+            });
+
+            let updateparams = {
+              document: this.elementAssociateDocUpdateForm,
+              types: types,
+              cid: this.cid,
+              pid: this.prid,
+              did: element.params.attachmentId,
+              text_fr: labels.fr,
+              text_en: labels.en
+            };
+            this.updateAssociateDocElement(updateparams);
+          }
           axios({
             method: "get",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
@@ -570,7 +711,6 @@ export default {
                 this.updateFailed,
                 this.updating
         );
-        console.log(e);
       });
     },
 
@@ -610,7 +750,6 @@ export default {
                   this.updateFailed,
                   this.updating
           );
-        console.log(e);
       });
     },
     //
@@ -666,7 +805,6 @@ export default {
                 this.updateFailed,
                 this.updating
         );
-        console.log(e);
       });
     },
 
@@ -704,9 +842,7 @@ export default {
               this.updateGroup = false;
               this.$forceUpdate();
             });
-          }).catch(e => {
-            console.log(e);
-          });
+          }).catch(e => {});
         }
       });
     },
@@ -745,7 +881,6 @@ export default {
                 this.orderFailed,
                 this.updating
         );
-        console.log(e);
       });
     },
 
@@ -882,6 +1017,7 @@ export default {
                   this.update
               );
               page.show_title.value = page.show_title.label[this.actualLanguage];
+              page.label = page.show_title.label[this.actualLanguage];
               this.updatePage = false;
             });
       }).catch(e => {
@@ -892,7 +1028,6 @@ export default {
             this.updateFailed,
             this.updating
         );
-        console.log(e);
       });
     },
 
@@ -943,7 +1078,6 @@ export default {
             this.updateFailed,
             this.updating
         );
-        console.log(e);
       });
     },
 

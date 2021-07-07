@@ -11,8 +11,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors.js');
-$document->addStyleSheet('media/com_emundus_onboard/app.css');
+$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
+$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
 ## MENU ##
 JText::script('COM_EMUNDUS_ONBOARD_SIDEMENUHELP');
@@ -27,6 +27,8 @@ JText::script('COM_EMUNDUS_ONBOARD_ADD');
 JText::script('COM_EMUNDUS_ONBOARD_SAVE');
 JText::script('COM_EMUNDUS_ONBOARD_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_BUILD_YOUR_FORM');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU_ACTION');
 ## END ##
 
 ## FIELDS ##
@@ -40,6 +42,7 @@ JText::script('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME');
 JText::script('COM_EMUNDUS_ONBOARD_FORM_AFFECTCAMPAIGNS');
 JText::script('COM_EMUNDUS_ONBOARD_FORM_CAMPAIGNSEMPTY');
 JText::script('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN');
+JText::script('COM_EMUNDUS_ONBOARD_BACK_WITHOUT_ASSOCIATION');
 ## END ##
 
 ## DOCUMENTS ##
@@ -119,6 +122,7 @@ JText::script('COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN');
 JText::script('COM_EMUNDUS_ONBOARD_TYPE_RADIOBUTTON');
 JText::script('COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA');
 JText::script('COM_EMUNDUS_ONBOARD_TYPE_DISPLAY');
+JText::script('COM_EMUNDUS_ONBOARD_TYPE_FILE');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_MAXLENGTH');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER_HELP');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_MENUDELETED');
@@ -210,4 +214,4 @@ if(count($languages) > 1){
 
 <div id="<?= $vue; ?>" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" cid="<?= $this->cid; ?>" eval="<?= $this->eval; ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>"></div>
 
-<script src="media/com_emundus_onboard/app.js"></script>
+<script src="media/com_emundus_onboard/app_onboard.js"></script>

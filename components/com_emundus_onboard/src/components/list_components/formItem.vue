@@ -13,12 +13,12 @@
                 <h2 class="nom-campagne-block">{{ data.form_label }}</h2>
               </div>
               <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
-                {{ isPublished ? publishedTag : unpublishedTag }}
+                {{ isPublished ? translations.publishedTag : translations.unpublishedTag }}
               </div>
             </div>
             <div>
-              <p class="pl-30px associated-campaigns" v-if="campaigns.length == 1">{{campaignAssociated}} :</p>
-              <p class="pl-30px associated-campaigns" v-if="campaigns.length > 1">{{campaignsAssociated}} :</p>
+              <p class="pl-30px associated-campaigns" v-if="campaigns.length == 1">{{translations.campaignAssociated}} :</p>
+              <p class="pl-30px associated-campaigns" v-if="campaigns.length > 1">{{translations.campaignsAssociated}} :</p>
               <ul style="margin-top: 10px">
                 <li v-for="(campaign, index) in campaigns" class="campaigns-item">{{campaign.label}}</li>
               </ul>
@@ -26,7 +26,7 @@
             <div class="stats-block" style="justify-content: flex-end">
               <a class="cta-block pointer"
                  @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
-                 :title="Modify">
+                 :title="translations.Modify">
                 <em class="fas fa-pen"></em>
               </a>
             </div>
@@ -54,13 +54,13 @@ export default {
       selectedData: [],
       updateAccess: false,
       campaigns: [],
-      publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-      unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
-      passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
-      Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-      Visualize: Joomla.JText._("COM_EMUNDUS_ONBOARD_VISUALIZE"),
-      campaignAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED"),
-      campaignsAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED")
+      translations:{
+        publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
+        unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
+        Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
+        campaignAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED"),
+        campaignsAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED")
+      },
     };
   },
 

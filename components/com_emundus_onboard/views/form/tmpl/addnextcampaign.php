@@ -10,8 +10,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors.js');
-$document->addStyleSheet('media/com_emundus_onboard/app.css');
+$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
+$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
 JText::script('COM_EMUNDUS_ONBOARD_FROM');
 JText::script('COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED');
@@ -186,7 +186,11 @@ JText::script('COM_EMUNDUS_ONBOARD_CHOOSE_CAMPAIGN_WARNING');
 JText::script('COM_EMUNDUS_ONBOARD_NO_AFFECTED_FORM');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_ADDGRID');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_EDITGRID');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_DELETEGRID');
 JText::script('COM_EMUNDUS_ONBOARD_GRIDMODEL');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_DELETEGRID_QUESTION');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_GRIDDELETED');
 ## END ##
 
 ## TUTORIAL ##
@@ -209,4 +213,4 @@ if(count($languages) > 1){
 
 <div id="em-addFormNextCampaign-vue" campaignId="<?= $this->cid ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>" index="<?= $this->index ?>"></div>
 
-<script src="media/com_emundus_onboard/app.js"></script>
+<script src="media/com_emundus_onboard/app_onboard.js"></script>

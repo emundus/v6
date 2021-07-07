@@ -962,6 +962,9 @@ class EmundusonboardModelsettings extends JModelList {
             $orderings = $db->loadColumn();
             $order = $orderings[sizeof($orderings) - 1] + 1;
 
+            $dateTime = new Date('now', 'UTC');
+            $now = $dateTime->toSQL();
+
             $query->clear()
                 ->insert($db->quoteName('#__dropfiles_files'));
             $query->set($db->quoteName('catid') . ' = ' . $db->quote($campaign_cat))
@@ -974,9 +977,9 @@ class EmundusonboardModelsettings extends JModelList {
                 ->set($db->quoteName('size') . ' = ' . $db->quote($filesize))
                 ->set($db->quoteName('hits') . ' = ' . $db->quote(0))
                 ->set($db->quoteName('version') . ' = ' . $db->quote(''))
-                ->set($db->quoteName('created_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('modified_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('publish') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('created_time') . ' = ' . $db->quote($now))
+                ->set($db->quoteName('modified_time') . ' = ' . $db->quote($now))
+                ->set($db->quoteName('publish') . ' = ' . $db->quote($now))
                 ->set($db->quoteName('author') . ' = ' . $db->quote(JFactory::getUser()->id))
                 ->set($db->quoteName('language') . ' = ' . $db->quote(''));
             $db->setQuery($query);
@@ -995,7 +998,7 @@ class EmundusonboardModelsettings extends JModelList {
         $user = JFactory::getUser();
         $form_module = null;
 
-        $html = '<li class="col-md-6 em-print-button" id="' . explode('.',$file)[0] . '" style="margin-bottom: 10px"><a id="print" style="border-radius: 4px;text-decoration: unset" href="' . $dir . $file . '" download="">' . $filename . '</a></li>';
+        $html = '<li class="col-md-6 em-print-button" id="' . explode('.',$file)[0] . '" style="margin-bottom: 10px"><a id="print" style="border-radius: 4px;text-decoration: unset" href="' . $dir . $file . '" download=""><i class="fas fa-arrow-circle-down"></i>' . $filename . '</a></li>';
 
         try {
             $query->select('*')

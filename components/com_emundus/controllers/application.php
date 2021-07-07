@@ -5,7 +5,7 @@
  * @copyright   (C) 2016 eMundus LLC. All rights reserved.
  * @license     GNU General Public License
  */
-
+use \setasign\Fpdi\Fpdi;
 // ensure this file is being included by a parent file
 defined( '_JEXEC' ) or die( JText::_('RESTRICTED_ACCESS') );
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
@@ -133,7 +133,7 @@ class EmundusControllerApplication extends JControllerLegacy
         else {
                 echo JText::_('ACCESS_DENIED').' : '.$attachment['value'].' : '.$upload['filename'];
         }
-       
+
     }
 
     /**
@@ -289,24 +289,6 @@ class EmundusControllerApplication extends JControllerLegacy
             }
         }
 
-        /*if (!EmundusHelperAccess::asAccessAction(10, 'u', $user->id, $comment['fnum'])) {
-
-            echo json_encode((object) array('status' => false, 'msg' => JText::_("ACCESS_DENIED")));
-            exit;
-
-        } else {
-
-            $result = $m_application->editComment($comment_id, $comment_title, $comment_text);
-
-            if ($result)
-                $msg = JText::_('COMMENT_EDITED');
-            else
-                $msg = JTEXT::_('COMMENT_EDIT_ERROR');
-
-            echo json_encode((object) array('status' => $result, 'msg' => $msg));
-            exit;
-
-        }*/
 
         echo json_encode((object)$tab);
         exit;
@@ -372,8 +354,8 @@ class EmundusControllerApplication extends JControllerLegacy
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
             }
         }
-       
-       
+
+
         echo json_encode((object)$tab);
         exit;
     }
@@ -427,10 +409,20 @@ class EmundusControllerApplication extends JControllerLegacy
                 $res = true;
                 $menu_application = array();
                 $i=0;
-                //var_dump($res);
+
                 foreach($menus as $k => $menu) {
                     $action = explode('|', $menu['note']);
                     if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
+                        if($action[0] == 36){
+                            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_messenger'.DS.'models'.DS.'messages.php');
+
+                            $messenger = new EmundusmessengerModelmessages;
+                            $notifications = $messenger->getNotificationsByFnum($fnum);
+                            if($notifications > 0) {
+                                $menu['notifications'] = $messenger->getNotificationsByFnum($fnum);
+                            }
+                        }
+
                         $menu_application[] = $menu;
                         if ((intval($menu['rgt']) - intval($menu['lft'])) == 1) {
                             $menu_application[$i++]['hasSons'] = false;
@@ -480,14 +472,12 @@ class EmundusControllerApplication extends JControllerLegacy
     public function exportpdf()
     {
         $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getString('fnum', null);
-        $ids = $jinput->getString('ids', null);
-        $ids = explode(',', $ids);
-        $sid = $jinput->getInt('student_id', null);
-        $form_post = $jinput->getVar('forms', null);
+        $fnum = $jinput->post->getString('fnum', null);
+        $ids = $jinput->post->getString('ids', null);
+        $sid = $jinput->post->getInt('student_id', null);
+        $form_post = $jinput->post->getVar('forms', null);
 
-        if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum))
-        {
+        if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum)) {
             $exports = array();
             $tmpArray = array();
 
@@ -514,6 +504,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
             if (!empty($exports)) {
                 require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
+                require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                 $pdf = new ConcatPdf();
                 $pdf->setFiles($exports);
                 $pdf->concat();

@@ -134,7 +134,8 @@ class EmundusModelEmails extends JModelList {
 
                     if (isset($tmpl['to']['group'])) {
                         if (count($tmpl['to']['group']) > 0) {
-                            $where = ' eg.group_id IN ('.implode(',', $tmpl['to']['group']).')';
+                            $where .= $as_where?' OR ':'';
+                            $where .= ' eg.group_id IN ('.implode(',', $tmpl['to']['group']).')';
                             $as_where = true;
                         }
                     }
@@ -464,8 +465,13 @@ class EmundusModelEmails extends JModelList {
                     if ($tag['tag'] == 'PHOTO') {
                         if (empty($result))
                             $result = 'media/com_emundus/images/icones/personal.png';
-                        else
-                            $result = EMUNDUS_PATH_REL.$user_id.'/tn_'.$result;
+                        else {
+                            if(file_exists(EMUNDUS_PATH_REL.$user_id.'/tn_'.$result)) {
+                                $result = EMUNDUS_PATH_REL.$user_id.'/tn_'.$result;
+                            } else {
+                                $result = EMUNDUS_PATH_REL.$user_id.'/'.$result;
+                            }
+                        }
                     }
                     $replacements[] = $result;
 
@@ -567,9 +573,11 @@ class EmundusModelEmails extends JModelList {
                 if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
                     $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, @$groupParams->repeat_group_button == 1);
 
-                    if (empty($fabrikValues[$elt['id']]['val'])) {
+
+                    if (empty($fabrikValues[$elt['id']])) {
                         $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
                     }
+
 
                 } else {
                     if ($isDate) {
@@ -1207,7 +1215,7 @@ class EmundusModelEmails extends JModelList {
      */
     public function get_messages_to_from_user($user_id) {
 
-        $query = 'SELECT * FROM #__messages WHERE user_id_to ='.$user_id.' OR user_id_from ='.$user_id.' ORDER BY date_time desc';
+        $query = 'SELECT * FROM #__messages WHERE (user_id_to ='.$user_id.' OR user_id_from ='.$user_id.') AND folder_id <> 2 ORDER BY date_time desc';
 
         try {
 

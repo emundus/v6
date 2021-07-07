@@ -17,9 +17,14 @@ JFactory::getSession()->set('application_layout', 'tag');
 
 	            <?php if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $this->fnum)) :?>
                     <select class="chzn-select" multiple id="mytags">
-                        <?php foreach($this->alltags as $alltag) :?>
-                            <option value="<?php echo $alltag['id']; ?>"><?php echo $alltag['label']; ?></option>
+                        <?php foreach($this->groupedTags as $category => $value) :?>
+                            <optgroup value="<?php echo $category; ?>" label="<?= empty($category) ? JText::_('UNCATEGORIZED_TAGS') : JText::_($category) ;?>">
+                            <?php foreach($value as $tag) :?>
+                                <option value="<?php echo $tag['id']; ?>"><?php echo $tag['label']; ?></option>
+                            <?php endforeach; ?>
+                            </optgroup>
                         <?php endforeach; ?>
+                        
                     </select>&ensp;&ensp;
                     <button class="btn btn-success btn-xs" id="add-tags">
                         <?php echo JText::_('ADD'); ?>

@@ -386,6 +386,7 @@ input[type="date"].form-control, input[type="time"].form-control, input[type="da
   padding-top: 5%;
   height: 100%;
   border-left: solid 1px $light-grey;
+  overflow: auto;
 }
 
 .no-elements-tip{
@@ -404,7 +405,7 @@ input[type="date"].form-control, input[type="time"].form-control, input[type="da
 
 /* Modal */
 .v--modal-overlay{
-  background: unset !important;
+  background: #0000002e !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
 }
