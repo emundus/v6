@@ -2659,6 +2659,62 @@ class EmundusHelperFiles
         }
     }
 
+    public function getExportExcelFilterById($fid) {
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        if(!empty($fid)) {
+            $query->clear()
+                ->select('#__emundus_filters.*')
+                ->from($db->quoteName('#__emundus_filters'))
+                ->where($db->quoteName('#__emundus_filters.id') . '=' . (int)$fid);
+            $db->setQuery($query);
+            return $db->loadObject();
+        } else {
+            return false;
+        }
+    }
+
+    public function getAllLetters() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('#__emundus_setup_letters.*')
+                ->from($db->quoteName('#__emundus_setup_letters'));
+            $db->setQuery($query);
+            return $db->loadObjectList();
+
+        } catch(Exception $e) {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+
+    public function getLetterById($lid) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($lid)) {
+            try {
+                $query->clear()
+                    ->select('#__emundus_setup_letters.*')
+                    ->from($db->quoteName('#__emundus_setup_letters'))
+                    ->where($db->quoteName('#__emundus_setup_letters.id') . '=' . (int)$lid)
+                    ->andWhere($db->quoteName('#__emundus_setup_letters.template_type') . '=' . 4);
+
+                $db->setQuery($query);
+                return $db->loadObject();
+            } catch(Exception $e) {
+                echo $e->getMessage();
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     public function checkadmission() {
         $db = JFactory::getDBO();
 
@@ -2673,4 +2729,22 @@ class EmundusHelperFiles
         }
     }
 
+    /// this code will be fixed in the future
+    public function getSelectedElements($selectedElts) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+
+            $_string = implode(',', $selectedElts);
+            $_find_in_set = "'" . $_string . "'";
+
+            $query = "SELECT jfe.* FROM #__fabrik_elements AS jfe WHERE jfe.id IN ($_string) ORDER BY find_in_set(jfe.id, $_find_in_set)";
+            $db->setQuery($query);
+            $selected_elts = $db->loadObjectList();
+            return array('selected_elements' => $selected_elts);
+        } catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }
