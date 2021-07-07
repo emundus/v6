@@ -4383,7 +4383,7 @@ $(document).ready(function() {
                                 dataType: 'JSON',
                                 data: { fnum: fnum },
                                 success: function(result) {
-                                    /// never success ???
+                                    /////
                                 }, error: function(jqXHR, textStatus) {
                                     $.ajax({
                                         type: 'POST',

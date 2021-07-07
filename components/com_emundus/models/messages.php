@@ -1344,4 +1344,123 @@ class EmundusModelMessages extends JModelList {
             return false;
         }
     }
+
+    /// send email to fnum
+    public function sendEmailByFnum($fnum, $mail_from_sys, $mail_from_sys_name) {
+	    $logs = "";
+        $jinput = JFactory::getApplication()->input;
+
+        // If no mail sender info is provided (already in controller), we use the system global config
+        $mail_from_name = $jinput->post->getString('mail_from_name', $mail_from_sys_name);
+        $mail_from = $jinput->post->getString('mail_from', $mail_from_sys);
+
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'messages.php');
+
+        $m_messages = new EmundusModelMessages();
+        $m_emails = new EmundusModelEmails();
+        $m_files = new EmundusModelFiles();
+        $m_campaign = new EmundusModelCampaign();
+        $_meval = new EmundusModelEvaluation;
+
+        /// from fnum --> detect candidat email
+        $fnum_info = $m_files->getFnumInfos($fnum);
+
+        $candidat_email = $fnum_info['email'];
+
+        /// get message recap by fnum --> reuse the function models/messages.php/getMessageRecapByFnum($fnum)
+        $message = $m_messages->getMessageRecapByFnum($fnum);
+
+        $email_recap = $message['message_recap'];                   /// length = 1
+        $letter_recap = $message['attached_letter'];                /// length >= 1
+
+        // get programme info
+        $programme = $m_campaign->getProgrammeByTraining($fnum_info['training']);
+
+        $toAttach = [];
+        $post = [
+            'FNUM' => $fnum_info['fnum'],
+            'USER_NAME' => $fnum_info['name'],
+            'COURSE_LABEL' => $programme->label,
+            'CAMPAIGN_LABEL' => $fnum_info['label'],
+            'CAMPAIGN_YEAR' => $fnum_info['year'],
+            'CAMPAIGN_START' => $fnum_info['start_date'],
+            'CAMPAIGN_END' => $fnum_info['end_date'],
+            'SITE_URL' => JURI::base(),
+            'USER_EMAIL' => $fnum_info['email'],
+        ];
+
+        $tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum_info['fnum']);
+
+        $body = $m_emails->setTagsFabrik($email_recap->message, [$fnum_info['fnum']]);
+        $subject = $m_emails->setTagsFabrik($email_recap->subject, [$fnum_info['fnum']]);
+
+        // Tags are replaced with their corresponding values using the PHP preg_replace function.
+        $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
+        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+
+        $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
+        $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
+
+        // If the email sender has the same domain as the system sender address.
+        if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+            $mail_from_address = $mail_from;
+        } else {
+            $mail_from_address = $mail_from_sys;
+        }
+
+        // Set sender
+        $sender = [
+            $mail_from_address,
+            $mail_from_name
+        ];
+
+        // Configure email sender
+        $mailer = JFactory::getMailer();
+        $mailer->setSender($sender);
+        $mailer->addReplyTo($mail_from, $mail_from_name);
+        $mailer->addRecipient($fnum_info['email']);
+        $mailer->setSubject($subject);
+        $mailer->isHTML(true);
+        $mailer->Encoding = 'base64';
+        $mailer->setBody($body);
+
+        $attachments = $_meval->getLettersByFnums($fnum, $attachments = true);
+
+        foreach ($attachments['attachments'] as $key => $value) {
+            $attachment_ids[] = $value['id'];
+        }
+
+        $attachment_ids = array_unique(array_filter($attachment_ids));
+
+        /// get attachment letters by fnum
+        $file_path = [];
+        foreach($attachment_ids as $key => $value) {
+            $attached_letters = $_meval->getFilesByAttachmentFnums($value, [$fnum]);
+            $file_path[] = EMUNDUS_PATH_ABS . $attached_letters[0]->user_id . DS . $attached_letters[0]->filename;
+        }
+
+        $mailer->addAttachment($file_path);
+        $send = $mailer->Send();
+
+        if($send !== true) {
+            $logs .= '<div class="alert alert-dismissable alert-danger">'.JText::_('EMAIL_NOT_SENT') . ' : ' . $candidat_email .' '. $send->__toString() . '</div>';
+            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
+        } else {
+            $message = array(
+              'applicant_id_to' => $fnum_info['applicant_id'],
+              'subject' => $subject,
+              'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $candidat_email . '</i><br>' . $body
+            );
+            $m_emails->logEmail($message);
+            $logs .= JText::_('EMAIL_SENT').' : '.$candidat_email.'<br>';
+            JLog::add($candidat_email.' '.$body, JLog::INFO, 'com_emundus.email');
+        }
+
+        return array('sending_status' => $send, 'log_message' => $logs);
+    }
 }
