@@ -10,6 +10,10 @@ if (!empty($fnum)) {
     }
 }', 'Send results to candidat', 1);
 
+-- update table jos_emundus_tag_assoc ---
+alter table jos_emundus_tag_assoc
+    add tag_assoc_type varchar(255) not null;
+
 -- new module with published = 0 by default --
 INSERT INTO jos_modules (title, note, content, ordering, position, checked_out, checked_out_time, publish_up, publish_down, published, module, access, showtitle, params, client_id, language) VALUES ('MESSAGE INSTANTANÉ', '', '<p style="text-align: center;">[QUICK MESSAGE]</p>', 1, '', 0, null, null, null, 0, 'mod_emundus_custom', 1, 1, '{"prepare_content":0,"layout":"_:default","moduleclass_sfx":"","cache":1,"cache_time":900,"cachemode":"static","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}', 0, '*');
 
