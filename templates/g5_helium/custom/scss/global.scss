@@ -26,40 +26,44 @@ $complete-gradient: linear-gradient(rgba(240,238,109,10), rgba(50,238,95,50), rg
 $simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
 
 
-/* GENERAL */
+  /* GENERAL */
 
-*:focus {
-  outline: none;
-}
-
-body {
-  line-height: normal;
-
-  p {
-    margin: 0;
-
-    a:hover {
-      text-decoration: underline;
-    }
-  }
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   color: $base-primary-color;
-  margin-top: 50px;
-  margin-bottom: 50px;
   font-weight: 700;
 }
 
 h1 {
-  font-size: 2em;
-  position: relative;
+  margin: 50px 0px;
+  font-size: 2.25rem;
 }
+
+h2 {
+  margin: 50px 0px;
+  font-size: 1.9rem;
+}
+
+h3 {
+  margin: 30px 0px;
+  font-size: 1.5rem;
+}
+
+h4 {
+  margin: 30px 0px;
+  font-size: 1.25rem;
+}
+
+h5 {
+  margin: 30px 0px;
+  font-size: 1rem;
+}
+
+h6 {
+  margin: 30px 0px;
+  font-size: 0.85rem;
+}
+
+
 
 .view-login h1::after,
 .view-registration h1::after,
