@@ -57,7 +57,7 @@ echo $description;
 
                 <div class="col-xs-12 col-md-6 main-page-file-info">
                     <p class="em-tags-display"><?= $file_tags_display; ?></i></p>
-                    <a class="btn btn-warning" href="<?php echo JRoute::_($first_page_url); ?>" role="button">
+                    <a class="btn btn-primary" href="<?php echo JRoute::_($first_page_url); ?>" role="button">
                         <i class="folder open outline icon"></i> <?= ($is_admission) ? JText::_('OPEN_ADMISSION') : JText::_('OPEN_APPLICATION'); ?>
                     </a>
 
