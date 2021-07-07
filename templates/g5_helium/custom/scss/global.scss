@@ -13,15 +13,12 @@ $dark-blue: #16AFE1;
 $light-green: #32EE5F;
 $dark-green: #12DB42;
 $light-yellow: #F0EE6D;
-
 $night-blue: #353544;
 $dark-grey: #5A5A72;
 $grey: #B0B0BF;
 $light-grey: #F4F4F6;
 $white: #FFFFFF;
-
 $red: #e5283B;
-
 $complete-gradient: linear-gradient(rgba(240,238,109,10), rgba(50,238,95,50), rgba(240,238,109,96));
 $simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
 
@@ -63,23 +60,22 @@ h6 {
   font-size: 0.85rem;
 }
 
+.modal-dialog .modal-body, .contentpane.modal {
+  h1, h2, h3, h4, h5, h6 {
+    color: $dark-blue !important;
+  }
+
+  form legend {
+    color: $dark-blue !important;
+  }
+}
+
 .swal2-title {
   color: #000;
   margin: 10px 0 20px 0;
 }
 
-button.swal2-styled{
-  padding: 5px 20px;
-  border-radius: 25px !important;
-}
-
-button.swal2-confirm{
-  background: #12DB42 !important;
-}
-
-h2 {
-  font-size: 1.5rem;
-}
+/* TEXT / PARAGRAPH */
 
 a,
 p,
@@ -93,10 +89,6 @@ legend {
   font-weight: 400;
   font-style: normal;
   line-height: normal;
-}
-
-a:focus {
-  outline: none;
 }
 
 a {
@@ -271,21 +263,7 @@ ul {
   }
 }
 
-.contentpane.modal {
-  h1, h2, h3, h4, h5, h6 {
-    color: $dark-blue !important;
-  }
 
-  form legend {
-    color: $dark-blue !important;
-  }
-}
-
-.modal-dialog .modal-body {
-  h1, h2, h3, h4, h5, h6 {
-    color: $dark-blue !important;
-  }
-}
 
 
 .contentpane.modal form .fabrikActions.form-actions button.btn {
