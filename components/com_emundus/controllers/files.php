@@ -3869,6 +3869,161 @@ class EmundusControllerFiles extends JControllerLegacy
         echo $letters;
         exit;
     }
+
+    // send customized email to candidats when updating new status :: (+) attachments if any -- (+) template email if any -- (+) concerned candidats will receive the notification
+    // params :: [fnums], status
+    public function notifycandidat() {
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+
+        $app    = JFactory::getApplication();
+        $jinput = $app->input;
+
+        $fnums  = $jinput->getString('fnums', null);
+        $state  = $jinput->getInt('state', null);
+
+        $h_files    = new EmundusHelperFiles();
+
+        /// define models of all components
+        $m_messages = new EmundusModelMessages();
+        $m_files = $this->getModel('Files');
+        $m_evals = new EmundusModelEvaluation();
+        $m_emails = new EmundusModelEmails();
+        $m_campaign = new EmundusModelCampaign();
+
+        $config = JFactory::getConfig();
+
+        // Get default mail sender info
+        $email_from_sys = $app->getCfg('mailfrom');
+        $email_from_sys_name = $config->get('fromname');
+
+        // If no mail sender info is provided, we use the system global config.
+        $email_from_name = $jinput->post->getString('mail_from_name', $email_from_sys_name);
+        $email_from = $jinput->post->getString('mail_from', $email_from_sys);
+
+        /// end of default mail sender
+
+        if($fnums == "all") {
+            $fnums = $m_files->getAllFnums();
+        }
+
+        if (!is_array($fnums)) {
+            $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+        }
+
+        if (count($fnums) == 0 || !is_array($fnums)) {
+            $res = false;
+            $msg = JText::_('STATE_ERROR');
+
+            echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
+            exit;
+        }
+
+        $validFnums = array();
+
+        foreach ($fnums as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum)) {
+                $validFnums[] = $fnum;
+            }
+        }
+
+        $res = $m_files->updateState($validFnums, $state);
+        $msg = '';
+
+        /// next tick --> send email for each fnum in [fnums]
+        foreach($validFnums as $key => $fnum) {
+            /// from fnum --> detect candidat email
+            $fnum_info = $m_files->getFnumInfos($fnum);
+
+            $candidat_email = $fnum_info['email'];
+
+            /// get message recap by fnum --> reuse the function models/messages.php/getMessageRecapByFnum($fnum)
+            $message = $m_messages->getMessageRecapByFnum($fnum);
+
+            $email_recap = $message['message_recap'];                   /// length = 1
+            $letter_recap = $message['attached_letter'];                /// length >= 1
+
+            // get programme info
+            $programme = $m_campaign->getProgrammeByTraining($fnum_info['training']);
+
+            $post = [
+                'FNUM' => $fnum_info['fnum'],
+                'USER_NAME' => $fnum_info['name'],
+                'COURSE_LABEL' => $programme->label,
+                'CAMPAIGN_LABEL' => $fnum_info['label'],
+                'CAMPAIGN_YEAR' => $fnum_info['year'],
+                'CAMPAIGN_START' => $fnum_info['start_date'],
+                'CAMPAIGN_END' => $fnum_info['end_date'],
+                'SITE_URL' => JURI::base(),
+                'USER_EMAIL' => $fnum_info['email'],
+            ];
+
+            if(!empty($email_recap) and !is_null($email_recap)) {
+                $tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum_info['fnum']);
+
+                $body = $m_emails->setTagsFabrik($email_recap->message, [$fnum_info['fnum']]);
+
+                $subject = $m_emails->setTagsFabrik($email_recap->subject, [$fnum_info['fnum']]);
+
+                // Tags are replaced with their corresponding values using the PHP preg_replace function.
+                $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
+                $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+
+                $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $email_from);
+                $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $email_from_name);
+
+                // If the email sender has the same domain as the system sender address.
+                if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+                    $mail_from_address = $mail_from;
+                } else {
+                    $mail_from_address = $email_from_sys;
+                }
+
+                // Set sender
+                $sender = [
+                    $mail_from_address,
+                    $mail_from_name
+                ];
+
+                // Configure email sender
+                $mailer = JFactory::getMailer();
+                $mailer->setSender($sender);
+                $mailer->addReplyTo($mail_from, $mail_from_name);
+                $mailer->addRecipient($fnum_info['email']);
+                $mailer->setSubject($subject);
+                $mailer->isHTML(true);
+                $mailer->Encoding = 'base64';
+                $mailer->setBody($body);
+
+                $attachments = $m_evals->getLettersByFnums($fnum, $attachments = true);
+
+                if(!empty($attachments) and !is_null($attachments)) {
+
+                    foreach ($attachments['attachments'] as $key => $value) {
+                        $attachment_ids[] = $value['id'];
+                    }
+
+                    $attachment_ids = array_unique(array_filter($attachment_ids));
+
+                    /// get attachment letters by fnum
+                    $file_path = [];
+                    foreach ($attachment_ids as $key => $value) {
+                        $attached_letters = $m_evals->getFilesByAttachmentFnums($value, [$fnum]);
+                        $file_path[] = EMUNDUS_PATH_ABS . $attached_letters[0]->user_id . DS . $attached_letters[0]->filename;
+                    }
+
+                    $mailer->addAttachment($file_path);
+                }
+                $send = $mailer->Send();
+            }
+        }
+
+        echo json_encode(['status'=>true]);
+        exit;
+    }
 }
 
 

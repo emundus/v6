@@ -5244,7 +5244,8 @@ $(document).ready(function() {
                         $('.modal-body').append('<div>' +
                             '<img src="'+loadingLine+'" alt="loading"/>' +
                             '</div>');
-                        url = 'index.php?option=com_emundus&controller=files&task=updatestate';
+                        //url = 'index.php?option=com_emundus&controller=files&task=updatestate';
+                        url = 'index.php?option=com_emundus&controller=files&task=notifycandidat';
 
                         if(result.status) {
                             Swal.fire({
