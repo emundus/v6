@@ -26,7 +26,7 @@ $complete-gradient: linear-gradient(rgba(240,238,109,10), rgba(50,238,95,50), rg
 $simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
 
 
-  /* GENERAL */
+/* TITLES  */
 
 h1, h2, h3, h4, h5, h6 {
   color: $base-primary-color;
@@ -61,15 +61,6 @@ h5 {
 h6 {
   margin: 30px 0px;
   font-size: 0.85rem;
-}
-
-
-
-.view-login h1::after,
-.view-registration h1::after,
-.view-reset h1::after,
-.view-form.em-formRegistrationCenter h1::after {
-  display: none !important;
 }
 
 .swal2-title {
@@ -349,10 +340,6 @@ ul {
 
 #system-message .alert.alert-message h1 {
   margin: 0px;
-
-  &::after {
-    display: none;
-  }
 }
 
 #system-message{
@@ -873,9 +860,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     padding: 0 !important;
   }
 
-  h1::after {
-    display: none !important;
-  }
 
   .right-side.campaingapply {
     padding-left: 0px !important;
@@ -1011,9 +995,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 /* PAGE ACCUEIL */
 .homepage {
-  h1:first-child {
-    margin-bottom: 25px;
-  }
 
   .blog-featuredhomepage {
     margin-bottom: 50px;
@@ -3272,12 +3253,7 @@ div#em-appli-block {
 
 
   .blog-featuredhomepage {
-    h1:first-child {
-      margin-bottom: 30px;
-      margin-top: 30px;
-    }
-
-    p {
+     p {
       text-align: justify;
     }
   }
@@ -3325,10 +3301,6 @@ div#em-appli-block {
   /* GENERAL */
   #g-container-main.g-wrapper {
     padding: 20px;
-  }
-
-  h1::after {
-    display: none !important;
   }
 
   /* FAQ */
@@ -3599,16 +3571,6 @@ div#em-appli-block {
     }
   }
 
-
-  .gantry h1::after {
-    display: none !important;
-  }
-
-  .view-form h1::after,
-  .view-details h1::after {
-    display: none !important;
-  }
-
   /* FOOTER */
 
   .gantry footer#g-footer .logo a {
@@ -3681,15 +3643,7 @@ div#em-appli-block {
       margin: 0px 51px 0px 0px !important;
     }
   }
-
-  h1 {
-    font-size: 1.8em !important;
-
-    &::after {
-      margin-top: 45px !important;
-      width: 2.7rem !important;
-    }
-  }
+  
 
   ul.lang-inline {
     text-align: right;
@@ -3968,22 +3922,6 @@ div#em-appli-block {
 
   #g-main-mainbody {
     padding-top: 0;
-  }
-
-  h1 {
-    font-size: 28px;
-  }
-
-  h2 {
-    font-size: 25px;
-  }
-
-  h3 {
-    font-size: 22px;
-  }
-
-  h4 {
-    font-size: 18px;
   }
 
   .col-xs-12.col-md-6,
