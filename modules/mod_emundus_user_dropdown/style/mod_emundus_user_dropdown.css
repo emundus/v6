@@ -105,10 +105,10 @@ li>a:hover {
     margin-bottom: 5px !important;
     text-shadow: none;
     padding: 8px 12px;
+    text-transform: inherit;
 }
 
-#g-navigation #header-c .header-right a.btn {
-     color: #fff;
+#g-navigation #header-c .header-right a.btn-primary {
      border-radius: 4px;
      margin-bottom: 5px;
     line-height: normal;
@@ -116,15 +116,14 @@ li>a:hover {
 }
 
 #g-navigation #header-c .header-right a.btn.btn-secondary {
-     color: #fff;
      border-radius: 4px;
      margin-bottom: 5px !important;
     line-height: normal;
     letter-spacing: normal;
 }
 
-#g-navigation #header-c .header-right a:not(.btn):hover {
-    text-decoration: underline;
+#g-navigation #header-c .header-right a.forgotten_password_header:hover {
+    text-decoration: underline !important;
 }
 
 /* CORRECTION  */

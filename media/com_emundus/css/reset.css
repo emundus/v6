@@ -145,17 +145,6 @@ h1 {
     position: relative;
 }
 
-/*h1::after, .swal2-title:after {
-    content: '';
-    position: absolute;
-    margin-top: 45px;
-    width: 2.7rem;
-    height: .2rem;
-    background: #e5283b;
-    left: 0;
-    display: block !important;
-}*/
-
 .swal2-title {
     margin: 10px 0 20px 0 !important;
     color: #000 !important;

@@ -1040,7 +1040,7 @@ button#back:hover, button#back:active, button#back:focus,
 	  outline: none;
 }
 button.save-btn, .btn-success, button.save, button.save_continue, button.send, a.btn-attach, #trombi_preview, #trombi_generate,
-.indicateurs-page .btn, .fabrik_filter_submit, button.importation, a.btn-warning, a.btn-info, .header-right .btn-danger, button.btn-primary,
+.indicateurs-page .btn, .fabrik_filter_submit, button.importation, a.btn-warning, a.btn-info, button.btn-primary,
 .em-generated-docs .em-doc-zip, .xclsform .panel-body button#savefilter, .modal-dialog #chargement a.btn, a#em-doc-zip,
 .btn.advanced-search-apply, .toggle-addoption.btn, .candidacy-files-list a#send, .choice-statut-btn {
 	  background-color: #4e5b6d;
@@ -1064,7 +1064,6 @@ a.btn-attach:hover, a.btn-attach:active, a.btn-attach:focus,
 button.importation:hover, button.importation:active, button.importation:focus,
 a.btn-warning:hover, a.btn-warning:active, a.btn-warning:focus,
 a.btn-info:hover, a.btn-info:active, a.btn-info:focus,
-.header-right .btn-danger:hover, .header-right .btn-danger:focus, .header-right .btn-danger:active,
 button.btn-primary:hover, button.btn-primary:active, button.btn-primary:focus,
 .em-generated-docs .em-doc-zip:hover, .em-generated-docs .em-doc-zip:active, .em-generated-docs .em-doc-zip:focus,
 .xclsform .panel-body button#savefilter:hover, .xclsform .panel-body button#savefilter:active, .xclsform .panel-body button#savefilter:focus,
@@ -1120,12 +1119,6 @@ footer#g-footer {
 .radio input[type="radio"], .checkbox input[type="checkbox"] {
     margin-left: 0px !important;
     margin-top: 5px !important;
-}
-
-.header-right a.btn.btn-danger.connexion, .header-right a.btn.btn-danger.inscription  {
-    line-height: inherit;
-    letter-spacing: inherit;
-    font-weight: 300;
 }
 
 .page-header h1 {

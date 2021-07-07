@@ -29,12 +29,3 @@
     position:relative;
 }
 
-.em-infoComp .g-title::after {
-    content: '';
-    position: absolute;
-    margin-top: 35px;
-    left: 0;
-    width: 2.7rem;
-    height: 0.2rem;
-    background: #de6339;
-}

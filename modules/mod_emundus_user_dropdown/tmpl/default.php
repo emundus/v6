@@ -121,7 +121,7 @@ if($user != null) {
     });
 </script>
 <?php } else { ?>
-<div class="header-right" style="text-align: right;">
+<div class="header-right">
 	<a class="btn btn-secondary" href="<?= $link_login; ?>" data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
 	<?php if ($show_registration) { ?>
 		<a class="btn btn-primary" href="<?= $link_register; ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
