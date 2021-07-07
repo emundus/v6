@@ -301,6 +301,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $Content_Folder = array();
 
         $languages = JLanguageHelper::getLanguages();
+
         foreach ($languages as $language) {
             $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
             $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);

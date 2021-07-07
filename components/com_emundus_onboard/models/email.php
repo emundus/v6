@@ -95,6 +95,8 @@ class EmundusonboardModelemail extends JModelList {
             ->from($db->quoteName('#__emundus_setup_emails', 'se'))
             ->where($filterDate)
             ->where($fullRecherche)
+            ->where($db->quoteName('se.type') . ' != ' . $db->quote(1))
+
             ->group($sortDb)
             ->order($sortDb.$sort);
 

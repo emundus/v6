@@ -1,7 +1,7 @@
 <template class="form-item">
   <div class="main-column-block">
     <div class="column-block w-100">
-      <div class="block-dash" :class="isPublished ? '' : 'unpublishedBlock'">
+      <div class="block-dash" >
         <div class="column-blocks w-row">
           <div class="column-inner-block w-col w-col-8 pl-30px">
             <div class="list-item-header">
@@ -10,22 +10,21 @@
                    v-on:click="selectItem(data.id)"
                    :class="{ active: isActive }">
                 </a>
-                <h2 class="nom-campagne-block">{{ data.form_label }}</h2>
+                <h2 class="nom-campagne-block">{{ data.label[actualLanguage] }}</h2>
               </div>
-              <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
+              <!--<div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
                 {{ isPublished ? translations.publishedTag : translations.unpublishedTag }}
-              </div>
+              </div>-->
             </div>
             <div>
-              <p class="pl-30px associated-campaigns" v-if="campaigns.length == 1">{{translations.campaignAssociated}} :</p>
-              <p class="pl-30px associated-campaigns" v-if="campaigns.length > 1">{{translations.campaignsAssociated}} :</p>
+
               <ul style="margin-top: 10px">
-                <li v-for="(campaign, index) in campaigns" class="campaigns-item">{{campaign.label}}</li>
+                <li  class="campaigns-item">{{campaigns.label}}</li>
               </ul>
             </div>
             <div class="stats-block" style="justify-content: flex-end">
               <a class="bouton-ajouter pointer add-button-div"
-                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
+                 @click="evaluationBuilder"
                  :title="translations.Modify">
                 <em class="fas fa-pen"></em> Éditer
               </a>
@@ -44,10 +43,11 @@ import axios from "axios";
 const qs = require("qs");
 
 export default {
-  name: "formItem",
+  name: "grilleEvalItem",
   props: {
     data: Object,
-    selectItem: Function
+    selectItem: Function,
+    actualLanguage:String
   },
   data() {
     return {
@@ -83,20 +83,33 @@ export default {
     getAssociatedCampaigns(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=getassociatedcampaign",
+        url: "index.php?option=com_emundus_onboard&controller=form&task=getassociatedprogram",
         params: {
-          pid: this.data.id,
+          fid: this.data.id,
         },
         paramsSerializer: params => {
           return qs.stringify(params);
         }
       }).then(response => {
+
         this.campaigns = response.data.data;
+        //cons
       });
-    }
+    },
+    evaluationBuilder() {
+
+      this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=&index=0&cid=' +
+          '' +
+          '&evaluation=' +
+          this.data.id);
+    },
+
   },
 
   created() {
+
+
+
 
     list.getters.formsAccess[0].forEach(element => {
       if(element === this.data.id){
@@ -119,11 +132,11 @@ export default {
 };
 </script>
 <style scoped>
-  .w-row{
-    margin-bottom: 0;
-  }
-  .associated-campaigns{
-    font-style: italic;
-    font-size: 12px;
-  }
+.w-row{
+  margin-bottom: 0;
+}
+.associated-campaigns{
+  font-style: italic;
+  font-size: 12px;
+}
 </style>

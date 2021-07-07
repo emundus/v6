@@ -34,9 +34,10 @@
               </div>
               <a
                   @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + data.id + '&index=0')"
-                  class="cta-block pointer"
-                  :title="AdvancedSettings">
-                <em class="fas fa-pen"></em>
+                  class="bouton-ajouter pointer add-button-div"
+                  :title="AdvancedSettings"
+              >
+                <em class="fas fa-pen"></em> Editer
               </a>
             </div>
           </div>
