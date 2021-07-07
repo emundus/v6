@@ -11,8 +11,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors.js');
-$document->addStyleSheet('media/com_emundus_onboard/app.css');
+$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
+$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
 ## MENU ##
 JText::script('COM_EMUNDUS_ONBOARD_SIDEMENUHELP');
@@ -223,4 +223,4 @@ if(count($languages) > 1){
 
 <div id="<?= $vue; ?>" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" cid="<?= $this->cid; ?>" eval="<?= $this->eval; ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>"></div>
 
-<script src="media/com_emundus_onboard/app.js"></script>
+<script src="media/com_emundus_onboard/app_onboard.js"></script>

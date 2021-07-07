@@ -411,7 +411,7 @@ defined('_JEXEC') or die;
             endif;
         endforeach;
 
-        echo '<hr id="menu_separator">';
+
 
         foreach ($help_list as $i => &$item) :
             if($item->params->get('menu_show') != 0) :
