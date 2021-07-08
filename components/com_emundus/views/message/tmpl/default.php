@@ -101,7 +101,7 @@ if ($allowed_attachments !== true) {
                 <label for="select_sending_mode" ><?= JText::_('SELECT_SENDING_MODE'); ?></label>
                 <select name="select_sending_mode" class="form-control" id="sending-mode">
                     <option value="0"> <?= JText::_('SELECT_SENDING_MODE_DEFAULT'); ?> </option>
-                    <option value="1"> <?= JText::_('SELECT_SENDING_MODE_YES'); ?> </option>
+                    <option value="1" selected> <?= JText::_('SELECT_SENDING_MODE_YES'); ?> </option>
                     <option value="2"> <?= JText::_('SELECT_SENDING_MODE_NO'); ?> </option>
                 </select>
             </div>
@@ -260,7 +260,7 @@ if ($allowed_attachments !== true) {
 <script type="text/javascript">
     // get all action tags by ajax
 
-    $("#action-tags").selectize({create: true});         // init selectize object
+    $("#action-tags").selectize({create: false, preload: false});         // init selectize object
 
     var $selectize_cc = $("#cc-mails").selectize({
         plugins: ["remove_button"],
@@ -295,10 +295,11 @@ if ($allowed_attachments !== true) {
     });
 
     // var cci = null;
-    getAllTags();
+    getAllTagsWithoutRefresh();
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
     $(document).ready(function() {
+        // $('#em-email-messages').trigger('click');
         tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
         $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_LABEL') + '</label>');
         $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_LABEL') + '</label>');
@@ -314,12 +315,12 @@ if ($allowed_attachments !== true) {
 
     $('.action-tags .selectize-input').keyup(function(e){
         if(e.keyCode == '8') {
-            getAllTags();
+            getAllTagsWithRefresh();
         }
     })
 
-    // get all tags
-    function getAllTags() {
+    // get all tags without refresh
+    function getAllTagsWithoutRefresh() {
         $.ajax({
             type: 'POST',
             url: 'index.php?option=com_emundus_onboard&controller=settings&task=gettags',
@@ -335,13 +336,55 @@ if ($allowed_attachments !== true) {
                     selectize_tag.addItem(tag.label);
                 })
 
-                selectize_tag.refreshOptions();
-
+                selectize_tag.refreshOptions(false);
             }, error: function(jqXHR) {
                 console.log(jqXHR.responseText);
             }
         })
     }
+
+    // get all tags with refresh
+    function getAllTagsWithRefresh() {
+        $.ajax({
+            type: 'POST',
+            url: 'index.php?option=com_emundus_onboard&controller=settings&task=gettags',
+            dataType: 'JSON',
+            success: function(data) {
+                var $select_tag = $(document.getElementById('action-tags'));
+                var selectize_tag = $select_tag[0].selectize;
+
+                let tags = data.data;
+
+                tags.forEach(tag => {
+                    selectize_tag.addOption({ value:tag.id, text: tag.label });
+                    selectize_tag.addItem(tag.label);
+                })
+
+                selectize_tag.refreshOptions(true);
+            }, error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        })
+    }
+
+    /// when user select "classic mode" of sending_mode --> deactivate action-tag box and then change cursor mode ==> not-allowed
+    $(document).on('change', '#sending-mode', function() {
+        let sending_mode = $('#sending-mode').val();
+        if(sending_mode == 0) {
+            var $select_tag = $(document.getElementById('action-tags'));
+            var selectize_tag = $select_tag[0].selectize;
+            selectize_tag.clear();
+
+            $('#action-box .selectize-input').css('pointer-events', 'none');
+            $('#action-box .selectize-input').css('background-image', 'linear-gradient(17deg, #fafafa 25%, #dfebf2 25%, #dfebf2 50%, #fafafa 50%, #fafafa 75%, #dfebf2 75%, #dfebf2 100%)');
+            $('#action-box .selectize-input').css('background-size', '20.52px 6.27px');
+        } else {
+            getAllTagsWithoutRefresh();
+            $('#action-box .selectize-input').css('pointer-events', '');
+            $('#action-box .selectize-input').css('background-image', '');
+            $('#action-box .selectize-input').css('background-size', '');
+        }
+    })
 
     // Loads the template and updates the WYSIWYG editor
     function getTemplate(select) {
