@@ -100,8 +100,8 @@ if ($allowed_attachments !== true) {
             <div class="form-group col-md-6 col-sm-6 em-form-selectCategory">
                 <label for="select_sending_mode" ><?= JText::_('SELECT_SENDING_MODE'); ?></label>
                 <select name="select_sending_mode" class="form-control" id="sending-mode">
-                    <option value="0"> <?= JText::_('SELECT_SENDING_MODE_DEFAULT'); ?> </option>
-                    <option value="1" selected> <?= JText::_('SELECT_SENDING_MODE_YES'); ?> </option>
+                    <option value="0" selected> <?= JText::_('SELECT_SENDING_MODE_DEFAULT'); ?> </option>
+                    <option value="1"> <?= JText::_('SELECT_SENDING_MODE_YES'); ?> </option>
                     <option value="2"> <?= JText::_('SELECT_SENDING_MODE_NO'); ?> </option>
                 </select>
             </div>
@@ -299,7 +299,16 @@ if ($allowed_attachments !== true) {
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
     $(document).ready(function() {
-        // $('#em-email-messages').trigger('click');
+        var $select_tag = $(document.getElementById('action-tags'));
+        var selectize_tag = $select_tag[0].selectize;
+        selectize_tag.clear();
+
+        $('#action-box .selectize-input').css('pointer-events', 'none');
+        $('#action-box .selectize-input').css('background-image', 'linear-gradient(17deg, #fafafa 25%, #dfebf2 25%, #dfebf2 50%, #fafafa 50%, #fafafa 75%, #dfebf2 75%, #dfebf2 100%)');
+        $('#action-box .selectize-input').css('background-size', '20.52px 6.27px');
+
+        $('#action-box .selectize-input').append('<label id="default_message" style="color:red; font-size: 0.8rem; text-transform: uppercase">' + Joomla.JText._('COM_EMUNDUS_DEFAULT_SENDING_MESSAGE') + '</label>');
+
         tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
         $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_LABEL') + '</label>');
         $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_LABEL') + '</label>');
@@ -375,10 +384,12 @@ if ($allowed_attachments !== true) {
             var selectize_tag = $select_tag[0].selectize;
             selectize_tag.clear();
 
+            $('#action-box .selectize-input').append('<label id="default_message" style="color:red; font-size: 0.8rem; text-transform: uppercase">' + Joomla.JText._('COM_EMUNDUS_DEFAULT_SENDING_MESSAGE') + '</label>');
             $('#action-box .selectize-input').css('pointer-events', 'none');
             $('#action-box .selectize-input').css('background-image', 'linear-gradient(17deg, #fafafa 25%, #dfebf2 25%, #dfebf2 50%, #fafafa 50%, #fafafa 75%, #dfebf2 75%, #dfebf2 100%)');
             $('#action-box .selectize-input').css('background-size', '20.52px 6.27px');
         } else {
+            $('#default_message').remove();
             getAllTagsWithoutRefresh();
             $('#action-box .selectize-input').css('pointer-events', '');
             $('#action-box .selectize-input').css('background-image', '');
