@@ -92,19 +92,22 @@ if ($allowed_attachments !== true) {
             </div>
         </div>
 
+        <br/>
+
         <div class="form-inline row">
 
             <!-- Dropdown to select the email categories used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectCategory">
-                <label for="select_category" ><?= JText::_('SELECT_CATEGORY'); ?></label>
+                <label for="select_sending_mode" ><?= JText::_('SELECT_SENDING_MODE'); ?></label>
                 <select name="select_sending_mode" class="form-control" id="sending-mode">
-
+                    <option value="0"> <?= JText::_('SELECT_SENDING_MODE_YES'); ?> </option>
+                    <option value="1"> <?= JText::_('SELECT_SENDING_MODE_NO'); ?> </option>
                 </select>
             </div>
 
             <!-- Dropdown to select the email template used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail">
-                <label for="select_template" ><?= JText::_('SELECT_TEMPLATE'); ?></label>
+                <label for="select_action_tags" ><?= JText::_('SELECT_ACTION_TAGS'); ?></label>
                 <input type="text" id="action-tags" class="action-tags" style="height: 43px !important">
             </div>
         </div>
@@ -115,16 +118,15 @@ if ($allowed_attachments !== true) {
 
         <!-- Add current user to Cc -->
         <div id="cc-box" class="input-group form-inline col-md-12" style="margin-bottom: 10px !important;">
-<!--            <label for="cc-emails" >--><?//= JText::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?><!--</label>-->
             <input type="text" id="cc-mails" class="cc-bcc-mails">
         </div><!-- /input-group -->
 
         <!-- Add current user to Bcc -->
         <div id="bcc-box" class="input-group form-inline col-md-12">
-<!--            <label for="bcc-emails" >--><?//= JText::_('COM_EMUNDUS_EMAILS_BCC_LABEL'); ?><!--</label>-->
             <input type="text" id="bcc-mails" class="cc-bcc-mails">
         </div><!-- /input-group -->
 
+    </br>
         <div class="form-group em-form-recipients">
             <!-- List of users / their emails, gotten from the fnums selected. -->
             <div class="well well-sm" id="em-recipitents">
@@ -297,8 +299,8 @@ if ($allowed_attachments !== true) {
     // Editor loads disabled by default, we apply must toggle it active on page load.
     $(document).ready(function() {
         tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
-        $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #ccc; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_LABEL') + '</label>');
-        $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #ccc; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_LABEL') + '</label>');
+        $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_LABEL') + '</label>');
+        $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_LABEL') + '</label>');
     });
 
     // Change file upload string to selected file and reset the progress bar.
@@ -358,8 +360,8 @@ if ($allowed_attachments !== true) {
         $("label[for='cc-emails']").empty();
         $("label[for='bcc-emails']").empty();
 
-        $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #ccc; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_LABEL') + '</label>');
-        $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #ccc; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_LABEL') + '</label>');
+        $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_LABEL') + '</label>');
+        $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_LABEL') + '</label>');
 
         $('#em-attachment-list').empty();
         // ajax to get all receivers when changing model email

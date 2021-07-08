@@ -396,6 +396,11 @@ JText::script('COM_EMUNDUS_EMAILS_BCC_LABEL');
 JText::script('COM_EMUNDUS_EMAILS_CC');
 JText::script('COM_EMUNDUS_EMAILS_BCC');
 
+JText::script('SELECT_SENDING_MODE');
+JText::script('SELECT_SENDING_MODE_YES');
+JText::script('SELECT_SENDING_MODE_NO');
+JText::script('SELECT_ACTION_TAGS');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');
 //JHtml::script('media/com_emundus/lib/jquery-ui-1.8.18.min.js');
