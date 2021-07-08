@@ -4896,15 +4896,19 @@ $(document).ready(function() {
 
                 // Get all form elements.
                 var data = {
-                    recipients      : $('#fnums').val(),
-                    template        : $('#message_template :selected').val(),
-                    mail_from_name  : $('#mail_from_name').text(),
-                    mail_from       : $('#mail_from').text(),
-                    mail_subject    : $('#mail_subject').text(),
-                    message         : $('#mail_body').val(),
-                    bcc             : [],
-                    cc              : [],
-                    tags            : $('#tags').val(),
+                    recipients          : $('#fnums').val(),
+                    template            : $('#message_template :selected').val(),
+                    mail_from_name      : $('#mail_from_name').text(),
+                    mail_from           : $('#mail_from').text(),
+                    mail_subject        : $('#mail_subject').text(),
+                    message             : $('#mail_body').val(),
+                    bcc                 : [],
+                    cc                  : [],
+                    tags                : $('#tags').val(),
+                    sending_mode        : $('#sending-mode').val(),
+                    sending_mode_text   : $("#sending-mode option:selected").text(),  // just using to show on email preview windows
+                    tag_list            : [],
+                    tag_list_message    : [],
                 };
 
                // cc emails
@@ -4924,6 +4928,18 @@ $(document).ready(function() {
                         data.bcc.push(val);
                     }
                 })
+
+                // get selected action tags
+                $('#action-box div[data-value]').each(function () {
+                    let id = $(this).attr('data-value');
+                    let text = $(this).text();
+                    data.tag_list.push(id);
+                    data.tag_list_message.push(text);
+                })
+
+                data.tag_list_message = data.tag_list_message.toString();
+
+                // console.log(data);
 
                 // Attachments object used for sorting the different attachment types.
                 var attachments = {

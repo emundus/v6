@@ -100,13 +100,14 @@ if ($allowed_attachments !== true) {
             <div class="form-group col-md-6 col-sm-6 em-form-selectCategory">
                 <label for="select_sending_mode" ><?= JText::_('SELECT_SENDING_MODE'); ?></label>
                 <select name="select_sending_mode" class="form-control" id="sending-mode">
-                    <option value="0"> <?= JText::_('SELECT_SENDING_MODE_YES'); ?> </option>
-                    <option value="1"> <?= JText::_('SELECT_SENDING_MODE_NO'); ?> </option>
+                    <option value="0"> <?= JText::_('SELECT_SENDING_MODE_DEFAULT'); ?> </option>
+                    <option value="1"> <?= JText::_('SELECT_SENDING_MODE_YES'); ?> </option>
+                    <option value="2"> <?= JText::_('SELECT_SENDING_MODE_NO'); ?> </option>
                 </select>
             </div>
 
             <!-- Dropdown to select the email template used. -->
-            <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail">
+            <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail" id="action-box">
                 <label for="select_action_tags" ><?= JText::_('SELECT_ACTION_TAGS'); ?></label>
                 <input type="text" id="action-tags" class="action-tags" style="height: 43px !important">
             </div>

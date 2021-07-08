@@ -284,6 +284,16 @@ class EmundusControllerMessages extends JControllerLegacy {
         $cc = $jinput->post->getString('cc');
 	    $bcc = $jinput->post->getString('bcc');
 
+	    $sending_mode = $jinput->post->getRaw('sending_mode');
+        $tag_list = $jinput->post->getRaw('tag_list');
+
+        /// preview message
+
+        $sending_mode_message = $jinput->post->getRaw('sending_mode_text');
+        $tag_list_message = $jinput->post->getRaw('tag_list_message');
+
+        /// end of preview message
+
 	    if (!empty($bcc)) {
 
 		    if (!is_array($bcc)) {
@@ -402,6 +412,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_TO').'</strong> '.$fnum->email.' </br>'.
                  '<strong>'.JText::_('COM_EMUNDUS_EMAILS_SUBJECT').'</strong> '.$subject.' </br>'.
+                 '<strong>' . JText::_('SELECT_SENDING_MODE') . '</strong>' . ':' . $sending_mode_message . ' </br>'.
                  '<strong>'.JText::_('COM_EMUNDUS_EMAILS_BODY').'</strong>
 			</div>
 			<div class="well">'.$body.'</div>';
