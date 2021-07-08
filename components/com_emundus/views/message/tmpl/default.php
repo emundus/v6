@@ -92,6 +92,23 @@ if ($allowed_attachments !== true) {
             </div>
         </div>
 
+        <div class="form-inline row">
+
+            <!-- Dropdown to select the email categories used. -->
+            <div class="form-group col-md-6 col-sm-6 em-form-selectCategory">
+                <label for="select_category" ><?= JText::_('SELECT_CATEGORY'); ?></label>
+                <select name="select_sending_mode" class="form-control" id="sending-mode">
+
+                </select>
+            </div>
+
+            <!-- Dropdown to select the email template used. -->
+            <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail">
+                <label for="select_template" ><?= JText::_('SELECT_TEMPLATE'); ?></label>
+                <input type="text" id="action-tags" class="action-tags" style="height: 43px !important">
+            </div>
+        </div>
+
         <input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id" value="<?= $current_user->id; ?>" /><br>
         <input name="fnums" type="hidden" class="inputbox" id="fnums" value="<?= implode(',',$this->fnums); ?>" />
         <input name="tags" type="hidden" class="inputbox" id="tags" value="" />
@@ -236,7 +253,12 @@ if ($allowed_attachments !== true) {
 </form>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+
 <script type="text/javascript">
+    // get all action tags by ajax
+
+    $("#action-tags").selectize({create: true});         // init selectize object
+
     var $selectize_cc = $("#cc-mails").selectize({
         plugins: ["remove_button"],
         create: true,
@@ -270,6 +292,7 @@ if ($allowed_attachments !== true) {
     });
 
     // var cci = null;
+    getAllTags();
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
     $(document).ready(function() {
@@ -284,6 +307,38 @@ if ($allowed_attachments !== true) {
         $("#em-progress-wrp .progress-bar").css("width", + 0 + "%");
         $("#em-progress-wrp .status").text(0 + "%");
     });
+
+
+    $('.action-tags .selectize-input').keyup(function(e){
+        if(e.keyCode == '8') {
+            getAllTags();
+        }
+    })
+
+    // get all tags
+    function getAllTags() {
+        $.ajax({
+            type: 'POST',
+            url: 'index.php?option=com_emundus_onboard&controller=settings&task=gettags',
+            dataType: 'JSON',
+            success: function(data) {
+                var $select_tag = $(document.getElementById('action-tags'));
+                var selectize_tag = $select_tag[0].selectize;
+
+                let tags = data.data;
+
+                tags.forEach(tag => {
+                    selectize_tag.addOption({ value:tag.id, text: tag.label });
+                    selectize_tag.addItem(tag.label);
+                })
+
+                selectize_tag.refreshOptions();
+
+            }, error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        })
+    }
 
     // Loads the template and updates the WYSIWYG editor
     function getTemplate(select) {
