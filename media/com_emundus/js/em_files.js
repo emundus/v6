@@ -4930,7 +4930,7 @@ $(document).ready(function() {
                 })
 
                 // get selected action tags
-                $('#action-box div[data-value]').each(function () {
+                $('#action-tag-box div[data-value]').each(function () {
                     let id = $(this).attr('data-value');
                     let text = $(this).text();
                     data.tag_list.push(id);
@@ -4939,7 +4939,17 @@ $(document).ready(function() {
 
                 data.tag_list_message = data.tag_list_message.toString();
 
-                // console.log(data);
+                // if user selects classic mode --> set data.tag_list = null
+                if($('#sending-mode').val() == '0') {
+                    data.tag_list = null;
+                    data.tag_list_message = Joomla.JText._('COM_EMUNDUS_SELECT_NO_TAGS');
+                }
+
+                // if not classic mode but nothing tags is selected --> return all
+                if($('#sending-mode').val() != '0' && $('#action-tags').val() == "") {
+                    data.tag_list = null;
+                    data.tag_list_message = Joomla.JText._('COM_EMUNDUS_SELECT_NO_TAGS');
+                }
 
                 // Attachments object used for sorting the different attachment types.
                 var attachments = {

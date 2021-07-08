@@ -107,7 +107,7 @@ if ($allowed_attachments !== true) {
             </div>
 
             <!-- Dropdown to select the email template used. -->
-            <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail" id="action-box">
+            <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail" id="action-tag-box">
                 <label for="select_action_tags" ><?= JText::_('SELECT_ACTION_TAGS'); ?></label>
                 <input type="text" id="action-tags" class="action-tags" style="height: 43px !important">
             </div>
@@ -303,11 +303,13 @@ if ($allowed_attachments !== true) {
         var selectize_tag = $select_tag[0].selectize;
         selectize_tag.clear();
 
-        $('#action-box .selectize-input').css('pointer-events', 'none');
-        $('#action-box .selectize-input').css('background-image', 'linear-gradient(17deg, #fafafa 25%, #dfebf2 25%, #dfebf2 50%, #fafafa 50%, #fafafa 75%, #dfebf2 75%, #dfebf2 100%)');
-        $('#action-box .selectize-input').css('background-size', '20.52px 6.27px');
+        $('#action-tag-box .selectize-input').css('pointer-events', 'none');
+        $('#action-tag-box .selectize-input').css('background-image', 'linear-gradient(17deg, #fafafa 25%, #dfebf2 25%, #dfebf2 50%, #fafafa 50%, #fafafa 75%, #dfebf2 75%, #dfebf2 100%)');
+        $('#action-tag-box .selectize-input').css('background-size', '20.52px 6.27px');
 
-        $('#action-box .selectize-input').append('<label id="default_message" style="color:red; font-size: 0.8rem; text-transform: uppercase">' + Joomla.JText._('COM_EMUNDUS_DEFAULT_SENDING_MESSAGE') + '</label>');
+        $('#action-tag-box .selectize-input').append('<label id="default_message" style="color:red; font-size: 0.8rem; text-transform: uppercase">' + Joomla.JText._('COM_EMUNDUS_DEFAULT_SENDING_MESSAGE') + '</label>');
+
+        // $('#action-tag-box').find('.selectize-dropdown-content').empty();
 
         tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
         $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_LABEL') + '</label>');
@@ -384,16 +386,18 @@ if ($allowed_attachments !== true) {
             var selectize_tag = $select_tag[0].selectize;
             selectize_tag.clear();
 
-            $('#action-box .selectize-input').append('<label id="default_message" style="color:red; font-size: 0.8rem; text-transform: uppercase">' + Joomla.JText._('COM_EMUNDUS_DEFAULT_SENDING_MESSAGE') + '</label>');
-            $('#action-box .selectize-input').css('pointer-events', 'none');
-            $('#action-box .selectize-input').css('background-image', 'linear-gradient(17deg, #fafafa 25%, #dfebf2 25%, #dfebf2 50%, #fafafa 50%, #fafafa 75%, #dfebf2 75%, #dfebf2 100%)');
-            $('#action-box .selectize-input').css('background-size', '20.52px 6.27px');
+            $('#action-tag-box .selectize-input').append('<label id="default_message" style="color:red; font-size: 0.8rem; text-transform: uppercase">' + Joomla.JText._('COM_EMUNDUS_DEFAULT_SENDING_MESSAGE') + '</label>');
+            $('#action-tag-box .selectize-input').css('pointer-events', 'none');
+            $('#action-tag-box .selectize-input').css('background-image', 'linear-gradient(17deg, #fafafa 25%, #dfebf2 25%, #dfebf2 50%, #fafafa 50%, #fafafa 75%, #dfebf2 75%, #dfebf2 100%)');
+            $('#action-tag-box .selectize-input').css('background-size', '20.52px 6.27px');
+
+            $('#action-tag-box').find('.selectize-dropdown-content').empty();
         } else {
             $('#default_message').remove();
             getAllTagsWithoutRefresh();
-            $('#action-box .selectize-input').css('pointer-events', '');
-            $('#action-box .selectize-input').css('background-image', '');
-            $('#action-box .selectize-input').css('background-size', '');
+            $('#action-tag-box .selectize-input').css('pointer-events', '');
+            $('#action-tag-box .selectize-input').css('background-image', '');
+            $('#action-tag-box .selectize-input').css('background-size', '');
         }
     })
 

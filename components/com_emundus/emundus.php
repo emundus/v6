@@ -402,6 +402,7 @@ JText::script('SELECT_SENDING_MODE_NO');
 JText::script('SELECT_SENDING_MODE_DEFAULT');
 JText::script('SELECT_ACTION_TAGS');
 JText::script('COM_EMUNDUS_DEFAULT_SENDING_MESSAGE');
+JText::script('COM_EMUNDUS_SELECT_NO_TAGS');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');
