@@ -4907,7 +4907,7 @@ $(document).ready(function() {
                     tags                : $('#tags').val(),
                     sending_mode        : $('#sending-mode').val(),
                     sending_mode_text   : $("#sending-mode option:selected").text(),  // just using to show on email preview windows
-                    tag_list            : [],
+                    tag_list            : $('#action-tags').val(),
                     tag_list_message    : [],
                 };
 
@@ -4929,12 +4929,11 @@ $(document).ready(function() {
                     }
                 })
 
-                // get selected action tags
-                $('#action-tag-box div[data-value]').each(function () {
-                    let id = $(this).attr('data-value');
-                    let text = $(this).text();
-                    data.tag_list.push(id);
-                    data.tag_list_message.push(text);
+                /// get tag list name
+                let tag_div_obj = $("div.item");
+                let tag_div_arr = Array.prototype.slice.call( tag_div_obj );
+                tag_div_arr.forEach(tag => {
+                    data.tag_list_message.push(tag.textContent);
                 })
 
                 data.tag_list_message = data.tag_list_message.toString();
@@ -4943,14 +4942,12 @@ $(document).ready(function() {
                 if($('#sending-mode').val() == '0') {
                     data.tag_list = null;
                     data.tag_list_message = "";
-                    // data.tag_list_message = Joomla.JText._('COM_EMUNDUS_SELECT_NO_TAGS');
                 }
 
                 // if not classic mode but nothing tags is selected --> return all
                 if($('#sending-mode').val() != '0' && $('#action-tags').val() == "") {
                     data.tag_list = null;
                     data.tag_list_message = "";
-                    // data.tag_list_message = Joomla.JText._('COM_EMUNDUS_SELECT_NO_TAGS');
                 }
 
                 // Attachments object used for sorting the different attachment types.

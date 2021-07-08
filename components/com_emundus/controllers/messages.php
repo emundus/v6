@@ -420,7 +420,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                     $html .= '<strong>' . JText::_('SELECT_SENDING_TAGS') . '</strong>' . ':' . $tag_list_message . ' </br>';
                 }
 
-                    $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_BODY').'</strong>;
+                    $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_BODY').'</strong>
 			
 			</div>
 			<div class="well">'.$body.'</div>';
