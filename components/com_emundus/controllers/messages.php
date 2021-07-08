@@ -412,8 +412,16 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_TO').'</strong> '.$fnum->email.' </br>'.
                  '<strong>'.JText::_('COM_EMUNDUS_EMAILS_SUBJECT').'</strong> '.$subject.' </br>'.
-                 '<strong>' . JText::_('SELECT_SENDING_MODE') . '</strong>' . ':' . $sending_mode_message . ' </br>'.
-                 '<strong>'.JText::_('COM_EMUNDUS_EMAILS_BODY').'</strong>
+                 '<strong>' . JText::_('SELECT_SENDING_MODE') . '</strong>' . ':' . $sending_mode_message . ' </br>';
+
+                if($tag_list_message == "") {
+                    $html .= '<strong>' . JText::_('SELECT_SENDING_TAGS') . '</strong>' . ':' . '<span style="color:red">' . JText::_('COM_EMUNDUS_SELECT_NO_TAGS') . '</span>'. ' </br>';
+                } else {
+                    $html .= '<strong>' . JText::_('SELECT_SENDING_TAGS') . '</strong>' . ':' . $tag_list_message . ' </br>';
+                }
+
+                    $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_BODY').'</strong>;
+			
 			</div>
 			<div class="well">'.$body.'</div>';
 
