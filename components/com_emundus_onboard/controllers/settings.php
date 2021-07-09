@@ -897,5 +897,32 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         }
         exit;
     }
+
+    /// get all users
+    public function getallusers() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        } else {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            try {
+                $query->clear()
+                    ->select('#__users.*')
+                    ->from($db->quoteName('#__users'));
+
+                $db->setQuery($query);
+                $users = $db->loadObjectList();
+                echo json_encode(array('status' => true, 'users' => $users));
+            } catch(Exception $e) {
+                JLog::add('Cannot get all users '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                echo json_encode(array('status' => false));
+            }
+        }
+        exit;
+    }
 }
 
