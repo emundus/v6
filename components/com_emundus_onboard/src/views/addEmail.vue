@@ -80,26 +80,15 @@
 
           <div class="form-group">
             <label>{{ Tags }}</label>
-            <multiselect v-model="value" label="name" track-by="code" :options="options" :multiple="true" :taggable="true" placeholder="test"></multiselect>
+            <multiselect v-model="selectedTags" label="label" track-by="id" :options="action_tags" :multiple="true" :taggable="true" placeholder="test"></multiselect>
+            <pre class="language-json"><code> {{ selectedTags  }}</code></pre>
           </div>
 
-<!--          &lt;!&ndash; Email &#45;&#45; tags         &ndash;&gt;-->
-<!--          <div class="form-group" id='tags_assoc'>-->
-<!--            <label>{{ Tags }}</label>-->
-<!--            <select v-model="selectedTags" class="dropdown-toggle w-select" multiple>-->
-<!--              <option value="0" style="font-weight:bold" @click="unselectAllTags()"> -&#45;&#45; Tags -&#45;&#45; </option>-->
-<!--              <option v-for="tag in tags" :value="tag.id" :id="'tag_'+tag.id" @dblclick="unselectTag(tag.id)">{{tag.label}}</option>-->
-<!--            </select>-->
-<!--          </div>-->
-
-<!--          &lt;!&ndash; Email &#45;&#45; document type         &ndash;&gt;-->
-<!--          <div class="form-group">-->
-<!--            <label>{{ DocumentType }}</label>-->
-<!--            <select v-model="selectedDocuments" class="dropdown-toggle w-select" multiple>-->
-<!--              <option value="0" style="font-weight:bold" @click="unselectAllDocuments()"> &#45;&#45; Documents &#45;&#45; </option>-->
-<!--              <option v-for="document in documents" :value="document.id" :id="'document_'+document.id" @dblclick="unselectDocument(document.id)">{{document.value}}</option>-->
-<!--            </select>-->
-<!--          </div>-->
+          <div class="form-group">
+            <label>{{ DocumentType }}</label>
+            <multiselect v-model="selectedLetter" label="label" track-by="id" :options="attached_letters" :multiple="true" :taggable="true" placeholder="test"></multiselect>
+            <pre class="language-json"><code> {{ selectedLetter  }}</code></pre>
+          </div>
 
         </div>
         <div class="divider"></div>
@@ -230,15 +219,6 @@
     },
 
     data: () => ({
-      value: [
-        { name: 'Javascript', code: 'js' }
-      ],
-      options: [
-        { name: 'Vue.js', code: 'vu' },
-        { name: 'Javascript', code: 'js' },
-        { name: 'Open Source', code: 'os' }
-      ],
-
       langue: 0,
 
       dynamicComponent: false,
@@ -289,12 +269,6 @@
       searchTerm: '',
       selectall: false,
 
-      tags: [],         /// email --- tags
-      documents: [],    /// email -- document types
-
-      selectedTags: [],
-      selectedDocuments: [],
-
       form: {
         lbl: "",
         subject: "",
@@ -324,28 +298,18 @@
           action_status: false
         }
       },
-      submitted: false
+      submitted: false,
+
+      /// these 2 variables used to bind with tags and documents
+      action_tags: [],
+      attached_letters: [],
+
+      /// these 2 variables used to store v-model of tags and documents
+      selectedTags: [],
+      selectedLetter: [],
     }),
 
     methods: {
-      unselectTag: function(element) {
-        $('#tag_' + element).prop('selected', false); /// set unselected tag
-        $('#tag_' + element).trigger("chosen:updated"); /// set unselected tag
-      },
-
-      unselectDocument: function(element) {
-        $('#document_' + element).prop('selected', false); /// set unselected document
-        $('#document_' + element).trigger("chosen:updated");  /// set unselected document
-      },
-
-      unselectAllTags: function () {
-        $('[id^=tag_]').prop('selected', false);
-      },
-
-      unselectAllDocuments: function() {
-        $('[id^=document_]').prop('selected', false);
-      },
-
       getProgramsList() {
         axios({
           method: "get",
@@ -543,7 +507,16 @@
           },
         }).then(response => {
           let _tags = response.data.data;
-          this.tags = _tags;
+          let action_tags = [];
+
+          for (let index = 0; index < _tags.length; index++) {
+            action_tags[index] = {};
+
+            action_tags[index]['id'] = _tags[index].id;
+            action_tags[index]['label'] = _tags[index].label;
+          }
+
+          this.action_tags = action_tags;
         }).catch(error => {
           console.log(error);
         })
@@ -558,7 +531,16 @@
           },
         }).then(response => {
           let _documents = response.data.documents;
-          this.documents = _documents;
+          let documents = [];
+
+          for (let index = 0; index < _documents.length; index++) {
+            documents[index] = {};
+
+            documents[index]['id'] = _documents[index].id;
+            documents[index]['label'] = _documents[index].value;
+          }
+
+          this.attached_letters = documents;
         }).catch(error => {
           console.log(error);
         })
@@ -589,16 +571,12 @@
 
                             if(resp.data.data.tags !== null && resp.data.data.tags !== undefined && resp.data.data.tags !== "") {
                               let _tags = resp.data.data.tags;
-                              _tags.forEach((tag, index) => {
-                                this.selectedTags[index] = tag.id;
-                              })
+                              console.log(_tags);
                             }
 
                             if(resp.data.data.attachments !== null && resp.data.data.attachments !== undefined && resp.data.data.attachments !== "") {
                               let _documents = resp.data.data.attachments;
-                              _documents.forEach((document, index) => {
-                                this.selectedDocuments[index] = document.id;
-                              })
+                              console.log(_documents);
                             }
 
                           }).catch(e => {
