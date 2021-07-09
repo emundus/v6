@@ -334,6 +334,8 @@ class EmundusonboardModelemail extends JModelList {
                     ->where($db->quoteName('id') . ' = ' . $db->quote($newemail));
                 $db->setQuery($query);
                 $db->execute();
+
+                return true;
             } catch(Exception $e) {
                 JLog::add('component/com_emundus_onboard/models/email | Cannot create an email: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;

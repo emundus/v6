@@ -200,10 +200,26 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 	        $data = $jinput->getRaw('body');
 	        $m_email = $this->model;
 
-            $tags = $jinput->getRaw('tags');
-            $documents = $jinput->getRaw('documents');
+            $tags = $jinput->getRaw('tags', "");
+            $documents = $jinput->getRaw('documents', "");
 
-            $result = $m_email->createEmail($data, $tags, $documents);
+            /// these 2 variables used to stock id of $tags and $documents
+            $tag_list = [];
+            $document_list = [];
+
+            if(!empty($tags) and !is_null($tags)) {
+                for ($index_tag = 0; $index_tag < count($tags); $index_tag++) {
+                    $tag_list[] = $tags[$index_tag]['id'];
+                }
+            }
+
+            if(!empty($documents) and !is_null($documents)) {
+                for ($index_doc = 0; $index_doc < count($documents); $index_doc++) {
+                    $document_list[] = $documents[$index_doc]['id'];
+                }
+            }
+
+            $result = $m_email->createEmail($data, $tag_list, $document_list);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);
@@ -233,7 +249,26 @@ class EmundusonboardControlleremail extends JControllerLegacy {
             $tags = $jinput->getRaw('tags');
             $documents = $jinput->getRaw('documents');
 
-            $result = $m_email->updateEmail($code, $data, $tags, $documents);
+            $tags = $jinput->getRaw('tags', "");
+            $documents = $jinput->getRaw('documents', "");
+
+            /// these 2 variables used to stock id of $tags and $documents
+            $tag_list = [];
+            $document_list = [];
+
+            if(!empty($tags) and !is_null($tags)) {
+                for ($index_tag = 0; $index_tag < count($tags); $index_tag++) {
+                    $tag_list[] = $tags[$index_tag]['id'];
+                }
+            }
+
+            if(!empty($documents) and !is_null($documents)) {
+                for ($index_doc = 0; $index_doc < count($documents); $index_doc++) {
+                    $document_list[] = $documents[$index_doc]['id'];
+                }
+            }
+
+            $result = $m_email->updateEmail($code, $data, $tag_list, $document_list);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);

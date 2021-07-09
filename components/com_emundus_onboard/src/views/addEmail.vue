@@ -413,7 +413,7 @@
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
-            data: qs.stringify({ body: this.form, code: this.email, tags: this.selectedTags, documents: this.selectedDocuments })
+            data: qs.stringify({ body: this.form, code: this.email, tags: this.selectedTags, documents: this.selectedLetter })
           }).then(response => {
             this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
           }).catch(error => {
@@ -426,7 +426,7 @@
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
-            data: qs.stringify({ body: this.form, tags: this.selectedTags, documents: this.selectedDocuments }),
+            data: qs.stringify({ body: this.form, tags: this.selectedTags, documents: this.selectedLetter}),
           }).then(response => {
             this.trigger.model = response.data.data;
             axios({
