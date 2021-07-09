@@ -79,6 +79,7 @@
           </div>
 
           <div class="form-group">
+            <label>{{ Tags }}</label>
             <multiselect v-model="value" label="name" track-by="code" :options="options" :multiple="true" :taggable="true" placeholder="test"></multiselect>
           </div>
 
@@ -615,7 +616,6 @@
       this.getProgramsList();
       this.getStatus();
       this.getUsers();
-      $('.multiselect__placeholder').empty().append('placeholder-span');
     },
 
     mounted() {
@@ -736,7 +736,7 @@ fieldset[disabled] .multiselect {
 
 .multiselect__input,
 .multiselect__single {
-  position: static !important;
+  position: relative;
   display: inline-block !important;
   min-height: 20px;
   line-height: 20px !important;
@@ -745,7 +745,7 @@ fieldset[disabled] .multiselect {
   background: #fff;
   background-color: rgb(255, 255, 255);
   padding: 0 0 0 5px;
-  width: 100% !important;
+  width: 0px;
   -webkit-transition: border .1s ease;
   transition: border .1s ease !important;
   -webkit-box-sizing: border-box;
@@ -787,11 +787,11 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__tags {
-  min-height: 40px;
+  min-height: 50px;
   display: block;
-  padding: 8px 40px 0 8px;
+  padding: 10px 40px 0 8px;
   border-radius: 5px;
-  border: 1px solid #e8e8e8;
+  border: 2px solid #ccc;
   background: #fff;
   font-size: 14px;
 }
@@ -804,12 +804,17 @@ fieldset[disabled] .multiselect {
   margin-right: 10px;
   color: #fff;
   line-height: 1;
-  background: #c8c8c8;
+  background: #b5b4b4;
   margin-bottom: 5px;
   white-space: nowrap;
   overflow: hidden;
   max-width: 100%;
   text-overflow: ellipsis;
+  /*margin-top: 1px;*/
+}
+
+.multiselect__tag span {
+  font-weight: bold;
 }
 
 .multiselect__tag-icon {
@@ -830,18 +835,18 @@ fieldset[disabled] .multiselect {
 
 .multiselect__tag-icon:after {
   content: "×";
-  color: #1C1C1C;
+  color: black;
   font-size: 14px;
 }
 
 .multiselect__tag-icon:focus,
 .multiselect__tag-icon:hover {
-  background: #369a6e;
+  background: #ccc;
 }
 
 .multiselect__tag-icon:focus:after,
 .multiselect__tag-icon:hover:after {
-  color: white;
+  color: red;
 }
 
 .multiselect__current {
@@ -893,7 +898,7 @@ fieldset[disabled] .multiselect {
   color: #adadad;
   display: inline-block;
   margin-bottom: 10px;
-  padding-top: 2px;
+  padding-top: 5px;
 }
 
 .multiselect--active .multiselect__placeholder {
@@ -966,14 +971,14 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__option--highlight {
-  background: #4ce5a3;
+  background: #41b883;
   outline: none;
   color: white;
 }
 
 .multiselect__option--highlight:after {
   content: attr(data-select);
-  background: #4ce5a3;
+  background: #41b883;
   color: white;
 }
 
