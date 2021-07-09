@@ -1476,35 +1476,35 @@ class EmundusonboardModelform extends JModelList {
                     'secure' => 0,
                 );
                 $datas = array(
-                    'menutype' => "menu-profile" . $prid,
-                    'title' => 'Documents',
-                    'alias' => 'checklist-' . $prid,
-                    'note' => '',
-                    'path' => 'checklist-' . $prid,
-                    'link' => 'index.php?option=com_emundus&view=checklist',
-                    'type' => 'component',
+                    'menutype' => $db->quote("menu-profile" . $prid),
+                    'title' => $db->quote('Documents'),
+                    'alias' => $db->quote('checklist-' . $prid),
+                    'note' => $db->quote(''),
+                    'path' => $db->quote('checklist-' . $prid),
+                    'link' => $db->quote('index.php?option=com_emundus&view=checklist'),
+                    'type' => $db->quote('component'),
                     'published' => 1,
                     'parent_id' => 1,
                     'level' => 1,
                     'component_id' => 11369,
                     'checked_out' => 0,
-                    'checked_out_time' => date('Y-m-d h:i:s'),
+                    'checked_out_time' => $db->quote(date('Y-m-d h:i:s')),
                     'browserNav' => 0,
                     'access' => 1,
-                    'img' => '',
+                    'img' => $db->quote(''),
                     'template_style_id' => 22,
-                    'params' => json_encode($params),
+                    'params' => $db->quote(json_encode($params)),
                     'lft' => 0,
                     'rgt' => 0,
                     'home' => 0,
-                    'language' => '*',
+                    'language' => $db->quote('*'),
                     'client_id' => 0,
                 );
 
             $query->clear()
                 ->insert($db->quoteName('#__menu'))
-                ->columns($db->quote(array_keys($datas)))
-                ->values($db->quote(array_values($datas)));
+                ->columns($db->quoteName(array_keys($datas)))
+                ->values(implode(',',array_values($datas)));
             $db->setQuery($query);
 
             if ($db->execute()) {
