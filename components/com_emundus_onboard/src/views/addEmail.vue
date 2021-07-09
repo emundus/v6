@@ -81,13 +81,11 @@
           <div class="form-group">
             <label>{{ Tags }}</label>
             <multiselect v-model="selectedTags" label="label" track-by="id" :options="action_tags" :multiple="true" :taggable="true" placeholder="test"></multiselect>
-            <pre class="language-json"><code> {{ selectedTags  }}</code></pre>
           </div>
 
           <div class="form-group">
             <label>{{ DocumentType }}</label>
-            <multiselect v-model="selectedLetter" label="label" track-by="id" :options="attached_letters" :multiple="true" :taggable="true" placeholder="test"></multiselect>
-            <pre class="language-json"><code> {{ selectedLetter  }}</code></pre>
+            <multiselect v-model="selectedLetter" label="value" track-by="id" :options="attached_letters" :multiple="true" :taggable="true" placeholder="test"></multiselect>
           </div>
 
         </div>
@@ -507,16 +505,7 @@
           },
         }).then(response => {
           let _tags = response.data.data;
-          let action_tags = [];
-
-          for (let index = 0; index < _tags.length; index++) {
-            action_tags[index] = {};
-
-            action_tags[index]['id'] = _tags[index].id;
-            action_tags[index]['label'] = _tags[index].label;
-          }
-
-          this.action_tags = action_tags;
+          this.action_tags = _tags;
         }).catch(error => {
           console.log(error);
         })
@@ -531,16 +520,7 @@
           },
         }).then(response => {
           let _documents = response.data.documents;
-          let documents = [];
-
-          for (let index = 0; index < _documents.length; index++) {
-            documents[index] = {};
-
-            documents[index]['id'] = _documents[index].id;
-            documents[index]['label'] = _documents[index].value;
-          }
-
-          this.attached_letters = documents;
+          this.attached_letters = _documents;
         }).catch(error => {
           console.log(error);
         })
@@ -571,12 +551,12 @@
 
                             if(resp.data.data.tags !== null && resp.data.data.tags !== undefined && resp.data.data.tags !== "") {
                               let _tags = resp.data.data.tags;
-                              console.log(_tags);
+                              this.selectedTags = _tags;
                             }
 
                             if(resp.data.data.attachments !== null && resp.data.data.attachments !== undefined && resp.data.data.attachments !== "") {
                               let _documents = resp.data.data.attachments;
-                              console.log(_documents);
+                              this.selectedLetter = _documents;
                             }
 
                           }).catch(e => {
