@@ -474,133 +474,116 @@ if ($allowed_attachments !== true) {
 
                     // set fabrik tags
                     $('#tags').val(fabrik_tags.toString());
+
+                    /// merge with code Hugo (need to be refactored)
                 }
+
+                $.ajax({
+                    type: "POST",
+                    url : "index.php?option=com_emundus&controller=messages&task=gettemplate",
+                    data : {
+                        select : select.value
+                    },
+                    success: function (email) {
+                        var cci = $selectize_cc[0].selectize;
+                        email = JSON.parse(email);
+
+                        if(email.tmpl.cci != null){
+                            let cci_emails = email.tmpl.cci.split(',');
+                            cci_emails.forEach((elt) => {
+                                cci.createItem("BCC: Bcc: <"+elt+">");
+                            });
+                        } else {
+                            //cci.clear();
+                        }
+
+                        //$("#tags").val(email.tmpl.tags);
+
+                        var email_block = document.getElementById("em_email_block");
+                        $("#mail_subject").text(email.tmpl.subject);
+                        $("#mail_from").text(email.tmpl.emailfrom);
+                        $("#mail_from_name").text(email.tmpl.name);
+                        $("#mail_body").val(email.tmpl.message);
+                        tinyMCE.execCommand("mceSetContent", false, email.tmpl.message);
+                        tinyMCE.execCommand("mceRepaint");
+
+                        //Reset attachments.
+                        $('#em-attachment-list').each(function(idx, li) {
+                            var attachment = $(li);
+
+                            if (attachment.hasClass('candidate_file')) {
+
+                                // Remove 'disabled' attr from select options.
+                                $('#em-select_candidate_file option[value="'+attachment.find('.value').text()+'"]').prop('disabled', false);
+
+                            } else if (attachment.hasClass('setup_letters')) {
+
+                                // Remove 'disabled' attr from select options.
+                                $('#em-select_setup_letters option[value="'+attachment.find('.value').text()+'"]').prop('disabled', false);
+
+                            }
+                        });
+
+                        // Get the attached uploaded file if there is one.
+                        if (typeof(email.tmpl.attachment) != 'undefined' && email.tmpl.attachment != null) {
+                            $('#em-attachment-list').append('<li class="list-group-item upload" style="padding: 15px 15px"><div class="value hidden">'+email.tmpl.attachment+'</div>'+ email.tmpl.attachment.split('\\').pop().split('/').pop() +'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+                        }
+
+                        <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
+                        // Get the attached candidate files if there are any.
+                        if (typeof(email.tmpl.candidate_attachments) != 'undefined' && email.tmpl.candidate_attachments != null) {
+
+                            // We need another AJAX to get the info about the attachments, we only have the IDs and we need the names.
+                            $.ajax({
+                                type: 'POST',
+                                url: 'index.php?option=com_emundus&controller=messages&task=getcandidatefilenames',
+                                data : {
+                                    attachments : email.tmpl.candidate_attachments
+                                },
+                                success: function (attachments) {
+                                    attachments = JSON.parse(attachments);
+                                    if (attachments.status) {
+
+                                        // Add the attachments to the list and deselect the corresponding selects from the option.
+                                        attachments.attachments.forEach(function(attachment) {
+                                            $('#em-attachment-list').append('<li class="list-group-item candidate_file" style="padding: 15px 15px"><div class="value hidden">'+attachment.id+'</div>'+attachment.value+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
+                                            $('#em-select_candidate_file option[value="'+attachment.id+'"]').prop('disabled', true);
+                                        });
+                                    }
+                                }
+                            })
+                        }
+                        <?php endif; ?>
+
+                        // TODO: Rights?
+                        // Get the attached candidate files if there are any.
+                        if (typeof(email.tmpl.letter_attachments) != 'undefined' && email.tmpl.letter_attachments != null) {
+                            console.log(data);
+                            let letters = data.data.attachments;
+
+                            letters.forEach(letter => {
+                                $('#em-attachment-list').append('' +
+                                    '<li class="list-group-item setup_letters" style="padding: 15px 15px">' +
+                                        '<div class="value hidden">' + letter.id + '</div>' + letter.value +
+                                        '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
+                                        '<span class="glyphicon glyphicon-remove"></span>' +
+                                        '</span>' +
+                                        '<span class="badge">' +
+                                        '<span class="glyphicon glyphicon-envelope">' + '</span>' +
+                                        '</span>' +
+                                    '</li>');
+                            })
+                        }
+                    },
+                    error: function () {
+                        // handle error
+                        $("#message_template").append('<span class="alert"> <?= JText::_('ERROR'); ?> </span>')
+                    }
+                });
             }, error: function(jqXHR) {
                 console.log(jqXHR.responseText);
             }
         })
-
-        $.ajax({
-            type: "POST",
-            url : "index.php?option=com_emundus&controller=messages&task=gettemplate",
-            data : {
-                select : select.value
-            },
-            success: function (email) {
-                var cci = $selectize_cc[0].selectize;
-                email = JSON.parse(email);
-
-                if(email.tmpl.cci != null){
-                    let cci_emails = email.tmpl.cci.split(',');
-                    cci_emails.forEach((elt) => {
-                        cci.createItem("BCC: Bcc: <"+elt+">");
-                    });
-                } else {
-                    //cci.clear();
-                }
-
-                //$("#tags").val(email.tmpl.tags);
-
-                var email_block = document.getElementById("em_email_block");
-                $("#mail_subject").text(email.tmpl.subject);
-                $("#mail_from").text(email.tmpl.emailfrom);
-                $("#mail_from_name").text(email.tmpl.name);
-                $("#mail_body").val(email.tmpl.message);
-                tinyMCE.execCommand("mceSetContent", false, email.tmpl.message);
-                tinyMCE.execCommand("mceRepaint");
-
-                //Reset attachments.
-                $('#em-attachment-list').each(function(idx, li) {
-                    var attachment = $(li);
-
-                    if (attachment.hasClass('candidate_file')) {
-
-                        // Remove 'disabled' attr from select options.
-                        $('#em-select_candidate_file option[value="'+attachment.find('.value').text()+'"]').prop('disabled', false);
-
-                    } else if (attachment.hasClass('setup_letters')) {
-
-                        // Remove 'disabled' attr from select options.
-                        $('#em-select_setup_letters option[value="'+attachment.find('.value').text()+'"]').prop('disabled', false);
-
-                    }
-                });
-
-                // Get the attached uploaded file if there is one.
-                if (typeof(email.tmpl.attachment) != 'undefined' && email.tmpl.attachment != null) {
-                    $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+email.tmpl.attachment+'</div>'+ email.tmpl.attachment.split('\\').pop().split('/').pop() +'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
-                }
-
-                <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
-                // Get the attached candidate files if there are any.
-                if (typeof(email.tmpl.candidate_attachments) != 'undefined' && email.tmpl.candidate_attachments != null) {
-
-                    // We need another AJAX to get the info about the attachments, we only have the IDs and we need the names.
-                    $.ajax({
-                        type: 'POST',
-                        url: 'index.php?option=com_emundus&controller=messages&task=getcandidatefilenames',
-                        data : {
-                            attachments : email.tmpl.candidate_attachments
-                        },
-                        success: function (attachments) {
-                            attachments = JSON.parse(attachments);
-                            if (attachments.status) {
-
-                                // Add the attachments to the list and deselect the corresponding selects from the option.
-                                attachments.attachments.forEach(function(attachment) {
-                                    $('#em-attachment-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+attachment.id+'</div>'+attachment.value+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
-                                    $('#em-select_candidate_file option[value="'+attachment.id+'"]').prop('disabled', true);
-                                });
-                            }
-                        }
-                    })
-                }
-                <?php endif; ?>
-
-                // TODO: Rights?
-                // Get the attached candidate files if there are any.
-                // if (typeof(email.tmpl.letter_attachments) != 'undefined' && email.tmpl.letter_attachments != null) {
-                //     var fnums = $('input:hidden[name="fnums"]').val();
-                //     // We need another AJAX to get the info about the letter, we only have the IDs and we need the names.
-                //     $.ajax({
-                //         type: 'POST',
-                //         url: 'index.php?option=com_emundus&controller=evaluation&task=getavailableletters',
-                //         dataType: 'JSON',
-                //         data : {
-                //             fnums : fnums,
-                //         },
-                //         success: function (letter_tmpls) {
-                //             console.log(letter_tmpls);
-                //             if(letter_tmpls.status) {
-                //                 let letters = letter_tmpls.attached_letters;
-                //
-                //                 letters.forEach(letter => {
-                //                     $('#em-attachment-list').append('' +
-                //                         '<li class="list-group-item setup_letters" style="padding: 15px 15px">' +
-                //                         '<div class="value hidden">' + letter.id + '</div>' + letter.value +
-                //                         '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
-                //                         '<span class="glyphicon glyphicon-remove"></span>' +
-                //                         '</span>' +
-                //                         '<span class="badge">' +
-                //                         '<span class="glyphicon glyphicon-envelope">' + '</span>' +
-                //                         '</span>' +
-                //                         '</li>');
-                //                 })
-                //             } else {
-                //                 $('#em-attachment-list').append('ERROR_HERE');
-                //             }
-                //
-                //         }, error: function(jqXHR) {
-                //             console.log(jqXHR.responseText);
-                //         }
-                //     })
-                // }
-            },
-            error: function () {
-                // handle error
-                $("#message_template").append('<span class="alert"> <?= JText::_('ERROR'); ?> </span>')
-            }
-        });
     }
 
     function removeElement(element) {
@@ -733,7 +716,7 @@ if ($allowed_attachments !== true) {
                     // Disable the file from the dropdown.
                     file.prop('disabled', true);
                     // Add the file to the list.
-                    $('#em-attachment-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
+                    $('#em-attachment-list').append('<li class="list-group-item candidate_file" style="padding: 15px 15px"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
 
                 }
 
@@ -759,7 +742,7 @@ if ($allowed_attachments !== true) {
                     // Disable the file from the dropdown.
                     file.prop('disabled', true);
                     // Add the file to the list.
-                    $('#em-attachment-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
+                    $('#em-attachment-list').append('<li class="list-group-item setup_letters" style="padding: 15px 15px"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
 
                 }
 
@@ -832,7 +815,7 @@ if ($allowed_attachments !== true) {
                 data = JSON.parse(data);
 
                 if (data.status) {
-                    $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+                    $('#em-attachment-list').append('<li class="list-group-item upload" style="padding: 15px 15px"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
                 } else {
                     $("#em-file_to_upload").append('<span class="alert"> <?= JText::_('UPLOAD_FAILED'); ?> </span>')
                 }
