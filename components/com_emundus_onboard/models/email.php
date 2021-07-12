@@ -291,7 +291,6 @@ class EmundusonboardModelemail extends JModelList {
 
             $db->setQuery($query);
 
-//            var_dump($query->__toString());die;
             $tags_Info = $db->loadObjectList();         /// get tags info
 
             /// get associated letters
@@ -433,8 +432,6 @@ class EmundusonboardModelemail extends JModelList {
 
         $fabrik_pattern = '/\${(.+[0-9])\}/';
 
-        // set regular expression of email format
-
         if (count($data) > 0) {
 
             $fields = [];
@@ -470,6 +467,14 @@ class EmundusonboardModelemail extends JModelList {
                         $db->setQuery($query);
                         $db->execute();
                     }
+                } else {
+                    /// if empty --> remove all
+                    $query->clear()
+                        ->delete($db->quoteName('#__emundus_setup_emails_repeat_tags'))
+                        ->where($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . '=' . (int)$id);
+
+                    $db->setQuery($query);
+                    $db->execute();
                 }
 
                 /// remove and update new documents for an email
@@ -490,6 +495,14 @@ class EmundusonboardModelemail extends JModelList {
                         $db->setQuery($query);
                         $db->execute();
                     }
+                } else {
+                    /// if empty --> remove all
+                    $query->clear()
+                        ->delete($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
+                        ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . '=' . (int)$id);
+
+                    $db->setQuery($query);
+                    $db->execute();
                 }
 
                 if(!empty($receiver_cc) and !is_null($receiver_cc)) {
@@ -523,6 +536,15 @@ class EmundusonboardModelemail extends JModelList {
                             $db->execute();
                         }
                     }
+                } else {
+                    /// if empty --> remove all
+                    $query->clear()
+                        ->delete($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
+                        ->where($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . '=' . (int)$id)
+                        ->andWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' LIKE ' . $db->quote('receiver_cc_%'));
+
+                    $db->setQuery($query);
+                    $db->execute();
                 }
 
                 /// update bcc
@@ -556,6 +578,15 @@ class EmundusonboardModelemail extends JModelList {
                             $db->execute();
                         }
                     }
+                } else {
+                    /// if empty --> remove all
+                    $query->clear()
+                        ->delete($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
+                        ->where($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . '=' . (int)$id)
+                        ->andWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' LIKE ' . $db->quote('receiver_bcc_%'));
+
+                    $db->setQuery($query);
+                    $db->execute();
                 }
 
                 return true;

@@ -82,7 +82,7 @@
           <div class="form-group" id="receivers_tags">
             <label>{{ ReceiversCC }}</label>
             <div id="cc-tooltips" style="font-size: .8rem; color: #16afe1"> * {{ CopiesTooltips }} ${id} </div>
-            <multiselect v-model="selectedReceiversCC" label="email" track-by="id" :options="receivers_cc" :multiple="true"
+            <multiselect v-model="selectedReceiversCC" label="email" track-by="email" :options="receivers_cc" :multiple="true"
                          :taggable="true" :placeholder="ReceiversCCPlaceHolder" @tag="addNewCC" :close-on-select="false" :clear-on-select="false"></multiselect>
           </div>
 
@@ -636,10 +636,10 @@
                             }
 
                             if(resp.data.data.receivers !== null && resp.data.data.receivers !== undefined && resp.data.data.receivers !== "") {
-                              let receivers = resp.data.data.receivers;
-
                               let receiver_cc = [];
                               let receiver_bcc = [];
+
+                              let receivers = resp.data.data.receivers;
 
                               for (let index = 0; index < receivers.length; index++) {
                                 receiver_cc[index] = {};
@@ -664,7 +664,6 @@
                               this.selectedReceiversCC = cc_filtered;
                               this.selectedReceiversBCC = bcc_filtered;
                             }
-
 
                           }).catch(e => {
                             console.log(e);
