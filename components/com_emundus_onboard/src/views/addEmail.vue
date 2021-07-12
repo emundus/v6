@@ -490,7 +490,7 @@
                                         tags: this.selectedTags, documents: this.selectedLetter
             })
           }).then(response => {
-            //this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+            this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
           }).catch(error => {
             console.log(error);
           });

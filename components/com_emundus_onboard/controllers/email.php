@@ -210,6 +210,31 @@ class EmundusonboardControlleremail extends JControllerLegacy {
             $tags = $jinput->getRaw('tags');
             $documents = $jinput->getRaw('documents');
 
+            $tag_list = [];
+            $document_list = [];
+
+            // get tag from tag list
+            if(!empty($tags) and !is_null($tags)) {
+                foreach ($tags as $key => $value) {
+                    if(!empty($value['id']) or !is_null($value['id'])) {
+                        $tag_list[] = $value['id'];
+                    } else {
+                        continue;
+                    }
+                }
+            }
+
+            // get document from document list
+            if(!empty($documents) and !is_null($documents)) {
+                foreach ($documents as $key => $value) {
+                    if(!empty($value['id']) or !is_null($value['id'])) {
+                        $document_list[] = $value['id'];
+                    } else {
+                        continue;
+                    }
+                }
+            }
+
             // get receiver cc from cc list
             if(!empty($receivers_cc) and !is_null($receivers_cc)) {
                 foreach ($receivers_cc as $key => $value) {
@@ -232,7 +257,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
                 }
             }
 
-            $result = $m_email->createEmail($email_data, $cc_list, $bcc_list, $tags, $documents);
+            $result = $m_email->createEmail($email_data, $cc_list, $bcc_list, $tag_list, $document_list);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);
@@ -290,7 +315,32 @@ class EmundusonboardControlleremail extends JControllerLegacy {
                 }
             }
 
-            $result = $m_email->updateEmail($code, $data, $tags, $documents, $cc_list, $bcc_list);      /// call to updateEmail model
+            $tag_list = [];
+            $document_list = [];
+
+            // get tag from tag list
+            if(!empty($tags) and !is_null($tags)) {
+                foreach ($tags as $key => $value) {
+                    if(!empty($value['id']) or !is_null($value['id'])) {
+                        $tag_list[] = $value['id'];
+                    } else {
+                        continue;
+                    }
+                }
+            }
+
+            // get document from document list
+            if(!empty($documents) and !is_null($documents)) {
+                foreach ($documents as $key => $value) {
+                    if(!empty($value['id']) or !is_null($value['id'])) {
+                        $document_list[] = $value['id'];
+                    } else {
+                        continue;
+                    }
+                }
+            }
+
+            $result = $m_email->updateEmail($code, $data, $tag_list, $document_list, $cc_list, $bcc_list);      /// call to updateEmail model
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);

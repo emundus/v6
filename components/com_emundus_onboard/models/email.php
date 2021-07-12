@@ -290,6 +290,8 @@ class EmundusonboardModelemail extends JModelList {
                 ->where($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' = ' . (int)$id);
 
             $db->setQuery($query);
+
+//            var_dump($query->__toString());die;
             $tags_Info = $db->loadObjectList();         /// get tags info
 
             /// get associated letters
@@ -512,8 +514,7 @@ class EmundusonboardModelemail extends JModelList {
                     $query->clear()
                         ->delete($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
                         ->where($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . '=' . (int)$id)
-                        ->andWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . '=' . $db->quote('receiver_cc_email'))
-                        ->andWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . '=' . $db->quote('receiver_cc_fabrik'));
+                        ->andWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' LIKE ' . $db->quote('receiver_cc_%'));
 
                     $db->setQuery($query);
                     $db->execute();
@@ -543,17 +544,16 @@ class EmundusonboardModelemail extends JModelList {
                 }
 
                 /// update bcc
-                if(!empty($receiver_cc) and !is_null($receiver_cc)) {
+                if(!empty($receiver_bcc) and !is_null($receiver_bcc)) {
                     $query->clear()
                         ->delete($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
                         ->where($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . '=' . (int)$id)
-                        ->andWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . '=' . $db->quote('receiver_bcc_email'))
-                        ->andWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . '=' . $db->quote('receiver_bcc_fabrik'));
+                        ->andWhere($db->quoteName('#__emundus_setup_emails_repeat_receivers.type') . ' LIKE ' . $db->quote('receiver_bcc_%'));
 
                     $db->setQuery($query);
                     $db->execute();
 
-                    foreach ($receiver_cc as $key => $receiver) {
+                    foreach ($receiver_bcc as $key => $receiver) {
                         /// if fabrik tags --> then, receiver type = 'receiver_cc_fabrik', otherwise, 'receivers_cc_email'
                         $fabrik_matching_dollar_sign = preg_match($fabrik_pattern_start_dollar_sign,$receiver) and preg_match($fabrik_pattern_end_dollar_sign,$receiver);
                         $fabrik_matching_bracket_sign = preg_match($fabrik_pattern_start_bracket_sign,$receiver) and preg_match($fabrik_pattern_end_bracket_sign,$receiver);
