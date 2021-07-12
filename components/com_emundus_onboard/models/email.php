@@ -446,11 +446,10 @@ class EmundusonboardModelemail extends JModelList {
         $query = $db->getQuery(true);
 
         // set regular expression of fabrik elem
-        $fabrik_pattern_start_dollar_sign = '/\${[0-9a-zA-Z]/';
-        $fabrik_pattern_end_dollar_sign = '/}$/';
+//        $fabrik_pattern_start_dollar_sign = '/\${[0-9a-zA-Z]/';
+//        $fabrik_pattern_end_dollar_sign = '/}$/';
 
-        $fabrik_pattern_start_bracket_sign =  '/\[[0-9a-zA-Z]/';
-        $fabrik_pattern_end_bracket_sign = '/]$/';
+        $fabrik_pattern = '/\${(.+[0-9])\}/';
 
         if (count($data) > 0) {
 
@@ -521,9 +520,8 @@ class EmundusonboardModelemail extends JModelList {
 
                     foreach ($receiver_cc as $key => $receiver) {
                         /// if fabrik tags --> then, receiver type = 'receiver_cc_fabrik', otherwise, 'receivers_cc_email'
-                        $fabrik_matching_dollar_sign = preg_match($fabrik_pattern_start_dollar_sign,$receiver) and preg_match($fabrik_pattern_end_dollar_sign,$receiver);
-                        $fabrik_matching_bracket_sign = preg_match($fabrik_pattern_start_bracket_sign,$receiver) and preg_match($fabrik_pattern_end_bracket_sign,$receiver);
-                        if($fabrik_matching_dollar_sign == true or $fabrik_matching_bracket_sign == true) {
+                        $is_fabrik_tag = (bool) preg_match_all($fabrik_pattern, $receiver);
+                        if($is_fabrik_tag == true) {
                             $query->clear()
                                 ->insert($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
                                 ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$id)
@@ -555,9 +553,8 @@ class EmundusonboardModelemail extends JModelList {
 
                     foreach ($receiver_bcc as $key => $receiver) {
                         /// if fabrik tags --> then, receiver type = 'receiver_cc_fabrik', otherwise, 'receivers_cc_email'
-                        $fabrik_matching_dollar_sign = preg_match($fabrik_pattern_start_dollar_sign,$receiver) and preg_match($fabrik_pattern_end_dollar_sign,$receiver);
-                        $fabrik_matching_bracket_sign = preg_match($fabrik_pattern_start_bracket_sign,$receiver) and preg_match($fabrik_pattern_end_bracket_sign,$receiver);
-                        if($fabrik_matching_dollar_sign == true or $fabrik_matching_bracket_sign == true) {
+                        $is_fabrik_tag = (bool) preg_match_all($fabrik_pattern, $receiver);
+                        if($is_fabrik_tag) {
                             $query->clear()
                                 ->insert($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
                                 ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$id)
