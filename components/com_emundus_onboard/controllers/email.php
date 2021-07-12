@@ -213,12 +213,10 @@ class EmundusonboardControlleremail extends JControllerLegacy {
             // get receiver cc from cc list
             if(!empty($receivers_cc) and !is_null($receivers_cc)) {
                 foreach ($receivers_cc as $key => $value) {
-                    foreach ($value as $data => $receiver_cc) {
-                        if (empty($receiver_cc)) {
-                            continue;
-                        } else {
-                            $cc_list[] = $receiver_cc;
-                        }
+                    if(!empty($value['email']) or !is_null($value['email'])) {
+                        $cc_list[] = $value['email'];
+                    } else {
+                        continue;
                     }
                 }
             }
@@ -226,12 +224,10 @@ class EmundusonboardControlleremail extends JControllerLegacy {
             // get receiver bcc from cc list
             if(!empty($receivers_bcc) and !is_null($receivers_bcc)) {
                 foreach ($receivers_bcc as $key => $value) {
-                    foreach ($value as $data => $receiver_bcc) {
-                        if (empty($receiver_bcc)) {
-                            continue;
-                        } else {
-                            $bcc_list[] = $receiver_bcc;
-                        }
+                    if(!empty($value['email']) or !is_null($value['email'])) {
+                        $bcc_list[] = $value['email'];
+                    } else {
+                        continue;
                     }
                 }
             }
@@ -275,12 +271,21 @@ class EmundusonboardControlleremail extends JControllerLegacy {
             // get receiver cc from cc list
             if(!empty($receivers_cc) and !is_null($receivers_cc)) {
                 foreach ($receivers_cc as $key => $value) {
-                    foreach ($value as $data => $receiver_cc) {
-                        if (empty($receiver_cc)) {
-                            continue;
-                        } else {
-                            $cc_list[] = $receiver_cc;
-                        }
+                    if(!empty($value['email']) or !is_null($value['email'])) {
+                        $cc_list[] = $value['email'];
+                    } else {
+                        continue;
+                    }
+                }
+            }
+
+            // get receiver bcc from cc list
+            if(!empty($receivers_bcc) and !is_null($receivers_bcc)) {
+                foreach ($receivers_bcc as $key => $value) {
+                    if(!empty($value['email']) or !is_null($value['email'])) {
+                        $bcc_list[] = $value['email'];
+                    } else {
+                        continue;
                     }
                 }
             }

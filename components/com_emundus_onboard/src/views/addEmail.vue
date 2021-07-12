@@ -487,10 +487,10 @@
             },
             data: qs.stringify({ body: this.form, code: this.email,
                                         selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC,
-                                        tags: this.selectedTags, documents: this.selectedDocuments
+                                        tags: this.selectedTags, documents: this.selectedLetter
             })
           }).then(response => {
-            this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+            //this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
           }).catch(error => {
             console.log(error);
           });
@@ -501,7 +501,7 @@
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
-            data: qs.stringify({ body: this.form, selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC, tags: this.selectedTags, documents:this.selectedDocuments })
+            data: qs.stringify({ body: this.form, selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC, tags: this.selectedTags, documents:this.selectedLetter })
           }).then(response => {
             this.trigger.model = response.data.data;
             axios({
