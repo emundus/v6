@@ -319,11 +319,7 @@ class EmundusonboardModelemail extends JModelList {
          $data['category'] = null;
 
          // set regular expression of fabrik elem
-         $fabrik_pattern_start_dollar_sign = '/\${[0-9a-zA-Z]/';
-         $fabrik_pattern_end_dollar_sign = '/}$/';
-
-         $fabrik_pattern_start_bracket_sign =  '/\[[0-9a-zA-Z]/';
-         $fabrik_pattern_end_bracket_sign = '/]$/';
+         $fabrik_pattern = '/\${(.+[0-9])\}/';
 
          if (!empty($data)) {
         	$query->insert($db->quoteName('#__emundus_setup_emails'))
@@ -371,12 +367,8 @@ class EmundusonboardModelemail extends JModelList {
                 // add cc for new email
                 if(!empty($receiver_cc) and !is_null($receiver_cc)) {
                     foreach ($receiver_cc as $key => $receiver) {
-
-                        /// if fabrik tags --> then, receiver type = 'receiver_cc_fabrik', otherwise, 'receivers_cc_email'
-                        $fabrik_matching_dollar_sign = preg_match($fabrik_pattern_start_dollar_sign,$receiver) and preg_match($fabrik_pattern_end_dollar_sign,$receiver);
-                        $fabrik_matching_bracket_sign = preg_match($fabrik_pattern_start_bracket_sign,$receiver) and preg_match($fabrik_pattern_end_bracket_sign,$receiver);
-
-                        if($fabrik_matching_dollar_sign == true or $fabrik_matching_bracket_sign == true) {
+                        $is_fabrik_tag = (bool) preg_match_all($fabrik_pattern, $receiver);
+                        if($is_fabrik_tag == true) {
                             $query->clear()
                                 ->insert($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
                                 ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
@@ -385,7 +377,7 @@ class EmundusonboardModelemail extends JModelList {
 
                             $db->setQuery($query);
                             $db->execute();
-                        } else {
+                        } else if(filter_var($receiver, FILTER_VALIDATE_EMAIL) !== false){
                             $query->clear()
                                 ->insert($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
                                 ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
@@ -395,20 +387,14 @@ class EmundusonboardModelemail extends JModelList {
                             $db->setQuery($query);
                             $db->execute();
                         }
-
-                        /// if not email and not fabrik --> return false
                     }
                 }
 
                 // add bcc for new email
                 if(!empty($receiver_bcc) and !is_null($receiver_bcc)) {
                     foreach ($receiver_bcc as $key => $receiver) {
-
-                        /// if fabrik tags --> then, receiver type = 'receiver_cc_fabrik', otherwise, 'receivers_cc_email'
-                        $fabrik_matching_dollar_sign = preg_match($fabrik_pattern_start_dollar_sign,$receiver) and preg_match($fabrik_pattern_end_dollar_sign,$receiver);
-                        $fabrik_matching_bracket_sign = preg_match($fabrik_pattern_start_bracket_sign,$receiver) and preg_match($fabrik_pattern_end_bracket_sign,$receiver);
-
-                        if($fabrik_matching_dollar_sign == true or $fabrik_matching_bracket_sign == true) {
+                        $is_fabrik_tag = (bool) preg_match_all($fabrik_pattern, $receiver);
+                        if($is_fabrik_tag == true) {
                             $query->clear()
                                 ->insert($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
                                 ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
@@ -417,7 +403,7 @@ class EmundusonboardModelemail extends JModelList {
 
                             $db->setQuery($query);
                             $db->execute();
-                        } else {
+                        } else if(filter_var($receiver, FILTER_VALIDATE_EMAIL) !== false) {
                             $query->clear()
                                 ->insert($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
                                 ->set($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' =  ' . (int)$newemail)
@@ -427,8 +413,6 @@ class EmundusonboardModelemail extends JModelList {
                             $db->setQuery($query);
                             $db->execute();
                         }
-
-                        /// if not email and not fabrik --> return false
                     }
                 }
                 return true;
@@ -450,7 +434,6 @@ class EmundusonboardModelemail extends JModelList {
         $fabrik_pattern = '/\${(.+[0-9])\}/';
 
         // set regular expression of email format
-//        var_dump(preg_match(FILTER_VALIDATE_EMAIL, 'bob@example.com'));die;
 
         if (count($data) > 0) {
 
