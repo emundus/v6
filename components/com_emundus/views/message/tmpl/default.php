@@ -418,6 +418,7 @@ if ($allowed_attachments !== true) {
 
         var $select_tag = $(document.getElementById('action-tags'));
         var selectize_tag = $select_tag[0].selectize;
+        selectize_tag.clear();
 
         $("label[for='cc-emails']").empty();
         $("label[for='bcc-emails']").empty();
@@ -433,52 +434,57 @@ if ($allowed_attachments !== true) {
             dataType: 'JSON',
             data: { id : select.value },
             success: function(data) {
-                if(data.data.receivers != null && data.data.receivers != undefined && data.data.receivers != "") {
-                    let receivers = data.data.receivers;
 
-                    let receiver_cc = [];
-                    let receiver_bcc = [];
-                    //let fabrik_tags = [];
+                if(data.status) {
 
                     let tags = data.data.tags;
 
-                    if(tags != null && tags != undefined) {
+                    if (tags != null && tags != undefined) {
                         $('#sending-mode option:eq(1)').prop('selected', true);
                         $('#sending-mode').trigger("change");
                         $('#sending-mode').trigger("chosen:updated");
 
-                        selectize_tag.clear();
                         tags.forEach(tag => {
+                            console.log(tag.id);
                             $("div.option[data-value='" + tag.id + "']").click();
                         })
                     }
 
-                    for (let index = 0; index < receivers.length; index++) {
-                        switch(receivers[index].type) {
-                            case 'receiver_cc_email':
-                                receiver_cc.push(receivers[index].receivers);
-                                break;
+                    if (data.data.receivers != null && data.data.receivers != undefined && data.data.receivers != "") {
 
-                            case 'receiver_bcc_email':
-                                receiver_bcc.push(receivers[index].receivers);
-                                break;
+                        let receivers = data.data.receivers;
 
-                            default:
-                                break;
+                        let receiver_cc = [];
+                        let receiver_bcc = [];
+                        //let fabrik_tags = [];
+
+                        for (let index = 0; index < receivers.length; index++) {
+                            switch (receivers[index].type) {
+                                case 'receiver_cc_email':
+                                    receiver_cc.push(receivers[index].receivers);
+                                    break;
+
+                                case 'receiver_bcc_email':
+                                    receiver_bcc.push(receivers[index].receivers);
+                                    break;
+
+                                default:
+                                    break;
+                            }
                         }
+
+                        // cc
+                        receiver_cc.forEach(cc => {
+                            selectize_cc.addOption({value: "CC: " + cc, text: cc});
+                            selectize_cc.addItem("CC: " + cc);
+                        })
+
+                        // bcc
+                        receiver_bcc.forEach(bcc => {
+                            selectize_bcc.addOption({value: "BCC: " + bcc, text: bcc});
+                            selectize_bcc.addItem("BCC: " + bcc);
+                        })
                     }
-
-                    // cc
-                    receiver_cc.forEach(cc => {
-                        selectize_cc.addOption({ value:"CC: " + cc, text: cc });
-                        selectize_cc.addItem("CC: " + cc);
-                    })
-
-                    // bcc
-                    receiver_bcc.forEach(bcc => {
-                        selectize_bcc.addOption({ value: "BCC: " + bcc, text: bcc });
-                        selectize_bcc.addItem("BCC: " + bcc);
-                    })
                 }
 
                 $.ajax({
