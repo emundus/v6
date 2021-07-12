@@ -78,33 +78,34 @@
             />
           </div>
 
-          <!-- Email -- tags         -->
-          <div class="form-group">
-            <label>{{ Tags }}</label>
-            <select v-model="selectedTags" class="dropdown-toggle w-select" multiple>
-              <option v-for="tag in tags" :value="tag.id" :id="'tag_'+tag.id">{{tag.label}}</option>
-            </select>
-          </div>
-
-          <!-- Email -- tags         -->
+          <!-- Email -- CC (in form of email adress or fabrik element -->
           <div class="form-group" id="receivers_tags">
             <label>{{ ReceiversCC }}</label>
-            <div id="cc-tooltips" style="font-size: .8rem; color: #16afe1"> Format : ${id} ou [id] </div>
-            <multiselect v-model="selectedReceiversCC" label="email" track-by="id" :options="receivers_cc" :multiple="true" :taggable="true" placeholder="test" @tag="addTag"></multiselect>
+            <div id="cc-tooltips" style="font-size: .8rem; color: #16afe1"> * {{ CopiesTooltips }} ${id} </div>
+            <multiselect v-model="selectedReceiversCC" label="email" track-by="id" :options="receivers_cc" :multiple="true"
+                         :taggable="true" :placeholder="ReceiversCCPlaceHolder" @tag="addNewCC" :close-on-select="false" :clear-on-select="false"></multiselect>
           </div>
 
+          <!-- Email -- BCC (in form of email adress or fabrik element -->
           <div class="form-group" id="tags_tags">
             <label>{{ ReceiversBCC }}</label>
-            <div id="bcc-tooltips" style="font-size: .8rem; color: #16afe1"> Format : ${id} ou [id] </div>
-            <multiselect v-model="selectedReceiversBCC" label="email" track-by="email" :options="receivers_bcc" :multiple="true" :taggable="true" placeholder="test"></multiselect>
+            <div id="bcc-tooltips" style="font-size: .8rem; color: #16afe1"> *{{ CopiesTooltips }} ${id} </div>
+            <multiselect v-model="selectedReceiversBCC" label="email" track-by="email" :options="receivers_bcc" :multiple="true"
+                         :taggable="true" :placeholder="ReceiversBCCPlaceHolder" @tag="addNewBCC" :close-on-select="false" :clear-on-select="false"></multiselect>
           </div>
 
-          <!-- Email -- document type         -->
+          <!-- Email -- Action tags -->
           <div class="form-group">
-            <label>{{ DocumentType }}</label>
-            <select v-model="selectedDocuments" class="dropdown-toggle w-select" multiple>
-              <option v-for="document in documents" :value="document.id">{{document.value}}</option>
-            </select>
+            <label>{{ Tags }}</label>
+            <multiselect v-model="selectedTags" label="label" track-by="id" :options="action_tags" :multiple="true"
+                         :taggable="true" :placeholder="TagsPlaceHolder" :close-on-select="false" :clear-on-select="false"></multiselect>
+          </div>
+
+          <!-- Email -- Associated letters (in form of email adress or fabrik element -->
+          <div class="form-group">
+            <label>{{ Letters }}</label>
+            <multiselect v-model="selectedLetter" label="value" track-by="id" :options="attached_letters" :multiple="true"
+                         :taggable="true" :placeholder="LettersPlaceHolder" :close-on-select="false" :clear-on-select="false"></multiselect>
           </div>
 
         </div>
@@ -273,12 +274,20 @@
       TheCandidate: Joomla.JText._("COM_EMUNDUS_ONBOARD_THE_CANDIDATE"),
       Manual: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL"),
       Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS"),
+
       Tags: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TAGS"),
-      DocumentType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
+      TagsPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS"),
+
+      Letters: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
+      LettersPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT"),
+
       ReceiversCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS"),
       ReceiversCCPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER"),
+
       ReceiversBCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS"),
       ReceiversBCCPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER"),
+
+      CopiesTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_CC_BCC_TOOLTIPS"),
 
       categories: [],
       programs: [],
@@ -289,11 +298,13 @@
       searchTerm: '',
       selectall: false,
 
-      tags: [],         /// email --- tags
-      documents: [],    /// email -- document types
+      /// these 2 variables used to bind with tags and documents
+      action_tags: [],
+      attached_letters: [],
 
+      /// these 2 variables used to store v-model of tags and documents
       selectedTags: [],
-      selectedDocuments: [],
+      selectedLetter: [],
 
       /// these 2 variables used to binding value
       receivers_cc: [],
@@ -336,13 +347,24 @@
     }),
 
     methods: {
-      addTag (newTag) {
+      /// add new CC
+      addNewCC (newCC) {
         const tag = {
-          email: newTag,
-          id: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000))
+          email: newCC,
+          id: newCC.substring(0, 2) + Math.floor((Math.random() * 10000000))
         }
         this.receivers_cc.push(tag);
         this.selectedReceiversCC.push(tag);
+      },
+
+      /// add new BCC
+      addNewBCC (newBCC) {
+        const tag = {
+          email: newBCC,
+          id: newBCC.substring(0, 2) + Math.floor((Math.random() * 10000000))
+        }
+        this.receivers_bcc.push(tag);
+        this.selectedReceiversBCC.push(tag);
       },
 
       getAllUsers: function() {
@@ -353,8 +375,8 @@
             "Content-Type": "application/x-www-form-urlencoded"
           },
         }).then(response => {
-          console.log(response);
           this.receivers_cc = response.data.users;
+          this.receivers_bcc = response.data.users;
         }).catch(error => {
           console.log(error);
         })
@@ -468,7 +490,7 @@
                                         tags: this.selectedTags, documents: this.selectedDocuments
             })
           }).then(response => {
-            //this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+            this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
           }).catch(error => {
             console.log(error);
           });
@@ -493,7 +515,7 @@
                 users: this.selectedUsers
               })
             }).then((rep) => {
-              //this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+              this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
             });
           }).catch(error => {
             console.log(error);
@@ -560,7 +582,7 @@
           },
         }).then(response => {
           let _tags = response.data.data;
-          this.tags = _tags;
+          this.action_tags = _tags;
         }).catch(error => {
           console.log(error);
         })
@@ -574,26 +596,13 @@
             "Content-Type": "application/x-www-form-urlencoded"
           },
         }).then(response => {
-          console.log(response);
           let _documents = response.data.documents;
-          this.documents = _documents;
+          this.attached_letters = _documents;
         }).catch(error => {
           console.log(error);
         })
-      },
+      }
 
-      // onFocus() {
-      //   // get div parent
-      //   let _parent = $(this).parent().parent();
-      //   console.log(_parent);
-      //
-      //   $('div .tags-input-wrapper-default').css('border','2px solid #33b4de');
-      // },
-      //
-      // onBlur() {
-      //   console.log($(this));
-      //   $('div .tags-input-wrapper-default').css('border','2px solid #cccccc');
-      // },
     },
 
     created() {
@@ -618,52 +627,44 @@
 
                             if(resp.data.data.tags !== null && resp.data.data.tags !== undefined && resp.data.data.tags !== "") {
                               let _tags = resp.data.data.tags;
-                              _tags.forEach((tag, index) => {
-                                this.selectedTags[index] = tag.id;
-                              })
+                              this.selectedTags = _tags;
                             }
 
                             if(resp.data.data.attachments !== null && resp.data.data.attachments !== undefined && resp.data.data.attachments !== "") {
                               let _documents = resp.data.data.attachments;
-
-                              _documents.forEach((document, index) => {
-                                this.selectedDocuments[index] = document.id;
-                              })
+                              this.selectedLetter = _documents;
                             }
 
-                            //console.log(resp.data.data.receivers);
+                            if(resp.data.data.receivers !== null && resp.data.data.receivers !== undefined && resp.data.data.receivers !== "") {
+                              let receivers = resp.data.data.receivers;
 
-                            // if(resp.data.data.receivers !== null && resp.data.data.receivers !== undefined && resp.data.data.receivers !== "") {
-                            //   let receivers = resp.data.data.receivers;
-                            //
-                            //   let receiver_cc = [];
-                            //   let receiver_bcc = [];
-                            //
-                            //   for (let index = 0; index < receivers.length; index++) {
-                            //     receiver_cc[index] = {};
-                            //     receiver_bcc[index] = {};
-                            //
-                            //     if(receivers[index].type == 'receiver_cc_email' || receivers[index].type == 'receiver_cc_fabrik') {
-                            //       receiver_cc[index]['key'] = receivers[index].id;
-                            //       receiver_cc[index]['value'] = receivers[index].receivers;
-                            //     }
-                            //
-                            //     else if(receivers[index].type == 'receiver_bcc_email' || receivers[index].type == 'receiver_bcc_fabrik') {
-                            //         receiver_bcc[index]['key'] = receivers[index].id;
-                            //         receiver_bcc[index]['value'] = receivers[index].receivers;
-                            //       }
-                            //     }
-                            //
-                            //   const cc_filtered = receiver_cc.filter(el => {return el['key'] !== null && el['key'] !== undefined;})
-                            //   const bcc_filtered = receiver_bcc.filter(el => {return el['key'] !== null && el['key'] !== undefined;})
-                            //
-                            //   // /// bind data with v-model
-                            //   // console.log(cc_filtered);
-                            //   // console.log(bcc_filtered);
-                            //
-                            //   this.selectedReceiversCC = cc_filtered;
-                            //   this.selectedReceiversBCC = bcc_filtered;
-                            // }
+                              let receiver_cc = [];
+                              let receiver_bcc = [];
+
+                              for (let index = 0; index < receivers.length; index++) {
+                                receiver_cc[index] = {};
+                                receiver_bcc[index] = {};
+
+                                if (receivers[index].type == 'receiver_cc_email' || receivers[index].type == 'receiver_cc_fabrik') {
+                                  receiver_cc[index]['id'] = receivers[index].id;
+                                  receiver_cc[index]['email'] = receivers[index].receivers;
+                                } else if (receivers[index].type == 'receiver_bcc_email' || receivers[index].type == 'receiver_bcc_fabrik') {
+                                  receiver_bcc[index]['id'] = receivers[index].id;
+                                  receiver_bcc[index]['email'] = receivers[index].receivers;
+                                }
+                              }
+
+                              const cc_filtered = receiver_cc.filter(el => {
+                                return el['id'] !== null && el['id'] !== undefined;
+                              })
+                              const bcc_filtered = receiver_bcc.filter(el => {
+                                return el['id'] !== null && el['id'] !== undefined;
+                              })
+
+                              this.selectedReceiversCC = cc_filtered;
+                              this.selectedReceiversBCC = bcc_filtered;
+                            }
+
 
                           }).catch(e => {
                             console.log(e);
