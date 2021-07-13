@@ -891,4 +891,48 @@ class EmundusonboardModelemail extends JModelList {
             return false;
         }
     }
+
+    // get receivers from fabrik tags
+    public function getFabrikValueById($ids) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $output = [];
+
+        if(!empty($ids) and !is_null($ids)) {
+            $query->clear()
+                ->select('jfe.name, jfl.db_table_name')
+                ->from($db->quoteName('#__fabrik_lists', 'jfl'))
+                ->leftJoin($db->quoteName('#__fabrik_formgroup', 'jff') . ' ON ' . $db->quoteName('jfl.form_id') . ' = ' . $db->quoteName('jff.form_id'))
+                ->leftJoin($db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $db->quoteName('jff.group_id') . ' = ' . $db->quoteName('jfg.id'))
+                ->leftJoin($db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $db->quoteName('jff.group_id') . ' = ' . $db->quoteName('jfe.group_id'))
+                ->where($db->quoteName('jfe.id') . ' IN (' . implode(',', $ids) . ')');
+
+            $db->setQuery($query);
+            $fabrik_results = $db->loadObjectList();
+
+            foreach($fabrik_results as $key => $fabrik) {
+
+                $fabrik->db_table_name = str_replace('jos_', '', $fabrik->db_table_name);           // replace prefix 'jos_'
+                $fabrik->name = str_replace('jos_', '', $fabrik->name);                             // replace prefix 'jos_'
+
+                $query = 'SELECT #__' . $fabrik->db_table_name . '.' . $fabrik->name . ' FROM #__' . $fabrik->db_table_name . ' WHERE #__' . $fabrik->db_table_name . '.' . $fabrik->name . ' IS NOT NULL';
+                $db->setQuery($query);
+                $output[] = $db->loadObjectList();
+            }
+
+            $array_reduce = [];
+            $array_reduce = (array) array_reduce($output, 'array_merge', array());
+
+            $result = [];
+            foreach($array_reduce as $key => $value) {
+                foreach((array)$value as $index => $data) {
+                    $result[] = $data;
+                }
+            }
+
+            return array_unique($result);       // return array unique
+        } else {
+            return false;
+        }
+    }
 }

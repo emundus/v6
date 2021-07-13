@@ -456,7 +456,8 @@ if ($allowed_attachments !== true) {
 
                         let receiver_cc = [];
                         let receiver_bcc = [];
-                        //let fabrik_tags = [];
+                        let fabrik_cc = [];
+                        let fabrik_bcc = [];
 
                         for (let index = 0; index < receivers.length; index++) {
                             switch (receivers[index].type) {
@@ -466,6 +467,14 @@ if ($allowed_attachments !== true) {
 
                                 case 'receiver_bcc_email':
                                     receiver_bcc.push(receivers[index].receivers);
+                                    break;
+
+                                case 'receiver_cc_fabrik':
+                                    fabrik_cc.push(receivers[index].receivers);
+                                    break;
+
+                                case 'receiver_bcc_fabrik':
+                                    fabrik_bcc.push(receivers[index].receivers);
                                     break;
 
                                 default:
@@ -484,6 +493,59 @@ if ($allowed_attachments !== true) {
                             selectize_bcc.addOption({value: "BCC: " + bcc, text: bcc});
                             selectize_bcc.addItem("BCC: " + bcc);
                         })
+
+                        if(fabrik_cc.length > 0 && fabrik_cc != "" && fabrik_cc != null && fabrik_cc != undefined) {
+                            var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                            // call to controller --> get fabrik value
+                            $.ajax({
+                                type: 'post',
+                                url: 'index.php?option=com_emundus&controller=files&task=getfabrikvaluebyid',
+                                dataType: 'json',
+                                data: { elements : fabrik_cc },
+                                success: function(data) {
+                                    let emails = [];
+
+                                    for(email in data.data) {
+                                        if (REGEX_EMAIL.test(data.data[email])) {
+                                            emails.push(data.data[email]);
+                                            selectize_cc.addOption({value: "CC: " + data.data[email], text: data.data[email]});
+                                            selectize_cc.addItem("CC: " + data.data[email]);
+                                        }
+                                    }
+
+                                }, error: function(jqXHR) {
+                                    console.log(jqXHR.responseText);
+                                }
+                            })
+                        }
+
+                        // do the same thing with bcc receivers
+                        if(fabrik_bcc.length > 0 && fabrik_bcc != "" && fabrik_bcc != null && fabrik_bcc != undefined) {
+                            var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                            // call to controller --> get fabrik value
+                            $.ajax({
+                                type: 'post',
+                                url: 'index.php?option=com_emundus&controller=files&task=getfabrikvaluebyid',
+                                dataType: 'json',
+                                data: { elements : fabrik_bcc },
+                                success: function(data) {
+                                    let emails = [];
+
+                                    for(email in data.data) {
+                                        if (REGEX_EMAIL.test(data.data[email])) {
+                                            emails.push(data.data[email]);
+                                            selectize_bcc.addOption({value: "BCC: " + data.data[email], text: data.data[email]});
+                                            selectize_bcc.addItem("BCC: " + data.data[email]);
+                                        }
+                                    }
+
+                                    console.log(emails);
+
+                                }, error: function(jqXHR) {
+                                    console.log(jqXHR.responseText);
+                                }
+                            })
+                        }
                     }
                 }
 

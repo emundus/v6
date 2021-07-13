@@ -3869,6 +3869,34 @@ class EmundusControllerFiles extends JControllerLegacy
         echo $letters;
         exit;
     }
+
+    // get fabrik value by id
+    public function getfabrikvaluebyid() {
+        $jinput = JFactory::getApplication()->input;
+
+        $fabrikIds = $jinput->post->getRaw('elements', null);
+
+
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'email.php');
+        $m_files = new EmundusonboardModelemail;
+
+        $pattern = '/\${(.+[0-9])\}/';
+        $tag_ids = [];
+
+        foreach($fabrikIds as $key => $tag) {
+            $tag_ids[] = preg_replace($pattern,'$1', $tag);
+        }
+
+        $res = $m_files->getFabrikValueById($tag_ids);
+
+
+        if($res) {
+            echo json_encode((object)(array('status' => true, 'data' => $res)));
+        } else {
+            echo json_encode((object)(array('status' => false, 'data' => null)));
+        }
+        exit;
+    }
 }
 
 
