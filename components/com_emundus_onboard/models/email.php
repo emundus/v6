@@ -893,7 +893,7 @@ class EmundusonboardModelemail extends JModelList {
     }
 
     // get receivers from fabrik tags
-    public function getFabrikValueById($ids) {
+    public function getEmailsFromFabrikIds($ids) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $output = [];

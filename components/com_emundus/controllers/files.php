@@ -3887,7 +3887,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $tag_ids[] = preg_replace($pattern,'$1', $tag);
         }
 
-        $res = $m_files->getFabrikValueById($tag_ids);
+        $res = $m_files->getEmailsFromFabrikIds($tag_ids);
 
 
         if($res) {

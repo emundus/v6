@@ -309,8 +309,6 @@ if ($allowed_attachments !== true) {
 
         $('#action-tag-box .selectize-input').append('<label id="default_message" style="color:red; font-size: 0.8rem; text-transform: uppercase">' + Joomla.JText._('COM_EMUNDUS_DEFAULT_SENDING_MESSAGE') + '</label>');
 
-        // $('#action-tag-box').find('.selectize-dropdown-content').empty();
-
         tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
         $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_LABEL') + '</label>');
         $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_LABEL') + '</label>');
@@ -398,6 +396,28 @@ if ($allowed_attachments !== true) {
             $('#action-tag-box .selectize-input').css('pointer-events', '');
             $('#action-tag-box .selectize-input').css('background-image', '');
             $('#action-tag-box .selectize-input').css('background-size', '');
+
+            // load action tags by email template
+            $.ajax({
+                type: 'POST',
+                url: 'index.php?option=com_emundus_onboard&controller=email&task=getemailbyid',
+                dataType: 'JSON',
+                data: { id : $('#message_template').val() },
+                success: function(data) {
+                    if(data.status) {
+                        let tags = data.data.tags;
+                        if (tags != null && tags != undefined) {
+                            $('#sending-mode option:eq(1)').prop('selected', true);
+                            tags.forEach(tag => {
+                                console.log(tag.id);
+                                $("div.option[data-value='" + tag.id + "']").click();
+                            })
+                        }
+                    }
+                }, error: function(jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            })
         }
     })
 
