@@ -102,7 +102,7 @@ if ($allowed_attachments !== true) {
                 <select name="select_sending_mode" class="form-control" id="sending-mode">
                     <option value="0" selected> <?= JText::_('SELECT_SENDING_MODE_DEFAULT'); ?> </option>
                     <option value="1"> <?= JText::_('SELECT_SENDING_MODE_YES'); ?> </option>
-                    <option value="2"> <?= JText::_('SELECT_SENDING_MODE_NO'); ?> </option>
+                    <option value="2" style="color:#EF5350"><?= JText::_('SELECT_SENDING_MODE_NO'); ?></option>
                 </select>
             </div>
 
@@ -402,33 +402,33 @@ if ($allowed_attachments !== true) {
             $('#action-tag-box .selectize-input').css('background-size', '');
             $('#action-tag-box').css('cursor', '');
 
-            // load action tags by email template
-            $.ajax({
-                type: 'POST',
-                url: 'index.php?option=com_emundus_onboard&controller=email&task=getemailbyid',
-                dataType: 'JSON',
-                data: { id : $('#message_template').val() },
-                success: function(data) {
-                    if(data.status) {
-                        let tags = data.data.tags;
-                        if (tags != null && tags != undefined) {
-                            $('#sending-mode option:eq(1)').prop('selected', true);
-                            tags.forEach(tag => {
-                                $("div.option[data-value='" + tag.id + "']").click();
-                                $("div.item[data-value='" + tag.id + "']").css('background',tag.class);
-                                $("div.item[data-value='" + tag.id + "']").css('color','#fff');
-                                $("div.item[data-value='" + tag.id + "']").css('font-family','Maven Pro');
-                                $("div.item[data-value='" + tag.id + "']").css('font-weight','bold');
-                                $("div.item[data-value='" + tag.id + "']").css('padding','.2em .6em .3em');
-                                $("div.item[data-value='" + tag.id + "']").css('font-size','100% !important');
-                                $("div.item[data-value='" + tag.id + "']").css('margin-top','7px !important');
-                            })
-                        }
-                    }
-                }, error: function(jqXHR) {
-                    console.log(jqXHR.responseText);
-                }
-            })
+            // // load action tags by email template
+            // $.ajax({
+            //     type: 'POST',
+            //     url: 'index.php?option=com_emundus_onboard&controller=email&task=getemailbyid',
+            //     dataType: 'JSON',
+            //     data: { id : $('#message_template').val() },
+            //     success: function(data) {
+            //         if(data.status) {
+            //             let tags = data.data.tags;
+            //             if (tags != null && tags != undefined) {
+            //                 $('#sending-mode option:eq(1)').prop('selected', true);
+            //                 tags.forEach(tag => {
+            //                     $("div.option[data-value='" + tag.id + "']").click();
+            //                     $("div.item[data-value='" + tag.id + "']").css('background',tag.class);
+            //                     $("div.item[data-value='" + tag.id + "']").css('color','#fff');
+            //                     $("div.item[data-value='" + tag.id + "']").css('font-family','Maven Pro');
+            //                     $("div.item[data-value='" + tag.id + "']").css('font-weight','bold');
+            //                     $("div.item[data-value='" + tag.id + "']").css('padding','.2em .6em .3em');
+            //                     $("div.item[data-value='" + tag.id + "']").css('font-size','100% !important');
+            //                     $("div.item[data-value='" + tag.id + "']").css('margin-top','7px !important');
+            //                 })
+            //             }
+            //         }
+            //     }, error: function(jqXHR) {
+            //         console.log(jqXHR.responseText);
+            //     }
+            // })
         }
     })
 
@@ -436,6 +436,9 @@ if ($allowed_attachments !== true) {
     function getTemplate(select) {
         /// clear tags
         // $('#tags').val("");
+
+        $('#sending-mode option:eq(1)').prop('selected', true);
+        $('#sending-mode').trigger("change");
 
         /// clear cc
         var $select_cc = $(document.getElementById('cc-mails'));
@@ -466,23 +469,23 @@ if ($allowed_attachments !== true) {
             data: { id : select.value },
             success: function(data) {
                 if(data.status) {
-                    if (data.data.tags != null && data.data.tags != undefined) {
-                        let tags = data.data.tags;
-                        $('#sending-mode option:eq(1)').prop('selected', true);
-                        $('#sending-mode').trigger("change");
-                        $('#sending-mode').trigger("chosen:updated");
-
-                        tags.forEach(tag => {
-                            $("div.option[data-value='" + tag.id + "']").click();
-                            $("div.item[data-value='" + tag.id + "']").css('background',tag.class);
-                            $("div.item[data-value='" + tag.id + "']").css('color','#fff');
-                            $("div.item[data-value='" + tag.id + "']").css('font-family','Maven Pro');
-                            $("div.item[data-value='" + tag.id + "']").css('font-weight','bold');
-                            $("div.item[data-value='" + tag.id + "']").css('padding','.2em .6em .3em');
-                            $("div.item[data-value='" + tag.id + "']").css('font-size','100% !important');
-                            $("div.item[data-value='" + tag.id + "']").css('margin-top','7px !important');
-                        })
-                    }
+                    // if (data.data.tags != null && data.data.tags != undefined) {
+                    //     let tags = data.data.tags;
+                    //     $('#sending-mode option:eq(1)').prop('selected', true);
+                    //     $('#sending-mode').trigger("change");
+                    //     $('#sending-mode').trigger("chosen:updated");
+                    //
+                    //     tags.forEach(tag => {
+                    //         $("div.option[data-value='" + tag.id + "']").click();
+                    //         $("div.item[data-value='" + tag.id + "']").css('background',tag.class);
+                    //         $("div.item[data-value='" + tag.id + "']").css('color','#fff');
+                    //         $("div.item[data-value='" + tag.id + "']").css('font-family','Maven Pro');
+                    //         $("div.item[data-value='" + tag.id + "']").css('font-weight','bold');
+                    //         $("div.item[data-value='" + tag.id + "']").css('padding','.2em .6em .3em');
+                    //         $("div.item[data-value='" + tag.id + "']").css('font-size','100% !important');
+                    //         $("div.item[data-value='" + tag.id + "']").css('margin-top','7px !important');
+                    //     })
+                    // }
 
                     if (data.data.receivers != null && data.data.receivers != undefined && data.data.receivers != "") {
 
