@@ -1821,8 +1821,9 @@ if (JFactory::getUser()->id == 63)
      * @param $tag
      * @return bool|mixed
      */
-    public function tagFile($fnums, $tags) {
+    public function tagFile($fnums, $tags, $mode=null) {
 
+//        var_dump($mode);die;
         try {
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;

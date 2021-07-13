@@ -1159,11 +1159,10 @@ class EmundusModelMessages extends JModelList {
         }
     }
 
-
     // get tags by email
     public function getTagsByEmail($eid) {
-	    if(!empty($eid)) {
-	        try {
+        if(!empty($eid)) {
+            try {
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true);
 
@@ -1178,20 +1177,20 @@ class EmundusModelMessages extends JModelList {
                 return $db->loadObjectList();
 
             } catch(Exception $e) {
-                JLog::add('Error get tags by fnum : '.$e->getMessage(), JLog::ERROR, 'com_emundus.message');
+                JLog::add('Error get tags by email : '.$e->getMessage(), JLog::ERROR, 'com_emundus.message');
                 return false;
             }
         } else {
-	        return false;
+            return false;
         }
     }
 
     /// add tags by fnum
     public function addTagsByFnum($fnum, $tmpl) {
-	    if(!empty($fnum) and !empty($tmpl)) {
-	        /// get fnum info
+        if(!empty($fnum) and !empty($tmpl)) {
+            /// get fnum info
 
-	        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
             $m_files = new EmundusModelFiles();
 
             $fnum_info = $m_files->getFnumInfos($fnum);
@@ -1199,12 +1198,22 @@ class EmundusModelMessages extends JModelList {
             $_tags = $this->getTagsByEmail($tmpl);      // return type :: array
 
             if(!empty($_tags)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);       // make new query
+
+                $query->clear()
+                    ->delete($db->quoteName('#__emundus_tag_assoc'))
+                    ->where($db->quoteName('#__emundus_tag_assoc.fnum') . ' = '. $fnum)
+                    ->andWhere($db->quoteName('#__emundus_tag_assoc.tag_assoc_type') . ' = ' . $db->quote('email'));
+                $db->setQuery($query);
+                $db->execute();
+
                 foreach ($_tags as $key => $tag) {
 
                     $assoc_tag = $m_files->getTagsByIdFnumUser($tag->id, $fnum_info['fnum'], $fnum_info['applicant_id']);
 
                     if($assoc_tag == false) {
-                        $fnum_tag = $m_files->tagFile([$fnum_info['fnum']], [$tag->id]);
+                        $fnum_tag = $m_files->tagFile([$fnum_info['fnum']], [$tag->id], 'email');
                     } else {
                         /// do nothing
                     }
@@ -1213,7 +1222,7 @@ class EmundusModelMessages extends JModelList {
 
             }
         } else {
-	        return false;
+            return false;
         }
     }
 
