@@ -409,9 +409,14 @@ if ($allowed_attachments !== true) {
                         if (tags != null && tags != undefined) {
                             $('#sending-mode option:eq(1)').prop('selected', true);
                             tags.forEach(tag => {
-                                console.log(tag);
                                 $("div.option[data-value='" + tag.id + "']").click();
                                 $("div.item[data-value='" + tag.id + "']").css('background',tag.class);
+                                $("div.item[data-value='" + tag.id + "']").css('color','#fff');
+                                $("div.item[data-value='" + tag.id + "']").css('font-family','Maven Pro');
+                                $("div.item[data-value='" + tag.id + "']").css('font-weight','bold');
+                                $("div.item[data-value='" + tag.id + "']").css('padding','.2em .6em .3em');
+                                $("div.item[data-value='" + tag.id + "']").css('font-size','100% !important');
+                                $("div.item[data-value='" + tag.id + "']").css('margin-top','7px !important');
                             })
                         }
                     }
@@ -469,6 +474,12 @@ if ($allowed_attachments !== true) {
                             console.log(tag.id);
                             $("div.option[data-value='" + tag.id + "']").click();
                             $("div.item[data-value='" + tag.id + "']").css('background',tag.class);
+                            $("div.item[data-value='" + tag.id + "']").css('color','#fff');
+                            $("div.item[data-value='" + tag.id + "']").css('font-family','Maven Pro');
+                            $("div.item[data-value='" + tag.id + "']").css('font-weight','bold');
+                            $("div.item[data-value='" + tag.id + "']").css('padding','.2em .6em .3em');
+                            $("div.item[data-value='" + tag.id + "']").css('font-size','100% !important');
+                            $("div.item[data-value='" + tag.id + "']").css('margin-top','7px !important');
                         })
                     }
 
