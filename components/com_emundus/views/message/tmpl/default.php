@@ -310,6 +310,7 @@ if ($allowed_attachments !== true) {
         $('#action-tag-box .selectize-input').css('background-size', '20.52px 6.27px');
 
         $('#action-tag-box .selectize-input').append('<label id="default_message" style="color:red; font-size: 0.8rem; text-transform: uppercase">' + Joomla.JText._('COM_EMUNDUS_DEFAULT_SENDING_MESSAGE') + '</label>');
+        $('#action-tag-box').css('cursor', 'not-allowed');
 
         tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
         $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_PLACEHOLDER') + '</label>');
@@ -390,6 +391,7 @@ if ($allowed_attachments !== true) {
             $('#action-tag-box .selectize-input').css('pointer-events', 'none');
             $('#action-tag-box .selectize-input').css('background-image', 'linear-gradient(17deg, #fafafa 25%, #dfebf2 25%, #dfebf2 50%, #fafafa 50%, #fafafa 75%, #dfebf2 75%, #dfebf2 100%)');
             $('#action-tag-box .selectize-input').css('background-size', '20.52px 6.27px');
+            $('#action-tag-box').css('cursor', 'not-allowed');
 
             $('#action-tag-box').find('.selectize-dropdown-content').empty();
         } else {
@@ -398,6 +400,7 @@ if ($allowed_attachments !== true) {
             $('#action-tag-box .selectize-input').css('pointer-events', '');
             $('#action-tag-box .selectize-input').css('background-image', '');
             $('#action-tag-box .selectize-input').css('background-size', '');
+            $('#action-tag-box').css('cursor', '');
 
             // load action tags by email template
             $.ajax({
