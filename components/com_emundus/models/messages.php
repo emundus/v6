@@ -1217,7 +1217,7 @@ class EmundusModelMessages extends JModelList {
         }
     }
 
-    // lock or unlock action for fnum
+    // lock or unlock instant message for selected fnum
     public function getActionByFnum($fnum) {
         if(!empty($fnum)) {
             /// from fnum --> detect the message
@@ -1403,7 +1403,6 @@ class EmundusModelMessages extends JModelList {
 
             return array('sending_status' => $send, 'log_message' => $logs, 'message_id' => $email_recap->id);
         } else {
-            //// hint : sending default message if no email model found --> good idea?
             return false;
         }
     }
