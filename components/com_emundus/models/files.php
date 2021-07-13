@@ -1827,7 +1827,7 @@ if (JFactory::getUser()->id == 63)
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
 
-            $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
+            $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id, tag_assoc_type) VALUES ";
             if (!empty($fnums) && !empty($tags)) {
                 foreach ($fnums as $fnum) {
 
@@ -1835,7 +1835,11 @@ if (JFactory::getUser()->id == 63)
                     EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_ADD_TAG');
 
                     foreach ($tags as $tag) {
-                        $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
+                        if($mode == 'email') {
+                            $query .= '("' . $fnum . '", ' . $tag . ', ' . $user . ', ' . $db->quote('email') . '),';
+                        } else {
+                            $query .= '("' . $fnum . '", ' . $tag . ', ' . $user . ', ' . $db->quote('status') .'),';
+                        }
                     }
                 }
             }
