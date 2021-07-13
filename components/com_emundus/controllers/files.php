@@ -3870,7 +3870,80 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    // get fabrik value by id
+    // send customized email to candidats when updating new status :: (+) attachments if any -- (+) template email if any -- (+) concerned candidats will receive the notification
+    // params :: [fnums], status
+    public function notifycandidat() {
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+
+        $app    = JFactory::getApplication();
+        $jinput = $app->input;
+
+        $fnums  = $jinput->getString('fnums', null);
+        $state  = $jinput->getInt('state', null);
+
+        /// define models of all components
+        $m_messages = new EmundusModelMessages();
+        $m_files = $this->getModel('Files');
+
+        $config = JFactory::getConfig();
+
+        // Get default mail sender info
+        $mail_from_sys = $app->getCfg('mailfrom');
+        $mail_from_sys_name = $config->get('fromname');
+
+        /// end of default mail sender
+
+        if($fnums == "all") {
+            $fnums = $m_files->getAllFnums();
+        }
+
+        if (!is_array($fnums)) {
+            $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+        }
+
+        if (count($fnums) == 0 || !is_array($fnums)) {
+            $res = false;
+            $msg = JText::_('STATE_ERROR');
+
+            echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
+            exit;
+        }
+
+        $validFnums = array();
+
+        foreach ($fnums as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum)) {
+                $validFnums[] = $fnum;
+            }
+        }
+
+        $res = $m_files->updateState($validFnums, $state);
+        $msg = '';
+
+        if($res !== false) {
+            $message = JText::_('STATE_SUCCESS');
+            /// next tick --> send email for each fnum in [fnums]
+            foreach ($validFnums as $key => $fnum) {
+                $send = $m_messages->sendEmailByFnum($fnum, $mail_from_sys, $mail_from_sys_name);
+
+                // add assoc tag by fnum and $send['message_id']
+                $assoc_tag = $m_messages->addTagsByFnum($fnum, $send['message_id']);
+            }
+
+            if($send['sending_status'] === true) {
+                echo json_encode(['status' => true, 'msg' => $message]);
+            } else {
+                echo json_encode(['status' => false, 'msg' => $message]);
+            }
+            exit;
+        } else {
+            $message = JText::_('STATE_ERROR');
+            echo json_encode(['status' => false, 'msg' => $message]);
+            exit;
+        }
+    }
+
+    // get fabrik value by id --> need to integrate to KIT project
     public function getfabrikvaluebyid() {
         $jinput = JFactory::getApplication()->input;
 
