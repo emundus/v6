@@ -119,11 +119,13 @@ if ($allowed_attachments !== true) {
 
         <!-- Add current user to Cc -->
         <div id="cc-box" class="input-group form-inline col-md-12" style="margin-bottom: 10px !important;">
+            <label for="select_action_tags" ><?= JText::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?></label>
             <input type="text" id="cc-mails" class="cc-bcc-mails">
         </div><!-- /input-group -->
 
         <!-- Add current user to Bcc -->
-        <div id="bcc-box" class="input-group form-inline col-md-12">
+        <div id="bcc-box" class="input-group form-inline col-md-12" style="margin-top: 15px !important;">
+            <label for="select_action_tags" ><?= JText::_('COM_EMUNDUS_EMAILS_BCC_LABEL'); ?></label>
             <input type="text" id="bcc-mails" class="cc-bcc-mails">
         </div><!-- /input-group -->
 
@@ -310,8 +312,8 @@ if ($allowed_attachments !== true) {
         $('#action-tag-box .selectize-input').append('<label id="default_message" style="color:red; font-size: 0.8rem; text-transform: uppercase">' + Joomla.JText._('COM_EMUNDUS_DEFAULT_SENDING_MESSAGE') + '</label>');
 
         tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
-        $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_LABEL') + '</label>');
-        $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_LABEL') + '</label>');
+        $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_PLACEHOLDER') + '</label>');
+        $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER') + '</label>');
     });
 
     // Change file upload string to selected file and reset the progress bar.
@@ -449,8 +451,8 @@ if ($allowed_attachments !== true) {
         $("label[for='cc-emails']").empty();
         $("label[for='bcc-emails']").empty();
 
-        $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_LABEL') + '</label>');
-        $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_LABEL') + '</label>');
+        $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_PLACEHOLDER') + '</label>');
+        $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER') + '</label>');
 
         $('#em-attachment-list').empty();
         // ajax to get all receivers when changing model email
