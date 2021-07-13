@@ -556,5 +556,23 @@ class EmundusonboardControlleremail extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    // get action tag by id
+    public function gettagbyid() {
+        $jinput = JFactory::getApplication()->input;
+        $tag = $jinput->post->getRaw('tag', null);
+
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'settings.php');
+        $_mSettings = new EmundusonboardModelsettings;
+
+        $res = $_mSettings->getTagById($tag);
+
+        if($res) {
+            echo json_encode((object)array('status' => true, 'data' => $res));
+        } else {
+            echo json_encode((object)array('status' => false, 'data' => null));
+        }
+        exit;
+    }
 }
 

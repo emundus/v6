@@ -742,6 +742,27 @@ if ($allowed_attachments !== true) {
         e.unwrap();
     }
 
+    // change color of existing tag
+    $('#action-tags').on('change', function(e) {
+        let tags = $(this).val();
+        let last_tag = tags[tags.length - 1];
+
+        if(last_tag != "") {
+            // call to api
+            $.ajax({
+                type: 'post',
+                url: 'index.php?option=com_emundus_onboard&controller=email&task=gettagbyid',
+                dataType: 'json',
+                data: { tag: last_tag },
+                success: function(data) {
+                    let tag = data.data;
+                    $("div.item[data-value='" + tag.id + "']").css('background',tag.class);
+                }, error: function(jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            })
+        }
+    })
 
     // Change the attachment type being uploaded.
     function toggleAttachmentType(toggle) {
