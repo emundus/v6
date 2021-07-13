@@ -303,8 +303,6 @@ class EmundusonboardModelemail extends JModelList {
                 $tag->class = $_mSettings->getColorClasses()[$tag_color];
             }
 
-//            var_dump($tags_Info);die;
-
             /// get associated letters
             $query->clear()
                 ->select('#__emundus_setup_attachments.*')
@@ -313,9 +311,29 @@ class EmundusonboardModelemail extends JModelList {
                 ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . (int)$id);
 
             $db->setQuery($query);
-            $attachment_Info = $db->loadObjectList();         /// get attachment info
+            $letter_Info = $db->loadObjectList();         /// get attachment info
 
-            return array('email' => $email_Info, 'receivers' => $receiver_Info, 'tags' => $tags_Info, 'attachments' => $attachment_Info);
+            /// get all candidat attachments
+            $query->clear()
+                ->select('#__emundus_setup_attachments.*')
+                ->from($db->quoteName('#__emundus_setup_attachments'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_attachments.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment.candidate_attachment'))
+                ->where($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment.parent_id') . ' = ' . (int)$id);
+
+            $db->setQuery($query);
+            $candidatAttachment_Info = $db->loadObjectList();         /// get attachment info
+
+            /// get associated email template (jos_emundus_email_template)
+            $query->clear()
+                ->select('#__emundus_email_templates.*')
+                ->from($db->quoteName('#__emundus_email_templates'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails').' ON '.$db->quoteName('#__emundus_email_templates.id').' = '.$db->quoteName('#__emundus_setup_emails.email_tmpl'))
+                ->where($db->quoteName('#__emundus_setup_emails.id') . ' = ' . (int)$id);
+
+            $db->setQuery($query);
+            $template_Info = $db->loadObjectList();
+
+            return array('email' => $email_Info, 'receivers' => $receiver_Info, 'tags' => $tags_Info, 'letter_attachment' => $letter_Info, 'candidatAttachment_Info' => $candidatAttachment_Info, 'template' => $template_Info);
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/email | Cannot get the email by id ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;

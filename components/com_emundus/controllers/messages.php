@@ -348,7 +348,12 @@ class EmundusControllerMessages extends JControllerLegacy {
         $fnum = $m_files->getFnumsInfos([$fnums[0]], 'object')[$fnums[0]];
 
         // Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
-        $template = $m_messages->getEmail($template_id);
+        require_once (JPATH_SITE . DS. 'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'email.php');
+        $onboard_email = new EmundusonboardModelemail;
+        $template = $onboard_email->getEmailById($template_id);
+
+        /// get template by $template['template'][0]->Template
+
         $programme = $m_campaign->getProgrammeByTraining($fnum->training);
 
         $toAttach = [];
@@ -369,7 +374,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
 
         // Tags are replaced with their corresponding values.
-        if (empty($template) || empty($template->Template)) {
+        if (empty($template) || empty($template['template'][0]->Template)) {
         	$db = JFactory::getDbo();
         	$query = $db->getQuery(true);
 
@@ -381,7 +386,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         	$template->Template = $db->loadResult();
         }
 
-        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $message], $template->Template);
+        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $message], $template['template'][0]->Template);
 	    $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
 	    $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
@@ -590,7 +595,11 @@ class EmundusControllerMessages extends JControllerLegacy {
         $failed = [];
 
         // Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
-        $template = $m_messages->getEmail($template_id);
+        require_once (JPATH_SITE . DS. 'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'email.php');
+        $onboard_email = new EmundusonboardModelemail;
+        $template = $onboard_email->getEmailById($template_id);
+
+        /// get template by $template['template'][0]->Template
 
         foreach ($fnums as $fnum) {
             if($tags_str != null){
@@ -638,7 +647,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             // Tags are replaced with their corresponding values using the PHP preg_replace function.
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
 
-            if (empty($template) || empty($template->Template)) {
+            if (empty($template) || empty($template['template'][0]->Template)) {
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true);
 
@@ -647,10 +656,10 @@ class EmundusControllerMessages extends JControllerLegacy {
                     ->where($db->quoteName('id').' = 1');
                 $db->setQuery($query);
 
-                $template->Template = $db->loadResult();
+                $template['template'][0]->Template = $db->loadResult();
             }
 
-            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template['template'][0]->Template);
             $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
 	        $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);

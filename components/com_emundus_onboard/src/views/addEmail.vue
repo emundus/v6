@@ -89,7 +89,7 @@
           <!-- Email -- BCC (in form of email adress or fabrik element -->
           <div class="form-group" id="tags_tags">
             <label>{{ ReceiversBCC }}</label>
-            <div id="bcc-tooltips" style="font-size: .8rem; color: #16afe1"> *{{ CopiesTooltips }} ${id} </div>
+            <div id="bcc-tooltips" style="font-size: .8rem; color: #16afe1"> * {{ CopiesTooltips }} ${id} </div>
             <multiselect v-model="selectedReceiversBCC" label="email" track-by="email" :options="receivers_bcc" :multiple="true"
                          :taggable="true" :placeholder="ReceiversBCCPlaceHolder" @tag="addNewBCC" :close-on-select="false" :clear-on-select="false"></multiselect>
           </div>
@@ -630,8 +630,8 @@
                               this.selectedTags = _tags;
                             }
 
-                            if(resp.data.data.attachments !== null && resp.data.data.attachments !== undefined && resp.data.data.attachments !== "") {
-                              let _documents = resp.data.data.attachments;
+                            if(resp.data.data.letter_attachment !== null && resp.data.data.letter_attachment !== undefined && resp.data.data.letter_attachment !== "") {
+                              let _documents = resp.data.data.letter_attachment;
                               this.selectedLetter = _documents;
                             }
 
