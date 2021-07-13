@@ -2301,13 +2301,18 @@ if (JFactory::getUser()->id == 63)
                     if ($attachments == true) {
                         /// from $_letters --> get distinct attachment_id
                         $_letter_attachment_ids = [];
+                        $_letter_attachment_emails = [];
+
                         foreach ($_letters as $key => $value) {
                             $_letter_attachment_ids[] = $value->attachment_id;
+                            $_letter_attachment_emails[] = $value->email_id;
                         }
 
                         $_letter_attachment_ids = array_unique($_letter_attachment_ids);
+                        $_letter_attachment_emails = array_unique($_letter_attachment_emails);
+
                         $_attachment_ids = $this->getAttachmentByIds($_letter_attachment_ids);
-                        return $_attachment_ids;
+                        return array('attachments' => $_attachment_ids, 'emails' => $_letter_attachment_emails);
                     } else {
                         /// from $_letters -> det distinct letter id
                         $_letter_ids = [];
@@ -2320,7 +2325,8 @@ if (JFactory::getUser()->id == 63)
                     return false;
                 }
             } catch(Exception $e) {
-                return $e->getMessage();
+                JLog::add('Cannot get letters by fnums : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                return false;
             }
         } else {
             return false;
