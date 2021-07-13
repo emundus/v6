@@ -409,8 +409,9 @@ if ($allowed_attachments !== true) {
                         if (tags != null && tags != undefined) {
                             $('#sending-mode option:eq(1)').prop('selected', true);
                             tags.forEach(tag => {
-                                console.log(tag.id);
+                                console.log(tag);
                                 $("div.option[data-value='" + tag.id + "']").click();
+                                $("div.item[data-value='" + tag.id + "']").css('background',tag.class);
                             })
                         }
                     }
@@ -467,6 +468,7 @@ if ($allowed_attachments !== true) {
                         tags.forEach(tag => {
                             console.log(tag.id);
                             $("div.option[data-value='" + tag.id + "']").click();
+                            $("div.item[data-value='" + tag.id + "']").css('background',tag.class);
                         })
                     }
 

@@ -293,6 +293,18 @@ class EmundusonboardModelemail extends JModelList {
 
             $tags_Info = $db->loadObjectList();         /// get tags info
 
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'settings.php');
+            $_mSettings = new EmundusonboardModelsettings;
+
+            // replace class name by hex color
+            foreach ($tags_Info as $key => $tag) {
+                $tag_color = str_replace('label-', '', $tag->class);
+                // replace $tag_color by hex color
+                $tag->class = $_mSettings->getColorClasses()[$tag_color];
+            }
+
+//            var_dump($tags_Info);die;
+
             /// get associated letters
             $query->clear()
                 ->select('#__emundus_setup_attachments.*')
