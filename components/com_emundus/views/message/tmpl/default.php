@@ -435,7 +435,7 @@ if ($allowed_attachments !== true) {
     // Loads the template and updates the WYSIWYG editor
     function getTemplate(select) {
         /// clear tags
-        $('#tags').val("");
+        // $('#tags').val("");
 
         /// clear cc
         var $select_cc = $(document.getElementById('cc-mails'));
@@ -467,16 +467,13 @@ if ($allowed_attachments !== true) {
             success: function(data) {
 
                 if(data.status) {
-
-                    let tags = data.data.tags;
-
-                    if (tags != null && tags != undefined) {
+                    if (data.data.tags != null && data.data.tags != undefined) {
+                        let tags = data.data.tags;
                         $('#sending-mode option:eq(1)').prop('selected', true);
                         $('#sending-mode').trigger("change");
                         $('#sending-mode').trigger("chosen:updated");
 
                         tags.forEach(tag => {
-                            console.log(tag.id);
                             $("div.option[data-value='" + tag.id + "']").click();
                             $("div.item[data-value='" + tag.id + "']").css('background',tag.class);
                             $("div.item[data-value='" + tag.id + "']").css('color','#fff');
