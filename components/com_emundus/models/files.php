@@ -1922,8 +1922,8 @@ if (JFactory::getUser()->id == 63)
             // remove all tags associated with $fnums
             $query->clear()
                 ->delete($db->quoteName('#__emundus_tag_assoc'))
-                ->where($db->quoteName('#__emundus_tag_assoc.fnum') . ' IN (' . implode(',', $fnums) . ')')
-                ->andWhere($db->quoteName('#__emundus_tag_assoc.tag_assoc_type') . ' = ' . $db->quote('status'));
+                ->where($db->quoteName('#__emundus_tag_assoc.fnum') . ' IN (' . implode(',', $fnums) . ')');
+//                ->andWhere($db->quoteName('#__emundus_tag_assoc.tag_assoc_type') . ' = ' . $db->quote('status'));
             $db->setQuery($query);
             $db->execute();
         } catch (Exception $e) {

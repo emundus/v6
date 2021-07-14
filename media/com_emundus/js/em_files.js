@@ -602,32 +602,7 @@ function getUserCheck() {
 function getUserCheckArray() {
 
     if ($('#em-check-all-all').is(':checked')) {
-        var fnums = [];
-
-        if ($('.em-check:checked').length === 0) {
-            var hash = $(location).attr('hash');
-            var fnum = hash.replace("#", "");
-            fnum = fnum.replace("|open", "");
-
-            if (fnum == "") {
-                return null;
-            } else {
-                let cid = parseInt(fnum.substr(14, 7));
-                let sid = parseInt(fnum.substr(21, 7));
-                fnums.push({fnum: fnum, cid: cid, sid:sid});
-            }
-        } else {
-            let cid = ''
-            let sid = ''
-            $('.em-check:checked').each(function() {
-                fnum = $(this).attr('id').split('_')[0];
-                cid = parseInt(fnum.substr(14, 7));
-                sid = parseInt(fnum.substr(21, 7));
-                fnums.push({fnum: fnum, cid: cid, sid:sid});
-            });
-        }
-
-        // return 'all';
+        return 'all';
     } else {
         var fnums = [];
 
@@ -4998,69 +4973,81 @@ $(document).ready(function() {
                                     $('#em-modal-sending-emails').css('display', 'block');
 
                                     $.ajax({
-                                        type: "POST",
-                                        url: "index.php?option=com_emundus&controller=messages&task=applicantemail",
-                                        data: data,
-                                        success: function (result) {
+                                        type: 'post',
+                                        url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidatbytags',
+                                        dataType: 'json',
+                                        data: { fnums: data.recipients, sendingMode: data.sending_mode, tags: data.tag_list },
+                                        success: function(value) {
+                                            console.log(value);
+                                        }, error: function(jqXHR) {
+                                            console.log(jqXHR.responseText);
+                                        }
+                                    })
 
-                                            $('#em-modal-sending-emails').css('display', 'none');
-
-                                            result = JSON.parse(result);
-                                            if (result.status) {
-
-                                                if (result.sent.length > 0) {
-
-                                                    var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
-                                                    result.sent.forEach(function (element) {
-                                                        sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
-                                                    });
-
-                                                    Swal.fire({
-                                                        type: 'success',
-                                                        title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
-                                                        html: sent_to + '</ul>'
-                                                    });
-
-                                                } else {
-                                                    Swal.fire({
-                                                        type: 'error',
-                                                        title: Joomla.JText._('NO_EMAILS_SENT')
-                                                    })
-                                                }
-
-                                                if (result.failed.length > 0) {
-                                                    // Block containing the email adresses of the failed emails.
-                                                    $("#em-email-messages").append('<div class="alert alert-danger">' + Joomla.JText._('EMAILS_FAILED') + '<span class="badge">' + result.failed.length + '</span>' +
-                                                        '<ul class="list-group" id="em-mails-failed"></ul>');
-
-                                                    result.failed.forEach(function (element) {
-                                                        $('#em-mails-sent').append('<li class="list-group-item alert-danger">' + element + '</li>');
-                                                    });
-
-                                                    $('#em-email-messages').append('</div>');
-                                                }
-
-                                            } else {
-                                                $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
-                                            }
-                                        },
-                                        error: function (jqXHR, textStatus) {
-                                            if(textStatus == 'timeout') {
-                                                $('#em-modal-sending-emails').css('display', 'none');
-
-                                                var sent_to = '<p>' + Joomla.JText._('EMAIL_SENDING') + '</p>';
-
-                                                Swal.fire({
-                                                    type: 'success',
-                                                    title: Joomla.JText._('EMAILS_SENT'),
-                                                    html: sent_to
-                                                });
-                                            } else {
-                                                $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
-                                            }
-                                        },
-                                        timeout: 5000
-                                    });
+                                    // $.ajax({
+                                    //     type: "POST",
+                                    //     url: "index.php?option=com_emundus&controller=messages&task=applicantemail",
+                                    //     data: data,
+                                    //     success: function (result) {
+                                    //
+                                    //         $('#em-modal-sending-emails').css('display', 'none');
+                                    //
+                                    //         result = JSON.parse(result);
+                                    //         if (result.status) {
+                                    //
+                                    //             if (result.sent.length > 0) {
+                                    //
+                                    //                 var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                                    //                 result.sent.forEach(function (element) {
+                                    //                     sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
+                                    //                 });
+                                    //
+                                    //                 Swal.fire({
+                                    //                     type: 'success',
+                                    //                     title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
+                                    //                     html: sent_to + '</ul>'
+                                    //                 });
+                                    //
+                                    //             } else {
+                                    //                 Swal.fire({
+                                    //                     type: 'error',
+                                    //                     title: Joomla.JText._('NO_EMAILS_SENT')
+                                    //                 })
+                                    //             }
+                                    //
+                                    //             if (result.failed.length > 0) {
+                                    //                 // Block containing the email adresses of the failed emails.
+                                    //                 $("#em-email-messages").append('<div class="alert alert-danger">' + Joomla.JText._('EMAILS_FAILED') + '<span class="badge">' + result.failed.length + '</span>' +
+                                    //                     '<ul class="list-group" id="em-mails-failed"></ul>');
+                                    //
+                                    //                 result.failed.forEach(function (element) {
+                                    //                     $('#em-mails-sent').append('<li class="list-group-item alert-danger">' + element + '</li>');
+                                    //                 });
+                                    //
+                                    //                 $('#em-email-messages').append('</div>');
+                                    //             }
+                                    //
+                                    //         } else {
+                                    //             $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
+                                    //         }
+                                    //     },
+                                    //     error: function (jqXHR, textStatus) {
+                                    //         if(textStatus == 'timeout') {
+                                    //             $('#em-modal-sending-emails').css('display', 'none');
+                                    //
+                                    //             var sent_to = '<p>' + Joomla.JText._('EMAIL_SENDING') + '</p>';
+                                    //
+                                    //             Swal.fire({
+                                    //                 type: 'success',
+                                    //                 title: Joomla.JText._('EMAILS_SENT'),
+                                    //                 html: sent_to
+                                    //             });
+                                    //         } else {
+                                    //             $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
+                                    //         }
+                                    //     },
+                                    //     timeout: 5000
+                                    // });
                                 }
                             });
                         }

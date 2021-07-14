@@ -1613,4 +1613,41 @@ class EmundusControllerMessages extends JControllerLegacy {
         }
         exit;
     }
+
+    // send email by action tags --> params :: [fnums], [tags], sendingMode
+    public function sendemailtocandidatbytags() {
+        $jinput = JFactory::getApplication()->input;
+
+        $fnums = $jinput->post->getRaw('fnums', null);
+
+        $tags = $jinput->post->getRaw('tags', null);
+        $sendingMode = $jinput->post->getRaw('sendingMode', 0);
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        /// first :: get all fnums by selected tags with any tags
+        $query->clear()
+            ->select('#__emundus_tag_assoc.fnum')
+            ->from($db->quoteName('#__emundus_tag_assoc'))
+            ->where($db->quoteName('#__emundus_tag_assoc.id_tag') . ' IN (' . $tags . ')');
+
+        $db->setQuery($query);
+
+        $assoc_fnums = $db->loadColumn();
+
+        $fnums = explode(',', $fnums);          /// convert $fnums : string --> $fnums : array
+
+        if($sendingMode == 1) {
+            /// sending mode = 1 --> send to fnums which having the selected action tags
+            $fnums_intersect = array_intersect($assoc_fnums, $fnums);
+
+            // reuse the method sendEmailByFnum into Models to send emails
+        } else {
+            /// sending mode = 2 --> send to fnums which NOT having the selected action tags
+            $fnums_diff = array_diff($fnums, $assoc_fnums);
+
+            // reuse the method sendEmailByFnum into Models to send emails
+        }
+    }
 }

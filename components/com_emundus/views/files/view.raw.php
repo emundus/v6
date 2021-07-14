@@ -136,30 +136,36 @@ class EmundusViewFiles extends JViewLegacy {
 			    $this->assignRef('filters', $filters);
 			break;
 
-			case 'docs':
-				$fnumsObj = $app->input->getString('fnums', "");
-				$fnumsObj = json_decode(stripslashes($fnumsObj), false, 512, JSON_BIGINT_AS_STRING);
-				$fnums = array();
-				foreach ($fnumsObj as $fObj) {
-					if (EmundusHelperAccess::asAccessAction(27, 'c', JFactory::getUser()->id, $fObj->fnum)) {
-						$fnums[] = $fObj->fnum;
-					}
-				}
-				if (!empty($fnums)) {
-					$prgs = $m_files->getProgByFnums($fnums);
-					$docs = $m_files->getDocsByProg(key($prgs));
-				} else {
-					echo JText::_('ACCESS_DENIED');
-					exit();
-				}
+            case 'docs':
+                $fnumsObj = $app->input->getString('fnums', "");
+                $fnums = array();
 
-				$this->assignRef('docs', $docs);
-				$this->assignRef('prgs', $prgs);
-				$fnums_array = implode(',', $fnums);
-				$this->assignRef('fnums', $fnums_array);
-			break;
+                if($fnumsObj === 'all') {
+                    $fnums = $m_files->getAllFnums();
+                }
 
-			// get list of application files
+                $fnumsObj = json_decode(stripslashes($fnumsObj), false, 512, JSON_BIGINT_AS_STRING);
+                foreach ($fnumsObj as $fObj) {
+                    if (EmundusHelperAccess::asAccessAction(27, 'c', JFactory::getUser()->id, $fObj->fnum)) {
+                        $fnums[] = $fObj->fnum;
+                    }
+                }
+
+                if (!empty($fnums)) {
+                    $prgs = $m_files->getProgByFnums($fnums);
+                    $docs = $m_files->getDocsByProg(key($prgs));
+                } else {
+                    echo JText::_('ACCESS_DENIED');
+                    exit();
+                }
+
+                $this->assignRef('docs', $docs);
+                $this->assignRef('prgs', $prgs);
+                $fnums_array = implode(',', $fnums);
+                $this->assignRef('fnums', $fnums_array);
+                break;
+
+            // get list of application files
 			default :
 			    $menu = $app->getMenu();
 			    $current_menu = $menu->getActive();
