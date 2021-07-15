@@ -1232,8 +1232,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 /* LISTES  */
 
 .nav .dropdown-toggle .caret {
-  border-top-color: $base-secondary-color;
-  border-bottom-color: $base-secondary-color;
+  border-top-color: $dark-blue;
+  border-bottom-color: $dark-blue;
 }
 
 /* DOCUMENTS OBLIGATOIRES */
@@ -2486,7 +2486,7 @@ ul.unstyled.em-linkForgot li a {
 /************************ GESTIONNAIRE - COORDINATOR *********************/
 
 .files-board .dropdown-menu > li > a:focus, .files-board .dropdown-submenu:hover > a, .files-board .dropdown-submenu:focus > a {
-  background: $base-secondary-color !important;
+  background: $dark-blue !important;
 }
 
 .edit-comment-container button.edit-comment {
@@ -2885,6 +2885,10 @@ div#em-appli-block {
 
 
 .view-list {
+
+  .fabrik___heading  a.fabrikorder {
+     color: $dark-blue;
+  }
   .filtertable {
     thead tr.fabrik___heading {
 
