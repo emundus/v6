@@ -2360,12 +2360,41 @@ class EmundusModelFiles extends JModelLegacy
                         $element_attribs = json_decode($elt->element_attribs);
 
                         if ($element_attribs->database_join_display_type == "checkbox") {
-                            $t = $elt->table_join.'_repeat_'.$elt->element_name;
-                            $select = '(
-                                SELECT GROUP_CONCAT('.$t.'.'.$elt->element_name.' SEPARATOR ", ")
+
+                            $t = $elt->table_join;
+
+                            $join_query = $db->getQuery(true);
+
+                            $join_query
+                                ->select($db->quoteName('join_from_table'))
+                                ->from($db->quoteName('#__fabrik_joins'))
+                                ->where($db->quoteName('element_id') . ' = ' . $elt->id);
+
+                            $db->setQuery($join_query);
+
+                            try {
+                                $join_table = $db->loadObject();
+
+                                $join_val_column = !empty($element_attribs->join_val_column_concat)
+                                    ? 'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')'
+                                    : 't.'.$element_attribs->join_val_column;
+
+                                $sub_select = '(
+                                SELECT ' . $t . '.parent_id AS pid, CONCAT("[\"",GROUP_CONCAT('.$join_val_column.' SEPARATOR ", \""), "\"]") AS vals
                                 FROM '.$t.'
-                                WHERE '.$t.'.parent_id='.$elt->table_join.'.id
-                              ) ';
+                                LEFT JOIN '.$element_attribs->join_db_name. ' AS  t ON ' .'t.'.$element_attribs->join_key_column.' = '.$t.'.'.$elt->element_name.'
+                                LEFT JOIN '.$join_table. ' ON ' .$elt->table_join.'.parent_id = '.$join_table.'.id
+                                WHERE '.$t.'.parent_id='.$elt->tab_name.'_'. $elt->group_id.'_repeat.id
+                                    GROUP BY pid
+                              ) sub_select';
+
+                                $select = '(SELECT GROUP_CONCAT(vals) FROM '. $sub_select. ')';
+
+                            } catch (Exception $e) {
+                                $error = JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage().' :: '.preg_replace("/[\r\n]/", " ", $query);
+                                JLog::add($error, JLog::ERROR, 'com_emundus');
+                            }
+
                         } else {
                             $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.$element_attribs->join_val_column;
 
@@ -2434,24 +2463,27 @@ class EmundusModelFiles extends JModelLegacy
 
                             $t = $elt->table_join;
 
-
                             $join_query = $db->getQuery(true);
 
                             $join_query
-                                ->select([$db->quoteName('join_from_table'),$db->quoteName('table_join'), $db->quoteName('table_key'), $db->quoteName('table_join_key'), 'JSON_VALUE(params, "$.pk") as pk'])
+                                ->select($db->quoteName('join_from_table'))
                                 ->from($db->quoteName('#__fabrik_joins'))
                                 ->where($db->quoteName('element_id') . ' = ' . $elt->id);
 
                             $db->setQuery($join_query);
 
                             try {
-                                $join_values = $db->loadObject();
+                                $join_table = $db->loadObject();
+
+                                $join_val_column = !empty($element_attribs->join_val_column_concat) ?
+                                    'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':
+                                    't.'.$element_attribs->join_val_column;
 
                                 $sub_select = '(
-                                SELECT ' . $t . '.parent_id AS pid, CONCAT("[\"",GROUP_CONCAT(parent_table.'.$element_attribs->join_val_column.' SEPARATOR ", \""), "\"]") AS vals
+                                SELECT ' . $t . '.parent_id AS pid, CONCAT("[\"",GROUP_CONCAT('.$join_val_column.' SEPARATOR ", \""), "\"]") AS vals
                                 FROM '.$t.'
-                                LEFT JOIN '.$element_attribs->join_db_name. ' AS  parent_table ON ' .'parent_table.'.$element_attribs->join_key_column.' = '.$t.'.'.$elt->element_name.'
-                                LEFT JOIN '.$join_values->join_from_table. ' ON ' .$elt->table_join.'.parent_id = '.$join_values->join_from_table.'.id
+                                LEFT JOIN '.$element_attribs->join_db_name. ' AS  t ON ' .'t.'.$element_attribs->join_key_column.' = '.$t.'.'.$elt->element_name.'
+                                LEFT JOIN '.$join_table. ' ON ' .$elt->table_join.'.parent_id = '.$join_table.'.id
                                 WHERE '.$t.'.parent_id='.$elt->tab_name.'_'. $elt->group_id.'_repeat.id
                                     GROUP BY pid
                               ) sub_select';
