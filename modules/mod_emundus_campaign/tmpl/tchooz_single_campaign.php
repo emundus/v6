@@ -121,7 +121,7 @@ switch ($order) {
     </div>
     <div id="documents"></div>
     <div class="single-campaign">
-        <div class="below-content" style="max-width: 30%;">
+        <div class="below-content">
             <?php $formUrl = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course='.$currentCampaign->code.'&cid='.$currentCampaign->id); ?>
 
             <?php if ($currentCampaign->apply_online == 1) :?>

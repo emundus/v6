@@ -870,6 +870,16 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 .view-programme {
 
+  #documents .single-campaign .below-content{
+    width: 30%;
+  }
+
+  /* DOCUMENTS PREALABLES */
+  .em-infoComp li i {
+    margin-left: 10px;
+    color: $base-primary-color;
+  }
+
   #g-sidebar{
     margin-top: 50px;
     width: max-content !important;
@@ -1021,12 +1031,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   .blog-featuredhomepage {
     margin-bottom: 50px;
     margin-top: 50px;
-  }
-
-  /* DOCUMENTS PREALABLES */
-  .em-infoComp li i {
-    margin-left: 10px;
-    color: $base-primary-color;
   }
 
   /* MODULE EMUNDUS CAMPAIGN */
@@ -3244,7 +3248,13 @@ div#em-appli-block {
 /* MOBILE */
 @media all and (max-width: 479px) {
 
-  /* FOOTER */
+  .view-programme {
+    #documents .single-campaign .below-content {
+      width: 100%;
+    }
+  }
+
+    /* FOOTER */
 
   .footer-rgpd {
     align-items: center;
