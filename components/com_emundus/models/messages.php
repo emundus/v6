@@ -1290,7 +1290,7 @@ class EmundusModelMessages extends JModelList {
         }
     }
 
-    public function sendEmailByFnum($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data=null) {
+    public function sendEmailToCandidat($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data=null) {
         $logs = "";
         $jinput = JFactory::getApplication()->input;
 
@@ -1315,7 +1315,6 @@ class EmundusModelMessages extends JModelList {
         $fnum_info = $m_files->getFnumInfos($fnum);
 
         $candidat_email = $fnum_info['email'];
-
 
         // get programme info
         $programme = $m_campaign->getProgrammeByTraining($fnum_info['training']);

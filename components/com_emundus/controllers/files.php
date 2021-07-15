@@ -3924,7 +3924,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $message = JText::_('STATE_SUCCESS');
             /// next tick --> send email for each fnum in [fnums]
             foreach ($validFnums as $key => $fnum) {
-                $send = $m_messages->sendEmailByFnum($fnum, $mail_from_sys, $mail_from_sys_name);
+                $send = $m_messages->sendEmailToCandidat($fnum, $mail_from_sys, $mail_from_sys_name);
 
                 // add assoc tag by fnum and $send['message_id']
                 $assoc_tag = $m_messages->addTagsByFnum($fnum, $send['message_id']);

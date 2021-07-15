@@ -1547,42 +1547,42 @@ class EmundusControllerMessages extends JControllerLegacy {
     }
 
     /// send email to candidat with attached letters
-    public function sendemailtocandidat() {
-        $jinput = JFactory::getApplication()->input;
-
-        $fnum = $jinput->post->getRaw('fnum', null);
-
-        if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
-            die(JText::_("ACCESS_DENIED"));
-        }
-
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'messages.php');
-        $m_messages = new EmundusModelMessages();
-
-        $user = JFactory::getUser();
-        $config = JFactory::getConfig();
-
-        // set default mail sender info
-        $mail_from_sys = $config->get('mailfrom');
-        $mail_from_sys_name = $config->get('fromname');
-
-        /// end
-
-        /// send email --> and then track the log
-        $res = $m_messages->sendEmailByFnum($fnum,$mail_from_sys, $mail_from_sys_name);
-
-        /// if using mailtrap (for dev test), we a sleep to avoid the blocking
-        if ($config->get('smtphost') === 'smtp.mailtrap.io') {
-            sleep(5);
-        }
-
-        if($res['sending_status'] === true) {
-            echo json_encode(['status' => true]);
-        } else {
-            echo json_encode(['status' => false]);
-        }
-        exit;
-    }
+//    public function sendemailtocandidat() {
+//        $jinput = JFactory::getApplication()->input;
+//
+//        $fnum = $jinput->post->getRaw('fnum', null);
+//
+//        if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
+//            die(JText::_("ACCESS_DENIED"));
+//        }
+//
+//        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'messages.php');
+//        $m_messages = new EmundusModelMessages();
+//
+//        $user = JFactory::getUser();
+//        $config = JFactory::getConfig();
+//
+//        // set default mail sender info
+//        $mail_from_sys = $config->get('mailfrom');
+//        $mail_from_sys_name = $config->get('fromname');
+//
+//        /// end
+//
+//        /// send email --> and then track the log
+//        $res = $m_messages->sendEmailByFnum($fnum,$mail_from_sys, $mail_from_sys_name);
+//
+//        /// if using mailtrap (for dev test), we a sleep to avoid the blocking
+//        if ($config->get('smtphost') === 'smtp.mailtrap.io') {
+//            sleep(5);
+//        }
+//
+//        if($res['sending_status'] === true) {
+//            echo json_encode(['status' => true]);
+//        } else {
+//            echo json_encode(['status' => false]);
+//        }
+//        exit;
+//    }
 
     /// set tags to fnum --> params :: fnum
     public function addtagsbyfnum() {
@@ -1615,7 +1615,7 @@ class EmundusControllerMessages extends JControllerLegacy {
     }
 
     // send email by action tags --> params :: [fnums], [tags], sendingMode
-    public function sendemailtocandidatwithcustomizedtags() {
+    public function sendemailtocandidat() {
         $jinput = JFactory::getApplication()->input;
 
         $raw_data = $jinput->post->getRaw('data', null);
@@ -1662,7 +1662,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                         if (!empty($fnums_intersect) and !is_null($fnums_intersect)) {
                             foreach ($fnums_intersect as $key => $fnum) {
-                                $send = $m_messages->sendEmailByFnum($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
+                                $send = $m_messages->sendEmailToCandidat($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
                             }
                         }
                     } else {
@@ -1670,14 +1670,15 @@ class EmundusControllerMessages extends JControllerLegacy {
                         $fnums_diff = array_diff($fnums, $assoc_fnums);
 
                         foreach ($fnums_diff as $key => $fnum) {
-                            $send = $m_messages->sendEmailByFnum($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
+                            $send = $m_messages->sendEmailToCandidat($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
                         }
                     }
                 }
             }
         } else {
+            /// send instant message
             $fnum = $jinput->post->getRaw('fnum', null);
-            $send = $m_messages->sendEmailByFnum($fnum,$mail_from_sys, $mail_from_sys_name, null);
+            $send = $m_messages->sendEmailToCandidat($fnum,$mail_from_sys, $mail_from_sys_name, null);
         }
 
         /// if classic mode --> fix into the em_files.js (not in the controller)
