@@ -389,13 +389,13 @@
           email:{
             id:10,
             value: 'email',
-            icon: 'fas fa-font',
+            icon: 'fas fa-at',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_EMAIL")
           },
           yesno:{
             id:12,
             value: 'yesno',
-            icon: 'fas fa-font',
+            icon: 'fas fa-toggle-on',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_YESNO")
           },
           textarea: {

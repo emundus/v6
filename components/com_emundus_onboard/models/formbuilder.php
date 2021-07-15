@@ -697,7 +697,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     break;
                 case 'display':
                     $params['display_showlabel'] = 1;
-                    $params['store_in_db'] = 0;
+                    //$params['store_in_db'] = 0;
                     break;
                 case 'emundus_fileupload':
                     $params['size'] = 10485760;
