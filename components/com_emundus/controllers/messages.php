@@ -1644,6 +1644,9 @@ class EmundusControllerMessages extends JControllerLegacy {
             $fnums = $m_files->getAllFnums();
         }
 
+        /// destinations
+        $dest = [];
+
         if(!is_null($raw_data)) {
             if ($raw_data['sending_mode'] != '0') {
                 if (!empty($raw_data['tag_list']) and !is_null($raw_data['tag_list'])) {
@@ -1663,6 +1666,10 @@ class EmundusControllerMessages extends JControllerLegacy {
                         if (!empty($fnums_intersect) and !is_null($fnums_intersect)) {
                             foreach ($fnums_intersect as $key => $fnum) {
                                 $send = $m_messages->sendEmailToCandidat($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
+
+                                if($send['status']) {
+                                    $dest[] = $fnum;
+                                }
                             }
                         }
                     } else {
@@ -1671,17 +1678,30 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                         foreach ($fnums_diff as $key => $fnum) {
                             $send = $m_messages->sendEmailToCandidat($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
+
+                            if($send['status']) {
+                                $dest[] = $fnum;
+                            }
                         }
                     }
+                }
+                if(count($dest) > 0) {
+                    echo json_encode(['status' => true, 'dest' => $dest]);
+                } else {
+                    echo json_encode(['status' => false]);
                 }
             }
         } else {
             /// send instant message
             $fnum = $jinput->post->getRaw('fnum', null);
             $send = $m_messages->sendEmailToCandidat($fnum,$mail_from_sys, $mail_from_sys_name, null);
-        }
 
-        /// if classic mode --> fix into the em_files.js (not in the controller)
+            if($send['status']) {
+                echo json_encode(['status' => true, 'dest' => $fnum]);
+            } else {
+                echo json_encode(['status' => false]);
+            }
+        }
         exit;
     }
 }

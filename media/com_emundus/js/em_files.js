@@ -4975,10 +4975,8 @@ $(document).ready(function() {
                                     $('#em-modal-sending-emails').css('display', 'block');
 
                                     /// if user want to send customized email --> sending mode = 1 or 2
-                                    /// if no action tag(s) is selected --> tag_list == ""
-                                    // console.log(data.tag_list == null);
+                                    /// if no action tag(s) is selected --> tag_list is not ∅
                                     if((data.sending_mode == '1' || data.sending_mode == '2') && (data.tag_list != null)) {
-                                        console.log('customized email');
                                         $.ajax({
                                             type: 'post',
                                             url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
@@ -4986,12 +4984,42 @@ $(document).ready(function() {
                                             data: {data: data},
                                             success: function (value) {
                                                 console.log(value);
+                                                $('#em-modal-sending-emails').css('display', 'none');
+
+                                                if(value.status) {
+                                                    if(value.dest.length > 0) {
+                                                        Swal.fire({
+                                                            type: 'success',
+                                                            title: Joomla.JText._('EMAILS_SENT') + value.dest.length,
+                                                        });
+
+                                                    } else {
+                                                        Swal.fire({
+                                                            type: 'error',
+                                                            title: Joomla.JText._('NO_EMAILS_SENT')
+                                                        })
+                                                    }
+                                                } else {
+                                                    $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>');
+                                                }
+
                                             }, error: function (jqXHR) {
-                                                console.log(jqXHR.responseText);
+                                                if (textStatus == 'timeout') {
+                                                    $('#em-modal-sending-emails').css('display', 'none');
+
+                                                    var sent_to = '<p>' + Joomla.JText._('EMAIL_SENDING') + '</p>';
+
+                                                    Swal.fire({
+                                                        type: 'success',
+                                                        title: Joomla.JText._('EMAILS_SENT'),
+                                                        html: sent_to
+                                                    });
+                                                } else {
+                                                    $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>');
+                                                }
                                             }
                                         })
                                     } else {
-                                        console.log('old email');
                                         $.ajax({
                                             type: "POST",
                                             url: "index.php?option=com_emundus&controller=messages&task=applicantemail",

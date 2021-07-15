@@ -1427,7 +1427,7 @@ class EmundusModelMessages extends JModelList {
             }
 
             $mailer->addAttachment($toAttach);
-            $send = $mailer->Send();
+            //$send = $mailer->Send();
         }
 
         /////// $TEMPLATE is ∅ --> send instant message (just based on fnum)...Used case: send instant message
@@ -1471,25 +1471,24 @@ class EmundusModelMessages extends JModelList {
 
                     $mailer->addAttachment($file_path);
                 }
-
-                $send = $mailer->Send();
-
-                if ($send !== true) {
-                    $logs .= '<div class="alert alert-dismissable alert-danger">' . JText::_('EMAIL_NOT_SENT') . ' : ' . $candidat_email . ' ' . $send->__toString() . '</div>';
-                    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
-                } else {
-                    $message = array(
-                        'applicant_id_to' => $fnum_info['applicant_id'],
-                        'subject' => $subject,
-                        'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $candidat_email . '</i><br>' . $body
-                    );
-                    $m_emails->logEmail($message);
-                    $logs .= JText::_('EMAIL_SENT') . ' : ' . $candidat_email . '<br>';
-                    JLog::add($candidat_email . ' ' . $body, JLog::INFO, 'com_emundus.email');
-                }
-
-                return array('sending_status' => $send, 'log_message' => $logs, 'message_id' => $email_recap->id);
+                //return array('sending_status' => $send, 'log_message' => $logs, 'message_id' => $email_recap->id);
             }
         }
+
+        $send = $mailer->Send();
+
+        if ($send !== true) {
+            $logs .= '<div class="alert alert-dismissable alert-danger">' . JText::_('EMAIL_NOT_SENT') . ' : ' . $candidat_email . ' ' . $send->__toString() . '</div>';
+            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
+        } else {
+            $message = array(
+                'applicant_id_to' => $fnum_info['applicant_id'],
+                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $candidat_email,
+            );
+            $m_emails->logEmail($message);
+            $logs .= JText::_('EMAIL_SENT') . ' : ' . $candidat_email . '<br>';
+        }
+
+        return array('status' => $send);    ///send is "true" or "false"
     }
 }
