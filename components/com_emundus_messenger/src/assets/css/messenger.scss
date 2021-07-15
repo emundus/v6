@@ -1,3 +1,12 @@
+@media all and (max-width: 479px) {
+    #app .messages__vue .vm--container.scrollable .vm--modal {
+        width: 94% !important;
+        left: 10px !important;
+        overflow: auto;
+        top: 55px !important;
+    }
+}
+
 hr{
     margin: 0;
 }
@@ -365,15 +374,5 @@ hr{
     transform: translateX(200px);
     left: 30px;
 }
-
-@media all and (max-width: 479px) {
-    #app .messages__vue .vm--container.scrollable .vm--modal {
-        width: 94% !important;
-        left: 10px !important;
-        overflow: auto;
-        top: 10px !important;
-    }
-}
-
 /**** END ****/
 

@@ -440,6 +440,10 @@ input[type="text"],
   margin: unset;
 }
 
+.gantry .view-list #g-container-main .g-container .page-header {
+  margin-top: 50px;
+}
+
 .view-list #g-container-main {
   width: calc(100% - 75px) !important;
 }
@@ -2276,7 +2280,7 @@ textarea:hover {
     align-items: center;
     flex-direction: row-reverse;
     justify-content: space-between;
-    margin: 0 0 10px;
+    margin: 100px 0 0 0;
   }
 }
 
@@ -3240,6 +3244,21 @@ div#em-appli-block {
 }
 
 /******************************* RESPONSIVE ***********************************/
+/* LAPTOP  MENU TCHO0Z */
+@media screen and (max-width: 1366px),
+screen and (max-height: 769px) {
+  .gantry #g-navigation .g-main-nav#em_user_menu .g-toplevel.tchooz-vertical-toplevel > li.g-menu-item.g-standard.tchooz-vertical-item:nth-child(3) {
+    margin-top: -40px !important;
+  }
+
+  .gantry #g-navigation .g-main-nav .tchooz-vertical-toplevel > li.g-menu-item {
+    margin: 3px 10px !important;
+  }
+
+  hr#menu_separator {
+    margin: 15px 0;
+  }
+}
 
 /* MOBILE */
 @media all and (max-width: 479px) {
