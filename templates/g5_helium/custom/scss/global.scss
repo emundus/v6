@@ -2232,6 +2232,19 @@ textarea:hover {
   margin: 20px;
 }
 
+.messenger__notifications_counter{
+  background: red;
+  padding: 10px;
+  border-radius: 50%;
+  width: 20px;
+  height: 21px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+}
+
 .alert {
 
   .close,
