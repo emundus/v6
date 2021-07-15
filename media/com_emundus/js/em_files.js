@@ -4974,9 +4974,9 @@ $(document).ready(function() {
 
                                     $.ajax({
                                         type: 'post',
-                                        url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidatbytags',
+                                        url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidatwithcustomizedtags',
                                         dataType: 'json',
-                                        data: { fnums: data.recipients, sendingMode: data.sending_mode, tags: data.tag_list },
+                                        data: { data : data },
                                         success: function(value) {
                                             console.log(value);
                                         }, error: function(jqXHR) {

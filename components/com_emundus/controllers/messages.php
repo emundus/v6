@@ -1615,13 +1615,10 @@ class EmundusControllerMessages extends JControllerLegacy {
     }
 
     // send email by action tags --> params :: [fnums], [tags], sendingMode
-    public function sendemailtocandidatbytags() {
+    public function sendemailtocandidatwithcustomizedtags() {
         $jinput = JFactory::getApplication()->input;
 
-        $fnums = $jinput->post->getRaw('fnums', null);
-
-        $tags = $jinput->post->getRaw('tags', null);
-        $sendingMode = $jinput->post->getRaw('sendingMode', 0);
+        $raw_data = $jinput->post->getRaw('data', null);
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -1630,24 +1627,49 @@ class EmundusControllerMessages extends JControllerLegacy {
         $query->clear()
             ->select('#__emundus_tag_assoc.fnum')
             ->from($db->quoteName('#__emundus_tag_assoc'))
-            ->where($db->quoteName('#__emundus_tag_assoc.id_tag') . ' IN (' . $tags . ')');
+            ->where($db->quoteName('#__emundus_tag_assoc.id_tag') . ' IN (' . $raw_data['tag_list'] . ')');
 
         $db->setQuery($query);
 
         $assoc_fnums = $db->loadColumn();
 
-        $fnums = explode(',', $fnums);          /// convert $fnums : string --> $fnums : array
+        $fnums = explode(',', $raw_data['recipients']);          /// convert $fnums : string --> $fnums : array
 
-        if($sendingMode == 1) {
+
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'messages.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+
+        $m_messages = new EmundusModelMessages();
+        $m_files = new EmundusModelFiles;
+
+        $user = JFactory::getUser();
+        $config = JFactory::getConfig();
+
+        // set default mail sender info
+        $mail_from_sys = $config->get('mailfrom');
+        $mail_from_sys_name = $config->get('fromname');
+
+        if($fnums == "all") {
+            $fnums = $m_files->getAllFnums();
+        }
+
+        if($raw_data['sending_mode'] == 1) {
             /// sending mode = 1 --> send to fnums which having the selected action tags
             $fnums_intersect = array_intersect($assoc_fnums, $fnums);
 
-            // reuse the method sendEmailByFnum into Models to send emails
+            if(!empty($fnums_intersect) and !is_null($fnums_intersect)) {
+                foreach ($fnums_intersect as $key => $fnum) {
+                    $send = $m_messages->sendEmailByFnum($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
+                }
+            }
         } else {
             /// sending mode = 2 --> send to fnums which NOT having the selected action tags
             $fnums_diff = array_diff($fnums, $assoc_fnums);
 
-            // reuse the method sendEmailByFnum into Models to send emails
+            foreach($fnums_diff as $key => $fnum) {
+                $send = $m_messages->sendEmailByFnum($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
+            }
         }
+        exit;
     }
 }
