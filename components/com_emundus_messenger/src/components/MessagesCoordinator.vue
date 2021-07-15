@@ -22,7 +22,7 @@
         <AttachDocument :user="user" :fnum="fnum" :applicant="false" v-if="attachOpen" @pushAttachmentMessage="pushAttachmentMessage" ref="attachment"/>
       </transition>
       <div class="messages__bottom-input">
-        <input type="text" class="messages__input_text" v-model="message" :placeholder="translations.writeMessage" @keyup.enter.exact.prevent="sendMessage($event)"/>
+        <textarea type="text" class="messages__input_text" rows="1" spellcheck="true" v-model="message" :placeholder="translations.writeMessage" @keyup.enter.exact.prevent="sendMessage($event)"/>
       </div>
       <div class="messages__bottom-input-actions">
         <div class="messages__actions_bar">

@@ -82,6 +82,8 @@ hr{
 
 .messages__input_text{
     width: 90% !important;
+    resize: none;
+    height: 45px;
 }
 
 .messages__bottom-input input:focus,.messages__bottom-input input:hover{
