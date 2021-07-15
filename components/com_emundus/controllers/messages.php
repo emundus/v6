@@ -1654,7 +1654,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                     $db->setQuery($query);
 
-                    $assoc_fnums = $db->loadColumn();
+                    $assoc_fnums = array_unique($db->loadColumn());
 
                     if ($raw_data['sending_mode'] == 1) {
                         /// sending mode = 1 --> send to fnums which having the selected action tags
@@ -1673,6 +1673,8 @@ class EmundusControllerMessages extends JControllerLegacy {
                             $send = $m_messages->sendEmailToCandidat($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
                         }
                     }
+                } else {
+                    /// send all by default
                 }
             }
         } else {

@@ -1396,6 +1396,37 @@ class EmundusModelMessages extends JModelList {
                 $mailer->addBcc($raw_data['bcc']);
             }
 
+            $toAttach = [];
+
+            // attach uploaded file(s) if they exist
+            if (!empty($raw_data['attachments']['upload'])) {
+                foreach ($raw_data['attachments']['upload'] as $upload) {
+                    if (file_exists(JPATH_BASE.DS.$upload)) {
+                        $toAttach[] = JPATH_BASE.DS.$upload;
+                    }
+                }
+            }
+
+            // Files gotten from candidate files, requires attachment read rights.
+            if (!empty($raw_data['attachments']['candidate_file'])) {
+                if (!empty($raw_data['attachments']['candidate_file'])) {
+                    foreach ($raw_data['attachments']['candidate_file'] as $candidate_file) {
+                        $filename = $this->get_upload($fnum, $candidate_file);
+                        if ($filename != false) {
+
+                            // Build the path to the file we are searching for on the disk.
+                            $path = EMUNDUS_PATH_ABS.$fnum_info['applicant_id'].DS.$filename;
+
+                            if (file_exists($path)) {
+                                $toAttach[] = $path;
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            $mailer->addAttachment($toAttach);
             $send = $mailer->Send();
         }
 
