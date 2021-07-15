@@ -1624,17 +1624,8 @@ class EmundusControllerMessages extends JControllerLegacy {
         $query = $db->getQuery(true);
 
         /// first :: get all fnums by selected tags with any tags
-        $query->clear()
-            ->select('#__emundus_tag_assoc.fnum')
-            ->from($db->quoteName('#__emundus_tag_assoc'))
-            ->where($db->quoteName('#__emundus_tag_assoc.id_tag') . ' IN (' . $raw_data['tag_list'] . ')');
-
-        $db->setQuery($query);
-
-        $assoc_fnums = $db->loadColumn();
 
         $fnums = explode(',', $raw_data['recipients']);          /// convert $fnums : string --> $fnums : array
-
 
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'messages.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
@@ -1653,23 +1644,43 @@ class EmundusControllerMessages extends JControllerLegacy {
             $fnums = $m_files->getAllFnums();
         }
 
-        if($raw_data['sending_mode'] == 1) {
-            /// sending mode = 1 --> send to fnums which having the selected action tags
-            $fnums_intersect = array_intersect($assoc_fnums, $fnums);
+        if(!is_null($raw_data)) {
+            if ($raw_data['sending_mode'] != '0') {
+                if (!empty($raw_data['tag_list']) and !is_null($raw_data['tag_list'])) {
+                    $query->clear()
+                        ->select('#__emundus_tag_assoc.fnum')
+                        ->from($db->quoteName('#__emundus_tag_assoc'))
+                        ->where($db->quoteName('#__emundus_tag_assoc.id_tag') . ' IN (' . $raw_data['tag_list'] . ')');
 
-            if(!empty($fnums_intersect) and !is_null($fnums_intersect)) {
-                foreach ($fnums_intersect as $key => $fnum) {
-                    $send = $m_messages->sendEmailByFnum($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
+                    $db->setQuery($query);
+
+                    $assoc_fnums = $db->loadColumn();
+
+                    if ($raw_data['sending_mode'] == 1) {
+                        /// sending mode = 1 --> send to fnums which having the selected action tags
+                        $fnums_intersect = array_intersect($assoc_fnums, $fnums);
+
+                        if (!empty($fnums_intersect) and !is_null($fnums_intersect)) {
+                            foreach ($fnums_intersect as $key => $fnum) {
+                                $send = $m_messages->sendEmailByFnum($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
+                            }
+                        }
+                    } else {
+                        /// sending mode = 2 --> send to fnums which NOT having the selected action tags
+                        $fnums_diff = array_diff($fnums, $assoc_fnums);
+
+                        foreach ($fnums_diff as $key => $fnum) {
+                            $send = $m_messages->sendEmailByFnum($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
+                        }
+                    }
                 }
             }
         } else {
-            /// sending mode = 2 --> send to fnums which NOT having the selected action tags
-            $fnums_diff = array_diff($fnums, $assoc_fnums);
-
-            foreach($fnums_diff as $key => $fnum) {
-                $send = $m_messages->sendEmailByFnum($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
-            }
+            $fnum = $jinput->post->getRaw('fnum', null);
+            $send = $m_messages->sendEmailByFnum($fnum,$mail_from_sys, $mail_from_sys_name, null);
         }
+
+        /// if classic mode --> fix into the em_files.js (not in the controller)
         exit;
     }
 }

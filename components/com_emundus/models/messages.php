@@ -1333,6 +1333,32 @@ class EmundusModelMessages extends JModelList {
             'USER_EMAIL' => $fnum_info['email'],
         ];
 
+        //// GLOBAL CONFIGS OF SENDER
+        $tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum_info['fnum']);
+
+        $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
+        $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
+
+        // If the email sender has the same domain as the system sender address.
+        if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+            $mail_from_address = $mail_from;
+        } else {
+            $mail_from_address = $mail_from_sys;
+        }
+
+        // Set sender
+        $sender = [
+            $mail_from_address,
+            $mail_from_name
+        ];
+
+        $mailer = JFactory::getMailer();
+        $mailer->setSender($sender);
+        $mailer->addReplyTo($mail_from, $mail_from_name);
+        $mailer->addRecipient($fnum_info['email']);
+
+        /// END OF GLOBAL CONFIG
+
         /////// $raw_data --> not ∅ (send customized message)
         if(!is_null($raw_data)) {
             $template = $m_emails->getEmailById($raw_data['template']);
@@ -1349,7 +1375,6 @@ class EmundusModelMessages extends JModelList {
                 $template->Template = $db->loadResult();
             }
 
-            $tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum->fnum);
             $body = $m_emails->setTagsFabrik($raw_data['message'], [$fnum->fnum]);
             $subject = $m_emails->setTagsFabrik($raw_data['mail_subject'], [$fnum->fnum]);
 
@@ -1359,31 +1384,20 @@ class EmundusModelMessages extends JModelList {
             $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
             $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
-            $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
-            $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
-
-            // If the email sender has the same domain as the system sender address.
-            if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
-                $mail_from_address = $mail_from;
-            } else {
-                $mail_from_address = $mail_from_sys;
-            }
-
-            // Set sender
-            $sender = [
-                $mail_from_address,
-                $mail_from_name
-            ];
-
-            // Configure email sender
-            $mailer = JFactory::getMailer();
-            $mailer->setSender($sender);
-            $mailer->addReplyTo($mail_from, $mail_from_name);
-            $mailer->addRecipient($fnum_info['email']);
             $mailer->setSubject($subject);
             $mailer->isHTML(true);
             $mailer->Encoding = 'base64';
             $mailer->setBody($body);
+
+            if (!empty($raw_data['cc'])) {
+                $mailer->addCc($raw_data['cc']);
+            }
+
+            if (!empty($raw_data['bcc'])) {
+                $mailer->addBcc($raw_data['bcc']);
+            }
+
+            $send = $mailer->Send();
         }
 
         /////// $TEMPLATE is ∅ --> send instant message (just based on fnum)...Used case: send instant message
@@ -1395,7 +1409,6 @@ class EmundusModelMessages extends JModelList {
             $letter_recap = $message['attached_letter'];                /// length >= 1
 
             if (!empty($email_recap) and !is_null($email_recap)) {
-                $tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum_info['fnum']);
 
                 $body = $m_emails->setTagsFabrik($email_recap->message, [$fnum_info['fnum']]);
                 $subject = $m_emails->setTagsFabrik($email_recap->subject, [$fnum_info['fnum']]);
@@ -1404,27 +1417,6 @@ class EmundusModelMessages extends JModelList {
                 $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
                 $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
-                $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
-                $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
-
-                // If the email sender has the same domain as the system sender address.
-                if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
-                    $mail_from_address = $mail_from;
-                } else {
-                    $mail_from_address = $mail_from_sys;
-                }
-
-                // Set sender
-                $sender = [
-                    $mail_from_address,
-                    $mail_from_name
-                ];
-
-                // Configure email sender
-                $mailer = JFactory::getMailer();
-                $mailer->setSender($sender);
-                $mailer->addReplyTo($mail_from, $mail_from_name);
-                $mailer->addRecipient($fnum_info['email']);
                 $mailer->setSubject($subject);
                 $mailer->isHTML(true);
                 $mailer->Encoding = 'base64';
