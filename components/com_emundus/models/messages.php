@@ -1408,7 +1408,7 @@ class EmundusModelMessages extends JModelList {
             }
 
             // Files gotten from candidate files, requires attachment read rights.
-            if (!empty($raw_data['attachments']['candidate_file'])) {
+            if (EmundusHelperAccess::asAccessAction(4, 'r') && !empty($raw_data['attachments']['candidate_file'])) {
                 if (!empty($raw_data['attachments']['candidate_file'])) {
                     foreach ($raw_data['attachments']['candidate_file'] as $candidate_file) {
                         $filename = $this->get_upload($fnum, $candidate_file);

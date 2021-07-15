@@ -1673,8 +1673,6 @@ class EmundusControllerMessages extends JControllerLegacy {
                             $send = $m_messages->sendEmailToCandidat($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
                         }
                     }
-                } else {
-                    /// send all by default
                 }
             }
         } else {
