@@ -3949,19 +3949,19 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $fabrikIds = $jinput->post->getRaw('elements', null);
 
-
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'email.php');
-        $m_files = new EmundusonboardModelemail;
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
-        $pattern = '/\${(.+[0-9])\}/';
+        $m_emails = new EmundusonboardModelemail;
+        $m_files = new EmundusModelFiles;
+
         $tag_ids = [];
 
         foreach($fabrikIds as $key => $tag) {
-            $tag_ids[] = preg_replace($pattern,'$1', $tag);
+            $tag_ids[] = reset($m_files->getVariables($tag));
         }
 
-        $res = $m_files->getEmailsFromFabrikIds($tag_ids);
-
+        $res = $m_emails->getEmailsFromFabrikIds($tag_ids);
 
         if($res) {
             echo json_encode((object)(array('status' => true, 'data' => $res)));

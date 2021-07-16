@@ -2366,7 +2366,7 @@ if (JFactory::getUser()->id == 63)
     }
 
     /// get exactly letter id by fnum and template --> with or without status
-    public function getLetterTemplateForFnum($fnum,$templates=array(), $mode=null) {
+    public function getLetterTemplateForFnum($fnum,$templates=array()) {
         if(!empty($fnum) and !is_null($fnum) and !empty($templates) and !is_null($templates)) {
             $query = $this->_db->getQuery(true);
 
@@ -2379,32 +2379,17 @@ if (JFactory::getUser()->id == 63)
                 $_fnumCampaign = $_mFile->getFnumInfos($fnum)['id'];
 
                 /// second :: status, program, templates --> detect the letter id to generate
-                if($mode == null) {
-                    $query->clear()
-                        ->select('jesl.*')
-                        ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
-                        ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
-                        ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
-                        ->where($this->_db->quoteName('jeslrs.status') . ' = ' . $_fnumStatus)
-                        ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
-                        ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
+                $query->clear()
+                    ->select('jesl.*')
+                    ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+                    ->where($this->_db->quoteName('jeslrs.status') . ' = ' . $_fnumStatus)
+                    ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
+                    ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
 
-                    $this->_db->setQuery($query);
-                    return $this->_db->loadObjectList();
-                } else if($mode == 'without_status') {
-                    $query->clear()
-                        ->select('jesl.*')
-                        ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
-                        ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
-                        ->where($this->_db->quoteName('jeslrs.status') . ' = ' . $_fnumStatus)
-                        ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
-                        ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
-
-                    $this->_db->setQuery($query);
-                    return $this->_db->loadObjectList();
-                } else {
-                    return false;
-                }
+                $this->_db->setQuery($query);
+                return $this->_db->loadObjectList();
             } catch(Exception $e) {
                 JLog::add('Cannot get letter template by single fnum : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                 return false;
@@ -2423,7 +2408,7 @@ if (JFactory::getUser()->id == 63)
             try {
                 $fnum_Array = explode(',', $fnums);
                 foreach($fnum_Array as $data => $fnum) {
-                    $letter_ids[] = $this->getLetterTemplateForFnum($fnum,$templates, null);
+                    $letter_ids[] = $this->getLetterTemplateForFnum($fnum,$templates);
                 }
                 return $letter_ids;
             } catch(Exception $e) {
@@ -2493,7 +2478,7 @@ if (JFactory::getUser()->id == 63)
 
         /// a partir de $fnums + $templates --> generer les lettres qui correspondent
         foreach($fnum_Array as $key => $fnum) {
-            $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates, null); // return :: Array
+            $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates); // return :: Array
             $fnumInfo = $_mFile->getFnumsTagsInfos([$fnum]);
 
             if(empty($generated_letters) or empty($generated_letters)) {
