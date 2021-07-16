@@ -1290,7 +1290,7 @@ class EmundusModelMessages extends JModelList {
         }
     }
 
-    public function sendEmailToCandidat($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data=null) {
+    public function sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data=null) {
         $logs = "";
         $jinput = JFactory::getApplication()->input;
 
@@ -1423,10 +1423,13 @@ class EmundusModelMessages extends JModelList {
             }
 
             // Files generated using the Letters system. Requires attachment creation and doc generation rights.
+            $email_mapping = [];
             if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($raw_data['attachments']['setup_letters'])) {
 
                 foreach($raw_data['attachments']['setup_letters'] as $setup_letter) {
                     $letters = $_meval->getLetterTemplateForFnum($fnum, [$setup_letter]);
+
+                    $email_mapping[] = reset($letters)->email_id;
 
                     if(!empty($letters)) {
                         foreach($letters as $key => $email_tmpl) {
@@ -1441,27 +1444,15 @@ class EmundusModelMessages extends JModelList {
                             $toAttach[] = $path;
                         }
                     } else {
-                        continue;
+
                     }
                 }
             }
 
-            $mailer->addAttachment($toAttach);
+            $email_mapping = reset(array_unique($email_mapping));
 
-            // compare the selected email template vs the right template
-            $attachment_ids = $_meval->getLettersByFnums($fnum, $attachments = true);
-
-            $attachment_list = array();
-            foreach ($attachment_ids['attachments'] as $key => $value) {
-                $attachment_list[] = $value['id'];
-            }
-
-            $attachment_list = array_unique(array_filter($attachment_list));            /// this line ensures that all attachment ids will appear once
-            $email_id = array_unique(array_filter($attachment_ids['emails']));
-
-            $email_Template = $m_emails->getEmailById($email_id[0]);
-
-            if($email_Template->id == $raw_data['template']) {
+            if($email_mapping === $raw_data['template']) {
+                $mailer->addAttachment($toAttach);
                 $send = $mailer->Send();
             }
         }
@@ -1515,8 +1506,8 @@ class EmundusModelMessages extends JModelList {
 
 
         if ($send !== true) {
-            $logs .= '<div class="alert alert-dismissable alert-danger">' . JText::_('EMAIL_NOT_SENT') . ' : ' . $candidat_email . ' ' . $send->__toString() . '</div>';
-            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
+            $logs .= '<div class="alert alert-dismissable alert-danger">' . JText::_('EMAIL_NOT_SENT') . ' : ' . $candidat_email . ' ' . $send . '</div>';
+            JLog::add($send, JLog::ERROR, 'com_emundus.email');
         } else {
             $message = array(
                 'applicant_id_to' => $fnum_info['applicant_id'],

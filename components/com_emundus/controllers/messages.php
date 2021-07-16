@@ -1620,7 +1620,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                         if (!empty($fnums_intersect) and !is_null($fnums_intersect)) {
                             foreach ($fnums_intersect as $key => $fnum) {
-                                $send = $m_messages->sendEmailToCandidat($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
+                                $send = $m_messages->sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
 
                                 if($send['status']) {
                                     $dest[] = $fnum;
@@ -1632,7 +1632,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                         $fnums_diff = array_diff($fnums, $assoc_fnums);
 
                         foreach ($fnums_diff as $key => $fnum) {
-                            $send = $m_messages->sendEmailToCandidat($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
+                            $send = $m_messages->sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
 
                             if($send['status']) {
                                 $dest[] = $fnum;
@@ -1649,7 +1649,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         } else {
             /// send instant message
             $fnum = $jinput->post->getRaw('fnum', null);
-            $send = $m_messages->sendEmailToCandidat($fnum,$mail_from_sys, $mail_from_sys_name, null);
+            $send = $m_messages->sendEmailToApplicant($fnum,$mail_from_sys, $mail_from_sys_name, null);
 
             if($send['status']) {
                 echo json_encode(['status' => true, 'dest' => $fnum]);
