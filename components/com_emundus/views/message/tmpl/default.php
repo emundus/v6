@@ -326,7 +326,7 @@ if ($allowed_attachments !== true) {
 
 
     $('.action-tags .selectize-input').keyup(function(e){
-        if(e.keyCode == '8') {
+        if(e.keyCode == '8' || e.keyCode == '46') {
             getAllTagsWithRefresh();
         }
     })
@@ -782,7 +782,7 @@ if ($allowed_attachments !== true) {
         let tags = $(this).val();
         let last_tag = tags[tags.length - 1];
 
-        if(last_tag != "") {
+        if(last_tag != "" && last_tag != null) {
             // call to api
             $.ajax({
                 type: 'post',
