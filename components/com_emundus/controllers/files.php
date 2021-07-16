@@ -3861,8 +3861,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $showMode = $jinput->post->getRaw('showMode', 0);
         $mergeMode = $jinput->post->getRaw('mergeMode', 0);
 
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-        $_mEval = new EmundusModelEvaluation;
+        $_mEval = $this->getModel('Evaluation');        // get evaluation model
 
         $letters = $_mEval->generateLetters($fnums,$templates,$canSee,$showMode,$mergeMode);
 
@@ -3873,7 +3872,7 @@ class EmundusControllerFiles extends JControllerLegacy
     // send customized email to candidats when updating new status :: (+) attachments if any -- (+) template email if any -- (+) concerned candidats will receive the notification
     // params :: [fnums], status
     public function notifycandidat() {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+        //require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
 
         $app    = JFactory::getApplication();
         $jinput = $app->input;
@@ -3882,7 +3881,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $state  = $jinput->getInt('state', null);
 
         /// define models of all components
-        $m_messages = new EmundusModelMessages();
+
+        $m_messages = $this->getModel('Messages');
         $m_files = $this->getModel('Files');
 
         $config = JFactory::getConfig();
@@ -3950,10 +3950,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $fabrikIds = $jinput->post->getRaw('elements', null);
 
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'email.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
         $m_emails = new EmundusonboardModelemail;
-        $m_files = new EmundusModelFiles;
+        $m_files = $this->getModel('Files');
 
         $tag_ids = [];
 
