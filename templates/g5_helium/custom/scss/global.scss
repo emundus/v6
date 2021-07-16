@@ -2886,7 +2886,7 @@ div#em-appli-block {
 
 .view-list {
 
-  .fabrik___heading  a.fabrikorder {
+  .fabrik___heading  a.fabrikorder, .fabrik___heading  a.fabrikorder-desc {
      color: $dark-blue;
   }
   .filtertable {
@@ -3296,7 +3296,7 @@ screen and (max-height: 769px) {
   }
 
   #g-container-main .g-container {
-    padding: 0px 35px;
+    padding: 0px 15px;
   }
 
   #g-navigation .g-container #header-c {
