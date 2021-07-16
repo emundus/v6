@@ -1430,47 +1430,40 @@ class EmundusModelMessages extends JModelList {
 
                     if(!empty($letters)) {
                         foreach($letters as $key => $email_tmpl) {
-                            // generate each letter for each fnum + $email_tmpl
+                            // generate each letter for each fnum + $setup_letter
+                            $res = $_meval->generateLetters($fnum, [$setup_letter], 0,0 ,0);
+
+                            $res_status = json_decode($res)->status;
+                            $res_data = reset(json_decode($res)->files);
+
+                            $path = EMUNDUS_PATH_ABS.$fnum_info['applicant_id'].DS.$res_data->filename;
+
+                            $toAttach[] = $path;
                         }
                     } else {
-                        // get letter info from $setup_letter --> using $m_decision->getLettersTemplateByID
-                        $_letters = $_meval->getLetterTemplateForFnum($fnum, [$setup_letter], 'without_status');
-                        foreach($_letters as $key => $doc_tmpl) {
-                            switch ($doc_tmpl->template_type) {
-                                case '1':
-                                    /// static file --> just get its path from disk
-                                    if (file_exists(JPATH_BASE.$doc_tmpl->file)) {
-                                        $toAttach[] = JPATH_BASE.$doc_tmpl->file;
-                                    }
-                                    break;
-
-                                case '2':
-                                    /// generate pdf from html data
-                                    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-                                    $path = generateLetterFromHtml($doc_tmpl, $fnum, $fnum_info['applicant_id'], $fnum_info['training']);
-                                    $toAttach[] = $path;
-                                    break;
-
-                                case '3':
-                                    /// generate docx document
-                                    $path = $m_messages->generateLetterDoc($doc_tmpl, $fnum);
-                                    $toAttach[] = $path;
-                                    break;
-
-                                case '4':
-                                    /// generate xlsx document --> not yet now
-                                    break;
-
-                                default:
-                                    break;
-                            }
-                        }
+                        continue;
                     }
                 }
             }
 
             $mailer->addAttachment($toAttach);
-            //$send = $mailer->Send();
+
+            // compare the selected email template vs the right template
+            $attachment_ids = $_meval->getLettersByFnums($fnum, $attachments = true);
+
+            $attachment_list = array();
+            foreach ($attachment_ids['attachments'] as $key => $value) {
+                $attachment_list[] = $value['id'];
+            }
+
+            $attachment_list = array_unique(array_filter($attachment_list));            /// this line ensures that all attachment ids will appear once
+            $email_id = array_unique(array_filter($attachment_ids['emails']));
+
+            $email_Template = $m_emails->getEmailById($email_id[0]);
+
+            if($email_Template->id == $raw_data['template']) {
+                $send = $mailer->Send();
+            }
         }
 
         /////// $TEMPLATE is ∅ --> send instant message (just based on fnum)...Used case: send instant message
@@ -1514,11 +1507,12 @@ class EmundusModelMessages extends JModelList {
 
                     $mailer->addAttachment($file_path);
                 }
+                $send = $mailer->Send();
                 //return array('sending_status' => $send, 'log_message' => $logs, 'message_id' => $email_recap->id);
             }
         }
 
-        $send = $mailer->Send();
+
 
         if ($send !== true) {
             $logs .= '<div class="alert alert-dismissable alert-danger">' . JText::_('EMAIL_NOT_SENT') . ' : ' . $candidat_email . ' ' . $send->__toString() . '</div>';
