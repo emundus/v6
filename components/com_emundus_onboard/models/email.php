@@ -383,10 +383,28 @@ class EmundusonboardModelemail extends JModelList {
                 // add attached documents for new email --> table jos_emundus_setup_emails_repeat_letter_attachment
                 if(!empty($documents) and !is_null($documents)) {
                     foreach ($documents as $key => $document) {
+                        // first --> matching letter -- ∅ -- emails (emundus_setup_email_repeat_letter_attachment)
                         $query->clear()
                             ->insert($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
                             ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' =  ' . (int)$newemail)
                             ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' = ' . (int)$document);
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+
+                    // second --> matching letter -- ∅ -- emails (emundus_setup_letters) --> find all letters having document_ids --> and then update each of them by new email id
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+                    $m_eval = new EmundusModelEvaluation;
+
+                    $letters = $m_eval->getLettersByAttachmentIds($documents);
+
+                    foreach($letters as $key => $letter) {
+                        /// update
+                        $query->clear()
+                            ->update($db->quoteName('#__emundus_setup_letters'))
+                            ->set($db->quoteName('#__emundus_setup_letters.email_id') . ' = ' . (int)$newemail)
+                            ->where($db->quoteName('#__emundus_setup_letters.id') . ' = ' . (int)$letter);
 
                         $db->setQuery($query);
                         $db->execute();
@@ -507,6 +525,9 @@ class EmundusonboardModelemail extends JModelList {
                     $db->execute();
                 }
 
+                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+                $m_eval = new EmundusModelEvaluation;
+
                 /// remove and update new documents for an email
                 if(!empty($documents) and !is_null($documents)) {
                     $query->clear()
@@ -525,11 +546,35 @@ class EmundusonboardModelemail extends JModelList {
                         $db->setQuery($query);
                         $db->execute();
                     }
+
+                    // second --> matching letter -- ∅ -- emails (emundus_setup_letters) --> find all letters having document_ids --> and then update each of them by new email id
+                    $letters = $m_eval->getLettersByAttachmentIds($documents);
+
+                    foreach($letters as $key => $letter) {
+                        /// update
+                        $query->clear()
+                            ->update($db->quoteName('#__emundus_setup_letters'))
+                            ->set($db->quoteName('#__emundus_setup_letters.email_id') . ' = ' . (int)$id)
+                            ->where($db->quoteName('#__emundus_setup_letters.id') . ' = ' . (int)$letter);
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
                 } else {
                     /// if empty --> remove all
                     $query->clear()
                         ->delete($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
                         ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . '=' . (int)$id);
+
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    // then, get letter(s) having the email_id --> update email_id = NULL
+
+                    $query->clear()
+                        ->update($db->quoteName('#__emundus_setup_letters'))
+                        ->set($db->quoteName('#__emundus_setup_letters.email_id') . ' = ' . 'NULL')
+                        ->where($db->quoteName('#__emundus_setup_letters.email_id') . ' = ' . (int)$id);
 
                     $db->setQuery($query);
                     $db->execute();

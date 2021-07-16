@@ -2259,18 +2259,18 @@ if (JFactory::getUser()->id == 63)
     }
 
     /// get letters from attachmene_id
-    public function getLettersByListID($lid) {
+    public function getLettersByAttachmentIds($aids) {
         $query = $this->_db->getQuery(true);
 
-        if(!empty($lid) and !is_null($lid)) {
+        if(!empty($aids) and !is_null($aids)) {
             try {
                 $query->clear()
                     ->select('#__emundus_setup_letters.id')
                     ->from($this->_db->quoteName('#__emundus_setup_letters'))
-                    ->where($this->_db->quoteName('#__emundus_setup_letters.attachment_id') . '=' . (int)$lid);
+                    ->where($this->_db->quoteName('#__emundus_setup_letters.attachment_id') . 'IN (' . implode(',', $aids) . ')');
 
                 $this->_db->setQuery($query);
-                return $this->_db->loadAssocList();
+                return $this->_db->loadColumn();        // just load column, not load object
             } catch(Exception $e) {
                 JLog::add('Cannot get letter by ids : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                 return false;
