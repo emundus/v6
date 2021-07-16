@@ -102,7 +102,7 @@ class EmundusModelEvaluation extends JModelList {
 		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
 
 		$this->_elements_default = array();
-		
+
 		if (!is_null($this->elements_id)) {
 			$this->_elements = @EmundusHelperFiles::getElementsName($this->elements_id);
 		}
@@ -170,7 +170,7 @@ class EmundusModelEvaluation extends JModelList {
                     $cascadingdropdown_label = $attribs->cascadingdropdown_label;
                     $r2 = explode('___', $cascadingdropdown_label);
                     $select = !empty($attribs->cascadingdropdown_label_concat)?"CONCAT(".$attribs->cascadingdropdown_label_concat.")":$r2[1];
-                    $from = $r2[0]; 
+                    $from = $r2[0];
                     $where = $r1[1];
 
                    if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
@@ -186,7 +186,7 @@ class EmundusModelEvaluation extends JModelList {
                     } else {
                         $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where."=".$def_elmt->element_name." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
                     }
-                    
+
                     $query = preg_replace('#{thistable}#', $from, $query);
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
@@ -338,7 +338,7 @@ class EmundusModelEvaluation extends JModelList {
         if ($session->has('filt_params') ||!empty($all)) {
 
             $filt_params = $session->get('filt_params');
-            
+
             if (!empty($code)) {
 	            $programmes = array_unique($code);
             } elseif ($filt_params['programme'][0] !== '%' && is_array(@$filt_params['programme']) && count(@$filt_params['programme']) > 0) {
@@ -348,12 +348,12 @@ class EmundusModelEvaluation extends JModelList {
             }
             foreach ($programmes as $value) {
                 $groups = $this->getGroupsEvalByProgramme($value);
-                
+
                 if (empty($groups)) {
                     $eval_elt_list = array();
                 } else {
                     $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-                    
+
                     if (count($eval_elt_list) > 0) {
                         foreach ($eval_elt_list as $eel) {
                             if (isset($eel->element_id) && !empty($eel->element_id)) {
@@ -893,7 +893,7 @@ class EmundusModelEvaluation extends JModelList {
 													if (!array_key_exists($tab[0], $tableAlias))
 														$query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like c.fnum ';
 												}
-												
+
 											}
 										}
 									}
@@ -914,7 +914,7 @@ class EmundusModelEvaluation extends JModelList {
                             foreach ($q['join'] as $u) {
 	                            $query['join'] .= $u;
                             }
-								
+
 							if (isset($q['users'])) {
 								$query['users'] = true;
 							}
@@ -1096,7 +1096,7 @@ class EmundusModelEvaluation extends JModelList {
                                 if (is_array($value) && $filt_menu_defined) {
                                 	$diff = array_diff($value, $filt_menu['status']);
                                 }
-                                
+
                                 if (count($diff) == 0) {
                                 	$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
                                 } else {
@@ -1478,8 +1478,8 @@ class EmundusModelEvaluation extends JModelList {
 					) eta ON c.fnum = eta.fnum ' ;
 		$q = $this->_buildWhere($lastTab);
 
-		if (EmundusHelperAccess::isCoordinator($current_user->id) 
-			|| (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1) 
+		if (EmundusHelperAccess::isCoordinator($current_user->id)
+			|| (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1)
 			|| EmundusHelperAccess::asAccessAction(5, 'r', $current_user->id)) {
 			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum ';
 		} else {
@@ -1513,12 +1513,14 @@ if (JFactory::getUser()->id == 63)
 			$res = $dbo->loadAssocList();
 			$this->_applicants = $res;
 
-			$limit = $session->get('limitstart');
+            if (empty($current_fnum)) {
+                $limit = $session->get('limit');
 
-			$limitStart = $session->get('limit');
-			if ($limitStart > 0) {
-				$query .= " limit $limit, $limitStart ";
-			}
+                $limitStart = $session->get('limitstart');
+                if ($limitStart > 0) {
+                    $query .= " limit $limitStart, $limit ";
+                }
+            }
 
 			$dbo->setQuery($query);
 			return $dbo->loadAssocList();
@@ -2032,7 +2034,7 @@ if (JFactory::getUser()->id == 63)
 		try {
 		$this->_db->setQuery($query);
 		return $this->_db->loadAssocList();
-		
+
 		} catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -2156,7 +2158,7 @@ if (JFactory::getUser()->id == 63)
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
 	}
-	
+
 	public function delevaluation($id) {
       	try {
 
@@ -2168,7 +2170,7 @@ if (JFactory::getUser()->id == 63)
             JLog::add('Error in model/evaluation at query: '.$query, JLog::ERROR, 'com_emundus');
         }
 	}
-	
+
 	function getEvaluationById($id) {
         try {
 	        $query = 'SELECT * FROM #__emundus_evaluations ee WHERE ee.id = ' . $id;
@@ -2227,12 +2229,12 @@ if (JFactory::getUser()->id == 63)
 
 		    // The highest possible value of the evaluation criteria is hidden in the comment.
 		    $max = json_decode($element->params)->comment;
-			
+
 			// Make an array containing all element names brought to 10.
 			$return[$element->label] = ($value/$max)*10;
 
 	    }
-	    
+
 	    return $return;
     }
 
