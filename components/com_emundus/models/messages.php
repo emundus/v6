@@ -1409,19 +1409,62 @@ class EmundusModelMessages extends JModelList {
 
             // Files gotten from candidate files, requires attachment read rights.
             if (EmundusHelperAccess::asAccessAction(4, 'r') && !empty($raw_data['attachments']['candidate_file'])) {
-                if (!empty($raw_data['attachments']['candidate_file'])) {
-                    foreach ($raw_data['attachments']['candidate_file'] as $candidate_file) {
-                        $filename = $this->get_upload($fnum, $candidate_file);
-                        if ($filename != false) {
+                foreach ($raw_data['attachments']['candidate_file'] as $candidate_file) {
+                    $filename = $this->get_upload($fnum, $candidate_file);
+                    if ($filename != false) {
 
-                            // Build the path to the file we are searching for on the disk.
-                            $path = EMUNDUS_PATH_ABS.$fnum_info['applicant_id'].DS.$filename;
+                        // Build the path to the file we are searching for on the disk.
+                        $path = EMUNDUS_PATH_ABS.$fnum_info['applicant_id'].DS.$filename;
+                        if (file_exists($path)) {
+                            $toAttach[] = $path;
+                        }
+                    }
+                }
+            }
 
-                            if (file_exists($path)) {
-                                $toAttach[] = $path;
+            // Files generated using the Letters system. Requires attachment creation and doc generation rights.
+            if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($raw_data['attachments']['setup_letters'])) {
+
+                foreach($raw_data['attachments']['setup_letters'] as $setup_letter) {
+                    $letters = $_meval->getLetterTemplateForFnum($fnum, [$setup_letter]);
+
+                    if(!empty($letters)) {
+                        foreach($letters as $key => $email_tmpl) {
+                            // generate each letter for each fnum + $email_tmpl
+                        }
+                    } else {
+                        // get letter info from $setup_letter --> using $m_decision->getLettersTemplateByID
+                        $_letters = $_meval->getLetterTemplateForFnum($fnum, [$setup_letter], 'without_status');
+                        foreach($_letters as $key => $doc_tmpl) {
+                            switch ($doc_tmpl->template_type) {
+                                case '1':
+                                    /// static file --> just get its path from disk
+                                    if (file_exists(JPATH_BASE.$doc_tmpl->file)) {
+                                        $toAttach[] = JPATH_BASE.$doc_tmpl->file;
+                                    }
+                                    break;
+
+                                case '2':
+                                    /// generate pdf from html data
+                                    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
+                                    $path = generateLetterFromHtml($doc_tmpl, $fnum, $fnum_info['applicant_id'], $fnum_info['training']);
+                                    $toAttach[] = $path;
+                                    break;
+
+                                case '3':
+                                    /// generate docx document
+                                    $path = $m_messages->generateLetterDoc($doc_tmpl, $fnum);
+                                    $toAttach[] = $path;
+                                    break;
+
+                                case '4':
+                                    /// generate xlsx document --> not yet now
+                                    break;
+
+                                default:
+                                    break;
                             }
                         }
-
                     }
                 }
             }

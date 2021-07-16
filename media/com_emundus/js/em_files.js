@@ -5003,7 +5003,7 @@ $(document).ready(function() {
                                                     $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>');
                                                 }
 
-                                            }, error: function (jqXHR) {
+                                            }, error: function (jqXHR, textStatus) {
                                                 if (textStatus == 'timeout') {
                                                     $('#em-modal-sending-emails').css('display', 'none');
 
