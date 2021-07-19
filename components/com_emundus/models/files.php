@@ -2373,7 +2373,7 @@ class EmundusModelFiles extends JModelLegacy
                             $db->setQuery($join_query);
 
                             try {
-                                $join_table = $db->loadObject();
+                                $join_table = $db->loadResult();
 
                                 $join_val_column = !empty($element_attribs->join_val_column_concat)
                                     ? 'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')'
@@ -2473,7 +2473,7 @@ class EmundusModelFiles extends JModelLegacy
                             $db->setQuery($join_query);
 
                             try {
-                                $join_table = $db->loadObject();
+                                $join_table = $db->loadResult();
 
                                 $join_val_column = !empty($element_attribs->join_val_column_concat) ?
                                     'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':
