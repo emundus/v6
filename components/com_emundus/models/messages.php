@@ -1423,38 +1423,29 @@ class EmundusModelMessages extends JModelList {
             }
 
             // Files generated using the Letters system. Requires attachment creation and doc generation rights.
-            $email_mapping = [];
             if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($raw_data['attachments']['setup_letters'])) {
-
                 foreach($raw_data['attachments']['setup_letters'] as $setup_letter) {
                     $letters = $_meval->getLetterTemplateForFnum($fnum, [$setup_letter]);
-
-                    $email_mapping[] = reset($letters)->email_id;
-
+                    $email_mapping = reset($letters)->email_id;
                     if(!empty($letters)) {
                         foreach($letters as $key => $email_tmpl) {
                             // generate each letter for each fnum + $setup_letter
-                            $res = $_meval->generateLetters($fnum, [$setup_letter], 0,0 ,0);
-
-                            $res_status = json_decode($res)->status;
-                            $res_data = reset(json_decode($res)->files);
-
-                            $path = EMUNDUS_PATH_ABS.$fnum_info['applicant_id'].DS.$res_data->filename;
-
-                            $toAttach[] = $path;
+                            if($email_mapping === $raw_data['template']) {
+                                $res = $_meval->generateLetters($fnum, [$setup_letter], 0,0 ,0);
+                                $res_status = json_decode($res)->status;
+                                $res_data = reset(json_decode($res)->files);
+                                $path = EMUNDUS_PATH_ABS.$fnum_info['applicant_id'].DS.$res_data->filename;
+                                $toAttach[] = $path;
+                            }
                         }
                     } else {
-
+                        // if no letter(s) found --> user can choose letter to generate on-the-fly
                     }
                 }
             }
 
-            $email_mapping = reset(array_unique($email_mapping));
-
-            if($email_mapping === $raw_data['template']) {
-                $mailer->addAttachment($toAttach);
-                $send = $mailer->Send();
-            }
+            $mailer->addAttachment($toAttach);
+            $send = $mailer->Send();
         }
 
         /////// $TEMPLATE is ∅ --> send instant message (just based on fnum)...Used case: send instant message

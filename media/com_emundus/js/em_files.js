@@ -4307,6 +4307,7 @@ $(document).ready(function() {
                             $('#email-candidat-panel-preview').append(
                                 '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
                                 '<label for="candidat-attachment-label">' + Joomla.JText._('ATTACHMENT_LETTER') + '</label>' +
+                                '<span class="glyphicon glyphicon-refresh" style="padding-left: 10px" onclick="reloadLetters()"></span>' +
                                 '<div id="candidat-letters"></div>' +
                                 '</div>'
                             );
@@ -4331,12 +4332,13 @@ $(document).ready(function() {
                             /// render attachment letters to candidat preview
                             letter_recap.forEach(letter => {
                                 $('#candidat-letters').append(
-                                    "<li>" +
+                                    "<li id='letter_" + letter.id + "'>" +
                                     "<a id='em_letter_preview' target='_blank' href='" + letter.dest + "'>" +
                                     "<span style='font-size: medium; padding: 10px 0px; color:" + color + "'>" +
                                     "<span class='glyphicon glyphicon-paperclip' style='padding-right: 10px;'></span>" + letter.value +
                                     "</span>" +
                                     "</a>" +
+                                    "<span class='glyphicon glyphicon-remove' style='padding-left: 5px; color:red; font-weight: bold' id='" + letter.id + "' onclick='removeLetter(this)'></span>"+
                                     "</li>"
                                 );
                             })
@@ -4948,8 +4950,6 @@ $(document).ready(function() {
 
                 data.attachments = attachments;
 
-                // console.log(data.tag_list);
-
                 $.ajax({
                     type: 'POST',
                     url: 'index.php?option=com_emundus&controller=messages&task=previewemail',
@@ -4974,8 +4974,10 @@ $(document).ready(function() {
                                     $('#em-email-messages').empty();
                                     $('#em-modal-sending-emails').css('display', 'block');
 
-                                    /// if user want to send customized email --> sending mode = 1 or 2
-                                    /// if no action tag(s) is selected --> tag_list is not ∅
+                                    // reuse the function controllers/messages/applicantemail
+
+                                    // if user want to send customized email --> sending mode = 1 or 2
+                                    // if no action tag(s) is selected --> tag_list is not ∅
                                     if((data.sending_mode == '1' || data.sending_mode == '2') && (data.tag_list != null)) {
                                         $.ajax({
                                             type: 'post',
@@ -6171,4 +6173,16 @@ function componentToHex(c) {
 
 function rgbToHex(r, g, b) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+// remove attached letter from front
+function removeLetter(letter) {
+    console.log(letter);
+}
+
+// reload all letters if user delete something ....
+function reloadLetters() {
+    $('#candidat-letters').empty();
+
+    // reload all letters --> using ajax to render just div "candidat-letters"
 }
