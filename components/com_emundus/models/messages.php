@@ -1290,7 +1290,7 @@ class EmundusModelMessages extends JModelList {
         }
     }
 
-    public function sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data=null, $custom_attachments = []) {
+    public function sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $data) {
         $logs = "";
         $jinput = JFactory::getApplication()->input;
 
@@ -1359,8 +1359,8 @@ class EmundusModelMessages extends JModelList {
         /// END OF GLOBAL CONFIG
 
         /////// $raw_data --> not ∅ (send customized message)
-        if(!is_null($raw_data)) {
-            $template = $m_emails->getEmailById($raw_data['template']);
+        if($data['mode'] == 'custom') {
+            $template = $m_emails->getEmailById($data['template']);
 
             if (empty($template) || empty($template->Template)) {
                 $db = JFactory::getDbo();
@@ -1374,8 +1374,8 @@ class EmundusModelMessages extends JModelList {
                 $template->Template = $db->loadResult();
             }
 
-            $body = $m_emails->setTagsFabrik($raw_data['message'], [$fnum->fnum]);
-            $subject = $m_emails->setTagsFabrik($raw_data['mail_subject'], [$fnum->fnum]);
+            $body = $m_emails->setTagsFabrik($data['message'], [$fnum->fnum]);
+            $subject = $m_emails->setTagsFabrik($data['mail_subject'], [$fnum->fnum]);
 
             // Tags are replaced with their corresponding values using the PHP preg_replace function.
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
@@ -1388,19 +1388,19 @@ class EmundusModelMessages extends JModelList {
             $mailer->Encoding = 'base64';
             $mailer->setBody($body);
 
-            if (!empty($raw_data['cc'])) {
-                $mailer->addCc($raw_data['cc']);
+            if (!empty($data['cc'])) {
+                $mailer->addCc($data['cc']);
             }
 
-            if (!empty($raw_data['bcc'])) {
-                $mailer->addBcc($raw_data['bcc']);
+            if (!empty($data['bcc'])) {
+                $mailer->addBcc($data['bcc']);
             }
 
             $toAttach = [];
 
             // attach uploaded file(s) if they exist
-            if (!empty($raw_data['attachments']['upload'])) {
-                foreach ($raw_data['attachments']['upload'] as $upload) {
+            if (!empty($data['attachments']['upload'])) {
+                foreach ($data['attachments']['upload'] as $upload) {
                     if (file_exists(JPATH_BASE.DS.$upload)) {
                         $toAttach[] = JPATH_BASE.DS.$upload;
                     }
@@ -1408,8 +1408,8 @@ class EmundusModelMessages extends JModelList {
             }
 
             // Files gotten from candidate files, requires attachment read rights.
-            if (EmundusHelperAccess::asAccessAction(4, 'r') && !empty($raw_data['attachments']['candidate_file'])) {
-                foreach ($raw_data['attachments']['candidate_file'] as $candidate_file) {
+            if (EmundusHelperAccess::asAccessAction(4, 'r') && !empty($data['attachments']['candidate_file'])) {
+                foreach ($data['attachments']['candidate_file'] as $candidate_file) {
                     $filename = $this->get_upload($fnum, $candidate_file);
                     if ($filename != false) {
 
@@ -1423,14 +1423,14 @@ class EmundusModelMessages extends JModelList {
             }
 
             // Files generated using the Letters system. Requires attachment creation and doc generation rights.
-            if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($raw_data['attachments']['setup_letters'])) {
-                foreach($raw_data['attachments']['setup_letters'] as $setup_letter) {
+            if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($data['attachments']['setup_letters'])) {
+                foreach($data['attachments']['setup_letters'] as $setup_letter) {
                     $letters = $_meval->getLetterTemplateForFnum($fnum, [$setup_letter]);
                     $email_mapping = reset($letters)->email_id;
                     if(!empty($letters)) {
                         foreach($letters as $key => $email_tmpl) {
                             // generate each letter for each fnum + $setup_letter
-                            if($email_mapping === $raw_data['template']) {
+                            if($email_mapping === $data['template']) {
                                 $res = $_meval->generateLetters($fnum, [$setup_letter], 0,0 ,0);
                                 $res_status = json_decode($res)->status;
                                 $res_data = reset(json_decode($res)->files);
@@ -1452,7 +1452,6 @@ class EmundusModelMessages extends JModelList {
         else {
             /// get message recap by fnum --> reuse the function models/messages.php/getMessageRecapByFnum($fnum)
             $message = $m_messages->getMessageRecapByFnum($fnum);
-
             $email_recap = $message['message_recap'];                   /// length = 1
             $letter_recap = $message['attached_letter'];                /// length >= 1
 
@@ -1483,15 +1482,15 @@ class EmundusModelMessages extends JModelList {
                     /// get attachment letters by fnum
                     $file_path = [];
 
-                    if(count($custom_attachments) > 0) {
-                        if (count($custom_attachments) == count($letter_recap)) {
+                    if(count($data['attachments']) > 0) {
+                        if (count($data[ 'attachments']) == count($letter_recap)) {
                             foreach ($attachment_ids as $key => $value) {
                                 $attached_letters = $_meval->getFilesByAttachmentFnums($value, [$fnum]);
                                 $file_path[] = EMUNDUS_PATH_ABS . $attached_letters[0]->user_id . DS . $attached_letters[0]->filename;
                             }
                         } else {
                             // get exactly the path to selected letter
-                            foreach ($custom_attachments as $key => $value) {
+                            foreach ($data['attachments'] as $key => $value) {
                                 $custom_file = $m_files->getAttachmentsById([$value]);
                                 $file_path[] = EMUNDUS_PATH_ABS . $custom_file[0]['user_id'] . DS . $custom_file[0]['filename'];
                             }
@@ -1503,8 +1502,6 @@ class EmundusModelMessages extends JModelList {
 
             $send = $mailer->Send();
         }
-
-
 
         if ($send !== true) {
             $logs .= '<div class="alert alert-dismissable alert-danger">' . JText::_('EMAIL_NOT_SENT') . ' : ' . $candidat_email . ' ' . $send . '</div>';
