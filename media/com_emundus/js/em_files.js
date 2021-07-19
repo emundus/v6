@@ -4218,7 +4218,6 @@ $(document).ready(function() {
 
     $(document).on('click', '[id^=candidat_]', function(e){
         let fnum = $(this).attr('id').split('candidat_')[1];
-        console.log($(this).attr('id'));
 
         $('#em-modal-actions').modal({backdrop:true,keyboard:true},'toggle');
         $('.modal-title').empty();
@@ -4307,7 +4306,7 @@ $(document).ready(function() {
                             $('#email-candidat-panel-preview').append(
                                 '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
                                 '<label for="candidat-attachment-label">' + Joomla.JText._('ATTACHMENT_LETTER') + '</label>' +
-                                '<span class="glyphicon glyphicon-refresh" style="padding-left: 10px" onclick="reloadLetters()"></span>' +
+                                '<span class="glyphicon glyphicon-refresh" style="padding-left: 10px" onclick="reloadLetters(this)" id="' + fnum + '"></span>' +
                                 '<div id="candidat-letters"></div>' +
                                 '</div>'
                             );
@@ -6181,8 +6180,43 @@ function removeLetter(letter) {
 }
 
 // reload all letters if user delete something ....
-function reloadLetters() {
+function reloadLetters(fnum) {
     $('#candidat-letters').empty();
 
-    // reload all letters --> using ajax to render just div "candidat-letters"
+    $('#candidat-letters').prepend('<div id="reloading-letters"><img src="'+loadingLine+'" alt="loading"/></div>');
+    $('#reloading-letters').show();
+
+    $.ajax({
+        type: 'post',
+        url: 'index.php?option=com_emundus&controller=messages&task=getrecapbyfnum',
+        dataType: 'JSON',
+        data: {fnum: fnum.id.toString()},
+        success: function (result) {
+            $.ajax({
+                type: 'post',
+                url: 'index.php?option=com_emundus&controller=messages&task=getmessagerecapbyfnum',
+                dataType: 'JSON',
+                data: {fnum: fnum.id.toString()},
+                success: function (data) {
+                    $('#reloading-letters').hide();
+                    let email_recap = data.email_recap.message_recap;
+                    let letter_recap = data.email_recap.attached_letter;
+                    let color = result.color;
+
+                    letter_recap.forEach(letter => {
+                        $('#candidat-letters').append(
+                            "<li id='letter_" + letter.id + "'>" +
+                            "<a id='em_letter_preview' target='_blank' href='" + letter.dest + "'>" +
+                            "<span style='font-size: medium; padding: 10px 0px; color:" + color + "'>" +
+                            "<span class='glyphicon glyphicon-paperclip' style='padding-right: 10px;'></span>" + letter.value +
+                            "</span>" +
+                            "</a>" +
+                            "<span class='glyphicon glyphicon-remove' style='padding-left: 5px; color:red; font-weight: bold' id='" + letter.id + "' onclick='removeLetter(this)'></span>"+
+                            "</li>"
+                        );
+                    })
+                }
+            })
+        }
+    })
 }
