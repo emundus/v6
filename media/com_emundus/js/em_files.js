@@ -4305,8 +4305,8 @@ $(document).ready(function() {
                             // attachment letters
                             $('#email-candidat-panel-preview').append(
                                 '<div id="email-candidat-panel-preview" class="email___candidat_panel_item">' +
-                                '<label for="candidat-attachment-label">' + Joomla.JText._('ATTACHMENT_LETTER') + '</label>' +
-                                '<span class="glyphicon glyphicon-refresh" style="padding-left: 10px" onclick="reloadLetters(this)" id="' + fnum + '"></span>' +
+                                '<label for="candidat-attachment-label" style="cursor:default;">' + Joomla.JText._('ATTACHMENT_LETTER') + '</label>' +
+                                '<span class="glyphicon glyphicon-refresh" style="padding-left: 10px; cursor: pointer" onclick="reloadLetters(this)" id="' + fnum + '"></span>' +
                                 '<div id="candidat-letters"></div>' +
                                 '</div>'
                             );
@@ -4337,7 +4337,7 @@ $(document).ready(function() {
                                     "<span class='glyphicon glyphicon-paperclip' style='padding-right: 10px;'></span>" + letter.value +
                                     "</span>" +
                                     "</a>" +
-                                    "<span class='glyphicon glyphicon-remove' style='padding-left: 5px; color:red; font-weight: bold' id='" + letter.id + "' onclick='removeLetter(this)'></span>"+
+                                    "<span class='glyphicon glyphicon-remove' style='padding-left: 5px; color:red; font-weight: bold; cursor: pointer' id='" + letter.id + "' onclick='removeLetter(this)'></span>"+
                                     "</li>"
                                 );
                             })
@@ -6176,7 +6176,7 @@ function rgbToHex(r, g, b) {
 
 // remove attached letter from front
 function removeLetter(letter) {
-    console.log(letter);
+    $('#letter_' + letter.id).empty();
 }
 
 // reload all letters if user delete something ....
