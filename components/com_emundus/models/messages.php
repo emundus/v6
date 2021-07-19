@@ -1290,7 +1290,7 @@ class EmundusModelMessages extends JModelList {
         }
     }
 
-    public function sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data=null) {
+    public function sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data=null, $custom_attachments = []) {
         $logs = "";
         $jinput = JFactory::getApplication()->input;
 
@@ -1482,16 +1482,26 @@ class EmundusModelMessages extends JModelList {
 
                     /// get attachment letters by fnum
                     $file_path = [];
-                    foreach ($attachment_ids as $key => $value) {
-                        $attached_letters = $_meval->getFilesByAttachmentFnums($value, [$fnum]);
-                        $file_path[] = EMUNDUS_PATH_ABS . $attached_letters[0]->user_id . DS . $attached_letters[0]->filename;
-                    }
 
-                    $mailer->addAttachment($file_path);
+                    if(count($custom_attachments) > 0) {
+                        if (count($custom_attachments) == count($letter_recap)) {
+                            foreach ($attachment_ids as $key => $value) {
+                                $attached_letters = $_meval->getFilesByAttachmentFnums($value, [$fnum]);
+                                $file_path[] = EMUNDUS_PATH_ABS . $attached_letters[0]->user_id . DS . $attached_letters[0]->filename;
+                            }
+                        } else {
+                            // get exactly the path to selected letter
+                            foreach ($custom_attachments as $key => $value) {
+                                $custom_file = $m_files->getAttachmentsById([$value]);
+                                $file_path[] = EMUNDUS_PATH_ABS . $custom_file[0]['user_id'] . DS . $custom_file[0]['filename'];
+                            }
+                        }
+                        $mailer->addAttachment($file_path);
+                    }
                 }
-                $send = $mailer->Send();
-                //return array('sending_status' => $send, 'log_message' => $logs, 'message_id' => $email_recap->id);
             }
+
+            $send = $mailer->Send();
         }
 
 

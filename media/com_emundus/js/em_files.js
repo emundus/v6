@@ -4352,14 +4352,27 @@ $(document).ready(function() {
                         /// send email
                         $('#send-email').on('click', function(e) {
                             let tmpl = email_recap;
-                            console.log(tmpl);
+
+                            // when user send an email from quick message --> he/she also can select the letter
+                            let sending_letters = [];
+
+                            $('li[id^=letter_]').each(function() {
+                                let id = $(this).attr('id').split('letter_')[1];
+                                sending_letters.push(id);
+                            })
+
+                            let data = {
+                              fnum: fnum,
+                              letters: sending_letters,
+                            };
+
                             $.ajax({
                                 type: 'POST',
-                                url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
+                                url: 'index.php?option=com_emundus&controller=messages&task=sendemailtoapplicant',
                                 dataType: 'JSON',
-                                data: { fnum: fnum },
+                                data: { data: data },
                                 success: function(result) {
-                                    /// never success ???
+
                                 }, error: function(jqXHR, textStatus) {
                                     $.ajax({
                                         type: 'POST',
@@ -4980,7 +4993,7 @@ $(document).ready(function() {
                                     if((data.sending_mode == '1' || data.sending_mode == '2') && (data.tag_list != null)) {
                                         $.ajax({
                                             type: 'post',
-                                            url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
+                                            url: 'index.php?option=com_emundus&controller=messages&task=sendemailtoapplicant',
                                             dataType: 'json',
                                             data: {data: data},
                                             success: function (value) {
@@ -6176,7 +6189,7 @@ function rgbToHex(r, g, b) {
 
 // remove attached letter from front
 function removeLetter(letter) {
-    $('#letter_' + letter.id).empty();
+    $('#letter_' + letter.id).remove();
 }
 
 // reload all letters if user delete something ....

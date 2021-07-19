@@ -1573,90 +1573,92 @@ class EmundusControllerMessages extends JControllerLegacy {
     }
 
     // send email by action tags --> params :: [fnums], [tags], sendingMode
-    public function sendemailtocandidat() {
+    public function sendemailtoapplicant() {
         $jinput = JFactory::getApplication()->input;
 
-        $raw_data = $jinput->post->getRaw('data', null);
+        $data = $jinput->post->getRaw('data', null);
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        /// first :: get all fnums by selected tags with any tags
-
-        $fnums = explode(',', $raw_data['recipients']);          /// convert $fnums : string --> $fnums : array
-
+//        /// first :: get all fnums by selected tags with any tags
+//
+//        $fnums = explode(',', $raw_data['recipients']);          /// convert $fnums : string --> $fnums : array
+//
         $m_messages = $this->getModel('Messages');
         $m_files = $this->getModel('Files');
-
+//
         $user = JFactory::getUser();
         $config = JFactory::getConfig();
-
-        // set default mail sender info
+//
+//        // set default mail sender info
         $mail_from_sys = $config->get('mailfrom');
         $mail_from_sys_name = $config->get('fromname');
-
-        if($fnums == "all") {
-            $fnums = $m_files->getAllFnums();
-        }
-
-        /// destinations
-        $dest = [];
-
-        if(!is_null($raw_data)) {
-            if ($raw_data['sending_mode'] != '0') {
-                if (!empty($raw_data['tag_list']) and !is_null($raw_data['tag_list'])) {
-                    $query->clear()
-                        ->select('#__emundus_tag_assoc.fnum')
-                        ->from($db->quoteName('#__emundus_tag_assoc'))
-                        ->where($db->quoteName('#__emundus_tag_assoc.id_tag') . ' IN (' . $raw_data['tag_list'] . ')');
-
-                    $db->setQuery($query);
-
-                    $assoc_fnums = array_unique($db->loadColumn());
-
-                    if ($raw_data['sending_mode'] == 1) {
-                        /// sending mode = 1 --> send to fnums which having the selected action tags
-                        $fnums_intersect = array_intersect($assoc_fnums, $fnums);
-
-                        if (!empty($fnums_intersect) and !is_null($fnums_intersect)) {
-                            foreach ($fnums_intersect as $key => $fnum) {
-                                $send = $m_messages->sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
-
-                                if($send['status']) {
-                                    $dest[] = $fnum;
-                                }
-                            }
-                        }
-                    } else {
-                        /// sending mode = 2 --> send to fnums which NOT having the selected action tags
-                        $fnums_diff = array_diff($fnums, $assoc_fnums);
-
-                        foreach ($fnums_diff as $key => $fnum) {
-                            $send = $m_messages->sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
-
-                            if($send['status']) {
-                                $dest[] = $fnum;
-                            }
-                        }
-                    }
-                }
-                if(count($dest) > 0) {
-                    echo json_encode(['status' => true, 'dest' => $dest]);
-                } else {
-                    echo json_encode(['status' => false]);
-                }
-            }
-        } else {
+//
+//        if($fnums == "all") {
+//            $fnums = $m_files->getAllFnums();
+//        }
+//
+//        /// destinations
+//        $dest = [];
+//
+//        if(!is_null($raw_data)) {
+//            if ($raw_data['sending_mode'] != '0') {
+//                if (!empty($raw_data['tag_list']) and !is_null($raw_data['tag_list'])) {
+//                    $query->clear()
+//                        ->select('#__emundus_tag_assoc.fnum')
+//                        ->from($db->quoteName('#__emundus_tag_assoc'))
+//                        ->where($db->quoteName('#__emundus_tag_assoc.id_tag') . ' IN (' . $raw_data['tag_list'] . ')');
+//
+//                    $db->setQuery($query);
+//
+//                    $assoc_fnums = array_unique($db->loadColumn());
+//
+//                    if ($raw_data['sending_mode'] == 1) {
+//                        /// sending mode = 1 --> send to fnums which having the selected action tags
+//                        $fnums_intersect = array_intersect($assoc_fnums, $fnums);
+//
+//                        if (!empty($fnums_intersect) and !is_null($fnums_intersect)) {
+//                            foreach ($fnums_intersect as $key => $fnum) {
+//                                $send = $m_messages->sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
+//
+//                                if($send['status']) {
+//                                    $dest[] = $fnum;
+//                                }
+//                            }
+//                        }
+//                    } else {
+//                        /// sending mode = 2 --> send to fnums which NOT having the selected action tags
+//                        $fnums_diff = array_diff($fnums, $assoc_fnums);
+//
+//                        foreach ($fnums_diff as $key => $fnum) {
+//                            $send = $m_messages->sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $raw_data);
+//
+//                            if($send['status']) {
+//                                $dest[] = $fnum;
+//                            }
+//                        }
+//                    }
+//                }
+//                if(count($dest) > 0) {
+//                    echo json_encode(['status' => true, 'dest' => $dest]);
+//                } else {
+//                    echo json_encode(['status' => false]);
+//                }
+//            }
+//        } else {
             /// send instant message
-            $fnum = $jinput->post->getRaw('fnum', null);
-            $send = $m_messages->sendEmailToApplicant($fnum,$mail_from_sys, $mail_from_sys_name, null);
+            $fnum = $data['fnum'];
+            $attachments = $data['letters'];
+
+            $send = $m_messages->sendEmailToApplicant($fnum,$mail_from_sys, $mail_from_sys_name, null, $attachments);
 
             if($send['status']) {
                 echo json_encode(['status' => true, 'dest' => $fnum]);
             } else {
                 echo json_encode(['status' => false]);
             }
-        }
+//        }
         exit;
     }
 }
