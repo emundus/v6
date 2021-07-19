@@ -2526,8 +2526,24 @@ class EmundusModelFiles extends JModelLegacy
                             WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
 
                         $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
-                    }
-                    else {
+                    } elseif ($elt->element_plugin == 'yesno') {
+                        $select = 'REPLACE(`'.$elt->table_join . '`.`' . $elt->element_name.'`, "\t", "" )';
+                        if($raw == 1){
+                            $select = $select;
+                        } else{
+                            $if[] = 'IF(' . $select . '="0","' . JText::_('JNO') . '"';
+                            $endif .= ')';
+                            $if[] = 'IF(' . $select . '="1","' . JText::_('JYES') . '"';
+                            $endif .= ')';
+                            $select = implode(',', $if) . ',' . $select . $endif;
+                            $query .= ', ( SELECT GROUP_CONCAT('.$select.' SEPARATOR ", ") ';
+                        }
+
+                        $query .= ' FROM '.$elt->table_join.'
+                                    WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id
+                                  ) AS '. $elt->table_join.'___'.$elt->element_name;
+
+                    } else {
 
                         if ($methode == 2) {
                             $query .= ', ( SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ") ';
