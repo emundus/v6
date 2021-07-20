@@ -2679,7 +2679,7 @@ class EmundusModelFiles extends JModelLegacy
                 $db->setQuery($eval_query);
                 $eval = $db->loadResult();
 
-                if (!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id) && (!empty($current_user->fnums) && !empty(array_diff($fnums, array_keys($current_user->fnums)))) || (@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)) && $eval) {
+                if ((!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id) && EmundusHelperAccess::asAccessAction(5,  'c', JFactory::getUser()->id)) && (!empty($current_user->fnums) && !empty(array_diff($fnums, array_keys($current_user->fnums)))) || ((@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id))) && $eval) {
                     $query .= ' AND jos_emundus_evaluations.user = '.JFactory::getUser()->id;
                 }
 
