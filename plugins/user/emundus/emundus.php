@@ -292,7 +292,11 @@ class plgUserEmundus extends JPlugin
                 $db->execute();
 
                 $db->setQuery('UPDATE #__emundus_personal_detail SET last_name='.$db->quote(strtoupper($lastname)).', first_name='.$db->quote(ucfirst($firstname)).' WHERE user='.$user['id']);
-                $db->execute();
+                try {
+                    $db->execute();
+                } catch (Exception $e) {
+                    // catch any database errors.
+                }
 
                 $this->onUserLogin($user);
 

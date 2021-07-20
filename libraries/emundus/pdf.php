@@ -1033,6 +1033,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         $dt = new DateTime('NOW', new DateTimeZone('UTC'));
         // change the timezone of the object without changing it's time
         $dt->setTimezone(new DateTimeZone($offset));
+        $date_printed = JHTML::_('date', $dt->format('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2'));
 
         if (!$anonymize_data && in_array("aemail", $options)) {
             $htmldata .= '<tr class="birthday"><td>'.JText::_('EMAIL').' : '.@$item->email.'</td></tr>';
@@ -1051,7 +1052,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             $htmldata .= '<tr><td class="statut">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</td></tr>';
         }
         if (in_array("adoc-print", $options)) {
-            $htmldata .= '<tr class="sent"><td>'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</td></tr>';
+            $htmldata .= '<tr class="sent"><td>'.JText::_('DOCUMENT_PRINTED_ON').' : '.$date_printed.'</td></tr>';
         }
         if (in_array("status", $options)) {
             $status = $m_files->getStatusByFnums(explode(',', $fnum));
@@ -1124,6 +1125,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $dt = new DateTime('NOW', new DateTimeZone('UTC'));
                 // change the timezone of the object without changing it's time
                 $dt->setTimezone(new DateTimeZone($offset));
+                $date_printed = JHTML::_('date', $dt->format('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2'));
 
                 $htmldata .= '
                 
@@ -1136,7 +1138,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                             <tr><td class="name">'.@$item->label.' ('.@$item->cb_schoolyear.')</td></tr>
                             <tr><td class="nationality">'.JText::_('FNUM').' : '.$fnum.'</td></tr>
                             <tr><td class="statut">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</td></tr>
-                            <tr><td class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</td></tr>
+                            <tr><td class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$date_printed.'</td></tr>
                         
                         </table>
 
@@ -1392,6 +1394,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
         $dt = new DateTime('NOW', new DateTimeZone('UTC'));
         // change the timezone of the object without changing it's time
         $dt->setTimezone(new DateTimeZone($offset));
+        $date_printed = JHTML::_('date', $dt->format('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2'));
 
         if (!$anonymize_data && in_array("aemail", $options)) {
             $htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>';
@@ -1408,7 +1411,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
             $htmldata .= '<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>';
         }
         if (in_array("adoc-print", $options)) {
-            $htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>';
+            $htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$date_printed.'</div>';
         }
         if (in_array("status", $options)) {
             $status = $m_files->getStatusByFnums(explode(',', $fnum));

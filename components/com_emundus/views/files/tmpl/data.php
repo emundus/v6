@@ -90,8 +90,18 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 				<tbody>
 				<?php foreach ($this->datas as $key => $line):?>
 					<?php if ($key != 0): ?>
-						<tr>
+
+                        <?php foreach ($line as $k => $value) :?>
+                            <?php
+                                if($k == 'status') { ?>
+                                    <tr class="label-<?php echo($value->status_class); ?>">
+                                <?php }
+                            ?>
+
+                        <?php endforeach; ?>
+
 							<?php foreach ($line as $k => $value) :?>
+
 								<td <?php if ($k == 'check'&& $value->class != null) { echo 'class="'.$value->class.'"'; } ?>>
 									<div class="em-cell" >
 										<?php if ($k == 'check'): ?>
@@ -103,7 +113,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 												?>
 											</label>
 										<?php elseif ($k == 'status'):?>
-											<span class="label label-<?= $value->status_class; ?>" title="<?= $value->val; ?>"><?= $value->val; ?></span>
+											<span style="width: 100%" class="label label-<?= $value->status_class; ?>" title="<?= $value->val; ?>"><?= $value->val; ?></span>
 										<?php elseif ($k == 'fnum'):?>
 											<a href="#<?= $value->val; ?>|open" id="<?= $value->val; ?>" class="em_file_open">
 												<?php if (isset($value->photo) && !$anonymize_data) :?>

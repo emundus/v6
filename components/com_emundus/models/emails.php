@@ -465,8 +465,13 @@ class EmundusModelEmails extends JModelList {
                     if ($tag['tag'] == 'PHOTO') {
                         if (empty($result))
                             $result = 'media/com_emundus/images/icones/personal.png';
-                        else
-                            $result = EMUNDUS_PATH_REL.$user_id.'/tn_'.$result;
+                        else {
+                            if(file_exists(EMUNDUS_PATH_REL.$user_id.'/tn_'.$result)) {
+                                $result = EMUNDUS_PATH_REL.$user_id.'/tn_'.$result;
+                            } else {
+                                $result = EMUNDUS_PATH_REL.$user_id.'/'.$result;
+                            }
+                        }
                     }
                     $replacements[] = $result;
 
@@ -1210,7 +1215,7 @@ class EmundusModelEmails extends JModelList {
      */
     public function get_messages_to_from_user($user_id) {
 
-        $query = 'SELECT * FROM #__messages WHERE user_id_to ='.$user_id.' OR user_id_from ='.$user_id.' ORDER BY date_time desc';
+        $query = 'SELECT * FROM #__messages WHERE (user_id_to ='.$user_id.' OR user_id_from ='.$user_id.') AND folder_id <> 2 ORDER BY date_time desc';
 
         try {
 

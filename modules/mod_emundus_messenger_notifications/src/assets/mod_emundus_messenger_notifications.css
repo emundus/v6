@@ -1,0 +1,24 @@
+.blog-featuredhomepage{
+  display: none;
+}
+
+.g-grid{
+  width: 100%;
+}
+
+.notifications__counter{
+  position: absolute;
+  top: 20px;
+  right: 90px;
+  background: red;
+  padding: 10px;
+  border-radius: 50%;
+  width: 20px;
+  height: 21px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+}
+

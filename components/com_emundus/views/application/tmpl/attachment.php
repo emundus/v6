@@ -114,7 +114,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                 </div>
                             </div>
                         </div>
-          
+
                         <div class="em-collapse">
                             <div class="panel-heading fileCollapse">
                                 <div class="em-title-collapse">
@@ -187,7 +187,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                       <td>' . $checkbox . ' ' . $i . '</td>
                                       <td>'.$label.'</td>
                                       <td>' . date('l, d F Y H:i', strtotime($attachment->timedate)) . '</td>
-                                      <td>' . $attachment->description . '</td>
+                                      <td>' . ($attachment->applicant_description ?: $attachment->description) . '</td>
                                       <td>' . $attachment->year . '</td>
                                       <td>' . $validation . '</td>
                                   </tr>';

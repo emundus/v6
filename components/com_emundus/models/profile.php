@@ -222,7 +222,7 @@ class EmundusModelProfile extends JModelList {
         $query = $this->_db->getQuery(true);
 
         $query
-            ->select(['attachment.*', $this->_db->quoteName('profile.id', 'selected'), $this->_db->quoteName('profile.mandatory'), $this->_db->quoteName('profile.bank_needed')])
+            ->select(['attachment.*', $this->_db->quoteName('profile.id', 'selected'), $this->_db->quoteName('profile.mandatory'), $this->_db->quoteName('profile.bank_needed'), $this->_db->quoteName('profile.displayed')])
             ->from($this->_db->quoteName('#__emundus_setup_attachments', 'attachment'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles','profile').' ON '.$this->_db->quoteName('profile.attachment_id').' = '.$this->_db->quoteName('attachment.id') . ' AND ' . $this->_db->quoteName('profile.profile_id').' = '. (int)$p)
             ->where($this->_db->quoteName('attachment.published') . ' = 1')
@@ -417,6 +417,26 @@ class EmundusModelProfile extends JModelList {
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
             JError::raiseError(500, $e->getMessage());
+        }
+    }
+
+    function getProfileByStep($fnum,$step){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        try {
+            $query->select('esp.id AS profile')
+                ->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
+                ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('cc.applicant_id'))
+                ->leftJoin($this->_db->quoteName('jos_emundus_campaign_workflow', 'ecw') . ' ON ' . $this->_db->quoteName('ecw.campaign') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
+                ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp') . ' ON ' . $this->_db->quoteName('esp.id') . ' = ' . $this->_db->quoteName('ecw.profile'))
+                ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $fnum)
+                ->andWhere($this->_db->quoteName('ecw.step') . ' = ' . $step);
+
+            $this->_db->setQuery( $query );
+            return $this->_db->loadResult();
+        } catch(Exception $e) {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 
