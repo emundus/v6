@@ -440,6 +440,10 @@ input[type="text"],
   margin: unset;
 }
 
+.gantry.view-list #g-container-main .g-container .page-header {
+  margin-top: 50px;
+}
+
 .view-list #g-container-main {
   width: calc(100% - 75px) !important;
 }
@@ -870,6 +874,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 .view-programme {
 
+  /* DOCUMENTS PREALABLES */
+  .em-infoComp li i {
+    margin-left: 10px;
+    color: $base-primary-color;
+  }
+
   #g-sidebar{
     margin-top: 50px;
     width: max-content !important;
@@ -1023,12 +1033,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     margin-top: 50px;
   }
 
-  /* DOCUMENTS PREALABLES */
-  .em-infoComp li i {
-    margin-left: 10px;
-    color: $base-primary-color;
-  }
-
   /* MODULE EMUNDUS CAMPAIGN */
   .campaigns-list .below-content {
 
@@ -1159,7 +1163,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .below-content{
-    width: 100%;
+    width: 30%;
   }
 
   .campaingapply{
@@ -1228,8 +1232,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 /* LISTES  */
 
 .nav .dropdown-toggle .caret {
-  border-top-color: $base-secondary-color;
-  border-bottom-color: $base-secondary-color;
+  border-top-color: $dark-blue;
+  border-bottom-color: $dark-blue;
 }
 
 /* DOCUMENTS OBLIGATOIRES */
@@ -2232,6 +2236,19 @@ textarea:hover {
   margin: 20px;
 }
 
+.messenger__notifications_counter{
+  background: red;
+  padding: 10px;
+  border-radius: 50%;
+  width: 20px;
+  height: 21px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+}
+
 .alert {
 
   .close,
@@ -2263,7 +2280,7 @@ textarea:hover {
     align-items: center;
     flex-direction: row-reverse;
     justify-content: space-between;
-    margin: 0 0 10px;
+    margin: 100px 0 0 0;
   }
 }
 
@@ -2469,7 +2486,7 @@ ul.unstyled.em-linkForgot li a {
 /************************ GESTIONNAIRE - COORDINATOR *********************/
 
 .files-board .dropdown-menu > li > a:focus, .files-board .dropdown-submenu:hover > a, .files-board .dropdown-submenu:focus > a {
-  background: $base-secondary-color !important;
+  background: $dark-blue !important;
 }
 
 .edit-comment-container button.edit-comment {
@@ -2868,6 +2885,10 @@ div#em-appli-block {
 
 
 .view-list {
+
+  .fabrik___heading  a.fabrikorder, .fabrik___heading  a.fabrikorder-desc {
+     color: $dark-blue;
+  }
   .filtertable {
     thead tr.fabrik___heading {
 
@@ -3227,11 +3248,32 @@ div#em-appli-block {
 }
 
 /******************************* RESPONSIVE ***********************************/
+/* LAPTOP  MENU TCHO0Z */
+@media screen and (max-width: 1366px),
+screen and (max-height: 769px) {
+  .gantry #g-navigation .g-main-nav#em_user_menu .g-toplevel.tchooz-vertical-toplevel > li.g-menu-item.g-standard.tchooz-vertical-item:nth-child(3) {
+    margin-top: -40px !important;
+  }
+
+  .gantry #g-navigation .g-main-nav .tchooz-vertical-toplevel > li.g-menu-item {
+    margin: 3px 10px !important;
+  }
+
+  hr#menu_separator {
+    margin: 15px 0;
+  }
+}
 
 /* MOBILE */
 @media all and (max-width: 479px) {
 
-  /* FOOTER */
+  .view-programme {
+    #documents .single-campaign .below-content {
+      width: 100%;
+    }
+  }
+
+    /* FOOTER */
 
   .footer-rgpd {
     align-items: center;
@@ -3254,7 +3296,7 @@ div#em-appli-block {
   }
 
   #g-container-main .g-container {
-    padding: 0px 35px;
+    padding: 0px 15px;
   }
 
   #g-navigation .g-container #header-c {

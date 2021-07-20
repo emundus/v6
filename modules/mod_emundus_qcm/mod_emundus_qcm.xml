@@ -59,6 +59,13 @@
 							default="-1"
 							label="MOD_EM_QCM_POINTS_MINIMAL"
 							description="MOD_EM_QCM_POINTS_MINIMAL_DESC"/>
+
+					<field
+							name="mod_em_qcm_points_maximal"
+							type="text"
+							default="1"
+							label="MOD_EM_QCM_POINTS_MAXIMAL"
+							description="MOD_EM_QCM_POINTS_MAXIMAL_DESC"/>
 				</fieldset>
 			</fields>
 		</config>

@@ -1,3 +1,12 @@
+@media all and (max-width: 479px) {
+    #app .messages__vue .vm--container.scrollable .vm--modal {
+        width: 94% !important;
+        left: 10px !important;
+        overflow: auto;
+        top: 55px !important;
+    }
+}
+
 hr{
     margin: 0;
 }
@@ -73,6 +82,8 @@ hr{
 
 .messages__input_text{
     width: 90% !important;
+    resize: none;
+    height: 45px;
 }
 
 .messages__bottom-input input:focus,.messages__bottom-input input:hover{
