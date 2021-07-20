@@ -2269,7 +2269,7 @@ class EmundusHelperFiles
 	                $str = $eval['label'].' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.JFactory::getUser($eval['jos_emundus_evaluations___user_raw'])->name;
                 }
 
-                $data[$eval['fnum']][$eval['jos_emundus_evaluations___user_raw']] = $str;
+                $data[$eval['fnum']][$eval['jos_emundus_evaluations___user']] = $str;
             }
         }
         return $data;
