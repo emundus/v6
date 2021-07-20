@@ -46,7 +46,7 @@ class EmundusModelEvaluation extends JModelList {
 		// Get current menu parameters
 		$menu = @JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
-
+        $current_user = JFactory::getUser();
 		/*
 		** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
 		*/
@@ -388,7 +388,7 @@ class EmundusModelEvaluation extends JModelList {
             $elements_id = array();
 			$filt_params = $session->get('filt_params');
 
-            if (is_array(@$filt_params['programme']) && $filt_params['programme'][0] != '%') {
+            if (is_array(@$filt_params['programme']) && $filt_params['programme'][0] != '%' && !empty(array_filter($filt_params['programme']))) {
                 foreach ($filt_params['programme'] as $value) {
                     if ($value == $programme_code) {
                         $groups = $this->getGroupsEvalByProgramme($value);
