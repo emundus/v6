@@ -1424,8 +1424,21 @@ class EmundusModelMessages extends JModelList {
 
             // Files generated using the Letters system. Requires attachment creation and doc generation rights.
             if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($data['attachments']['setup_letters'])) {
+                /// get all evaluation info for this fnum
+                $query = $this->_db->getQuery(true);
+
+                $query->clear()
+                    ->select('#__emundus_setup_profiles.id')
+                    ->from($this->_db->quoteName('#__emundus_setup_profiles'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_users') . ' ON ' . $this->_db->quoteName('#__emundus_setup_profiles.id') . ' = ' . $this->_db->quoteName('#__emundus_users.profile'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_evaluations') . ' ON ' . $this->_db->quoteName('#__emundus_evaluations.user') . ' = ' . $this->_db->quoteName('#__emundus_users.user_id'))
+                    ->where($this->_db->quoteName('#__emundus_evaluations.fnum') . ' = ' . $fnum);
+
+                $this->_db->setQuery($query);
+
                 foreach($data['attachments']['setup_letters'] as $setup_letter) {
                     $letters = $_meval->getLetterTemplateForFnum($fnum, [$setup_letter]);
+
                     $email_mapping = reset($letters)->email_id;
                     if(!empty($letters)) {
                         foreach($letters as $key => $email_tmpl) {
@@ -1435,16 +1448,18 @@ class EmundusModelMessages extends JModelList {
                                 $res_status = json_decode($res)->status;
                                 $res_data = reset(json_decode($res)->files);
                                 $path = EMUNDUS_PATH_ABS.$fnum_info['applicant_id'].DS.$res_data->filename;
-                                $toAttach[] = $path;
                             }
                         }
                     } else {
-                        // if no letter(s) found --> user can choose letter to generate on-the-fly
+                        var_dump('manually add --> generate from selected templates');die;
                     }
+                    $toAttach[] = $path;
                 }
             }
 
             $mailer->addAttachment($toAttach);
+            die;
+
             $send = $mailer->Send();
         }
 

@@ -2389,7 +2389,22 @@ if (JFactory::getUser()->id == 63)
                     ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
 
                 $this->_db->setQuery($query);
-                return $this->_db->loadObjectList();
+                $letters = $this->_db->loadObjectList();
+
+                if(empty($letters)) {
+                    $query->clear()
+                        ->select('jesl.*')
+                        ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
+                        ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+                        ->where($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
+                        ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
+
+                    $this->_db->setQuery($query);
+                    $_letters = $this->_db->loadObjectList();
+                    return $_letters;
+                } else {
+                    return $letters;
+                }
             } catch(Exception $e) {
                 JLog::add('Cannot get letter template by single fnum : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                 return false;
