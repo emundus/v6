@@ -1445,20 +1445,28 @@ class EmundusModelMessages extends JModelList {
                     if (!empty($letters)) {
                         foreach ($letters as $key => $email_tmpl) {
                             if (!is_null($email_tmpl->evaluator)) {
-                                foreach ($evals as $index => $eval) {
-                                    if ($email_tmpl->evaluator == $eval) {
-                                        var_dump(' -- generate this letter with suffix being name of evaluator --' . $email_tmpl->evaluator . '---' .uniqid());
+                                if(!empty($evals)) {
+                                    foreach ($evals as $index => $eval) {
+                                        if ($email_tmpl->evaluator == $eval) {
+                                            $res = $_meval->generateLetters($fnum, [$email_tmpl->attachment_id], 0, 0, 0, uniqid());
+                                        } else {
+                                            /// if email.evaluator !== eval --> happen?
+                                        }
                                     }
+                                } else {
+                                    $res = $_meval->generateLetters($fnum, [$email_tmpl->attachment_id], 0, 0, 0);
+                                    $res_status = json_decode($res)->status;
+                                    $res_data = reset(json_decode($res)->files);
+                                    $path = EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . DS . $res_data->filename;
                                 }
                             }
 
-                            // generate each letter for each fnum + $setup_letter
-                            if ($email_mapping === $data['template']) {
+                            /// if no evaluation available --> classic mode
+                            else {
                                 $res = $_meval->generateLetters($fnum, [$setup_letter], 0, 0, 0);
                                 $res_status = json_decode($res)->status;
                                 $res_data = reset(json_decode($res)->files);
                                 $path = EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . DS . $res_data->filename;
-                                var_dump($path);
                             }
                         }
                     } else {

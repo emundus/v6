@@ -2459,7 +2459,7 @@ if (JFactory::getUser()->id == 63)
     }
 
     /// generate letters
-    public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode) {
+    public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode, $suffixe=null) {
         $tmp_path = JPATH_BASE . DS . 'tmp' . DS;
 
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
@@ -2864,9 +2864,17 @@ if (JFactory::getUser()->id == 63)
                                 /// check if the filename is anonymized -- logically, we should avoid to generate many files which have the same contents, but different name --> bad performance
                                 $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                                 if (!$anonymize_data) {
-                                    $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".docx";
+                                    if($suffixe == null) {
+                                        $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".docx";
+                                    } else {
+                                        $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . $suffixe . '_' . ".docx";
+                                    }
                                 } else {
-                                    $filename = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".docx";
+                                    if($suffixe == null) {
+                                        $filename = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".docx";
+                                    } else {
+                                        $filename = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . $suffixe . '_' . ".docx";
+                                    }
                                 }
 
                                 $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
