@@ -301,6 +301,8 @@ if ($allowed_attachments !== true) {
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
     $(document).ready(function() {
+        $('#can-val .btn-success').attr('disabled', true);
+
         var $select_tag = $(document.getElementById('action-tags'));
         var selectize_tag = $select_tag[0].selectize;
         selectize_tag.clear();
@@ -437,6 +439,8 @@ if ($allowed_attachments !== true) {
         /// clear tags
         // $('#tags').val("");
 
+        $('#can-val .btn-success').attr('disabled', true);
+
         $('#sending-mode option:eq(1)').prop('selected', true);
         $('#sending-mode').trigger("change");
 
@@ -469,6 +473,7 @@ if ($allowed_attachments !== true) {
             data: { id : select.value },
             success: function(data) {
                 if(data.status) {
+                    $('#can-val .btn-success').attr('disabled', false);  /// lock "send email" button
                     // if (data.data.tags != null && data.data.tags != undefined) {
                     //     let tags = data.data.tags;
                     //     $('#sending-mode option:eq(1)').prop('selected', true);
