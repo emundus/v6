@@ -1441,16 +1441,16 @@ class EmundusModelMessages extends JModelList {
 
                     $letters = $_meval->getLetterTemplateForFnum($fnum, [$setup_letter]);
 
-                    $email_mapping = reset($letters)->email_id;
                     if (!empty($letters)) {
                         foreach ($letters as $key => $email_tmpl) {
                             if (!is_null($email_tmpl->evaluator)) {
                                 if(!empty($evals)) {
                                     foreach ($evals as $index => $eval) {
                                         if ($email_tmpl->evaluator == $eval) {
-                                            $res = $_meval->generateLetters($fnum, [$email_tmpl->attachment_id], 0, 0, 0, uniqid());
+                                            $_filename = explode('/',$email_tmpl->file)[count(explode('/',$email_tmpl->file))-1];
+                                            $res = $_meval->generateLetters($fnum, [$email_tmpl->attachment_id], 0, 0, 0, uniqid(). '___' . $_filename);
                                         } else {
-                                            /// if email.evaluator !== eval --> happen?
+                                            continue;
                                         }
                                     }
                                 } else {
@@ -1461,7 +1461,7 @@ class EmundusModelMessages extends JModelList {
                                 }
                             }
 
-                            /// if no evaluation available --> classic mode
+                            /// if no evaluation available --> classic mode like KIT
                             else {
                                 $res = $_meval->generateLetters($fnum, [$setup_letter], 0, 0, 0);
                                 $res_status = json_decode($res)->status;
@@ -1474,12 +1474,9 @@ class EmundusModelMessages extends JModelList {
                     }
                     $toAttach[] = $path;
                 }
-                die;
             }
 
             $mailer->addAttachment($toAttach);
-            die;
-
             $send = $mailer->Send();
         }
 
