@@ -1447,8 +1447,14 @@ class EmundusModelMessages extends JModelList {
                                 if(!empty($evals)) {
                                     foreach ($evals as $index => $eval) {
                                         if ($email_tmpl->evaluator == $eval) {
-                                            $_filename = explode('/',$email_tmpl->file)[count(explode('/',$email_tmpl->file))-1];
-                                            $res = $_meval->generateLetters($fnum, [$email_tmpl->attachment_id], 0, 0, 0, uniqid(). '___' . $_filename);
+//                                            $_filename = explode('/',$email_tmpl->file)[count(explode('/',$email_tmpl->file))-1];
+                                            $res = $_meval->generateLetters($fnum, [$email_tmpl->attachment_id], 0, 0, 0, uniqid());
+                                            $_files = json_decode($res)->files;
+                                            foreach($_files as $k => $f) {
+                                                $path = EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . DS . $f->filename;
+                                                $toAttach[] = $path;
+                                                break;
+                                            }
                                         } else {
                                             continue;
                                         }
@@ -1458,6 +1464,7 @@ class EmundusModelMessages extends JModelList {
                                     $res_status = json_decode($res)->status;
                                     $res_data = reset(json_decode($res)->files);
                                     $path = EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . DS . $res_data->filename;
+                                    $toAttach[] = $path;
                                 }
                             }
 
@@ -1467,12 +1474,13 @@ class EmundusModelMessages extends JModelList {
                                 $res_status = json_decode($res)->status;
                                 $res_data = reset(json_decode($res)->files);
                                 $path = EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . DS . $res_data->filename;
+                                $toAttach[] = $path;
                             }
                         }
                     } else {
                         var_dump('manually add --> generate from selected templates 🇻🇳🇻🇳🇻🇳'); die;
                     }
-                    $toAttach[] = $path;
+
                 }
             }
 
