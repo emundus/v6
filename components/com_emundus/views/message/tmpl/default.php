@@ -27,7 +27,8 @@ $m_messages = new EmundusModelMessages();
 $message_categories = $m_messages->getAllCategories();
 $message_templates = $m_messages->getAllMessages();
 $setup_attachments = $m_messages->getAttachments();
-$setup_letters = $m_messages->getLetters();
+//$setup_letters = $m_messages->getLetters();
+$setup_letters = $m_messages->getAllDocumentsLetters();                 // get all attachments being letter 👻
 
 $email_list = array();
 
@@ -232,7 +233,7 @@ if ($allowed_attachments !== true) {
                             <?php else: ?>
                                 <option value="%"> <?= JText::_('PLEASE_SELECT'); ?> </option>
                                 <?php foreach ($setup_letters as $letter): ?>
-                                    <option value="<?= $letter->id; ?>"> <?= $letter->title; ?></option>
+                                    <option value="<?= $letter->id; ?>"> <?= $letter->value; ?></option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </select>
