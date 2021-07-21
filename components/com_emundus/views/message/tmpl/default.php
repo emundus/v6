@@ -473,6 +473,7 @@ if ($allowed_attachments !== true) {
             data: { id : select.value },
             success: function(data) {
                 if(data.status) {
+                    $('#can-val').css('cursor', '');
                     $('#can-val .btn-success').attr('disabled', false);  /// lock "send email" button
                     // if (data.data.tags != null && data.data.tags != undefined) {
                     //     let tags = data.data.tags;
@@ -620,6 +621,8 @@ if ($allowed_attachments !== true) {
                                     '</span>' +
                             '</li>');
                     })
+                } else {
+                    $('#can-val').css('cursor', 'not-allowed');
                 }
 
                 //$.ajax({
