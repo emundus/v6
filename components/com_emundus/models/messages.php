@@ -1435,26 +1435,38 @@ class EmundusModelMessages extends JModelList {
                     ->where($this->_db->quoteName('#__emundus_evaluations.fnum') . ' = ' . $fnum);
 
                 $this->_db->setQuery($query);
+                $evals = $this->_db->loadColumn();
 
-                foreach($data['attachments']['setup_letters'] as $setup_letter) {
+                foreach ($data['attachments']['setup_letters'] as $setup_letter) {
+
                     $letters = $_meval->getLetterTemplateForFnum($fnum, [$setup_letter]);
 
                     $email_mapping = reset($letters)->email_id;
-                    if(!empty($letters)) {
-                        foreach($letters as $key => $email_tmpl) {
+                    if (!empty($letters)) {
+                        foreach ($letters as $key => $email_tmpl) {
+                            if (!is_null($email_tmpl->evaluator)) {
+                                foreach ($evals as $index => $eval) {
+                                    if ($email_tmpl->evaluator == $eval) {
+                                        var_dump(' -- generate this letter with suffix being name of evaluator --' . $email_tmpl->evaluator . '---' .uniqid());
+                                    }
+                                }
+                            }
+
                             // generate each letter for each fnum + $setup_letter
-                            if($email_mapping === $data['template']) {
-                                $res = $_meval->generateLetters($fnum, [$setup_letter], 0,0 ,0);
+                            if ($email_mapping === $data['template']) {
+                                $res = $_meval->generateLetters($fnum, [$setup_letter], 0, 0, 0);
                                 $res_status = json_decode($res)->status;
                                 $res_data = reset(json_decode($res)->files);
-                                $path = EMUNDUS_PATH_ABS.$fnum_info['applicant_id'].DS.$res_data->filename;
+                                $path = EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . DS . $res_data->filename;
+                                var_dump($path);
                             }
                         }
                     } else {
-                        var_dump('manually add --> generate from selected templates');die;
+                        var_dump('manually add --> generate from selected templates 🇻🇳🇻🇳🇻🇳'); die;
                     }
                     $toAttach[] = $path;
                 }
+                die;
             }
 
             $mailer->addAttachment($toAttach);
