@@ -2459,7 +2459,7 @@ if (JFactory::getUser()->id == 63)
     }
 
     /// generate letters
-    public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode, $suffixe=null) {
+    public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode, $eval_letter=null, $suffixe=null) {
         $tmp_path = JPATH_BASE . DS . 'tmp' . DS;
 
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
@@ -2493,7 +2493,9 @@ if (JFactory::getUser()->id == 63)
 
         /// a partir de $fnums + $templates --> generer les lettres qui correspondent
         foreach($fnum_Array as $key => $fnum) {
-            $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates); // return :: Array
+
+            is_null($eval_letter) ? $generated_letters = $_mEval->getLetterTemplateForFnum($fnum, $templates) : $generated_letters = [$eval_letter];
+
             $fnumInfo = $_mFile->getFnumsTagsInfos([$fnum]);
 
             if(empty($generated_letters) or empty($generated_letters)) {

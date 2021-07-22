@@ -1448,7 +1448,7 @@ class EmundusModelMessages extends JModelList {
                                     foreach ($evals as $index => $eval) {
                                         if ($email_tmpl->evaluator == $eval) {
 //                                            $_filename = explode('/',$email_tmpl->file)[count(explode('/',$email_tmpl->file))-1];
-                                            $res = $_meval->generateLetters($fnum, [$email_tmpl->attachment_id], 0, 0, 0, uniqid());
+                                            $res = $_meval->generateLetters($fnum, [$email_tmpl->attachment_id], 0, 0, 0, $email_tmpl, uniqid() . '_' . $email_tmpl->evaluator);
                                             $_files = json_decode($res)->files;
                                             foreach($_files as $k => $f) {
                                                 $path = EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . DS . $f->filename;
@@ -1478,7 +1478,7 @@ class EmundusModelMessages extends JModelList {
                             }
                         }
                     } else {
-                        var_dump('manually add --> generate from selected templates 🇻🇳🇻🇳🇻🇳'); die;
+                        // Envoyer l'email sans documents car aucun document attache avec cette campagne
                     }
 
                 }
