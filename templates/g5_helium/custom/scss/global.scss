@@ -563,6 +563,10 @@ input[type="text"],
   justify-content: center;
 }
 
+.page-header {
+  margin-top: 50px ;
+}
+
 /* FOOTER */
 
 .footer-rgpd {
@@ -3860,7 +3864,6 @@ screen and (max-height: 769px) {
     margin-left: 0 !important;
     margin-top: 20px !important;
   }
-
 
   .user-menu-phone a.profile-btn-phone::before {
     content: "\f007";
