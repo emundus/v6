@@ -1374,8 +1374,8 @@ class EmundusModelMessages extends JModelList {
                 $template->Template = $db->loadResult();
             }
 
-            $body = $m_emails->setTagsFabrik($data['message'], [$fnum->fnum]);
-            $subject = $m_emails->setTagsFabrik($data['mail_subject'], [$fnum->fnum]);
+            $body = $m_emails->setTagsFabrik($data['message'], [$fnum]);
+            $subject = $m_emails->setTagsFabrik($data['mail_subject'], [$fnum]);
 
             // Tags are replaced with their corresponding values using the PHP preg_replace function.
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
@@ -1437,6 +1437,8 @@ class EmundusModelMessages extends JModelList {
                 $this->_db->setQuery($query);
                 $evals = $this->_db->loadColumn();
 
+
+
                 foreach ($data['attachments']['setup_letters'] as $setup_letter) {
 
                     $letters = $_meval->getLetterTemplateForFnum($fnum, [$setup_letter]);
@@ -1447,8 +1449,9 @@ class EmundusModelMessages extends JModelList {
                                 if(!empty($evals)) {
                                     foreach ($evals as $index => $eval) {
                                         if ($email_tmpl->evaluator == $eval) {
-//                                            $_filename = explode('/',$email_tmpl->file)[count(explode('/',$email_tmpl->file))-1];
-                                            $res = $_meval->generateLetters($fnum, [$email_tmpl->attachment_id], 0, 0, 0, $email_tmpl, uniqid() . '_' . $email_tmpl->evaluator);
+                                            $rand = rand(0, 1000000);       // random number and then
+                                            $_filename = explode('/',$email_tmpl->file)[count(explode('/',$email_tmpl->file))-1];
+                                            $res = $_meval->generateLetters($fnum, [$email_tmpl->attachment_id], 0, 0, 0, $email_tmpl, date("Y-m-d") . '_' . $email_tmpl->evaluator . '_' . md5(rand()));
                                             $_files = json_decode($res)->files;
                                             foreach($_files as $k => $f) {
                                                 $path = EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . DS . $f->filename;
