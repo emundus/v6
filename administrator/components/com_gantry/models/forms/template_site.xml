@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!-- $Id: template_site.xml 1604 2012-07-11 22:53:32Z btowles $ -->
+<form>
+	<fieldset>
+		<field
+			name="home"
+			type="contentlanguage"
+			label="COM_TEMPLATES_FIELD_HOME_LABEL"
+			description="COM_TEMPLATES_FIELD_HOME_SITE_DESC"
+			class="inputbox"
+			default="0">
+			<option value="0">JNO</option>
+			<option value="1">JALL</option>
+		</field>
+	</fieldset>
+</form>

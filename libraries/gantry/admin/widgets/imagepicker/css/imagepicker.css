@@ -1,0 +1,7 @@
+.group-colorchooser .group-label, .group-selectbox .group-label {margin:0 10px 0 0;}
+.backgroundpicker-img {display:inline-block;margin-right: 10px;padding:2px;border: 1px solid #c4c4c4;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;vertical-align:middle;}
+.backgroundpicker a:hover {text-decoration:none;}
+.backgroundpicker .rok-button {display:inline-block;margin-top:-1px;}
+.backgroundpicker-infos {margin-right: 10px;color:#666;font-size:13px;}
+.background-enabled span.chain-label, .background-image span.chain-label {margin-bottom: 10px;}
+.mediadropdown {display:inline-block;margin-left:15px;}

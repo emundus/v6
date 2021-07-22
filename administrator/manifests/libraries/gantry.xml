@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension type="library" version="2.5" method="upgrade">
+    <name>Gantry 4 Framework</name>
+    <libraryname>gantry</libraryname>
+    <description>LIB_GANTRY_DESCRIPTION</description>
+    <creationDate>April  1, 2020</creationDate>
+    <author>RocketTheme, LLC</author>
+    <authorEmail>support@rockettheme.com</authorEmail>
+    <authorUrl>http://www.rockettheme.com</authorUrl>
+    <copyright>(C) 2005 - 2020 RocketTheme, LLC. All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <version>4.1.43</version>
+
+    <files>
+        <filename>autoload.php</filename>
+        <filename>CREDITS.php</filename>
+        <filename>gantry.config.php</filename>
+        <filename>gantry.php</filename>
+        <filename>MD5SUMS</filename>
+        <folder>admin</folder>
+        <folder>ajax-models</folder>
+        <folder>assets</folder>
+        <folder>classes</folder>
+        <folder>core</folder>
+        <folder>css</folder>
+        <folder>facets</folder>
+        <folder>features</folder>
+        <folder>html</folder>
+        <folder>images</folder>
+        <folder>js</folder>
+        <folder>libs</folder>
+        <folder>tmpl</folder>
+    </files>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.lib_gantry.sys.ini</language>
+    </languages>
+</extension>

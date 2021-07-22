@@ -1,0 +1,14 @@
+controller.php	590693e5297ab03b673994f38b6f1143
+gantry.php	a4cffd006c49a921ac41f67c2ce68c1e
+compatability.php	7a2e5632fe0e576ddd01a6070ba8798c
+language/en-GB/en-GB.com_gantry.sys.ini	f580f040c0438dfde5dcecdd31dc0151
+language/en-GB/en-GB.com_gantry.ini	d796a86bb0819e2a18965e6d537bfa8c
+controllers/template.php	a9dd52f4d4237c311faa7ecd995d919e
+MD5SUMS	d41d8cd98f00b204e9800998ecf8427e
+models/template.php	5dcd3f0ffe2b3c5531720e01a6f616fe
+models/forms/template.xml	eb30e2d4ea442468bca8cf38b02ba5b5
+models/forms/template_site.xml	a30f66bf0f65e9051d1239d2f64920ef
+views/template/view.html.php	0147a597164392361d7cb699b7934f76
+views/template/tmpl/default.php	2015a161efbefc1152e624ee44cd8a74
+views/template/tmpl/edit.php	534377739d0486d0c949e2a6a26e4658
+views/template/tmpl/edit_presets.php	cf4934cc064ca6095bddd6e8d7a76362

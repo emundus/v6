@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension type="component" version="2.5" method="upgrade">
+    <name>COM_GANTRY</name>
+    <author>RocketTheme, LLC</author>
+    <creationDate>April  1, 2020</creationDate>
+    <copyright>(C) 2005 - 2020 RocketTheme, LLC. All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <authorEmail>support@rockettheme.com</authorEmail>
+    <authorUrl>http://www.rockettheme.com</authorUrl>
+    <version>4.1.43</version>
+    <description>Gantry 4 component. Needs to be enabled at all times.</description>
+
+    <scriptfile>gantry_install.script.php</scriptfile>
+
+    <files folder="site">
+        <filename>compatability.php</filename>
+        <filename>controller.php</filename>
+        <filename>gantry.php</filename>
+        <filename>MD5SUMS</filename>
+    </files>
+
+    <administration>
+        <files folder="admin">
+            <filename>compatability.php</filename>
+            <filename>controller.php</filename>
+            <filename>gantry.php</filename>
+            <filename>MD5SUMS</filename>
+            <folder>controllers</folder>
+            <folder>models</folder>
+            <folder>views</folder>
+        </files>
+        <languages folder="admin/language">
+            <language tag="en-GB">en-GB/en-GB.com_gantry.ini</language>
+            <language tag="en-GB">en-GB/en-GB.com_gantry.sys.ini</language>
+        </languages>
+    </administration>
+</extension>
