@@ -145,9 +145,15 @@ function reloadData(view)
         success: function(data)
         {
             $('.em-dimmer').remove();
-            $('.col-md-9 .panel.panel-default').remove();
-            $('.col-md-9').append(data);
+            if($('.col-md-9 .panel.panel-default').length > 0) {
+                $('.col-md-9 .panel.panel-default').remove();
+                $('.col-md-9').append(data);
+            }
 
+            if($('.col-md-12 .panel.panel-default').length > 0) {
+                $('.col-md-12 .panel.panel-default').remove();
+                $('.col-md-12').append(data);
+            }
         },
         error: function(jqXHR) {
             console.log(jqXHR.responseText);
