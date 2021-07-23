@@ -459,19 +459,22 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         // Files generated using the Letters system. Requires attachment creation and doc generation rights.
         if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($attachments['setup_letters'])) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
 	        // Get from DB and generate using the tags.
             foreach ($attachments['setup_letters'] as $setup_letter) {
 
-                $letter = $m_messages->get_letter($setup_letter);
-
-                // We only get the letters if they are for that particular programme and/or status.
-                if ($letter && in_array($fnum->training, explode('","',$letter->training)) && ($letter->status == null || in_array($fnum->step, explode(',',$letter->status)))) {
-                    $toAttach['letter'][] = $letter->title;
-                }
+                /// get letter from attachment id distinctly --> note that : in this case, since in dropdown menu, we already show all letter model --> (with its id)
+                $query->clear()
+                    ->select('distinct #__emundus_setup_letters.*')
+                    ->from($db->quoteName('#__emundus_setup_letters'))
+                    ->where($db->quoteName('#__emundus_setup_letters.attachment_id') . ' = ' . $setup_letter);
+                $db->setQuery($query);
+                $_letter = $db->loadObject();
+                $toAttach['letter'][] = $_letter->title;
             }
         }
-
 
         $files = '';
         if (!empty($toAttach)) {
