@@ -1245,6 +1245,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   color: $base-primary-color;
 }
 
+.view-list table .fabrik_groupheading .groupTitle {
+  color: #000;
+}
 
 /*BOUTONS + ET _ */
 
@@ -3864,6 +3867,7 @@ screen and (max-height: 769px) {
     margin-left: 0 !important;
     margin-top: 20px !important;
   }
+
 
   .user-menu-phone a.profile-btn-phone::before {
     content: "\f007";
