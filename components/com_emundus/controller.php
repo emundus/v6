@@ -117,6 +117,60 @@ class EmundusController extends JControllerLegacy {
         }
     }
 
+    function pdf_by_status() {
+        $user = JFactory::getSession()->get('emundusUser');
+        $jinput = JFactory::getApplication()->input;
+        $student_id = $jinput->get('user', null, 'string');
+        $fnum = $jinput->get('fnum', null, 'string');
+        $profile = $jinput->get('profile', null, 'string');
+        $fnum = !empty($fnum)?$fnum:$user->fnum;
+        $m_profile = $this->getModel('profile');
+        $m_campaign = $this->getModel('campaign');
+
+        $infos 		= $m_profile->getProfileByStatus($fnum);
+        if(empty($infos['profile'])){
+            $infos 		= $m_profile->getFnumDetails($fnum);
+        }
+        if(empty($profile)) {
+            $profile = !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
+        }
+        $h_menu = new EmundusHelperMenu;
+        $getformids = $h_menu->getUserApplicationMenu($profile);
+
+        foreach ($getformids as $getformid) {
+            $formid[] = $getformid->form_id;
+        }
+
+        if (!empty($fnum)) {
+            $campaign = $m_campaign->getCampaignByID($infos['campaign_id']);
+        }
+
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.@$campaign['training'].'.php';
+
+        if (!file_exists($file)) {
+            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+        }
+
+        if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
+            mkdir(EMUNDUS_PATH_ABS.$student_id);
+            chmod(EMUNDUS_PATH_ABS.$student_id, 0755);
+        }
+
+        require_once($file);
+
+        // Here we call the profile by fnum function, which will get the candidate's profile in the status table
+
+        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, null, null, $profile);
+            exit;
+        } elseif (EmundusHelperAccess::isApplicant($user->id)) {
+            application_form_pdf($user->id, $fnum, true, 1, $formid, null, null, $profile);
+            exit;
+        } else {
+            die(JText::_('ACCESS_DENIED'));
+        }
+    }
+
     function pdf_emploi(){
         $user = JFactory::getSession()->get('emundusUser');
         $student_id = JRequest::getVar('user', null, 'GET', 'none',0);
