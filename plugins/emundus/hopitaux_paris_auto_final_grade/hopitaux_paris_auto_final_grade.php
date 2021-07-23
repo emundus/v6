@@ -57,20 +57,21 @@ class PlgEmundusHopitaux_paris_auto_final_grade extends JPlugin {
             }
         }
 
-        $this->log = '';
-
         $elts = explode(',',$elts_to_complete[$status]);
         $values = explode(',',$elt_values[$status]);
 
         try{
-            $query->clear()
-                ->select('id')
-                ->from($db->quoteName('#__emundus_final_grade'))
-                ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
-            $db->setQuery($query);
-            $final_grade = $db->loadResult();
-
             foreach ($elts as $key => $elt){
+                $table = explode('___',$elt)[0];
+                $element = explode('___',$elt)[1];
+
+                $query->clear()
+                    ->select('id')
+                    ->from($db->quoteName($table))
+                    ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+                $db->setQuery($query);
+                $final_grade = $db->loadResult();
+
                 $value_expected = $values[$key];
 
                 if(strpos($value_expected,'___')){
@@ -84,19 +85,28 @@ class PlgEmundusHopitaux_paris_auto_final_grade extends JPlugin {
 
                 if(!empty($final_grade)){
                     $query->clear()
-                        ->update($db->quoteName('#__emundus_final_grade'))
-                        ->set($db->quoteName(explode('___',$elt)[1]) . ' = ' . $db->quote($value_expected))
+                        ->select($element)
+                        ->from($table)
                         ->where($db->quoteName('id') . ' = ' . $db->quote($final_grade));
                     $db->setQuery($query);
-                    $db->execute();
+                    $value_exist = $db->loadResult();
+
+                    if(is_null($value_exist) || $value_exist == '') {
+                        $query->clear()
+                            ->update($db->quoteName($table))
+                            ->set($db->quoteName($element) . ' = ' . $db->quote($value_expected))
+                            ->where($db->quoteName('id') . ' = ' . $db->quote($final_grade));
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
                 } else {
                     $query->clear()
-                        ->insert($db->quoteName('#__emundus_final_grade'))
+                        ->insert($db->quoteName($table))
                         ->set($db->quoteName('time_date') . ' = ' . $db->quote(date('Y-m-d h:i:s')))
                         ->set($db->quoteName('user') . ' = ' . $db->quote($user->id))
                         ->set($db->quoteName('student_id') . ' = ' . $db->quote($file->applicant_id))
                         ->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
-                        ->set($db->quoteName(explode('___',$elt)[1]) . ' = ' . $db->quote($value_expected));
+                        ->set($db->quoteName($element) . ' = ' . $db->quote($value_expected));
                     $db->setQuery($query);
                     $db->execute();
                     $final_grade = $db->insertid();
