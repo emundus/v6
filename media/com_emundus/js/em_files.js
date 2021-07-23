@@ -4367,22 +4367,23 @@ $(document).ready(function() {
                               recipients: fnum,
                               attachments: sending_letters,
                               mode: 'instant',
+                              template: tmpl.id,
                             };
 
                             $.ajax({
                                 type: 'POST',
                                 url: 'index.php?option=com_emundus&controller=messages&task=sendemailtoapplicant',
                                 dataType: 'JSON',
-                                data: { data: data, mode: 'instant', },
+                                data: { data: data, mode: 'instant'},
                                 success: function(result) {
-
+                                    // console.log(result);
                                 }, error: function(jqXHR, textStatus) {
                                     $.ajax({
                                         type: 'POST',
-                                        url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnum',
+                                        url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnums',
                                         dataType: 'JSON',
-                                        data: { fnum: fnum , tmpl: email_recap.id },
-                                        success: function(value) {
+                                        data: { data : data },
+                                        success: function(tags) {
                                             addDimmer();
                                             $('#em-modal-actions').modal('hide');
 
@@ -4390,7 +4391,9 @@ $(document).ready(function() {
                                             reloadActions($('#view').val(), undefined, false);
                                             $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                                             $('body').removeClass('modal-open');
-                                            
+
+                                            // $('.col-md-9').append(data);
+
                                         }, error: function(jqXHR) {
                                             console.log(jqXHR.responseText);
                                         }}

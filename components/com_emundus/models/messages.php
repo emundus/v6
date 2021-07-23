@@ -1187,6 +1187,7 @@ class EmundusModelMessages extends JModelList {
 
     /// add tags by fnums
     public function addTagsByFnums($fnums, $tmpl) {
+	    $set_tag = [];
         if(!empty($fnums) and !empty($tmpl)) {
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
             $m_files = new EmundusModelFiles();
@@ -1213,6 +1214,10 @@ class EmundusModelMessages extends JModelList {
 
                         if ($assoc_tag == false) {
                             $fnum_tag = $m_files->tagFile([$fnum_info['fnum']], [$tag->id], 'email');
+
+                            if($fnum_tag == true) {
+                                $set_tag[] = true;
+                            }
                         } else {
                             /// do nothing
                         }
@@ -1221,6 +1226,12 @@ class EmundusModelMessages extends JModelList {
 
                 }
             }
+        } else {
+            return false;
+        }
+
+        if(!empty($set_tag)) {
+            return true;
         } else {
             return false;
         }

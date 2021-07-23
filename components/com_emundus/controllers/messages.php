@@ -1560,7 +1560,11 @@ class EmundusControllerMessages extends JControllerLegacy {
         $_mMessages = $this->getModel('Messages');
 
         $_tags = $_mMessages->addTagsByFnums($fnums,$email_tmpl);
-        echo json_encode(['status'=>true]);
+        if($_tags) {
+            echo json_encode(['status' => true]);
+        } else {
+            echo json_encode(['status' => false]);
+        }
         exit;
     }
 
