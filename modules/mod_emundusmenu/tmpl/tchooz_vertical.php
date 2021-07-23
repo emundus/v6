@@ -548,6 +548,7 @@ defined('_JEXEC') or die;
             jQuery(".sidebar-formbuilder").css("opacity","0");
             if(window.innerWidth >= 1280) {
                 jQuery("#g-footer").css("padding-left", "300px");
+                jQuery("#footer-rgpd").css("padding-left", "300px");
                 jQuery("#g-container-main").css("padding-left", "180px");
                 jQuery("#header-a").css("opacity", "1");
             }
@@ -569,6 +570,7 @@ defined('_JEXEC') or die;
             if(window.innerWidth >= 1280) {
                 jQuery("#g-container-main").css("padding-left", "0");
                 jQuery("#g-footer").css("padding-left", "80px");
+                jQuery("#footer-rgpd").css("padding-left", "80px");
                 jQuery("#header-a").css("opacity", "0");
             }
             setTimeout(() =>{
