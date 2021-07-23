@@ -1547,9 +1547,12 @@ class EmundusModelMessages extends JModelList {
         }
 
         if ($send !== true) {
+            $failed[] = $candidat_email;
+            echo 'Error sending email: ' . $send->__toString();
             $logs .= '<div class="alert alert-dismissable alert-danger">' . JText::_('EMAIL_NOT_SENT') . ' : ' . $candidat_email . ' ' . $send . '</div>';
             JLog::add($send, JLog::ERROR, 'com_emundus.email');
         } else {
+            $success[] = $candidat_email;
             $message = array(
                 'applicant_id_to' => $fnum_info['applicant_id'],
                 'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $candidat_email,
@@ -1558,6 +1561,9 @@ class EmundusModelMessages extends JModelList {
             $logs .= JText::_('EMAIL_SENT') . ' : ' . $candidat_email . '<br>';
         }
 
-        return array('status' => $send);    ///send is "true" or "false"
+        // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
+        $config = JFactory::getConfig();
+
+        return array('status' => $send, 'success' => $success, 'failed' => $failed);    ///send is "true" or "false"
     }
 }

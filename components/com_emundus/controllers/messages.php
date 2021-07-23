@@ -1603,6 +1603,8 @@ class EmundusControllerMessages extends JControllerLegacy {
             $fnums = $m_files->getAllFnums();
         }
 
+        $res = [];
+
         if(!is_null($sending_mode)) {
             $tag_list = $data['tag_list'];
 
@@ -1620,6 +1622,10 @@ class EmundusControllerMessages extends JControllerLegacy {
                     if (!empty($fnums_intersect) and !is_null($fnums_intersect)) {
                         foreach ($fnums_intersect as $key => $fnum) {
                             $send = $m_messages->sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $data);
+
+                            if($send['status'] == true) {
+                                $res[] = reset($send['success']);
+                            }
                         }
                     }
                 } else if ($sending_mode == 2) {     /// difference
@@ -1628,25 +1634,46 @@ class EmundusControllerMessages extends JControllerLegacy {
                     if (!empty($fnums_diff) and !is_null($fnums_diff)) {
                         foreach ($fnums_diff as $key => $fnum) {
                             $send = $m_messages->sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $data);
+
+                            if($send['status'] == true) {
+                                $res[] = reset($send['success']);
+                            }
                         }
                     }
                 } else {
                     // send email to all applicants
                     foreach ($fnums as $key => $fnum) {
                         $send = $m_messages->sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $data);
+
+                        if($send['status'] == true) {
+                            $res[] = reset($send['success']);
+                        }
                     }
                 }
             } else {
                 foreach ($fnums as $key => $fnum) {
                     $send = $m_messages->sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $data);
+
+                    if($send['status'] == true) {
+                        $res[] = reset($send['success']);
+                    }
                 }
             }
         } else {
             foreach ($fnums as $key => $fnum) {
                 $send = $m_messages->sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $data);
+
+                if($send['status'] == true) {
+                    $res[] = reset($send['success']);
+                }
             }
         }
 
-        /// return the controller results !!!
+        if(!empty($res)) {
+            echo json_encode(['status' => true, 'data' => $res]);
+        } else {
+            echo json_encode(['status' => false, 'data' => $res]);
+        }
+        die;
     }
 }
