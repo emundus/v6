@@ -1672,7 +1672,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         if(!empty($res)) {
             echo json_encode(['status' => true, 'data' => $res]);
         } else {
-            echo json_encode(['status' => false, 'data' => $res]);
+            echo json_encode(['status' => false, 'data' => null]);
         }
         die;
     }
