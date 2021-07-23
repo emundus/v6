@@ -1549,15 +1549,17 @@ class EmundusControllerMessages extends JControllerLegacy {
     }
 
     /// set tags to fnum --> params :: fnum
-    public function addtagsbyfnum() {
+    public function addtagsbyfnums() {
         $jinput = JFactory::getApplication()->input;
 
-        $fnum = $jinput->post->getRaw('fnum');
-        $tmpl = $jinput->post->getRaw('tmpl');
+        $data = $jinput->post->getRaw('data');
+
+        $fnums = explode(',', $data['recipients']);
+        $email_tmpl = $data['template'];
 
         $_mMessages = $this->getModel('Messages');
 
-        $_tags = $_mMessages->addTagsByFnum($fnum,$tmpl);
+        $_tags = $_mMessages->addTagsByFnums($fnums,$email_tmpl);
         echo json_encode(['status'=>true]);
         exit;
     }

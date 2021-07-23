@@ -4995,13 +4995,29 @@ $(document).ready(function() {
                                         url: 'index.php?option=com_emundus&controller=messages&task=sendemailtoapplicant',
                                         dataType: 'json',
                                         data: {data: data, mode : 'custom'},
-                                        success: function(data) {
-                                            if(data.status) {
-                                                $('#em-modal-sending-emails').css('display', 'none');
-                                                Swal.fire({
-                                                    type: 'success',
-                                                    title: Joomla.JText._('EMAILS_SENT') + data.data.length,
-                                                });
+                                        success: function(send) {
+                                            if(send.status) {
+                                                /// add tags by selected fnums and email template
+                                                $.ajax({
+                                                    type: 'post',
+                                                    url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnums',
+                                                    dataType: 'json',
+                                                    data: { data: data },
+                                                    success: function(tags) {
+                                                        console.log(tags);
+
+                                                        $('#em-modal-sending-emails').css('display', 'none');
+                                                        Swal.fire({
+                                                            type: 'success',
+                                                            title: Joomla.JText._('EMAILS_SENT') + send.data.length,
+                                                        });
+
+                                                    }, error: function(jqXHR) {
+                                                        console.log(jqXHR.responseText);
+                                                    }
+                                                })
+
+
                                             } else {
                                                 $('#em-modal-sending-emails').css('display', 'none');
                                                 Swal.fire({
@@ -5011,12 +5027,25 @@ $(document).ready(function() {
                                             }
                                         }, error: function(jqXHR, textStatus) {
                                             if(textStatus == 'timeout') {
-                                                $('#em-modal-sending-emails').css('display', 'none');
+                                                $.ajax({
+                                                    type: 'post',
+                                                    url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnums',
+                                                    dataType: 'json',
+                                                    data: { data: data },
+                                                    success: function(tags) {
+                                                        console.log(tags);
 
-                                                Swal.fire({
-                                                    type: 'success',
-                                                    title: Joomla.JText._('EMAILS_SENT'),
-                                                });
+                                                        $('#em-modal-sending-emails').css('display', 'none');
+
+                                                        Swal.fire({
+                                                            type: 'success',
+                                                            title: Joomla.JText._('EMAILS_SENT'),
+                                                        });
+
+                                                    }, error: function(jqXHR) {
+                                                        console.log(jqXHR.responseText);
+                                                    }
+                                                })
                                             } else {
                                                 $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
                                             }

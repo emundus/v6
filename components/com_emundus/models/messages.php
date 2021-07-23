@@ -1185,41 +1185,41 @@ class EmundusModelMessages extends JModelList {
         }
     }
 
-    /// add tags by fnum
-    public function addTagsByFnum($fnum, $tmpl) {
-        if(!empty($fnum) and !empty($tmpl)) {
-            /// get fnum info
-
+    /// add tags by fnums
+    public function addTagsByFnums($fnums, $tmpl) {
+        if(!empty($fnums) and !empty($tmpl)) {
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
             $m_files = new EmundusModelFiles();
 
-            $fnum_info = $m_files->getFnumInfos($fnum);
-
             $_tags = $this->getTagsByEmail($tmpl);      // return type :: array
 
-            if(!empty($_tags)) {
-                $db = JFactory::getDbo();
-                $query = $db->getQuery(true);       // make new query
+            foreach($fnums as $key => $fnum) {
+                $fnum_info = $m_files->getFnumInfos($fnum);
 
-                $query->clear()
-                    ->delete($db->quoteName('#__emundus_tag_assoc'))
-                    ->where($db->quoteName('#__emundus_tag_assoc.fnum') . ' = '. $fnum)
-                    ->andWhere($db->quoteName('#__emundus_tag_assoc.tag_assoc_type') . ' = ' . $db->quote('email'));
-                $db->setQuery($query);
-                $db->execute();
+                if (!empty($_tags)) {
+                    $db = JFactory::getDbo();
+                    $query = $db->getQuery(true);       // make new query
 
-                foreach ($_tags as $key => $tag) {
+                    $query->clear()
+                        ->delete($db->quoteName('#__emundus_tag_assoc'))
+                        ->where($db->quoteName('#__emundus_tag_assoc.fnum') . ' = ' . $fnum)
+                        ->andWhere($db->quoteName('#__emundus_tag_assoc.tag_assoc_type') . ' = ' . $db->quote('email'));
+                    $db->setQuery($query);
+                    $db->execute();
 
-                    $assoc_tag = $m_files->getTagsByIdFnumUser($tag->id, $fnum_info['fnum'], $fnum_info['applicant_id']);
+                    foreach ($_tags as $key => $tag) {
 
-                    if($assoc_tag == false) {
-                        $fnum_tag = $m_files->tagFile([$fnum_info['fnum']], [$tag->id], 'email');
-                    } else {
-                        /// do nothing
+                        $assoc_tag = $m_files->getTagsByIdFnumUser($tag->id, $fnum_info['fnum'], $fnum_info['applicant_id']);
+
+                        if ($assoc_tag == false) {
+                            $fnum_tag = $m_files->tagFile([$fnum_info['fnum']], [$tag->id], 'email');
+                        } else {
+                            /// do nothing
+                        }
                     }
-                }
-            } else {
+                } else {
 
+                }
             }
         } else {
             return false;
