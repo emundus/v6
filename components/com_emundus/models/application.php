@@ -3141,6 +3141,7 @@ class EmundusModelApplication extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        /* First determine the program the user is applying to is in the emundus_hikashop_programs */
         $query
             ->select('hp.id')
             ->from($db->quoteName('#__emundus_hikashop_programs', 'hp'))
@@ -3149,6 +3150,7 @@ class EmundusModelApplication extends JModelList {
         $db->setQuery($query);
         $rule = $db->loadResult();
 
+        /* If we find a row, we use the emundus_hikashop_programs, otherwise we use the eMundus config */
         $em_application_payment = isset($rule) ? 'programmes' : $eMConfig->get('application_payment', 'user');
 
         if ($cancelled) {
@@ -3213,6 +3215,7 @@ class EmundusModelApplication extends JModelList {
                 break;
 
             case 'programmes' :
+                /* By using the parent_id from the emundus_hikashop_programs table, we can get the list of the other programs that use the same settings*/
                 $hika_query = $db->getQuery(true);
                 $hika_query->select('hpr.code_prog')
                     ->from($db->quoteName('#__emundus_hikashop_programs_repeat_code_prog', 'hpr'))
@@ -3221,6 +3224,7 @@ class EmundusModelApplication extends JModelList {
                 $progs_to_check = $db->loadColumn();
 
                 $fnum_query = $db->getQuery(true);
+                /* Get the list of the candiate's files that are in the list of programs in the year*/
                 $fnum_query
                     ->select('cc.fnum')
                     ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
@@ -3231,6 +3235,7 @@ class EmundusModelApplication extends JModelList {
                 $db->setQuery($fnum_query);
                 $program_year_fnum = $db->loadColumn();
 
+                /* If we find another file in the list of programs during the same year, we can determine that he's already paid*/
                 if(!empty($program_year_fnum)) {
                     $query
                         ->where($db->quoteName('eh.fnum') . ' IN (' . implode(',', $program_year_fnum) . ')');
@@ -3586,7 +3591,7 @@ class EmundusModelApplication extends JModelList {
             $db->setQuery($query);
             $db->execute();
             $id = $db->loadResult();
-
+            $offset = JFactory::getConfig()->get('offset', 'UTC');
             $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
             $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
             $now = $dateTime->format('Y-m-d H:i:s');
