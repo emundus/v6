@@ -5251,11 +5251,18 @@ $(document).ready(function() {
                 var newState = document.getElementById("em-action-state").options[sel.selectedIndex].text;
 
                 url = 'index.php?option=com_emundus&controller=files&task=getExistEmailTrigger';
+                // url = 'index.php?option=com_emundus&controller=files&task=notifycandidat';
+
+                var data = {
+                    recipients : checkInput,
+                    mode: 'instant',
+                }
+
                 $.ajax({
                     type:'POST',
                     url:url,
                     dataType:'json',
-                    data:({fnums:checkInput, state: state}),
+                    data:({data:data, state: state}),
                     success: function(result) {
                         $('.modal-body').empty();
                         $('.modal-body').append('<div>' +
@@ -5275,9 +5282,9 @@ $(document).ready(function() {
                                 if (result.value) {
                                     $.ajax({
                                         type:'POST',
-                                        url:url,
+                                        url: url,
                                         dataType:'json',
-                                        data:({fnums:checkInput, state: state}),
+                                        data:  { data : data, state: state },
                                         success: function(result) {
 
                                             $('.modal-footer').hide();
@@ -5323,7 +5330,7 @@ $(document).ready(function() {
                                 type:'POST',
                                 url:url,
                                 dataType:'json',
-                                data:({fnums:checkInput, state: state}),
+                                data:{ data : data, state: state },
                                 success: function(result) {
 
                                     $('.modal-footer').hide();

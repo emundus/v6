@@ -3444,8 +3444,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $app    = JFactory::getApplication();
         $jinput = $app->input;
 
-        $fnums  = $jinput->getString('fnums', null);
-        $state  = $jinput->getInt('state', null);
+        $data  = $jinput->getRaw('data');
+        $state  = $jinput->post->getInt('state', null);
+
+        $fnums = $data['recipients'];
 
         /// define models of all components
 
@@ -3488,24 +3490,23 @@ class EmundusControllerFiles extends JControllerLegacy
         $msg = '';
 
         if($res !== false) {
-            $message = JText::_('STATE_SUCCESS');
+            $message_success = JText::_('STATE_SUCCESS');
+            $message_error = JText::_('STATE_ERROR');
+
             /// next tick --> send email for each fnum in [fnums]
             foreach ($validFnums as $key => $fnum) {
-                $send = $m_messages->sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name);
-
-                // add assoc tag by fnum and $send['message_id']
-                $assoc_tag = $m_messages->addTagsByFnum($fnum, $send['message_id']);
+                $send = $m_messages->sendEmailToApplicant($fnum, $mail_from_sys, $mail_from_sys_name, $data);
             }
 
-            if($send['sending_status'] === true) {
-                echo json_encode(['status' => true, 'msg' => $message]);
+            if($send['status'] === true) {
+                echo json_encode(['status' => true, 'msg' => $message_success]);
             } else {
-                echo json_encode(['status' => false, 'msg' => $message]);
+                echo json_encode(['status' => false, 'msg' => $message_error]);
             }
             exit;
         } else {
-            $message = JText::_('STATE_ERROR');
-            echo json_encode(['status' => false, 'msg' => $message]);
+            $message_error = JText::_('STATE_ERROR');
+            echo json_encode(['status' => false, 'msg' => $message_error]);
             exit;
         }
     }

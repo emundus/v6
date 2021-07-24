@@ -1536,22 +1536,35 @@ class EmundusModelMessages extends JModelList {
                     /// get attachment letters by fnum
                     $file_path = [];
 
-                    if(count($data['attachments']) > 0) {
-                        if (count($data[ 'attachments']) == count($letter_recap)) {
+                    if(!is_null($data['attachments'])) {
+                        if (count($data['attachments']) > 0) {
+                            if (count($data['attachments']) == count($letter_recap)) {
+                                foreach ($attachment_ids as $key => $value) {
+                                    $attached_letters = $_meval->getFilesByAttachmentFnums($value, [$fnum]);
+                                    $file_path[] = EMUNDUS_PATH_ABS . $attached_letters[0]->user_id . DS . $attached_letters[0]->filename;
+                                }
+                            } else {
+                                // get exactly the path to selected letter
+                                foreach ($data['attachments'] as $key => $value) {
+                                    $custom_file = $m_files->getAttachmentsById([$value]);
+                                    $file_path[] = EMUNDUS_PATH_ABS . $custom_file[0]['user_id'] . DS . $custom_file[0]['filename'];
+                                }
+                            }
+                            $mailer->addAttachment($file_path);
+                        }
+                    }
+                    else {
+                        if(count($attachment_ids) > 0) {
                             foreach ($attachment_ids as $key => $value) {
                                 $attached_letters = $_meval->getFilesByAttachmentFnums($value, [$fnum]);
                                 $file_path[] = EMUNDUS_PATH_ABS . $attached_letters[0]->user_id . DS . $attached_letters[0]->filename;
                             }
-                        } else {
-                            // get exactly the path to selected letter
-                            foreach ($data['attachments'] as $key => $value) {
-                                $custom_file = $m_files->getAttachmentsById([$value]);
-                                $file_path[] = EMUNDUS_PATH_ABS . $custom_file[0]['user_id'] . DS . $custom_file[0]['filename'];
-                            }
+                            $mailer->addAttachment($file_path);
                         }
-                        $mailer->addAttachment($file_path);
                     }
                 }
+                // assoc tag for fnum --> in case of instant message
+                $assoc_tag = $this->addTagsByFnums(explode(',', $fnum), $email_recap->id);
             }
 
             $send = $mailer->Send();
@@ -1575,6 +1588,6 @@ class EmundusModelMessages extends JModelList {
         // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
         $config = JFactory::getConfig();
 
-        return array('status' => $send, 'success' => $success, 'failed' => $failed);    ///send is "true" or "false"
+        return array('status' => $send, 'success' => $success, 'failed' => $failed);   ///send is "true" or "false"
     }
 }
