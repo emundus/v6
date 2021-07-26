@@ -2808,6 +2808,7 @@ $(document).ready(function() {
 
                             //*** on export excel filter change ******************************/
                             $('#filt_save').on('change', function(e) {
+                                $('#model-err').empty();
                                 $('#em-export').remove();
                                 $('#em-export-elts').append('<ul id="em-export"></ul></div>');
                                 var id = $(this).val();
@@ -2824,13 +2825,9 @@ $(document).ready(function() {
                                                     dataType: 'JSON',
                                                     data: { id : id},
                                                     success: function(excelFilter) {
-                                                        console.log(excelFilter);
                                                         try {
                                                             let constraints = jQuery.parseJSON(excelFilter.filter.constraints);
-                                                            //console.log(constraints);
-
                                                             let filter = jQuery.parseJSON(constraints.excelfilter);
-                                                            // console.log(filter);
 
                                                             if (filter.baseElements !== undefined) {
                                                                 let baseElements = filter.baseElements;
@@ -2841,7 +2838,6 @@ $(document).ready(function() {
                                                                     dataType: 'JSON',
                                                                     data: {elts: baseElements.split(',')},
                                                                     success: function (selectedElements) {
-                                                                        console.log(selectedElements);
                                                                         let selectedElts = selectedElements.elements.selected_elements;
 
                                                                         selectedElts.forEach(elts => {
@@ -2852,12 +2848,13 @@ $(document).ready(function() {
                                                                 })
                                                             }
                                                         } catch(e) {
-                                                            //console.log('error');
+                                                            $('#filt_save_chosen').append('<div id="model-err" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
                                                         }
                                                     }
                                                 })
 
                                                 for (var d in result.filter) {
+                                                    $('#model-err-data').empty();
                                                     if (isNaN(parseInt(d)))
                                                         break;
                                                     if (result.filter[d].id == id) {
@@ -2874,7 +2871,7 @@ $(document).ready(function() {
                                                             if (code != 0) { //for programmes
 
                                                                 /// check if letters != 0 -> [yes] --> select it, [no] --> do nothing
-                                                                if(letters != undefined && letters != null && letters != 0) {
+                                                                if(letters) {
                                                                     document.getElementById('em-export-letter')[letters].selected = true;
                                                                     $('#em-export-letter').trigger("chosen:updated");
                                                                     $('#em-export-letter').trigger("change");
@@ -3089,7 +3086,7 @@ $(document).ready(function() {
                                                                 $('#elements-popup').hide();
                                                             }
                                                         } catch(e) {
-
+                                                            $('#data').append('<br> <div id="model-err-data" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div></br>');
                                                         }
                                                     }
                                                 }
