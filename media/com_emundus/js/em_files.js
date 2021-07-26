@@ -5016,6 +5016,15 @@ $(document).ready(function() {
                                                         console.log(tags);
 
                                                         $('#em-modal-sending-emails').css('display', 'none');
+
+                                                        $('#em-modal-actions').modal('hide');
+                                                        addDimmer();
+
+                                                        reloadData();
+                                                        reloadActions($('#view').val(), undefined, false);
+                                                        $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                                        $('body').removeClass('modal-open');
+
                                                         Swal.fire({
                                                             type: 'success',
                                                             title: Joomla.JText._('EMAILS_SENT') + send.data.length,
@@ -5025,8 +5034,6 @@ $(document).ready(function() {
                                                         console.log(jqXHR.responseText);
                                                     }
                                                 })
-
-
                                             } else {
                                                 $('#em-modal-sending-emails').css('display', 'none');
                                                 Swal.fire({
@@ -5043,8 +5050,14 @@ $(document).ready(function() {
                                                     data: { data: data },
                                                     success: function(tags) {
                                                         console.log(tags);
-
                                                         $('#em-modal-sending-emails').css('display', 'none');
+                                                        $('#em-modal-actions').modal('hide');
+                                                        addDimmer();
+
+                                                        reloadData();
+                                                        reloadActions($('#view').val(), undefined, false);
+                                                        $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                                        $('body').removeClass('modal-open');
 
                                                         Swal.fire({
                                                             type: 'success',
@@ -5250,7 +5263,7 @@ $(document).ready(function() {
                 var sel = document.getElementById("em-action-state");
                 var newState = document.getElementById("em-action-state").options[sel.selectedIndex].text;
 
-                url = 'index.php?option=com_emundus&controller=files&task=getExistEmailTrigger';
+                //url = 'index.php?option=com_emundus&controller=files&task=getExistEmailTrigger';
                 // url = 'index.php?option=com_emundus&controller=files&task=notifycandidat';
 
                 var data = {
@@ -5258,120 +5271,144 @@ $(document).ready(function() {
                     mode: 'instant',
                 }
 
-                $.ajax({
-                    type:'POST',
-                    url:url,
-                    dataType:'json',
-                    data:({data:data, state: state}),
-                    success: function(result) {
-                        $('.modal-body').empty();
-                        $('.modal-body').append('<div>' +
-                            '<img src="'+loadingLine+'" alt="loading"/>' +
-                            '</div>');
-                        url = 'index.php?option=com_emundus&controller=files&task=notifycandidat';
+                Swal.fire({
+                    title: Joomla.JText._('WARNING_CHANGE_STATUS'),
+                    text: '',
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: Joomla.JText._('VALIDATE_CHANGE_STATUT'),
+                    cancelButtonText: Joomla.JText._('CANCEL_CHANGE_STATUT'),
+                }).then(function (result) {
+                    if(result.value) {
+                        $.ajax({
+                            type:'post',
+                            url:'index.php?option=com_emundus&controller=files&task=notifycandidat',
+                            dataType:'json',
+                            data: { data:data, state: state },
+                            success: function(tags) {
+                                addDimmer();
+                                $('#em-modal-actions').modal('hide');
 
-                        if(result.status) {
-                            Swal.fire({
-                                title: Joomla.JText._('WARNING_CHANGE_STATUS'),
-                                text: result.msg,
-                                type: "warning",
-                                showCancelButton: true,
-                                confirmButtonText: Joomla.JText._('VALIDATE_CHANGE_STATUT'),
-                                cancelButtonText: Joomla.JText._('CANCEL_CHANGE_STATUT')
-                            }).then(function(result) {
-                                if (result.value) {
-                                    $.ajax({
-                                        type:'POST',
-                                        url: url,
-                                        dataType:'json',
-                                        data:  { data : data, state: state },
-                                        success: function(result) {
+                                reloadData();
+                                reloadActions($('#view').val(), undefined, false);
+                                $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                $('body').removeClass('modal-open');
 
-                                            $('.modal-footer').hide();
-                                            if (result.status) {
-                                                $('.modal-body').empty();
-                                                Swal.fire({
-                                                    position: 'center',
-                                                    type: 'success',
-                                                    title: result.msg,
-                                                    showConfirmButton: false,
-                                                    timer: 1500
-                                                });
-                                            } else {
-                                                $('.modal-body').empty();
-                                                Swal.fire({
-                                                    position: 'center',
-                                                    type: 'warning',
-                                                    title: result.msg
-                                                });
-                                            }
+                                Swal.fire({
+                                    position: 'center',
+                                    type: 'success',
+                                    title: "",
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
 
+                            }, error: function(result) {
+                                addDimmer();
+                                $('#em-modal-actions').modal('hide');
 
-                                            $('#em-modal-actions').modal('hide');
+                                reloadData();
+                                reloadActions($('#view').val(), undefined, false);
+                                $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                $('body').removeClass('modal-open');
 
-                                            reloadData();
-                                            reloadActions($('#view').val(), undefined, false);
-                                            $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-                                            $('body').removeClass('modal-open');
-                                        },
-                                        error: function (jqXHR) {
-                                            console.log(jqXHR.responseText);
-                                        }
-                                    });
-                                } else {
-                                    $('.modal-body').empty();
-                                    $('#em-modal-actions').modal('hide');
-                                    $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-                                    $('body').removeClass('modal-open');
-                                }
-                            })
-                        } else {
-                            $.ajax({
-                                type:'POST',
-                                url:url,
-                                dataType:'json',
-                                data:{ data : data, state: state },
-                                success: function(result) {
-
-                                    $('.modal-footer').hide();
-                                    if (result.status) {
-                                        $('.modal-body').empty();
-                                        Swal.fire({
-                                            position: 'center',
-                                            type: 'success',
-                                            title: result.msg,
-                                            showConfirmButton: false,
-                                            timer: 1500
-                                        });
-                                    } else {
-                                        $('.modal-body').empty();
-                                        Swal.fire({
-                                            position: 'center',
-                                            type: 'warning',
-                                            title: result.msg
-                                        });
-                                    }
-
-
-                                    $('#em-modal-actions').modal('hide');
-
-                                    reloadData();
-                                    reloadActions($('#view').val(), undefined, false);
-                                    $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-                                    $('body').removeClass('modal-open');
-                                },
-                                error: function (jqXHR) {
-                                    console.log(jqXHR.responseText);
-                                }
-                            });
-                        }
-
-                    },
-                    error: function (jqXHR) {
-                        document.getElementsByClassName('modal-body')[0].innerHTML =jqXHR.responseText;
+                                Swal.fire({
+                                    position: 'center',
+                                    type: 'success',
+                                    title: "",
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            }
+                        })
+                    } else {
+                        console.log('false');
                     }
-                });
+                })
 
+                // $.ajax({
+                //     type:'POST',
+                //     url:url,
+                //     dataType:'json',
+                //     data:({data:data, state: state}),
+                //     success: function(result) {
+                //         $('.modal-body').empty();
+                //         $('.modal-body').append('<div>' +
+                //             '<img src="' + loadingLine + '" alt="loading"/>' +
+                //             '</div>');
+                //
+                //         url = 'index.php?option=com_emundus&controller=files&task=notifycandidat';
+                //
+                //         let text = "";
+                //         if(result.status == true) {
+                //             text = result.msg;
+                //         }
+                //
+                //         Swal.fire({
+                //             title: Joomla.JText._('WARNING_CHANGE_STATUS'),
+                //             text: text,
+                //             type: "warning",
+                //             showCancelButton: true,
+                //             confirmButtonText: Joomla.JText._('VALIDATE_CHANGE_STATUT'),
+                //             cancelButtonText: Joomla.JText._('CANCEL_CHANGE_STATUT')
+                //         }).then(function (result) {
+                //             if (result.value) {
+                //                 $.ajax({
+                //                     type: 'POST',
+                //                     url: url,
+                //                     dataType: 'json',
+                //                     data: {data: data, state: state},
+                //                     success: function (tags) {
+                //                         console.log(tags);
+                //                         $('.modal-footer').hide();
+                //                         $('.modal-body').empty();
+                //                         Swal.fire({
+                //                             position: 'center',
+                //                             type: 'success',
+                //                             title: result.msg,
+                //                             showConfirmButton: false,
+                //                             timer: 1500
+                //                         });
+                //
+                //                         $('#em-modal-actions').modal('hide');
+                //
+                //                         reloadData();
+                //                         reloadActions($('#view').val(), undefined, false);
+                //                         $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
+                //                         $('body').removeClass('modal-open');
+                //                     },
+                //                     error: function (jqXHR) {
+                //                         //console.log(jqXHR.responseText);
+                //
+                //                         $('.modal-footer').hide();
+                //                         $('.modal-body').empty();
+                //                         Swal.fire({
+                //                             position: 'center',
+                //                             type: 'success',
+                //                             title: '',
+                //                             showConfirmButton: false,
+                //                             timer: 1500
+                //                         });
+                //
+                //                         $('#em-modal-actions').modal('hide');
+                //
+                //                         reloadData();
+                //                         reloadActions($('#view').val(), undefined, false);
+                //                         $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
+                //                         $('body').removeClass('modal-open');
+                //                     }
+                //                 });
+                //             } else {
+                //                 $('.modal-body').empty();
+                //                 $('#em-modal-actions').modal('hide');
+                //                 $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
+                //                 $('body').removeClass('modal-open');
+                //             }
+                //         })
+                //     },
+                //     error: function (jqXHR) {
+                //         document.getElementsByClassName('modal-body')[0].innerHTML =jqXHR.responseText;
+                //     }
+                // });
                 break;
 
             // Validating tags
