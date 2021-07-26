@@ -6244,7 +6244,8 @@ function renderProgCamp(json) {
     if($("#em-export-prg option[value='" + progCode + "']").length > 0 === true) {
         if(progCode !== $('#em-export-prg').val()) {
             setProgram(progCode);
-            setCampaignAsync(progCode, campCode);
+            //setCampaignAsync(progCode, campCode);
+            renderElements(progCode, campCode, elements);
         }
     }
 }
@@ -6279,5 +6280,23 @@ async function setCampaignAsync(progCode,campCode) {
 
         }
     })
+}
+
+async function renderElements(progCode,campCode,elements) {
+    await setCampaignAsync(progCode,campCode);
+    // call ajax to get profiles
+    if (elements[0] !== "") {
+        $.ajax({
+            type: 'post',
+            url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
+            dataType: 'JSON',
+            data: {elts: elements.toString()},
+            async: false,
+            success: function (returnData) {
+                // build profile(s)
+                let profiles = returnData.fabrik_data.profiles;
+            }
+        })
+    }
 }
 
