@@ -1572,7 +1572,6 @@ class EmundusModelMessages extends JModelList {
 
         if ($send !== true) {
             $failed[] = $candidat_email;
-            echo 'Error sending email: ' . $send->__toString();
             $logs .= '<div class="alert alert-dismissable alert-danger">' . JText::_('EMAIL_NOT_SENT') . ' : ' . $candidat_email . ' ' . $send . '</div>';
             JLog::add($send, JLog::ERROR, 'com_emundus.email');
         } else {

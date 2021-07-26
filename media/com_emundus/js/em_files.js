@@ -5263,8 +5263,7 @@ $(document).ready(function() {
                 var sel = document.getElementById("em-action-state");
                 var newState = document.getElementById("em-action-state").options[sel.selectedIndex].text;
 
-                //url = 'index.php?option=com_emundus&controller=files&task=getExistEmailTrigger';
-                // url = 'index.php?option=com_emundus&controller=files&task=notifycandidat';
+                //url = 'index.php?option=com_emundus&controller=files&task=getExistEmailTrigger';              /// keep this line, may be used later
 
                 var data = {
                     recipients : checkInput,
@@ -5273,7 +5272,7 @@ $(document).ready(function() {
 
                 Swal.fire({
                     title: Joomla.JText._('WARNING_CHANGE_STATUS'),
-                    text: '',
+                    text: Joomla.JText._('CHANGE_STATUS_MESSAGE'),
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonText: Joomla.JText._('VALIDATE_CHANGE_STATUT'),
@@ -5288,19 +5287,28 @@ $(document).ready(function() {
                             success: function(tags) {
                                 addDimmer();
                                 $('#em-modal-actions').modal('hide');
-
                                 reloadData();
                                 reloadActions($('#view').val(), undefined, false);
-                                $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
                                 $('body').removeClass('modal-open');
 
-                                Swal.fire({
-                                    position: 'center',
-                                    type: 'success',
-                                    title: "",
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                });
+                                if(tags.status) {
+                                    Swal.fire({
+                                        position: 'center',
+                                        type: 'success',
+                                        title: Joomla.JText._('CHANGE_STATUS_SUCCESSFULLY_WITH_EMAIL'),
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        position: 'center',
+                                        type: 'warning',
+                                        title: Joomla.JText._('CHANGE_STATUS_SUCCESSFULLY_WITHOUT_EMAIL'),
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    });
+                                }
 
                             }, error: function(result) {
                                 addDimmer();
@@ -5313,8 +5321,8 @@ $(document).ready(function() {
 
                                 Swal.fire({
                                     position: 'center',
-                                    type: 'success',
-                                    title: "",
+                                    type: 'error',
+                                    title: Joomla.JText._('CHANGE_STATUS_OR_SENDING_EMAIL_FAILED'),
                                     showConfirmButton: false,
                                     timer: 1500
                                 });
