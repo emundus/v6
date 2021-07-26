@@ -3609,93 +3609,95 @@ $(document).ready(function() {
                                    let constraints = result.filter.constraints;
                                    let json = JSON.parse(constraints);
 
+                                   renderProgCamp(json);
+                                   //enderProfileElements(json);
                                    /// from json --> we will re-render data to DOM
-                                   let progCode = json.pdffilter.code;
-                                   let progName = json.pdffilter.proglabel;
-
-                                   let campCode = json.pdffilter.camp;
-                                   let campName = json.pdffilter.camplabel;
-
-                                   let checkAllGroups = json.pdffilter.checkAllGroups;
-                                   let checkAllTables = json.pdffilter.checkAllTables;
-                                   let elements = json.pdffilter.elements;
-                                   let headers = json.pdffilter.headers;
+                                   // let progCode = json.pdffilter.code;
+                                   // let progName = json.pdffilter.proglabel;
+                                   //
+                                   // let campCode = json.pdffilter.camp;
+                                   // let campName = json.pdffilter.camplabel;
+                                   //
+                                   // let checkAllGroups = json.pdffilter.checkAllGroups;
+                                   // let checkAllTables = json.pdffilter.checkAllTables;
+                                   // let elements = json.pdffilter.elements;
+                                   // let headers = json.pdffilter.headers;
 
                                    // re-render to DOM
-                                   if($("#em-export-prg option[value='" + progCode + "']").length > 0 === true){
-                                       if(progCode !== $('#em-export-prg').val()) {
-                                           $('#em-export-prg').val(progCode);
-                                           $('#em-export-prg').trigger("chosen:updated");
-                                           $('#em-export-prg').trigger("click");
-                                           $('#em-export-prg').trigger("change");
-                                       }
-
-                                       setTimeout(function(){
-                                           if($("#em-export-camp option[value='" + campCode + "']").length > 0 === true) {
-                                               $('#em-export-camp').val(campCode);
-                                               $('#em-export-camp').trigger("chosen:updated");
-                                               $('#em-export-camp').trigger("click");
-                                               $('#em-export-camp').trigger("change");
-
-                                               $('#em-export-opt').val(headers);
-                                               $('#em-export-opt').trigger("chosen:updated");
-                                               $('#em-export-opt').trigger("change");
-
-                                               if (elements[0] !== "") {
-                                                   $.ajax({
-                                                       type: 'post',
-                                                       url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
-                                                       dataType: 'JSON',
-                                                       data: {elts: elements.toString()},
-                                                       success: function (returnData) {
-                                                           let profiles = returnData.fabrik_data.profiles;
-
-                                                           // show 'felts' + profile
-                                                               setTimeout(function () {
-                                                           profiles.forEach(prf => {
-                                                               $('#felts' + prf.id).show();
-
-                                                               $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
-                                                               $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
-
-                                                           })
-                                                                   }, 3000
-                                                               );
-
-                                                           if (checkAllTables !== null || checkAllTables !== undefined || checkAllTables[0] !== "") {
-                                                               //render tables
-                                                                   setTimeout(function () {
-                                                               checkAllTables.forEach(tbl => {
-                                                                   $('#emundus_checkall_tbl_' + tbl).attr('checked', true);
-                                                               })
-                                                                   }, 3000);
-                                                           }
-
-                                                           if (checkAllGroups !== null || checkAllGroups !== undefined || checkAllGroups[0] !== "") {
-                                                               // render groups
-                                                                   setTimeout(function () {
-                                                               checkAllGroups.forEach(grp => {
-                                                                   $('#emundus_checkall_grp_' + grp).attr('checked', true);
-                                                               })
-                                                                   }, 3000);
-                                                           }
-
-                                                           if (elements !== null || elements !== undefined || elements[0] !== "") {
-                                                               // render elements
-                                                                   setTimeout(function () {
-                                                               elements.forEach(elt => {
-                                                                   $('#emundus_elm_' + elt).attr('checked', true);
-                                                               })
-                                                                   }, 3000);
-                                                           }
-                                                           }, error: function (jqXHR) {
-                                                           console.log(jqXHR.responseText);
-                                                       }
-                                                   });
-                                               }
-                                           }
-                                   }, 4500);
-                               }
+                                   // if($("#em-export-prg option[value='" + progCode + "']").length > 0 === true){
+                                   //     if(progCode !== $('#em-export-prg').val()) {
+                                   //         $('#em-export-prg').val(progCode);
+                                   //         $('#em-export-prg').trigger("chosen:updated");
+                                   //         $('#em-export-prg').trigger("click");
+                                   //         $('#em-export-prg').trigger("change");
+                                   //     }
+                                   //
+                                   //     setTimeout(function(){
+                                   //         if($("#em-export-camp option[value='" + campCode + "']").length > 0 === true) {
+                                   //             $('#em-export-camp').val(campCode);
+                                   //             $('#em-export-camp').trigger("chosen:updated");
+                                   //             $('#em-export-camp').trigger("click");
+                                   //             $('#em-export-camp').trigger("change");
+                                   //
+                                   //             $('#em-export-opt').val(headers);
+                                   //             $('#em-export-opt').trigger("chosen:updated");
+                                   //             $('#em-export-opt').trigger("change");
+                                   //
+                                   //             if (elements[0] !== "") {
+                                   //                 $.ajax({
+                                   //                     type: 'post',
+                                   //                     url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
+                                   //                     dataType: 'JSON',
+                                   //                     data: {elts: elements.toString()},
+                                   //                     success: function (returnData) {
+                                   //                         let profiles = returnData.fabrik_data.profiles;
+                                   //
+                                   //                         // show 'felts' + profile
+                                   //                             setTimeout(function () {
+                                   //                         profiles.forEach(prf => {
+                                   //                             $('#felts' + prf.id).show();
+                                   //
+                                   //                             $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
+                                   //                             $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
+                                   //
+                                   //                         })
+                                   //                                 }, 3000
+                                   //                             );
+                                   //
+                                   //                         if (checkAllTables !== null || checkAllTables !== undefined || checkAllTables[0] !== "") {
+                                   //                             //render tables
+                                   //                                 setTimeout(function () {
+                                   //                             checkAllTables.forEach(tbl => {
+                                   //                                 $('#emundus_checkall_tbl_' + tbl).attr('checked', true);
+                                   //                             })
+                                   //                                 }, 3000);
+                                   //                         }
+                                   //
+                                   //                         if (checkAllGroups !== null || checkAllGroups !== undefined || checkAllGroups[0] !== "") {
+                                   //                             // render groups
+                                   //                                 setTimeout(function () {
+                                   //                             checkAllGroups.forEach(grp => {
+                                   //                                 $('#emundus_checkall_grp_' + grp).attr('checked', true);
+                                   //                             })
+                                   //                                 }, 3000);
+                                   //                         }
+                                   //
+                                   //                         if (elements !== null || elements !== undefined || elements[0] !== "") {
+                                   //                             // render elements
+                                   //                                 setTimeout(function () {
+                                   //                             elements.forEach(elt => {
+                                   //                                 $('#emundus_elm_' + elt).attr('checked', true);
+                                   //                             })
+                                   //                                 }, 3000);
+                                   //                         }
+                                   //                         }, error: function (jqXHR) {
+                                   //                         console.log(jqXHR.responseText);
+                                   //                     }
+                                   //                 });
+                                   //             }
+                                   //         }
+                                   // }, 4500);
+                               //}
                            }
                        }, error: function(jqXHR) {console.log(jqXHR.responseText);}
                    });
@@ -6226,3 +6228,56 @@ function getXMLHttpRequest() {
 
     return xhr;
 }
+
+function renderProgCamp(json) {
+    let progCode = json.pdffilter.code;
+    let progName = json.pdffilter.proglabel;
+
+    let campCode = json.pdffilter.camp;
+    let campName = json.pdffilter.camplabel;
+
+    let checkAllGroups = json.pdffilter.checkAllGroups;
+    let checkAllTables = json.pdffilter.checkAllTables;
+    let elements = json.pdffilter.elements;
+    let headers = json.pdffilter.headers;
+
+    if($("#em-export-prg option[value='" + progCode + "']").length > 0 === true) {
+        if(progCode !== $('#em-export-prg').val()) {
+            setProgram(progCode);
+            setCampaignAsync(progCode, campCode);
+        }
+    }
+}
+
+function setProgram(progCode) {
+    $('#em-export-prg').val(progCode);
+    $('#em-export-prg').trigger("chosen:updated");
+    $('#em-export-prg').trigger("click");
+}
+
+async function setCampaignAsync(progCode,campCode) {
+    await setProgram(progCode);
+
+    $.ajax({
+        type: 'get',
+        url: 'index.php?option=com_emundus&controller=files&task=getProgramCampaigns&code=' + progCode,
+        dataType: 'json',
+        success: function(data) {
+            if(data.status) {
+                $('#em-export-camp').empty();
+                $('#em-export-camp').append('<option value="0" data-value="0">-- ' + Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP') + ' --</option>');
+                $('#em-export-camp').append(data.html);
+                $('#em-export-camp').trigger("chosen:updated");
+                $('#camp').show();
+
+                $('#em-export-camp').val(campCode);
+                $('#em-export-camp').trigger("chosen:updated");
+                $('#em-export-camp').trigger("click");
+                $('#em-export-camp').trigger("change");
+            }
+        }, error: function(jqXHR) {
+
+        }
+    })
+}
+
