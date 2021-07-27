@@ -3597,22 +3597,65 @@ $(document).ready(function() {
                     //$('#data').before('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
 
                    if(model != 0) {
-                       $.ajax({
-                           type: 'post',
-                           url: 'index.php?option=com_emundus&controller=files&task=getExportPdfFilterById',
-                           data: {
-                               id: model,
-                           },
-                           dataType: 'JSON',
-                           success: function(result) {
-                               if(result.status) {
-                                   let constraints = result.filter.constraints;
-                                   let json = JSON.parse(constraints);
+                       $('#camp').show();
 
-                                   setModel(json);
-                           }
-                       }, error: function(jqXHR) {console.log(jqXHR.responseText);}
-                   });
+                       // show #form-div
+                       $('#form-exists').show();
+
+                       // show #document-div
+                       $('#att-exists').show();
+
+                       // show #eval-div
+                       $('#eval-exists').show();
+
+                       // show #document-div
+                       $('#dec-exists').show();
+
+                       // show #admission-div
+                       $('#adm-exists').show();
+
+                       $.ajax({
+                               type: 'post',
+                               url: 'index.php?option=com_emundus&controller=files&task=getExportPdfFilterById',
+                               data: {
+                                   id: model,
+                               },
+                               dataType: 'JSON',
+                               success: function(result) {
+                                   if(result.status) {
+                                       let constraints = result.filter.constraints;
+                                       let json = JSON.parse(constraints);
+
+                                       setModel(json);
+                               }
+                           }, error: function(jqXHR) {console.log(jqXHR.responseText);}
+                       });
+                   } else {
+                       // set "unselect" program
+                       $('#em-export-prg option:selected').removeAttr("selected");
+                       $('#em-export-prg').trigger('chosen:updated');
+
+                       // hide #camp --> set "unselect" campaign
+                       $('#camp').hide();
+                       $('#em-export-camp option:selected').removeAttr("selected");
+                       $('#em-export-camp').trigger('chosen:updated');
+
+                       // hide #form-div and reset #form-element
+                       $('#form-exists').hide();
+                       $('#form-element').empty();
+
+                       // hide #att-div and reset #aelts (documents)
+                       $('#att-exists').hide();
+                       $('#aelts').empty();
+
+                       // hide #eval-div
+                       $('#eval-exists').hide();
+
+                       // hide #decision-div
+                       $('#dec-exists').hide();
+
+                       // hide #admission-div
+                       $('#adm-exists').hide();
                    }
                 });
 
