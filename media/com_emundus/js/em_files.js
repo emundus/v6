@@ -6284,7 +6284,7 @@ async function setCampaignAsync(progCode,campCode) {
 
 async function renderElements(progCode,campCode,elements) {
     await setCampaignAsync(progCode,campCode);
-    // call ajax to get profiles
+
     if (elements[0] !== "") {
         $.ajax({
             type: 'post',
@@ -6295,8 +6295,26 @@ async function renderElements(progCode,campCode,elements) {
             success: function (returnData) {
                 // build profile(s)
                 let profiles = returnData.fabrik_data.profiles;
+
+                profiles.forEach(prf => {
+                    checkElement('#felts'+prf.id).then((selector) => {
+                        $('#' + selector.id).show();        // show felts
+                        $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
+                        $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
+                    });
+                })
+
             }
         })
     }
 }
+
+const checkElement = async selector => {
+    while ( document.querySelector(selector) === null) {
+        await new Promise( resolve =>  requestAnimationFrame(resolve) )
+    }
+    return document.querySelector(selector);
+};
+
+
 
