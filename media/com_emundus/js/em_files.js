@@ -6212,13 +6212,15 @@ async function setCampaign(progCode,campCode,headers) {
                 $('#em-export-camp').empty();
                 $('#em-export-camp').append('<option value="0" data-value="0">-- ' + Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP') + ' --</option>');
                 $('#em-export-camp').append(data.html);
-                $('#camp').show();
 
-                $('#loadingimg-campaign').remove();
-                $('#em-export-camp').val(campCode);
-                $('#em-export-camp').trigger("chosen:updated");
-                $('#em-export-camp').trigger("click");
-                $('#em-export-camp').trigger("change");
+                if($("#em-export-camp option[value='" + campCode + "']").length > 0 === true) {
+                    $('#loadingimg-campaign').remove();
+                    $('#camp').show();
+                    $('#em-export-camp').val(campCode);
+                    $('#em-export-camp').trigger("chosen:updated");
+                    $('#em-export-camp').trigger("click");
+                    $('#em-export-camp').trigger("change");
+                }
 
                 $('#em-export-opt').val(headers);
                 $('#em-export-opt').trigger("chosen:updated");
