@@ -2809,7 +2809,6 @@ class EmundusHelperFiles
                     ->andWhere($db->quoteName('#__emundus_filters.mode') . ' = ' . $db->quote('pdf'));
 
                 $db->setQuery($query);
-//                var_dump($db->loadObject());die;
                 return $db->loadObject();
             }
             catch(Exception $e) {
