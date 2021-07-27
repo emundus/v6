@@ -3594,9 +3594,7 @@ $(document).ready(function() {
                 $('#filt_save_pdf').on('change', function() {
                     var model = $('#filt_save_pdf').val();
 
-                    $('#em_export_prg_chosen').after('<div id="loadingimg-candidat"><img src="'+loadingLine+'" alt="loading"/></div>');
-                    //$('#em_export_prg_chosen').after('<div id="loadingimg-candidat"><img src="'+loadingLine+'" alt="loading"/></div>');
-                    //$('#data').before('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+                    $('#em_export_prg_chosen').after('<div id="loadingimg-campaign"><img src="'+loadingLine+'" alt="loading"/></div>');
 
                    if(model != 0) {
                        // show #form-div
@@ -3632,7 +3630,7 @@ $(document).ready(function() {
                        });
                    } else {
                        // set "unselect" program
-                       $('#loadingimg-candidat').remove();
+                       $('#loadingimg-campaign').remove();
                        $('#em-export-prg option:selected').removeAttr("selected");
                        $('#em-export-prg').trigger('chosen:updated');
 
@@ -6211,13 +6209,12 @@ async function setCampaign(progCode,campCode,headers) {
         dataType: 'json',
         success: function(data) {
             if(data.status) {
-                $('#loadingimg-candidat').remove();
                 $('#em-export-camp').empty();
                 $('#em-export-camp').append('<option value="0" data-value="0">-- ' + Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP') + ' --</option>');
                 $('#em-export-camp').append(data.html);
                 $('#camp').show();
 
-                $('#loadingimg-candidat').remove();
+                $('#loadingimg-campaign').remove();
                 $('#em-export-camp').val(campCode);
                 $('#em-export-camp').trigger("chosen:updated");
                 $('#em-export-camp').trigger("click");
@@ -6226,6 +6223,8 @@ async function setCampaign(progCode,campCode,headers) {
                 $('#em-export-opt').val(headers);
                 $('#em-export-opt').trigger("chosen:updated");
                 $('#em-export-opt').trigger("change");
+
+                $('#form-exists').after('<div id="loadingimg-form" style="margin-left: 4rem"><img src="'+loadingLine+'" alt="loading"/></div>')
             }
         }, error: function(jqXHR) {
 
@@ -6258,6 +6257,7 @@ async function setProfiles(json) {
                 profiles.forEach(prf => {
                     checkElement('#felts'+prf.id).then((selector) => {
                         $('#' + selector.id).show();        // show felts
+                        $('#loadingimg-form').remove();
                         $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
                         $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
 
