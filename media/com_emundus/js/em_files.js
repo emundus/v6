@@ -3609,7 +3609,7 @@ $(document).ready(function() {
                                    let constraints = result.filter.constraints;
                                    let json = JSON.parse(constraints);
 
-                                   renderProgCamp(json);
+                                   setModel(json);
                                    //enderProfileElements(json);
                                    /// from json --> we will re-render data to DOM
                                    // let progCode = json.pdffilter.code;
@@ -6229,23 +6229,19 @@ function getXMLHttpRequest() {
     return xhr;
 }
 
-function renderProgCamp(json) {
+function setModel(json) {
     let progCode = json.pdffilter.code;
-    let progName = json.pdffilter.proglabel;
-
     let campCode = json.pdffilter.camp;
-    let campName = json.pdffilter.camplabel;
+    let headers = json.pdffilter.headers;
 
     let checkAllGroups = json.pdffilter.checkAllGroups;
     let checkAllTables = json.pdffilter.checkAllTables;
     let elements = json.pdffilter.elements;
-    let headers = json.pdffilter.headers;
 
     if($("#em-export-prg option[value='" + progCode + "']").length > 0 === true) {
         if(progCode !== $('#em-export-prg').val()) {
             setProgram(progCode);
-            //setCampaignAsync(progCode, campCode);
-            renderElements(progCode, campCode, elements);
+            setProfiles(progCode, campCode, elements, checkAllGroups, checkAllTables);
         }
     }
 }
@@ -6256,7 +6252,7 @@ function setProgram(progCode) {
     $('#em-export-prg').trigger("click");
 }
 
-async function setCampaignAsync(progCode,campCode) {
+async function setCampaign(progCode,campCode) {
     await setProgram(progCode);
 
     $.ajax({
@@ -6282,8 +6278,8 @@ async function setCampaignAsync(progCode,campCode) {
     })
 }
 
-async function renderElements(progCode,campCode,elements) {
-    await setCampaignAsync(progCode,campCode);
+async function setProfiles(progCode,campCode,elements, checkAllGroups, checkAllTables) {
+    await setCampaign(progCode,campCode);
 
     if (elements[0] !== "") {
         $.ajax({
@@ -6301,9 +6297,27 @@ async function renderElements(progCode,campCode,elements) {
                         $('#' + selector.id).show();        // show felts
                         $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
                         $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
+
+                        // render tables
+                        if (checkAllTables !== null || checkAllTables !== undefined || checkAllTables[0] !== "") {
+                            checkAllTables.forEach(tbl => {
+                                $('#emundus_checkall_tbl_' + tbl).attr('checked', true);
+                            })
+                        }
+
+                        if (checkAllGroups !== null || checkAllGroups !== undefined || checkAllGroups[0] !== "") {
+                            checkAllGroups.forEach(grp => {
+                                $('#emundus_checkall_grp_' + grp).attr('checked', true);
+                            })
+                        }
+
+                        if (elements !== null || elements !== undefined || elements[0] !== "") {
+                            elements.forEach(elt => {
+                                $('#emundus_elm_' + elt).attr('checked', true);
+                            })
+                        }
                     });
                 })
-
             }
         })
     }
