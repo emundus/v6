@@ -3592,13 +3592,13 @@ $(document).ready(function() {
                 });
 
                 $('#filt_save_pdf').on('change', function() {
-                   var model = $('#filt_save_pdf').val();
+                    var model = $('#filt_save_pdf').val();
 
+                    $('#em_export_prg_chosen').after('<div id="loadingimg-candidat"><img src="'+loadingLine+'" alt="loading"/></div>');
+                    //$('#em_export_prg_chosen').after('<div id="loadingimg-candidat"><img src="'+loadingLine+'" alt="loading"/></div>');
                     //$('#data').before('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
 
                    if(model != 0) {
-                       $('#camp').show();
-
                        // show #form-div
                        $('#form-exists').show();
 
@@ -3632,6 +3632,7 @@ $(document).ready(function() {
                        });
                    } else {
                        // set "unselect" program
+                       $('#loadingimg-candidat').remove();
                        $('#em-export-prg option:selected').removeAttr("selected");
                        $('#em-export-prg').trigger('chosen:updated');
 
@@ -6210,12 +6211,13 @@ async function setCampaign(progCode,campCode,headers) {
         dataType: 'json',
         success: function(data) {
             if(data.status) {
+                $('#loadingimg-candidat').remove();
                 $('#em-export-camp').empty();
                 $('#em-export-camp').append('<option value="0" data-value="0">-- ' + Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP') + ' --</option>');
                 $('#em-export-camp').append(data.html);
-                $('#em-export-camp').trigger("chosen:updated");
                 $('#camp').show();
 
+                $('#loadingimg-candidat').remove();
                 $('#em-export-camp').val(campCode);
                 $('#em-export-camp').trigger("chosen:updated");
                 $('#em-export-camp').trigger("click");
