@@ -103,6 +103,14 @@ defined('_JEXEC') or die;
         width: 50px;
         margin: 5px 10px !important;
     }
+
+    .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo > a {
+        margin-bottom: 50px;
+    }
+    .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo img {
+        width: 30px;
+    }
+
     #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container{
         border-bottom: unset !important;
     }
@@ -219,7 +227,7 @@ defined('_JEXEC') or die;
         <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="/images/emundus/menus/menu.png" style="width: 30px"></button>
         <?php
 
-        echo '<li class="g-menu-item g-standard tchooz-vertical-item" style="margin-bottom: 50px !important;"><a class="item" href="/"><img src="/images/emundus/tchooz_favicon.png" alt="Accueil" style="width: 30px"></a>
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" href="/"><img src="/images/emundus/tchooz_favicon.png" alt="Accueil"></a>
         </li>';
 
 
