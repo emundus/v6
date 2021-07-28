@@ -67,3 +67,5 @@ plugins/fabrik_form/php/emundus-csv_import_ehesp.php
 /modules/mod_emundus_dashboard_vue/node_modules/
 
 
+/components/node_modules/
+/components/com_emundus_messenger/node_modules/

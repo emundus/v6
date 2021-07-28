@@ -222,7 +222,9 @@ defined('_JEXEC') or die;
         echo '<li class="g-menu-item g-standard tchooz-vertical-item" style="margin-bottom: 50px !important;"><a class="item" href="/"><img src="/images/emundus/tchooz_favicon.png" alt="Accueil" style="width: 30px"></a>
         </li>';
 
+
         foreach ($list as $i => &$item) :
+
             if($item->alias == 'homepage') :
                 $item->anchor_css="item";
                 $class = 'item-'.$item->id.' g-standard';
@@ -324,13 +326,13 @@ defined('_JEXEC') or die;
                 }
                 // The next item is shallower.
                 elseif ($item->shallower) {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block">'.$item->title.'</div>';
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block"> '.$item->title.'</div>';
                     echo '</li>';
                     echo str_repeat('</ul></div></div></li></ul>', $item->level_diff);
                 }
                 // The next item is on the same level.
                 else {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block"><a'.$class.' href="'. $item->flink . '"'. $item->title .'>'.$item->title.'</a></div></div>';
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block"><a class class="'.$class.'" href="'. $item->flink . '"> '.$item->title.'</a></div></div>';
                     echo '</li>';
                 }
             endforeach;
@@ -403,13 +405,13 @@ defined('_JEXEC') or die;
                 }
                 // The next item is on the same level.
                 else {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block">'.$item->title.'</div></div>';
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block"> <a class class="'.$class.'" href="'. $item->flink . '"> '.$item->title.'</a></div></div>';
                     echo '</li>';
                 }
             endif;
         endforeach;
 
-        echo '<hr id="menu_separator">';
+
 
         foreach ($help_list as $i => &$item) :
             if($item->params->get('menu_show') != 0) :
@@ -469,6 +471,9 @@ defined('_JEXEC') or die;
                 // The next item is on the same level.
                 else {
                     echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block">'.$item->title.'</div></div>';
+
+                    //'<a'.$class.' href="'. $item->flink . '"'. $item->title .'></a>
+
                     echo '</li>';
                 }
             endif;

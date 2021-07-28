@@ -23,9 +23,26 @@
       <li v-for="(cat, index) in email_categories" v-if="cat != ''">
         <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
       </li>
-      <li>
+      <!--<li>
         <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">{{System}}</a>
+      </li>-->
+    </ul>
+    <ul class="form-section email-sections" v-if="(type == 'formulaire'|| type == 'grilleEval')  && !loading ">
+      <!--<li>Types : </li>-->
+
+      <li>
+        <a :class="typeForAdd === 'form'||type === 'formulaire' ? 'form-section__current' : ''" @click="typeForAdd = 'form' ; type='formulaire'">Candidature</a>
       </li>
+      <li>
+        <a :class="typeForAdd === 'grilleEval' ? 'form-section__current' : ''" @click="typeForAdd = 'grilleEval' ; type='grilleEval'">Grilles d'évaluation</a>
+      </li>
+      <!--<li v-for="(cat, index) in email_categories" v-if="cat != ''">
+        <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
+      </li>-->
+
+      <!--<li>
+        <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">{{System}}</a>
+      </li>-->
     </ul>
 
 <!--    <transition :name="'slide-down'" type="transition">
@@ -80,7 +97,8 @@
 
       <transition-group :name="'slide-down'" type="transition" style="display: inline-block;margin-bottom: 5%;width: 100%">
         <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
-          <component v-bind:is="type" :data="data" :selectItem="selectItem" />
+
+          <component v-bind:is="type" :data="data" :selectItem="selectItem" :actualLanguage="actualLanguage"/>
         </div>
         <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" :models="list" />
@@ -160,6 +178,7 @@ import axios from "axios";
 import program from "../components/list_components/programItem";
 import campaign from "../components/list_components/camapaignItem";
 import email from "../components/list_components/emailItem";
+import grilleEval from  "../components/list_components/evalgridItem"
 import formulaire from "../components/list_components/formItem";
 import files from "../components/list_components/files";
 import actions from "../components/list_components/action_menu";
@@ -188,13 +207,14 @@ export default {
     formulaire,
     files,
     actions,
-    tasks
+    tasks,
+    grilleEval
   },
 
   name: "list",
   props: {
     type: String,
-    actualLanguage: String,
+
     coordinatorAccess: Number
   },
   data: () => ({
@@ -204,6 +224,7 @@ export default {
       add_url: ""
     },
     loading: false,
+    actualLanguage:'',
 
     Select: Joomla.JText._("COM_EMUNDUS_ONBOARD_SELECT"),
     Deselect: Joomla.JText._("COM_EMUNDUS_ONBOARD_DESELECT"),
@@ -240,6 +261,7 @@ export default {
 
   computed: {
     list() {
+
       return list.getters.list;
     },
 
@@ -249,6 +271,15 @@ export default {
   },
 
   created() {
+    axios({
+      method: "get",
+      url: "index.php?option=com_emundus_onboard&controller=form&task=getActualLanguage",
+
+
+    }).then(response => {
+
+      this.actualLanguage=response.data.msg;
+    });
     this.actions.type = this.type;
     this.typeForAdd = this.type;
     if (this.typeForAdd == "form") {
@@ -258,6 +289,23 @@ export default {
       this.actions.add_url =  'index.php?option=com_emundus_onboard&view=' + this.typeForAdd + '&layout=add'
     }
     this.validateFilters();
+  },
+  watch:{
+    type:function (val){
+
+      this.actions.type = val;
+      this.typeForAdd = val=='formulaire'? 'form': val;
+
+      if (this.typeForAdd == "form") {
+        this.type = "formulaire";
+      }
+      if (this.typeForAdd != "files") {
+        let view= this.typeForAdd =='grilleEval' ?'form':this.typeForAdd
+        this.actions.add_url =  'index.php?option=com_emundus_onboard&view=' + view  + '&layout=add'
+      }
+      this.validateFilters();
+    }
+
   },
 
   methods: {
@@ -314,17 +362,20 @@ export default {
     },
 
     allFilters(filtersCount, filters) {
+      let controller=this.typeForAdd=='grilleEval'?'form':this.typeForAdd
       if (this.type != "files") {
         axios.get("index.php?option=com_emundus_onboard&controller=" +
-              this.typeForAdd +
+              controller +
               "&task=get" +
               this.typeForAdd +
               "count" +
               filtersCount
           ).then(response => {
+
+
             axios.get(
                 "index.php?option=com_emundus_onboard&controller=" +
-                  this.typeForAdd +
+                  controller +
                   "&task=getall" +
                   this.typeForAdd +
                   filters
@@ -365,6 +416,7 @@ export default {
       list.commit("resetSelectedItemsList");
     },
     selectItem(id) {
+
       list.commit("selectItem", id);
     }
   }

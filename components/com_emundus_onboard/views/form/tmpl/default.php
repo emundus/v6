@@ -10,8 +10,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors.js');
-$document->addStyleSheet('media/com_emundus_onboard/app.css');
+$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
+$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 
@@ -44,8 +44,8 @@ JText::script('COM_EMUNDUS_ONBOARD_FILTER');
 JText::script('COM_EMUNDUS_ONBOARD_FILTER_ALL');
 JText::script('COM_EMUNDUS_ONBOARD_FILTER_OPEN');
 JText::script('COM_EMUNDUS_ONBOARD_FILTER_CLOSE');
-JText::script('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH');
-JText::script('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH');
+JText::script('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM');
+JText::script('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM');
 JText::script('COM_EMUNDUS_ONBOARD_SELECT');
 JText::script('COM_EMUNDUS_ONBOARD_DESELECT');
 JText::script('COM_EMUNDUS_ONBOARD_TOTAL');
@@ -83,4 +83,4 @@ $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 
 <list id="em-list-vue" type="form" coordinatorAccess="<?= $coordinator_access ?>"/>
 
-<script src="media/com_emundus_onboard/app.js"></script>
+<script src="media/com_emundus_onboard/app_onboard.js"></script>

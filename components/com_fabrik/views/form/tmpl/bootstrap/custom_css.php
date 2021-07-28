@@ -1811,9 +1811,9 @@ a.btn-attach:active {
 
 @media all and (max-width: 479px) {
 
-  
- 
-    
+  .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter {
+    padding: 20px;
+   }
     
     .view-form .btn.send_the_request_for_individual_assessment {
        margin-left: 0px !important; 

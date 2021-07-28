@@ -198,7 +198,7 @@
                           <strong class="b switch"></strong>
                           <strong class="b track"></strong>
                         </div>
-                        <span class="ml-10px" style="color:black">{{Required}}</span>
+                        <span class="ml-10px" style="color:black">{{Required}} </span>
                       </a>
                     </div>
                   </div>

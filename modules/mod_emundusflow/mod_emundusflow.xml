@@ -96,6 +96,17 @@
 					<option
 							value="0">JHIDE</option>
 				</field>
+				<field
+						name="show_hikashop"
+						type="radio"
+						default="1"
+						label="MOD_EMUNDUSFLOW_SHOW_HIKASHOP_LABEL"
+						description="MOD_EMUNDUSFLOW_SHOW_HIKASHOP_DESC">
+					<option
+							value="1">JSHOW</option>
+					<option
+							value="0">JHIDE</option>
+				</field>
 				<field name="layout" type="modulelayout" label="JFIELD_ALT_LAYOUT_LABEL" description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
 
 				<field name="admission" type="list" default="0" description="MOD_EMUNDUSFLOW_IS_ADMISSION_DESC" label="MOD_EMUNDUSFLOW_IS_ADMISSION" >

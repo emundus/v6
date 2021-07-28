@@ -1958,27 +1958,21 @@ class EmundusControllerFiles extends JControllerLegacy
         //
         if (count($validFnums) == 1) {
             $eMConfig = JComponentHelper::getParams('com_emundus');
-            $application_form_name = $eMConfig->get('application_form_name', "application_form_pdf");
+            $application_form_name = empty($admission) ? $eMConfig->get('application_form_name', "application_form_pdf") : $eMConfig->get('application_admission_name', "application_form_pdf");
 
             if ($application_form_name != "application_form_pdf") {
 
-                require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-                $m_emails = new EmundusModelEmails;
+                require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                $m_checklist = new EmundusModelChecklist;
 
                 $fnum = $validFnums[0];
                 $post = array(
                     'FNUM' => $fnum,
                     'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
                 );
-                $tags = $m_emails->setTags($fnumsInfo[$fnum]['applicant_id'], $post, $fnum);
 
                 // Format filename
-                $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
-                $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
-                $application_form_name = $m_emails->stripAccents($application_form_name);
-                $application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
-                $application_form_name = preg_replace('/\s/', '', $application_form_name);
-                $application_form_name = strtolower($application_form_name);
+                $application_form_name = $m_checklist->formatFileName($application_form_name, $fnum, $post);
 
                 if ($file != $application_form_name.'.pdf' && file_exists(JPATH_BASE.DS.'tmp'.DS.$application_form_name.'.pdf')) {
                     unlink(JPATH_BASE.DS.'tmp'.DS.$application_form_name.'.pdf');
@@ -2090,6 +2084,47 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
+    public function export_letter() {
+        /// the main idea of this function is to use Stream of Buffer to pass data from CSV to Excel
+        /// params --> 1st: csv, 2nd: excel
+        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+        $jinput = JFactory::getApplication()->input;
+
+        // get source, letter name
+        $source = $jinput->getVar('source', null);
+        $letter = $jinput->getVar('letter', null);
+
+        /// copy excel to excel
+        $_start = JPATH_BASE.DS."tmp".DS. $source;
+        $_end = JPATH_BASE . $letter;
+
+        /// copy letter from /images/emundus/letters --> /tmp
+        $tmp_route = JPATH_BASE.DS."tmp".DS;
+        $randomString = JUserHelper::genRandomPassword(20);
+
+        $letter_file = end(explode('/', $letter));
+        $letter_file_random = explode('.xlsx', $letter_file)[0] .'_' . $randomString;
+
+        $_newLetter = JPATH_BASE.DS."tmp".DS.$letter_file_random.'.xlsx';
+        copy($_end, JPATH_BASE.DS."tmp".DS.$letter_file_random.'.xlsx');
+
+        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+        $_readerSpreadSheet = $reader->load($_start);
+
+        $_readerData = $_readerSpreadSheet->getActiveSheet()->toArray();
+
+        $_destination = \PhpOffice\PhpSpreadsheet\IOFactory::load($_newLetter);
+        $_destination->setActiveSheetIndex(0);
+
+        $_destination->getActiveSheet()->fromArray($_readerData,null,'A1');
+
+        $writer = new Xlsx($_destination);
+        $writer->save($_newLetter);
+
+        $result = array('status' => true, 'link' => $_newLetter);
+        echo json_encode((object) $result);
+        exit();
+    }
 
     public function export_xls_from_csv() {
         /** PHPExcel */
@@ -2605,7 +2640,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
 
                 if ($admission) {
-                    $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
+                    $admission_file= EmundusHelperExport::getAdmissionPDF($fnum, $options);
                 }
 
                 if (count($files_list) > 0) {
@@ -2623,6 +2658,28 @@ class EmundusControllerFiles extends JControllerLegacy
                     if (!$zip->addFile($dossier . $application_pdf, $filename)) {
                         continue;
                     }
+                }
+
+                if (file_exists($admission_file)) {
+                    $eMConfig = JComponentHelper::getParams('com_emundus');
+                    $fileName = $eMConfig->get('application_admission_name', null);
+
+                    if (is_null($fileName)) {
+                        $name = $fnum . '-admission.pdf';
+                    } else {
+                        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
+                        $m_checklist = new EmundusModelChecklist;
+                        $post = array(
+                            'FNUM' => $fnum,
+                        );
+                        $name = $m_checklist->formatFileName($fileName, $fnum, $post).'.pdf';
+                    }
+                    $filename = $application_form_name . DS . $name;
+                    if (!$zip->addFile($admission_file, $filename )) {
+                        continue;
+                    }
+                } else {
+                    continue;
                 }
 
                 if ($attachment || !empty($attachids)) {
@@ -2973,7 +3030,16 @@ class EmundusControllerFiles extends JControllerLegacy
 
                         $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                         if (!$anonymize_data) {
-                            $name = $this->sanitize_filename($fnumsInfos[$fnum]['applicant_name']).$attachInfos['lbl']."-".md5($rand.time()).".pdf";
+                            $eMConfig = JComponentHelper::getParams('com_emundus');
+                            $generated_doc_name = $eMConfig->get('generated_doc_name', "");
+                            if (!empty($generated_doc_name)) {
+                                require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                                $m_checklist = new EmundusModelChecklist;
+                                $name = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
+                            } else {
+                                $name = $this->sanitize_filename($fnumsInfos[$fnum]['applicant_name']);
+                            }
+                            $name = $name.$attachInfos['lbl']."-".md5($rand.time()).".pdf";
                         } else {
                             $name = $this->sanitize_filename($fnumsInfos[$fnum]).$attachInfos['lbl']."-".md5($rand.time()).".pdf";
                         }
@@ -3567,6 +3633,39 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
+    public function getExportExcelFilterById() {
+        $user_id  = JFactory::getUser()->id;
+
+        $jinput = JFactory::getApplication()->input;
+        $fid = $jinput->getVar('id', null);
+
+        $h_files = new EmundusHelperFiles;
+        $filters = $h_files->getExportExcelFilterById($fid);
+
+        echo json_encode((object)(array('status' => true, 'filter' => $filters)));
+        exit;
+    }
+
+    public function getAllLetters() {
+        $h_files = new EmundusHelperFiles;
+        $letters = $h_files->getAllLetters();
+
+        echo json_encode((object)(array('status' => true, 'letters' => $letters)));
+        exit;
+    }
+
+    public function getletter() {
+        $h_files = new EmundusHelperFiles;
+
+        $jinput = JFactory::getApplication()->input;
+        $lid = $jinput->getVar('letter', null);
+
+        $letter = $h_files->getLetterById($lid);
+
+        echo json_encode((object)(array('status' => true, 'letter' => $letter)));
+        exit;
+    }
+
     public function checkforms(){
         $user_id   = JFactory::getUser()->id;
         $jinput    = JFactory::getApplication()->input;
@@ -3861,6 +3960,18 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
+    public function getselectedelements() {
+        $jinput = JFactory::getApplication()->input;
+
+        $h_files = new EmundusHelperFiles;
+        $_elements = $jinput->getVar('elts', null);
+
+        $_getElements = $h_files->getSelectedElements($_elements);
+
+        echo json_encode((object)(array('status' => true, 'elements' => $_getElements, )));
+        exit;
+    }
+    
     // generate letter by template --> apply for $fnums
     public function generateletter() {
         $jinput = JFactory::getApplication()->input;
