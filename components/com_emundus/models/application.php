@@ -1637,9 +1637,9 @@ class EmundusModelApplication extends JModelList {
 
                                         // modulo for strips css //
                                         if ($modulo%2) {
-                                            $forms .= '<tr class="table-strip-1"><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td> '.JText::_($elt).'</td></tr>';
+                                            $forms .= '<tr class="table-strip-1">'. (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td>' : '') . '<td> '.JText::_($elt).'</td></tr>';
                                         } else {
-                                            $forms .= '<tr class="table-strip-2"><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td> '.JText::_($elt).'</td></tr>';
+                                            $forms .= '<tr class="table-strip-2">'. (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td>' : '') . '<td> '.JText::_($elt).'</td></tr>';
                                         }
                                         $modulo++;
                                         unset($params);
