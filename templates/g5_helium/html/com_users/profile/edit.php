@@ -164,7 +164,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_u
 				<a class="btn" href="index.php" title="<?php echo JText::_('JCANCEL'); ?>">
 					<?php echo JText::_('JCANCEL'); ?>
 				</a>
-                <button type="submit" class="btn btn-primary validate">
+                <button type="submit" class="btn btn-primary">
 					<?php echo JText::_('JSUBMIT'); ?>
                 </button>
 				<input type="hidden" name="option" value="com_users" />

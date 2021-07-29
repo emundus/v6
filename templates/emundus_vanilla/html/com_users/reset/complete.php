@@ -32,7 +32,7 @@ JHtml::_('behavior.formvalidator');
 		<?php endforeach; ?>
 		<div class="control-group">
 			<div class="controls">
-				<button type="submit" class="btn btn-primary validate">
+				<button type="submit" class="btn btn-primary">
 					<?php echo JText::_('JSUBMIT'); ?>
 				</button>
 			</div>
