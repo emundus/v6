@@ -1123,6 +1123,17 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       color: white;
     }
   }
+  button.btn.btn-primary:not(.current-tab) {
+    background: #cecece;
+    color: black;
+    border-color: #cecece;
+
+    &:hover{
+      background-color: transparent;
+      color: $base-primary-color;
+      border: 1px solid $base-primary-color;
+    }
+  }
 }
 
 .tchooz-single-campaign {
@@ -1151,7 +1162,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .below-content{
-    width: 100%;
+    width: 30%;
   }
 
   .campaingapply{
