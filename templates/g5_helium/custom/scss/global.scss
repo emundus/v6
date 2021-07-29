@@ -1130,8 +1130,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
     &:hover{
       background-color: transparent;
-      color: $base-primary-color;
-      border: 1px solid $base-primary-color;
+      color: $base-secondary-color;
+      border: 1px solid $base-secondary-color;
     }
   }
 }
@@ -1522,6 +1522,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 .btn.btn-primary {
   background: $base-secondary-color;
   border: 1px solid $base-secondary-color;
+  color: #fff;
   border-radius: 4px;
   padding: 8px 12px;
   text-transform: inherit;
@@ -1539,6 +1540,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 .btn.btn-secondary {
   background-color: transparent;
   color: $base-primary-color;
+  border: 1px solid $base-primary-color;
   border-radius: 4px;
   padding: 8px 12px;
   text-transform: inherit;
@@ -1548,7 +1550,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   &:hover, &:active, &:focus {
     background: $base-primary-color;
-    border: 1px solid $base-primary-color;
     color: #fff;
   }
 }
