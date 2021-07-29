@@ -119,6 +119,7 @@ label {
   background: $base-secondary-color;
   border: 1px solid $base-secondary-color;
   color: #fff;
+  text-transform: inherit;
 
   &:hover,
   &:active,
@@ -2908,10 +2909,11 @@ div#em-appli-block {
     display: flex;
     justify-content: center;
     flex-direction: row;
+    margin-top: 10%;
   }
 
   .container-404 {
-    display: flex;
+    display: flex;ma
     justify-content: space-around;
     flex-direction: row;
     align-items: center;
@@ -2929,27 +2931,11 @@ div#em-appli-block {
 
       p {
         text-align: center;
-
-        a {
-          background-color: $base-secondary-color;
-          color: #fff;
-          border: 1px solid $base-secondary-color;
-          padding: 8px 12px;
-          border-radius: 4px;
-
-          &:hover,
-          &:active,
-          &:focus {
-            background-color: transparent;
-            color: $base-secondary-color;
-            text-decoration: none;
-            border: 1px solid $base-secondary-color;
-          }
         }
       }
     }
   }
-}
+
 
 /******************************* RESPONSIVE ***********************************/
 
