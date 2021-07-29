@@ -1967,37 +1967,7 @@ p.readmore .btn,
   }
 }
 
-button.goback-btn,
-.btn-danger,
-.pull-right .btn:not(.dropdown-toggle),
-.below-content a,
-#member-profile .controls a,
-.toggle-editor .btn,
-.xclsform .panel-body button#delfilter,
-button#back,
-.btn.advanced-search-clearall,
-.emails-setup-page .form-actions button:not(.save),
-.documents-type-candidacy-page .fabrikDetails .btn,
-.fabrikUploadDelete .btn,
-.btn-toolbar .btn-group:nth-child(2) .btn {
-  background: transparent;
-  border: 1px solid $base-secondary-color;
-  text-shadow: none;
-  text-transform: none;
-  color: $base-secondary-color;
-  border-radius: 4px;
-  padding: 8px 12px;
-  font-weight: inherit;
-
-  &:hover,
-  &:focus {
-    background-color: $base-secondary-color;
-    color: #fff;
-    outline: none;
-  }
-}
-
-#member-profile .controls button.btn.btn-primary.validate {
+#member-profile .controls button.btn.btn-primary {
   background: $dark-blue;
   border: 2px solid $dark-blue;
   text-shadow: none;
@@ -2433,21 +2403,6 @@ ul.nav.nav-tabs.nav-stacked li a {
     }
   }
 
-  .view-login button.btn.btn-primary {
-    background-color: $base-secondary-color;
-    border-color: $base-secondary-color;
-    color: #fff;
-    //font-family: "Lato", sans-serif;
-    text-transform: capitalize;
-
-    &:hover,
-    &:active,
-    &:focus {
-      background-color: transparent;
-      color: $base-secondary-color;
-      border-color: $base-secondary-color;
-    }
-  }
 
 /* CONNEXION - CANDIDATER */
 
@@ -3285,10 +3240,6 @@ div#em-appli-block {
   .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter .page-header div.icon-title.applyicon {
     display: none;
   }
-
-    .homepage .campaigns-list .below-content a.btn.btn-primary.btn-creux.btn-orange {
-      margin-bottom: 5px;
-    }
 
   #g-container-main .g-container {
     padding: 0px 35px;
