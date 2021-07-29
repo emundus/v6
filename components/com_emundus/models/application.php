@@ -3141,7 +3141,17 @@ class EmundusModelApplication extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $em_application_payment = $eMConfig->get('application_payment', 'user');
+        /* First determine the program the user is applying to is in the emundus_hikashop_programs */
+        $query
+            ->select('hp.id')
+            ->from($db->quoteName('#__emundus_hikashop_programs', 'hp'))
+            ->leftJoin($db->quoteName('jos_emundus_hikashop_programs_repeat_code_prog','hpr').' ON '.$db->quoteName('hpr.parent_id').' = '.$db->quoteName('hp.id'))
+            ->where($db->quoteName('hpr.code_prog') . ' = ' .$db->quote($fnumInfos['training']));
+        $db->setQuery($query);
+        $rule = $db->loadResult();
+
+        /* If we find a row, we use the emundus_hikashop_programs, otherwise we use the eMundus config */
+        $em_application_payment = isset($rule) ? 'programmes' : $eMConfig->get('application_payment', 'user');
 
         if ($cancelled) {
             $order_status = array('cancelled');
@@ -3199,6 +3209,37 @@ class EmundusModelApplication extends JModelList {
                         ->where($db->quoteName('eh.status') . ' = ' . $fnumInfos['status'])
                         ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
                 } else{
+                    $query
+                        ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
+                }
+                break;
+
+            case 'programmes' :
+                /* By using the parent_id from the emundus_hikashop_programs table, we can get the list of the other programs that use the same settings*/
+                $hika_query = $db->getQuery(true);
+                $hika_query->select('hpr.code_prog')
+                    ->from($db->quoteName('#__emundus_hikashop_programs_repeat_code_prog', 'hpr'))
+                    ->where($db->quoteName('hpr.parent_id') . ' = ' .$db->quote($rule));
+                $db->setQuery($hika_query);
+                $progs_to_check = $db->loadColumn();
+
+                $fnum_query = $db->getQuery(true);
+                /* Get the list of the candiate's files that are in the list of programs in the year*/
+                $fnum_query
+                    ->select('cc.fnum')
+                    ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
+                    ->where($db->quoteName('sc.training') . ' IN (' .implode(',',$db->quote($progs_to_check)) . ')')
+                    ->andWhere($db->quoteName('sc.year') . ' = ' .$db->quote($fnumInfos['year']))
+                    ->andWhere($db->quoteName('cc.applicant_id') . ' = ' .$db->quote($fnumInfos['applicant_id']));
+                $db->setQuery($fnum_query);
+                $program_year_fnum = $db->loadColumn();
+
+                /* If we find another file in the list of programs during the same year, we can determine that he's already paid*/
+                if(!empty($program_year_fnum)) {
+                    $query
+                        ->where($db->quoteName('eh.fnum') . ' IN (' . implode(',', $program_year_fnum) . ')');
+                } else {
                     $query
                         ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
                 }
@@ -3550,7 +3591,7 @@ class EmundusModelApplication extends JModelList {
             $db->setQuery($query);
             $db->execute();
             $id = $db->loadResult();
-
+            $offset = JFactory::getConfig()->get('offset', 'UTC');
             $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
             $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
             $now = $dateTime->format('Y-m-d H:i:s');

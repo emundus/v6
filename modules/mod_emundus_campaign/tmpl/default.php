@@ -51,7 +51,7 @@ if ($locallang == "fr-FR") {
             <div class="navsearch-content">
                 <div class="rt-grid-4">
                     <div class="input-group">
-                        <input name="searchword" type="text" class="form-control" placeholder="<?php  echo JText::_("SEARCH")."..." ; ?>" <?php if (isset($searchword) && !empty($searchword)) { echo "value=".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8');}; ?>>
+                        <input name="searchword" type="text" class="form-control" placeholder=" <?php  echo JText::_("SEARCH")."..." ; ?>" <?php if (isset($searchword) && !empty($searchword)) { echo "value=".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8');}; ?>>
                         <span class="input-group-btn">
                             <button class="btn btn-default sch" type="submit"><?php  echo JText::_("SEARCH"); ?></button>
                         </span>

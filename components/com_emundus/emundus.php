@@ -358,6 +358,7 @@ JText::script('COM_EMUNDUS_MESSENGER_TITLE');
 JText::script('COM_EMUNDUS_MESSENGER_SEND_DOCUMENT');
 JText::script('COM_EMUNDUS_MESSENGER_ASK_DOCUMENT');
 JText::script('COM_EMUNDUS_MESSENGER_DROP_HERE');
+JText::script('COM_EMUNDUS_PLEASE_SELECT');
 JText::script('COM_EMUNDUS_MESSENGER_SEND');
 JText::script('COM_EMUNDUS_MESSENGER_WRITE_MESSAGE');
 JText::script('COM_EMUNDUS_MESSENGER_TYPE_ATTACHMENT');
@@ -396,6 +397,8 @@ JText::script('EMAIL_TAGS');
 
 JText::script('SEND_EMAIL_TOOLTIPS');
 JText::script('NO_LETTER_FOUND');
+
+JText::script('COM_EMUNDUS_MODEL_ERR');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');

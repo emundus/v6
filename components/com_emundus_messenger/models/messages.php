@@ -118,7 +118,7 @@ class EmundusmessengerModelmessages extends JModelList
             $new_message = $db->insertid();
             return $this->getMessageById($new_message);
         } catch (Exception $e){
-            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id .'and to campaign : '.$cid . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();
         }
     }
@@ -135,7 +135,7 @@ class EmundusmessengerModelmessages extends JModelList
             $db->setQuery($query);
             return $db->loadObject();
         } catch (Exception $e){
-            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id .'and to campaign : '.$cid . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages with ID '. $id . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();
         }
     }
@@ -156,7 +156,7 @@ class EmundusmessengerModelmessages extends JModelList
             $db->setQuery($query);
             return $db->loadObject();
         } catch (Exception $e){
-            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id .'and to campaign : '.$cid . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return 0;
         }
     }
@@ -177,7 +177,7 @@ class EmundusmessengerModelmessages extends JModelList
             $db->setQuery($query);
             return $db->loadResult();
         } catch (Exception $e){
-            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id .'and to campaign : '.$cid . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return 0;
         }
     }
@@ -218,9 +218,8 @@ class EmundusmessengerModelmessages extends JModelList
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-
         try {
-            if($applicant){
+            if ($applicant == 'true'){
                 $query->select('attachments')
                     ->from($db->quoteName('#__emundus_chatroom'))
                     ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));

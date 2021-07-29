@@ -269,8 +269,9 @@ export default {
     },
     initialisation() {
       this.tempEl = JSON.parse(JSON.stringify(this.element));
-      //console.log("initialisation");
+      console.log("initialisation");
       //console.log(this.tempEl.show_title.titleraw.split('_'));
+      console.log(this.tempEl);
       this.axiostrad(this.tempEl.intro_raw)
         .then(response => {
           this.intro.fr = response.data.fr;
@@ -281,6 +282,7 @@ export default {
         });
       this.axiostrad(this.tempEl.show_title.titleraw)
         .then(response => {
+          console.log(response);
           //this.label.fr = (response.data.fr.split('_'))[1];
          // this.label.en = (response.data.en.split('_'))[1];
           this.label.fr=response.data.fr
@@ -298,6 +300,7 @@ export default {
     }
   },
   created: function() {
+    //console.log('created initialisations');
     //this.initialisation();
   }
 };

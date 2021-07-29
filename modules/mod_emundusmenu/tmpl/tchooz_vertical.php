@@ -103,6 +103,14 @@ defined('_JEXEC') or die;
         width: 50px;
         margin: 5px 10px !important;
     }
+
+    .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo > a {
+        margin-bottom: 50px;
+    }
+    .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo img {
+        width: 30px;
+    }
+
     #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container{
         border-bottom: unset !important;
     }
@@ -219,10 +227,12 @@ defined('_JEXEC') or die;
         <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="/images/emundus/menus/menu.png" style="width: 30px"></button>
         <?php
 
-        echo '<li class="g-menu-item g-standard tchooz-vertical-item" style="margin-bottom: 50px !important;"><a class="item" href="/"><img src="/images/emundus/tchooz_favicon.png" alt="Accueil" style="width: 30px"></a>
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" href="/"><img src="/images/emundus/tchooz_favicon.png" alt="Accueil"></a>
         </li>';
 
+
         foreach ($list as $i => &$item) :
+
             if($item->alias == 'homepage') :
                 $item->anchor_css="item";
                 $class = 'item-'.$item->id.' g-standard';
@@ -324,13 +334,13 @@ defined('_JEXEC') or die;
                 }
                 // The next item is shallower.
                 elseif ($item->shallower) {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block">'.$item->title.'</div>';
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block"> '.$item->title.'</div>';
                     echo '</li>';
                     echo str_repeat('</ul></div></div></li></ul>', $item->level_diff);
                 }
                 // The next item is on the same level.
                 else {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block"><a'.$class.' href="'. $item->flink . '"'. $item->title .'>'.$item->title.'</a></div></div>';
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block"><a class class="'.$class.'" href="'. $item->flink . '"> '.$item->title.'</a></div></div>';
                     echo '</li>';
                 }
             endforeach;
@@ -403,7 +413,7 @@ defined('_JEXEC') or die;
                 }
                 // The next item is on the same level.
                 else {
-                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block">'.$item->title.'</div></div>';
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block"> <a class class="'.$class.'" href="'. $item->flink . '"> '.$item->title.'</a></div></div>';
                     echo '</li>';
                 }
             endif;
@@ -469,6 +479,9 @@ defined('_JEXEC') or die;
                 // The next item is on the same level.
                 else {
                     echo '<div class="message-tooltip" id="tooltip-'.$item->id.'"><div class="message-tooltip-block">'.$item->title.'</div></div>';
+
+                    //'<a'.$class.' href="'. $item->flink . '"'. $item->title .'></a>
+
                     echo '</li>';
                 }
             endif;
@@ -524,6 +537,7 @@ defined('_JEXEC') or die;
             jQuery(".sidebar-formbuilder").css("opacity","0");
             if(window.innerWidth >= 1280) {
                 jQuery("#g-footer").css("padding-left", "300px");
+                jQuery("#footer-rgpd").css("padding-left", "300px");
                 jQuery("#g-container-main").css("padding-left", "180px");
                 jQuery("#header-a").css("opacity", "1");
             }
@@ -542,6 +556,7 @@ defined('_JEXEC') or die;
             jQuery(".sidebar-formbuilder").css("opacity","0");
             if(window.innerWidth >= 1280) {
                 jQuery("#g-footer").css("padding-left", "300px");
+                jQuery("#footer-rgpd").css("padding-left", "300px");
                 jQuery("#g-container-main").css("padding-left", "180px");
                 jQuery("#header-a").css("opacity", "1");
             }
@@ -563,6 +578,7 @@ defined('_JEXEC') or die;
             if(window.innerWidth >= 1280) {
                 jQuery("#g-container-main").css("padding-left", "0");
                 jQuery("#g-footer").css("padding-left", "80px");
+                jQuery("#footer-rgpd").css("padding-left", "80px");
                 jQuery("#header-a").css("opacity", "0");
             }
             setTimeout(() =>{

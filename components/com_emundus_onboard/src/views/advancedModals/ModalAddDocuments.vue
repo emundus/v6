@@ -21,10 +21,10 @@
           </div>
                 <div class="update-field-header">
             <h2 class="update-title-header" v-if="currentDoc ==null">
-               {{ createDocument }}
+               {{ translations.createDocument }}
             </h2>
             <h2 class="update-title-header" v-if="currentDoc != null">
-               {{ editDocument }}
+               {{ translations.editDocument }}
             </h2>
                 </div>
         </div>
@@ -38,19 +38,21 @@
               <strong class="b switch"></strong>
               <strong class="b track"></strong>
             </div>
-            <span class="ml-10px">{{ Required }}</span>
+            <span class="ml-10px">{{ translations.Required }}</span>
           </a>
         </div>
+        <div class="form-group" v-if="can_be_deleted">
+          <button type="button" class="bouton-sauvergarder-et-continuer w-delete" @click="deleteModel">{{translations.DeleteDocTemplate}}</button>
+        </div>
         <div class="form-group" v-if="currentDoc ==null">
-          <label for="modelName">{{ DocTemplate }} :</label>
-          <select v-model="doc" class="dropdown-toggle" :disabled="Object.keys(models).length <= 0">
+          <label for="modelName">{{ translations.DocTemplate }} :</label>
+          <select v-model="doc" class="dropdown-toggle" id="modelName" :disabled="Object.keys(models).length <= 0">
             <option :value="null"></option>
-            <option v-for="(modelT, index) in models"
-                    :value="modelT.id">{{ modelT.name[langue] }}  ({{ modelT.allowed_types }})</option>
+            <option v-for="(modelT, index) in models" :value="modelT.id">{{ modelT.name[langue] }}  ({{ modelT.allowed_types }})</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="name">{{ Name }}* :</label>
+          <label for="name">{{ translations.Name }}* :</label>
           <div class="input-can-translate">
             <input type="text" maxlength="100" class="form__input field-general w-input mb-0"
                    v-model="form.name[langue]" id="name" :class="{ 'is-invalid': errors.name}"/>
@@ -59,11 +61,11 @@
           </div>
           <translation :label="form.name" :actualLanguage="langue" v-if="translate.name"></translation>
           <p v-if="errors.name" class="error col-md-12 mb-2">
-            <span class="error">{{ NameRequired }}</span>
+            <span class="error">{{ translations.NameRequired }}</span>
           </p>
         </div>
         <div class="form-group">
-          <label for="description">{{ Description }} :</label>
+          <label for="description">{{ translations.Description }} :</label>
           <div class="input-can-translate">
             <textarea type="text" class="form__input field-general w-input mb-0" v-model="form.description[langue]"
                       id="description"/>
@@ -74,15 +76,15 @@
           <translation :label="form.description" :actualLanguage="langue" v-if="translate.description"></translation>
         </div>
         <div class="form-group">
-          <label for="nbmax">{{ MaxPerUser }}* :</label>
+          <label for="nbmax">{{ translations.MaxPerUser }}* :</label>
           <input type="number" min="1" class="form__input field-general w-input" v-model="form.nbmax" id="nbmax"
                  :class="{ 'is-invalid': errors.nbmax}"/>
           <p v-if="errors.nbmax" class="error col-md-12 mb-2">
-            <span class="error">{{ MaxRequired }}</span>
+            <span class="error">{{ translations.MaxRequired }}</span>
           </p>
         </div>
         <div class="form-group">
-          <label for="nbmax" :class="{ 'is-invalid': errors.selectedTypes}">{{ FileType }}* :</label>
+          <label for="nbmax" :class="{ 'is-invalid': errors.selectedTypes}">{{ translations.FileType }}* :</label>
           <div class="users-block" :class="{ 'is-invalid': errors.selectedUsers}">
             <div v-for="(type, index) in types" :key="index" class="user-item">
               <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type.value]">
@@ -92,7 +94,7 @@
             </div>
           </div>
           <p v-if="errors.selectedTypes" class="error col-md-12 mb-2">
-            <span class="error">{{ TypeRequired }}</span>
+            <span class="error">{{ translations.TypeRequired }}</span>
           </p>
         </div>
       </div>
@@ -101,12 +103,12 @@
             type="button"
             class="bouton-sauvergarder-et-continuer w-retour"
             @click.prevent="$modal.hide('modalAddDocuments')">
-          {{ Retour }}
+          {{ translations.Retour }}
         </button>
         <button type="button"
                 class="bouton-sauvergarder-et-continuer"
                 @click.prevent="createNewDocument()">
-          {{ Continuer }}
+          {{ translations.Continuer }}
         </button>
       </div>
     </modal>
@@ -118,6 +120,7 @@ import axios from "axios";
 
 const qs = require("qs");
 import Translation from "@/components/translation"
+import Swal from "sweetalert2";
 
 export default {
   name: "modalAddDocuments",
@@ -207,24 +210,32 @@ export default {
 
       selectedTypes: [],
       models: [],
-      createDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT"),
-      editDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_EDIT_DOCUMENT"),
-      Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-      DocTemplate: Joomla.JText._("COM_EMUNDUS_ONBOARD_TEMPLATE_DOC"),
-      Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_LASTNAME"),
-      Description: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
-      MaxPerUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAXPERUSER"),
-      FileType: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED"),
-      NameRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL"),
-      MaxRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAXPERUSER_REQUIRED"),
-      TypeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED_REQUIRED"),
-      TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-      Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
+      can_be_deleted: false,
+      translations: {
+        DeleteDocTemplate: Joomla.JText._("COM_EMUNDUS_ONBOARD_DELETE_TEMPLATE_DOC"),
+        createDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT"),
+        editDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_EDIT_DOCUMENT"),
+        Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+        DocTemplate: Joomla.JText._("COM_EMUNDUS_ONBOARD_TEMPLATE_DOC"),
+        Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_LASTNAME"),
+        Description: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
+        MaxPerUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAXPERUSER"),
+        FileType: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED"),
+        NameRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL"),
+        MaxRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAXPERUSER_REQUIRED"),
+        TypeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED_REQUIRED"),
+        TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+        Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
+      }
     };
   },
   methods: {
     beforeClose(event) {
+      this.doc = null;
+      this.currentDoc = null;
+      this.can_be_deleted = false;
+
       this.form = {
         name: {
           fr: '',
@@ -242,9 +253,6 @@ export default {
           'xls;xlsx;odf': false,
         },
       };
-
-      this.doc = null;
-      this.currentDoc = null;
 
       this.$emit("modalClosed");
     },
@@ -375,13 +383,58 @@ export default {
         });
     },
 
+    deleteModel(){
+      Swal.fire({
+        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_DELETE_TEMPLATE_DOC"),
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: '#12db42',
+        confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+        cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+        reverseButtons: true
+      }).then(result => {
+        if(result.value){
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus_onboard&controller=form&task=deletemodeldocument",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              did: this.doc,
+            })
+          }).then((response) => {
+            console.log(response);
+            if(response.data.allowed){
+              Swal.fire({
+                backdrop: true,
+                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODEL_DELETED"),
+                text: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODEL_DELETED_TEXT"),
+                showConfirmButton: true,
+                timer: 5000
+              }).then(() => {
+                this.$modal.hide('modalAddDocuments')
+              });
+            } else {
+              Swal.fire({
+                backdrop: true,
+                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANNOT_DELETE"),
+                text: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANNOT_DELETE_TEXT"),
+                showConfirmButton: true,
+                timer: 5000
+              })
+            }
+          });
+        }
+      });
+    },
+
     getModelsDocs() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus_onboard&controller=form&task=getundocuments",
       }).then(response => {
         this.models = response.data.data;
-
 
         if (this.currentDoc != null) {
           this.doc = this.currentDoc;
@@ -426,8 +479,6 @@ export default {
 
   watch: {
     doc: function (val) {
-
-
       if (val != null) {
         this.model = this.models.find(model => model.id == val);
 
@@ -456,6 +507,11 @@ export default {
           this.form.selectedTypes['xls;xlsx;odf'] = true;
         } else {
           this.form.selectedTypes['xls;xlsx;odf'] = false;
+        }
+        if(this.model.can_be_deleted){
+          this.can_be_deleted = true;
+        } else {
+          this.can_be_deleted = false;
         }
         this.form.nbmax = this.model.nbmax;
       } else {
@@ -505,6 +561,7 @@ export default {
 .users-block {
   height: 15em;
   overflow: scroll;
+  overflow-x: hidden;
 }
 
 .user-item {
@@ -517,8 +574,7 @@ export default {
 }
 
 .bigbox {
-  height: 30px !important;
-  width: 30px !important;
+  margin: 0 !important;
   cursor: pointer;
 }
 

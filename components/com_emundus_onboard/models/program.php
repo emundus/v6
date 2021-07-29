@@ -1019,7 +1019,9 @@ class EmundusonboardModelprogram extends JModelList {
                 ->from($db->quoteName('#__fabrik_formgroup'))
                 ->where($db->quoteName('group_id') . ' = ' . $db->quote($fabrik_groups[0]));
             $db->setQuery($query);
-            return $db->loadResult();
+
+          return  $db->loadResult();
+
         } catch (Exception $e){
             JLog::add('component/com_emundus_onboard/models/program | Error at getting evaluation grid of the program ' . $pid . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;

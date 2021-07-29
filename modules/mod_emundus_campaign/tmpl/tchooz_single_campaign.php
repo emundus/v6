@@ -110,31 +110,6 @@ switch ($order) {
                     <?= (!empty($mod_em_campaign_show_timezone)) ? JText::_('TIMEZONE').$offset : ''; ?>
                 </div>
             </div>
-            <div class="below-content">
-                <?php $formUrl = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course='.$currentCampaign->code.'&cid='.$currentCampaign->id); ?>
-
-                <?php if ($currentCampaign->apply_online == 1) :?>
-                    <a class="btn btn-secondary"  role="button" href="index.php"><?= JText::_('GO_BACK');?></a>
-                    <?php
-                    // The register URL does not work  with SEF, this workaround helps counter this.
-                    if ($sef == 0) {
-                        if(!isset($redirect_url) || empty($redirect_url)) {
-                            $redirect_url = "index.php?option=com_users&view=registration";
-                        }
-                        $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
-                    } else {
-                        $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
-                    }
-                    ?>
-                    <a class="btn btn-primary" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
-                <?php else :?>
-                    <?php if ($mod_em_campaign_get_link) :?>
-                        <a class="btn btn-secondary" role="button" href="index.php" data-toggle="sc-modal" ><?= JText::_('GO_BACK');?></a>
-                    <?php else :?>
-                        <a class="btn btn-primary" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                    <?php endif; ?>
-                <?php endif; ?>
-            </div>
         </div>
     </div><!-- Close campaign-content -->
     <div id="faq">
@@ -145,12 +120,41 @@ switch ($order) {
         <?php endforeach; ?>
     </div>
     <div id="documents"></div>
+    <div class="single-campaign">
+        <div class="below-content">
+            <?php $formUrl = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course='.$currentCampaign->code.'&cid='.$currentCampaign->id); ?>
+
+            <?php if ($currentCampaign->apply_online == 1) :?>
+                <a class="btn btn-primary btn-creux"  role="button" href="index.php"><?= JText::_('GO_BACK');?></a>
+                <?php
+                // The register URL does not work  with SEF, this workaround helps counter this.
+                if ($sef == 0) {
+                    if(!isset($redirect_url) || empty($redirect_url)) {
+                        $redirect_url = "index.php?option=com_users&view=registration";
+                    }
+                    $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
+                } else {
+                    $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
+                }
+                ?>
+                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+            <?php else :?>
+                <?php if ($mod_em_campaign_get_link) :?>
+                    <a class="btn btn-primary btn-creux" role="button" href="index.php" data-toggle="sc-modal" ><?= JText::_('GO_BACK');?></a>
+                <?php else :?>
+                    <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
+    </div>
 </div>
 
     <script>
         window.onload = function() {
             <?php if (in_array('campaign', $modules_tabs)) : ?>
                 document.getElementById('campaign_tab').classList.add('current-tab');
+            <?php else :?>
+                document.getElementById('campaign').style.display = 'none';
             <?php endif; ?>
             <?php if (in_array('faq', $modules_tabs)) : ?>
                 <?php if (!in_array('campaign', $modules_tabs)) : ?>
@@ -162,6 +166,7 @@ switch ($order) {
             <?php if (in_array('documents', $modules_tabs)) : ?>
                 <?php if (!in_array('campaign', $modules_tabs) && !in_array('faq', $modules_tabs)) : ?>
                     document.getElementById('documents_tab').classList.add('current-tab');
+                    document.getElementById('documents').appendChild(document.getElementsByClassName('campaign-documents')[0].parentElement);
                 <?php else :?>
                     document.getElementById('documents').appendChild(document.getElementsByClassName('campaign-documents')[0].parentElement);
                     document.getElementById('documents').style.display = 'none';

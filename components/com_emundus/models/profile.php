@@ -222,7 +222,7 @@ class EmundusModelProfile extends JModelList {
         $query = $this->_db->getQuery(true);
 
         $query
-            ->select(['attachment.*', $this->_db->quoteName('profile.id', 'selected'), $this->_db->quoteName('profile.mandatory'), $this->_db->quoteName('profile.bank_needed')])
+            ->select(['attachment.*', $this->_db->quoteName('profile.id', 'selected'), $this->_db->quoteName('profile.mandatory'), $this->_db->quoteName('profile.bank_needed'), $this->_db->quoteName('profile.displayed')])
             ->from($this->_db->quoteName('#__emundus_setup_attachments', 'attachment'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles','profile').' ON '.$this->_db->quoteName('profile.attachment_id').' = '.$this->_db->quoteName('attachment.id') . ' AND ' . $this->_db->quoteName('profile.profile_id').' = '. (int)$p)
             ->where($this->_db->quoteName('attachment.published') . ' = 1')

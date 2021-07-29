@@ -47,7 +47,7 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
     </div>
   </div>
     <?php endif; ?>
-<?php if ($application_fee == 1): ?>
+<?php if ($application_fee == 1 && $show_hikashop == 1): ?>
   <div class="<?= ($option=="com_hikashop")?"active":""; ?> <?= $step_paiement; ?> step">
     <?php if ($paid == false && !empty($sentOrder) && !$orderCancelled): ?>
       <?php if ($sentOrder->order_payment_method == 'paybox') :?>

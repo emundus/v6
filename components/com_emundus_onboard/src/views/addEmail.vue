@@ -78,7 +78,7 @@
             />
           </div>
 
-          <!-- Email -- tags         -->
+<!--          &lt;!&ndash; Email &#45;&#45; tags         &ndash;&gt;
           <div class="form-group">
             <label>{{ Tags }}</label>
             <select v-model="selectedTags" class="dropdown-toggle w-select" multiple>
@@ -86,13 +86,13 @@
             </select>
           </div>
 
-          <!-- Email -- document type         -->
+          &lt;!&ndash; Email &#45;&#45; document type         &ndash;&gt;
           <div class="form-group">
             <label>{{ DocumentType }}</label>
             <select v-model="selectedDocuments" class="dropdown-toggle w-select" multiple>
               <option v-for="document in documents" :value="document.id">{{document.value}}</option>
             </select>
-          </div>
+          </div>-->
 
         </div>
         <div class="divider"></div>
