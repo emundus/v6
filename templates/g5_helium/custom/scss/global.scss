@@ -2869,6 +2869,11 @@ div#em-appli-block {
 
 
 .view-list {
+
+  .page-header h1 {
+    color: #000;
+  }
+
   .filtertable {
     thead tr.fabrik___heading {
 
@@ -2893,10 +2898,8 @@ div#em-appli-block {
 
     b.caret {
       color: $dark-blue;
-    }
-
-    b.caret {
-      color: $dark-blue;
+      border-top-color: $dark-blue;
+      border-bottom-color: $dark-blue;
     }
 
     a:hover b.caret,
