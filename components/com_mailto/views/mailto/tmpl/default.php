@@ -33,7 +33,7 @@ JHtml::_('behavior.keepalive');
 			<?php endforeach; ?>
 			<div class="control-group">
 				<div class="controls">
-					<button type="submit" class="btn btn-primary validate">
+					<button type="submit" class="btn btn-primary">
 						<?php echo JText::_('COM_MAILTO_SEND'); ?>
 					</button>
 					<button type="button" class="button" onclick="window.close();return false;">
