@@ -13,66 +13,59 @@ $dark-blue: #16AFE1;
 $light-green: #32EE5F;
 $dark-green: #12DB42;
 $light-yellow: #F0EE6D;
+
 $night-blue: #353544;
 $dark-grey: #5A5A72;
 $grey: #B0B0BF;
 $light-grey: #F4F4F6;
 $white: #FFFFFF;
+
 $red: #e5283B;
+
 $complete-gradient: linear-gradient(rgba(240,238,109,10), rgba(50,238,95,50), rgba(240,238,109,96));
 $simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
 
 
-/* TITLES  */
+/* GENERAL */
 
-h1, h2, h3, h4, h5, h6 {
+*:focus {
+  outline: none;
+}
+
+body {
+  line-height: normal;
+
+  p {
+    margin: 0;
+
+    a:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: $base-primary-color;
+  margin-top: 50px;
+  margin-bottom: 50px;
   font-weight: 700;
 }
 
 h1 {
-  margin: 50px 0px;
-  font-size: 2.25rem;
+  font-size: 2em;
+  position: relative;
 }
 
-h2 {
-  margin: 50px 0px;
-  font-size: 1.9rem;
-}
-
-h3 {
-  margin: 30px 0px;
-  font-size: 1.5rem;
-}
-
-h4 {
-  margin: 30px 0px;
-  font-size: 1.25rem;
-}
-
-h5 {
-  margin: 30px 0px;
-  font-size: 1rem;
-}
-
-h6 {
-  margin: 30px 0px;
-  font-size: 0.85rem;
-}
-
-.modal-dialog .modal-body, .contentpane.modal {
-  h1, h2, h3, h4, h5, h6 {
-    color: $dark-blue !important;
-  }
-
-  form legend {
-    color: $dark-blue !important;
-  }
-}
-
-.box h2 {
-  font-size: 1.5rem;
-  margin-top: 20px !important;
+.view-login h1::after,
+.view-registration h1::after,
+.view-reset h1::after,
+.view-form.em-formRegistrationCenter h1::after {
+  display: none !important;
 }
 
 .swal2-title {
@@ -80,7 +73,18 @@ h6 {
   margin: 10px 0 20px 0;
 }
 
-/* TEXT / PARAGRAPH */
+button.swal2-styled{
+  padding: 5px 20px;
+  border-radius: 25px !important;
+}
+
+button.swal2-confirm{
+  background: #12DB42 !important;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
 
 a,
 p,
@@ -96,6 +100,10 @@ legend {
   line-height: normal;
 }
 
+a:focus {
+  outline: none;
+}
+
 a {
   color: $base-secondary-color;
 }
@@ -107,70 +115,15 @@ label {
   display: inline-block;
 }
 
-.hidden {
-  display: none;
-}
-
-/* BUTTONS */
-
-/* PRIMARY BUTTONS */
-
-.btn.btn-primary {
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
-  color: #fff;
-  text-transform: inherit;
-  font-size: 14px;
-  line-height: normal;
-  letter-spacing: normal;
-  padding: 8px 12px;
-
-  &:hover,
-  &:active,
-  &:focus {
-    background: transparent;
-    color: $base-secondary-color;
-    border-color: $base-secondary-color;
-  }
-}
-
-/* SECONDARY BUTTONS */
-
-.btn.btn-secondary {
-  background: transparent;
-  border: 1px solid $base-primary-color;
-  color: $base-primary-color;
-  font-size: 14px;
-  line-height: normal;
-  letter-spacing: normal;
-  padding: 8px 12px;
-
-  &:hover,
-  &:active,
-  &:focus {
-    background: $base-primary-color;
-    color: #fff;
-    border-color: $base-primary-color;
-  }
-}
-
-button.swal2-styled{
-  padding: 5px 20px;
-  border-radius: 25px !important;
-}
-
-/*************************** TCHOOZ ***************************/
-
-button.swal2-confirm{
-  background: #12DB42 !important;
-}
-
 .view-form label.fabrikLabel.fabrikTip {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
+.hidden {
+  display: none;
+}
 
 .moduletable .nav li {
   margin-bottom: 0;
@@ -186,7 +139,10 @@ button.swal2-confirm{
   }
 }
 
-
+.box h2 {
+  font-size: 1.5rem;
+  margin-top: 20px !important;
+}
 
 .col-xs-1,
 .col-sm-1,
@@ -320,7 +276,21 @@ ul {
   }
 }
 
+.contentpane.modal {
+  h1, h2, h3, h4, h5, h6 {
+    color: $dark-blue !important;
+  }
 
+  form legend {
+    color: $dark-blue !important;
+  }
+}
+
+.modal-dialog .modal-body {
+  h1, h2, h3, h4, h5, h6 {
+    color: $dark-blue !important;
+  }
+}
 
 
 .contentpane.modal form .fabrikActions.form-actions button.btn {
@@ -375,6 +345,10 @@ ul {
 
 #system-message .alert.alert-message h1 {
   margin: 0px;
+
+  &::after {
+    display: none;
+  }
 }
 
 #system-message{
@@ -417,6 +391,16 @@ legend {
   overflow: visible;
 }
 
+p,
+a,
+legend,
+select,
+textarea,
+label,
+input[type="text"],
+.ui.warning.message {
+  //font-family: "Lato", sans-serif;
+}
 
 p,
 legend,
@@ -738,6 +722,40 @@ body>.g-container {
     float: right;
   }
 
+  .moduletable .header-right {
+    a.btn.btn-danger {
+
+      &.btn-creer-compte,
+      &.inscription {
+        background: $base-secondary-color;
+        border: 1px solid $base-secondary-color;
+        color: #fff;
+
+        &:hover,
+        &:active,
+        &:focus {
+          background: transparent;
+          color: $base-secondary-color;
+          border-color: $base-secondary-color;
+        }
+      }
+
+      &:not(btn-creer-compte) {
+        background: transparent;
+        border: 1px solid $base-primary-color;
+        color: $base-primary-color;
+
+        &:hover,
+        &:active,
+        &:focus {
+          background: $base-primary-color;
+          color: #fff;
+          border-color: $base-primary-color;
+        }
+      }
+    }
+  }
+
   #userDropdownIcon {
     background-color: white;
     font-size: 1.5em;
@@ -809,6 +827,23 @@ body>.g-container {
 
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
 
+view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
+.view-form .em-formRegistrationCenter .row-fluid .span4 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
+  background-color: $base-secondary-color;
+  color: #ffffff;
+  border-color: $base-secondary-color;
+  text-transform: initial;
+  margin-left: 0px !important;
+
+  &:hover,
+  &active,
+  &:focus {
+    background-color: transparent;
+    color: $base-secondary-color;
+    border-color: $base-secondary-color;
+  }
+}
+
 .view-registration .em-register-warning {
   border: 1px solid $base-primary-color;
 }
@@ -834,6 +869,9 @@ body>.g-container {
     padding: 0 !important;
   }
 
+  h1::after {
+    display: none !important;
+  }
 
   .right-side.campaingapply {
     padding-left: 0px !important;
@@ -846,6 +884,37 @@ body>.g-container {
     justify-content: space-between;
     padding: 0px;
     margin-bottom: 50px;
+
+    .btn.btn-plein {
+
+      background-color: $base-secondary-color;
+      border-color: $base-secondary-color;
+      color: #fff;
+      font-size: 14px !important;
+
+      &:hover,
+      &:active,
+      &:focus {
+        background-color: #ffffff;
+        color: $base-secondary-color;
+        border-color: $base-secondary-color;
+      }
+    }
+
+    .btn.btn-creux {
+      background-color: transparent;
+      border-color: $base-primary-color;
+      color: $base-primary-color;
+      font-size: 14px !important;
+
+      &:hover,
+      &:active,
+      &:focus {
+        background-color: $base-primary-color;
+        color: #fff;
+        border-color: $base-primary-color;
+      }
+    }
   }
 }
 
@@ -938,12 +1007,47 @@ body>.g-container {
 
 /* PAGE ACCUEIL */
 .homepage {
+  h1:first-child {
+    margin-bottom: 25px;
+  }
 
   .blog-featuredhomepage {
     margin-bottom: 50px;
     margin-top: 50px;
   }
 
+  /* MODULE EMUNDUS CAMPAIGN */
+  .campaigns-list .below-content {
+
+    /*COULEURS BTNS - PLUS D'INFO ET CANDIDATER */
+    a.btn.btn-primary.btn-plein.btn-blue {
+      background-color: $base-secondary-color;
+      border-color: $base-secondary-color;
+      color: #fff;
+
+      &:hover,
+      &:active,
+      &:focus {
+        background-color: transparent;
+        color: $base-secondary-color;
+        border-color: $base-secondary-color;
+      }
+    }
+
+    a.btn.btn-primary.btn-creux.btn-orange {
+      background-color: transparent;
+      border-color: $base-primary-color;
+      color: $base-primary-color;
+
+      &:hover,
+      &:active,
+      &:focus {
+        background-color: $base-primary-color;
+        color: #fff;
+        border-color: $base-primary-color;
+      }
+    }
+  }
   /* DOCUMENTS PREALABLES */
   .em-infoComp li i {
     margin-left: 10px;
@@ -1096,6 +1200,21 @@ body>.g-container {
     font-weight: 300;
     font-size: 14px;
   }
+
+  button.btn.btn-primary.validate {
+    background-color: $base-secondary-color;
+    border-color: $base-secondary-color;
+    color: #fff;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: transparent;
+      color: $base-secondary-color;
+      border-color: $base-secondary-color;
+    }
+  }
+
 }
 
 /* LISTES  */
@@ -1483,12 +1602,30 @@ button.btn-primary {
   border-radius: 4px;
   padding: 8px 12px;
 
-  &:hover {
-    background-color: transparent;
-    color: $base-secondary-color;
-    outline: none;
+    &:hover {
+      background-color: transparent;
+      color: $base-secondary-color;
+      outline: none;
+    }
   }
-}
+
+  a.btn,
+  span.btn {
+    background: $base-primary-color;
+    border: 1px solid $base-primary-color;
+    border-radius: 4px;
+    padding: 8px 12px !important;
+    color: #fff;
+
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: transparent;
+      color: $base-primary-color;
+      outline: none;
+      border: 1px solid $base-primary-color;
+    }
+  }
 
 *.btn,
 a.btn-attach,
@@ -1634,6 +1771,111 @@ p.readmore .btn,
     }
   }
 }
+
+  button.save-btn,
+  .btn-success,
+  button.save,
+  button.save_continue,
+  button.send,
+  a.btn-attach,
+  #trombi_preview,
+  #trombi_generate,
+  .indicateurs-page .btn,
+  .fabrik_filter_submit,
+  button.importation,
+  a.btn-warning,
+  a.btn-info,
+  .header-right .btn-danger,
+  button.btn-primary,
+  .em-generated-docs .em-doc-zip,
+  .xclsform .panel-body button#savefilter,
+  .modal-dialog #chargement a.btn,
+  a#em-doc-zip,
+  .btn.advanced-search-apply,
+  .toggle-addoption.btn,
+  .candidacy-files-list a#send,
+  .choice-statut-btn {
+    background: $base-primary-color;
+    border: 1px solid $base-primary-color;
+    text-shadow: none;
+    text-transform: initial;
+    padding: 8px 12px;
+  }
+
+  button.save-btn:hover,
+  button.save-btn:active,
+  button.save-btn:focus,
+  .btn-success:hover,
+  .btn-success:focus,
+  .btn-success:active,
+  button.save:hover,
+  button.save:active,
+  button.save:focus,
+  button.save_continue:hover,
+  button.save_continue:active,
+  button.save_continue:focus,
+  button.send:hover,
+  button.send:active,
+  button.send:focus,
+  a.btn-attach:hover,
+  a.btn-attach:active,
+  a.btn-attach:focus,
+  #trombi_preview:hover,
+  #trombi_preview:active,
+  #trombi_preview:focus,
+  #trombi_generate:hover,
+  #trombi_generate:active,
+  #trombi_generate:focus,
+  .indicateurs-page .btn:hover,
+  .indicateurs-page .btn:active,
+  .indicateurs-page .btn:focus,
+  .fabrik_filter_submit:hover,
+  .fabrik_filter_submit:active,
+  .fabrik_filter_submit:focus,
+  button.importation:hover,
+  button.importation:active,
+  button.importation:focus,
+  a.btn-warning:hover,
+  a.btn-warning:active,
+  a.btn-warning:focus,
+  a.btn-info:hover,
+  a.btn-info:active,
+  a.btn-info:focus,
+  .header-right .btn-danger:hover,
+  .header-right .btn-danger:focus,
+  .header-right .btn-danger:active,
+  button.btn-primary:hover,
+  button.btn-primary:active,
+  button.btn-primary:focus,
+  .em-generated-docs .em-doc-zip:hover,
+  .em-generated-docs .em-doc-zip:active,
+  .em-generated-docs .em-doc-zip:focus,
+  .xclsform .panel-body button#savefilter:hover,
+  .xclsform .panel-body button#savefilter:active,
+  .xclsform .panel-body button#savefilter:focus,
+  .modal-dialog #chargement a.btn:hover,
+  .modal-dialog #chargement a.btn:active,
+  .modal-dialog #chargement a.btn:focus,
+  a#em-doc-zip:hover,
+  a#em-doc-zip:active,
+  a#em-doc-zip:focus,
+  .btn.advanced-search-apply:hover,
+  .btn.advanced-search-apply:active,
+  .btn.advanced-search-apply:focus,
+  .toggle-addoption.btn:hover,
+  .toggle-addoption.btn:active,
+  .toggle-addoption.btn:focus,
+  .candidacy-files-list a#send:hover,
+  .candidacy-files-list a#send:active,
+  .candidacy-files-list a#send:focus,
+  .choice-statut-btn:hover,
+  .choice-statut-btn:active,
+  .choice-statut-btn:focus {
+    background-color: transparent;
+    color: $base-primary-color;
+    outline: none;
+    border: 1px solid $base-primary-color;
+  }
 
 .span4.offset1>.btn-group>button.button {
   background: $base-primary-color;
@@ -2138,12 +2380,28 @@ ul.nav.nav-tabs.nav-stacked span {
 ul.nav.nav-tabs.nav-stacked li a {
   color: $base-secondary-color;
 
-  &:hover,
-  &:focus,
-  &:active {
-    color: $base-secondary-color;
+    &:hover,
+    &:focus,
+    &:active {
+      color: $base-secondary-color;
+    }
   }
-}
+
+  .view-login button.btn.btn-primary {
+    background-color: $base-secondary-color;
+    border-color: $base-secondary-color;
+    color: #fff;
+    //font-family: "Lato", sans-serif;
+    text-transform: capitalize;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: transparent;
+      color: $base-secondary-color;
+      border-color: $base-secondary-color;
+    }
+  }
 
 /* CONNEXION - CANDIDATER */
 
@@ -2888,16 +3146,26 @@ div#em-appli-block {
 
 
 .error-page {
-    .lang-inline {
-      display: inline-flex;
-      list-style: none;
-      float: unset;
-      justify-content: center;
-      margin: 0;
 
-      li {
-        margin-left: 15px;
-      }
+    div.advanced-dropdown {
+      margin-right: 3em;
+       form {
+         margin: 3px 0 !important;
+         a.langChoose:link, a.langChoose:visited {
+           padding: 5px;
+         }
+         .lang-inline {
+           display: inline-flex;
+           list-style: none;
+           float: unset;
+           justify-content: center;
+           margin: 0;
+
+           li {
+             margin-left: 15px;
+           }
+         }
+       }
     }
 
     #g-container-main {
@@ -2963,9 +3231,9 @@ div#em-appli-block {
     display: none;
   }
 
-  .homepage .campaigns-list .below-content a.btn.btn-secondary {
-    margin-bottom: 5px;
-  }
+    .homepage .campaigns-list .below-content a.btn.btn-primary.btn-creux.btn-orange {
+      margin-bottom: 5px;
+    }
 
   #g-container-main .g-container {
     padding: 0px 35px;
@@ -2988,11 +3256,16 @@ div#em-appli-block {
   }
 
 
-  .blog-featuredhomepage {
-     p {
-      text-align: justify;
+    .blog-featuredhomepage {
+      h1:first-child {
+        margin-bottom: 30px;
+        margin-top: 30px;
+      }
+
+      p {
+        text-align: justify;
+      }
     }
-  }
 
   .gantry.view-registration, .gantry.view-form.em-formRegistrationCenter {
     main#g-main-mainbody {
@@ -3039,14 +3312,18 @@ div#em-appli-block {
     padding: 20px;
   }
 
-  /* FAQ */
-  .view-category.faq, .view-article.faq, .view-form.faq, .view-form.layout-edit.faq {
-    .blogfaq, .item-pagefaq {
-      h1 {
-        margin-top: 50px;
-        margin-bottom: 50px;
-      }
+    h1::after {
+      display: none !important;
     }
+
+    /* FAQ */
+    .view-category.faq, .view-article.faq, .view-form.faq, .view-form.layout-edit.faq {
+      .blogfaq, .item-pagefaq {
+        h1 {
+          margin-top: 50px;
+          margin-bottom: 50px;
+        }
+      }
 
     .items-leading > div {
       margin-bottom: 30px;
@@ -3307,7 +3584,17 @@ div#em-appli-block {
     }
   }
 
-  /* FOOTER */
+
+    .gantry h1::after {
+      display: none !important;
+    }
+
+    .view-form h1::after,
+    .view-details h1::after {
+      display: none !important;
+    }
+
+    /* FOOTER */
 
   .gantry footer#g-footer .logo a {
     display: flex;
@@ -3380,6 +3667,14 @@ div#em-appli-block {
     }
   }
 
+    h1 {
+      font-size: 1.8em !important;
+
+      &::after {
+        margin-top: 45px !important;
+        width: 2.7rem !important;
+      }
+    }
 
   ul.lang-inline {
     text-align: right;
@@ -3660,8 +3955,24 @@ div#em-appli-block {
     padding-top: 0;
   }
 
-  .col-xs-12.col-md-6,
-  .col-xs-12.col-md-6 {
+    h1 {
+      font-size: 28px;
+    }
+
+    h2 {
+      font-size: 25px;
+    }
+
+    h3 {
+      font-size: 22px;
+    }
+
+    h4 {
+      font-size: 18px;
+    }
+
+    .col-xs-12.col-md-6,
+    .col-xs-12.col-md-6 {
 
     &.main-page-file-progress,
     &.main-page-file-info {
