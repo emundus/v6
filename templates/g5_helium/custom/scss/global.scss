@@ -1508,6 +1508,41 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 /* BOUTONS */
 
+.btn.btn-primary {
+  background: $base-secondary-color;
+  border: 1px solid $base-secondary-color;
+  border-radius: 4px;
+  padding: 8px 12px;
+  text-transform: inherit;
+  line-height: normal;
+  font-size: 14px;
+  letter-spacing: normal;
+
+&:hover, &:active, &:focus {
+    background-color: transparent;
+    color: $base-secondary-color;
+
+  }
+}
+
+.btn.secondary {
+  background-color: transparent;
+  color: $base-secondary-color;
+  border-radius: 4px;
+  padding: 8px 12px;
+  text-transform: inherit;
+  line-height: normal;
+  font-size: 14px;
+  letter-spacing: normal;
+
+  &:hover, &:active, &:focus {
+    background: $base-secondary-color;
+    border: 1px solid $base-secondary-color;
+    color: #fff;
+  }
+}
+
+
 .modal-dialog .modal-body a.btn.btn-link[title*="Télécharger"], .modal-dialog .modal-body a.btn.btn-link[title*="Download"]  {
   span {
     color: #fff !important
@@ -1605,7 +1640,6 @@ button.btn-primary {
     &:hover {
       background-color: transparent;
       color: $base-secondary-color;
-      outline: none;
     }
   }
 
