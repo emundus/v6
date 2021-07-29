@@ -3183,6 +3183,7 @@ div#em-appli-block {
 
     div.advanced-dropdown {
       margin-right: 3em;
+      position: relative;
        form {
          margin: 3px 0 !important;
          a.langChoose:link, a.langChoose:visited {
@@ -3202,14 +3203,6 @@ div#em-appli-block {
            left: 0;
            padding: 3px;
            border-radius: 0 0 2px 2px;
-
-           &:hover {
-
-           }
-
-           li {
-             margin-left: 15px;
-           }
          }
        }
     }
