@@ -825,25 +825,6 @@ body>.g-container {
   outline: none;
 }
 
-/*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
-
-view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
-.view-form .em-formRegistrationCenter .row-fluid .span4 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
-  background-color: $base-secondary-color;
-  color: #ffffff;
-  border-color: $base-secondary-color;
-  text-transform: initial;
-  margin-left: 0px !important;
-
-  &:hover,
-  &active,
-  &:focus {
-    background-color: transparent;
-    color: $base-secondary-color;
-    border-color: $base-secondary-color;
-  }
-}
-
 .view-registration .em-register-warning {
   border: 1px solid $base-primary-color;
 }
@@ -1016,38 +997,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     margin-top: 50px;
   }
 
-  /* MODULE EMUNDUS CAMPAIGN */
-  .campaigns-list .below-content {
-
-    /*COULEURS BTNS - PLUS D'INFO ET CANDIDATER */
-    a.btn.btn-primary.btn-plein.btn-blue {
-      background-color: $base-secondary-color;
-      border-color: $base-secondary-color;
-      color: #fff;
-
-      &:hover,
-      &:active,
-      &:focus {
-        background-color: transparent;
-        color: $base-secondary-color;
-        border-color: $base-secondary-color;
-      }
-    }
-
-    a.btn.btn-primary.btn-creux.btn-orange {
-      background-color: transparent;
-      border-color: $base-primary-color;
-      color: $base-primary-color;
-
-      &:hover,
-      &:active,
-      &:focus {
-        background-color: $base-primary-color;
-        color: #fff;
-        border-color: $base-primary-color;
-      }
-    }
-  }
   /* DOCUMENTS PREALABLES */
   .em-infoComp li i {
     margin-left: 10px;
@@ -1211,21 +1160,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     font-weight: 300;
     font-size: 14px;
   }
-
-  button.btn.btn-primary.validate {
-    background-color: $base-secondary-color;
-    border-color: $base-secondary-color;
-    color: #fff;
-
-    &:hover,
-    &:active,
-    &:focus {
-      background-color: transparent;
-      color: $base-secondary-color;
-      border-color: $base-secondary-color;
-    }
-  }
-
 }
 
 /* LISTES  */
@@ -1529,6 +1463,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   line-height: normal;
   font-size: 14px;
   letter-spacing: normal;
+  font-weight: 300 !important;
 
 &:hover, &:active, &:focus {
     background-color: transparent;
@@ -1547,6 +1482,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   line-height: normal;
   font-size: 14px;
   letter-spacing: normal;
+  font-weight: 300 !important;
 
   &:hover, &:active, &:focus {
     background: $base-primary-color;
@@ -1588,10 +1524,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 .btnmarge {
   margin-left: 20px !important;
-}
-
-.btn-primary {
-  font-weight: 300 !important;
 }
 
 /* PRINT AND SEND FILE */
@@ -1643,24 +1575,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   text-shadow: none !important;
 }
 
-button.btn-primary {
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
-  border-radius: 4px;
-  padding: 8px 12px;
-
-    &:hover {
-      background-color: transparent;
-      color: $base-secondary-color;
-    }
-  }
-
   a.btn,
   span.btn {
     background: $base-primary-color;
     border: 1px solid $base-primary-color;
     border-radius: 4px;
-    padding: 8px 12px !important;
+    padding: 8px 12px;
     color: #fff;
 
     &:hover,
@@ -1709,7 +1629,6 @@ button.close {
 .pager.pagenav a,
 p.readmore .btn,
 .contact .form-actions .btn,
-#contact-form .controls .btn-primary.validate,
 .profile .btn,
 .login .btn,
 .logout .btn,
@@ -1964,22 +1883,6 @@ p.readmore .btn,
     background-color: transparent !important;
     color: $base-secondary-color !important;
     outline: none;
-  }
-}
-
-#member-profile .controls button.btn.btn-primary {
-  background: $dark-blue;
-  border: 2px solid $dark-blue;
-  text-shadow: none;
-  text-transform: initial;
-  border-radius: 25px !important;
-
-  &:hover,
-  &:focus,
-  &:active {
-    background-color: transparent;
-    color: $dark-blue;
-    border: 2px solid $dark-blue;
   }
 }
 
