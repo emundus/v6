@@ -6,6 +6,9 @@
             "email": "benjamin.rivalland@emundus.fr"
         }
     ],
+    "config": {
+        "platform-check": false
+    },
     "repositories": [
         {
             "type": "composer",
