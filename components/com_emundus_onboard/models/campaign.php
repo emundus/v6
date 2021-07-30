@@ -569,7 +569,7 @@ class EmundusonboardModelcampaign extends JModelList
                     $label_fr = $data['label']['fr'];
                     $label_en = $data['label']['en'];
                     $data['label'] = $data['label'][$actualLanguage];
-                    $fields[] = $db->quoteName($key) . ' = ' . $db->quote($data['label'][$actualLanguage]);
+                    $fields[] = $db->quoteName($key) . ' = ' . $db->quote($data['label']);
                 } else if ($key == 'limit_status') {
                     $limit_status = $data['limit_status'];
                 }
