@@ -672,6 +672,29 @@ div#em-modal-actions label.col-lg-2.control-label {
 div#em-modal-actions .panel-heading h5 {
     color: #2a363b;
 }
+
+div#em-modal-actions #form-element{
+    padding: 15px 15px 15px 2rem;
+}
+
+div#em-modal-actions #savePDFfilter, div#em-modal-actions #savefilter{
+    margin-left: 0;
+    margin-right: 1%;
+    border-radius: 4px;
+    margin-top: 10px;
+    background: #12db42;
+    border: solid 1px #12db42;
+}
+div#em-modal-actions #savePDFfilter:hover, div#em-modal-actions #savefilter:hover{
+    background: transparent;
+    color: #12db42;
+}
+
+div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
+    padding: 8px 12px;
+    margin-top: 10px;
+}
+
 /* CHECK BOX FOR EXPORTS */
 
 .modal-body input[type="checkbox"]+label {
@@ -2118,9 +2141,6 @@ label[for="em-file_to_upload"]:hover {
 
 .xclsform {
     margin: 35px auto auto !important;
-}
-.xclsform button#savefilter {
-    margin:0 20px!important;
 }
 
 .xclsform .panel-info > .panel-heading label {

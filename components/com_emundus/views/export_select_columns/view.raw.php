@@ -49,6 +49,8 @@ class EmundusViewExport_select_columns extends JViewLegacy {
         
         $camp = $jinput->getVar('camp', null);
 
+        $profile = $jinput->getVar('profile', null);
+
         $all = $jinput->get('all', null);
 
         $program = $m_program->getProgramme($prg);
@@ -78,7 +80,7 @@ class EmundusViewExport_select_columns extends JViewLegacy {
         } elseif ($form == "evaluation") {
 	        $elements = $m_eval->getEvaluationElementsName(0, 0, $code, $all);
         } else {
-	        $elements = EmundusHelperFiles::getElements($code, $camps);
+	        $elements = EmundusHelperFiles::getElements($code, $camps, [], $profile);
         }
 
 	    $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($current_user->id);
