@@ -1,21 +1,6 @@
 <?php
-function age($naiss) {
-    @list($annee, $mois, $jour) = preg_split('[-.]', $naiss);
-    $today['mois'] = date('n');
-    $today['jour'] = date('j');
-    $today['annee'] = date('Y');
-    $annees = $today['annee'] - $annee;
-    if ($today['mois'] <= $mois) {
-        if ($mois == $today['mois']) {
-            if ($jour > $today['jour']) {
-	            $annees--;
-            }
-        } else {
-	        $annees--;
-        }
-    }
-    return $annees;
-}
+use setasign\Fpdi\Tcpdf\Fpdi;
+require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
 function get_mime_type($filename, $mimePath = '../etc') {
     $fileext = substr(strrchr($filename, '.'), 1);
@@ -40,7 +25,7 @@ function get_mime_type($filename, $mimePath = '../etc') {
 }
 
 function is_image_ext($filename) {
-	return array_key_exists(strtolower(array_pop(explode('.', $filename))), ['png', 'jpe', 'jpeg', 'jpg', 'gif', 'bmp', 'ico', 'tiff', 'tif', 'svg', 'svgz']);
+	return array_key_exists(strtolower(array_pop(...explode('.', $filename))), ['png', 'jpe', 'jpeg', 'jpg', 'gif', 'bmp', 'ico', 'tiff', 'tif', 'svg', 'svgz']);
 }
 
 
@@ -243,7 +228,6 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
  */
 function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluation_id, $output = true, $fnum = null) {
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
@@ -792,12 +776,12 @@ function data_to_img($match) {
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf' . DS . 'config' . DS . 'lang' . DS . 'eng.php');
     require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf' . DS . 'tcpdf.php');
 
     require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
     require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
     require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus_onboard' . DS . 'models' . DS . 'form.php');
 
     if (empty($file_lbl)) {
         $file_lbl = "_application";
@@ -805,7 +789,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25'); //déclaration couleur principale
-    $profile_color = '#42b983';
+    $profile_color = '#20835F';
 
     $config = JFactory::getConfig();
     $offset = $config->get('offset');
@@ -813,6 +797,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $m_profile = new EmundusModelProfile;
     $m_application = new EmundusModelApplication;
     $m_files = new EmundusModelFiles;
+    $m_form = new EmundusonboardModelform;
 
     $db = JFactory::getDBO();
     $app = JFactory::getApplication();
@@ -875,14 +860,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $dt = new DateTime('NOW', new DateTimeZone('UTC'));
                 // change the timezone of the object without changing it's time
                 $dt->setTimezone(new DateTimeZone($offset));
+                $date_printed = JHTML::_('date', $dt->format('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2'));
 
                 $htmldata .= '<table width="100%"><tr>';
 
                 $htmldata .= '<h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3><tr><td class="name">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
 
                 if (!$anonymize_data && in_array("aemail", $options)) {
-                    $htmldata .=
-                        '<tr class="birthday">
+                    $htmldata .= '<tr class="birthday">
                                     <td>' . JText::_('EMAIL') . ' : ' . @$item->email . '</td>
                                 </tr>';
                 }
@@ -906,7 +891,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 }
 
                 if (in_array("adoc-print", $options)) {
-                    $htmldata .= '<tr class="sent"><td>' . JText::_('DOCUMENT_PRINTED_ON') . ' : ' . $dt->format('d/m/Y H:i') . '</td></tr>';
+                    $htmldata .= '<tr class="sent"><td>' . JText::_('DOCUMENT_PRINTED_ON') . ' : ' . $date_printed . '</td></tr>';
                 }
 
                 if (in_array("status", $options)) {
@@ -916,9 +901,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
                 if (in_array("tags", $options)) {
                     $tags = $m_files->getTagsByFnum(explode(',', $fnum));
-                    $htmldata .= '<br/><table><tr><td style="display: inline;"> ';
+                    $htmldata .= '<br/><table><tr><td style="display: inline"> ';
                     foreach ($tags as $tag) {
-                        $htmldata .= '<span class="label ' . $tag['class'] . '" >' . $tag['label'] . '</span>&nbsp;';
+                        $htmldata .= '<span class="label ' . $tag['class'] . '">' . $tag['label'] . '</span>&nbsp;';
                     }
                     $htmldata .= '</td></tr></table>';
                 }
@@ -939,32 +924,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $gids = $elements[$profile_id]['gids'];
                 $eids = $elements[$profile_id]['eids'];
 
-//                $query = "SELECT id from #__emundus_setup_profiles as jesp WHERE jesp.menutype LIKE " . $db->quote($value);
-//                $db->setQuery($query);
-//
-//                $profile_id = $db->loadResult();
-//
-//                $fids = array_values(array_keys($elements[$value])); // tableau des ids du formulaires
-//
-//                $query = 'SELECT form_id FROM #__fabrik_lists WHERE id IN ( ' . implode(',', $fids) . ')';
-//                $db->setQuery($query);
-//                $fid = $db->loadColumn();
-//
-//                $gids = [];
-//
-//                foreach ($elements[$value] as $key => $data) {
-//                    $gids[] = implode(',', array_keys($data));
-//                }
-//
-//                $eids = [];
-//                foreach ($elements[$value] as $key => $data) {
-//                    foreach ($data as $k => $v) {
-//                        foreach ($v as $a => $b) {
-//                            $eids[] = $b;
-//                        }
-//                    }
-//                }
-                $forms = $m_application->getFormsPDF($user_id, $fnum, $fids, $gids, $profile_id, $eids);
+                if(sizeof($profile_menu) > 1) {
+                    if($key != 0) {
+                        $forms .= '<br pagebreak="true"/>';
+                    }
+                    $forms .= '<h1>' . $m_form->getProfileLabelByProfileId($profile_id)->label . '</h1>';
+                }
+                $forms .= $m_application->getFormsPDF($user_id, $fnum, $fids, $gids, $profile_id, $eids);
             }
         }
         else {
@@ -972,7 +938,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         }
 
         // Create PDF object
-        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf = new Fpdi();
+        //$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('eMundus');
@@ -1001,9 +968,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
             (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
 
-                if ((bool)preg_match($pattern, $tab[1])) {
-                    $tab[1] = parse_url($tab[1], PHP_URL_PATH);
-                }
+            if ((bool) preg_match($pattern, $tab[1])) {
+                $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+            }
 
                 $logo = JPATH_SITE . DS . $tab[1];
 
@@ -1065,7 +1032,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             .sent { display: block; font-family: 'Roboto', sans-serif; text-align:left;  }
             .statut { display: block; font-family: 'Roboto', sans-serif; text-align:left; color: " . $cTitle . "  }
             .birthday { display: block; font-family: 'Roboto', sans-serif; }
-            .label		   {color:black;  }
+            .label {color:black;}
             .label-default {background-color:#999999;}
             .label-primary {background-color:#337ab7;}
             .label-success {background-color:#5cb85c;}
@@ -1097,12 +1064,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
             .group { color: black; }
                     h1 {
+                        font-family: 'Roboto';
                         font-size:75px;
                         color: " . $profile_color . ";
                         font-weight:550;
                     }
 
                     h2 {
+                       font-family: 'Roboto';
                        font-size:45px;
                        color: " . $cTitle . ";
                        font-weight:500;
@@ -1205,7 +1174,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 function application_header_pdf($user_id, $fnum = null, $output = true, $options = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf' . DS . 'config' . DS . 'lang' . DS . 'eng.php');
+
     require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf' . DS . 'tcpdf.php');
 
     require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
@@ -1232,7 +1201,8 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     $htmldata = '';
 
     // Create PDF object
-    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    //$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf = new Fpdi();
 
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor('eMundus');
@@ -1369,6 +1339,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
         $dt = new DateTime('NOW', new DateTimeZone('UTC'));
         // change the timezone of the object without changing it's time
         $dt->setTimezone(new DateTimeZone($offset));
+        $date_printed = JHTML::_('date', $dt->format('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2'));
 
         if (!$anonymize_data && in_array("aemail", $options)) {
             $htmldata .= '<div class="birthday">' . JText::_('EMAIL') . ' : ' . @$item->email . '</div>';
@@ -1385,7 +1356,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
             $htmldata .= '<div class="sent">' . JText::_('APPLICATION_SENT_ON') . ' : ' . $date_submitted . '</div>';
         }
         if (in_array("adoc-print", $options)) {
-            $htmldata .= '<div class="sent">' . JText::_('DOCUMENT_PRINTED_ON') . ' : ' . $dt->format('d/m/Y H:i') . '</div>';
+            $htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$date_printed.'</div>';
         }
         if (in_array("status", $options)) {
             $status = $m_files->getStatusByFnums(explode(',', $fnum));
@@ -1458,7 +1429,6 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 function generatePDFfromHTML($html, $path = null, $footer = '') {
 
     set_time_limit(0);
-    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
     require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
 

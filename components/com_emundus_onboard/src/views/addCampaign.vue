@@ -426,6 +426,8 @@ export default {
       axios.get(
           `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaign}`
         ).then(response => {
+          let label = response.data.data.campaign.label;
+
           this.form = response.data.data.campaign;
           this.$emit('getInformations',this.form);
           this.programForm = response.data.data.program;
@@ -436,12 +438,12 @@ export default {
             en: '',
           }
           if(response.data.data.label.fr == null) {
-            this.form.label.fr = response.data.data.campaign.label;
+            this.form.label.fr = label;
           } else {
             this.form.label.fr = response.data.data.label.fr.value;
           }
           if(response.data.data.label.en == null) {
-            this.form.label.en = response.data.data.campaign.label;
+            this.form.label.en = label;
           } else {
             this.form.label.en = response.data.data.label.en.value;
           }
@@ -715,13 +717,11 @@ export default {
           this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
           this.createCampaignWithExistingProgram(this.form);
         } else {
-
-
             this.createCampainWithNoExistingProgram(this.programForm);
         }
       }
 
-      this.years.forEach((elt) => {
+      /*this.years.forEach((elt) => {
         if(elt.schoolyear == this.year.schoolyear){
           newsession = true;
         }
@@ -737,7 +737,7 @@ export default {
         }).then(response => {}).catch(error => {
           console.log(error);
         });
-      }
+      }*/
   },
 
     quitFunnelOrContinue(quit) {

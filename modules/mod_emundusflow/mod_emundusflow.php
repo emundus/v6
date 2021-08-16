@@ -48,6 +48,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$show_document_step = $params->get('show_document_step', 1);
 	$show_form_step = $params->get('show_form_step', 1);
 	$show_status = $params->get('show_status', 1);
+    $show_hikashop = $params->get('show_hikashop', 1);
 	$show_deadline  = $params->get('show_deadline', 0);
     $admission  = $params->get('admission', 0);
     $layout = $params->get('layout', 'default');

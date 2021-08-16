@@ -838,7 +838,7 @@ input[type="reset"] {
 }
 
 .list-item-header .block-label {
-  width: 83%;
+  width: 80%;
 }
 .column-inner-block-2 {
   height: auto;
@@ -877,6 +877,7 @@ input[type="reset"] {
   box-shadow: 0 1px 2px 0 hsla(0, 0%, 41%, 0.19);
   padding: 30px 30px;
   border-radius: 4px;
+  margin-top: 50px;
   margin-bottom: 1em;
 }
 .sub-form{
@@ -910,7 +911,7 @@ input[type="reset"] {
   width: min-content;
   padding: 5px 30px;
   text-align: center;
-  margin-left: 1em;
+  margin-left: 0.7em;
   border: solid 2px #298721;
   font-size: 12px;
   background: white;
@@ -949,6 +950,9 @@ input[type="reset"] {
     cursor: pointer;
     background-color: transparent;
     color: $dark-blue;
+  }
+  .fa-pen{
+    margin-right: 10px;
   }
 }
 .bouton-ajouter-green{

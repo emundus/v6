@@ -151,6 +151,7 @@ JText::script('PDF_TAGS');
 JText::script('PDF_STATUS');
 JText::script('ADD_HEADER');
 JText::script('DELETE_TAGS');
+JText::script('TAG_CATEGORIES');
 JText::script('DELETE_TAGS_CONFIRM');
 JText::script('TAGS_DELETE_SUCCESS');
 JText::script('CONFIRM_DELETE_FILTER');
@@ -279,7 +280,7 @@ JText::script('PROGRAM_NAME');
 JText::script('CHOOSE_YOUR_OPTION');
 JText::script('RESTRICTED_ACCESS_OTHERS_EVAL');
 JText::script('GENERATE_EXCEL');
-
+JText::script('COM_EMUNDUS_CHOOSE_LETTER');
 
 //Export PDF
 JText::script('COM_EMUNDUS_PDF_GENERATION');
@@ -350,17 +351,66 @@ JText::script('JGLOBAL_SELECT_AN_OPTION');
 JText::script('COM_EMUNDUS_VOTE_NON_ACCEPTED');
 JText::script('COM_EMUNDUS_VOTE_ACCEPTED');
 
+
+//Messenger
+JText::script('COM_EMUNDUS_MESSENGER_TITLE');
+JText::script('COM_EMUNDUS_MESSENGER_SEND_DOCUMENT');
+JText::script('COM_EMUNDUS_MESSENGER_ASK_DOCUMENT');
+JText::script('COM_EMUNDUS_MESSENGER_DROP_HERE');
+JText::script('COM_EMUNDUS_PLEASE_SELECT');
+JText::script('COM_EMUNDUS_MESSENGER_SEND');
+JText::script('COM_EMUNDUS_MESSENGER_WRITE_MESSAGE');
+JText::script('COM_EMUNDUS_MESSENGER_TYPE_ATTACHMENT');
+JText::script('COM_EMUNDUS_EXPORT_MODE');
+JText::script('COM_EMUNDUS_EXPORT_BY_CANDIDAT');
+JText::script('COM_EMUNDUS_EXPORT_BY_DOCUMENT');
+JText::script('COM_EMUNDUS_EXPORT_BY_FILES');
+JText::script('COM_EMUNDUS_PDF_MERGE');
+JText::script('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP');
+JText::script('COM_EMUNDUS_DOCUMENT_EXPORT_TOOLTIP');
+JText::script('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP');
+JText::script('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP');
+JText::script('COM_EMUNDUS_SELECT_IMPOSSIBLE');
+
+JText::script('AFFECTED_CANDIDATS');
+JText::script('GENERATED_DOCUMENTS_LABEL');
+JText::script('GENERATED_DOCUMENTS_COUNT');
+JText::script('GENERATE_DOCUMENT');
+JText::script('DOWNLOAD_DOCUMENT');
+
+JText::script('CANDIDAT_GENERATED');
+JText::script('DOCUMENT_GENERATED');
+JText::script('CANDIDATE');
+JText::script('DOCUMENT_NAME');
+
+JText::script('CANDIDAT_INFORMATION');
+JText::script('CANDIDAT_STATUS');
+JText::script('EMAIL_SUBJECT');
+JText::script('EMAIL_BODY');
+JText::script('ATTACHMENT_LETTER');
+JText::script('MESSAGE_INFORMATION');
+JText::script('EMAIL_FAILED');
+JText::script('CAMPAIGN_YEAR');
+JText::script('CANDIDATE_EMAIL');
+JText::script('EMAIL_TAGS');
+
+JText::script('SEND_EMAIL_TOOLTIPS');
+JText::script('NO_LETTER_FOUND');
+
+JText::script('COM_EMUNDUS_MODEL_ERR');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
-//JHtml::script('media/jui/js/jquery.min.js');
-//JHtml::script('media/com_emundus/lib/jquery-ui-1.8.18.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
 JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
+JHTML::script('media/com_emundus_messenger/app_messenger.js');
+JHTML::script('media/com_emundus_messenger/chunk-vendors_messenger.js');
 JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
 JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
 JHTML::script('media/com_emundus/js/em_files.js');
 JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
 JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
+JHtml::styleSheet('media/com_emundus_messenger/app_messenger.css');
 JHtml::styleSheet('media/com_emundus/css/reset.css');
 JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
 JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');

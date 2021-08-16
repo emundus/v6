@@ -11,6 +11,8 @@
  * details.
  */
 
+use setasign\Fpdi\Tcpdf\Fpdi;
+
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
@@ -28,10 +30,20 @@ JModelLegacy::addIncludePath(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'mod
  * @since 1.5
  */
 
-class EmundusHelperExport
-{
+class EmundusHelperExport {
 
-	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 0, $form_ids = null, $options = null, $application_form_order = null, $elements = null) {
+    /**
+     * @param $fnumInfos
+     * @param $sid
+     * @param $fnum
+     * @param int $form_post
+     * @param null $form_ids
+     * @param null $options
+     * @param null $application_form_order
+     * @param null $elements
+     * @return string
+     */
+    public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 0, $form_ids = null, $options = null, $application_form_order = null, $elements = null): string {
 		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
 
 		if (!file_exists($file)) {
@@ -299,8 +311,21 @@ class EmundusHelperExport
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
 
-        $name = $fnum.'-admission.pdf';
-        $tmpName = JPATH_SITE.DS.'tmp'.DS.$name;
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $fileName = $eMConfig->get('application_admission_name', null);
+
+        if (is_null($fileName)) {
+            $name = $fnum . '-admission.pdf';
+        } else {
+            require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
+            $m_checklist = new EmundusModelChecklist;
+            $post = array(
+                'FNUM' => $fnum,
+            );
+            $name = $m_checklist->formatFileName($fileName, $fnum, $post).'.pdf';
+        }
+
+        $tmpName = JPATH_SITE . DS . 'tmp' . DS . $name;
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
@@ -321,10 +346,11 @@ class EmundusHelperExport
 
 	public static function makePDF($fileName, $ext, $aid, $i=0)
 	{
-        require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+
         include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 		$imgExt = array('jpeg', 'jpg', 'png', 'gif', 'svg');
-		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+		$pdf = new Fpdi();
 		$pdf->SetCreator(PDF_CREATOR);
 		$pdf->SetAuthor('eMundus');
         $pdf->SetTitle($fileName);
@@ -339,29 +365,6 @@ class EmundusHelperExport
 		$pdf->SetFont('helvetica', '', 8);
         $pdf->AddPage();
 
-		/*if (in_array(strtolower($ext), $imgExt)) {
-
-			$pdf->setJPEGQuality(75);
-			if ($ext == 'svg')
-				$pdf->ImageSVG(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
-            else
-                $pdf->Image(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
-
-            $pdf->startTransaction();
-            $start_y = $pdf->GetY();
-            $start_page = $pdf->getPage();
-            $pdf->writeHTMLCell(0,'','',$start_y,$htmlData,'B', 1);
-
-		} else {
-            if (EmundusHelperExport::isEncrypted(EMUNDUS_PATH_ABS.$aid.DS.$fileName)) {
-			    $htmlData .= JText::_('ENCRYPTED_FILE').' : ';
-                $htmlData .= '<a href="'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base().EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
-            }
-			$pdf->startTransaction();
-			$start_y = $pdf->GetY();
-			$start_page = $pdf->getPage();
-			$pdf->writeHTMLCell(0,'','',$start_y,$htmlData,'B', 1);
-        }*/
         if (in_array(strtolower($ext), $imgExt)) {
 			$pdf->setJPEGQuality(75);
 			if ($ext == 'svg')

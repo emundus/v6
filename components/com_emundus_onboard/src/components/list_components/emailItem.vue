@@ -1,11 +1,11 @@
 <template class="email-item">
-  <div class="main-column-block">
+  <div class="main-column-block" >
     <ModalEmailPreview
         :model="this.email_to_preview"
         :models="this.models"
     />
 
-    <div class="column-block w-100">
+    <div class="column-block w-100" >
       <div class="block-dash" :class="isPublished ? '' : 'unpublishedBlock'">
         <div class="column-blocks w-row">
           <div class="column-inner-block w-col w-col-8 pl-30px">

@@ -24,10 +24,10 @@
               </ul>
             </div>
             <div class="stats-block" style="justify-content: flex-end">
-              <a class="cta-block pointer"
+              <a class="bouton-ajouter pointer add-button-div"
                  @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
                  :title="translations.Modify">
-                <em class="fas fa-pen"></em>
+                <em class="fas fa-pen"></em> Éditer
               </a>
             </div>
           </div>
@@ -55,8 +55,8 @@ export default {
       updateAccess: false,
       campaigns: [],
       translations:{
-        publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-        unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
+        publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM"),
+        unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM"),
         Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
         campaignAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED"),
         campaignsAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED")
@@ -97,6 +97,7 @@ export default {
   },
 
   created() {
+
     list.getters.formsAccess[0].forEach(element => {
       if(element === this.data.id){
         this.updateAccess = true;

@@ -13,6 +13,7 @@ $document->addStyleSheet("modules/mod_emundusmenu/style/mod_emundusmenu.css" );
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 // needed when default top menu is missing
 global $gantry;
 if (!empty($gantry)) {
@@ -35,6 +36,7 @@ $display_applicant_menu = $params->get('display_applicant_menu', 1);
 $display_tchooz = $params->get('displayTchooz', 1);
 
 $user = JFactory::getSession()->get('emundusUser');
+$m_profile = new EmundusModelProfile();
 
 if ((!empty($user->applicant) || !empty($user->fnum)) && $display_applicant_menu==0) {
 	return;
@@ -44,7 +46,8 @@ $list = array();
 $tchooz_list = array();
 if (isset($user->menutype)) {
 	$list = modEmundusMenuHelper::getList($params);
-    if(EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+    $current_profile = $m_profile->getProfileById($user->profile);
+    if(EmundusHelperAccess::asCoordinatorAccessLevel($user->id) && $current_profile['acl_aro_groups'] == 7) {
         $tchooz_list = modEmundusMenuHelper::getList($params,'onboardingmenu');
     }
     $help_list = modEmundusMenuHelper::getList($params,'usermenu');

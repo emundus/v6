@@ -1264,7 +1264,7 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
 }
 
 .view-form input[type='radio']:checked  { 
-    background: #de6339;
+    background: #1b1f3c;
 }
 
 .view-form .fabrikActions.form-actions .row-fluid button, .view-details .fabrikActions.form-actions .row-fluid button {
@@ -1812,9 +1812,9 @@ a.btn-attach:active {
 
 @media all and (max-width: 479px) {
 
-  
- 
-    
+  .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter {
+    padding: 20px;
+   }
     
     .view-form .btn.send_the_request_for_individual_assessment {
        margin-left: 0px !important; 

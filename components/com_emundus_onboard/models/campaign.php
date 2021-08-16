@@ -442,6 +442,9 @@ class EmundusonboardModelcampaign extends JModelList
         $settings = JModelLegacy::getInstance('settings', 'EmundusonboardModel');
         $email = JModelLegacy::getInstance('email', 'EmundusonboardModel');
 
+        $lang = JFactory::getLanguage();
+        $actualLanguage = substr($lang->getTag(), 0 , 2);
+
         $i = 0;
 
         $label_fr = '';
@@ -456,7 +459,7 @@ class EmundusonboardModelcampaign extends JModelList
                 if ($key == 'label') {
                     $label_fr = $data['label']['fr'];
                     $label_en = $data['label']['en'];
-                    $data['label'] = $data['label']['fr'];
+                    $data['label'] = $data['label'][$actualLanguage];
                 }
                 if ($key == 'limit_status') {
                     $limit_status = $data['limit_status'];
@@ -527,6 +530,10 @@ class EmundusonboardModelcampaign extends JModelList
                 }
                 //
 
+                // Create teaching unity
+                $this->createYear($data);
+                //
+
                 JPluginHelper::importPlugin('emundus', 'setup_category');
                 $dispatcher = JEventDispatcher::getInstance();
                 $dispatcher->trigger('onCampaignCreate', $campaign_id);
@@ -547,6 +554,9 @@ class EmundusonboardModelcampaign extends JModelList
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
+        $lang = JFactory::getLanguage();
+        $actualLanguage = substr($lang->getTag(), 0 , 2);
+
         $label_fr = '';
         $label_en = '';
         $limit_status = [];
@@ -558,7 +568,8 @@ class EmundusonboardModelcampaign extends JModelList
                 if ($key == 'label') {
                     $label_fr = $data['label']['fr'];
                     $label_en = $data['label']['en'];
-                    $fields[] = $db->quoteName($key) . ' = ' . $db->quote($data['label']['fr']);
+                    $data['label'] = $data['label'][$actualLanguage];
+                    $fields[] = $db->quoteName($key) . ' = ' . $db->quote($data['label']);
                 } else if ($key == 'limit_status') {
                     $limit_status = $data['limit_status'];
                 }
@@ -597,6 +608,10 @@ class EmundusonboardModelcampaign extends JModelList
                     }
                 }
 
+                // Create teaching unity
+                $this->createYear($data);
+                //
+
                 return true;
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_onboard/models/campaign | Error when update the campaign : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
@@ -607,30 +622,40 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    public function createYear($data) {
+    public function createYear($data,$profile = null) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        if (!empty($data)) {
+        $prid = !empty($profile) ? $profile : $data['profile_id'];
 
-            foreach ($data as $key => $val) {
-                $data[$key] = htmlspecialchars($data[$key]);
-            }
+        try {
+            // Create teaching unity
+            $query->select('count(id)')
+                ->from($db->quoteName('#__emundus_setup_teaching_unity'))
+                ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid))
+                ->andWhere($db->quoteName('schoolyear') . ' = ' . $db->quote($data['year']))
+                ->andWhere($db->quoteName('code') . ' = ' . $db->quote($data['training']));
+            $db->setQuery($query);
+            $teaching_unity_exist = $db->loadResult();
 
-            $query->insert($db->quoteName('#__emundus_setup_teaching_unity'))
-                ->columns($db->quoteName(array_keys($data)))
-                ->values(implode(',', $db->Quote(array_values($data))));
-
-            try {
+            if ($teaching_unity_exist == 0) {
+                $query->clear()
+                    ->insert($db->quoteName('#__emundus_setup_teaching_unity'))
+                    ->set($db->quoteName('code') . ' = ' . $db->quote($data['training']))
+                    ->set($db->quoteName('label') . ' = ' . $db->quote($data['label']))
+                    ->set($db->quoteName('schoolyear') . ' = ' . $db->quote($data['year']))
+                    ->set($db->quoteName('published') . ' = 1')
+                    ->set($db->quoteName('profile_id') . ' = ' . $db->quote($prid));
                 $db->setQuery($query);
-                return $db->execute();
-            } catch (Exception $e) {
-                JLog::add('component/com_emundus_onboard/models/campaign | Error when create a new teaching unity : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-                return $e->getMessage();
+                $db->execute();
             }
-        } else {
-            return false;
+
+            return true;
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/campaign | Error when create the campaign : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return $e->getMessage();
         }
+        //
     }
 
     public function getCampaignById($id) {
@@ -704,13 +729,13 @@ class EmundusonboardModelcampaign extends JModelList
 
         $form = JModelLegacy::getInstance('form', 'EmundusonboardModel');
 
-        $query->select('year')
+        $query->select('label,year,training')
             ->from($db->quoteName('#__emundus_setup_campaigns'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
 
         try {
             $db->setQuery($query);
-            $schoolyear = $db->loadResult();
+            $schoolyear = $db->loadAssoc();
 
             $query->clear()
                 ->update($db->quoteName('#__emundus_setup_attachment_profiles'))
@@ -731,21 +756,19 @@ class EmundusonboardModelcampaign extends JModelList
                 $form->addChecklistMenu($profile);
             }
 
-            $query->clear()
-                ->update($db->quoteName('#__emundus_setup_campaigns'))
+            $query = $db->getQuery(true);
+            $query->update($db->quoteName('#__emundus_setup_campaigns'))
                 ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
 
             $db->setQuery($query);
             $db->execute();
 
-            $query->clear()
-                ->update($db->quoteName('#__emundus_setup_teaching_unity'))
-                ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
-                ->where($db->quoteName('schoolyear') . ' = ' . $db->quote($schoolyear));
+            // Create teaching unity
+            $this->createYear($schoolyear,$profile);
+            //
 
-            $db->setQuery($query);
-            return $db->execute();
+            return true;
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/campaign | Error at updating setup_profile of the campaign: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;

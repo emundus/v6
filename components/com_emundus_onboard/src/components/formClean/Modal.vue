@@ -58,6 +58,7 @@
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
           <displayF v-if="plugin =='display'" :element="element"></displayF>
           <fileF v-if="plugin =='emundus_fileupload'" :element="element" :prid="profileId"></fileF>
+          <yesnoF v-if="plugin=='yesno'" :element="element"></yesnoF>
         </div>
       </div>
       <div class="d-flex justify-content-between mb-1">
@@ -87,7 +88,8 @@
   import radiobtnF from "./Plugin/radiobtn";
   import textareaF from "./Plugin/textarea";
   import displayF from "./Plugin/display";
-  import fileF from "./Plugin/fileupload"
+  import fileF from "./Plugin/fileupload";
+  import yesnoF from './Plugin/yesno';
 
 
   const qs = require("qs");
@@ -103,7 +105,8 @@
       radiobtnF,
       textareaF,
       displayF,
-      fileF
+      fileF,
+      yesnoF,
     },
     data() {
       return {
@@ -153,6 +156,11 @@
           fileupload: {
             value: 'emundus_fileupload',
             name:  Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FILE")
+          },
+          yesno: {
+            value: 'yesno',
+            name:  'yesno'
+            /*Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_YESNO")*/
           }
         },
         databases: [],
@@ -187,6 +195,8 @@
         if(typeof this.element.params.sub_options !== 'undefined') {
           this.element.params.sub_options.sub_values = this.sublabel;
         }
+
+
         axios({
           method: "post",
           url:

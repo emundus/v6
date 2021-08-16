@@ -125,7 +125,7 @@
       <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
         <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-offset-2 col-md-6' : 'col-md-8'">
           <div class="d-flex" v-show="!updateFormLabel">
-            <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="profileLabel">{{profileLabel}}  </h2>
+            <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="profileLabel">{{profileLabel}}</h2>
             <a @click="enableUpdatingForm" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
               <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
             </a>
@@ -185,7 +185,7 @@
             />
           </div>
         </div>
-        <ul class="col-md-3 sticky-form-pages" :class="[addingElement || actions_menu? 'ml-10px col-sm-offset-5 col-sm-7' : '',optionsModal ? 'col-sm-5' : '']" style="margin-top: 0" v-if="formObjectArray">
+        <ul class="col-md-3 sticky-form-pages" :class="[addingElement || actions_menu && formList.length >0? 'ml-10px col-sm-offset-5 col-sm-7' : '',optionsModal ? 'col-sm-5' : '',formList.length ===0 ? 'col-sm-offset-5 col-sm-7':'']" style="margin-top: 0" v-if="formObjectArray">
           <div class="d-flex justify-content-between mb-1">
             <h3 class="mb-0" style="padding: 0;">{{ FormPage }}</h3>
             <label class="saving-at">{{ Savingat }} {{lastUpdate}}<em class="fas fa-sync ml-10px"></em></label>
@@ -236,7 +236,7 @@
                 </a>
               </li>
             </draggable>
-            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalAddDocuments');optionsModal = true" style="margin-left: 30px" :title="AddNewDocument">{{AddNewDocument}}</button>
+            <button class="bouton-sauvergarder-et-continuer" @click="currentDoc = null;$modal.show('modalAddDocuments');optionsModal = true" style="margin-left: 30px" :title="AddNewDocument">{{AddNewDocument}}</button>
 
           </div>
           <div class="form-pages" style="padding-top: 20px" v-if="submittionPages">
@@ -285,6 +285,7 @@
   import Tasks from "@/views/tasks";
   import ModalTestingForm from "@/components/formClean/ModalTestingForm";
   import ModalAddDocuments from "./advancedModals/ModalAddDocuments";
+  import Swal from "sweetalert2";
 
   const qs = require("qs");
 
@@ -338,7 +339,7 @@
         // Forms variables
         formObjectArray: [],
         submittionPages: [],
-        formList: "",
+        formList: [],
         profileLabel: "",
         id: 0,
         grab: 0,
@@ -372,6 +373,30 @@
             value: 'field',
             icon: 'fas fa-font',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FIELD")
+          },
+          nom: {
+            id: 8,
+            value: 'nom',
+            icon: 'fas fa-font',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_LASTNAME")
+          },
+          prenom: {
+            id: 9,
+            value: 'prenom',
+            icon: 'fas fa-font',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FIRSTNAME")
+          },
+          email:{
+            id:10,
+            value: 'email',
+            icon: 'fas fa-at',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_EMAIL")
+          },
+          yesno:{
+            id:12,
+            value: 'yesno',
+            icon: 'fas fa-toggle-on',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_YESNO")
           },
           textarea: {
             id: 5,
@@ -463,6 +488,18 @@
       slpitProfileIdfromLabel(label){
         return (label.split(/-(.+)/))[1];
       },
+      showModal () {
+
+        Swal.fire({
+          //title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENU"),
+          text: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_NOFORMPAGEWARNING"),
+          type: "warning",
+          //showCancelButton: true
+        })
+      },
+      hide () {
+        this.$modal.hide('my-first-modal');
+      },
 
       createElement(gid,plugin,order) {
         let list = this.formObjectArray;
@@ -515,8 +552,24 @@
                   return qs.stringify(params);
                 }
               }).then(response => {
-                    console.log("none emundus file upload");
-                    console.log(response);
+
+
+                if (plugin=="email") {
+                  response.data.params.password = 3;
+                } else {
+                  response.data.params.password=0;
+                }
+                axios({
+                  method: "post",
+                  url:
+                      "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateparams",
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                  },
+                  data: qs.stringify({
+                    element: response.data,
+                  })
+                })
 
                 this.menuHighlightCustumisation(response,gid,order);
 
@@ -666,7 +719,6 @@
 
       // Update component dynamically
       UpdateName(index, label) {
-
         this.formObjectArray[index].object.show_title.value = label;
       },
       UpdateIntro(index, intro) {
@@ -862,22 +914,26 @@
       },
 
       async getDataObjectSingle(index) {
-        let ellink = this.formList[index].link.replace("fabrik","emundus_onboard");
-        await axios.get(ellink + "&format=vue_jsonclean")
-            .then(response => {
-              this.formObjectArray[index].object = response.data;
-             // console.log(response.data)
-              /*this.formObjectArray.push({
+
+        if(this.formList.length>0) {
+          let ellink = this.formList[index].link.replace("fabrik", "emundus_onboard");
+          await axios.get(ellink + "&format=vue_jsonclean")
+              .then(response => {
+                this.formObjectArray[index].object = response.data;
+                /*this.formObjectArray.push({
                 object: response.data,
                 rgt: this.formList[index].rgt,
                 link: this.formList[index].link
               });*/
-            }).then(r => {
-              this.formObjectArray.sort((a, b) => a.rgt - b.rgt);
-            }).catch(e => {
-              console.log(e);
-            });
-        this.loading = false;
+              }).then(r => {
+                this.formObjectArray.sort((a, b) => a.rgt - b.rgt);
+              }).catch(e => {
+                console.log(e);
+              });
+
+
+        //this.loading = false;
+
         /*if(this.getCookie('page_' + this.prid) !== '') {
           this.indexHighlight = this.getCookie('page_' + this.prid);
         } else {
@@ -885,6 +941,10 @@
         }*/
         this.elementDisabled = _.isEmpty(this.formObjectArray[index].object.Groups);
         this.rgt = this.formObjectArray[index].rgt;
+        }
+
+          this.loading = false;
+
         this.indexHighlight = index;
       },
 
@@ -961,16 +1021,23 @@
           this.formList = response.data.data;
           setTimeout(() => {
             //this.getDataObject();
-            this.formList.forEach((element) => {
-              this.formObjectArray.push({
-                object: {},
-                rgt: element.rgt,
-                link: element.link
+            if (this.formList.length > 0){
+              this.formList.forEach((element) => {
+                this.formObjectArray.push({
+                  object: {},
+                  rgt: element.rgt,
+                  link: element.link
+                });
               });
-            });
+            } else{
+              this.showModal();
+            }
+
+            this.loading=false;
             this.getDataObjectSingle(0);
             this.getProfileLabel(this.prid);
-          },100);
+
+          }, 100);
         }).catch(e => {
           console.log(e);
         });
@@ -1047,6 +1114,7 @@
       },
 
       sendForm() {
+        if(this.formList.length>0){
         if(this.cid != 0){
           axios({
             method: "get",
@@ -1082,6 +1150,9 @@
           });
           //history.go(-1);
         }
+      } else {
+        this.showModal();
+      }
       },
 
       testForm() {

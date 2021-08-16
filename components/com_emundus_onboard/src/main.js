@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuelidate from 'vuelidate';
 import List from './views/list.vue';
+import GrilleEvalItem from './components/list_components/evalgridItem';
 import AddProgram from './views/addProgram.vue';
 import AddProgramAdvancedSettings from './views/addProgramAdvancedSettings.vue';
 import AddCampaign from './views/addCampaign.vue';
@@ -42,11 +43,13 @@ if (document.getElementById('em-list-vue')) {
         props: {
           type: this.$el.attributes.type.value,
           coordinatorAccess: this.$el.attributes.coordinatorAccess.value,
+          actualLanguage: this.$el.attributes,
         }
       });
     }
   });
 }
+
 
 if (document.getElementById('em-addProgram-vue')) {
   new Vue({
