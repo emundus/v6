@@ -1629,6 +1629,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $dbtype = 'TEXT';
         } elseif ($plugin === 'display') {
             $default = 'Ajoutez du texte personnalisé pour vos candidats';
+            $dbtype = 'TEXT';
         } /*elseif ($plugin === 'fileupload'){
             $dbtype='FILEUPLOAD';
         }*/

@@ -1645,9 +1645,9 @@ class EmundusModelApplication extends JModelList
 
                                         // modulo for strips css //
                                         if ($modulo % 2) {
-                                            $forms .= '<tr class="table-strip-1"><td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td> <td> ' . JText::_($elt) . '</td></tr>';
+                                            $forms .= '<tr class="table-strip-1">'. (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td>' : '') . '<td> '.JText::_($elt).'</td></tr>';
                                         } else {
-                                            $forms .= '<tr class="table-strip-2"><td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td> <td> ' . JText::_($elt) . '</td></tr>';
+                                            $forms .= '<tr class="table-strip-2">'. (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td>' : '') . '<td> '.JText::_($elt).'</td></tr>';
                                         }
                                         $modulo++;
                                         unset($params);
@@ -2031,14 +2031,15 @@ class EmundusModelApplication extends JModelList
                                         $forms .= '<br>---- ' . $i . ' ----<br>';
                                         $forms .= '<table>';
                                         foreach ($r_element as $key => $r_elt) {
+                                            $params = json_decode($elements[$j]->params);
 
                                             // Do not display elements with no value inside them.
-                                            if ($show_empty_fields == 0 && trim($r_elt) == '') {
+                                            if (($show_empty_fields == 0 && trim($r_elt) == '') || empty($params->store_in_db)) {
                                                 $j++;
                                                 continue;
                                             }
 
-                                            if ((!empty($r_elt) || $r_elt == 0) && $key != 'id' && $key != 'parent_id' && isset($elements[$j]) && $elements[$j]->plugin != 'display') {
+                                            if ((!empty($r_elt) || $r_elt == 0) && $key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
                                                 if ($elements[$j]->plugin == 'date') {
                                                     if (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
@@ -2112,7 +2113,7 @@ class EmundusModelApplication extends JModelList
                                                     $r2 = explode('___', $cascadingdropdown_label);
                                                     $select = !empty($params->cascadingdropdown_label_concat) ? "CONCAT(" . $params->cascadingdropdown_label_concat . ")" : $r2[1];
                                                     $from = $r2[0];
-                                                    $where = $r1[1] . '=' . $this->_db->Quote($element->content);
+                                                    $where = $r1[1].'='.$this->_db->Quote($elements[$j]->content);
                                                     $query = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
                                                     $query = preg_replace('#{thistable}#', $from, $query);
                                                     $query = preg_replace('#{my->id}#', $aid, $query);
@@ -2146,6 +2147,8 @@ class EmundusModelApplication extends JModelList
                                                     }
                                                 } elseif ($elements[$j]->plugin == 'yesno') {
                                                     $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
+                                                } elseif ($elements[$j]->plugin == 'display') {
+                                                    $elt = empty($elements[$j]->eval) ? $elements[$j]->default : $r_elt;
                                                 } else {
                                                     $elt = JText::_($r_elt);
                                                 }
@@ -2330,9 +2333,9 @@ class EmundusModelApplication extends JModelList
                                         }
 
                                         if ($element->plugin == 'textarea' || $element->plugin == 'display') {
-                                            $forms .= '<tr><td   colspan="2" ><strong><span style="color: #000000;">' . (!empty($params->display_showlabel) ? JText::_($element->label) . ' : ' : '') . '</span></strong>' . JText::_($elt) . '<br/></td></tr>';
+                                            $forms .= '<tr><td   colspan="2" ><strong><span style="color: #000000;">'.(!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label).' : ' : '').'</span></strong>'.JText::_($elt).'<br/></td></tr>';
                                         } else {
-                                            $forms .= '<tr ><td ><span style="color: #000000;">' . JText::_($element->label) . ' : ' . '</span></td> <td> ' . JText::_($elt) . '</td></tr>';
+                                            $forms .= '<tr ><td ><span style="color: #000000;">'.(!empty(JText::_($element->label)) ? JText::_($element->label).' : ' : '').'</span></td> <td> '.JText::_($elt).'</td></tr>';
                                         }
                                     }
                                 } elseif (empty($element->content)) {
