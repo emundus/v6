@@ -504,6 +504,10 @@ div#em-appli-block .active.content fieldset {
     margin-bottom: 0px;
 }
 
+.panel-body.Marginpanel-body.em-container-form-body .em-personalDetail{
+    overflow:scroll;
+}
+
 div#em-appli-block .legend {
     font-weight: 500;
     margin-bottom: 0px;
