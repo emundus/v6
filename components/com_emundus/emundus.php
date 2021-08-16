@@ -282,7 +282,6 @@ JText::script('RESTRICTED_ACCESS_OTHERS_EVAL');
 JText::script('GENERATE_EXCEL');
 JText::script('COM_EMUNDUS_CHOOSE_LETTER');
 
-
 //Export PDF
 JText::script('COM_EMUNDUS_PDF_GENERATION');
 JText::script('COM_EMUNDUS_CREATE_PDF');

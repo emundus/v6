@@ -270,6 +270,17 @@ ul {
   box-shadow: none;
 }
 
+#loadingimg-campaign {
+  position: absolute;
+  margin: 0 auto;
+  width: 100%;
+  text-align: center;
+  background-color: rgba(242, 242, 242, 0.67);
+  height: 100%;
+  z-index: 9999;
+  padding-top: 20%;
+}
+
 .modal-header {
   background: #fff;
   padding: 10px 20px;
@@ -332,7 +343,7 @@ ul {
   }
 }
 
-.modal-body .xclsform-filters button#delfilter , .modal-body .xclsform-filters button#savefilter , .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs  {
+.modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs  {
   background: $dark-blue !important;
   background-color: $dark-blue !important;
   border: 1px solid $dark-blue !important;
@@ -2295,6 +2306,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
+  #chargement .alert {
+    &:not(.em-alert-filter) {
+      margin: 0 0 10px 0 !important;
+    }
+  }
+
   .alert {
     a {
       font-size: 16px;
@@ -2562,7 +2579,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .g-back-office-emundus-tableau.files-page .panel-info > .panel-heading {
-    background: $base-secondary-color;
+    background: $dark-blue;
   }
 
   .g-back-office-emundus-tableau.experts-page .panel-info > .panel-heading h3.panel-title {
