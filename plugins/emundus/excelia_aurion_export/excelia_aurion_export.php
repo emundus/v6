@@ -379,7 +379,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
         // Build the user's personal details section
         $individu = "
-                <individu key='" . $user_key . "' code='" . strtoupper($this->replaceUserNameWithSpace($user->lastname)) . "' libelle='" . htmlspecialchars(ucfirst($user->firstname), ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A595='" . date('d-m-Y', strtotime($user->birth_date)). "' A596='" . $user->Sexe . "' A39153560='" . $user->first_language . "' A39218849='" . $user->user_id . "' A601='true'>
+                <individu key='" . $user_key . "' code='" . strtoupper($this->replaceUserNameWithSpace($user->lastname)) . "' libelle='" . htmlspecialchars(ucfirst($user->firstname), ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A595='" . date('d-m-Y', strtotime($user->birth_date)). "' A596='" . $user->Sexe . "' A39153560='" . htmlspecialchars($user->first_language, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A39218849='" . $user->user_id . "' A601='true'>
                     
                     <titre objet_id='" . $user->civility . "' ForceImport='true' ForceReplace='true' />
                     <nationalite objet_id='" . $user->nationality . "' ForceImport='true' />
