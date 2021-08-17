@@ -4899,19 +4899,6 @@ $(document).ready(function() {
             baseElements.push(id);
         })
 
-        // // get all inputs of #oelts
-        // var otherElements = [];
-        // if($('#oelts :input').is(":checked")) {
-        //     $('#oelts :input').each(function(elt) {
-        //         if($(this).is(":checked")) {
-        //             let id = $(this).attr('id');
-        //             otherElements.push(id);
-        //         }
-        //     })
-        // } else {
-        //     // no #oelts is selected
-        // }
-
         var params = '{' +
             '"programmelabel":"'+proglabel+
             '","code":"'+code+
@@ -4919,7 +4906,6 @@ $(document).ready(function() {
             '","letters":"'+letters+
             '","baseElements":"'+baseElements+
             '","campaignlabel":"'+camplabel+
-            // '","otherElements":"'+otherElements+
             '","elements":';
 
         // var params = '{' +
@@ -4933,7 +4919,6 @@ $(document).ready(function() {
         var eltJson = "{";
         var i = 0;
 
-        // let defaultElts = [2540,2754,1906,7056,7057,7068];  //default elements --> this list will be removed in the future to avoid harcoding
         $(".em-export-item").each(function() {
             // let id = $(this).attr('id').split('-')[0];
             // if(!defaultElts.includes(parseInt(id))) {
