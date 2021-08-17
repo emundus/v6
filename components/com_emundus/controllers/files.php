@@ -2119,9 +2119,15 @@ class EmundusControllerFiles extends JControllerLegacy
         $_destination->getActiveSheet()->fromArray($_readerData,null,'A1');
 
         $writer = new Xlsx($_destination);
-        $writer->save($_newLetter);
 
-        $result = array('status' => true, 'link' => $_newLetter);
+        $_raw_output_file = explode('#', $_newLetter)[0] . '.xlsx';
+        $_final_output_file = explode('.xlsx', $_raw_output_file)[0] . '.xlsx';
+
+        $writer->save($_raw_output_file);
+
+        $result = array('status' => true, 'link' => $_raw_output_file);
+
+        unlink($_newLetter);
         echo json_encode((object) $result);
         exit();
     }
