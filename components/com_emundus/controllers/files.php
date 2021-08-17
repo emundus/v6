@@ -2121,14 +2121,19 @@ class EmundusControllerFiles extends JControllerLegacy
         $writer = new Xlsx($_destination);
 
         $_raw_output_file = explode('#', $_newLetter)[0] . '.xlsx';
-        $_final_output_file = explode('.xlsx', $_raw_output_file)[0] . '.xlsx';
+        $_output_file = explode('.xlsx', $_raw_output_file)[0];
+
+        $_clean_output_file = explode(JPATH_BASE.DS."tmp".DS, $_output_file)[1] . '.xlsx';
 
         $writer->save($_raw_output_file);
 
-        $result = array('status' => true, 'link' => $_raw_output_file);
+        copy($_raw_output_file, JPATH_BASE.DS."tmp".DS . $_clean_output_file);
 
-        unlink($_newLetter);
+        $result = array('status' => true, 'link' => $_clean_output_file);
+
         echo json_encode((object) $result);
+
+        unlink($_raw_output_file);
         exit();
     }
 
