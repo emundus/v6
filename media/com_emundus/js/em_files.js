@@ -724,7 +724,6 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                                     success: function (result) {
                                         if (result.status) {
                                             //// right here --> I will
-                                            //console.log(result);
                                             let source = result.link;
 
                                             if(letter != 0) {
@@ -1961,9 +1960,11 @@ $(document).ready(function() {
                                     //console.log(result);
                                     let letters = result.letters;
                                     letters.forEach(letter => {
-                                        $('#em-export-letter').append('<option value="' + letter.id + '">' + letter.title + '</option>');
-                                        $('#em-export-letter').trigger("chosen:updated");
-                                        $('#letter').show();
+                                        if(letter.template_type == '4') {
+                                            $('#em-export-letter').append('<option value="' + letter.id + '">' + letter.title + '</option>');
+                                            $('#em-export-letter').trigger("chosen:updated");
+                                            $('#letter').show();
+                                        }
                                     });
                                }, error: function(jqXHR) {
                                     console.log(jqXHR.responseText);
