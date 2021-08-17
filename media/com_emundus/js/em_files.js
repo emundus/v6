@@ -2830,6 +2830,15 @@ $(document).ready(function() {
                                                             let constraints = jQuery.parseJSON(excelFilter.filter.constraints);
                                                             let filter = jQuery.parseJSON(constraints.excelfilter);
 
+                                                            if(!jQuery.isEmptyObject(filter.objects)) {
+                                                                let otherElements = Object.values(filter.objects);
+
+                                                                /// iterate
+                                                                otherElements.forEach(elems => {
+                                                                    $('#' + elems).prop('checked', true);
+                                                                })
+                                                            }
+
                                                             if (filter.baseElements !== undefined) {
                                                                 let baseElements = filter.baseElements;
 
@@ -4890,7 +4899,18 @@ $(document).ready(function() {
             baseElements.push(id);
         })
 
-        //console.log(baseElements);
+        // // get all inputs of #oelts
+        // var otherElements = [];
+        // if($('#oelts :input').is(":checked")) {
+        //     $('#oelts :input').each(function(elt) {
+        //         if($(this).is(":checked")) {
+        //             let id = $(this).attr('id');
+        //             otherElements.push(id);
+        //         }
+        //     })
+        // } else {
+        //     // no #oelts is selected
+        // }
 
         var params = '{' +
             '"programmelabel":"'+proglabel+
@@ -4899,6 +4919,7 @@ $(document).ready(function() {
             '","letters":"'+letters+
             '","baseElements":"'+baseElements+
             '","campaignlabel":"'+camplabel+
+            // '","otherElements":"'+otherElements+
             '","elements":';
 
         // var params = '{' +
@@ -4930,7 +4951,7 @@ $(document).ready(function() {
         var objJson = '{';
         i = 0;
         $('.em-ex-check:checked').each(function() {
-            objJson += '"'+i +'":"'+$(this).attr('value')+'",';
+            objJson += '"'+i +'":"'+$(this).attr('name')+'",';
             i++;
         });
         objJson = objJson.substr(0, objJson.length - 1);
