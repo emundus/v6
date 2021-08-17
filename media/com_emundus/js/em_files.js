@@ -3039,18 +3039,18 @@ $(document).ready(function() {
                                                                                                     }
                                                                                                 }
 
-                                                                                                if (others != "") {
-
-                                                                                                    $('#oelts').find('input[type=checkbox]:checked').removeAttr('checked');
-
-                                                                                                    for (var d in others) {
-                                                                                                        if (isNaN(parseInt(d)))
-                                                                                                            break;
-
-                                                                                                        $('#em-ex-' + others[d]).prop("checked", true);
-
-                                                                                                    }
-                                                                                                }
+                                                                                                // if (others != "") {
+                                                                                                //
+                                                                                                //     $('#oelts').find('input[type=checkbox]:checked').removeAttr('checked');
+                                                                                                //
+                                                                                                //     for (var d in others) {
+                                                                                                //         if (isNaN(parseInt(d)))
+                                                                                                //             break;
+                                                                                                //
+                                                                                                //         $('#em-ex-' + others[d]).prop("checked", true);
+                                                                                                //
+                                                                                                //     }
+                                                                                                // }
 
                                                                                                 $('input[name=em-export-methode][value="'+methode+'"]').prop("checked",true);
 
