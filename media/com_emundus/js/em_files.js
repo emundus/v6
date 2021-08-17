@@ -2873,7 +2873,7 @@ $(document).ready(function() {
 
                                                                 /// check if letters != 0 -> [yes] --> select it, [no] --> do nothing
                                                                 if(letters) {
-                                                                    document.getElementById('em-export-letter')[letters].selected = true;
+                                                                    $('#em-export-letter  option[value="' + letters + '"]').prop("selected", true);
                                                                     $('#em-export-letter').trigger("chosen:updated");
                                                                     $('#em-export-letter').trigger("change");
                                                                 }
