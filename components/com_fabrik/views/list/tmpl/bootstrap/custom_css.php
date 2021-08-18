@@ -141,7 +141,7 @@ border-radius: 4px;
 
 .view-list form.form-search table tbody td.fabrik_actions .btn-group {
     display: flex; 
-    justify-content: space-evenly; 
+    justify-content: flex-end; 
 }
 
 
