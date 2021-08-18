@@ -23,6 +23,7 @@ JText::script('COM_EMUNDUS_DASHBOARD_USERS_TOTAL');
 JText::script('COM_EMUNDUS_DASHBOARD_USERS');
 JText::script('COM_EMUNDUS_DASHBOARD_FAQ_QUESTION');
 JText::script('COM_EMUNDUS_DASHBOARD_FAQ_REDIRECT');
+JText::script('COM_EMUNDUS_DASHBOARD_FAQ_HELPCENTER');
 
 $user = JFactory::getSession()->get('emundusUser');
 
