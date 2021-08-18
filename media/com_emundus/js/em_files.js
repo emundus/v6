@@ -721,7 +721,6 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                                     success: function (result) {
                                         if (result.status) {
                                             //// right here --> I will
-                                            //console.log(result);
                                             let source = result.link;
 
                                             if(letter != 0) {
@@ -1965,9 +1964,11 @@ $(document).ready(function() {
                                     //console.log(result);
                                     let letters = result.letters;
                                     letters.forEach(letter => {
-                                        $('#em-export-letter').append('<option value="' + letter.id + '">' + letter.title + '</option>');
-                                        $('#em-export-letter').trigger("chosen:updated");
-                                        $('#letter').show();
+                                        if(letter.template_type == '4') {
+                                            $('#em-export-letter').append('<option value="' + letter.id + '">' + letter.title + '</option>');
+                                            $('#em-export-letter').trigger("chosen:updated");
+                                            $('#letter').show();
+                                        }
                                     });
                                }, error: function(jqXHR) {
                                     console.log(jqXHR.responseText);
@@ -2832,6 +2833,15 @@ $(document).ready(function() {
                                                             let constraints = jQuery.parseJSON(excelFilter.filter.constraints);
                                                             let filter = jQuery.parseJSON(constraints.excelfilter);
 
+                                                            if(!jQuery.isEmptyObject(filter.objects)) {
+                                                                let otherElements = Object.values(filter.objects);
+
+                                                                /// iterate
+                                                                otherElements.forEach(elems => {
+                                                                    $('#' + elems).prop('checked', true);
+                                                                })
+                                                            }
+
                                                             if (filter.baseElements !== undefined) {
                                                                 let baseElements = filter.baseElements;
 
@@ -2875,7 +2885,7 @@ $(document).ready(function() {
 
                                                                 /// check if letters != 0 -> [yes] --> select it, [no] --> do nothing
                                                                 if(letters) {
-                                                                    document.getElementById('em-export-letter')[letters].selected = true;
+                                                                    $('#em-export-letter  option[value="' + letters + '"]').prop("selected", true);
                                                                     $('#em-export-letter').trigger("chosen:updated");
                                                                     $('#em-export-letter').trigger("change");
                                                                 }
@@ -3032,18 +3042,18 @@ $(document).ready(function() {
                                                                                                     }
                                                                                                 }
 
-                                                                                                if (others != "") {
-
-                                                                                                    $('#oelts').find('input[type=checkbox]:checked').removeAttr('checked');
-
-                                                                                                    for (var d in others) {
-                                                                                                        if (isNaN(parseInt(d)))
-                                                                                                            break;
-
-                                                                                                        $('#em-ex-' + others[d]).prop("checked", true);
-
-                                                                                                    }
-                                                                                                }
+                                                                                                // if (others != "") {
+                                                                                                //
+                                                                                                //     $('#oelts').find('input[type=checkbox]:checked').removeAttr('checked');
+                                                                                                //
+                                                                                                //     for (var d in others) {
+                                                                                                //         if (isNaN(parseInt(d)))
+                                                                                                //             break;
+                                                                                                //
+                                                                                                //         $('#em-ex-' + others[d]).prop("checked", true);
+                                                                                                //
+                                                                                                //     }
+                                                                                                // }
 
                                                                                                 $('input[name=em-export-methode][value="'+methode+'"]').prop("checked",true);
 
@@ -5366,8 +5376,6 @@ $(document).ready(function() {
             baseElements.push(id);
         })
 
-        //console.log(baseElements);
-
         var params = '{' +
             '"programmelabel":"'+proglabel+
             '","code":"'+code+
@@ -5388,7 +5396,6 @@ $(document).ready(function() {
         var eltJson = "{";
         var i = 0;
 
-        // let defaultElts = [2540,2754,1906,7056,7057,7068];  //default elements --> this list will be removed in the future to avoid harcoding
         $(".em-export-item").each(function() {
             // let id = $(this).attr('id').split('-')[0];
             // if(!defaultElts.includes(parseInt(id))) {
@@ -5406,7 +5413,7 @@ $(document).ready(function() {
         var objJson = '{';
         i = 0;
         $('.em-ex-check:checked').each(function() {
-            objJson += '"'+i +'":"'+$(this).attr('value')+'",';
+            objJson += '"'+i +'":"'+$(this).attr('name')+'",';
             i++;
         });
         objJson = objJson.substr(0, objJson.length - 1);
