@@ -136,7 +136,7 @@ border-radius: 4px;
 
 .view-list form.form-search table thead th.fabrik_actions .btn-group {
     display: flex; 
-    justify-content: space-evenly; 
+    justify-content: flex-end; 
 }
 
 .view-list form.form-search table tbody td.fabrik_actions .btn-group {
