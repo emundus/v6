@@ -2855,11 +2855,17 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
         }
       }
 
-      a.fabrik_edit,
+      a.fabrik_edit {
+        background: $dark-green;
+        border-color: $dark-green;
+        margin-right: 5px;
+      }
+
       a.fabrik_view,
       a.listplugin {
         background: $dark-blue;
         border-color: $dark-blue;
+        margin-right: 5px;
 
         &:hover,
         &:active,
