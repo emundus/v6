@@ -18,16 +18,14 @@ class plgEmundusCustom_event_handler extends JPlugin {
     }
 
 
-
     /**
      * Call event handler set in the params
      *
-     * @param $event
+     * @param String $event
      *
-     * @return bool
+     * @return void
      */
-    function callEventHandler($event) {
-
+    function callEventHandler(String $event): void {
         $params = json_decode($this->params);
         $event_handlers = json_decode($params->event_handlers);
         $events = array_keys($event_handlers->event, $event);
@@ -40,6 +38,5 @@ class plgEmundusCustom_event_handler extends JPlugin {
                 continue;
             }
         }
-        return true;
     }
 }
