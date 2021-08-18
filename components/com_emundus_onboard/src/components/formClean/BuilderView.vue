@@ -23,7 +23,7 @@
           </a>
         </div>
       </div>
-      <translation v-if="object_json.show_title"  :label="object_json.show_title.label" :actualLanguage="actualLanguage" v-if="translate.label_page"></translation>
+      <translation v-if="object_json.show_title && translate.label_page" :label="object_json.show_title.label" :actualLanguage="actualLanguage"></translation>
     </div>
 
     <p v-if="eval == 0 && !updateIntroPage" class="introP" v-html="object_json.intro_value" @click="enableUpdatingPageIntro(object_json)" />
@@ -38,7 +38,7 @@
           </a>
         </div>
       </div>
-      <translation v-if="object_json.intro"  :label="object_json.intro" :actualLanguage="actualLanguage" v-if="translate.intro_page"></translation>
+      <translation v-if="object_json.intro && translate.intro_page"  :label="object_json.intro" :actualLanguage="actualLanguage"></translation>
     </div>
 
     <form method="post" v-on:submit.prevent object_json.attribs class="form-page" :id="'form_' + object_json.id" :style="eval == 1 ? 'margin-top: 30px' : ''">

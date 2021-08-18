@@ -11,28 +11,47 @@
           <div class="column-inner-block w-col w-col-8 pl-30px">
             <div class="list-item-header">
               <div class="block-label">
-                <a v-if="data.type == 2"
+<!--                <a v-if="data.type == 2"
                    class="item-select w-inline-block"
                    v-on:click="selectItem(data.id)"
                    :class="{ active: isActive }"
-                ></a>
+                ></a>-->
                 <h2 class="nom-campagne-block" :style="data.type != 2 ? 'margin-left: 35px' : ''">{{ data.subject }}</h2>
               </div>
+            </div>
+<!--            <p class="description-block"><span v-html="data.message"></span></p>-->
+            <div class="d-flex">
               <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
                 {{ isPublished ? publishedTag : unpublishedTag }}
               </div>
+              <div class="nb-dossier">
+                <div>{{ type[langue][data.type - 1] }}</div>
+              </div>
             </div>
-            <a href="#" class="button-programme" style="margin-left: 35px">{{ type[langue][data.type - 1] }}</a>
-            <p class="description-block"><span v-html="data.message"></span></p>
-            <div class="stats-block" style="justify-content: flex-end">
-              <button class="cta-block mb-0" type="button" :title="Visualize" @click="$modal.show('modalEmailPreview_' + data.id)">
-                <em class="fas fa-eye"></em>
-              </button>
-              <a class="cta-block pointer"
-                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id)"
-                 :title="Modify">
-                <em class="fas fa-pen"></em>
-              </a>
+            <div>
+              <hr class="divider-card">
+              <div class="stats-block">
+                <a @click="redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id)"
+                   class="bouton-ajouter pointer add-button-div"
+                   :title="Modify">
+                  <em class="fas fa-pen"></em>
+                  <span>{{Modify}}</span>
+                </a>
+                <div class="d-flex">
+                  <button class="cta-block" style="height: unset" type="button" :title="Visualize" @click="$modal.show('modalEmailPreview_' + data.id)">
+                    <em class="fas fa-eye"></em>
+                  </button>
+                  <v-popover :popoverArrowClass="'custom-popover-arraow'">
+                    <button class="tooltip-target b3 card-button"></button>
+
+                    <template slot="popover">
+                      <actions
+                          :data="actions"
+                      ></actions>
+                    </template>
+                  </v-popover>
+                </div>
+              </div>
             </div>
           </div>
           </div>
@@ -45,18 +64,19 @@
 import { list } from "../../store";
 import axios from "axios";
 import ModalEmailPreview from "@/views/advancedModals/ModalEmailPreview";
-
+import actions from "./action_menu";
 
 const qs = require("qs");
 
 export default {
   name: "emailItem",
-  components: {ModalEmailPreview},
+  components: {ModalEmailPreview,actions},
   props: {
     data: Object,
     selectItem: Function,
     actualLanguage: String,
-    models: Array
+    models: Array,
+    actions: Object,
   },
   data() {
     return {

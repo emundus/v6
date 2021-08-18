@@ -40,7 +40,7 @@
 
   export default {
     name: "modalEmailPreview",
-    props: { model: Number, models: Array },
+    props: { model: String, models: Array },
     data() {
       return {
         email: null,
