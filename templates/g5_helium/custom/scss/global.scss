@@ -258,6 +258,10 @@ ul {
   border-bottom: none;
 }
 
+.contentpane.modal form#job-form[name="adminForm"] .em-container-trombi {
+  justify-content: flex-start !important;
+  flex-direction: column !important;
+}
 
 .modal {
   position: relative;
@@ -2300,7 +2304,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .alert {
     a {
-      font-size: 16px;
+      font-size: 16px !important;
 
       &:hover {
         font-size: 16px;
@@ -3318,7 +3322,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       display: none;
     }
 
-    .homepage .campaigns-list .below-content a.btn.btn-primary.btn-creux.btn-orange {
+    .homepage .campaigns-list .below-content a.btn.btn-primary.btn-creux.btn-orange , .homepage .campaigns-list .below-content a.btn.btn-primary.btn-plein.btn-blue {
       margin-bottom: 5px;
     }
 
