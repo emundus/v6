@@ -3,7 +3,7 @@
     <div class='section-sub-menu' style='margin-bottom: 10px'>
       <h3>{{translations.Question}}</h3>
       <p class="faq-intro">{{translations.Redirect}}</p>
-      <a href='{{translations.FAQ}}' target='_blank' rel="noopener noreferrer"><button class='bouton-faq'>F.A.Q</button></a>
+      <a :href="translations.FAQ" target='_blank' rel="noopener noreferrer"><button class='bouton-faq'>F.A.Q</button></a>
     </div>
   </div>
 </template>
