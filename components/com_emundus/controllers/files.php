@@ -2312,7 +2312,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $tmp_route = JPATH_BASE.DS."tmp".DS;
         $randomString = JUserHelper::genRandomPassword(20);
 
-        $letter_file = end(explode('/', $letter));
+        $array = explode('/', $letter);
+        $letter_file = end($array);
         $letter_file_random = explode('.xlsx', $letter_file)[0] .'_' . $randomString;
 
         $_newLetter = JPATH_BASE.DS."tmp".DS.$letter_file_random.'.xlsx';
@@ -4226,6 +4227,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         $dispatcher = JEventDispatcher::getInstance();
 
         $status = $dispatcher->trigger('onExportFiles', array($fnums, $type));
+        $dispatcher->trigger('callEventHandler', ['onExportFiles']);
         if (is_array($status) && !in_array(false, $status)) {
             $msg = JText::_('FILES_EXPORTED_TO_EXTERNAL');
             $result = true;
