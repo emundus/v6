@@ -205,6 +205,12 @@ JText::script('COM_EMUNDUS_ONBOARD_BUILDER_FUTURE_YEARS');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_YEAR_RANGE');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_TIP_YEARS_FUTURE');
 
+# IMAGE RESOLUTION
+JText::script('COM_EMUNDUS_ONBOARD_MIN_WIDTH');
+JText::script('COM_EMUNDUS_ONBOARD_MIN_HEIGHT');
+JText::script('COM_EMUNDUS_ONBOARD_MAX_WIDTH');
+JText::script('COM_EMUNDUS_ONBOARD_MAX_HEIGHT');
+
 $vue = 'em-formBuilder-vue';
 if($this->eval != 0){
     $vue = 'em-evaluationBuilder-vue';

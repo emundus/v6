@@ -98,6 +98,34 @@
           </p>
         </div>
       </div>
+      <!-- image resolution -->
+      <div class="form-group">
+        <label for="image-min-width">{{ translations.MinWidth }}</label>
+        <div class="input-can-translate">
+          <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="image-min-height">{{ translations.MinHeight }}</label>
+        <div class="input-can-translate">
+          <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="image-max-width">{{ translations.MaxWidth }}</label>
+        <div class="input-can-translate">
+          <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="image-max-height">{{ translations.MaxHeight }}</label>
+        <div class="input-can-translate">
+          <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height"/>
+        </div>
+      </div>
       <div class="d-flex justify-content-between mb-1">
         <button
             type="button"
@@ -227,6 +255,10 @@ export default {
         TypeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED_REQUIRED"),
         TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
         Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
+        MinWidth: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_WIDTH"),
+        MinHeight: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_HEIGHT"),
+        MaxWidth: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_WIDTH"),
+        MaxHeight: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_HEIGHT"),
       }
     };
   },
