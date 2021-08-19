@@ -101,31 +101,37 @@
       <!-- image resolution -->
       <div id="imageResolutionZone" v-if="show == true">
         <hr style="margin-top: unset"/>
+        <div class="toogle" style="font-size: smaller">
+          <span>{{ translations.MinResolutionTooltips }}</span>
+          <br/>
+          <span>{{ translations.MaxResolutionTooltips }}</span>
+        </div>
+        <br/>
         <div class="form-group">
           <label for="image-min-width">{{ translations.MinWidth }}</label>
           <div class="input-can-translate">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width" min="100"/>
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width" v-model="form.minResolution.width"/>
           </div>
         </div>
 
         <div class="form-group">
           <label for="image-min-height">{{ translations.MinHeight }}</label>
           <div class="input-can-translate">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height" min="100"/>
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height" v-model="form.minResolution.height"/>
           </div>
         </div>
 
         <div class="form-group">
           <label for="image-max-width">{{ translations.MaxWidth }}</label>
           <div class="input-can-translate">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width"/>
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width" v-model="form.maxResolution.width"/>
           </div>
         </div>
 
         <div class="form-group">
           <label for="image-max-height">{{ translations.MaxHeight }}</label>
           <div class="input-can-translate">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height"/>
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height" v-model="form.maxResolution.height"/>
           </div>
         </div>
       </div>
@@ -208,7 +214,17 @@ export default {
           'doc;docx;odt': false,
           'xls;xlsx;odf': false,
         },
-        mandatory: 0
+        mandatory: 0,
+        // min resolution by default
+        minResolution: {
+          width: 400,
+          height: 400,
+        },
+        // max resolution by default
+        maxResolution: {
+          width: 4000,
+          height: 4000,
+        },
       },
       translate: {
         name: false,
@@ -263,6 +279,8 @@ export default {
         MinHeight: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_HEIGHT"),
         MaxWidth: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_WIDTH"),
         MaxHeight: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_HEIGHT"),
+        MinResolutionTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_TOOLTIPS"),
+        MaxResolutionTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_TOOLTIPS"),
       }
     };
   },

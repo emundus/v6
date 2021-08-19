@@ -211,6 +211,9 @@ JText::script('COM_EMUNDUS_ONBOARD_MIN_HEIGHT');
 JText::script('COM_EMUNDUS_ONBOARD_MAX_WIDTH');
 JText::script('COM_EMUNDUS_ONBOARD_MAX_HEIGHT');
 
+JText::script('COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_TOOLTIPS');
+JText::script('COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_TOOLTIPS');
+
 $vue = 'em-formBuilder-vue';
 if($this->eval != 0){
     $vue = 'em-evaluationBuilder-vue';
