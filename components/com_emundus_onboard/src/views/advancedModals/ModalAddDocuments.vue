@@ -87,7 +87,7 @@
           <label for="nbmax" :class="{ 'is-invalid': errors.selectedTypes}">{{ translations.FileType }}* :</label>
           <div class="users-block" :class="{ 'is-invalid': errors.selectedUsers}">
             <div v-for="(type, index) in types" :key="index" class="user-item">
-              <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type.value]" @click="selectType(type)">
+              <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type.value]" @change="selectType(type)">
               <div class="ml-10px">
                   <p>{{ type.title }} ({{ type.value }})</p>
               </div>
@@ -196,7 +196,17 @@ export default {
         ordering: "",
         published: "",
         value: "",
-        video_max_length:''
+        video_max_length:'',
+
+        minResolution: {
+          width: 0,
+          height: 0,
+        },
+        // max resolution by default
+        maxResolution: {
+          width: 0,
+          height: 0,
+        },
       },
       form: {
         name: {
@@ -210,20 +220,20 @@ export default {
         nbmax: 1,
         selectedTypes: {
           pdf: false,
-          'jpg;png;gif': false,
+          'jpeg;jpg;png;gif': false,
           'doc;docx;odt': false,
           'xls;xlsx;odf': false,
         },
         mandatory: 0,
-        // min resolution by default
+        //min resolution by default
         minResolution: {
-          width: 400,
-          height: 400,
+          width: 300,
+          height: 300,
         },
         // max resolution by default
         maxResolution: {
-          width: 4000,
-          height: 4000,
+          width: 1200,
+          height: 1200,
         },
       },
       translate: {
@@ -243,7 +253,7 @@ export default {
         },
         {
           title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS"),
-          value: 'jpg;png;gif'
+          value: 'jpeg;jpg;png;gif'
         },
         {
           title: Joomla.JText._("COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS"),
@@ -286,12 +296,16 @@ export default {
   },
   methods: {
     selectType(e) {
-      if(e.title == Joomla.JText._("COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS")) {
+      let raw_val = e.value;
+      let val = raw_val.split(';');
+
+      if(val.includes('jpeg') || val.includes('jpg') || val.includes('png') || val.includes('gif')) {
         this.show = !this.show;
       }
     },
 
     beforeClose(event) {
+      this.show = false;
       this.doc = null;
       this.currentDoc = null;
       this.can_be_deleted = false;
@@ -308,9 +322,18 @@ export default {
         nbmax: 1,
         selectedTypes: {
           pdf: false,
-          'jpg;png;gif': false,
+          'jpeg;jpg;png;gif': false,
           'doc;docx;odt': false,
           'xls;xlsx;odf': false,
+        },
+        minResolution: {
+          width: 300,
+          height: 300,
+        },
+        // max resolution by default
+        maxResolution: {
+          width: 1200,
+          height: 1200,
         },
       };
 
@@ -396,8 +419,8 @@ export default {
       if (this.model.allowed_types.includes('pdf')) {
         y.push('pdf');
       }
-      if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
-        y.push('jpg;png;gif')
+      if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('jpeg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
+        y.push('jpeg;jpg;png;gif')
       }
       if (this.model.allowed_types.includes('xls') || this.model.allowed_types.includes('xlsx') || this.model.allowed_types.includes('odf')) {
         y.push('xls;xlsx;odf')
@@ -495,7 +518,6 @@ export default {
         url: "index.php?option=com_emundus_onboard&controller=form&task=getundocuments",
       }).then(response => {
         this.models = response.data.data;
-
         if (this.currentDoc != null) {
           this.doc = this.currentDoc;
         }
@@ -545,6 +567,14 @@ export default {
         this.form.name = this.model.name;
         this.form.description = this.model.description;
         this.form.mandatory = this.model.mandatory
+        this.form.minResolution = {
+          width: 300,
+          height: 300,
+        };
+        this.form.maxResolution = {
+          width: 1200,
+          height: 1200,
+        };
         //this.form.mandatory=1;
         if (this.model.mandatory == 1) {
 
@@ -558,10 +588,27 @@ export default {
         } else {
           this.form.selectedTypes.pdf = false;
         }
-        if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
-          this.form.selectedTypes['jpg;png;gif'] = true;
+
+        if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('jpeg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
+          console.log(this.model.min_width);
+          /// bind image resolution -- min resolution
+          if(this.model.min_width !== null && this.model.min_height !== null) {
+            this.form.minResolution.width = this.model.min_width;
+            this.form.minResolution.height = this.model.min_height;
+          }
+
+          /// bind image resolution -- max resolution
+          if(this.model.max_width !== null && this.model.max_height !== null) {
+            this.form.maxResolution.width = this.model.max_width;
+            this.form.maxResolution.height = this.model.max_height;
+          }
+
+          this.form.selectedTypes['jpeg;jpg;png;gif'] = true;
+          this.show = true;
+
         } else {
-          this.form.selectedTypes['jpg;png;gif'] = false;
+          this.form.selectedTypes['jpeg;jpg;png;gif'] = false;
+          this.show = false;
         }
         if (this.model.allowed_types.includes('xls') || this.model.allowed_types.includes('xlsx') || this.model.allowed_types.includes('odf')) {
           this.form.selectedTypes['xls;xlsx;odf'] = true;
@@ -587,7 +634,7 @@ export default {
           nbmax: 1,
           selectedTypes: {
             pdf: false,
-            'jpg;png;gif': false,
+            'jpeg;jpg;png;gif': false,
             'doc;docx;odt': false,
             'xls;xlsx;odf': false,
           },
