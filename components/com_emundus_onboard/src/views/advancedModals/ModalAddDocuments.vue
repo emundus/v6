@@ -87,7 +87,7 @@
           <label for="nbmax" :class="{ 'is-invalid': errors.selectedTypes}">{{ translations.FileType }}* :</label>
           <div class="users-block" :class="{ 'is-invalid': errors.selectedUsers}">
             <div v-for="(type, index) in types" :key="index" class="user-item">
-              <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type.value]">
+              <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type.value]" @click="selectType(type)">
               <div class="ml-10px">
                   <p>{{ type.title }} ({{ type.value }})</p>
               </div>
@@ -99,31 +99,34 @@
         </div>
       </div>
       <!-- image resolution -->
-      <div class="form-group">
-        <label for="image-min-width">{{ translations.MinWidth }}</label>
-        <div class="input-can-translate">
-          <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width"/>
+      <div id="imageResolutionZone" v-if="show == true">
+        <hr style="margin-top: unset"/>
+        <div class="form-group">
+          <label for="image-min-width">{{ translations.MinWidth }}</label>
+          <div class="input-can-translate">
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width" min="100"/>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label for="image-min-height">{{ translations.MinHeight }}</label>
-        <div class="input-can-translate">
-          <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height"/>
+        <div class="form-group">
+          <label for="image-min-height">{{ translations.MinHeight }}</label>
+          <div class="input-can-translate">
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height" min="100"/>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label for="image-max-width">{{ translations.MaxWidth }}</label>
-        <div class="input-can-translate">
-          <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width"/>
+        <div class="form-group">
+          <label for="image-max-width">{{ translations.MaxWidth }}</label>
+          <div class="input-can-translate">
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width"/>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label for="image-max-height">{{ translations.MaxHeight }}</label>
-        <div class="input-can-translate">
-          <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height"/>
+        <div class="form-group">
+          <label for="image-max-height">{{ translations.MaxHeight }}</label>
+          <div class="input-can-translate">
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height"/>
+          </div>
         </div>
       </div>
       <div class="d-flex justify-content-between mb-1">
@@ -164,6 +167,7 @@ export default {
   },
   data() {
     return {
+      show: false,
       doc: null,
       model: {
         allowed_types: '',
@@ -263,6 +267,12 @@ export default {
     };
   },
   methods: {
+    selectType(e) {
+      if(e.title == Joomla.JText._("COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS")) {
+        this.show = !this.show;
+      }
+    },
+
     beforeClose(event) {
       this.doc = null;
       this.currentDoc = null;
