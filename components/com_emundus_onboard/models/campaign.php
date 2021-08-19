@@ -840,6 +840,7 @@ class EmundusonboardModelcampaign extends JModelList
         $types = implode(";", array_values($types));
         $query
             ->insert($db->quoteName('#__emundus_setup_attachments'));
+
         $query
             ->set($db->quoteName('lbl') . ' = ' . $db->quote('_em'))
             ->set($db->quoteName('value') . ' = ' . $db->quote($document['name'][$actualLanguage]))
@@ -847,6 +848,15 @@ class EmundusonboardModelcampaign extends JModelList
             ->set($db->quoteName('allowed_types') . ' = ' . $db->quote($types))
             ->set($db->quoteName('ordering') . ' = ' . $db->quote(0))
             ->set($db->quoteName('nbmax') . ' = ' . $db->quote($document['nbmax']));
+
+        /// insert image resolution if image is found
+        if($document['minResolution'] != null and $document['maxResolution'] != null) {
+            $query
+                ->set($db->quoteName('min_width') . ' = ' . (int)$document['minResolution']['width'])
+                ->set($db->quoteName('min_height') . ' = ' . (int)$document['minResolution']['height'])
+                ->set($db->quoteName('max_width') . ' = ' . (int)$document['maxResolution']['width'])
+                ->set($db->quoteName('max_height') . ' = ' . (int)$document['maxResolution']['height']);
+        }
 
         try{
             $db->setQuery($query);
