@@ -1,5 +1,13 @@
 @import "variables";
 
+
+// FORM
+.form-title-block{
+  position: absolute;
+  top: -90px;
+  z-index: 11;
+}
+
 // YES NO
 .fabrikgrid_0.btn-default{
   background-color: #bd362f;
@@ -217,8 +225,18 @@ fieldset {
   margin-top: 3em;
 }
 
+.groups-block{
+  background: #f8f8f8;
+}
+
+.group-item-block{
+  margin-bottom: 30px;
+  background: white;
+}
+
 .form-viewer-builder .form-page {
   margin-top: 0;
+  background: #fff;
 }
 
 .elements-block {

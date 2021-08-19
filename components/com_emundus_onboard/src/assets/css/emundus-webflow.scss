@@ -744,6 +744,9 @@ input[type="reset"] {
   width: 30px;
   height: 30px;
   text-align: center;
+  align-items: center;
+  display: flex;
+  justify-content: center;
   transition: all 0.1s ease-in-out;
   &:hover{
     color: $grey;
@@ -1701,6 +1704,8 @@ textarea {
   text-decoration: none;
   margin: 10px 0 20px 5px;
   width: auto;
+  display: flex;
+  align-items: center;
 }
 .MenuFormItem {
   text-decoration: none;
@@ -1825,7 +1830,7 @@ textarea {
   position: fixed;
   width: 250px;
   left: 75px;
-  top: 85px;
+  top: 0;
   padding-top: 5.3%;
   z-index: 10;
   height: 100%;
@@ -1851,6 +1856,7 @@ textarea {
 .heading-block{
   margin-bottom: 1em;
   margin-top: 2em;
+  margin-left: 250px;
   width: 67%;
   display: flex;
   justify-content: space-between;

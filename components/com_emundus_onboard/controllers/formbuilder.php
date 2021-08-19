@@ -312,8 +312,9 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
             $getJtext = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $getJtext = new stdClass();
-            $getJtext->fr = $m_form->getTranslation($toJTEXT,$Content_Folder['fr']);
-            $getJtext->en = $m_form->getTranslation($toJTEXT,$Content_Folder['en']);
+            foreach ($languages as $language) {
+                $getJtext->{$language->sef} = $m_form->getTranslation($toJTEXT,$Content_Folder[$language->sef]);
+            }
         }
         echo json_encode((object)$getJtext);
         exit;

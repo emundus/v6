@@ -91,13 +91,8 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 $show_title->titleraw = $form->form->label;
                 $show_title->value = $form->getLabel();
                 $show_title->label = new stdClass;
-                $show_title->label->fr = $formbuilder->getTranslation($form->form->label, $Content_Folder['fr']);
-                $show_title->label->en = $formbuilder->getTranslation($form->form->label, $Content_Folder['en']);
-                if ($show_title->label->fr === false) {
-                    $show_title->label->fr = $form->form->label;
-                }
-                if ($show_title->label->en === false) {
-                    $show_title->label->en = $form->form->label;
+                foreach ($languages as $language) {
+                    $show_title->label->{$language->sef} = $formbuilder->getTranslation($form->form->label,$Content_Folder[$language->sef]);
                 }
                 $returnObject->show_title = $show_title;
             else :
@@ -105,23 +100,19 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 $show_title->titleraw = '';
                 $show_title->value = '';
                 $show_title->label = new stdClass;
-                $show_title->label->fr = '';
-                $show_title->label->en = '';
+                foreach ($languages as $language) {
+                    $show_title->label->{$language->sef} = '';
+                }
                 $returnObject->show_title = $show_title;
             endif;
 
             if ($form->getIntro()) :
                 $returnObject->intro_value = $form->getIntro();
                 $returnObject->intro = new stdClass;
-                $returnObject->intro->fr = $formbuilder->getTranslation($form->form->intro, $Content_Folder['fr']);
-                $returnObject->intro->en = $formbuilder->getTranslation($form->form->intro, $Content_Folder['en']);
-                if ($returnObject->intro->fr === false) {
-                    $returnObject->intro->fr = $form->form->intro;
+                foreach ($languages as $language) {
+                    $returnObject->intro->{$language->sef} = $formbuilder->getTranslation($form->form->intro,$Content_Folder[$language->sef]);
                 }
-                if ($returnObject->intro->en === false) {
-                    $returnObject->intro->en = $form->form->intro;
-                }
-                $returnObject->intro_raw = $form->form->intro;
+                $returnObject->intro_raw = strip_tags($form->form->intro);
             endif;
 
             if ($form->attribs) :
@@ -145,23 +136,19 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 $query = $db->getQuery(true);
 
                 $query
-                    ->select('ordering')
-                    ->from($db->quoteName('#__fabrik_formgroup'))
-                    ->where($db->quoteName('group_id') . ' = ' . $db->quote($GroupProperties->id));
+                    ->select('fg.label,ffg.ordering')
+                    ->from($db->quoteName('#__fabrik_formgroup','ffg'))
+                    ->leftJoin($db->quoteName('#__fabrik_groups','fg').' ON '.$db->quoteName('fg.id').' = '.$db->quoteName('ffg.group_id'))
+                    ->where($db->quoteName('ffg.group_id') . ' = ' . $db->quote($GroupProperties->id));
 
                 $db->setQuery($query);
-                ${"group_" . $GroupProperties->id}->ordering = $db->loadResult();
-
+                $group_infos = $db->loadObject();
+                ${"group_" . $GroupProperties->id}->ordering = (int)$group_infos->ordering;
                 ${"group_" . $GroupProperties->id}->group_showLegend = $GroupProperties->title;
-                ${"group_" . $GroupProperties->id}->group_tag = $GroupProperties->name;
+                ${"group_" . $GroupProperties->id}->group_tag = $group_infos->label != '' ? $group_infos->label : strtoupper($formbuilder->replaceAccents($GroupProperties->name));
                 ${"group_" . $GroupProperties->id}->label = new stdClass;
-                ${"group_" . $GroupProperties->id}->label->fr = $formbuilder->getTranslation($GroupProperties->name, $Content_Folder['fr']);
-                ${"group_" . $GroupProperties->id}->label->en = $formbuilder->getTranslation($GroupProperties->name, $Content_Folder['en']);
-                if (${"group_" . $GroupProperties->id}->label->fr === false) {
-                    ${"group_" . $GroupProperties->id}->label->fr = $GroupProperties->name;
-                }
-                if (${"group_" . $GroupProperties->id}->label->en === false) {
-                    ${"group_" . $GroupProperties->id}->label->en = $GroupProperties->name;
+                foreach ($languages as $language) {
+                    ${"group_" . $GroupProperties->id}->label->{$language->sef} = $formbuilder->getTranslation($group_infos->label,$Content_Folder[$language->sef]);
                 }
 
                 if ($GroupProperties->class) :
@@ -218,13 +205,8 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                         ${"element" . $o_element->id}->params = $el_parmas;
                         ${"element" . $o_element->id}->label_tag = $o_element->label;
                         ${"element" . $o_element->id}->label = new stdClass;
-                        ${"element" . $o_element->id}->label->fr = $formbuilder->getTranslation(${"element" . $o_element->id}->label_tag, $Content_Folder['fr']);
-                        ${"element" . $o_element->id}->label->en = $formbuilder->getTranslation(${"element" . $o_element->id}->label_tag, $Content_Folder['en']);
-                        if (${"element" . $o_element->id}->label->fr === false) {
-                            ${"element" . $o_element->id}->label->fr = $o_element->label;
-                        }
-                        if (${"element" . $o_element->id}->label->en === false) {
-                            ${"element" . $o_element->id}->label->en = $o_element->label;
+                        foreach ($languages as $language) {
+                            ${"element" . $o_element->id}->label->{$language->sef} = $formbuilder->getTranslation(${"element" . $o_element->id}->label_tag,$Content_Folder[$language->sef]);
                         }
                         ${"element" . $o_element->id}->labelToFind = $element->label;
                         ${"element" . $o_element->id}->publish = $element->isPublished();

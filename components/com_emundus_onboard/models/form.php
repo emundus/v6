@@ -802,22 +802,15 @@ class EmundusonboardModelform extends JModelList {
                         $db->setQuery($query);
                         $form = $db->loadObject();
 
-                        $label = array(
-                            'fr' => $formbuilder->getTranslation($form->label,$Content_Folder['fr']),
-                            'en' => $formbuilder->getTranslation($form->label,$Content_Folder['en']),
-                        );
+                        $label = array();
+                        $intro = array();
 
-                        $intro = array(
-                            'fr' => $formbuilder->getTranslation($form->intro,$Content_Folder['fr']),
-                            'en' => $formbuilder->getTranslation($form->intro,$Content_Folder['en']),
-                        );
-
-                        // Manage old platforms without translation
-                        if($label['fr'] == '') {
-                            $label['fr'] = $form->label;
-                        }
-                        if($label['en'] == '') {
-                            $label['en'] = $form->label;
+                        foreach ($languages as $language) {
+                            $label[$language->sef] = $formbuilder->getTranslation($form->label,$Content_Folder[$language->sef]);
+                            $intro[$language->sef] = $formbuilder->getTranslation($form->intro,$Content_Folder[$language->sef]);
+                            if($label[$language->sef] == ''){
+                                $label[$language->sef] = $form->label;
+                            }
                         }
 
                         $formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile);
