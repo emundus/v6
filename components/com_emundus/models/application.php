@@ -1193,9 +1193,9 @@ class EmundusModelApplication extends JModelList {
 
                     if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training") {
 
-	                    $query = 'SELECT count(id) FROM `'.$itemt->db_table_name.'` WHERE fnum like '.$this->_db->Quote($fnum);
-	                    $this->_db->setQuery($query);
-	                    $cpt = $this->_db->loadResult();
+                        $query = 'SELECT count(id) FROM `'.$itemt->db_table_name.'` WHERE fnum like '.$this->_db->Quote($fnum);
+                        $this->_db->setQuery($query);
+                        $cpt = $this->_db->loadResult();
 
                         if ($cpt > 0) {
 
@@ -1445,7 +1445,12 @@ class EmundusModelApplication extends JModelList {
                                                     }
 
                                                     elseif ($elements[$j]->plugin == 'checkbox') {
-                                                        $elt = $elt = "<ul><li>" . implode("</li><li>", json_decode (@$r_elt)) . "</li></ul>";
+                                                        $elm = [];
+                                                        $index = array_intersect($params->sub_options->sub_values,json_decode(@$r_elt));
+                                                        foreach($index as $key => $value) {
+                                                            $elm[] = $params->sub_options->sub_labels[$key];
+                                                        }
+                                                        $elt = "<ul><li>" . JText::_(implode("</li><li>", @$elm)) . "</li></ul>";
                                                     }
 
                                                     elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
@@ -1494,10 +1499,10 @@ class EmundusModelApplication extends JModelList {
                                 $modulo = 0;
                                 foreach ($elements as &$element) {
 
-	                                if (!empty(trim($element->label))) {
+                                    if (!empty(trim($element->label))) {
                                         $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
-	                                    $this->_db->setQuery( $query );
-	                                    $res = $this->_db->loadRow();
+                                        $this->_db->setQuery( $query );
+                                        $res = $this->_db->loadRow();
 
                                         $element->content = @$res[1];
                                         $element->content_id = @$res[0];
@@ -1554,16 +1559,16 @@ class EmundusModelApplication extends JModelList {
 
                                                 try {
                                                     $this->_db->setQuery($query);
-	                                                $res = $this->_db->loadColumn();
+                                                    $res = $this->_db->loadColumn();
                                                     $elt = "<ul><li>" . implode("</li><li>", $res) . "</li></ul>";
-	                                            } catch (Exception $e) {
-	                                                JLog::add('Line 997 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
-	                                                throw $e;
-	                                            }
-	                                        } else {
-	                                            $from = $params->join_db_name;
-	                                            $where = $params->join_key_column.'='.$this->_db->Quote($element->content);
-	                                            $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+                                                } catch (Exception $e) {
+                                                    JLog::add('Line 997 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
+                                                    throw $e;
+                                                }
+                                            } else {
+                                                $from = $params->join_db_name;
+                                                $where = $params->join_key_column.'='.$this->_db->Quote($element->content);
+                                                $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
@@ -1616,7 +1621,7 @@ class EmundusModelApplication extends JModelList {
                                             }
                                         } elseif ($element->plugin == 'internalid') {
                                             $elt = '';
-	                                    } elseif ($element->plugin == 'yesno') {
+                                        } elseif ($element->plugin == 'yesno') {
                                             $elt = ($element->content == 1) ? JText::_('JYES') : JText::_('JNO');
                                         } elseif ($element->plugin == 'field') {
                                             $params = json_decode($element->params);
@@ -1670,13 +1675,13 @@ class EmundusModelApplication extends JModelList {
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
     function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) {
-           /* COULEURS*/
-	    $eMConfig = JComponentHelper::getParams('com_emundus');
-	    $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
-    	$em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
+        /* COULEURS*/
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+        $em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
         $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25');
 
-    	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
         $h_list = new EmundusHelperList;
 
         $tableuser  = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
@@ -2121,8 +2126,12 @@ class EmundusModelApplication extends JModelList {
                                                 elseif ($elements[$j]->plugin == 'textarea') {
                                                     $elt = JText::_($r_elt);
                                                 } elseif ($elements[$j]->plugin == 'checkbox') {
-                                                    $elt = JText::_(implode(", ", json_decode(@$r_elt)));
-                                                    $elt = "<ul><li>" .  JText::_(implode("</li><li>", json_decode(@$r_elt))) . "</li></ul>";
+                                                    $elm = array();
+                                                    $index = array_intersect($params->sub_options->sub_values,json_decode(@$r_elt));
+                                                    foreach($index as $key => $value) {
+                                                        $elm[] = $params->sub_options->sub_labels[$key];
+                                                    }
+                                                    $elt = "<ul><li>" . JText::_(implode("</li><li>", @$elm)) . "</li></ul>";
                                                 } elseif ($elements[$j]->plugin == 'dropdown' || @$elements[$j] == 'radiobutton') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $index = array_search($r_elt, $params->sub_options->sub_values);
