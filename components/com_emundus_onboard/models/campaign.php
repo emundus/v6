@@ -911,8 +911,18 @@ class EmundusonboardModelcampaign extends JModelList
             ->set($db->quoteName('value') . ' = ' . $db->quote($document['name'][$actualLanguage]))
             ->set($db->quoteName('description') . ' = ' . $db->quote($document['description'][$actualLanguage]))
             ->set($db->quoteName('allowed_types') . ' = ' . $db->quote($types))
-            ->set($db->quoteName('nbmax') . ' = ' . $db->quote($document['nbmax']))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($did));
+            ->set($db->quoteName('nbmax') . ' = ' . $db->quote($document['nbmax']));
+
+            /// insert image resolution if image is found
+        if($document['minResolution'] != null and $document['maxResolution'] != null) {
+            $query
+                ->set($db->quoteName('min_width') . ' = ' . (int)$document['minResolution']['width'])
+                ->set($db->quoteName('min_height') . ' = ' . (int)$document['minResolution']['height'])
+                ->set($db->quoteName('max_width') . ' = ' . (int)$document['maxResolution']['width'])
+                ->set($db->quoteName('max_height') . ' = ' . (int)$document['maxResolution']['height']);
+        }
+
+        $query->where($db->quoteName('id') . ' = ' . $db->quote($did));
 
         try{
 
