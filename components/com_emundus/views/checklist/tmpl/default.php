@@ -401,10 +401,13 @@ if (!empty($this->custom_title)) :?>
           });
 
           this.on("success", function(file, responseText) {
-
+            console.log(responseText);
+            
             // Handle the responseText here. For example, add the text to the preview element:
             var response = JSON.parse(responseText);
             var id = response["id"];
+            
+            
 
             if (!response["status"]) {
                 // Remove the file preview.
