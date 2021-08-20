@@ -162,9 +162,8 @@ fieldset {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
-.introP {
-  padding-left: 1.5em;
-  padding-bottom: 2em;
+.introP, .groupintro {
+  padding: 1em;
 }
 .dpflex {
   display: flex;

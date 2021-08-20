@@ -1232,6 +1232,7 @@ class EmundusonboardModelform extends JModelList {
 	public function getUnDocuments() {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
+        $languages = JLanguageHelper::getLanguages();
 
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
@@ -1256,15 +1257,10 @@ class EmundusonboardModelform extends JModelList {
                     $undocument->can_be_deleted = false;
                 }
 
-                $f_values = $falang->getFalang($undocument->id,'emundus_setup_attachments','value');
-			    $undocument->name = new stdClass;
-                $undocument->name->en = $f_values->en->value;
-                $undocument->name->fr = $f_values->fr->value;
-
-                $f_descriptions = $falang->getFalang($undocument->id,'emundus_setup_attachments','description');
-                $undocument->description = new stdClass;
-                $undocument->description->en = $f_descriptions->en->value;
-                $undocument->description->fr = $f_descriptions->fr->value;
+                $f_values = $falang->getFalang($undocument->id,'emundus_setup_attachments','value',$undocument->value);
+                $f_descriptions = $falang->getFalang($undocument->id,'emundus_setup_attachments','description',$undocument->description);
+			    $undocument->name = $f_values;
+                $undocument->description = $f_descriptions;
             }
 
 			return $undocuments;

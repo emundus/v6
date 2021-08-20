@@ -905,8 +905,7 @@ input[type="reset"] {
 .unpublishedTag,
 .passeeTag {
   color: #298721;
-  border-radius: 25px;
-  width: min-content;
+  border-radius: 25px;;
   padding: 5px 30px;
   text-align: center;
   margin-right: 0.7em;
@@ -914,6 +913,7 @@ input[type="reset"] {
   font-size: 12px;
   background: white;
   font-weight: 500;
+  width: auto;
 }
 .unpublishedTag{
   color: #00000059 !important;

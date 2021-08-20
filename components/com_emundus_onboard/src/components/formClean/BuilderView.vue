@@ -56,7 +56,7 @@
                @mouseleave="disableGroupHover()">
             <fieldset :class="[group.group_class]" :id="'group_'+group.group_id" :style="group.group_css" style="background-size: 20px; width: 100%">
               <div class="d-flex justify-content-between" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%">
-                <div class="d-flex">
+                <div class="d-flex justify-content-between" style="width: 100%">
                   <span v-show="hoverGroup && indexGroup == group.group_id" class="icon-handle-group">
                     <em class="fas fa-grip-vertical handle"></em>
                   </span>
@@ -66,12 +66,37 @@
                     class="legend ViewerLegend">
                     {{group.group_showLegend}}
                   </legend>
-                  <a @click="enableUpdatingGroup(group)" style="margin-left: 1em;font-size: 16px" :title="translations.Edit" class="cta-block pointer">
+                  <div class="d-flex">
+                    <a :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px pointer" :title="translations.RepeatedGroup" @click="enableRepatedGroup(group)">
+                      <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
+                    </a>
+                    <v-popover :popoverArrowClass="'custom-popover-arrow'">
+                      <button class="tooltip-target b3 card-button"></button>
+
+                      <template slot="popover">
+                        <div class="container-2 w-container" style="max-width: unset">
+                          <transition :name="'slide-down'" type="transition">
+                            <div>
+                              <nav aria-label="action" class="actions-dropdown pointer">
+                                <a v-on:click="enableUpdatingGroup(group)" class="action-submenu">
+                                  {{translations.EditName}}
+                                </a>
+<!--                                <a v-on:click="enableUpdatingIntroGroup(group)" class="action-submenu">
+                                  {{translations.EditIntro}}
+                                </a>-->
+                                <a @click="deleteAGroup(group,index_group)" class="action-submenu" style="margin-left: 1em;color: black" v-if="files == 0" :title="translations.Delete">
+                                  {{translations.Delete}}
+                                </a>
+                              </nav>
+                            </div>
+                          </transition>
+                        </div>
+                      </template>
+                    </v-popover>
+<!--                  <a @click="enableUpdatingGroup(group)" style="margin-left: 1em;font-size: 16px" :title="translations.Edit" class="cta-block pointer">
                     <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-                  </a>
-                  <a :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px pointer" :title="translations.RepeatedGroup" @click="enableRepatedGroup(group)">
-                    <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
-                  </a>
+                  </a>-->
+                  </div>
                 </div>
 <!--                <div>
                   <div v-show="!openGroup[group.group_id]">
@@ -89,12 +114,6 @@
                   <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
                     <a @click="updateLabelGroup(group)" :title="translations.Validate">
                       <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
-                    </a>
-                    <a @click="enableRepatedGroup(group)" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon" :title="translations.RepeatGroup" v-if="files == 0">
-                      <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
-                    </a>
-                    <a @click="deleteAGroup(group,index_group)" style="margin-left: 1em;color: black" v-if="files == 0" :title="translations.Delete">
-                      <em class="fas fa-trash-alt" data-toggle="tooltip" data-placement="top"></em>
                     </a>
                   </div>
                 </div>
@@ -333,6 +352,9 @@ export default {
         RepeatedGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEATED_GROUP"),
         Duplicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_DUPLICATE"),
         NoElementsTips: Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS"),
+        EditName: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EDIT_NAME"),
+        EditIntro: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EDIT_INTRO"),
+        DisplayHide: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE"),
       }
     };
   },
@@ -1198,6 +1220,9 @@ export default {
           document.getElementById('update_input_' + group.group_id).focus();
         }, 100);
       }
+    },
+    enableUpdatingIntroGroup(group) {
+
     },
     enableTranslationGroup(gid) {
       this.translate.label_group = !this.translate.label_group;

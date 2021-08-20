@@ -45,9 +45,6 @@ class EmundusonboardModelformbuilder extends JModelList {
     }
 
     public function updateTranslation($key,$values){
-        $app = JFactory::getApplication();
-        $languages = JLanguageHelper::getLanguages();
-
         // Prepare languages
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_files = array();
@@ -270,7 +267,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $newmenuid = $db->insertid();
 
             // Insert translation into falang for modules
-            $falang->insertFalang($label['fr'], $label['en'], $newmenuid, 'menu', 'title');
+            $falang->insertFalang($label, $newmenuid, 'menu', 'title');
             //
 
             // Affect modules to this menu
@@ -3015,7 +3012,7 @@ this.set(words.join(&quot; &quot;));
             $newmenuid = $db->insertid();
 
             // Add translation for menu
-            $falang->insertFalang($label['fr'],$label['en'],$newmenuid,'menu','title');
+            $falang->insertFalang($label,$newmenuid,'menu','title');
             //
 
             // Affect modules to this menu
@@ -3315,7 +3312,6 @@ this.set(words.join(&quot; &quot;));
                 ->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('fg.form_id'))
                 ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
             $db->setQuery($query);
-            //$db_table = $db->loadObject()->dbtable;
             $group_params = json_decode($group->params);
             $group_params->repeat_group_button = 0;
 
@@ -3325,27 +3321,6 @@ this.set(words.join(&quot; &quot;));
                 ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
             $db->setQuery($query);
             return $db->execute();
-            //$repeat_table_name = $db_table . "_" . $gid . "_repeat";
-            //
-
-            // Delete parent_id and join_table
-            /*$query->clear()
-                ->delete($db->quoteName('#__fabrik_elements'))
-                ->where($db->quoteName('name') . ' = ' . $db->quote('parent_id'))
-                ->andWhere($db->quoteName('group_id') . ' = ' . $db->quote($gid));
-            $db->setQuery($query);
-            $db->execute();*/
-
-            /*$query->clear()
-                ->delete($db->quoteName('#__fabrik_joins'))
-                ->where($db->quoteName('table_join') . ' = ' . $db->quote($repeat_table_name));
-            $db->setQuery($query);
-            $db->execute();*/
-            //
-
-            /*$query = "DROP TABLE IF EXISTS " . $repeat_table_name;
-            $db->setQuery($query);*/
-            //return $db->execute();
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot disable repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
@@ -3367,7 +3342,7 @@ this.set(words.join(&quot; &quot;));
         try {
             $menuid = $db->loadObject();
 
-            return $falang->updateFalang($label['fr'],$label['en'],$menuid->id,'menu','title');
+            return $falang->updateFalang($label,$menuid->id,'menu','title');
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot update the menu label of the fabrik_form ' . $pid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
