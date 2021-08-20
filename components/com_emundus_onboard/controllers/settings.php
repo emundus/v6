@@ -656,6 +656,9 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $datas = JLanguageHelper::getLanguages();
+            usort($datas, function($a, $b) {
+                return (int)$a->lang_id > (int)$b->lang_id ? 1 : -1;
+            });
             $response = array('status' => '1', 'msg' => 'SUCCESS', 'data' => $datas);
         }
         echo json_encode((object)$response);
@@ -895,20 +898,6 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             }
             echo json_encode(array('status' => $status));
         }
-        exit;
-    }
-
-    public function getlanguages(){
-        $user = JFactory::getUser();
-
-        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $languages = JLanguageHelper::getLanguages();
-            $response = array('status' => '1', 'msg' => 'SUCCESS', 'languages' => $languages);
-        }
-        echo json_encode((object)$response);
         exit;
     }
 }

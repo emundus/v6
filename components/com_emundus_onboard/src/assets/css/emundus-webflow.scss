@@ -1510,22 +1510,22 @@ textarea {
   }
 }
 .search {
-  width: 100%;
   display: flex;
 }
 .searchTerm {
   width: 100%;
-  border: 2px solid #de6339;
+  border: 2px solid $dark-blue;
   border-right: none;
   padding: 5px;
   border-radius: 5px 0 0 5px;
   outline: none;
   color: #9DBFAF;
-  right: -3px;
-  height: 36px;
+  right: 0;
+  height: 30px;
   position: relative;
+  margin-bottom: 0 !important;
   &:focus {
-    border-color: #de6339 !important;
+    border-color: $dark-blue !important;
     box-shadow: unset !important;
   }
 }
@@ -1576,8 +1576,10 @@ textarea {
   justify-content: center;
 }
 .filters-menu{
-  width: 30px;
-  float: right;
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: end;
 }
 .filter-subtitle {
   font-size: 14px;
@@ -2500,3 +2502,12 @@ input[type="radio"]{
   color: white !important;
 }
 /*** END ***/
+
+
+.hidden-notice{
+  padding: 10px;
+  background: $light-yellow;
+  border-radius: 5px;
+  margin: 10px 0;
+  color: #7d7c09;
+}

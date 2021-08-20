@@ -60,7 +60,7 @@ class EmundusonboardModelfalang extends JModelList {
 
           return $results;
       }  catch(Exception $e) {
-          JLog::add('component/com_emundus_onboard/models/falang | Error when try to insert the translation ' . $textfr . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+          JLog::add('component/com_emundus_onboard/models/falang | Error when try to insert the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
           return false;
       }
   }
@@ -88,7 +88,7 @@ class EmundusonboardModelfalang extends JModelList {
           return $db->execute();
           //
       }  catch(Exception $e) {
-          JLog::add('component/com_emundus_onboard/models/falang | Error when try to insert the translation ' . $textfr . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+          JLog::add('component/com_emundus_onboard/models/falang | Error when try to insert the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
           return false;
       }
   }

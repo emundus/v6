@@ -1340,9 +1340,9 @@
       getLanguages(){
         axios({
           method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=settings&task=getlanguages",
+          url: "index.php?option=com_emundus_onboard&controller=settings&task=getactivelanguages",
         }).then(response => {
-            this.languages = response.data.languages;
+            this.languages = response.data.data;
         });
       }
       //

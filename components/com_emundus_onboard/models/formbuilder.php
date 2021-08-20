@@ -3327,6 +3327,35 @@ this.set(words.join(&quot; &quot;));
         }
     }
 
+    function displayHideGroup($gid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('params')
+                ->from($db->quoteName('#__fabrik_groups'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $group_params = json_decode($db->loadResult());
+            if((int)$group_params->repeat_group_show_first == -1){
+                $group_params->repeat_group_show_first = 1;
+            } else {
+                $group_params->repeat_group_show_first = -1;
+            }
+
+            $query->clear()
+                ->update($db->quoteName('#__fabrik_groups'))
+                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($group_params)))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $db->execute();
+            return $group_params->repeat_group_show_first;
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot disable repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
     function updateMenuLabel($label,$pid){
         $db = $this->getDbo();
         $query = $db->getQuery(true);

@@ -3,11 +3,11 @@
     <div class="container-2 w-container" style="max-width: unset;min-width: 200px">
       <transition :name="'slide-down'" type="transition">
         <div>
-          <!--<div class="search">
+<!--          <div class="search">
             <input class="searchTerm"
                    :placeholder="Rechercher"
                    v-model="recherche"
-                   @keyup="cherche(recherche) | debounce"
+                   @keyup="cherche(recherche) || debounce"
                    @keyup.enter="chercheGo(recherche)"/>
             <a @click="chercheGo(recherche)" class="searchButton"><em class="fa fa-search"></em></a>
           </div>-->

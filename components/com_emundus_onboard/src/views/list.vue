@@ -14,6 +14,13 @@
     ></list-header>
 
     <div class="filters-menu">
+      <div class="search">
+        <input class="searchTerm"
+               :placeholder="translations.Rechercher"
+               v-model="recherche"
+               @keyup="cherche(recherche) || debounce"
+               @keyup.enter="chercheGo(recherche)"/>
+      </div>
       <v-popover :popoverArrowClass="'custom-popover-arrow'">
         <button class="tooltip-target b3 card-button"></button>
 
@@ -35,7 +42,7 @@
     </div>
 
     <ul class="form-section email-sections" v-if="type == 'email' && !loading && total != 0">
-      <li>{{Categories}} : </li>
+      <li>{{translations.Categories}} : </li>
       <li>
         <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">{{All}}</a>
       </li>
@@ -242,18 +249,23 @@ export default {
     },
     loading: false,
     actualLanguage:'',
+    recherche: "",
+    timer: null,
 
-    Select: Joomla.JText._("COM_EMUNDUS_ONBOARD_SELECT"),
-    Deselect: Joomla.JText._("COM_EMUNDUS_ONBOARD_DESELECT"),
-    Total: Joomla.JText._("COM_EMUNDUS_ONBOARD_TOTAL"),
-    noCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOCAMPAIGN"),
-    noProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOPROGRAM"),
-    noEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOEMAIL"),
-    noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
-    noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
-    All: Joomla.JText._("COM_EMUNDUS_ONBOARD_ALL"),
-    System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
-    Categories: Joomla.JText._("COM_EMUNDUS_ONBOARD_CATEGORIES"),
+    translations:{
+      Select: Joomla.JText._("COM_EMUNDUS_ONBOARD_SELECT"),
+      Deselect: Joomla.JText._("COM_EMUNDUS_ONBOARD_DESELECT"),
+      Total: Joomla.JText._("COM_EMUNDUS_ONBOARD_TOTAL"),
+      noCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOCAMPAIGN"),
+      noProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOPROGRAM"),
+      noEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOEMAIL"),
+      noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
+      noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
+      All: Joomla.JText._("COM_EMUNDUS_ONBOARD_ALL"),
+      System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
+      Categories: Joomla.JText._("COM_EMUNDUS_ONBOARD_CATEGORIES"),
+      Rechercher: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH"),
+    },
     total: 0,
     filtersCount: "",
     filters: "",
@@ -352,10 +364,16 @@ export default {
     },
 
     cherche(recherche) {
-      this.filtersCountSearch = "&rechercheCount=" + recherche;
-      this.filtersSearch = "&recherche=" + recherche;
-      this.search = recherche;
-      this.validateFilters();
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+      this.timer = setTimeout(() => {
+        this.filtersCountSearch = "&rechercheCount=" + recherche;
+        this.filtersSearch = "&recherche=" + recherche;
+        this.search = recherche;
+        this.validateFilters();
+      }, 800);
     },
 
     chercheGo(recherche) {

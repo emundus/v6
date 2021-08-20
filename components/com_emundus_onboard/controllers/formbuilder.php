@@ -715,6 +715,25 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
+    public function displayhidegroup() {
+        $user = JFactory::getUser();
+
+        $m_form = $this->model;
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $gid = $jinput->getInt('gid');
+
+            $state = $m_form->displayHideGroup($gid);
+
+            $tab = array('status' => $state, 'msg' => 'worked');
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function updatemenulabel(){
         $user = JFactory::getUser();
 

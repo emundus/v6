@@ -54,7 +54,8 @@
                class="group-item-block"
                @mouseover="enableGroupHover(group.group_id)"
                @mouseleave="disableGroupHover()">
-            <fieldset :class="[group.group_class]" :id="'group_'+group.group_id" :style="group.group_css" style="background-size: 20px; width: 100%">
+            <fieldset :class="[group.group_class]" :id="'group_'+group.group_id" :style="group.hidden_group == -1 ? 'background: #e3e3e3;' : ''" style="background-size: 20px; width: 100%">
+              <div class="hidden-notice d-flex" v-if="group.hidden_group == -1"><i class="fas fa-exclamation-circle"></i><span class="ml-10px">{{translations.HiddenGroup}}</span></div>
               <div class="d-flex justify-content-between" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%">
                 <div class="d-flex justify-content-between" style="width: 100%">
                   <span v-show="hoverGroup && indexGroup == group.group_id" class="icon-handle-group">
@@ -81,10 +82,13 @@
                                 <a v-on:click="enableUpdatingGroup(group)" class="action-submenu">
                                   {{translations.EditName}}
                                 </a>
+                                <a v-on:click="displayHideGroup(group)" class="action-submenu">
+                                  {{translations.DisplayHide}}
+                                </a>
 <!--                                <a v-on:click="enableUpdatingIntroGroup(group)" class="action-submenu">
                                   {{translations.EditIntro}}
                                 </a>-->
-                                <a @click="deleteAGroup(group,index_group)" class="action-submenu" style="margin-left: 1em;color: black" v-if="files == 0" :title="translations.Delete">
+                                <a @click="deleteAGroup(group,index_group)" class="action-submenu" v-if="files == 0 && !group.cannot_delete" :title="translations.Delete">
                                   {{translations.Delete}}
                                 </a>
                               </nav>
@@ -355,6 +359,7 @@ export default {
         EditName: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EDIT_NAME"),
         EditIntro: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EDIT_INTRO"),
         DisplayHide: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE"),
+        HiddenGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HIDDEN_GROUP"),
       }
     };
   },
@@ -982,6 +987,43 @@ export default {
           }
         });
       }
+    },
+    //
+
+    // Display/Hide group
+    displayHideGroup(group){
+      Swal.fire({
+        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE"),
+        text: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE_MESSAGE"),
+        type: "info",
+        showCancelButton: true,
+        confirmButtonColor: '#12db42',
+        confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+        cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+        reverseButtons: true
+      }).then(result => {
+        if(result.value) {
+          axios({
+            method: "POST",
+            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=displayhidegroup",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              gid: group.group_id,
+            })
+          }).then((result) => {
+            group.hidden_group = result.data.status;
+            this.$emit(
+                "show",
+                "foo-velocity",
+                "success",
+                this.updateSuccess,
+                this.update
+            );
+          });
+        }
+      });
     },
     //
 

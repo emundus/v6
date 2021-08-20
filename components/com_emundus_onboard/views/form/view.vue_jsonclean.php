@@ -171,11 +171,25 @@ class EmundusonboardViewForm extends FabrikViewFormBase
 
                 $elements = new stdClass();
 
+                if(sizeof($groupElement) > 0) {
+                    $display_group = false;
+                } else {
+                    $display_group = true;
+                }
+
                 foreach ($groupElement as $element) :
                     $this->element = $element;
                     $d_element = $this->element;
                     $o_element = $d_element->element;
-                    if($o_element->plugin != 'emundusreferent') {
+                    if(in_array($o_element->name,['id','user','time_date','fnum'])){
+                        ${"group_" . $GroupProperties->id}->cannot_delete = true;
+                        if(!$display_group) {
+                            continue;
+                        }
+                    } else {
+                        $display_group = true;
+                    }
+                    if($o_element->plugin != 'emundusreferent' && (int)$o_element->eval == 0) {
                         //if($o_element->plugin != 'calc') {
                         $el_parmas = json_decode($o_element->params);
                         $content_element = $element->preRender('0', '1', 'bootstrap');
@@ -269,7 +283,14 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                     ${"group_" . $GroupProperties->id}->group_outro = $GroupProperties->outro;
                 endif;
 
-                if (${"group_" . $GroupProperties->id}->group_css !== ";display:none;") {
+                if (${"group_" . $GroupProperties->id}->group_css === ";display:none;") {
+                    ${"group_" . $GroupProperties->id}->hidden_group = -1;
+                    ${"group_" . $GroupProperties->id}->group_css = '';
+                } else {
+                    ${"group_" . $GroupProperties->id}->hidden_group = 1;
+                }
+
+                if($display_group) {
                     $Groups->{"group_" . $GroupProperties->id} = ${"group_" . $GroupProperties->id};
                 }
             endforeach;
