@@ -101,10 +101,8 @@
       <!-- image resolution -->
       <div id="imageResolutionZone" v-if="show == true">
         <hr style="margin-top: unset"/>
-        <div class="toogle" style="font-size: smaller">
+        <div class="toogle" style="font-size: smaller; color: #16AFE1;">
           <span>{{ translations.MinResolutionTooltips }}</span>
-          <br/>
-          <span>{{ translations.MaxResolutionTooltips }}</span>
         </div>
         <br/>
         <div class="form-group">
@@ -131,7 +129,7 @@
         <div class="form-group">
           <label for="image-max-height">{{ translations.MaxHeight }}</label>
           <div class="input-can-translate">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height" v-model="form.maxResolution.height"/>
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height" v-model="form.maxResolution.height" :value="1200"/>
           </div>
         </div>
       </div>
@@ -199,13 +197,13 @@ export default {
         video_max_length:'',
 
         minResolution: {
-          width: 0,
-          height: 0,
+          width: 300,
+          height: 300,
         },
         // max resolution by default
         maxResolution: {
-          width: 0,
-          height: 0,
+          width: null,
+          height: null,
         },
       },
       form: {
@@ -227,13 +225,13 @@ export default {
         mandatory: 0,
         //min resolution by default
         minResolution: {
-          width: 300,
-          height: 300,
+          width: null,
+          height: null,
         },
         // max resolution by default
         maxResolution: {
-          width: 1200,
-          height: 1200,
+          width: null,
+          height: null,
         },
       },
       translate: {
@@ -327,13 +325,13 @@ export default {
           'xls;xlsx;odf': false,
         },
         minResolution: {
-          width: 300,
-          height: 300,
+          width: null,
+          height: null,
         },
         // max resolution by default
         maxResolution: {
-          width: 1200,
-          height: 1200,
+          width: null,
+          height: null,
         },
       };
 
@@ -567,14 +565,8 @@ export default {
         this.form.name = this.model.name;
         this.form.description = this.model.description;
         this.form.mandatory = this.model.mandatory
-        this.form.minResolution = {
-          width: 300,
-          height: 300,
-        };
-        this.form.maxResolution = {
-          width: 1200,
-          height: 1200,
-        };
+        this.form.minResolution = {};
+        this.form.maxResolution = {};
         //this.form.mandatory=1;
         if (this.model.mandatory == 1) {
 

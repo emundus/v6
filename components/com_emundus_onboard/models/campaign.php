@@ -851,11 +851,27 @@ class EmundusonboardModelcampaign extends JModelList
 
         /// insert image resolution if image is found
         if($document['minResolution'] != null and $document['maxResolution'] != null) {
+            if(empty($document['minResolution']['width']) or (int)$document['minResolution']['width'] == 0) {
+                $document['minResolution']['width'] = null;
+            }
+
+            if(empty($document['minResolution']['height']) or (int)$document['minResolution']['height'] == 0) {
+                $document['minResolution']['height'] = null;
+            }
+
+            if(empty($document['maxResolution']['width']) or (int)$document['maxResolution']['width'] == 0) {
+                $document['maxResolution']['width'] = null;
+            }
+
+            if(empty($document['maxResolution']['height']) or (int)$document['maxResolution']['height'] == 0) {
+                $document['maxResolution']['height'] = null;
+            }
+
             $query
-                ->set($db->quoteName('min_width') . ' = ' . (int)$document['minResolution']['width'])
-                ->set($db->quoteName('min_height') . ' = ' . (int)$document['minResolution']['height'])
-                ->set($db->quoteName('max_width') . ' = ' . (int)$document['maxResolution']['width'])
-                ->set($db->quoteName('max_height') . ' = ' . (int)$document['maxResolution']['height']);
+                ->set($db->quoteName('min_width') . ' = ' . $document['minResolution']['width'])
+                ->set($db->quoteName('min_height') . ' = ' . $document['minResolution']['height'])
+                ->set($db->quoteName('max_width') . ' = ' . $document['maxResolution']['width'])
+                ->set($db->quoteName('max_height') . ' = ' . $document['maxResolution']['height']);
         }
 
         try{
@@ -913,13 +929,49 @@ class EmundusonboardModelcampaign extends JModelList
             ->set($db->quoteName('allowed_types') . ' = ' . $db->quote($types))
             ->set($db->quoteName('nbmax') . ' = ' . $db->quote($document['nbmax']));
 
-            /// insert image resolution if image is found
-        if($document['minResolution'] != null and $document['maxResolution'] != null) {
+        /// many cases
+        if(isset($document['minResolution'])) {
+            if(isset($document['minResolution']['width']) and !empty($document['minResolution']['width']) and !is_null($document['minResolution']['width'])) {
+                $query
+                    ->set($db->quoteName('min_width') . ' = ' . $document['minResolution']['width']);
+            } else {
+                $query
+                    ->set($db->quoteName('min_width') . ' = null');
+            }
+
+            if(isset($document['minResolution']['height']) and !empty($document['minResolution']['height']) and !is_null($document['minResolution']['height'])) {
+                $query
+                    ->set($db->quoteName('min_height') . ' = ' . $document['minResolution']['height']);
+            } else {
+                $query
+                    ->set($db->quoteName('min_height') . ' = null');
+            }
+        } else {
             $query
-                ->set($db->quoteName('min_width') . ' = ' . (int)$document['minResolution']['width'])
-                ->set($db->quoteName('min_height') . ' = ' . (int)$document['minResolution']['height'])
-                ->set($db->quoteName('max_width') . ' = ' . (int)$document['maxResolution']['width'])
-                ->set($db->quoteName('max_height') . ' = ' . (int)$document['maxResolution']['height']);
+                ->set($db->quoteName('min_width') . ' = null')
+                ->set($db->quoteName('min_height') . ' = null');
+        }
+
+        if(isset($document['maxResolution'])) {
+            if(isset($document['maxResolution']['width']) and !empty($document['maxResolution']['width']) and !is_null($document['maxResolution']['width'])) {
+                $query
+                    ->set($db->quoteName('max_width') . ' = ' . $document['maxResolution']['width']);
+            } else {
+                $query
+                    ->set($db->quoteName('max_width') . ' = null');
+            }
+
+            if(isset($document['maxResolution']['height']) and !empty($document['maxResolution']['height']) and !is_null($document['maxResolution']['height'])) {
+                $query
+                    ->set($db->quoteName('max_height') . ' = ' . $document['maxResolution']['height']);
+            } else {
+                $query
+                    ->set($db->quoteName('max_height') . ' = null');
+            }
+        } else {
+            $query
+                ->set($db->quoteName('max_width') . ' = null')
+                ->set($db->quoteName('max_height') . ' = null');
         }
 
         $query->where($db->quoteName('id') . ' = ' . $db->quote($did));
