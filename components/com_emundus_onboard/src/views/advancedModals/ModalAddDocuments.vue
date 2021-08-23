@@ -290,6 +290,7 @@ export default {
       this.doc = null;
       this.currentDoc = null;
       this.can_be_deleted = false;
+      this.errorMinMax = false;
 
       this.form = {
         name: {
@@ -324,7 +325,8 @@ export default {
       this.getModelsDocs();
     },
     createNewDocument() {
-      if(this.checkMinMax() == true) {
+      if(this.checkError() == true) {
+        this.errorMinMax = false;
         this.errors = {
           name: false,
           nbmax: false,
@@ -450,14 +452,24 @@ export default {
       }
     },
 
-    checkMinMax() {
+    checkError() {
       if(this.form.minResolution !== undefined && this.form.maxResolution !== undefined) {
-        if((parseInt(this.form.minResolution.width) > parseInt(this.form.maxResolution.width)) || parseInt(this.form.minResolution.height) > parseInt(this.form.maxResolution.height)){
-          return false;
+        if((parseInt(this.form.minResolution.width) > 0 && parseInt(this.form.maxResolution.width) > 0 && parseInt(this.form.minResolution.height) > 0 && parseInt(this.form.maxResolution.height) > 0)){
+          if ((parseInt(this.form.minResolution.width) > parseInt(this.form.maxResolution.width)) || parseInt(this.form.minResolution.height) > parseInt(this.form.maxResolution.height)) {
+            return false;
+          } else {
+            return true;
+          }
         } else {
-          return true;
+          return false;
         }
       }
+    },
+
+    checkErrorV2() {
+      // error 1 : at least fields <= 0
+
+      // error 2 : at least min > max
     },
 
     deleteModel(){
@@ -570,6 +582,8 @@ export default {
         document.getElementById(id).style.color = "unset";
       }
     },
+
+
 
     // LessOrHigherThanMin() {
     //   if((this.form.minResolution.width <= this.form.maxResolution.width) && (this.form.minResolution.height <= this.form.maxResolution.height)) {
