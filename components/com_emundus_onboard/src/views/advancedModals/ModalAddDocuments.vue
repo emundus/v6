@@ -111,6 +111,9 @@
             <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width" v-model="form.minResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
             <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width" v-model="form.maxResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
           </div>
+          <transition name="fade">
+              <span style="font-size: smaller; color:red" v-if=" errorWidth == true"> {{ translations.ErrorResolution}} </span>
+          </transition>
         </div>
 
         <div class="form-group">
@@ -119,7 +122,9 @@
             <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height" v-model="form.minResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
             <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height" v-model="form.maxResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
           </div>
-          <span style="font-size: smaller; color:red" v-if=" errorMinMax == true"> {{ translations.ErrorResolution}} </span>
+          <transition name="fade">
+              <span style="font-size: smaller; color:red" v-if=" errorHeight == true"> {{ translations.ErrorResolution}} </span>
+          </transition>
         </div>
 
       </div>
@@ -162,7 +167,8 @@ export default {
   data() {
     return {
       show: false,
-      errorMinMax: false,
+      errorWidth: false,
+      errorHeight: false,
       doc: null,
       model: {
         allowed_types: '',
@@ -290,7 +296,8 @@ export default {
       this.doc = null;
       this.currentDoc = null;
       this.can_be_deleted = false;
-      this.errorMinMax = false;
+      this.errorWidth = false;
+      this.errorHeight = false;
 
       this.form = {
         name: {
@@ -325,8 +332,7 @@ export default {
       this.getModelsDocs();
     },
     createNewDocument() {
-      if(this.checkError() == true) {
-        this.errorMinMax = false;
+      if(this.isError() == '') {
         this.errors = {
           name: false,
           nbmax: false,
@@ -448,22 +454,32 @@ export default {
 
         });
       } else {
-        this.errorMinMax = true;
+        return false;
       }
     },
 
-    checkError() {
+    isError() {
+      let return_message = "";
       if(this.form.minResolution !== undefined && this.form.maxResolution !== undefined) {
-        if((parseInt(this.form.minResolution.width) > 0 && parseInt(this.form.maxResolution.width) > 0 && parseInt(this.form.minResolution.height) > 0 && parseInt(this.form.maxResolution.height) > 0)){
-          if ((parseInt(this.form.minResolution.width) > parseInt(this.form.maxResolution.width)) || parseInt(this.form.minResolution.height) > parseInt(this.form.maxResolution.height)) {
-            return false;
-          } else {
-            return true;
-          }
+        /// check width
+        if (parseInt(this.form.minResolution.width) > parseInt(this.form.maxResolution.width)) {
+          this.errorWidth = true;
+          return_message = 'fatal_error';
         } else {
-          return false;
+          this.errorWidth = false;
         }
+
+        if(parseInt(this.form.minResolution.height) > parseInt(this.form.maxResolution.height)) {
+          this.errorHeight = true;
+          return_message = "fatal_error";
+        } else {
+          this.errorHeight = false;
+        }
+
+      } else {
+        return_message = 'fatal_error';
       }
+      return return_message;
     },
 
     checkErrorV2() {
@@ -726,12 +742,11 @@ export default {
   margin-bottom: 1em;
 }
 
-.red{
-  background: red;
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
 }
-
-.blue{
-  background: blue;
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 
 </style>
