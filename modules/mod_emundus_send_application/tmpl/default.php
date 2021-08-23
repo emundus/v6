@@ -24,7 +24,7 @@ $uri = JUri::getInstance();
                 <?php if (((int)($attachments) >= 100 && (int)($forms) >= 100 && in_array($application->status, $status_for_send) && (!$is_dead_line_passed || ($is_dead_line_passed && $can_edit_after_deadline))) || in_array($user->id, $applicants)) :?>
                     href="<?php echo $confirm_form_url; ?>" style="opacity: 1"
                 <?php else: ?>
-                    style="opacity: 0.6"
+                    style="opacity: 0.6; cursor: not-allowed"
                 <?php endif; ?>
                 <?php if ($application_fee && !$paid) :?>
                     title="<?php echo JText::_('PROCESS_TO_PAYMENT'); ?>"

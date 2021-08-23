@@ -1236,7 +1236,7 @@ label {
     font-weight: normal !important;
     text-align: center !important;
     vertical-align: middle !important;
-    cursor: pointer !important;
+    cursor: pointer;
     background-image: none !important;
     border: 1px solid transparent ;
     white-space: nowrap !important;
