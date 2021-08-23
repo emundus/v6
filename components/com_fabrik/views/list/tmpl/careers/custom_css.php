@@ -136,5 +136,54 @@ flex-direction: row;
 justify-content: flex-start;
 align-items: center;
 }
+.fabrikNav{
+  display:flex;
+  flex-direction:row;
+  justify-content:center;
+}
+ul.pagination-list {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+ul.pagination-list li {
+  display: inline;
+  
+}
+
+ul.pagination-list li a {
+  color: black;
+  float: left;
+  padding: 8px 16px;
+  text-decoration: none;
+  margin: 5px;
+  border-radius:5px;
+}
+
+ul.pagination-list li.active a{
+  background-color: #a51e25;
+  color: white;
+}
+
+ul.pagination-list .pagination-prev.active a,
+ul.pagination-list .pagination-start.active a,
+ul.pagination-list .pagination-next.active a,
+ul.pagination-list .pagination-end.active a {
+  background-color: white;
+  color:#a51e25;
+}
+ul.pagination-list .pagination-prev:not(.active) a,
+ul.pagination-list .pagination-start:not(.active) a,
+ul.pagination-list .pagination-next:not(.active) a,
+ul.pagination-list .pagination-end:not(.active) a{
+  background-color: #a51e25;
+  color: white;
+}
+
+ul.pagination-list li:not(.active) a{
+  background-color: white;
+  color:#a51e25;
+}
 /* END - Your CSS styling ends here */
 EOT;
