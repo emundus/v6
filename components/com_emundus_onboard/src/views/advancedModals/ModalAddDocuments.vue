@@ -106,32 +106,22 @@
         </div>
         <br/>
         <div class="form-group">
-          <label for="image-min-width">{{ translations.MinWidth }}</label>
-          <div class="input-can-translate">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width" v-model="form.minResolution.width"/>
+          <label for="image-min-width">{{ translations.ImageWidth }}</label>
+          <div class="input-can-translate d-flex justify-content-between">
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width" v-model="form.minResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width" v-model="form.maxResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="image-min-height">{{ translations.MinHeight }}</label>
-          <div class="input-can-translate">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height" v-model="form.minResolution.height"/>
+          <label for="image-min-height">{{ translations.ImageHeight }}</label>
+          <div class="input-can-translate d-flex justify-content-between">
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height" v-model="form.minResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height" v-model="form.maxResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
           </div>
+          <span style="font-size: smaller; color:red" v-if=" errorMinMax == true"> {{ translations.ErrorResolution}} </span>
         </div>
 
-        <div class="form-group">
-          <label for="image-max-width">{{ translations.MaxWidth }}</label>
-          <div class="input-can-translate">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width" v-model="form.maxResolution.width"/>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="image-max-height">{{ translations.MaxHeight }}</label>
-          <div class="input-can-translate">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height" v-model="form.maxResolution.height" :value="1200"/>
-          </div>
-        </div>
       </div>
       <div class="d-flex justify-content-between mb-1">
         <button
@@ -172,6 +162,7 @@ export default {
   data() {
     return {
       show: false,
+      errorMinMax: false,
       doc: null,
       model: {
         allowed_types: '',
@@ -283,25 +274,17 @@ export default {
         TypeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED_REQUIRED"),
         TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
         Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
-        MinWidth: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_WIDTH"),
-        MinHeight: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_HEIGHT"),
-        MaxWidth: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_WIDTH"),
-        MaxHeight: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_HEIGHT"),
+        ImageWidth: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMAGE_WIDTH"),
+        ImageHeight: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMAGE_HEIGHT"),
         MinResolutionTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_TOOLTIPS"),
         MaxResolutionTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_TOOLTIPS"),
+        MinResolutionPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER"),
+        MaxResolutionPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER"),
+        ErrorResolution: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION"),
       }
     };
   },
   methods: {
-    selectType(e) {
-      let raw_val = e.value;
-      let val = raw_val.split(';');
-
-      if(val.includes('jpeg') || val.includes('jpg') || val.includes('png') || val.includes('gif')) {
-        this.show = !this.show;
-      }
-    },
-
     beforeClose(event) {
       this.show = false;
       this.doc = null;
@@ -341,114 +324,114 @@ export default {
       this.getModelsDocs();
     },
     createNewDocument() {
+      if(this.checkMinMax() == true) {
+        this.errors = {
+          name: false,
+          nbmax: false,
+          selectedTypes: false
+        };
 
-      this.errors = {
-        name: false,
-        nbmax: false,
-        selectedTypes: false
-      };
+        if (this.form.name[this.langue] === '') {
+          this.errors.name = true;
 
-      if (this.form.name[this.langue] === '') {
-        this.errors.name = true;
+          return 0;
+        }
+        if (this.form.nbmax === '' || this.form.nbmax === 0) {
+          this.errors.nbmax = true;
+          return 0;
+        }
+        if (Object.values(this.form.selectedTypes).every((val, i) => val === false)) {
+          this.errors.selectedTypes = true;
+          return 0;
+        }
 
-        return 0;
-      }
-      if (this.form.nbmax === '' || this.form.nbmax === 0) {
-        this.errors.nbmax = true;
-        return 0;
-      }
-      if (Object.values(this.form.selectedTypes).every((val, i) => val === false)) {
-        this.errors.selectedTypes = true;
-        return 0;
-      }
+        if (this.translate.name === false) {
 
-      if (this.translate.name === false) {
+          if (this.manyLanguages == 0 && this.langue == "en") {
 
-        if (this.manyLanguages == 0 && this.langue == "en") {
+            this.form.name.fr = this.form.name.en
 
-          this.form.name.fr = this.form.name.en
+
+          }
+          if (this.manyLanguages == 0 && this.langue == "fr") {
+
+
+            this.form.name.en = this.form.name.fr;
+
+          }
+        }
+
+        if (this.translate.description === false) {
+
+          if (this.manyLanguages == 0 && this.langue == "en") {
+
+            this.form.description.fr = this.form.description.en;
+
+          } else {
+
+            this.form.description.en = this.form.description.fr;
+
+          }
+        }
+
+        let types = [];
+        Object.keys(this.form.selectedTypes).forEach(key => {
+          if (this.form.selectedTypes[key] == true) {
+            types.push(key);
+          }
+        });
+
+        let params = {
+          document: this.form,
+          types: types,
+          cid: this.cid,
+          pid: this.pid,
+          isModeleAndUpdate: false
+        }
+
+        if (
+
+            this.form.name[this.langue] != this.model.value && this.currentDoc == null) {
+          params.isModeleAndUpdate = true;
+
+        }
+
+        let y = [];
+        if (this.model.allowed_types.includes('pdf')) {
+          y.push('pdf');
+        }
+        if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('jpeg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
+          y.push('jpeg;jpg;png;gif')
+        }
+        if (this.model.allowed_types.includes('xls') || this.model.allowed_types.includes('xlsx') || this.model.allowed_types.includes('odf')) {
+          y.push('xls;xlsx;odf')
+        }
+
+        let diffenceBetweenNewType = y.filter(x => !types.includes(x));
+
+
+        if (diffenceBetweenNewType.length > 0 && this.currentDoc == null) {
+          params.isModeleAndUpdate = true;
+        }
+
+
+        let url = 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument';
+
+        if (this.form.name[this.langue] === this.model.value && this.doc != null) {
+          url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
+
+          params.did = this.doc;
+
+        }
+        if (this.currentDoc != null) {
+
+          url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
+          params.did = this.doc;
 
 
         }
-        if (this.manyLanguages == 0 && this.langue == "fr") {
 
-
-          this.form.name.en = this.form.name.fr;
-
-        }
-      }
-
-      if (this.translate.description === false) {
-
-        if (this.manyLanguages == 0 && this.langue == "en") {
-
-          this.form.description.fr = this.form.description.en;
-
-        } else {
-
-          this.form.description.en = this.form.description.fr;
-
-        }
-      }
-
-      let types = [];
-      Object.keys(this.form.selectedTypes).forEach(key => {
-        if (this.form.selectedTypes[key] == true) {
-          types.push(key);
-        }
-      });
-
-      let params = {
-        document: this.form,
-        types: types,
-        cid: this.cid,
-        pid: this.pid,
-        isModeleAndUpdate: false
-      }
-
-      if (
-
-          this.form.name[this.langue] != this.model.value && this.currentDoc == null) {
-        params.isModeleAndUpdate = true;
-
-      }
-
-      let y = [];
-      if (this.model.allowed_types.includes('pdf')) {
-        y.push('pdf');
-      }
-      if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('jpeg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
-        y.push('jpeg;jpg;png;gif')
-      }
-      if (this.model.allowed_types.includes('xls') || this.model.allowed_types.includes('xlsx') || this.model.allowed_types.includes('odf')) {
-        y.push('xls;xlsx;odf')
-      }
-
-      let diffenceBetweenNewType = y.filter(x => !types.includes(x));
-
-
-      if (diffenceBetweenNewType.length > 0 && this.currentDoc == null) {
-        params.isModeleAndUpdate = true;
-      }
-
-
-      let url = 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument';
-
-      if (this.form.name[this.langue] === this.model.value && this.doc != null) {
-        url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
-
-        params.did = this.doc;
-
-      }
-      if (this.currentDoc != null) {
-
-        url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
-        params.did = this.doc;
-
-
-      }
-
-      axios({
+        axios({
           method: "post",
           url: url,
           headers: {
@@ -457,11 +440,24 @@ export default {
           data: qs.stringify(params)
         }).then((rep) => {
 
-          this.req=false;
+          this.req = false;
           this.$emit("UpdateDocuments");
           this.$modal.hide('modalAddDocuments')
 
         });
+      } else {
+        this.errorMinMax = true;
+      }
+    },
+
+    checkMinMax() {
+      if(this.form.minResolution !== undefined && this.form.maxResolution !== undefined) {
+        if((parseInt(this.form.minResolution.width) > parseInt(this.form.maxResolution.width)) || parseInt(this.form.minResolution.height) > parseInt(this.form.maxResolution.height)){
+          return false;
+        } else {
+          return true;
+        }
+      }
     },
 
     deleteModel(){
@@ -555,6 +551,33 @@ export default {
         });
       }, 300);*/
     },
+
+    selectType(e) {
+      let raw_val = e.value;
+      let val = raw_val.split(';');
+
+      if(val.includes('jpeg') || val.includes('jpg') || val.includes('png') || val.includes('gif')) {
+        this.show = !this.show;
+      }
+    },
+
+    ZeroOrNegative() {
+      let id = event.target.id;
+      let val = parseInt(event.target.value);
+      if(val == 0 || val < 0) {
+        document.getElementById(id).style.color = "red";
+      } else {
+        document.getElementById(id).style.color = "unset";
+      }
+    },
+
+    // LessOrHigherThanMin() {
+    //   if((this.form.minResolution.width <= this.form.maxResolution.width) && (this.form.minResolution.height <= this.form.maxResolution.height)) {
+    //     this.errorMinMax = false;
+    //   } else {
+    //     this.errorMinMax = true;
+    //   }
+    // }
   },
 
   watch: {
@@ -582,7 +605,7 @@ export default {
         }
 
         if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('jpeg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
-          console.log(this.model.min_width);
+          // console.log(this.model.min_width);
           /// bind image resolution -- min resolution
           if(this.model.min_width !== null && this.model.min_height !== null) {
             this.form.minResolution.width = this.model.min_width;
@@ -688,4 +711,13 @@ export default {
   align-items: end;
   margin-bottom: 1em;
 }
+
+.red{
+  background: red;
+}
+
+.blue{
+  background: blue;
+}
+
 </style>
