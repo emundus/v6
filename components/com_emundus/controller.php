@@ -1078,6 +1078,7 @@ class EmundusController extends JControllerLegacy {
             } else if($w_src * $h_src < (int)$image_resolution->min_width * (int)$image_resolution->min_height) {
                 $errorInfo = "ERROR_IMAGE_TOO_SMALL";
                 echo '{"aid":"0","status":false,"message":"'.JText::_('ERROR_IMAGE_TOO_SMALL'). " " . (int)$image_resolution->min_width . 'x' . (int)$image_resolution->min_height . '"}';
+                unlink($file_src);          /// remove uploaded file
                 return false;
             }
         }
