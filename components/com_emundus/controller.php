@@ -11,11 +11,6 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
-ini_set('memory_limit','1024M');            /// set memory limit 1024Mb to upload bigger image (change it if needed)
-
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
 /**
  * eMundus Component Controller
  *
