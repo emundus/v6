@@ -1448,9 +1448,9 @@ class EmundusModelApplication extends JModelList {
                                                         $elm = [];
                                                         $index = array_intersect($params->sub_options->sub_values,json_decode(@$r_elt));
                                                         foreach($index as $key => $value) {
-                                                            $elm[] = $params->sub_options->sub_labels[$key];
+                                                            $elm[] = JText::_($params->sub_options->sub_labels[$key]);
                                                         }
-                                                        $elt = "<ul><li>" . JText::_(implode("</li><li>", @$elm)) . "</li></ul>";
+                                                        $elt = "<ul><li>" . implode("</li><li>", @$elm) . "</li></ul>";
                                                     }
 
                                                     elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
@@ -2129,9 +2129,9 @@ class EmundusModelApplication extends JModelList {
                                                     $elm = array();
                                                     $index = array_intersect($params->sub_options->sub_values,json_decode(@$r_elt));
                                                     foreach($index as $key => $value) {
-                                                        $elm[] = $params->sub_options->sub_labels[$key];
+                                                        $elm[] = JText::_($params->sub_options->sub_labels[$key]);
                                                     }
-                                                    $elt = "<ul><li>" . JText::_(implode("</li><li>", @$elm)) . "</li></ul>";
+                                                    $elt = "<ul><li>" . implode("</li><li>", @$elm) . "</li></ul>";
                                                 } elseif ($elements[$j]->plugin == 'dropdown' || @$elements[$j] == 'radiobutton') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $index = array_search($r_elt, $params->sub_options->sub_values);
