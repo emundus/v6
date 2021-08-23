@@ -181,7 +181,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                     $this->element = $element;
                     $d_element = $this->element;
                     $o_element = $d_element->element;
-                    if(in_array($o_element->name,['id','user','time_date','fnum'])){
+                    if(in_array($o_element->name,['id','user','time_date','fnum','date_time'])){
                         ${"group_" . $GroupProperties->id}->cannot_delete = true;
                         if(!$display_group) {
                             continue;
