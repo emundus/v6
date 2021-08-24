@@ -189,7 +189,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                     } else {
                         $display_group = true;
                     }
-                    if($o_element->plugin != 'emundusreferent' && (int)$o_element->eval == 0) {
+                    if($o_element->plugin != 'emundusreferent' && !(int)$o_element->hidden) {
                         //if($o_element->plugin != 'calc') {
                         $el_parmas = json_decode($o_element->params);
                         $content_element = $element->preRender('0', '1', 'bootstrap');
