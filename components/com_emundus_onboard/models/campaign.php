@@ -931,7 +931,9 @@ class EmundusonboardModelcampaign extends JModelList
 
         /// many cases
         if(isset($document['minResolution'])) {
-            if(isset($document['minResolution']['width']) and !empty($document['minResolution']['width']) and !is_null($document['minResolution']['width'])) {
+
+            /// isset + !empty - !is_null === !empty (just it)
+            if(!empty($document['minResolution']['width'])) {
                 $query
                     ->set($db->quoteName('min_width') . ' = ' . $document['minResolution']['width']);
             } else {
@@ -939,7 +941,8 @@ class EmundusonboardModelcampaign extends JModelList
                     ->set($db->quoteName('min_width') . ' = null');
             }
 
-            if(isset($document['minResolution']['height']) and !empty($document['minResolution']['height']) and !is_null($document['minResolution']['height'])) {
+            /// isset + !empty - !is_null === !empty (just it)
+            if(!empty($document['minResolution']['height'])) {
                 $query
                     ->set($db->quoteName('min_height') . ' = ' . $document['minResolution']['height']);
             } else {
@@ -953,7 +956,8 @@ class EmundusonboardModelcampaign extends JModelList
         }
 
         if(isset($document['maxResolution'])) {
-            if(isset($document['maxResolution']['width']) and !empty($document['maxResolution']['width']) and !is_null($document['maxResolution']['width'])) {
+            /// isset + !empty - !is_null === !empty (just it)
+            if(!empty($document['maxResolution']['width'])) {
                 $query
                     ->set($db->quoteName('max_width') . ' = ' . $document['maxResolution']['width']);
             } else {
@@ -961,7 +965,8 @@ class EmundusonboardModelcampaign extends JModelList
                     ->set($db->quoteName('max_width') . ' = null');
             }
 
-            if(isset($document['maxResolution']['height']) and !empty($document['maxResolution']['height']) and !is_null($document['maxResolution']['height'])) {
+            /// isset + !empty - !is_null === !empty (just it)
+            if(!empty($document['maxResolution']['height'])) {
                 $query
                     ->set($db->quoteName('max_height') . ' = ' . $document['maxResolution']['height']);
             } else {

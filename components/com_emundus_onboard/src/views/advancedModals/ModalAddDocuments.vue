@@ -332,7 +332,7 @@ export default {
       this.getModelsDocs();
     },
     createNewDocument() {
-      if(this.isError() == '') {
+      if(this.isImageError() == '') {
         this.errors = {
           name: false,
           nbmax: false,
@@ -458,7 +458,7 @@ export default {
       }
     },
 
-    isError() {
+    isImageError() {
       let return_message = "";
       if(this.form.minResolution !== undefined && this.form.maxResolution !== undefined) {
         /// check width
@@ -480,12 +480,6 @@ export default {
         return_message = 'fatal_error';
       }
       return return_message;
-    },
-
-    checkErrorV2() {
-      // error 1 : at least fields <= 0
-
-      // error 2 : at least min > max
     },
 
     deleteModel(){
