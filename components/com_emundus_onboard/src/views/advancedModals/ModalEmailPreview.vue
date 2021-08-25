@@ -15,21 +15,20 @@
             @before-open="beforeOpen"
     >
       <div class="fixed-header-modal">
+        <div class="update-field-header d-flex justify-content-between">
+          <h2 class="update-title-header" style="margin-bottom: 10px">
+             {{ModelPreview}}
+          </h2>
           <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalEmailPreview_' + model)">
+            <button type="button" class="btnCloseModal" @click="$modal.hide('modalEmailPreview_' + model)">
               <em class="fas fa-times"></em>
             </button>
           </div>
-
-        <div class="update-field-header">
-          <h2 class="update-title-header">
-             {{ModelPreview}}
-          </h2>
         </div>
         </div>
 
       <div class="modalC-content">
-          <p class="description-block" v-if="email != null"><span v-html="email.message"></span></p>
+          <p v-if="email != null"><span v-html="email.message"></span></p>
       </div>
     </modal>
   </span>

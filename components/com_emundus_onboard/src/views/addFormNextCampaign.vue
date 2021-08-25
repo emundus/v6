@@ -123,12 +123,12 @@
               :manyLanguages="manyLanguages"
           ></add-documents-form>
 
-          <add-gestionnaires
+<!--          <add-gestionnaires
               v-if="menuHighlightProg == 0 && program.id != 0"
               :funnelCategorie="formPrograms[langue][menuHighlight]"
               :group="prog_group"
               :coordinatorAccess="true"
-          ></add-gestionnaires>
+          ></add-gestionnaires>-->
 
           <add-evaluation-grid
               v-if="menuHighlightProg == 1 && program.id != 0"
@@ -271,12 +271,12 @@ export default {
 
     formPrograms: [
       [
-        "Utilisateurs",
+        //"Utilisateurs",
         "Grille d'évaluation",
         "Emails",
       ],
       [
-        "Users",
+        //"Users",
         "Evaluation grid",
         "Emails",
       ]
