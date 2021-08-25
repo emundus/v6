@@ -2258,28 +2258,6 @@ if (JFactory::getUser()->id == 63)
         }
     }
 
-    /// get letters from attachmene_id
-    public function getLettersByListID($lid) {
-        $query = $this->_db->getQuery(true);
-
-        if(!empty($lid) and !is_null($lid)) {
-            try {
-                $query->clear()
-                    ->select('#__emundus_setup_letters.id')
-                    ->from($this->_db->quoteName('#__emundus_setup_letters'))
-                    ->where($this->_db->quoteName('#__emundus_setup_letters.attachment_id') . '=' . (int)$lid);
-
-                $this->_db->setQuery($query);
-                return $this->_db->loadAssocList();
-            } catch(Exception $e) {
-                JLog::add('Cannot get letter by ids : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
     /// get letters by status
     public function getLettersByFnums($fnums, $attachments=false) {
         $query = $this->_db->getQuery(true);
@@ -2366,7 +2344,7 @@ if (JFactory::getUser()->id == 63)
     }
 
     /// get exactly letter id by fnum and template (32,33,34)
-    public function getLetterTemplateForFnum($fnum,$templates=array()) {
+    public function getLettersByFnumTemplates($fnum, $templates=array()) {
         if(!empty($fnum) and !is_null($fnum) and !empty($templates) and !is_null($templates)) {
             $query = $this->_db->getQuery(true);
 
@@ -2409,7 +2387,7 @@ if (JFactory::getUser()->id == 63)
             try {
                 $fnum_Array = explode(',', $fnums);
                 foreach($fnum_Array as $data => $fnum) {
-                    $letter_ids[] = $this->getLetterTemplateForFnum($fnum,$templates);
+                    $letter_ids[] = $this->getLettersByFnumTemplates($fnum,$templates);
                 }
                 return $letter_ids;
             } catch(Exception $e) {
@@ -2452,12 +2430,16 @@ if (JFactory::getUser()->id == 63)
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'users.php');
+
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'controllers' . DS . 'files.php');
         require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
 
         $_mEval = new EmundusModelEvaluation;
         $_mFile = new EmundusModelFiles;
         $_mEmail = new EmundusModelEmails;
         $_mUser = new EmundusModelUsers;
+
+        $_cFile = new EmundusControllerFiles;
 
         $user = JFactory::getUser();
 
@@ -2479,7 +2461,7 @@ if (JFactory::getUser()->id == 63)
 
         /// a partir de $fnums + $templates --> generer les lettres qui correspondent
         foreach($fnum_Array as $key => $fnum) {
-            $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates); // return :: Array
+            $generated_letters = $_mEval->getLettersByFnumTemplates($fnum,$templates); // return :: Array
             $fnumInfo = $_mFile->getFnumsTagsInfos([$fnum]);
 
             if(empty($generated_letters) or empty($generated_letters)) {
@@ -2509,9 +2491,9 @@ if (JFactory::getUser()->id == 63)
                             // make file name --- logically, we should avoid to generate many files which have same contents but different name --> fnum will distinguish the file name
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
-                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];;
+                                $name = $_cFile->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];;
                             } else {
-                                $name = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];
+                                $name = $_cFile->sanitize_filename($fnum) . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];
                             }
 
                             // get file path --> original path + file path, e.g: images/emundus/files/95
@@ -2647,9 +2629,9 @@ if (JFactory::getUser()->id == 63)
                             // make file name --- logically, we should avoid to generate many files which have same contents but different name --> fnum will distinguish the file name
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
-                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf";
+                                $name = $_cFile->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf";
                             } else {
-                                $name = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".pdf";
+                                $name = $_cFile->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".pdf";
                             }
 
                             $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
@@ -2850,9 +2832,9 @@ if (JFactory::getUser()->id == 63)
                                 /// check if the filename is anonymized -- logically, we should avoid to generate many files which have the same contents, but different name --> bad performance
                                 $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                                 if (!$anonymize_data) {
-                                    $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".docx";
+                                    $filename = $_cFile->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".docx";
                                 } else {
-                                    $filename = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".docx";
+                                    $filename = $_cFile->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".docx";
                                 }
 
                                 $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
@@ -2965,11 +2947,7 @@ if (JFactory::getUser()->id == 63)
                                             $fabrikElts = array();
                                         }
 
-                                        /// call to file controller
-                                        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'files.php');
-                                        $_cFiles = new EmundusControllerFiles;
-
-                                        $fabrikValues = $_cFiles->getValueByFabrikElts($fabrikElts, [$fnum]);
+                                        $fabrikValues = $_cFile->getValueByFabrikElts($fabrikElts, [$fnum]);
 
                                         foreach ($setupTags as $tag) {
                                             $val = "";
@@ -3026,9 +3004,9 @@ if (JFactory::getUser()->id == 63)
                             /// check if the filename is anonymized -- logically, we should avoid to generate many files which have the same contents, but different name --> bad performance
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
-                                $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".xlsx";
+                                $filename = $_cFile->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".xlsx";
                             } else {
-                                $filename = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".xlsx";
+                                $filename = $_cFile->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".xlsx";
                             }
 
                             $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
@@ -3480,9 +3458,5 @@ if (JFactory::getUser()->id == 63)
         }
 
         return $zip->close();
-    }
-
-    private function sanitize_filename($name) {
-        return strtolower(preg_replace(['([\40])', '([^a-zA-Z0-9-])','(-{2,})'], ['_','','_'], preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/', '$1', htmlentities($name, ENT_NOQUOTES, 'UTF-8'))));
     }
 }

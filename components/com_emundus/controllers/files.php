@@ -3287,7 +3287,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
     }
 
-    private function sanitize_filename($name) {
+    public function sanitize_filename($name) {
         return strtolower(preg_replace(['([\40])', '([^a-zA-Z0-9-])','(-{2,})'], ['_','','_'], preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/', '$1', htmlentities($name, ENT_NOQUOTES, 'UTF-8'))));
     }
 

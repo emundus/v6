@@ -1468,7 +1468,6 @@ class EmundusModelMessages extends JModelList {
 
             return array('sending_status' => $send, 'log_message' => $logs, 'message_id' => $email_recap->id);
         } else {
-            //// hint : sending default message if no email model found --> good idea?
             return false;
         }
     }
