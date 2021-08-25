@@ -393,7 +393,7 @@ class EmundusonboardModelemail extends JModelList {
                     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
                     $m_eval = new EmundusModelEvaluation;
 
-                    $letters = $m_eval->getLettersByAttachmentIds($documents);
+                    $letters = $m_eval->getLettersByAttachments($documents);
 
                     foreach($letters as $key => $letter) {
                         /// update
@@ -544,7 +544,7 @@ class EmundusonboardModelemail extends JModelList {
                     }
 
                     // second --> matching letter -- ∅ -- emails (emundus_setup_letters) --> find all letters having document_ids --> and then update each of them by new email id
-                    $letters = $m_eval->getLettersByAttachmentIds($documents);
+                    $letters = $m_eval->getLettersByAttachments($documents);
 
                     foreach($letters as $key => $letter) {
                         /// update

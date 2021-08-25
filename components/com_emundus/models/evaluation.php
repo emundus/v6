@@ -2237,7 +2237,7 @@ if (JFactory::getUser()->id == 63)
     }
 
     /// get distinct attachment
-    public function getAttachmentByIds($ids) {
+    public function getAttachmentsByIds($ids) {
         $query = $this->_db->getQuery(true);
 
         if(!empty($ids) and !is_null($ids)) {
@@ -2251,6 +2251,28 @@ if (JFactory::getUser()->id == 63)
                 return $this->_db->loadAssocList();
             } catch (Exception $e) {
                 JLog::add('Cannot get attachment by ids : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /// get letters from attachmene_id
+    public function getLettersByAttachments($aids) {
+        $query = $this->_db->getQuery(true);
+
+        if(!empty($aids) and !is_null($aids)) {
+            try {
+                $query->clear()
+                    ->select('#__emundus_setup_letters.id')
+                    ->from($this->_db->quoteName('#__emundus_setup_letters'))
+                    ->where($this->_db->quoteName('#__emundus_setup_letters.attachment_id') . 'IN (' . implode(',', $aids) . ')');
+
+                $this->_db->setQuery($query);
+                return $this->_db->loadColumn();        // just load column, not load object
+            } catch(Exception $e) {
+                JLog::add('Cannot get letter by attachments : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                 return false;
             }
         } else {
@@ -2295,7 +2317,7 @@ if (JFactory::getUser()->id == 63)
                         $_letter_attachment_ids = array_unique($_letter_attachment_ids);
                         $_letter_attachment_emails = array_unique($_letter_attachment_emails);
 
-                        $_attachment_ids = $this->getAttachmentByIds($_letter_attachment_ids);
+                        $_attachment_ids = $this->getAttachmentsByIds($_letter_attachment_ids);
                         return array('attachments' => $_attachment_ids, 'emails' => $_letter_attachment_emails);
                     } else {
                         /// from $_letters -> det distinct letter id
@@ -2343,7 +2365,7 @@ if (JFactory::getUser()->id == 63)
         }
     }
 
-    /// get exactly letter id by fnum and template (32,33,34)
+    /// get exactly letter id by fnum and template --> with or without status (for KIT, we have always status // but for NORMANDIE, status is optional)
     public function getLettersByFnumTemplates($fnum, $templates=array()) {
         if(!empty($fnum) and !is_null($fnum) and !empty($templates) and !is_null($templates)) {
             $query = $this->_db->getQuery(true);
@@ -2352,11 +2374,11 @@ if (JFactory::getUser()->id == 63)
                 /// first :: get fnum info
                 $_mFile = new EmundusModelFiles;
 
-                $_fnumStatus = $_mFile->getFnumInfos($fnum)['status'];
                 $_fnumProgram = $_mFile->getFnumInfos($fnum)['training'];
                 $_fnumCampaign = $_mFile->getFnumInfos($fnum)['id'];
 
                 /// second :: status, program, templates --> detect the letter id to generate
+                $_fnumStatus = $_mFile->getFnumInfos($fnum)['status'];
                 $query->clear()
                     ->select('jesl.*')
                     ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
@@ -2367,8 +2389,22 @@ if (JFactory::getUser()->id == 63)
                     ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
 
                 $this->_db->setQuery($query);
-                return $this->_db->loadObjectList();
+                $letters = $this->_db->loadObjectList();
 
+                if(empty($letters)) {
+                    $query->clear()
+                        ->select('jesl.*')
+                        ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
+                        ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+                        ->where($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
+                        ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
+
+                    $this->_db->setQuery($query);
+                    $_letters = $this->_db->loadObjectList();
+                    return $_letters;
+                } else {
+                    return $letters;
+                }
             } catch(Exception $e) {
                 JLog::add('Cannot get letter template by single fnum : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                 return false;
