@@ -58,7 +58,7 @@ export default {
   name: "modalTestingForm",
   components: {},
   props: {
-    profileId: Number,
+    profileId: String,
     actualLanguage: String,
     campaigns: Object,
     currentForm: Number,

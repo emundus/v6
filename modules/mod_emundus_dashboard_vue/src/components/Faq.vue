@@ -3,7 +3,7 @@
     <div class='section-sub-menu' style='margin-bottom: 10px'>
       <h3>{{translations.Question}}</h3>
       <p class="faq-intro">{{translations.Redirect}}</p>
-      <a href='https://www.emundus.fr/ressources/centre-aide' target='_blank' rel="noopener noreferrer"><button class='bouton-faq'>F.A.Q</button></a>
+      <a :href="translations.FAQ" target='_blank' rel="noopener noreferrer"><button class='bouton-faq'>F.A.Q</button></a>
     </div>
   </div>
 </template>
@@ -22,6 +22,7 @@ export default {
     translations: {
       Question: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FAQ_QUESTION"),
       Redirect: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FAQ_REDIRECT"),
+      FAQ: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FAQ_HELPCENTER"),
     }
   }),
 

@@ -150,4 +150,26 @@ class EmundusControllerExport extends JControllerLegacy
             exit();
         }
     }
+
+    public function getprofiles() {
+        $current_user = JFactory::getUser();
+
+        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+            die(JText::_('RESTRICTED_ACCESS'));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+
+            $code = $jinput->getVar('code', null);
+            $camp = $jinput->getVar('camp', null);
+
+            $code = explode(",", $code);
+            $camp = explode(",", $camp);
+
+            $_model = $this->getModel('profile');
+            $_profiles = $_model->getProfileIDByCampaigns($camp,$code);
+
+            echo json_encode((object) $_profiles);
+            exit();
+        }
+    }
 }

@@ -17,7 +17,55 @@ use Joomla\CMS\Date\Date;
 
 class EmundusonboardModelfalang extends JModelList {
 
-  function insertFalang($textfr,$texten,$reference_id,$reference_table,$reference_field){
+  function insertFalang($values,$reference_id,$reference_table,$reference_field){
+      $db = $this->getDbo();
+      $query = $db->getQuery(true);
+      $languages = JLanguageHelper::getLanguages();
+
+      $values = json_decode(json_encode($values), true);
+
+      $currentDate = date('Y-m-d H:i:s');
+      $user = JFactory::getUser()->id;
+
+      $results = array();
+
+      try {
+          foreach ($languages as $language) {
+              $query->clear()
+                  ->select('COUNT(*)')
+                  ->from($db->quoteName('#__falang_content'))
+                  ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+                  ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+                  ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+                  ->andWhere($db->quoteName('language_id') . ' = ' . $db->quote($language->lang_id));
+              $db->setQuery($query);
+              if ($db->loadResult() == 0) {
+                  $query->clear()
+                      ->insert('#__falang_content')
+                      ->set($db->quoteName('language_id') . ' = ' . $language->lang_id)
+                      ->set($db->quoteName('value') . ' = ' . $db->quote($values[$language->sef]))
+                      ->set($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+                      ->set($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+                      ->set($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+                      ->set($db->quoteName('original_text') . ' = ' . $db->quote(''))
+                      ->set($db->quoteName('modified') . ' = ' . $db->quote($currentDate))
+                      ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
+                      ->set($db->quoteName('published') . ' = 1');
+                  $db->setQuery($query);
+                  $results[] = $db->execute();
+              } else {
+                  $results[] = $this->updateFalangOnce($values,$reference_id,$reference_table,$reference_field, $language->lang_id);
+              }
+          }
+
+          return $results;
+      }  catch(Exception $e) {
+          JLog::add('component/com_emundus_onboard/models/falang | Error when try to insert the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+          return false;
+      }
+  }
+
+  function insertFalangOnce($text,$reference_id,$reference_table,$reference_field, $language){
       $db = $this->getDbo();
       $query = $db->getQuery(true);
 
@@ -25,67 +73,44 @@ class EmundusonboardModelfalang extends JModelList {
       $user = JFactory::getUser()->id;
 
       try {
-          // Check if exist update else insert
-          $query
-              ->select('COUNT(*)')
-              ->from($db->quoteName('#__falang_content'))
-              ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
-              ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-              ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
-              ->andWhere($db->quoteName('language_id') . ' = 1');
+          // Insert text
+          $query->insert('#__falang_content')
+              ->set($db->quoteName('language_id') . ' = ' . $db->quote($language))
+              ->set($db->quoteName('value') . ' = ' . $db->quote($text))
+              ->set($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+              ->set($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+              ->set($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+              ->set($db->quoteName('original_text') . ' = ' . $db->quote(''))
+              ->set($db->quoteName('modified') . ' = ' . $db->quote($currentDate))
+              ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
+              ->set($db->quoteName('published') . ' = 1');
           $db->setQuery($query);
-          if ($db->loadResult() == 0) {
-              // Insert english text
-              $query->clear()
-                  ->insert('#__falang_content')
-                  ->set($db->quoteName('language_id') . ' = 1')
-                  ->set($db->quoteName('value') . ' = ' . $db->quote($texten))
-                  ->set($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
-                  ->set($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-                  ->set($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
-                  ->set($db->quoteName('original_text') . ' = ' . $db->quote(''))
-                  ->set($db->quoteName('modified') . ' = ' . $db->quote($currentDate))
-                  ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
-                  ->set($db->quoteName('published') . ' = 1');
-              $db->setQuery($query);
-              $db->execute();
-          } else {
-              $this->updateFalang($textfr, $texten, $reference_id, $reference_table, $reference_field);
-          }
+          return $db->execute();
           //
-
-          // Check if exist update else insert
-          $query->clear()
-              ->select('COUNT(*)')
-              ->from($db->quoteName('#__falang_content'))
-              ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
-              ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-              ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
-              ->andWhere($db->quoteName('language_id') . ' = 2');
-          $db->setQuery($query);
-          if ($db->loadResult() == 0) {
-              // Insert french text
-              $query->clear()
-                  ->insert('#__falang_content')
-                  ->set($db->quoteName('language_id') . ' = 2')
-                  ->set($db->quoteName('value') . ' = ' . $db->quote($textfr))
-                  ->set($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
-                  ->set($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-                  ->set($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
-                  ->set($db->quoteName('original_text') . ' = ' . $db->quote(''))
-                  ->set($db->quoteName('modified') . ' = ' . $db->quote($currentDate))
-                  ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
-                  ->set($db->quoteName('published') . ' = 1');
-              $db->setQuery($query);
-              return $db->execute();
-          } else {
-              return $this->updateFalang($textfr, $texten, $reference_id, $reference_table, $reference_field);
-          }
       }  catch(Exception $e) {
-          JLog::add('component/com_emundus_onboard/models/falang | Error when try to insert the translation ' . $textfr . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+          JLog::add('component/com_emundus_onboard/models/falang | Error when try to insert the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
           return false;
       }
   }
+
+    function updateFalangOnce($values,$reference_id,$reference_table,$reference_field, $language){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->update('#__falang_content')
+                ->set($db->quoteName('value') . ' = ' . $db->quote($values[$language->sef]))
+                ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+                ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+                ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+                ->andWhere($db->quoteName('language_id') . ' = ' . $db->quote($language));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/falang | Error when try to update the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 
   function deleteFalang($reference_id,$reference_table,$reference_field){
       $db = $this->getDbo();
@@ -104,74 +129,70 @@ class EmundusonboardModelfalang extends JModelList {
       }
   }
 
-  function updateFalang($textfr,$texten,$reference_id,$reference_table,$reference_field){
+  function updateFalang($values,$reference_id,$reference_table,$reference_field){
       $db = $this->getDbo();
       $query = $db->getQuery(true);
+      $languages = JLanguageHelper::getLanguages();
+
+      $values = json_decode(json_encode($values), true);
+
+      $results = array();
 
       try {
-          $query
-              ->select('COUNT(*)')
-              ->from($db->quoteName('#__falang_content'))
-              ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
-              ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-              ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
-              ->andWhere($db->quoteName('language_id') . ' = 1');
-          $db->setQuery($query);
-          if ($db->loadResult() != 0) {
-
-              $query->update('#__falang_content')
-                  ->set($db->quoteName('value') . ' = ' . $db->quote($texten))
-                  ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
-                  ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-                  ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
-                  ->andWhere($db->quoteName('language_id') . ' = 1');
-              $db->setQuery($query);
-              $db->execute();
-
+          foreach ($languages as $language) {
               $query->clear()
-                  ->update('#__falang_content')
-                  ->set($db->quoteName('value') . ' = ' . $db->quote($textfr))
+                  ->select('COUNT(*)')
+                  ->from($db->quoteName('#__falang_content'))
                   ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
                   ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
                   ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
-                  ->andWhere($db->quoteName('language_id') . ' = 2');
+                  ->andWhere($db->quoteName('language_id') . ' = ' . $db->quote($language->lang_id));
               $db->setQuery($query);
-              return $db->execute();
-          } else {
-
-              return $this->insertFalang($textfr, $texten, $reference_id, $reference_table, $reference_field);
+              if ($db->loadResult() != 0) {
+                  $query->clear()
+                      ->update('#__falang_content')
+                      ->set($db->quoteName('value') . ' = ' . $db->quote($values[$language->sef]))
+                      ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+                      ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+                      ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+                      ->andWhere($db->quoteName('language_id') . ' = ' . $db->quote($language->lang_id));
+                  $db->setQuery($query);
+                  $results[] = $db->execute();
+              } else {
+                  $results[] = $this->insertFalangOnce($values[$language->sef], $reference_id, $reference_table, $reference_field, $language->lang_id);
+              }
           }
+
+          return $results;
       } catch(Exception $e) {
           JLog::add('component/com_emundus_onboard/models/falang | Error when try to update the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
           return false;
       }
   }
 
-  function getFalang($reference_id,$reference_table,$reference_field){
+  function getFalang($reference_id,$reference_table,$reference_field,$default = ''){
       $labels = new stdClass();
 
       $db = $this->getDbo();
       $query = $db->getQuery(true);
+      $languages = JLanguageHelper::getLanguages();
 
       try {
-          $query->select('value')
-              ->from($db->quoteName('#__falang_content'))
-              ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
-              ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-              ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
-              ->andWhere($db->quoteName('language_id') . ' = 1');
-          $db->setQuery($query);
-          $labels->en = $db->loadObject();
+          foreach ($languages as $language) {
+              $query->clear()
+                  ->select('value')
+                  ->from($db->quoteName('#__falang_content'))
+                  ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+                  ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+                  ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+                  ->andWhere($db->quoteName('language_id') . ' = ' . $db->quote($language->lang_id));
+              $db->setQuery($query);
+              $labels->{$language->sef} = $db->loadResult();
+              if(empty($labels->{$language->sef})){
+                  $labels->{$language->sef} = $default;
+              }
+          }
 
-          $query->clear()
-              ->select('value')
-              ->from($db->quoteName('#__falang_content'))
-              ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
-              ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-              ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
-              ->andWhere($db->quoteName('language_id') . ' = 2');
-          $db->setQuery($query);
-          $labels->fr = $db->loadObject();
           return $labels;
       } catch(Exception $e) {
           JLog::add('component/com_emundus_onboard/models/falang | Error at getting the translations ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
