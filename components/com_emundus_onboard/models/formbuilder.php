@@ -59,17 +59,25 @@ class EmundusonboardModelformbuilder extends JModelList {
         if(!empty(trim($key))) {
             $key = strtoupper(preg_replace('/\s+/', '_', $this->replaceAccents($key)));
             foreach ($languages as $language) {
-                $fileName = constant('JPATH_BASE') . '/language/overrides/' . $language->lang_code . '.override.ini';
-                $strings  = JLanguageHelper::parseIniFile($fileName);
+                try {
+                    $fileName = constant('JPATH_BASE') . '/language/overrides/' . $language->lang_code . '.override.ini';
+                    if (file_exists($fileName)) {
+                        $strings  = JLanguageHelper::parseIniFile($fileName);
 
-                if(isset($strings[$key])){
-                    $strings[$key] = $values[$language->sef];
-                } else {
-                    $strings = array($key => $values[$language->sef]) + $strings;
+                        if(isset($strings[$key])){
+                            $strings[$key] = $values[$language->sef];
+                        } else {
+                            $strings = array($key => $values[$language->sef]) + $strings;
+                        }
+
+                        $results[] = JLanguageHelper::saveToIniFile($fileName, $strings);
+                        $this->copyFileToAdministration($language->lang_code);
+                    }
+                } catch (Exception $e) {
+                    JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot find '.$language->sef.'language override file : ', JLog::ERROR, 'com_emundus');
+                    continue;
                 }
 
-                $results[] = JLanguageHelper::saveToIniFile($fileName, $strings);
-                $this->copyFileToAdministration($language->lang_code);
             }
             return $key;
         } else {
@@ -134,12 +142,17 @@ class EmundusonboardModelformbuilder extends JModelList {
             $textTofind = "/^" . $textTofind . ".*/mi";
 
             // Search and return the translation
-            preg_match_all($textTofind, $content, $matches, PREG_SET_ORDER, 0);
-            if (!empty($matches)) {
-                return str_replace("\"", '', explode('=', $matches[0][0], 2)[1]);
-            } else {
+            try {
+                preg_match_all($textTofind, $content, $matches, PREG_SET_ORDER, 0);
+                if (!empty($matches)) {
+                    return str_replace("\"", '', explode('=', $matches[0][0], 2)[1]);
+                } else {
+                    return $text;
+                }
+            } catch (Exception $e) {
                 return $text;
             }
+
         } else {
             return '';
         }

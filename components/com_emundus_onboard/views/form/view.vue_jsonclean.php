@@ -61,7 +61,14 @@ class EmundusonboardViewForm extends FabrikViewFormBase
             $languages = JLanguageHelper::getLanguages();
             foreach ($languages as $language) {
                 $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-                $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+                try {
+                    if (file_exists($path_to_files[$language->sef])) {
+                        $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+                    }
+                } catch (Exception $e) {
+                    JLog::add('component/com_emundus_onboard/view/vue_jsonclean | Cannot find '.$language->sef.'language override file : ', JLog::ERROR, 'com_emundus');
+                    continue;
+                }
             }
 
             $returnObject = new stdClass();
