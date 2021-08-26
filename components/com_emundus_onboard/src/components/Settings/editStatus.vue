@@ -83,10 +83,6 @@
                         this.status = response.data.data;
                         setTimeout(() => {
                           this.status.forEach(element => {
-                            if(element.label.fr == ""){
-                              element.label.fr = element.value;
-                              element.label.en = element.value;
-                            }
                             this.getHexColors(element);
                           });
                         }, 100);

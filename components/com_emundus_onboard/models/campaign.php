@@ -447,8 +447,7 @@ class EmundusonboardModelcampaign extends JModelList
 
         $i = 0;
 
-        $label_fr = '';
-        $label_en = '';
+        $labels = new stdClass;
         $limit_status = [];
 
         if (!empty($data)) {
@@ -457,8 +456,8 @@ class EmundusonboardModelcampaign extends JModelList
                     array_splice($data, $i, 1);
                 }
                 if ($key == 'label') {
-                    $label_fr = $data['label']['fr'];
-                    $label_en = $data['label']['en'];
+                    $labels->fr = $data['label']['fr'];
+                    $labels->en = $data['label']['en'];
                     $data['label'] = $data['label'][$actualLanguage];
                 }
                 if ($key == 'limit_status') {
@@ -490,7 +489,7 @@ class EmundusonboardModelcampaign extends JModelList
                 $db->execute();
                 $campaign_id = $db->insertid();
 
-                $falang->insertFalang($label_fr,$label_en,$campaign_id,'emundus_setup_campaigns','label');
+                $falang->insertFalang($labels,$campaign_id,'emundus_setup_campaigns','label');
 
                 if($data['is_limited'] == 1){
                     foreach ($limit_status as $key => $limit_statu) {
@@ -563,9 +562,11 @@ class EmundusonboardModelcampaign extends JModelList
 
         if (!empty($data)) {
             $fields = [];
+            $labels = new stdClass;
 
             foreach ($data as $key => $val) {
                 if ($key == 'label') {
+                    $labels = $data['label'];
                     $label_fr = $data['label']['fr'];
                     $label_en = $data['label']['en'];
                     $data['label'] = $data['label'][$actualLanguage];
@@ -579,7 +580,7 @@ class EmundusonboardModelcampaign extends JModelList
                 }
             }
 
-            $falang->updateFalang($label_fr,$label_en,$cid,'emundus_setup_campaigns','label');
+            $falang->updateFalang($labels,$cid,'emundus_setup_campaigns','label');
 
             $query->update($db->quoteName('#__emundus_setup_campaigns'))
                 ->set($fields)
@@ -879,8 +880,8 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query);
             $db->execute();
             $newdocument = $db->insertid();
-            $falang->insertFalang($document['name']['fr'],$document['name']['en'],$newdocument,'emundus_setup_attachments','value');
-            $falang->insertFalang($document['description']['fr'],$document['description']['en'],$newdocument,'emundus_setup_attachments','description');
+            $falang->insertFalang($document['name'],$newdocument,'emundus_setup_attachments','value');
+            $falang->insertFalang($document['description'],$newdocument,'emundus_setup_attachments','description');
 
             $query
                 ->clear()
@@ -994,8 +995,8 @@ class EmundusonboardModelcampaign extends JModelList
             $db->execute();
 
 
-            $falang->updateFalang($document['name']['fr'],$document['name']['en'],$did,'emundus_setup_attachments','value');
-            $falang->updateFalang($document['description']['fr'],$document['description']['en'],$did,'emundus_setup_attachments','description');
+            $falang->updateFalang($document['name'],$did,'emundus_setup_attachments','value');
+            $falang->updateFalang($document['description'],$did,'emundus_setup_attachments','description');
 
             $query->clear()
                 ->select('count(id)')
