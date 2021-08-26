@@ -48,9 +48,9 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
         jimport('joomla.mail.helper');
 
         $params = $this->getParams();
-        $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        $reminder_mail_id = $params->get('reminder_mail_id', '15');
+        $reminder_mail_id = $params->get('reminder_mail_id', '79');
+        $reminder_mail_coordinator_id = $params->get('reminder_mail_id_coordinator', '80');
 
         $this->log = '';
 
@@ -70,7 +70,15 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
         // Generate emails from template and store it in message table
         if (!empty($chatrooms)) {
             include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
+            include_once(JPATH_SITE.'/components/com_emundus/models/files.php');
+            include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+            include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
+
             $m_emails = new EmundusModelEmails;
+            $m_files = new EmundusModelFiles;
+            $m_profile = new EmundusModelProfile;
+
+            $c_messages = new EmundusControllerMessages();
             $email = $m_emails->getEmailById($reminder_mail_id);
 
             $query->clear()
@@ -154,20 +162,111 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                 $send = $mailer->Send();
                 if ($send !== true) {
                     $this->log .= "\n Error sending email : " . $to;
-                } else {
-                    $message = array(
-                        'user_id_from' => $from_id,
-                        'user_id_to' => $to_id,
-                        'subject' => $subject,
-                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
-                    );
-                    $m_emails->logEmail($message);
-                    $this->log .= '\n' . JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.' :: '.$body;
                 }
                 // to avoid been considered as a spam process or DDoS
                 sleep(0.1);
             }
 
+            // Send notifications to coordinators
+            $fnums_no_readed = array();
+            $users_to_send = array();
+
+            foreach ($chatrooms as $chatroom) {
+                $query->clear()
+                    ->select('distinct g.user_id')
+                    ->from($db->quoteName('#__emundus_groups', 'g'))
+                    ->leftJoin($db->quoteName('#__emundus_group_assoc', 'ga') . ' ON ' . $db->quoteName('ga.group_id') . ' = ' . $db->quoteName('g.group_id'))
+                    ->where($db->quoteName('ga.fnum') . ' LIKE ' . $db->quote($chatroom->fnum));
+                $db->setQuery($query);
+
+                $groups_associated = $db->loadColumn();
+                $users_associated = $m_files->getAssessorsByFnums((array)$chatroom->fnum,'uids');
+                foreach ($users_associated as $key => $user_associated){
+                    if(!is_string($user_associated)){
+                        unset($users_associated[$key]);
+                    }
+                }
+                $users_to_send = array_unique(array_merge($groups_associated,$users_associated));
+
+                if(empty($users_to_send)){
+                    $query->clear()
+                        ->select('distinct eu.user_id')
+                        ->from($db->quoteName('#__emundus_users_profiles','eup'))
+                        ->leftJoin($db->quoteName('#__emundus_users','eu').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('eup.user_id'))
+                        ->where($db->quoteName('profile_id') . ' = 2');
+                    $db->setQuery($query);
+                    $users_to_send = $db->loadColumn();
+                }
+
+                $query->clear()
+                    ->select('count(m.message_id)')
+                    ->from($db->quoteName('#__messages', 'm'))
+                    ->leftJoin($db->quoteName('#__emundus_chatroom', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('m.page'))
+                    ->where($db->quoteName('c.fnum') . ' LIKE ' . $db->quote($chatroom->fnum))
+                    ->andWhere($db->quoteName('m.user_id_from') . ' NOT IN (' . implode(',',$users_to_send) . ')')
+                    ->andWhere($db->quoteName('m.state') . ' = 0');
+
+                $db->setQuery($query);
+                $messages_not_read = $db->loadResult();
+
+                if ($messages_not_read > 0) {
+                    if(!in_array($chatroom->fnum,$fnums_no_readed)) {
+                        $fnums_no_readed[] = $chatroom->fnum;
+                    }
+                }
+            }
+
+            if(!empty($fnums_no_readed)) {
+                foreach ($users_to_send as $user_to_send) {
+                    $query->clear()
+                        ->select('id, email, name')
+                        ->from($db->quoteName('#__users'))
+                        ->where($db->quoteName('id') . ' = ' . $user_to_send);
+                    $db->setQuery($query);
+                    $user_info = $db->loadObject();
+
+                    $to = $user_info->email;
+
+                    $menu = JMenu::getInstance('site');
+                    $menutype = $m_profile->getProfileByApplicant($user_info->id)['menutype'];
+                    $items = $menu->getItems('menutype', $menutype);
+
+                    // We're getting the first link in the user's menu that's from com_emundus
+                    // which is PROBABLY a files/evaluation view, but this does not guarantee it.
+                    $index = 0;
+                    foreach ($items as $k => $item) {
+                        if ($item->component === 'com_emundus') {
+                            $index = $k;
+                            break;
+                        }
+                    }
+
+                    if (JFactory::getConfig()->get('sef') == 1) {
+                        $userLink = $items[$index]->alias;
+                    } else {
+                        $userLink = $items[$index]->link . '&Itemid=' . $items[0]->id;
+                    }
+
+                    $fnumList = '<ul>';
+                    foreach ($fnums_no_readed as $fnum) {
+                        $fnumList .= '
+                        <li>
+                            <a href="' . JURI::root() . $userLink . '#' . $fnum . '|open">' . $fnum . '</a>
+                        </li>';
+                    }
+                    $fnumList .= '</ul>';
+
+                    $post = array(
+                        'FNUMS' => $fnumList,
+                        'NAME' => $user_info->name,
+                        'SITE_URL' => JURI::base(),
+                    );
+
+                    $c_messages->sendEmailNoFnum($to, $reminder_mail_coordinator_id, $post, $user_info->id);
+                    // to avoid been considered as a spam process or DDoS
+                    sleep(0.1);
+                }
+            }
         }
         $this->log .= "\n process " . count($applicants_to_send) . " applicant(s)";
 

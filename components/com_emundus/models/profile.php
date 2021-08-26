@@ -440,6 +440,157 @@ class EmundusModelProfile extends JModelList {
         }
     }
 
+    /// get profile from menutype
+    public function getProfileByMenu($menu) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            /// another way, if $menu has the regular expression "menu-profile" --> will see
+
+            $query->clear()
+                ->select('#__emundus_setup_profiles.*')
+                ->from($db->quoteName('#__emundus_setup_profiles'))
+                ->where($db->quoteName('#__emundus_setup_profiles.menutype') . '=' . $db->quote($menu))
+                ->andWhere($db->quoteName('#__emundus_setup_profiles.published') . '=' . 1);
+            $db->setQuery($query);
+            return $db->loadObject();
+
+        } catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /// get fabrik list by ids
+    public function getFabrikListByIds($flist) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($flist)) {
+            try {
+                $query->clear()
+                    ->select('jfl.*')
+                    ->from($db->quoteName('#__fabrik_lists', 'jfl'))
+                    ->where($db->quoteName('jfl.id') . 'IN (' . $flist . ' )');
+
+                $db->setQuery($query);
+
+                return $db->loadObjectList();
+            } catch(Exception $e) {
+                return $e->getMessage();
+            }
+        } else {
+            return false;
+        }
+    }
+
+    // get fabrik form by list
+    public function getFabrikFormByList($list) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($list)) {
+            try {
+                $query->clear()
+                    ->select('jff.id, jff.label')
+                    ->from($db->quoteName('#__fabrik_forms', 'jff'))
+                    ->leftJoin($db->quoteName('#__fabrik_lists', 'jfl') . ' ON ' . $db->quoteName('jfl.form_id') . ' = ' . $db->quoteName('jff.id'))
+                    ->where($db->quoteName('jfl.id') . '=' . $list );
+
+                $db->setQuery($query);
+                return $db->loadObject();
+
+            } catch(Exception $e) {
+
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /// get fabrik groups by ids
+    public function getFabrikGroupByList($glist) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($glist)) {
+            try {
+                $query->clear()
+                    ->select('jfg.*')
+                    ->from($db->quoteName('#__fabrik_groups', 'jfg'))
+                    ->where($db->quoteName('jfg.id') . '=' . $glist);
+
+                $db->setQuery($query);
+                return $db->loadObjectList();
+
+            } catch(Exception $e) {
+                return $e->getMessage();
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /// get fabrik elements by ids
+    public function getFabrikElementById($eid) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($eid)) {
+            $query->clear()
+                ->select('jfe.id, jfe.name, jfe.label, jfe.group_id')
+                ->from($db->quoteName('#__fabrik_elements', 'jfe'))
+                ->where($db->quoteName('jfe.id') . '=' . (int)$eid);
+
+            $db->setQuery($query);
+            return $db->loadObject();       // return element
+        } else {
+            return false;
+        }
+    }
+
+    /// get data from element name
+    public function getDataFromElementName($element, $fnum, $user) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($element) and !empty($fnum) and !empty($user)) {
+            try {
+                /// step 1 --> get table name
+                $query->clear()
+                    ->select('jfl.*')
+                    ->from($db->quoteName('#__fabrik_lists', 'jfl'))
+                    ->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $db->quoteName('jffg.form_id') . '=' . $db->quoteName('jfl.form_id'))
+                    ->leftJoin($db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $db->quoteName('jffg.group_id') . '=' . $db->quoteName('jfe.group_id'))
+                    ->where($db->quoteName('jfe.id') . '=' . (int)$element->id)
+                    ->andWhere($db->quoteName('jfe.name') . '=' . $db->quote($element->name))
+                    ->andWhere($db->quoteName('jfe.group_id') . '=' . (int)$element->group_id);
+
+                $db->setQuery($query);
+
+                $_table_name = $db->loadObject();
+
+                /// step 2 --> from table name --> get element data from element name (element_name == column) with ::fnum and ::user
+                /// input params :: $db->quote($element->name) + $_table_name->db_tale_name
+                ///
+                $query->clear()
+                    ->select($_table_name->db_table_name . '.' . $element->name)
+                    ->from($_table_name->db_table_name)
+                    ->where($_table_name->db_table_name . '.fnum' . '=' . $db->quote($fnum))
+                    ->andWhere($_table_name->db_table_name . '.user' . '=' . $db->quote($user));
+
+                $db->setQuery($query);
+                $_element_data = $db->loadResult();
+
+                return $_element_data;
+
+            } catch(Exception $e) {
+                return $e->getMessage();
+            }
+        } else {
+            return false;
+        }
+    }
 
 	/**
 	 * Gets the list of profiles from array of programmes
@@ -518,6 +669,115 @@ class EmundusModelProfile extends JModelList {
         }
 
         return $res;
+    }
+
+    public function getProfileIDByCampaigns($campaigns, $codes) {
+        $query = $this->_db->getQuery(true);
+        if(!empty($campaigns)) {
+            if(!empty($codes)) {
+                try {
+                    $query->clear()
+                        ->select('#__emundus_setup_campaigns.*')
+                        ->from($this->_db->quoteName('#__emundus_setup_campaigns'))
+                        ->where($this->_db->quoteName('#__emundus_setup_campaigns.id') . 'IN (' . implode(',', $campaigns) . ')')
+                        ->andWhere($this->_db->quoteName('#__emundus_setup_campaigns.training') . 'IN ("' . implode(',', $codes) . '")');
+
+                    $this->_db->setQuery($query);
+                    $_firstResult = $this->_db->loadObjectList();
+
+                    $firstProfile = array();
+                    foreach ($_firstResult as $key => $value) {
+                        $firstProfile[] = $value->profile_id;
+                    }
+
+                    $query->clear()
+                        ->select('#__emundus_campaign_workflow.*')
+                        ->from($this->_db->quoteName('#__emundus_campaign_workflow'))
+                        ->where($this->_db->quoteName('#__emundus_campaign_workflow.campaign') . 'IN (' . implode(',', $campaigns) . ')')
+                        ->order('step');
+
+                    $this->_db->setQuery($query);
+                    $_secondResult = $this->_db->loadObjectList();
+
+                    $secondProfile = array();
+                    foreach ($_secondResult as $key => $value) {
+                        $secondProfile[] = $value->profile;
+                    }
+
+                    $profileIds = array_unique(array_merge($firstProfile, $secondProfile));
+
+                    $query->clear()
+                        ->select('#__emundus_setup_profiles.*')
+                        ->from($this->_db->quoteName('#__emundus_setup_profiles'))
+                        ->where($this->_db->quoteName('#__emundus_setup_profiles.id') . 'IN (' . implode(',', $profileIds) . ')');
+
+                    $this->_db->setQuery($query);
+
+                    $_profilesLabels = $this->_db->loadObjectList();
+
+                    foreach ($_profilesLabels as $key => $value) {
+                        $profileLabels[] = $value->label;
+                        $profileMenuType[] = $value->menutype;
+                    }
+
+                    return ['profile_id' => $profileIds, 'profile_label' => $profileLabels, 'profile_menu_type' => $profileMenuType];
+
+                } catch(Exception $e) {
+                    JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(). ' : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                    return false;
+                }
+            } else {
+                try {
+                    $query->clear()
+                        ->select('#__emundus_campaign_workflow.*')
+                        ->from($this->_db->quoteName('#__emundus_campaign_workflow'))
+                        ->where($this->_db->quoteName('#__emundus_campaign_workflow.campaign') . 'IN (' . implode(',', $campaigns) . ')');
+
+                    $this->_db->setQuery($query);
+
+                    $_firstResult = $this->_db->loadObjectList();
+
+                    foreach ($_firstResult as $key => $value) {
+                        $firstProfile[] = $value->profile;
+                    }
+
+                    $query->clear()
+                        ->select('#__emundus_setup_campaigns.*')
+                        ->from($this->_db->quoteName('#__emundus_setup_campaigns'))
+                        ->where($this->_db->quoteName('#__emundus_setup_campaigns.id') . 'IN (' . implode(',', $campaigns) . ')');
+
+                    $this->_db->setQuery($query);
+                    $_secondResult = $this->_db->loadObjectList();
+
+                    foreach ($_secondResult as $key => $value) {
+                        $secondProfile[] = $value->profile_id;
+                    }
+
+                    $_profileIds = array_unique(array_merge($firstProfile,$secondProfile));
+
+                    $query->clear()
+                        ->select('#__emundus_setup_profiles.*')
+                        ->from($this->_db->quoteName('#__emundus_setup_profiles'))
+                        ->where($this->_db->quoteName('#__emundus_setup_profiles.id') . 'IN (' . implode(',', $_profileIds) . ')');
+
+                    $this->_db->setQuery($query);
+
+                    $_profilesLabels = $this->_db->loadObjectList();
+
+                    foreach ($_profilesLabels as $key => $value) {
+                        $profileLabels[] = $value->label;
+                    }
+
+                    return ['profile_id' => $_profileIds, 'profile_label' => $profileLabels];
+
+                } catch(Exception $e) {
+                    JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(). ' : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
     }
 
     function getFnumDetails($fnum) {

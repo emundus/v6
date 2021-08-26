@@ -178,7 +178,7 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
                 $day = new stdClass;
                 $query = 'SELECT COUNT(id) as users
                             FROM jos_users
-                            WHERE YEAR(registerDate) = ' . $dateTime->format('Y') . ' AND MONTH(registerDate) = ' . $dateTime->format('m') . ' AND DAY(registerDate) = ' . $d;
+                            WHERE id != 62 AND YEAR(registerDate) = ' . $dateTime->format('Y') . ' AND MONTH(registerDate) = ' . $dateTime->format('m') . ' AND DAY(registerDate) = ' . $d;
 
                 $db->setQuery($query);
                 $user->value = $db->loadResult();

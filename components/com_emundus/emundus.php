@@ -372,6 +372,7 @@ JText::script('COM_EMUNDUS_DOCUMENT_EXPORT_TOOLTIP');
 JText::script('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP');
 JText::script('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP');
 JText::script('COM_EMUNDUS_SELECT_IMPOSSIBLE');
+JText::script('COM_EMUNDUS_MESSENGER_ATTACHMENTS');
 JText::script('GENERATE_DOCUMENT');
 JText::script('DOWNLOAD_DOCUMENT');
 JText::script('NO_LETTER_FOUND');
@@ -397,6 +398,9 @@ JText::script('SEND_EMAIL_TOOLTIPS');
 // EXPORT EXCEL MODEL
 JText::script('COM_EMUNDUS_CHOOSE_LETTER');
 JText::script('COM_EMUNDUS_MODEL_ERR');
+
+// UPLOADED IMAGE IS TOO SMALL
+JText::script('ERROR_IMAGE_TOO_SMALL');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
