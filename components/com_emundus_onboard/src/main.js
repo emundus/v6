@@ -25,9 +25,9 @@ Vue.component('table-column', TableColumn);
 import Notifications from 'vue-notification';
 import velocity from 'velocity-animate';
 
-import VoerroTagsInput from '@voerro/vue-tagsinput';
+//import VoerroTagsInput from '@voerro/vue-tagsinput';
 
-Vue.component('tags-input', VoerroTagsInput);
+//Vue.component('tags-input', VoerroTagsInput);
 
 Vue.use(Notifications, { velocity });
 Vue.use(Vuelidate);
