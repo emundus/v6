@@ -48,6 +48,9 @@ class EmundusmessengerModelmessages extends JModelList
 
         $user = JFactory::getSession()->get('emundusUser');
 
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $anonymous_coordinator = $eMConfig->get('messenger_anonymous_coordinator', '0');
+
         try {
             $query = "SELECT distinct(CAST(m.date_time AS DATE)) as dates,group_concat(m.message_id) as messages
                 FROM `jos_messages` AS `m`
@@ -77,6 +80,7 @@ class EmundusmessengerModelmessages extends JModelList
             $datas = new stdClass;
             $datas->dates = $dates;
             $datas->messages = array_reverse($db->loadObjectList());
+            $datas->anonymous = $anonymous_coordinator;
 
             return $datas;
         } catch (Exception $e){
@@ -305,7 +309,16 @@ class EmundusmessengerModelmessages extends JModelList
         $user = JFactory::getUser();
 
         try{
-            $query->insert($db->quoteName('#__emundus_uploads'))
+            if(empty($attachment)){
+                $query->select('id')
+                    ->from($db->quoteName('#__emundus_setup_attachments'))
+                    ->where($db->quoteName('lbl') . ' LIKE ' . $db->quote('_messenger_attachments'));
+                $db->setQuery($query);
+                $attachment = $db->loadResult();
+            }
+
+            $query->clear()
+                ->insert($db->quoteName('#__emundus_uploads'))
                 ->set($db->quoteName('user_id') . ' = ' . $db->quote($user->id))
                 ->set($db->quoteName('fnum') . ' = ' . $db->quote($fnumInfos['fnum']))
                 ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($fnumInfos['id']))
