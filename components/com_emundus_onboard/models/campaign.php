@@ -852,19 +852,19 @@ class EmundusonboardModelcampaign extends JModelList
         /// insert image resolution if image is found
         if($document['minResolution'] != null and $document['maxResolution'] != null) {
             if(empty($document['minResolution']['width']) or (int)$document['minResolution']['width'] == 0) {
-                $document['minResolution']['width'] = null;
+                $document['minResolution']['width'] = 'null';
             }
 
             if(empty($document['minResolution']['height']) or (int)$document['minResolution']['height'] == 0) {
-                $document['minResolution']['height'] = null;
+                $document['minResolution']['height'] = 'null';
             }
 
             if(empty($document['maxResolution']['width']) or (int)$document['maxResolution']['width'] == 0) {
-                $document['maxResolution']['width'] = null;
+                $document['maxResolution']['width'] = 'null';
             }
 
             if(empty($document['maxResolution']['height']) or (int)$document['maxResolution']['height'] == 0) {
-                $document['maxResolution']['height'] = null;
+                $document['maxResolution']['height'] = 'null';
             }
 
             $query
@@ -875,6 +875,7 @@ class EmundusonboardModelcampaign extends JModelList
         }
 
         try{
+
             $db->setQuery($query);
             $db->execute();
             $newdocument = $db->insertid();
