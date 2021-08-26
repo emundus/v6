@@ -196,30 +196,68 @@ class EmundusonboardControlleremail extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
 
-	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->getRaw('body');
-	        $m_email = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $email_data = $jinput->getRaw('body');
 
-            $tags = $jinput->getRaw('tags', "");
-            $documents = $jinput->getRaw('documents', "");
+            $m_email = $this->model;
 
-            /// these 2 variables used to stock id of $tags and $documents
+            $receivers_cc = $jinput->getRaw('selectedReceiversCC');
+            $receivers_bcc = $jinput->getRaw('selectedReceiversBCC');
+
+            $cc_list = [];
+            $bcc_list = [];
+
+            $tags = $jinput->getRaw('tags');
+            $documents = $jinput->getRaw('documents');
+
             $tag_list = [];
             $document_list = [];
 
+            // get tag from tag list
             if(!empty($tags) and !is_null($tags)) {
-                for ($index_tag = 0; $index_tag < count($tags); $index_tag++) {
-                    $tag_list[] = $tags[$index_tag]['id'];
+                foreach ($tags as $key => $value) {
+                    if(!empty($value['id']) or !is_null($value['id'])) {
+                        $tag_list[] = $value['id'];
+                    } else {
+                        continue;
+                    }
                 }
             }
 
+            // get document from document list
             if(!empty($documents) and !is_null($documents)) {
-                for ($index_doc = 0; $index_doc < count($documents); $index_doc++) {
-                    $document_list[] = $documents[$index_doc]['id'];
+                foreach ($documents as $key => $value) {
+                    if(!empty($value['id']) or !is_null($value['id'])) {
+                        $document_list[] = $value['id'];
+                    } else {
+                        continue;
+                    }
                 }
             }
 
-            $result = $m_email->createEmail($data, $tag_list, $document_list);
+            // get receiver cc from cc list
+            if(!empty($receivers_cc) and !is_null($receivers_cc)) {
+                foreach ($receivers_cc as $key => $value) {
+                    if(!empty($value['email']) or !is_null($value['email'])) {
+                        $cc_list[] = $value['email'];
+                    } else {
+                        continue;
+                    }
+                }
+            }
+
+            // get receiver bcc from cc list
+            if(!empty($receivers_bcc) and !is_null($receivers_bcc)) {
+                foreach ($receivers_bcc as $key => $value) {
+                    if(!empty($value['email']) or !is_null($value['email'])) {
+                        $bcc_list[] = $value['email'];
+                    } else {
+                        continue;
+                    }
+                }
+            }
+
+            $result = $m_email->createEmail($email_data, $cc_list, $bcc_list, $tag_list, $document_list);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);
@@ -241,34 +279,68 @@ class EmundusonboardControlleremail extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
 
-	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->getRaw('body');
-	        $code = $jinput->getString('code');
-	        $m_email = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $data = $jinput->getRaw('body');
+            $code = $jinput->getString('code');
+            $m_email = $this->model;
+
+            $receivers_cc = $jinput->getRaw('selectedReceiversCC');
+            $receivers_bcc = $jinput->getRaw('selectedReceiversBCC');
 
             $tags = $jinput->getRaw('tags');
             $documents = $jinput->getRaw('documents');
 
-            $tags = $jinput->getRaw('tags', "");
-            $documents = $jinput->getRaw('documents', "");
+            $cc_list = [];
+            $bcc_list = [];
 
-            /// these 2 variables used to stock id of $tags and $documents
+            // get receiver cc from cc list
+            if(!empty($receivers_cc) and !is_null($receivers_cc)) {
+                foreach ($receivers_cc as $key => $value) {
+                    if(!empty($value['email']) or !is_null($value['email'])) {
+                        $cc_list[] = $value['email'];
+                    } else {
+                        continue;
+                    }
+                }
+            }
+
+            // get receiver bcc from cc list
+            if(!empty($receivers_bcc) and !is_null($receivers_bcc)) {
+                foreach ($receivers_bcc as $key => $value) {
+                    if(!empty($value['email']) or !is_null($value['email'])) {
+                        $bcc_list[] = $value['email'];
+                    } else {
+                        continue;
+                    }
+                }
+            }
+
             $tag_list = [];
             $document_list = [];
 
+            // get tag from tag list
             if(!empty($tags) and !is_null($tags)) {
-                for ($index_tag = 0; $index_tag < count($tags); $index_tag++) {
-                    $tag_list[] = $tags[$index_tag]['id'];
+                foreach ($tags as $key => $value) {
+                    if(!empty($value['id']) or !is_null($value['id'])) {
+                        $tag_list[] = $value['id'];
+                    } else {
+                        continue;
+                    }
                 }
             }
 
+            // get document from document list
             if(!empty($documents) and !is_null($documents)) {
-                for ($index_doc = 0; $index_doc < count($documents); $index_doc++) {
-                    $document_list[] = $documents[$index_doc]['id'];
+                foreach ($documents as $key => $value) {
+                    if(!empty($value['id']) or !is_null($value['id'])) {
+                        $document_list[] = $value['id'];
+                    } else {
+                        continue;
+                    }
                 }
             }
 
-            $result = $m_email->updateEmail($code, $data, $tag_list, $document_list);
+            $result = $m_email->updateEmail($code, $data, $tag_list, $document_list, $cc_list, $bcc_list);      /// call to updateEmail model
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);
@@ -293,6 +365,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 	        $m_email = $this->model;
 
             $email = $m_email->getEmailById($id);
+
             if (!empty($email)) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $email);
             } else {
@@ -481,6 +554,24 @@ class EmundusonboardControlleremail extends JControllerLegacy {
             }
         }
         echo json_encode((object)$tab);
+        exit;
+    }
+
+    // get action tag by id
+    public function gettagbyid() {
+        $jinput = JFactory::getApplication()->input;
+        $tag = $jinput->post->getRaw('tag', null);
+
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'settings.php');
+        $_mSettings = new EmundusonboardModelsettings;
+
+        $res = $_mSettings->getTagById($tag);
+
+        if($res) {
+            echo json_encode((object)array('status' => true, 'data' => $res));
+        } else {
+            echo json_encode((object)array('status' => false, 'data' => null));
+        }
         exit;
     }
 }
