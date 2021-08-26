@@ -65,7 +65,18 @@ class EmundusonboardModelform extends JModelList {
 		}
 	}
 
-	function getAllForms($filter, $sort, $recherche, $lim, $page) {
+    /**
+     * @param String $filter
+     * @param String $sort
+     * @param String $recherche
+     * @param Int $lim
+     * @param Int $page
+     * @return array|stdClass
+     */
+    function getAllForms(String $filter = "", String $sort = "", String $recherche = "", Int $lim = 0, Int $page = 0) : Array {
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+
+        // Get translation files
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_files = array();
         $Content_Folder = array();
@@ -74,9 +85,12 @@ class EmundusonboardModelform extends JModelList {
             $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
             $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
         }
+
+
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        // Build filter / limit / pagination part of the query
 		if (empty($lim)) {
 			$limit = 25;
 		} else {
@@ -110,225 +124,86 @@ class EmundusonboardModelform extends JModelList {
 			$fullRecherche = $rechercheLbl.' OR '.$rechercheResume;
 		}
 
+		// Get program codes linked to the user's group to later filter
+        $m_user = new EmundusModelUsers();
+        $allowed_programs = $m_user->getUserGroupsProgramme(JFactory::getUser()->id);
+
+        // Now we need to put the query together and get the profiles
 		$query->select([
 			    'sp.*',
                 'sp.label AS form_label'
             ])
 			->from($db->quoteName('#__emundus_setup_profiles', 'sp'))
+            ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.profile_id').' = '.$db->quoteName('sp.id'))
 			->where($filterDate)
 			->andWhere($fullRecherche)
 			->andWhere($filterId)
+            ->andWhere($db->quoteName('esc.training') . ' IN (' . implode(',', $db->quote($allowed_programs)). ')')
 			->group($sortDb)
 			->order($sortDb . $sort);
 
 		try {
-		    $tab=[];
 			$db->setQuery($query, $offset, $limit);
-
-
-
-            $tab[]=$db->loadObjectList();
-
-            return $tab[0];
-
+            return $db->loadObjectList();
 		} catch (Exception $e) {
 		    echo $e->getMessage();
-            JLog::add('component/com_emundus_onboard/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-			return new stdClass();
+            JLog::add('component/com_emundus_onboard/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			return [];
 		}
 	}
-    function getAllGrilleEval($filter, $sort, $recherche, $lim, $page) {
+
+    /**
+     * TODO: Add filters / recherche etc./.. At the moment, it's not working
+     * @param $filter
+     * @param $sort
+     * @param $recherche
+     * @param $lim
+     * @param $page
+     * @return array
+     */
+    function getAllGrilleEval($filter, $sort, $recherche, $lim, $page) : array{
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+        $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
+
+        // Get translation files
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_files = array();
         $Content_Folder = array();
-        $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
         $languages = JLanguageHelper::getLanguages();
         foreach ($languages as $language) {
             $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
             $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
         }
+
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        if (empty($lim)) {
-            $limit = 25;
-        } else {
-            $limit = $lim;
-        }
-
-        if (empty($page)) {
-            $offset = 0;
-        } else {
-            $offset = ($page - 1) * $limit;
-        }
-
-        if (empty($sort)) {
-            $sort = 'DESC';
-        }
-        $sortDb = 'sp.id ';
-
-        if ($filter == 'Unpublish') {
-            $filterDate = $db->quoteName('sp.status') . ' = 0';
-        } else {
-            $filterDate = $db->quoteName('sp.status') . ' = 1';
-        }
-
-        $filterId = $db->quoteName('sp.published') . ' = 1';
-
-        if (empty($recherche)) {
-            $fullRecherche = 1;
-        } else {
-            $rechercheLbl = $db->quoteName('sp.label').' LIKE '.$db->quote('%' . $recherche . '%');
-            $rechercheResume = $db->quoteName('sp.description').' LIKE '.$db->quote('%' . $recherche . '%');
-            $fullRecherche = $rechercheLbl.' OR '.$rechercheResume;
-        }
-
-        $query->select([
-            'sp.*',
-            'sp.label AS form_label'
-        ])
-            ->from($db->quoteName('#__emundus_setup_profiles', 'sp'))
-            ->where($filterDate)
-            ->andWhere($fullRecherche)
-            ->andWhere($filterId)
-            ->group($sortDb)
-            ->order($sortDb . $sort);
-
         try {
-            $tab=[];
-            $db->setQuery($query, $offset, $limit);
-
-
-
-            $tab[]=$db->loadObjectList();
+            // We need to get the list of fabrik forms that are linked to the jos_emundus_evaluations table
             $query->clear();
-            $query->select([
-                'form_id',
-
-            ])
-                ->from($db->quoteName('#__fabrik_lists'))
-                ->where($db->quoteName('db_table_name').' = '.$db->quote('jos_emundus_evaluations' ));
+            $query
+                ->select([$db->quoteName('ff.id'), $db->quoteName('ff.label'), '"grilleEval" AS type'])
+                ->from($db->quoteName('#__fabrik_forms', 'ff'))
+                ->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ff.id'))
+                ->where($db->quoteName('fl.db_table_name').' = '.$db->quote('jos_emundus_evaluations' ));
             $db->setQuery($query);
-            $evaluation_forms_id=[];
 
-            array_push($evaluation_forms_id, $db->loadColumn());
-            //var_dump($evaluation_forms_id);
-            $evaluation_forms=[];
-            foreach ( $evaluation_forms_id[0] as $form_id ){
+            $evaluation_forms = $db->loadObjectList();
 
-                $query->clear()
-                    ->select('label')
-                    ->from($db->quoteName('#__fabrik_forms'))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($form_id));
-                $db->setQuery($query);
-                $form = $db->loadObject();
-
-
-                $label = array(
-                    'fr' => $formbuilder->getTranslation($form->label,$Content_Folder['fr'])? $formbuilder->getTranslation($form->label,$Content_Folder['fr']): $form->label,
-                    'en' => $formbuilder->getTranslation($form->label,$Content_Folder['en'])?$formbuilder->getTranslation($form->label,$Content_Folder['en']): $form->label,
-                );
-                $returndata = new stdClass();
-                $returndata->id=$form_id;
-                $returndata->label=$label;
-                $returndata->form_type='evalgille';
-
-
-                array_push($evaluation_forms,$returndata);
-
-
-
-
+            // Get the form translation value
+            foreach ( $evaluation_forms as $evaluation_form ) {
+                $label= [];
+                foreach ($languages as $language) {
+                    $label[$language->sef] = $formbuilder->getTranslation($evaluation_form->label,$Content_Folder[$language->sef]) ?: $evaluation_form->label;
+                }
+                $evaluation_form->label=$label;
             }
-            /*foreach ($tab[0] as $data){
-                array_push($evaluation_forms,$data);
-            }*/
 
-            /*$program=  JModelLegacy::getInstance('program', 'EmundusonboardModel');
-            $evaluation_forms_models=$program->getGridsModel();
-            foreach ($evaluation_forms_models as $model){
-                $returndata = new stdClass();
-                $returndata->id=$model->form_id;
-                $returndata->label= array(
-                    'fr' => $formbuilder->getTranslation($model->label,$Content_Folder['fr']) ? $formbuilder->getTranslation($model->label,$Content_Folder['fr']):$model->label,
-                    'en' => $formbuilder->getTranslation($model->label,$Content_Folder['en']) ? $formbuilder->getTranslation($model->label,$Content_Folder['en']):$model->label,
-                );
-                $returndata->type='form_evaluation_model';
-
-                array_push($evaluation_forms,$returndata);
-
-            }*/
-
-
-
-
-            // var_dump($tab[0]);
-            //var_dump($evaluation_forms);
             return $evaluation_forms;
-            //
-
-
-            //die();
-
-
 
         } catch (Exception $e) {
             echo $e->getMessage();
-            JLog::add('component/com_emundus_onboard/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return new stdClass();
-        }
-    }
-
-
-	function getFormsUpdated() {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $access_profiles = [];
-            $query
-                ->select('id')
-                ->from($db->quoteName('#__emundus_setup_profiles'))
-                ->where($db->quoteName('published') . ' = 1')
-                ->andWhere($db->quoteName('status') . ' = 1');
-            $db->setQuery($query);
-            $access_profiles[] = $db->loadColumn();
-
-            $campaigns = $this->model_campaign->getAssociatedCampaigns('', '', '', 100, '');
-            $campaigns_id = [];
-            $profiles_campaign_associated = [];
-            foreach ($campaigns as $campaign) {
-                if ($campaign->profile_id != null) {
-                    $profiles_campaign_associated[] = $campaign->profile_id;
-                }
-                $campaigns_id[] = $campaign->id;
-            }
-
-            if (!empty($campaigns_id)) {
-                $query
-                    ->clear()
-                    ->select('*')
-                    ->from($db->quoteName('#__emundus_setup_campaigns'))
-                    ->where($db->quoteName('id') . ' NOT IN (' . implode(',', $db->quote($campaigns_id)) . ')');
-                $db->setQuery($query);
-                $campaigns_not_user = $db->loadObjectList();
-            } else {
-                $campaigns_not_user = [];
-            }
-
-            foreach ($campaigns_not_user as $campaign) {
-                if ($campaign->profile_id != null) {
-                    if (!in_array($campaign->profile_id, $profiles_campaign_associated)) {
-                        array_splice($access_profiles, array_search($campaign->profile_id, $access_profiles), 1);
-                    }
-                }
-            }
-
-            sort($access_profiles);
-
-            return $access_profiles;
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Cannot getting the forms that can be updating : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
         }
     }
@@ -802,22 +677,15 @@ class EmundusonboardModelform extends JModelList {
                         $db->setQuery($query);
                         $form = $db->loadObject();
 
-                        $label = array(
-                            'fr' => $formbuilder->getTranslation($form->label,$Content_Folder['fr']),
-                            'en' => $formbuilder->getTranslation($form->label,$Content_Folder['en']),
-                        );
+                        $label = array();
+                        $intro = array();
 
-                        $intro = array(
-                            'fr' => $formbuilder->getTranslation($form->intro,$Content_Folder['fr']),
-                            'en' => $formbuilder->getTranslation($form->intro,$Content_Folder['en']),
-                        );
-
-                        // Manage old platforms without translation
-                        if($label['fr'] == '') {
-                            $label['fr'] = $form->label;
-                        }
-                        if($label['en'] == '') {
-                            $label['en'] = $form->label;
+                        foreach ($languages as $language) {
+                            $label[$language->sef] = $formbuilder->getTranslation($form->label,$Content_Folder[$language->sef]);
+                            $intro[$language->sef] = $formbuilder->getTranslation($form->intro,$Content_Folder[$language->sef]);
+                            if($label[$language->sef] == ''){
+                                $label[$language->sef] = $form->label;
+                            }
                         }
 
                         $formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile);
@@ -1239,6 +1107,7 @@ class EmundusonboardModelform extends JModelList {
 	public function getUnDocuments() {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
+        $languages = JLanguageHelper::getLanguages();
 
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
@@ -1263,15 +1132,10 @@ class EmundusonboardModelform extends JModelList {
                     $undocument->can_be_deleted = false;
                 }
 
-                $f_values = $falang->getFalang($undocument->id,'emundus_setup_attachments','value');
-			    $undocument->name = new stdClass;
-                $undocument->name->en = $f_values->en->value;
-                $undocument->name->fr = $f_values->fr->value;
-
-                $f_descriptions = $falang->getFalang($undocument->id,'emundus_setup_attachments','description');
-                $undocument->description = new stdClass;
-                $undocument->description->en = $f_descriptions->en->value;
-                $undocument->description->fr = $f_descriptions->fr->value;
+                $f_values = $falang->getFalang($undocument->id,'emundus_setup_attachments','value',$undocument->value);
+                $f_descriptions = $falang->getFalang($undocument->id,'emundus_setup_attachments','description',$undocument->description);
+			    $undocument->name = $f_values;
+                $undocument->description = $f_descriptions;
             }
 
 			return $undocuments;

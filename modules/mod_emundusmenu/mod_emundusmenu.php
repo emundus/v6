@@ -24,14 +24,7 @@ if (!empty($gantry)) {
 	$layout = 'gantry5';
 }
 
-/*
-$document = JFactory::getDocument();
-$files = glob('templates/rt_afterburner2/css-compiled/menu*.{css}', GLOB_BRACE);
 
-foreach($files as $file) {
-  	$document->addStyleSheet($file );
-}
-*/
 $display_applicant_menu = $params->get('display_applicant_menu', 1);
 $display_tchooz = $params->get('displayTchooz', 1);
 
@@ -47,7 +40,7 @@ $tchooz_list = array();
 if (isset($user->menutype)) {
 	$list = modEmundusMenuHelper::getList($params);
     $current_profile = $m_profile->getProfileById($user->profile);
-    if(EmundusHelperAccess::asCoordinatorAccessLevel($user->id) && $current_profile['acl_aro_groups'] == 7) {
+    if(EmundusHelperAccess::asCoordinatorAccessLevel($user->id) && $current_profile->applicant == 0) {
         $tchooz_list = modEmundusMenuHelper::getList($params,'onboardingmenu');
     }
     $help_list = modEmundusMenuHelper::getList($params,'usermenu');

@@ -1,6 +1,6 @@
 <template>
   <div id="list">
-    <actions
+    <list-header
       v-if="type != 'files'"
       :data="actions"
       :selected="selecedItems"
@@ -11,12 +11,38 @@
       :chercheGo="chercheGo"
       :validateFilters="validateFilters"
       :nbresults="nbresults"
-      :isEmpty="isEmpty"
-      :coordinatorAccess="coordinatorAccess"
-    ></actions>
+    ></list-header>
+
+    <div class="filters-menu">
+      <div class="search">
+        <input class="searchTerm"
+               :placeholder="translations.Rechercher"
+               v-model="recherche"
+               @keyup="cherche(recherche) || debounce"
+               @keyup.enter="chercheGo(recherche)"/>
+      </div>
+      <v-popover :popoverArrowClass="'custom-popover-arrow'">
+        <button class="tooltip-target b3 card-button"></button>
+
+        <template slot="popover">
+          <filters
+              v-if="type != 'files'"
+              :data="actions"
+              :selected="selecedItems"
+              :updateTotal="updateTotal"
+              :filter="filter"
+              :sort="sort"
+              :cherche="cherche"
+              :chercheGo="chercheGo"
+              :validateFilters="validateFilters"
+              :nbresults="nbresults"
+          ></filters>
+        </template>
+      </v-popover>
+    </div>
 
     <ul class="form-section email-sections" v-if="type == 'email' && !loading && total != 0">
-      <li>{{Categories}} : </li>
+      <li>{{translations.Categories}} : </li>
       <li>
         <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">{{All}}</a>
       </li>
@@ -81,7 +107,7 @@
     </transition>
 
     <div v-show="total > 0 || type == 'files'">
-      <transition :name="'slide-down'" type="transition">
+<!--      <transition :name="'slide-down'" type="transition">
         <div v-show="total > 0" class="buttonSelectDeselect">
           <button @click="!isEmpty ? selectAllItem() : deselectItem()"
             class="btn-selectAll"
@@ -93,27 +119,25 @@
           </div>
           <div v-show="isEmpty" id="buttonLabelDeselect">{{ Deselect }}</div>
         </div>
-      </transition>
+      </transition>-->
 
       <transition-group :name="'slide-down'" type="transition" style="display: inline-block;margin-bottom: 5%;width: 100%">
-        <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
+        <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" :actualLanguage="actualLanguage"/>
+        </div>
 
-          <component v-bind:is="type" :data="data" :selectItem="selectItem" :actualLanguage="actualLanguage"/>
+        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" :models="list" />
         </div>
-        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
-          <component v-bind:is="type" :data="data" :selectItem="selectItem" :models="list" />
+
+        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" />
         </div>
-        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
-          <component v-bind:is="type" :data="data" :selectItem="selectItem" />
-        </div>
-        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
-          <component v-bind:is="type" :data="data" :selectItem="selectItem" />
+
+        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" />
         </div>
       </transition-group>
-
-      <div v-if="type == 'files'">
-        <component v-bind:is="type" />
-      </div>
 
       <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">
         <ul class="pagination" v-if="total > 0" style="position: absolute;bottom: 0;width: 100%;">
@@ -181,7 +205,8 @@ import email from "../components/list_components/emailItem";
 import grilleEval from  "../components/list_components/evalgridItem"
 import formulaire from "../components/list_components/formItem";
 import files from "../components/list_components/files";
-import actions from "../components/list_components/action_menu";
+import filters from "../components/list_components/filters_menu";
+import listHeader from "../components/list_components/list_header";
 import tasks from "./tasks"
 import { list } from "../store";
 import Swal from "sweetalert2";
@@ -206,16 +231,15 @@ export default {
     email,
     formulaire,
     files,
-    actions,
+    filters,
+    listHeader,
     tasks,
     grilleEval
   },
 
   name: "list",
   props: {
-    type: String,
-
-    coordinatorAccess: Number
+    type: String
   },
   data: () => ({
     selecedItems: [],
@@ -225,18 +249,23 @@ export default {
     },
     loading: false,
     actualLanguage:'',
+    recherche: "",
+    timer: null,
 
-    Select: Joomla.JText._("COM_EMUNDUS_ONBOARD_SELECT"),
-    Deselect: Joomla.JText._("COM_EMUNDUS_ONBOARD_DESELECT"),
-    Total: Joomla.JText._("COM_EMUNDUS_ONBOARD_TOTAL"),
-    noCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOCAMPAIGN"),
-    noProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOPROGRAM"),
-    noEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOEMAIL"),
-    noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
-    noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
-    All: Joomla.JText._("COM_EMUNDUS_ONBOARD_ALL"),
-    System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
-    Categories: Joomla.JText._("COM_EMUNDUS_ONBOARD_CATEGORIES"),
+    translations:{
+      Select: Joomla.JText._("COM_EMUNDUS_ONBOARD_SELECT"),
+      Deselect: Joomla.JText._("COM_EMUNDUS_ONBOARD_DESELECT"),
+      Total: Joomla.JText._("COM_EMUNDUS_ONBOARD_TOTAL"),
+      noCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOCAMPAIGN"),
+      noProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOPROGRAM"),
+      noEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOEMAIL"),
+      noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
+      noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
+      All: Joomla.JText._("COM_EMUNDUS_ONBOARD_ALL"),
+      System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
+      Categories: Joomla.JText._("COM_EMUNDUS_ONBOARD_CATEGORIES"),
+      Rechercher: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH"),
+    },
     total: 0,
     filtersCount: "",
     filters: "",
@@ -261,7 +290,6 @@ export default {
 
   computed: {
     list() {
-
       return list.getters.list;
     },
 
@@ -336,10 +364,16 @@ export default {
     },
 
     cherche(recherche) {
-      this.filtersCountSearch = "&rechercheCount=" + recherche;
-      this.filtersSearch = "&recherche=" + recherche;
-      this.search = recherche;
-      this.validateFilters();
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+      this.timer = setTimeout(() => {
+        this.filtersCountSearch = "&rechercheCount=" + recherche;
+        this.filtersSearch = "&recherche=" + recherche;
+        this.search = recherche;
+        this.validateFilters();
+      }, 800);
     },
 
     chercheGo(recherche) {
@@ -382,9 +416,6 @@ export default {
               ).then(rep => {
                 this.total = response.data.data;
                 list.commit("listUpdate", rep.data.data);
-                if(typeof rep.data.forms_updating != 'undefined') {
-                  list.commit("formsAccessUpdate", rep.data.forms_updating);
-                }
                 this.countPages = Math.ceil(this.total / this.limit);
                 if(this.type == 'email'){
                   axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
