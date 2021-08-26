@@ -224,7 +224,7 @@ defined('_JEXEC') or die;
     ?>>
     <div style="opacity: 0" class="grey-navbar-icons"></div>
     <ul class="g-toplevel tchooz-vertical-toplevel">
-        <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="/images/emundus/menus/menu.png" style="width: 30px"></button>
+        <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="<?php echo JURI::base()?>/images/emundus/menus/menu.png" style="width: 30px"></button>
         <?php
 
         if(file_exists(JPATH_SITE . '/images/custom/favicon.png')){
