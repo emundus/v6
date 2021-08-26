@@ -1,5 +1,8 @@
 <?php
 use setasign\Fpdi\Tcpdf\Fpdi;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Date\Date;
+use Joomla\CMS\HTML\HTMLHelper;
 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
 function get_mime_type($filename, $mimePath = '../etc') {
@@ -856,11 +859,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             if ($options[0] !== "0" && !$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
                 $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000')) ? JHTML::_('date', $item->date_submitted, JText::_('DATE_FORMAT_LC2')) : JText::_('NOT_SENT');
 
-                // create a $dt object with the UTC timezone
-                $dt = new DateTime('NOW', new DateTimeZone('UTC'));
-                // change the timezone of the object without changing it's time
-                $dt->setTimezone(new DateTimeZone($offset));
-                $date_printed = JHTML::_('date', $dt->format('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2'));
+                // Create an date object
+                $date_printed = new Date();
+                //Use helper date function to set timezone an format
+                $date_printed = HtmlHelper::date($date_printed, Text::_('DATE_FORMAT_LC2'));
 
                 $htmldata .= '<table width="100%"><tr>';
 
@@ -1335,11 +1337,10 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 
         $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000')) ? JHTML::_('date', $item->date_submitted, JText::_('DATE_FORMAT_LC2')) : JText::_('NOT_SENT');
 
-        // create a $dt object with the UTC timezone
-        $dt = new DateTime('NOW', new DateTimeZone('UTC'));
-        // change the timezone of the object without changing it's time
-        $dt->setTimezone(new DateTimeZone($offset));
-        $date_printed = JHTML::_('date', $dt->format('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2'));
+            // Create an date object
+            $date_printed = new Date();
+            //Use helper date function to set timezone an format
+            $date_printed = HtmlHelper::date($date_printed, Text::_('DATE_FORMAT_LC2'));
 
         if (!$anonymize_data && in_array("aemail", $options)) {
             $htmldata .= '<div class="birthday">' . JText::_('EMAIL') . ' : ' . @$item->email . '</div>';
