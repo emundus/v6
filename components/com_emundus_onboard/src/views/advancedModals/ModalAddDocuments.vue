@@ -629,7 +629,6 @@ export default {
         }
 
         if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('jpeg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
-          // console.log(this.model.min_width);
           /// bind image resolution -- min resolution
           if(this.model.min_width !== null && this.model.min_height !== null) {
             this.form.minResolution.width = this.model.min_width;
