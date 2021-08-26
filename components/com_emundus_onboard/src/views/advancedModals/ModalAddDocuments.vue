@@ -108,22 +108,22 @@
         <div class="form-group">
           <label for="image-min-width">{{ translations.ImageWidth }}</label>
           <div class="input-can-translate d-flex justify-content-between">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width" v-model="form.minResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width" v-model="form.maxResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width" min="0" v-model="form.minResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width" min="0"  v-model="form.maxResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
           </div>
           <transition name="fade">
-              <span style="font-size: smaller; color:red" v-if=" errorWidth == true"> {{ translations.ErrorResolution}} </span>
+              <span style="font-size: smaller; color:red" v-if=" errorWidth.error "> {{ errorWidth.message}} </span>
           </transition>
         </div>
 
         <div class="form-group">
           <label for="image-min-height">{{ translations.ImageHeight }}</label>
           <div class="input-can-translate d-flex justify-content-between">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height" v-model="form.minResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height" v-model="form.maxResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height" min="0" v-model="form.minResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height" min="0" v-model="form.maxResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
           </div>
           <transition name="fade">
-              <span style="font-size: smaller; color:red" v-if=" errorHeight == true"> {{ translations.ErrorResolution}} </span>
+              <span style="font-size: smaller; color:red" v-if=" errorHeight.error"> {{ errorHeight.message}} </span>
           </transition>
         </div>
 
@@ -167,8 +167,14 @@ export default {
   data() {
     return {
       show: false,
-      errorWidth: false,
-      errorHeight: false,
+      errorWidth: {
+        error: false,
+        message: ""
+      },
+      errorHeight: {
+        error: false,
+        message: ""
+      },
       doc: null,
       model: {
         allowed_types: '',
@@ -181,7 +187,7 @@ export default {
         },
         id: "",
         lbl: "",
-        mandatory: "",
+        mandatory: 0,
         name: {
           'fr':'',
           'en':'',
@@ -287,6 +293,7 @@ export default {
         MinResolutionPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER"),
         MaxResolutionPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER"),
         ErrorResolution: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION"),
+        ErrorResolutionNegative: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NEGATIVE")
       }
     };
   },
@@ -332,7 +339,7 @@ export default {
       this.getModelsDocs();
     },
     createNewDocument() {
-      if(this.isImageError() == '') {
+      if(!this.isImageError()) {
         this.errors = {
           name: false,
           nbmax: false,
@@ -356,16 +363,10 @@ export default {
         if (this.translate.name === false) {
 
           if (this.manyLanguages == 0 && this.langue == "en") {
-
             this.form.name.fr = this.form.name.en
-
-
           }
-          if (this.manyLanguages == 0 && this.langue == "fr") {
-
-
+          if (this.manyLanguages == 0 && this.langue === "fr") {
             this.form.name.en = this.form.name.fr;
-
           }
         }
 
@@ -397,11 +398,8 @@ export default {
           isModeleAndUpdate: false
         }
 
-        if (
-
-            this.form.name[this.langue] != this.model.value && this.currentDoc == null) {
-          params.isModeleAndUpdate = true;
-
+        if (this.form.name[this.langue] != this.model.value && this.currentDoc == null) {
+            params.isModeleAndUpdate = true;
         }
 
         let y = [];
@@ -459,27 +457,29 @@ export default {
     },
 
     isImageError() {
-      let return_message = "";
-      if(this.form.minResolution !== undefined && this.form.maxResolution !== undefined) {
+      let sendError = false;
+
         /// check width
-        if (parseInt(this.form.minResolution.width) > parseInt(this.form.maxResolution.width)) {
-          this.errorWidth = true;
-          return_message = 'fatal_error';
+        if ((parseInt(this.form.minResolution.width) > parseInt(this.form.maxResolution.width)) || parseInt(this.form.minResolution.width) <= 0) {
+          this.errorWidth.error = true;
+          this.errorWidth.message = (parseInt(this.form.minResolution.width) <= 0) ? this.translations.ErrorResolutionNegative : this.translations.ErrorResolution
+          sendError = true;
         } else {
-          this.errorWidth = false;
+          this.errorWidth.error = false;
+          this.errorWidth.message = "";
         }
 
-        if(parseInt(this.form.minResolution.height) > parseInt(this.form.maxResolution.height)) {
-          this.errorHeight = true;
-          return_message = "fatal_error";
+        /// check height
+        if ((parseInt(this.form.minResolution.height) > parseInt(this.form.maxResolution.height)) || parseInt(this.form.minResolution.height) <= 0) {
+          this.errorHeight.error = true;
+          this.errorHeight.message = (parseInt(this.form.minResolution.height) <= 0) ? this.translations.ErrorResolutionNegative : this.translations.ErrorResolution
+          sendError = true;
         } else {
-          this.errorHeight = false;
+          this.errorHeight.error = false;
+          this.errorHeight.message = "";
         }
 
-      } else {
-        return_message = 'fatal_error';
-      }
-      return return_message;
+      return sendError;
     },
 
     deleteModel(){
@@ -543,35 +543,9 @@ export default {
 
       if (this.req == true) {
         this.form.mandatory = 0
-
       } else {
         this.form.mandatory = 1
-
       }
-      /*setTimeout(() => {
-        axios({
-          method: "post",
-          url:
-              "index.php?option=com_emundus_onboard&controller=formbuilder&task=changerequire",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
-            element: this.element
-          })
-        }).then(() => {
-          this.$emit("updateRequireEvent");
-        }).catch(e => {
-          this.$emit(
-              "show",
-              "foo-velocity",
-              "error",
-              this.updateFailed,
-              this.updating
-          );
-          console.log(e);
-        });
-      }, 300);*/
     },
 
     selectType(e) {
@@ -591,17 +565,7 @@ export default {
       } else {
         document.getElementById(id).style.color = "unset";
       }
-    },
-
-
-
-    // LessOrHigherThanMin() {
-    //   if((this.form.minResolution.width <= this.form.maxResolution.width) && (this.form.minResolution.height <= this.form.maxResolution.height)) {
-    //     this.errorMinMax = false;
-    //   } else {
-    //     this.errorMinMax = true;
-    //   }
-    // }
+    }
   },
 
   watch: {
@@ -614,19 +578,10 @@ export default {
         this.form.mandatory = this.model.mandatory
         this.form.minResolution = {};
         this.form.maxResolution = {};
-        //this.form.mandatory=1;
-        if (this.model.mandatory == 1) {
 
-          this.req = true;
+        this.req = this.model.mandatory;
 
-        } else {
-          this.req = false;
-        }
-        if (this.model.allowed_types.includes('pdf')) {
-          this.form.selectedTypes.pdf = true;
-        } else {
-          this.form.selectedTypes.pdf = false;
-        }
+        this.form.selectedTypes.pdf = this.model.allowed_types.includes('pdf')
 
         if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('jpeg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
           /// bind image resolution -- min resolution
@@ -648,16 +603,10 @@ export default {
           this.form.selectedTypes['jpeg;jpg;png;gif'] = false;
           this.show = false;
         }
-        if (this.model.allowed_types.includes('xls') || this.model.allowed_types.includes('xlsx') || this.model.allowed_types.includes('odf')) {
-          this.form.selectedTypes['xls;xlsx;odf'] = true;
-        } else {
-          this.form.selectedTypes['xls;xlsx;odf'] = false;
-        }
-        if(this.model.can_be_deleted){
-          this.can_be_deleted = true;
-        } else {
-          this.can_be_deleted = false;
-        }
+        this.form.selectedTypes['xls;xlsx;odf'] = this.model.allowed_types.includes('xls') || this.model.allowed_types.includes('xlsx') || this.model.allowed_types.includes('odf');
+
+        this.can_be_deleted = this.model.can_be_deleted;
+
         this.form.nbmax = this.model.nbmax;
       } else {
         this.form = {
