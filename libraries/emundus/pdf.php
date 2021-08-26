@@ -1029,11 +1029,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
         $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted, JText::_('DATE_FORMAT_LC2'), null):JText::_('NOT_SENT');
 
-        // create a $dt object with the UTC timezone
-        $dt = new DateTime('NOW', new DateTimeZone('UTC'));
-        // change the timezone of the object without changing it's time
-        $dt->setTimezone(new DateTimeZone($offset));
-        $date_printed = JHTML::_('date', $dt->format('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2'));
+        // Create an date object
+        $date_printed = new Date();
+        //Use helper date function to set timezone an format
+        $date_printed = HtmlHelper::date($date_printed, Text::_('DATE_FORMAT_LC2'));
 
         if (!$anonymize_data && in_array("aemail", $options)) {
             $htmldata .= '<tr class="birthday"><td>'.JText::_('EMAIL').' : '.@$item->email.'</td></tr>';
@@ -1121,11 +1120,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
                 $date_submitted = (!empty($item->date_submitted) && $item->date_submitted != '0000-00-00 00:00:00')?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
 
-                // create a $dt object with the UTC timezone
-                $dt = new DateTime('NOW', new DateTimeZone('UTC'));
-                // change the timezone of the object without changing it's time
-                $dt->setTimezone(new DateTimeZone($offset));
-                $date_printed = JHTML::_('date', $dt->format('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2'));
+                // Create an date object
+                $date_printed = new Date();
+                //Use helper date function to set timezone an format
+                $date_printed = HtmlHelper::date($date_printed, Text::_('DATE_FORMAT_LC2'));
 
                 $htmldata .= '
                 
