@@ -1024,6 +1024,60 @@ class EmundusController extends JControllerLegacy {
                 }
             }
         }
+
+        /// resize image
+        $_upload_file_type = $file['type'];
+
+        if(strpos($_upload_file_type, 'image') !== false) {
+            $file_src = EMUNDUS_PATH_ABS.$user->id.DS.$paths;
+            list($w_src, $h_src, $type) = getimagesize($file_src);
+
+            // get min_resolution, max_resolution from jos_emundus_setup_attachments (param::attachments)
+            $image_resolution_query = "SELECT min_width,max_width,min_height,max_height FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . (int)$attachments;
+            $this->_db->setQuery($image_resolution_query);
+            $image_resolution = $this->_db->loadObject();
+
+            if($w_src * $h_src > (int)$image_resolution->max_width * (int)$image_resolution->max_height) {
+                switch ($type){
+                    case 1:   // gif
+                        $original_img = imagecreatefromgif($file_src);
+                        break;
+                    case 2: // jpeg
+                        $original_img = imagecreatefromjpeg($file_src);
+                        break;
+                    case 3: // png
+                        $original_img = imagecreatefrompng($file_src);
+                        break;
+                    default:    // jpg
+                        $original_img = imagecreatefromjpeg($file_src);
+                        break;
+                }
+
+                $new_width = (int)$image_resolution->max_width;
+                $new_height = (int)$image_resolution->max_height;
+
+                $resized_img = imagecreatetruecolor($new_width, $new_height);
+
+                // copy resample
+                imagecopyresampled($resized_img, $original_img, 0, 0, 0, 0, $new_width, $new_height, $w_src, $h_src);
+
+                // export new image to jpeg
+                imagejpeg($resized_img, $chemin.$user->id.DS.'tn_'.$paths);
+
+                /// remove old image
+                unlink($file_src);
+
+                /// change name the resize image
+                rename($chemin.$user->id.DS.'tn_'.$paths, $file_src);
+
+            } else if($w_src * $h_src < (int)$image_resolution->min_width * (int)$image_resolution->min_height) {
+                $errorInfo = "ERROR_IMAGE_TOO_SMALL";
+                echo '{"aid":"0","status":false,"message":"'.JText::_('ERROR_IMAGE_TOO_SMALL'). " " . (int)$image_resolution->min_width . 'px x ' . (int)$image_resolution->min_height . 'px' . '"}';
+                unlink($file_src);          /// remove uploaded file
+                return false;
+            }
+        }
+
         // delete temp uploaded file
         unlink($file['tmp_name']);
 

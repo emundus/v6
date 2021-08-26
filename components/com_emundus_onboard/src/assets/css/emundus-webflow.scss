@@ -654,7 +654,6 @@ input[type="reset"] {
 .date-menu {
   color: #575766;
   font-size: 12px;
-  margin-left: 35px;
 }
 .date-menu.white {
   color: #fff;
@@ -723,8 +722,8 @@ input[type="reset"] {
 }
 .column-inner-block {
   width: 100%;
-  padding: 30px;
-  height: 200px;
+  padding: 16px;
+  height: 250px;
 }
 .button-programme {
   display: inline-block;
@@ -742,10 +741,12 @@ input[type="reset"] {
   color: $grey;
   background: transparent;
   font-size: 25px;
-  padding: 5px;
   width: 30px;
   height: 30px;
   text-align: center;
+  align-items: center;
+  display: flex;
+  justify-content: center;
   transition: all 0.1s ease-in-out;
   &:hover{
     color: $grey;
@@ -761,7 +762,6 @@ input[type="reset"] {
   font-size: 24px;
   line-height: 35px;
   font-weight: 700;
-  width: 90%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -779,17 +779,16 @@ input[type="reset"] {
 }
 .description-block {
   width: 70%;
-  margin-top: 9px;
-  margin-bottom: 8px;
+  margin-top: 12px;
+  margin-bottom: 16px;
   font-size: 13px;
   line-height: 20px;
-  margin-left: 35px;
-  height: 66px;
   -ms-overflow-style: none;
   scrollbar-width: none;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  max-height: 45px;
 }
 .description-block.white {
   width: 80%;
@@ -834,12 +833,10 @@ input[type="reset"] {
 .list-item-header {
   display: flex;
   align-items: center;
-  margin-bottom: 1em;
+  margin-bottom: 4px;
+  justify-content: space-between;
 }
 
-.list-item-header .block-label {
-  width: 80%;
-}
 .column-inner-block-2 {
   height: auto;
   padding: 15px;
@@ -862,7 +859,6 @@ input[type="reset"] {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 10px;
   white-space: nowrap;
   padding: 5px 30px;
   font-weight: 500;
@@ -899,6 +895,8 @@ input[type="reset"] {
   -webkit-transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
   transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
   font-size: 12px;
+  color: black;
+  font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
   &:hover {
     color: $dark-blue;
   }
@@ -907,15 +905,15 @@ input[type="reset"] {
 .unpublishedTag,
 .passeeTag {
   color: #298721;
-  border-radius: 25px;
-  width: min-content;
+  border-radius: 25px;;
   padding: 5px 30px;
   text-align: center;
-  margin-left: 0.7em;
+  margin-right: 0.7em;
   border: solid 2px #298721;
   font-size: 12px;
   background: white;
   font-weight: 500;
+  width: auto;
 }
 .unpublishedTag{
   color: #00000059 !important;
@@ -933,7 +931,6 @@ input[type="reset"] {
 .bouton-ajouter {
   position: relative;
   padding: 5px 30px;
-  height: 36px;
   border-radius: 25px;
   border: solid 2px $dark-blue;
   background-color: $dark-blue;
@@ -963,6 +960,17 @@ input[type="reset"] {
     background-color: transparent;
     color: $dark-green;
   }
+}
+.card-button{
+  background: url("../images/icons/options.svg") no-repeat;
+  width: 30px;
+  height: 30px;
+}
+.actions-dropdown{
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: left;
 }
 .container-2 {
   height: 100%;
@@ -1282,6 +1290,7 @@ textarea {
 }
 .tooltip[x-placement^="bottom"] {
   margin-top: 5px;
+  left: -30px !important;
   .tooltip-arrow {
     border-width: 0 5px 5px 5px;
     border-left-color: transparent !important;
@@ -1323,7 +1332,7 @@ textarea {
   .popover-inner {
     background: #f9f9f9;
     color: black;
-    padding: 24px;
+    padding: 16px 16px 16px 8px;
     border-radius: 5px;
     box-shadow: 0 5px 30px rgba(black, .1);
   }
@@ -1492,7 +1501,7 @@ textarea {
   }
 }
 .loading-form-save {
-  position: relative;
+  position: absolute;
   right: 2em;
   width: 50%;
   .lds-ring {
@@ -1501,22 +1510,22 @@ textarea {
   }
 }
 .search {
-  width: 100%;
   display: flex;
 }
 .searchTerm {
   width: 100%;
-  border: 2px solid #de6339;
+  border: 2px solid $dark-blue;
   border-right: none;
   padding: 5px;
   border-radius: 5px 0 0 5px;
   outline: none;
   color: #9DBFAF;
-  right: -3px;
-  height: 36px;
+  right: 0;
+  height: 30px;
   position: relative;
+  margin-bottom: 0 !important;
   &:focus {
-    border-color: #de6339 !important;
+    border-color: $dark-blue !important;
     box-shadow: unset !important;
   }
 }
@@ -1543,14 +1552,18 @@ textarea {
   overflow: scroll;
 }
 .stats-block {
-  margin-left: 35px;
   display: flex;
   align-items: end;
   justify-content: space-between;
+  width: 85%;
+  margin-top: 10px;
   position: absolute;
-  right: 3%;
-  bottom: 10%;
-  width: 90%;
+  bottom: 16px;
+}
+.divider-card{
+  position: absolute;
+  bottom: 43px;
+  width: 85%;
 }
 .block-label {
   display: flex;
@@ -1561,6 +1574,20 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.filters-menu{
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+.filter-subtitle {
+  font-size: 14px;
+  font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif !important;
+  border-bottom: solid 1px #dedede;
+  padding-bottom: 8px;
+  color: #868585;
+  font-weight: bold;
 }
 .actions-add-block {
   display: flex;
@@ -1574,7 +1601,7 @@ textarea {
   margin-right: 20px;
 }
 .tchooz-section-description{
-  width: 50%;
+  max-width: 80%;
 }
 .add-page-icon {
   background-image: url("../images/formbuilder_icons/icone-saas-page.svg");
@@ -1679,6 +1706,8 @@ textarea {
   text-decoration: none;
   margin: 10px 0 20px 5px;
   width: auto;
+  display: flex;
+  align-items: center;
 }
 .MenuFormItem {
   text-decoration: none;
@@ -1803,7 +1832,7 @@ textarea {
   position: fixed;
   width: 250px;
   left: 75px;
-  top: 85px;
+  top: 0;
   padding-top: 5.3%;
   z-index: 10;
   height: 100%;
@@ -1829,6 +1858,7 @@ textarea {
 .heading-block{
   margin-bottom: 1em;
   margin-top: 2em;
+  margin-left: 250px;
   width: 67%;
   display: flex;
   justify-content: space-between;
@@ -2410,7 +2440,6 @@ textarea {
   list-style-type: none;
   font-style: italic;
   color: $dark-blue;
-  padding-left: 5px;
 }
 
 .check{
@@ -2473,3 +2502,12 @@ input[type="radio"]{
   color: white !important;
 }
 /*** END ***/
+
+
+.hidden-notice{
+  padding: 10px;
+  background: $light-yellow;
+  border-radius: 5px;
+  margin: 10px 0;
+  color: #7d7c09;
+}
