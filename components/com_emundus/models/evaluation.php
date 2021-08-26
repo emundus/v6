@@ -2236,7 +2236,7 @@ if (JFactory::getUser()->id == 63)
 	    return $return;
     }
 
-    /// get distinct attachment
+    /// get distinct attachments by ids
     public function getAttachmentsByIds($ids) {
         $query = $this->_db->getQuery(true);
 
@@ -2258,7 +2258,7 @@ if (JFactory::getUser()->id == 63)
         }
     }
 
-    /// get letters from attachmene_id
+    /// get letters from document id
     public function getLettersByAttachments($aids) {
         $query = $this->_db->getQuery(true);
 
@@ -2458,8 +2458,10 @@ if (JFactory::getUser()->id == 63)
         }
     }
 
-    /// generate letters
+    /// generate letters with or without evaluations (if evaluation is available, so $eval_letter !== null and $suffixe !== null)
     public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode, $eval_letter=null, $suffixe=null) {
+        $eval_letter = null;        /// set $eval_letter == null for KIT
+
         $tmp_path = JPATH_BASE . DS . 'tmp' . DS;
 
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
