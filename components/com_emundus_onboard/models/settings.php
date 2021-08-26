@@ -132,6 +132,29 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
+    // get tag by id
+    function getTagById($tid) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($tid) and !is_null($tid)) {
+            $query->clear()
+                ->select('#__emundus_setup_action_tag.*')
+                ->from($db->quoteName('#__emundus_setup_action_tag'))
+                ->where($db->quoteName('#__emundus_setup_action_tag.id') . ' = ' . (int)$tid);
+
+            $db->setQuery($query);
+            $tag = $db->loadObject();
+
+            $tag_color = str_replace('label-', '', $tag->class);
+            $tag->class = $this->getColorClasses()[$tag_color];
+
+            return $tag;
+        } else {
+            return false;
+        }
+    }
+
     function deleteTag($id) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -961,6 +984,9 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($query);
             $orderings = $db->loadColumn();
             $order = $orderings[sizeof($orderings) - 1] + 1;
+
+            $dateTime = new Date('now', 'UTC');
+            $now = $dateTime->toSQL();
 
             $query->clear()
                 ->insert($db->quoteName('#__dropfiles_files'));
