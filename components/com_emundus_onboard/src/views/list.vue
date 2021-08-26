@@ -416,9 +416,6 @@ export default {
               ).then(rep => {
                 this.total = response.data.data;
                 list.commit("listUpdate", rep.data.data);
-                if(typeof rep.data.forms_updating != 'undefined') {
-                  list.commit("formsAccessUpdate", rep.data.forms_updating);
-                }
                 this.countPages = Math.ceil(this.total / this.limit);
                 if(this.type == 'email'){
                   axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
