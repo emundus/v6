@@ -121,7 +121,7 @@ if ($allowed_attachments !== true) {
         <!-- Add current user to Cc -->
         <div id="cc-box" class="input-group form-inline col-md-12" style="margin-bottom: 10px !important;">
             <label for="select_action_tags" ><?= JText::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?></label>
-            <input type="text" id="cc-mails" class="cc-bcc-mails">
+            <input type="text" id="cc-mails" class="cc-bcc-mails" style="vertical-align: -10px">
         </div><!-- /input-group -->
 
         <!-- Add current user to Bcc -->
@@ -261,8 +261,11 @@ if ($allowed_attachments !== true) {
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 
 <script type="text/javascript">
-    // get all action tags by ajax
+    // update css
+    $('#cc-mails-selectized').css('vertical-align', '-10px');
+    $('#bcc-mails-selectized').css('vertical-align', '-10px');
 
+    // get all action tags by ajax
     $("#action-tags").selectize({create: false, preload: false});         // init selectize object
 
     var $selectize_cc = $("#cc-mails").selectize({
@@ -312,7 +315,7 @@ if ($allowed_attachments !== true) {
         $('#action-tag-box .selectize-input').css('background-image', 'linear-gradient(17deg, #fafafa 25%, #dfebf2 25%, #dfebf2 50%, #fafafa 50%, #fafafa 75%, #dfebf2 75%, #dfebf2 100%)');
         $('#action-tag-box .selectize-input').css('background-size', '20.52px 6.27px');
 
-        $('#action-tag-box .selectize-input').append('<label id="default_message" style="color:red; font-size: 0.8rem; text-transform: uppercase">' + Joomla.JText._('COM_EMUNDUS_DEFAULT_SENDING_MESSAGE') + '</label>');
+        $('#action-tag-box .selectize-input').append('<label id="default_message" style="color:red; font-size: 0.8rem; text-transform: uppercase; vertical-align: 10px">' + Joomla.JText._('COM_EMUNDUS_DEFAULT_SENDING_MESSAGE') + '</label>');
         $('#action-tag-box').css('cursor', 'not-allowed');
 
         tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');

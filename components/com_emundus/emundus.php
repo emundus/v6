@@ -390,6 +390,25 @@ JText::script('NO_LETTER_FOUND');
 JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TAGS');
 JText::script('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT');
 
+JText::script('COM_EMUNDUS_EMAILS_CC_LABEL');
+JText::script('COM_EMUNDUS_EMAILS_BCC_LABEL');
+
+JText::script('COM_EMUNDUS_EMAILS_CC_PLACEHOLDER');
+JText::script('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER');
+
+JText::script('SELECT_SENDING_MODE');
+JText::script('SELECT_SENDING_MODE_YES');
+JText::script('SELECT_SENDING_MODE_NO');
+JText::script('SELECT_SENDING_MODE_DEFAULT');
+JText::script('SELECT_ACTION_TAGS');
+JText::script('COM_EMUNDUS_DEFAULT_SENDING_MESSAGE');
+JText::script('COM_EMUNDUS_SELECT_NO_TAGS');
+JText::script('SELECT_SENDING_TAGS');
+JText::script('CHANGE_STATUS_SUCCESSFULLY_WITH_EMAIL');
+JText::script('CHANGE_STATUS_SUCCESSFULLY_WITHOUT_EMAIL');
+JText::script('CHANGE_STATUS_OR_SENDING_EMAIL_FAILED');
+JText::script('CHANGE_STATUS_MESSAGE');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');
 //JHtml::script('media/com_emundus/lib/jquery-ui-1.8.18.min.js');

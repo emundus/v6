@@ -1508,7 +1508,7 @@ class EmundusModelMessages extends JModelList {
 
                 foreach ($data['attachments']['setup_letters'] as $setup_letter) {
 
-                    $letters = $_meval->getLetterTemplateForFnum($fnum, [$setup_letter]);
+                    $letters = $_meval->getLettersByFnumTemplates($fnum, [$setup_letter]);
 
                     if (!empty($letters)) {
                         foreach ($letters as $key => $email_tmpl) {

@@ -146,6 +146,7 @@
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
+  height: 43px !important;
 }
 .selectize-control.multi .selectize-input.has-items {
   padding: 5px 8px 2px;
@@ -334,12 +335,13 @@
   background: none;
 }
 .selectize-control.multi .selectize-input [data-value] {
-  
+
   -webkit-border-radius: 3px;
-  
+
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff1da7ee', endColorstr='#ff178ee9', GradientType=0);
   -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.2),inset 0 1px rgba(255,255,255,0.03);
   box-shadow: 0 1px 0 rgba(0,0,0,0.2),inset 0 1px rgba(255,255,255,0.03);
+  margin-top: 5px !important;
 }
 
 .selectize-control.single .selectize-input,
