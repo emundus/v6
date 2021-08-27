@@ -4915,7 +4915,8 @@ $(document).ready(function() {
 
                 // cc emails
                 $('#cc-box div[data-value]').each(function () {
-                    let val = $(this).attr('data-value').split('CC: ')[1];
+                    //let val = $(this).attr('data-value').split('CC: ')[1];
+                    let val = $(this).attr('data-value');
                     var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                     if (REGEX_EMAIL.test(val)) {
                         data.cc.push(val);
@@ -4924,7 +4925,8 @@ $(document).ready(function() {
 
                 // bcc emails
                 $('#bcc-box div[data-value]').each(function () {
-                    let val = $(this).attr('data-value').split('BCC: ')[1];
+                    //let val = $(this).attr('data-value').split('BCC: ')[1];
+                    let val = $(this).attr('data-value');
                     var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                     if (REGEX_EMAIL.test(val)) {
                         data.bcc.push(val);
