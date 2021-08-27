@@ -1579,7 +1579,7 @@ textarea {
   width: auto;
   display: flex;
   align-items: center;
-  justify-content: end;
+  justify-content: flex-end;
 }
 .filter-subtitle {
   font-size: 14px;
@@ -1953,6 +1953,23 @@ textarea {
 .logo-settings {
   margin: 30px;
   max-height: 50px;
+}
+.tags__category-block{
+  height: 50vh;
+  background: white;
+  padding: 16px !important;
+  border-radius: 5px;
+  margin-top: 20px;
+  border: solid 1px #cecece;
+}
+.tags__tag-item{
+  margin: 10px 0;
+  width: 60%;
+}
+.tags__tag-item-span{
+  padding: 10px;
+  margin: 10px;
+  border-radius: 25px;
 }
 
 /**** CUSTOM VUE DROPZONE ****/

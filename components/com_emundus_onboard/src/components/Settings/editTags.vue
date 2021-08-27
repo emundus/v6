@@ -1,12 +1,23 @@
 <template>
     <div class="container-evaluation">
-      <a @click="pushTag" class="bouton-ajouter-green bouton-ajouter pointer mb-1" style="width: max-content">
+      <p class="text-center">{{ translations.descTags }}</p>
+<!--      <a @click="pushTag" class="bouton-ajouter-green bouton-ajouter pointer mb-1" style="width: max-content">
         <div class="add-button-div">
           <em class="fas fa-plus mr-1"></em>
-          {{ addTag }}
+          {{ translations.addTag }}
         </div>
-      </a>
-        <div v-for="(tag, index) in tags" class="status-item tags-item" :id="'tag_' + tag.id">
+      </a>-->
+      <div class="d-flex">
+        <div v-for="(category, index) in tags" class="col-md-3 col-md-offset-1 tags__category-block">
+          <h5 class="mb-1">{{index}}</h5>
+          <div>
+            <div v-for="(tag, index) in category" class="tags__tag-item">
+              <span :class="tag.class + ' tags__tag-item-span'">{{tag.label}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+<!--        <div v-for="(tag, index) in tags" class="status-item tags-item" :id="'tag_' + tag.id">
             <div class="status-field">
                 <input type="text" v-model="tag.label">
                 <input type="hidden" :class="tag.class">
@@ -21,7 +32,7 @@
                     popover-y="top"
             ></v-swatches>
             <button type="button" @click="removeTag(tag,index)" class="remove-tag"><i class="fas fa-times"></i></button>
-        </div>
+        </div>-->
     </div>
 </template>
 
@@ -44,13 +55,17 @@
         data() {
             return {
                 tags: [],
+                categories: [],
                 show: false,
                 swatches: [
                     '#DCC6E0', '#947CB0', '#663399', '#6BB9F0', '#19B5FE', '#013243', '#7BEFB2', '#3FC380', '#1E824C', '#FFFD7E',
                     '#FFFD54', '#F7CA18', '#FABE58', '#E87E04', '#D35400', '#EC644B', '#CF000F', '#E5283B', '#E08283', '#D2527F',
                     '#DB0A5B', '#999999'
                 ],
+              translations:{
+                descTags: Joomla.JText._('COM_EMUNDUS_ONBOARD_TAGSDESCRIPTION'),
                 addTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_SETTINGS_ADDTAG"),
+              }
             };
         },
 
@@ -58,12 +73,14 @@
             getTags() {
                 axios.get("index.php?option=com_emundus_onboard&controller=settings&task=gettags")
                     .then(response => {
-                        this.tags = response.data.data;
-                        setTimeout(() => {
+                      console.log(response.data.data)
+                      this.tags = response.data.data;
+                      this.categories = Object.keys(this.tags);
+                        /*setTimeout(() => {
                             this.tags.forEach(element => {
                                 this.getHexColors(element);
                             });
-                        }, 100);
+                        }, 100);*/
                     });
             },
 

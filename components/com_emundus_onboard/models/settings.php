@@ -90,12 +90,21 @@ class EmundusonboardModelsettings extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('*')
-            ->from($db->quoteName('#__emundus_setup_action_tag'));
-
         try {
+            $query->select('distinct category')
+                ->from($db->quoteName('#__emundus_setup_action_tag'));
             $db->setQuery($query);
-            return $db->loadObjectList();
+            $categories = $db->loadAssocList('category');
+    
+            foreach ($categories as $key => $category){
+                $query->clear()
+                    ->select('*')
+                    ->from($db->quoteName('#__emundus_setup_action_tag'))
+                    ->where($db->quoteName('category') . ' LIKE ' . $db->quote($category['category']));
+                $db->setQuery($query);
+                $categories[$key] = $db->loadObjectList();
+            }
+            return $categories;
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/settings | Error at getting action tags : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
