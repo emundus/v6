@@ -78,14 +78,34 @@
             />
           </div>
 
-          <div class="form-group">
-            <label>{{ Tags }}</label>
-            <multiselect v-model="selectedTags" label="label" track-by="id" :options="action_tags" :multiple="true" :taggable="true" placeholder="test"></multiselect>
+          <!-- Email -- CC (in form of email adress or fabrik element -->
+          <div class="form-group" id="receivers_tags">
+            <label>{{ ReceiversCC }}</label>
+            <div id="cc-tooltips" style="font-size: .8rem; color: #16afe1"> * {{ CopiesTooltips }} ${id} </div>
+            <multiselect v-model="selectedReceiversCC" label="email" track-by="email" :options="receivers_cc" :multiple="true"
+                         :taggable="true" :placeholder="ReceiversCCPlaceHolder" @tag="addNewCC" :close-on-select="false" :clear-on-select="false"></multiselect>
           </div>
 
+          <!-- Email -- BCC (in form of email adress or fabrik element -->
+          <div class="form-group" id="tags_tags">
+            <label>{{ ReceiversBCC }}</label>
+            <div id="bcc-tooltips" style="font-size: .8rem; color: #16afe1"> * {{ CopiesTooltips }} ${id} </div>
+            <multiselect v-model="selectedReceiversBCC" label="email" track-by="email" :options="receivers_bcc" :multiple="true"
+                         :taggable="true" :placeholder="ReceiversBCCPlaceHolder" @tag="addNewBCC" :close-on-select="false" :clear-on-select="false"></multiselect>
+          </div>
+
+          <!-- Email -- Action tags -->
           <div class="form-group">
-            <label>{{ DocumentType }}</label>
-            <multiselect v-model="selectedLetter" label="value" track-by="id" :options="attached_letters" :multiple="true" :taggable="true" placeholder="test"></multiselect>
+            <label>{{ Tags }}</label>
+            <multiselect v-model="selectedTags" label="label" track-by="id" :options="action_tags" :multiple="true"
+                         :taggable="true" :placeholder="TagsPlaceHolder" :close-on-select="false" :clear-on-select="false"></multiselect>
+          </div>
+
+          <!-- Email -- Associated letters (in form of email adress or fabrik element -->
+          <div class="form-group">
+            <label>{{ Letters }}</label>
+            <multiselect v-model="selectedLetter" label="value" track-by="id" :options="attached_letters" :multiple="true"
+                         :taggable="true" :placeholder="LettersPlaceHolder" :close-on-select="false" :clear-on-select="false"></multiselect>
           </div>
 
         </div>
@@ -221,42 +241,54 @@
 
       dynamicComponent: false,
 
-      AddEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
-      Advanced: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
-      Informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
-      Trigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER"),
-      emailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE"),
-      emailCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
-      retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-      emailName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME"),
-      emailBody: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY"),
-      receiverName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER"),
-      emailAddress: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS"),
-      EmailResume: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME"),
-      RequiredFieldsIndicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
-      EmailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILTYPE"),
-      SubjectRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED"),
-      BodyRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_BODY_REQUIRED"),
-      Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
-      Model: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERMODEL"),
-      ModelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED"),
-      Status: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS"),
-      StatusRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
-      Target: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET"),
-      TargetRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED"),
-      Administrators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS"),
-      Evaluators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS"),
-      Candidates: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES"),
-      DefinedUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_DEFINED_USERS"),
-      ChooseUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_CHOOSE_USERS"),
-      UsersRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_USERS_REQUIRED"),
-      Search: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH_USERS"),
-      TheCandidate: Joomla.JText._("COM_EMUNDUS_ONBOARD_THE_CANDIDATE"),
-      Manual: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL"),
-      Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS"),
-      Tags: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TAGS"),
-      DocumentType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
+    AddEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
+    Advanced: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
+    Informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
+    Trigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER"),
+    emailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE"),
+    emailCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
+    retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+    continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+    emailName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME"),
+    emailBody: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY"),
+    receiverName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER"),
+    emailAddress: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS"),
+    EmailResume: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME"),
+    RequiredFieldsIndicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
+    EmailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILTYPE"),
+    SubjectRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED"),
+    BodyRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_BODY_REQUIRED"),
+    Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+    Model: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERMODEL"),
+    ModelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED"),
+    Status: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS"),
+    StatusRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
+    Target: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET"),
+    TargetRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED"),
+    Administrators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS"),
+    Evaluators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS"),
+    Candidates: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES"),
+    DefinedUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_DEFINED_USERS"),
+    ChooseUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_CHOOSE_USERS"),
+    UsersRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_USERS_REQUIRED"),
+    Search: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH_USERS"),
+    TheCandidate: Joomla.JText._("COM_EMUNDUS_ONBOARD_THE_CANDIDATE"),
+    Manual: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL"),
+    Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS"),
+
+    Tags: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TAGS"),
+    TagsPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS"),
+
+    Letters: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
+    LettersPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT"),
+
+    ReceiversCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS"),
+    ReceiversCCPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER"),
+
+    ReceiversBCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS"),
+    ReceiversBCCPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER"),
+
+    CopiesTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_CC_BCC_TOOLTIPS"),
 
       categories: [],
       programs: [],
@@ -267,25 +299,147 @@
       searchTerm: '',
       selectall: false,
 
-      form: {
-        lbl: "",
-        subject: "",
-        name: "",
-        emailfrom: "",
-        message: "",
-        type: 2,
-        category: "",
-        published: 1
-      },
+    /// these 2 variables used to bind with tags and documents
+    action_tags: [],
+    attached_letters: [],
+
+    /// these 2 variables used to store v-model of tags and documents
+    selectedTags: [],
+    selectedLetter: [],
+
+    /// these 2 variables used to binding value
+    receivers_cc: [],
+    receivers_bcc: [],
+
+    /// these 2 variables used to make v-model
+    selectedReceiversCC: [],
+    selectedReceiversBCC: [],
+
+    form: {
+      lbl: "",
+      subject: "",
+      name: "",
+      emailfrom: "",
+      message: "",
+      type: 2,
+      category: "",
+      published: 1
+    },
+    trigger: {
+      model: null,
+      status: null,
+      action_status: null,
+      target: null,
+      program: null
+    },
+    triggered: false,
+    errors: {
+      subject: false,
+      message: false,
       trigger: {
-        model: null,
-        status: null,
-        action_status: null,
-        target: null,
-        program: null
-      },
-      triggered: false,
-      errors: {
+        model: false,
+        status: false,
+        target: false,
+        selectedUsers: false,
+        action_status: false
+      }
+    },
+    submitted: false
+  }),
+
+  methods: {
+    /// add new CC
+    addNewCC (newCC) {
+      const tag = {
+        email: newCC,
+        id: newCC.substring(0, 2) + Math.floor((Math.random() * 10000000))
+      }
+      this.receivers_cc.push(tag);
+      this.selectedReceiversCC.push(tag);
+    },
+
+    /// add new BCC
+    addNewBCC (newBCC) {
+      const tag = {
+        email: newBCC,
+        id: newBCC.substring(0, 2) + Math.floor((Math.random() * 10000000))
+      }
+      this.receivers_bcc.push(tag);
+      this.selectedReceiversBCC.push(tag);
+    },
+
+    getAllUsers: function() {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=getallusers',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+      }).then(response => {
+        this.receivers_cc = response.data.users;
+        this.receivers_bcc = response.data.users;
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
+    getProgramsList() {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=program&task=getallprogram",
+        params: {
+          filter: '',
+          sort: '',
+          recherche: '',
+          lim: 100,
+          page: 1,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        this.programs = response.data.data;
+      });
+    },
+    getStatus() {
+      axios.get("index.php?option=com_emundus_onboard&controller=email&task=getstatus")
+          .then(response => {
+            this.status = response.data.data;
+          });
+    },
+    getUsers() {
+      axios.get("index.php?option=com_emundus_onboard&controller=program&task=getuserswithoutapplicants")
+          .then(response => {
+            this.users = response.data.data;
+          });
+    },
+    searchUserByTerm() {
+      axios.get("index.php?option=com_emundus_onboard&controller=program&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
+          .then(response => {
+            this.users = response.data.data;
+          });
+    },
+
+    addTrigger() {
+      if(this.trigger.program != null) {
+        this.triggered = true;
+      } else {
+        this.triggered = false;
+      }
+    },
+    selectAllUsers() {
+      this.users.forEach(element => {
+        if(!this.selectall) {
+          this.selectedUsers[element.id] = true;
+        } else {
+          this.selectedUsers[element.id] = false;
+        }
+      });
+      this.$forceUpdate();
+    },
+
+    submit() {
+      this.errors = {
         subject: false,
         message: false,
         trigger: {
@@ -293,300 +447,399 @@
           status: false,
           target: false,
           selectedUsers: false,
-          action_status: false
         }
-      },
-      submitted: false,
+      };
 
-      /// these 2 variables used to bind with tags and documents
-      action_tags: [],
-      attached_letters: [],
+      if(this.form.subject == ""){
+        this.errors.subject = true;
+        return 0;
+      }
+      if(this.form.message == ""){
+        this.errors.message = true;
+        return 0;
+      }
+      if(this.trigger.program != null){
+        if(this.trigger.action_status == null){
+          this.errors.trigger.action_status = true;
+          return 0;
+        }
+        if(this.trigger.status == null){
+          this.errors.trigger.status = true;
+          return 0;
+        }
+        if(this.trigger.target == null){
+          this.errors.trigger.target = true;
+          return 0;
+        } else if (this.trigger.target == 0) {
+          if(this.selectedUsers.length === 0) {
+            this.errors.trigger.selectedUsers = true;
+            return 0;
+          }
+        }
+      }
+      this.submitted = true;
 
-      /// these 2 variables used to store v-model of tags and documents
-      selectedTags: [],
-      selectedLetter: [],
-    }),
-
-    methods: {
-      getProgramsList() {
+      if (this.email !== "") {
         axios({
-          method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=program&task=getallprogram",
-          params: {
-            filter: '',
-            sort: '',
-            recherche: '',
-            lim: 100,
-            page: 1,
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=email&task=updateemail",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
           },
-          paramsSerializer: params => {
-            return qs.stringify(params);
-          }
+          data: qs.stringify({ body: this.form, code: this.email,
+            selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC,
+            tags: this.selectedTags, documents: this.selectedLetter
+          })
         }).then(response => {
-          this.programs = response.data.data;
+          this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+        }).catch(error => {
+          console.log(error);
         });
-      },
-      getStatus() {
-        axios.get("index.php?option=com_emundus_onboard&controller=email&task=getstatus")
-            .then(response => {
-              this.status = response.data.data;
-            });
-      },
-      getUsers() {
-        axios.get("index.php?option=com_emundus_onboard&controller=program&task=getuserswithoutapplicants")
-            .then(response => {
-              this.users = response.data.data;
-            });
-      },
-      searchUserByTerm() {
-        axios.get("index.php?option=com_emundus_onboard&controller=program&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
-            .then(response => {
-              this.users = response.data.data;
-            });
-      },
-
-      addTrigger() {
-        if(this.trigger.program != null) {
-          this.triggered = true;
-        } else {
-          this.triggered = false;
-        }
-      },
-      selectAllUsers() {
-        this.users.forEach(element => {
-          if(!this.selectall) {
-            this.selectedUsers[element.id] = true;
-          } else {
-            this.selectedUsers[element.id] = false;
-          }
-        });
-        this.$forceUpdate();
-      },
-
-      submit() {
-        this.errors = {
-          subject: false,
-          message: false,
-          trigger: {
-            model: false,
-            status: false,
-            target: false,
-            selectedUsers: false,
-          }
-        };
-
-        if(this.form.subject == ""){
-          this.errors.subject = true;
-          return 0;
-        }
-        if(this.form.message == ""){
-          this.errors.message = true;
-          return 0;
-        }
-        if(this.trigger.program != null){
-          if(this.trigger.action_status == null){
-            this.errors.trigger.action_status = true;
-            return 0;
-          }
-          if(this.trigger.status == null){
-            this.errors.trigger.status = true;
-            return 0;
-          }
-          if(this.trigger.target == null){
-            this.errors.trigger.target = true;
-            return 0;
-          } else if (this.trigger.target == 0) {
-            if(this.selectedUsers.length === 0) {
-              this.errors.trigger.selectedUsers = true;
-              return 0;
-            }
-          }
-        }
-        this.submitted = true;
-
-        if (this.email !== "") {
+      } else {
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=email&task=createemail",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({ body: this.form, selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC, tags: this.selectedTags, documents:this.selectedLetter })
+        }).then(response => {
+          this.trigger.model = response.data.data;
           axios({
             method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=email&task=updateemail",
+            url: 'index.php?option=com_emundus_onboard&controller=email&task=createtrigger',
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
-            data: qs.stringify({ body: this.form, code: this.email, tags: this.selectedTags, documents: this.selectedLetter })
-          }).then(response => {
+            data: qs.stringify({
+              trigger: this.trigger,
+              users: this.selectedUsers
+            })
+          }).then((rep) => {
             this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
-          }).catch(error => {
-            console.log(error);
           });
-        } else {
-          axios({
-            method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=email&task=createemail",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({ body: this.form, tags: this.selectedTags, documents: this.selectedLetter}),
-          }).then(response => {
-            this.trigger.model = response.data.data;
-            axios({
-              method: "post",
-              url: 'index.php?option=com_emundus_onboard&controller=email&task=createtrigger',
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-              },
-              data: qs.stringify({
-                trigger: this.trigger,
-                users: this.selectedUsers
-              })
-            }).then((rep) => {
-              this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
-            });
-          }).catch(error => {
-            console.log(error);
-          });
-        }
-      },
-
-      onSearchCategory(value) {
-        this.form.category = value;
-      },
-
-      enableVariablesTip() {
-        if(!this.enableTip){
-          this.enableTip = true;
-          this.tip();
-        }
-      },
-
-      redirectJRoute(link) {
-        axios({
-          method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
-          params: {
-            link: link,
-          },
-          paramsSerializer: params => {
-            return qs.stringify(params);
-          }
-        }).then(response => {
-          window.location.href = window.location.pathname + response.data.data;
-        });
-      },
-
-      /**
-       * ** Methods for notify
-       */
-      tip(){
-        this.show(
-            "foo-velocity",
-            Joomla.JText._("COM_EMUNDUS_ONBOARD_VARIABLESTIP") + ' <strong style="font-size: 16px">/</strong>',
-            Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
-        );
-      },
-
-      show(group, text = "", title = "Information") {
-        this.$notify({
-          group,
-          title: `${title}`,
-          text,
-          duration: 10000
-        });
-      },
-      clean(group) {
-        this.$notify({ group, clean: true });
-      },
-
-      /// get all tags
-      getAllTags: function() {
-        axios({
-          method: 'post',
-          url: 'index.php?option=com_emundus_onboard&controller=settings&task=gettags',
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-        }).then(response => {
-          let _tags = response.data.data;
-          this.action_tags = _tags;
         }).catch(error => {
           console.log(error);
-        })
-      },
-
-      getAllDocumentLetter: function() {
-        axios({
-          method: 'post',
-          url: 'index.php?option=com_emundus&controller=messages&task=getalldocumentsletters',
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-        }).then(response => {
-          let _documents = response.data.documents;
-          this.attached_letters = _documents;
-        }).catch(error => {
-          console.log(error);
-        })
+        });
       }
     },
 
-    created() {
-      this.getAllTags();
-      this.getAllDocumentLetter();
-      axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
-              .then(rep => {
-                this.categories = rep.data.data;
-
-                if (this.email !== "") {
-                  axios.get(`index.php?option=com_emundus_onboard&controller=email&task=getemailbyid&id=${this.email}`)
-                          .then(resp => {
-                            this.form.lbl = resp.data.data.email.lbl;
-                            this.form.subject = resp.data.data.email.subject;
-                            this.form.name = resp.data.data.email.name;
-                            this.form.emailfrom = resp.data.data.email.emailfrom;
-                            this.form.message = resp.data.data.email.message;
-                            this.form.type = resp.data.data.email.type;
-                            this.form.category = resp.data.data.email.category;
-                            this.form.published = resp.data.data.email.published;
-
-                            // bind selected tags
-                            this.dynamicComponent = true;
-
-                            if(resp.data.data.tags !== null && resp.data.data.tags !== undefined && resp.data.data.tags !== "") {
-                              let _tags = resp.data.data.tags;
-                              this.selectedTags = _tags;
-                            }
-
-                            if(resp.data.data.attachments !== null && resp.data.data.attachments !== undefined && resp.data.data.attachments !== "") {
-                              let _documents = resp.data.data.attachments;
-                              this.selectedLetter = _documents;
-                            }
-
-                          }).catch(e => {
-                            console.log(e);
-                          });
-                } else {
-                  this.dynamicComponent = true;
-                }
-              }).catch(e => {
-                console.log(e);
-              });
-      setTimeout(() => {
-        this.enableVariablesTip();
-      },2000);
-      this.getProgramsList();
-      this.getStatus();
-      this.getUsers();
+    onSearchCategory(value) {
+      this.form.category = value;
     },
 
-    mounted() {
-      if (this.actualLanguage == "en") {
-        this.langue = 1;
+    enableVariablesTip() {
+      if(!this.enableTip){
+        this.enableTip = true;
+        this.tip();
       }
+    },
+
+    redirectJRoute(link) {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        params: {
+          link: link,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        window.location.href = window.location.pathname + response.data.data;
+      });
+    },
+
+    /**
+     * ** Methods for notify
+     */
+    tip(){
+      this.show(
+          "foo-velocity",
+          Joomla.JText._("COM_EMUNDUS_ONBOARD_VARIABLESTIP") + ' <strong style="font-size: 16px">/</strong>',
+          Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
+      );
+    },
+
+    show(group, text = "", title = "Information") {
+      this.$notify({
+        group,
+        title: `${title}`,
+        text,
+        duration: 10000
+      });
+    },
+    clean(group) {
+      this.$notify({ group, clean: true });
+    },
+
+    /// get all tags
+    getAllTags: function() {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=gettags',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+      }).then(response => {
+        let _tags = response.data.data;
+        this.action_tags = _tags;
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
+    getAllDocumentLetter: function() {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus&controller=messages&task=getalldocumentsletters',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+      }).then(response => {
+        let _documents = response.data.documents;
+        this.attached_letters = _documents;
+      }).catch(error => {
+        console.log(error);
+      })
     }
-  };
+
+  },
+
+  created() {
+    this.getAllUsers();
+    this.getAllTags();
+    this.getAllDocumentLetter();
+    axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
+        .then(rep => {
+          this.categories = rep.data.data;
+          if (this.email !== "") {
+            axios.get(`index.php?option=com_emundus_onboard&controller=email&task=getemailbyid&id=${this.email}`)
+                .then(resp => {
+                  this.form.lbl = resp.data.data.email.lbl;
+                  this.form.subject = resp.data.data.email.subject;
+                  this.form.name = resp.data.data.email.name;
+                  this.form.emailfrom = resp.data.data.email.emailfrom;
+                  this.form.message = resp.data.data.email.message;
+                  this.form.type = resp.data.data.email.type;
+                  this.form.category = resp.data.data.email.category;
+                  this.form.published = resp.data.data.email.published;
+                  this.dynamicComponent = true;
+
+                  if(resp.data.data.tags !== null && resp.data.data.tags !== undefined && resp.data.data.tags !== "") {
+                    let _tags = resp.data.data.tags;
+                    this.selectedTags = _tags;
+                  }
+
+                  if(resp.data.data.letter_attachment !== null && resp.data.data.letter_attachment !== undefined && resp.data.data.letter_attachment !== "") {
+                    let _documents = resp.data.data.letter_attachment;
+                    this.selectedLetter = _documents;
+                  }
+
+                  if(resp.data.data.receivers !== null && resp.data.data.receivers !== undefined && resp.data.data.receivers !== "") {
+                    let receiver_cc = [];
+                    let receiver_bcc = [];
+
+                    let receivers = resp.data.data.receivers;
+
+                    for (let index = 0; index < receivers.length; index++) {
+                      receiver_cc[index] = {};
+                      receiver_bcc[index] = {};
+
+                      if (receivers[index].type == 'receiver_cc_email' || receivers[index].type == 'receiver_cc_fabrik') {
+                        receiver_cc[index]['id'] = receivers[index].id;
+                        receiver_cc[index]['email'] = receivers[index].receivers;
+                      } else if (receivers[index].type == 'receiver_bcc_email' || receivers[index].type == 'receiver_bcc_fabrik') {
+                        receiver_bcc[index]['id'] = receivers[index].id;
+                        receiver_bcc[index]['email'] = receivers[index].receivers;
+                      }
+                    }
+
+                    const cc_filtered = receiver_cc.filter(el => {
+                      return el['id'] !== null && el['id'] !== undefined;
+                    })
+                    const bcc_filtered = receiver_bcc.filter(el => {
+                      return el['id'] !== null && el['id'] !== undefined;
+                    })
+
+                    this.selectedReceiversCC = cc_filtered;
+                    this.selectedReceiversBCC = bcc_filtered;
+                  }
+
+                }).catch(e => {
+              console.log(e);
+            });
+          } else {
+            this.dynamicComponent = true;
+          }
+        }).catch(e => {
+      console.log(e);
+    });
+    setTimeout(() => {
+      this.enableVariablesTip();
+    },2000);
+    this.getProgramsList();
+    this.getStatus();
+    this.getUsers();
+  },
+
+  mounted() {
+    if (this.actualLanguage == "en") {
+      this.langue = 1;
+    }
+  }
+};
 </script>
 
-<!--<style scoped src="vue-multiselect/dist/vue-multiselect.min.css"></style>-->
-
 <style>
+
+.tags-input {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.tags-input input {
+  flex: 1;
+  background: transparent;
+  border: none;
+}
+
+.tags-input input:focus {
+  /*outline: unset !important;*/
+  /*box-shadow: #33B4DE;*/
+}
+
+.tags-input input[type="text"] {
+  color: #495057;
+  border: unset !important;
+  margin-bottom: unset !important;
+  height: 30px !important;
+}
+
+.tags-input-wrapper-default {
+  padding: .5em .25em;
+
+  background: #fff;
+
+  border: 2px solid #cccccc;
+  border-radius: .25em;
+}
+
+.tags-input-wrapper-default.active {
+  /*box-shadow: #33B4DE;*/
+  outline: 0 none;
+}
+
+/* The tag badges & the remove icon */
+.tags-input span {
+  margin-right: 0.3em;
+}
+
+.tags-input-remove {
+  cursor: pointer;
+  position: absolute;
+  display: inline-block;
+  right: 0.3em;
+  top: 0.3em;
+  padding: 0.5em;
+  overflow: hidden;
+}
+
+.tags-input-remove:focus {
+  outline: none;
+}
+
+.tags-input-remove:before, .tags-input-remove:after {
+  content: '';
+  position: absolute;
+  width: 75%;
+  left: 0.15em;
+  background: #5dc282;
+
+  height: 2px;
+  margin-top: -1px;
+}
+
+.tags-input-remove:before {
+  transform: rotate(45deg);
+}
+.tags-input-remove:after {
+  transform: rotate(-45deg);
+}
+
+/* Tag badge styles */
+.tags-input-badge {
+  position: relative;
+  display: inline-block;
+  padding: 0.25em 0.4em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tags-input-badge-pill {
+  padding-right: 1.25em;
+  padding-left: 0.6em;
+  border-radius: unset !important;
+}
+.tags-input-badge-pill.disabled {
+  padding-right: 0.6em;
+}
+
+.tags-input-badge-selected-default {
+  color: #212529;
+  background-color: #f0f1f2;
+}
+
+/* Typeahead */
+.typeahead-hide-btn {
+  color: #999 !important;
+  font-style: italic;
+}
+
+/* Typeahead - badges */
+.typeahead-badges > span {
+  margin-top: .5em;
+}
+
+.typeahead-badges > span {
+  cursor: pointer;
+  margin-right: 0.3em;
+}
+
+/* Typeahead - dropdown */
+.typeahead-dropdown {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 1000;
+}
+
+.typeahead-dropdown li {
+  padding: .25em 1em;
+  cursor: pointer;
+}
+
+/* Typeahead elements style/theme */
+.tags-input-typeahead-item-default {
+  color: #fff;
+  background-color: #343a40;
+}
+
+.tags-input-typeahead-item-highlighted-default {
+  color: #fff;
+  background-color: #007bff !important;
+}
+
 fieldset[disabled] .multiselect {
   pointer-events: none;
 }
@@ -1073,4 +1326,5 @@ fieldset[disabled] .multiselect {
     transform: rotate(2turn);
   }
 }
+
 </style>
