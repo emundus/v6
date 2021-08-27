@@ -470,24 +470,7 @@
                   url: "index.php?option=com_emundus_onboard&controller=campaign&task=duplicatecampaign",
                   data: qs.stringify({id})
                 }).then(response => {
-                  this.loading = false;
-                  list.commit("listUpdate", response.data.data);
-                  Swal.fire({
-                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNDUPLICATED"),
-                    type: "success",
-                    showConfirmButton: false,
-                    timer: 2000
-                  });
-                }).then(() => {
-                  axios.get(
-                          "index.php?option=com_emundus_onboard&controller=campaign&task=getcampaigncount"
-                  ).then(response => {
-                    this.total = response.data.data;
-                    this.updateTotal(this.total);
-                    this.$emit('validateFilters');
-                  });
-                }).catch(error => {
-                  console.log(error);
+                  window.location.reload();
                 });
               }
             });

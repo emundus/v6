@@ -1379,9 +1379,6 @@ class EmundusModelApplication extends JModelList
                                                             }
                                                         }
                                                     } elseif ($elements[$j]->plugin == 'databasejoin') {
-                                                        $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
-
-                                                    elseif ($elements[$j]->plugin == 'databasejoin') {
                                                         $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 
                                                         if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
@@ -2249,9 +2246,6 @@ class EmundusModelApplication extends JModelList
                                                 }
                                             }
                                         } elseif ($element->plugin == 'databasejoin') {
-                                            $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
-
-                                        elseif ($element->plugin == 'databasejoin') {
                                             $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 
                                             if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {

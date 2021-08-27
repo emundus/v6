@@ -47,6 +47,8 @@
                     <template slot="popover">
                       <actions
                           :data="actions"
+                          :selected="this.data.id"
+                          @validateFilters="validateFilters()"
                       ></actions>
                     </template>
                   </v-popover>
@@ -98,6 +100,10 @@ export default {
   },
 
   methods: {
+    validateFilters(){
+      this.$emit('validateFilters');
+    },
+
     redirectJRoute(link) {
       axios({
         method: "get",

@@ -232,7 +232,7 @@ defined('_JEXEC') or die;
         } else {
             $favicon = JURI::base().'/images/emundus/tchooz_favicon.png';
         }
-        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo" style="height: 50px"><a class="item" href="/"><img src="'.$favicon.'" alt="Accueil"></a>
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo" style="height: auto"><a class="item" href="/"><img src="'.$favicon.'" alt="Accueil"></a>
         </li>';
 
         if ($display_tchooz) :
