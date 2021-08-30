@@ -37,12 +37,9 @@ class JFormFieldThemes extends JFormFieldList
      */
     protected function getOptions()
     {
-        // JComponentHelper::getParams('com_dropfiles');
-        JFactory::getApplication();
-        JPluginHelper::importPlugin('dropfilesthemes');
-        $dispatcher = JDispatcher::getInstance();
-        $themes = $dispatcher->trigger('getThemeName');
-
+        // JFactory::getApplication();
+        JLoader::register('DropfilesBase', JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesBase.php');
+        $themes = DropfilesBase::getDropfilesThemes();
         $options = array();
         if (!empty($themes)) {
             foreach ($themes as $theme) {

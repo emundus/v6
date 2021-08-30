@@ -128,7 +128,7 @@ class MenusModelItem extends JModelAdmin
         // $value comes as {menutype}.{parent_id}
         $parts    = explode('.', $value);
         $menuType = $parts[0];
-        $parentId = (int) JArrayHelper::getValue($parts, 1, 0);
+        $parentId = (int) Joomla\Utilities\ArrayHelper::getValue($parts, 1, 0);
 
         $table    = $this->getTable();
         $db       = $this->getDbo();
@@ -156,7 +156,7 @@ class MenusModelItem extends JModelAdmin
         if (empty($parentId)) {
             $parentId = $table->getRootId();
             if (!$parentId) {
-                $this->setError($db->getErrorMsg());
+            //    $this->setError($db->getErrorMsg());
 
                 return false;
             }
@@ -313,7 +313,7 @@ class MenusModelItem extends JModelAdmin
         // $value comes as {menutype}.{parent_id}
         $parts    = explode('.', $value);
         $menuType = $parts[0];
-        $parentId = (int) JArrayHelper::getValue($parts, 1, 0);
+        $parentId = (int) Joomla\Utilities\ArrayHelper::getValue($parts, 1, 0);
 
         $table    = $this->getTable();
         $db       = $this->getDbo();
@@ -414,7 +414,7 @@ class MenusModelItem extends JModelAdmin
         if (!empty($children)) {
             // Remove any duplicates and sanitize ids.
             $children = array_unique($children);
-            JArrayHelper::toInteger($children);
+            Joomla\Utilities\ArrayHelper::toInteger($children);
 
             // Update the menutype field in all nodes where necessary.
             $query->clear()
@@ -470,8 +470,8 @@ class MenusModelItem extends JModelAdmin
             // The type should already be set.
             $this->setState('item.link', $item->link);
         } else {
-            $this->setState('item.link', JArrayHelper::getValue($data, 'link'));
-            $this->setState('item.type', JArrayHelper::getValue($data, 'type'));
+            $this->setState('item.link', Joomla\Utilities\ArrayHelper::getValue($data, 'link'));
+            $this->setState('item.type', Joomla\Utilities\ArrayHelper::getValue($data, 'type'));
         }
 
         // Get the form.
@@ -645,7 +645,7 @@ class MenusModelItem extends JModelAdmin
 
         // Convert to the JObject before adding the params.
         $properties = $table->getProperties(1);
-        $result = JArrayHelper::toObject($properties);
+        $result = Joomla\Utilities\ArrayHelper::toObject($properties);
 
         // Convert the params field to an array.
         $registry = new Registry;
@@ -1102,7 +1102,7 @@ class MenusModelItem extends JModelAdmin
      */
     public function save($data)
     {
-        $dispatcher = JEventDispatcher::getInstance();
+
         $pk         = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('item.id');
         $isNew      = true;
         $table      = $this->getTable();
@@ -1164,7 +1164,8 @@ class MenusModelItem extends JModelAdmin
         }
 
         // Trigger the before save event.
-        $result = $dispatcher->trigger($this->event_before_save, array($context, &$table, $isNew));
+        $app = JFactory::getApplication();
+        $result = $app->triggerEvent($this->event_before_save, array($context, &$table, $isNew));
 
         // Store the data.
         if (in_array(false, $result, true) || !$table->store()) {
@@ -1174,7 +1175,7 @@ class MenusModelItem extends JModelAdmin
         }
 
         // Trigger the after save event.
-        $dispatcher->trigger($this->event_after_save, array($context, &$table, $isNew));
+        $app->triggerEvent($this->event_after_save, array($context, &$table, $isNew));
 
         // Rebuild the tree path.
         if (!$table->rebuildPath($table->id)) {

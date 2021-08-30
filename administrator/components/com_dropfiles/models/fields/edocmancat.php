@@ -51,7 +51,7 @@ class JFormFieldEdocmancat extends JFormField
 
             $parentId = 0;
             $catId = 0;
-            if ($app->isSite()) {
+            if ($app->isClient('site')) {
                 $catId = $app->input->getInt('catid', 0);
                 if ($catId) {
                     $query->where('id IN (' . implode(',', EdocmanHelper::getChildrenCategories($catId)) . ')');
@@ -100,6 +100,7 @@ class JFormFieldEdocmancat extends JFormField
             }
 
             $return = '';
+            $return .= '<div class="import-name"><label class="ju-setting-label">'. JText::_('COM_DROPFILES_CONFIG_IMPORT_AVAILABLE_EDOCMAN_NAME') .'</label></div>';
             if ($disabled) {
                 $return .= JHtml::_('select.genericlist', $options, $this->name, array(
                         'option.text.toHtml' => false,
@@ -125,8 +126,8 @@ class JFormFieldEdocmancat extends JFormField
 
             return $return;
         } else {
-            $return = '<span class="check-import-hidden" >';
-            $return .= JText::_('COM_DROPFILES_CONFIG_IMPORT_AVAILABLE_EDOCMAN') . '</span>';
+            $return = '<span class="check-import-hidden no-edocman" >';
+            $return .= JText::_('COM_DROPFILES_CONFIG_IMPORT_AVAILABLE_DOCMAN') . '</span>';
 
             return $return;
         }

@@ -21,7 +21,6 @@ jimport('joomla.form.formfield');
  */
 class JFormFieldCanuser extends JFormField
 {
-
     /**
      * Type
      *
@@ -51,7 +50,7 @@ class JFormFieldCanuser extends JFormField
     protected $layout = 'joomla.form.field.user';
 
     /**
-     * Get Label
+     * Get label
      *
      * @return string
      */
@@ -62,18 +61,17 @@ class JFormFieldCanuser extends JFormField
         if (!$params->get('restrictfile', 0)) {
             return '';
         }
-
         return parent::getLabel();
     }
 
-
     /**
-     * Field input user
+     * Method to get the field input canuser.
      *
      * @return string
      */
     protected function getInput()
     {
+        $user = JFactory::getUser();
         $params = JComponentHelper::getParams('com_dropfiles');
         if (!$params->get('restrictfile', 0)) {
             return '';
@@ -88,19 +86,20 @@ class JFormFieldCanuser extends JFormField
         if (!isset($required)) {
             $required = 0;
         }
-
         $link = 'index.php?option=com_dropfiles&amp;view=users&amp;layout=modal&amp;tmpl=component&amp;required='
-            . ($required ? 1 : 0) . '&amp;field={field-user-id}'
+            . ($required ? 1 : 0)
+            . (isset($id) ? ('&amp;field=' . $id) : '')
             . (isset($groups) ? ('&amp;groups=' . base64_encode(json_encode($groups))) : '')
             . (isset($excluded) ? ('&amp;excluded=' . base64_encode(json_encode($excluded))) : '');
 
         // Invalidate the input value if no user selected
         if (!isset($userName)) {
-            $userName = '';
+            $userName = $user->name;
         }
         if (!isset($id)) {
             $id = 0;
         }
+
         if (JText::_('JLIB_FORM_SELECT_USER') === htmlspecialchars($userName, ENT_COMPAT, 'UTF-8')) {
             $userName = '';
         }
@@ -120,23 +119,24 @@ class JFormFieldCanuser extends JFormField
         >
             <div class="input-append">
                 <input
-                    type="text" id="<?php echo isset($id) ? $id : ''; ?>"
-                    value="<?php echo htmlspecialchars(isset($userName) ? $userName : '', ENT_COMPAT, 'UTF-8'); ?>"
-                    placeholder="<?php echo JText::_('JLIB_FORM_SELECT_USER'); ?>"
-                    readonly
-                    class="field-user-input-name <?php echo isset($class) ? (string)$class : '' ?>"
+                        type="text" id="<?php echo $id; ?>"
+                        value="<?php echo htmlspecialchars($userName, ENT_COMPAT, 'UTF-8'); ?>"
+                        placeholder="<?php echo JText::_('JLIB_FORM_SELECT_USER'); ?>"
+                        readonly
+                        class="field-user-input-name <?php echo isset($class) ? (string)$class : '' ?>"
                     <?php echo isset($size) ? ' size="' . (int)$size . '"' : ''; ?>
                     <?php echo $required ? 'required' : ''; ?>/>
                 <?php if (!$readonly) : ?>
-                    <a class="btn btn-primary button-select"
+                    <a data-bs-toggle="modal" data-bs-target="#<?php echo 'userModal_' . (isset($id) ? $id : 0);?>" class="btn btn-primary button-select"
                        title="<?php echo JText::_('JLIB_FORM_CHANGE_USER') ?>"><span class="icon-user"></span></a>
                     <?php echo JHtml::_(
                         'bootstrap.renderModal',
-                        'userModal_' . (isset($id) ? $id : ''),
+                        'userModal_' . $id,
                         array(
+                            'url' => $link,
                             'title' => JText::_('JLIB_FORM_CHANGE_USER'),
                             'closeButton' => true,
-                            'footer' => '<button class="btn" data-dismiss="modal">' . JText::_('JCANCEL') . '</button>'
+                            'footer' => '<button class="btn" data-dismiss="modal" data-bs-dismiss="modal">' . JText::_('JCANCEL') . '</button>'
                         )
                     ); ?>
                     <a class="btn user-clear"><span class="icon-delete"></span></a>
@@ -144,15 +144,13 @@ class JFormFieldCanuser extends JFormField
             </div>
             <?php // Create the real field, hidden, that stored the user id.
             ?>
-            <input type="hidden" id="<?php echo isset($id) ? $id : ''; ?>_id"
-                   name="<?php echo isset($name) ? $name : ''; ?>"
-                   value="<?php echo isset($value) ? (int)$value : 0; ?>"
+            <input type="hidden" id="<?php echo $id; ?>_id" name="<?php echo isset($name) ? $name : ''; ?>"
+                   value="<?php echo isset($value) ? (int)$value : ''; ?>"
                    class="field-user-input <?php echo isset($class) ? (string)$class : '' ?>"
                    data-onchange=""/>
         </div>
         <?php
     }
-
 
     /**
      * Get the data that is going to be passed to the layout
@@ -207,29 +205,29 @@ class JFormFieldCanuser extends JFormField
 
         return array(
             'autocomplete' => $this->autocomplete,
-            'autofocus'    => $this->autofocus,
-            'class'        => $this->class,
-            'description'  => $description,
-            'disabled'     => $this->disabled,
-            'field'        => $this,
-            'group'        => $this->group,
-            'hidden'       => $this->hidden,
-            'hint'         => $this->translateHint ? JText::alt($this->hint, $alt) : $this->hint,
-            'id'           => $this->id,
-            'label'        => $label,
-            'labelclass'   => $this->labelclass,
-            'multiple'     => $this->multiple,
-            'name'         => $this->name,
-            'onchange'     => $this->onchange,
-            'onclick'      => $this->onclick,
-            'pattern'      => $this->pattern,
-            'readonly'     => $this->readonly,
-            'repeat'       => $this->repeat,
-            'required'     => (bool) $this->required,
-            'size'         => $this->size,
-            'spellcheck'   => $this->spellcheck,
-            'validate'     => $this->validate,
-            'value'        => $this->value
+            'autofocus' => $this->autofocus,
+            'class' => $this->class,
+            'description' => $description,
+            'disabled' => $this->disabled,
+            'field' => $this,
+            'group' => $this->group,
+            'hidden' => $this->hidden,
+            'hint' => $this->translateHint ? JText::alt($this->hint, $alt) : $this->hint,
+            'id' => $this->id,
+            'label' => $label,
+            'labelclass' => $this->labelclass,
+            'multiple' => $this->multiple,
+            'name' => $this->name,
+            'onchange' => $this->onchange,
+            'onclick' => $this->onclick,
+            'pattern' => $this->pattern,
+            'readonly' => $this->readonly,
+            'repeat' => $this->repeat,
+            'required' => (bool)$this->required,
+            'size' => $this->size,
+            'spellcheck' => $this->spellcheck,
+            'validate' => $this->validate,
+            'value' => $this->value
         );
     }
 
