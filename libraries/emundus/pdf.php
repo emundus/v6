@@ -856,6 +856,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
             $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+
             if ($options[0] !== "0" && !$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
                 $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000')) ? JHTML::_('date', $item->date_submitted, JText::_('DATE_FORMAT_LC2')) : JText::_('NOT_SENT');
 
@@ -867,6 +868,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $htmldata .= '<table width="100%"><tr>';
 
                 $htmldata .= '<h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3><tr><td class="name">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
+
 
                 if (!$anonymize_data && in_array("aemail", $options)) {
                     $htmldata .= '<tr class="birthday">
@@ -909,6 +911,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     }
                     $htmldata .= '</td></tr></table>';
                 }
+                $htmldata .= '<tr><td><hr></td></tr>';
             }
         } catch (Exception $e) {
             JLog::add('SQL error in emundus pdf library at query : ' . $query, JLog::ERROR, 'com_emundus');

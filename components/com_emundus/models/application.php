@@ -1791,7 +1791,7 @@ class EmundusModelApplication extends JModelList
                             }
                         }
 
-                        $forms .= '<h2 class="group">' . JText::_($itemg->label) . '</h2>';
+                        $forms .= '<h3 class="group">' . JText::_($itemg->label) . '</h3>';
 
                         if ($itemg->group_id == 14) {
                             $forms .= '<table>';
@@ -2136,9 +2136,9 @@ class EmundusModelApplication extends JModelList
                                                     $elm = array();
                                                     $index = array_intersect($params->sub_options->sub_values,json_decode(@$r_elt));
                                                     foreach($index as $key => $value) {
-                                                        $elm[] = JText::_($params->sub_options->sub_labels[$key]);
+                                                        $elm[] = ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                                                     }
-                                                    $elt = "<ul><li>" . implode("</li><li>", @$elm) . "</li></ul>";
+                                                    $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
                                                 } elseif ($elements[$j]->plugin == 'dropdown' || @$elements[$j] == 'radiobutton') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $index = array_search($r_elt, $params->sub_options->sub_values);
@@ -2268,7 +2268,7 @@ class EmundusModelApplication extends JModelList
                                                 try {
                                                     $this->_db->setQuery($query);
                                                     $res = $this->_db->loadColumn();
-                                                    $elt = "<ul><li>" . implode("</li><li>", $res) . "</li></ul>";
+                                                    $elt = "<li> - " . implode("</li><li> - ", $res) . "</li>";
                                                 } catch (Exception $e) {
                                                     JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
                                                     throw $e;
@@ -2305,11 +2305,12 @@ class EmundusModelApplication extends JModelList
                                             $elt = JText::_($element->content);
                                         } elseif ($element->plugin == 'checkbox') {
                                             $params = json_decode($element->params);
+                                            $elm = array();
                                             $index = array_intersect(json_decode(@$element->content), $params->sub_options->sub_values);
                                             foreach ($index as $key => $value) {
-                                                $elm[] = $params->sub_options->sub_labels[$key];
+                                                $elm[] = ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                                             }
-                                            $elt = implode(', ', JText::_($elm));
+                                            $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
                                         } elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
                                             $index = array_search($element->content, $params->sub_options->sub_values);
                                             if (strlen($index) > 0) {
@@ -2340,14 +2341,14 @@ class EmundusModelApplication extends JModelList
                                         }
 
                                         if ($element->plugin == 'textarea' || $element->plugin == 'display') {
-                                            $forms .= '<tr><td   colspan="2" ><strong><span style="color: #000000;">'.(!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label).' : ' : '').'</span></strong>'.JText::_($elt).'<br/></td></tr>';
+                                            $forms .= '<tr><td colspan="2"><strong><span style="color: #000000;">'.(!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label).' : ' : '').'</span></strong>'.JText::_($elt).'<br/></td></tr>';
                                         } else {
-                                            $forms .= '<tr ><td ><span style="color: #000000;">'.(!empty(JText::_($element->label)) ? JText::_($element->label).' : ' : '').'</span></td> <td> '.JText::_($elt).'</td></tr>';
+                                            $forms .= '<tr><td colspan="1"><span style="color: #000000;">'.(!empty(JText::_($element->label)) ? JText::_($element->label).' : ' : '').'</span></td> <td> '.JText::_($elt).'</td></tr>';
                                         }
                                     }
                                 } elseif (empty($element->content) && $show_empty_fields == 1) {
                                     if (!empty($element->label) && $element->label!=' ') {
-                                        $forms .= '<tr><td ><span style="color: #000000;">'.JText::_($element->label).' '.'</span></td> <td>'.$element->content.'</td></tr>';
+                                        $forms .= '<tr><td><span style="color: #000000;">'.JText::_($element->label).' '.'</span></td> <td>'.$element->content.'</td></tr>';
                                     }
                                 }
                             }
