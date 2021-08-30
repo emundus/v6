@@ -1,0 +1,21 @@
+{
+  "name": "joomdonation/payment",
+  "type": "joomla-package",
+  "description": "Joomla Payment Package",
+  "keywords": [
+    "joomla",
+    "payment",
+    "omnipay"
+  ],
+  "homepage": "https://github.com/joomdonation/payment",
+  "license": "GPL-2.0+",
+  "require": {
+    "php": ">=5.3.10",
+    "omnipay/omnipay": "~2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Ossolution\\Payment\\": "src/"
+    }
+  }
+}

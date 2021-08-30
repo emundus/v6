@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><metadata>	<layout title="Manage Locations">		<message>			Display list of locations submitted by the current user		</message>	</layout>	<state>		<name>Manage Locations</name>		<description>Display list of locations submitted by the current user</description>					</state></metadata>
