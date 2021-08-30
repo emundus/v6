@@ -76,8 +76,7 @@ if (is_array($this->elements) && count($this->elements) > 0) {
         echo '</div>';
 
     } else {
-
-        echo '<input type="checkbox" id="emundus_checkall" class="emundusall" data-check=".emunduspage" onClick="javascript:check_all(\'emundus_checkall\')" /> ';
+        echo '<input type="checkbox" id="emundus_checkall' . $this->elements[0]->profil_id . '" class="emundusall" data-check=".emunduspage" onClick="javascript:check_all(\'emundus_checkall\')" /> ';
         echo '<label for="emundus_checkall">'.JText::_('SELECT_ALL').'</label>';
         echo '<div id="emundus_elements">';
         $tbl_tmp='';

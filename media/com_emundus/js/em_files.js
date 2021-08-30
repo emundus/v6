@@ -4096,6 +4096,21 @@ $(document).ready(function() {
                     }
                 });
 
+                /// check all pages
+                $(document).on('click', '[id^=emundus_checkall]', function() {
+                    let dataType = $(this).attr('data-check');
+                    if(dataType == '.emunduspage') {
+                        let profile_id = $(this).attr('id').split('emundus_checkall')[1];
+                        if($('#emundus_checkall'+profile_id).is(":checked")) {
+                            $('#felts' + profile_id + ' :input').attr('checked', true);
+                        } else {
+                            $('#felts' + profile_id + ' :input').attr('checked', false);
+                        }
+                    } else {
+
+                    }
+                });
+
                 /// check all children of table
                 $(document).on('click', '[id^=emundus_checkall_tbl_]', function() {
                     let id = $(this).attr('id').split('emundus_checkall_tbl_')[1];
