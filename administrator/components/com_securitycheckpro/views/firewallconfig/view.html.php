@@ -46,24 +46,22 @@ class SecuritycheckprosViewFirewallConfig extends SecuritycheckproView
 
         //  Parámetros del plugin
         $items= $model->getConfig();
-
-        // Pestaña Lists
-        $blacklist_elements= array();
+		
+		// Lista negra
+		$blacklist_elements = $model->getTableData("blacklist");        
         $pagination_blacklist = null;
-        if ((!is_null($items['blacklist'])) && ($items['blacklist'] != '')) {
-            $items['blacklist'] = str_replace(' ', '', $items['blacklist']);
-            $blacklist_elements = explode(',', trim($items['blacklist']));
+		
+        if ( !is_null($blacklist_elements) ) {            
             $blacklist_elements = $model->filter_data($blacklist_elements, $pagination_blacklist);
         }
 
         $dynamic_blacklist_elements= $model->get_dynamic_blacklist_ips();
 
-        $whitelist_elements= array();
-        $pagination_whitelist = null;
+        // Lista blanca
+		$whitelist_elements = $model->getTableData("whitelist");		
+		$pagination_whitelist = null;
 
-        if ((!is_null($items['whitelist'])) && ($items['whitelist'] != '')) {    
-            $items['whitelist'] = str_replace(' ', '', $items['whitelist']);
-            $whitelist_elements = explode(',', trim($items['whitelist']));
+        if ( !is_null($whitelist_elements) ) {                
             $whitelist_elements = $model->filter_data($whitelist_elements, $pagination_whitelist);
         }
 
@@ -398,18 +396,21 @@ class SecuritycheckprosViewFirewallConfig extends SecuritycheckproView
         $upload_scanner_enabled = 0;
         $check_multiple_extensions = 0;
         $extensions_blacklist  = "php,js,exe,xml";
+		$mimetype_blacklist  = "application/x-dosexec,application/x-msdownload ,text/x-php,application/x-php,application/x-httpd-php,application/x-httpd-php-source,application/javascript,application/xml";
         $delete_files = 0;
         $actions_upload_scanner = 0;
 
         $upload_scanner_enabled = $items['upload_scanner_enabled'];    
         $check_multiple_extensions = $items['check_multiple_extensions'];    
         $extensions_blacklist = $items['extensions_blacklist'];
+		$mimetypes_blacklist = $items['mimetypes_blacklist'];
         $delete_files = $items['delete_files'];
         $actions_upload_scanner = $items['actions_upload_scanner'];
 
         $this->upload_scanner_enabled = $upload_scanner_enabled;
         $this->check_multiple_extensions = $check_multiple_extensions;
-        $this->extensions_blacklist = $extensions_blacklist;
+		$this->extensions_blacklist = $extensions_blacklist;
+        $this->mimetypes_blacklist = $mimetypes_blacklist;
         $this->delete_files = $delete_files;
         $this->actions_upload_scanner = $actions_upload_scanner;
 

@@ -13,22 +13,7 @@ use Joomla\CMS\MVC\Controller\BaseController as JController;
 use Joomla\CMS\Session\Session as JSession;
 use Joomla\CMS\Factory as JFactory;
 
-if (!class_exists('JoomlaCompatController')) {
-    if (interface_exists('JController')) {
-        abstract class JoomlaCompatController extends JControllerLegacy
-        {
-
-        }
-    } else
-    {
-        class JoomlaCompatController extends JController
-        {
-
-        }
-    }
-}
-
-class SecuritycheckproController extends JoomlaCompatController
+class SecuritycheckproController extends \Joomla\CMS\MVC\Controller\BaseController
 {
     
     function __construct()
