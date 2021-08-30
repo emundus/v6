@@ -1011,7 +1011,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         // set default font subsetting mode
         $pdf->setFontSubsetting(true);
         // set font
-        $pdf->SetFont('freeserif', '', 10);
+        $pdf->SetFont('helvetica', '', 10);
         $pdf->AddPage();
         $dimensions = $pdf->getPageDimensions();
 
