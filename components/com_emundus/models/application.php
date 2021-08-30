@@ -1738,9 +1738,9 @@ class EmundusModelApplication extends JModelList
                     $forms .= '<h2' . $breaker . '>';
                     $title = explode('-', JText::_($itemt->label));
                     if (empty($title[1])) {
-                        $forms .= '<b><h2>' . strtoupper(preg_replace('/\s+/', ' ', $_formbuilder_model->replaceAccents(JText::_(trim($itemt->label))))) . '</h2></b>';
+                        $forms .= '<b><h2>' . strtoupper(preg_replace('/\s+/', ' ', JText::_(trim($itemt->label)))) . '</h2></b>';
                     } else {
-                        $forms .= '<b><h2>' . strtoupper(preg_replace('/\s+/', ' ', $_formbuilder_model->replaceAccents(JText::_(trim($title[1]))))) . '</h2></b>';
+                        $forms .= '<b><h2>' . strtoupper(preg_replace('/\s+/', ' ', JText::_(trim($title[1])))) . '</h2></b>';
                     }
                 }
 
