@@ -3901,6 +3901,7 @@ $(document).ready(function() {
 
                 $('#em-export-prg').on('change', function() {
                     $('#form-element').hide();
+                    $('#em-ex-forms').prop('checked', false);
                     var code = $(this).val();
                     if (code != 0) {
 
@@ -4036,6 +4037,11 @@ $(document).ready(function() {
                                     })
                                 }
                             }
+                        })
+
+                        checkElement('[id^=felts]').then((selector)=>{
+                            $('[id^=emundus_checkall_tbl_]').trigger('click');
+                            $('.emundusall').prop('checked', true);
                         })
 
                         $.ajax({
