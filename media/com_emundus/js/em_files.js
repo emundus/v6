@@ -3954,6 +3954,7 @@ $(document).ready(function() {
                                                 $('#em-export-camp').trigger("change");
 
                                                 checkElement('[id^=felts]').then((selector)=>{
+                                                    console.log(selector);
                                                     // let allFelts = selector;    /// array type
                                                     $('#emundus_checkall').trigger('click');
                                                     $('#em-ex-forms').trigger('click');
@@ -4017,6 +4018,7 @@ $(document).ready(function() {
                                             profile: menu,
                                         },
                                         dataType: 'json',
+                                        async: false,
                                         success: function (data) {
                                             $.ajax({
                                                 type: 'get',
