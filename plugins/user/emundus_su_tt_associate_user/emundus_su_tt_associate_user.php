@@ -29,7 +29,7 @@ class plgUserEmundus_su_tt_associate_user extends JPlugin
                 ->clear()
                 ->select('fnum')
                 ->from($db->quoteName('#__emundus_files_request'))
-                ->where($db->quoteName('email') . ' LIKE ' . $db->quote($user['email']))
+                ->where($db->quoteName('email') . ' LIKE ' . $db->quote(strtolower($user['email'])))
                 ->andwhere($db->quoteName('uploaded') . ' = 0 ');
 
             $db->setQuery($query);
@@ -75,6 +75,22 @@ class plgUserEmundus_su_tt_associate_user extends JPlugin
                 $em_user->profile_label = $p->label;
                 $em_user->applicant = 0;
 
+                // Unset all candidat keys
+                unset($em_user->campaign_id);
+                unset($em_user->fnum);
+                unset($em_user->fnums);
+                unset($em_user->status);
+                unset($em_user->candidature_incomplete);
+                unset($em_user->start_date);
+                unset($em_user->end_date);
+                unset($em_user->candidature_start);
+                unset($em_user->candidature_end);
+                unset($em_user->admission_start_date);
+                unset($em_user->admission_end_date);
+                unset($em_user->candidature_posted);
+                unset($em_user->schoolyear);
+                unset($em_user->code);
+                unset($em_user->campaign_name);
 
                 if ($insert) {
                     $em_user->emProfiles[] = (object)['id' => $p->id, 'label' => $p->label];
@@ -95,59 +111,70 @@ class plgUserEmundus_su_tt_associate_user extends JPlugin
                         $app->redirect("index.php");
                     }
                     $m_user->addProfileToUser($em_user->id, 6);
+                } else {
+                    $query
+                        ->clear()
+                        ->update('#__emundus_users')
+                        ->set($db->quoteName('profile') . ' = 6')
+                        ->where($db->quoteName('user_id') . ' = ' . $em_user->id);
+
+                    $db->setQuery($query);
+                    $db->execute();
                 }
                 JFactory::getSession()->set('emundusUser', $em_user);
             }
 
-            $query
-                ->clear()
-                ->select('*')
-                ->from($db->quoteName('#__emundus_auto_eval_encadrant'))
-                ->where($db->quoteName('user') . ' = ' . $db->quote($em_user->id));
+            if (!empty($file_requests)) {
 
-            $db->setQuery($query);
+                $query
+                    ->clear()
+                    ->select('*')
+                    ->from($db->quoteName('#__emundus_auto_eval_encadrant'))
+                    ->where($db->quoteName('user') . ' = ' . $db->quote($em_user->id));
 
-            try {
-                $autoeval = $db->loadObject();
-            } catch (Exception $e) {
-                JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'emundus_su_tt_plg');
-                $app->enqueueMessage(JText::_("Nous n'avons pas pû vous redirigez vers votre formulaire d'auto-évaluation. Veuillez vous diriger en cliquant sur le menu indiqué."), 'error');
-            }
+                $db->setQuery($query);
 
-            if (empty($autoeval)) {
-                $app->redirect("auto-evaluation-encadrant");
-            }
+                try {
+                    if (empty($db->loadObject())) {
+                        $app->redirect("auto-evaluation-encadrant");
+                    }
+                } catch (Exception $e) {
+                    JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'emundus_su_tt_plg');
+                    $app->enqueueMessage(JText::_("Nous n'avons pas pû vous redirigez vers votre formulaire d'auto-évaluation. Veuillez vous diriger en cliquant sur le menu indiqué."), 'error');
+                }
 
-            // Associate Files
-            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-            $m_files = new EmundusModelFiles();
 
-            // 2.1.1. Association de l'ID user Expert avec le candidat (#__emundus_groups_eval)
-            $newobj = new stdClass();
-            $newobj->id = 1;
-            $newobj->c = 0;
-            $newobj->r = 1;
-            $newobj->u = 0;
-            $newobj->d = 0;
+                // Associate Files
+                require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+                $m_files = new EmundusModelFiles();
 
-            $actions = [$newobj];
+                // 2.1.1. Association de l'ID user Expert avec le candidat (#__emundus_groups_eval)
+                $newobj = new stdClass();
+                $newobj->id = 1;
+                $newobj->c = 0;
+                $newobj->r = 1;
+                $newobj->u = 0;
+                $newobj->d = 0;
 
-            $m_files->shareUsers([$em_user->id], $actions, $file_requests);
+                $actions = [$newobj];
 
-            // Change uploaded state
-            $query
-                ->clear()
-                ->update($db->quoteName('#__emundus_files_request'))
-                ->set([$db->quoteName('uploaded') . ' = 1'])
-                ->where($db->quoteName('fnum') . ' IN (' . implode(',', $db->quote($file_requests)) . ')');
+                $m_files->shareUsers([$em_user->id], $actions, $file_requests);
 
-            $db->setQuery($query);
+                // Change uploaded state
+                $query
+                    ->clear()
+                    ->update($db->quoteName('#__emundus_files_request'))
+                    ->set([$db->quoteName('uploaded') . ' = 1'])
+                    ->where($db->quoteName('fnum') . ' IN (' . implode(',', $db->quote($file_requests)) . ')');
 
-            try {
-                $db->execute();
-            } catch (Exception $e) {
-                JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'emundus_su_tt_plg');
-                $app->enqueueMessage(JText::_("Nous avons détecté une erreur liée à l'assignation de vos dossiers. Veuillez vérifier vos informations suivantes."), 'error');
+                $db->setQuery($query);
+
+                try {
+                    $db->execute();
+                } catch (Exception $e) {
+                    JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'emundus_su_tt_plg');
+                    $app->enqueueMessage(JText::_("Nous avons détecté une erreur liée à l'assignation de vos dossiers. Veuillez vérifier vos informations suivantes."), 'error');
+                }
             }
         }
         $app->redirect("index.php");
