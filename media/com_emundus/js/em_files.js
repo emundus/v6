@@ -3646,7 +3646,7 @@ $(document).ready(function() {
 
                             '<div id="camp" style="display:none;">' +
                                 '<select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select">' +
-                                    '<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>' +
+
                                 '</select>' +
                             '</div>' +
                         '</div>' +
@@ -3805,6 +3805,19 @@ $(document).ready(function() {
                                                         $('#camp').show();
 
                                                         var camp = $("#em-export-camp").val();
+
+                                                        var firstOption = $("#em-export-camp").prop("selectedIndex", 0).val();
+
+                                                        /// check this firstOption by default
+                                                        $('#em-export-camp option[value="' + firstOption + '"]').prop("selected", true);
+                                                        $('#em-export-camp').trigger("chosen:updated");
+                                                        $('#em-export-camp').trigger("change");
+
+                                                        checkElement('[id^=felts]').then((selector)=>{
+                                                            // let allFelts = selector;    /// array type
+                                                            $('#emundus_checkall').trigger('click');
+                                                            $('#em-ex-forms').trigger('click');
+                                                        })
                                                     }
                                                 },
                                                 error: function (jqXHR) {
@@ -3926,12 +3939,25 @@ $(document).ready(function() {
                                         success: function(result) {
                                             if (result.status) {
                                                 $('#em-export-camp').empty();
-                                                $('#em-export-camp').append('<option value="0" data-value="0">-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>');
+
                                                 $('#em-export-camp').append(result.html);
                                                 $('#em-export-camp').trigger("chosen:updated");
                                                 $('#camp').show();
 
                                                 var camp = $("#em-export-camp").val();
+
+                                                var firstOption = $("#em-export-camp").prop("selectedIndex", 0).val();
+
+                                                /// check this firstOption by default
+                                                $('#em-export-camp option[value="' + firstOption + '"]').prop("selected", true);
+                                                $('#em-export-camp').trigger("chosen:updated");
+                                                $('#em-export-camp').trigger("change");
+
+                                                checkElement('[id^=felts]').then((selector)=>{
+                                                    // let allFelts = selector;    /// array type
+                                                    $('#emundus_checkall').trigger('click');
+                                                    $('#em-ex-forms').trigger('click');
+                                                })
                                             }
                                         },
                                         error: function (jqXHR) {
@@ -6957,7 +6983,7 @@ async function setCampaign(progCode,campCode,headers) {
         success: function(data) {
             if(data.status) {
                 $('#em-export-camp').empty();
-                $('#em-export-camp').append('<option value="0" data-value="0">-- ' + Joomla.JText._('COM_EMUNDUS_CHOOSE_CAMP') + ' --</option>');
+
                 $('#em-export-camp').append(data.html);
 
                 if($("#em-export-camp option[value='" + campCode + "']").length > 0 === true) {
