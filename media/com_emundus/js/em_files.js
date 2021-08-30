@@ -742,10 +742,8 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                                                                     letter: letter,
                                                                 },
                                                                 success: function(reply) {
-                                                                    //console.log(reply);
                                                                     let tmp = reply.link.split('/');
                                                                     let filename = tmp[tmp.length - 1];
-                                                                    //console.log(filename);
                                                                     $('#loadingimg').empty();
                                                                     $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
                                                                     $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
@@ -836,7 +834,6 @@ function generate_pdf(json,pdf_elements= null) {
     var attachids   = json.attachids;
     var options     = json.options;
 
-    //console.log(attachids);
     $.ajaxQ.abortAll();
 
     if (start+limit < maxfiles) {
@@ -1961,7 +1958,6 @@ $(document).ready(function() {
                                url: 'index.php?option=com_emundus&controller=files&task=getAllLetters',
                                dataType:'json',
                                success: function(result) {
-                                    //console.log(result);
                                     let letters = result.letters;
                                     letters.forEach(letter => {
                                         if(letter.template_type == '4') {
@@ -2312,7 +2308,6 @@ $(document).ready(function() {
                                                                         url: 'index.php?option=com_emundus&controller=files&task=getformelem&code='+code+'&camp='+camp+'&Itemid='+itemId,
                                                                         dataType:'json',
                                                                         success: function(result) {
-                                                                            //console.log(result);
                                                                             var item='';
 
                                                                             item += '<option value="0" selected>'+Joomla.JText._('JGLOBAL_SELECT_AN_OPTION')+'</option>';
@@ -2352,7 +2347,6 @@ $(document).ready(function() {
 
                                                                                 item += '<option value="'+result.elts[d].id+'" data-value="'+label+'">'+elt_label+'</option>';
                                                                             }
-                                                                            //console.log(item);
                                                                             $('#elements-popup').append(data);
                                                                             $('#em-export-form').append(item);
                                                                             $('#em-export-form').trigger("chosen:updated");
@@ -3954,8 +3948,6 @@ $(document).ready(function() {
                                                 $('#em-export-camp').trigger("change");
 
                                                 checkElement('[id^=felts]').then((selector)=>{
-                                                    console.log(selector);
-                                                    // let allFelts = selector;    /// array type
                                                     $('#emundus_checkall').trigger('click');
                                                     $('#em-ex-forms').trigger('click');
                                                 })
@@ -4938,7 +4930,6 @@ $(document).ready(function() {
 
     $(document).on('click', '[id^=candidat_]', function(e){
         let fnum = $(this).attr('id').split('candidat_')[1];
-        console.log($(this).attr('id'));
 
         $('#em-modal-actions').modal({backdrop:true,keyboard:true},'toggle');
         $('.modal-title').empty();
@@ -5071,7 +5062,6 @@ $(document).ready(function() {
                         /// send email
                         $('#send-email').on('click', function(e) {
                             let tmpl = email_recap;
-                            console.log(tmpl);
                             $.ajax({
                                 type: 'POST',
                                 url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
