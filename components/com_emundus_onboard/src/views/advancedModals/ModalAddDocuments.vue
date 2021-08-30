@@ -303,8 +303,8 @@ export default {
       this.doc = null;
       this.currentDoc = null;
       this.can_be_deleted = false;
-      this.errorWidth = false;
-      this.errorHeight = false;
+      this.errorWidth.error = false;
+      this.errorHeight.error = false;
 
       this.form = {
         name: {
