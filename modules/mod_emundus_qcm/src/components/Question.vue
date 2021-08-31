@@ -43,6 +43,7 @@ export default {
     question: Object,
     updateProposal: Number,
     pending: Number,
+    formid: Number,
     tierstemps: Number,
   },
   components: {
@@ -113,7 +114,12 @@ export default {
 
     nextQuestion(){
       if(!this.finish){
+        clearInterval(this.interval);
+        this.timer = 0;
         this.$emit('saveAnswer', this.answer);
+        this.finish = true;
+        this.$emit('resetPending');
+        this.pending = 0;
       }
       this.$emit('nextQuestion');
     },
@@ -128,6 +134,7 @@ export default {
         },
         data: qs.stringify({
           pending: this.timer,
+          formid: this.formid,
         })
       });
     }
