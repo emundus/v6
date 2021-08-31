@@ -3433,6 +3433,7 @@ if (JFactory::getUser()->id == 63)
                     FROM #__emundus_uploads
                     WHERE #__emundus_uploads.fnum in (' . $fnums . ') 
                     AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ')
+                    AND DATE(#__emundus_uploads.timedate) = current_date()
                     GROUP BY #__emundus_uploads.attachment_id';
 
         $this->_db->setQuery($query);
