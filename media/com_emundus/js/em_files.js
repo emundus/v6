@@ -7049,6 +7049,9 @@ async function setProfiles(json) {
                         $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
                         $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
 
+                        // uncheck all checkbox of each felts
+                        $('#form-exists input:checked').prop('checked', false);
+
                         // render tables
                         if (checkAllTables !== null || checkAllTables !== undefined || checkAllTables[0] !== "") {
                             checkAllTables.forEach(tbl => {
