@@ -80,7 +80,40 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
 	        $m_settings = $this->model;
-            $changeresponse = $m_settings->createTag();
+            $jinput = JFactory::getApplication()->input;
+            $category = $jinput->getString('category');
+            $changeresponse = $m_settings->createTag($category);
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
+
+    public function createtagcategory() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $changeresponse = $m_settings->createTagCategory();
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
+
+    public function updatetagcategory() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $oldcategory = $jinput->getString('oldcategory');
+            $newcategory = $jinput->getString('newcategory');
+            $changeresponse = $m_settings->updateTagCategory($oldcategory,$newcategory);
         }
         echo json_encode((object)$changeresponse);
         exit;

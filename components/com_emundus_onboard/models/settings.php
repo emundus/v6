@@ -94,7 +94,7 @@ class EmundusonboardModelsettings extends JModelList {
             $query->select('distinct category')
                 ->from($db->quoteName('#__emundus_setup_action_tag'));
             $db->setQuery($query);
-            $categories = $db->loadAssocList('category');
+            $categories = $db->loadAssocList();
     
             foreach ($categories as $key => $category){
                 $query->clear()
@@ -102,7 +102,7 @@ class EmundusonboardModelsettings extends JModelList {
                     ->from($db->quoteName('#__emundus_setup_action_tag'))
                     ->where($db->quoteName('category') . ' LIKE ' . $db->quote($category['category']));
                 $db->setQuery($query);
-                $categories[$key] = $db->loadObjectList();
+                $categories[$key][] = $db->loadObjectList();
             }
             return $categories;
         } catch(Exception $e) {
@@ -127,13 +127,14 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
-    function createTag() {
+    function createTag($category) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         $query->insert('#__emundus_setup_action_tag')
             ->set($db->quoteName('label') . ' = ' . $db->quote('Nouvelle étiquette'))
-            ->set($db->quoteName('class') . ' = ' . $db->quote('label-default'));
+            ->set($db->quoteName('class') . ' = ' . $db->quote('label-default'))
+            ->set($db->quoteName('category') . ' = ' . $db->quote($category));
 
         try {
             $db->setQuery($query);
@@ -148,6 +149,62 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($query);
             return $db->loadObject();
 
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/settings | Cannot create a tag : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function updateTagCategory($oldcategory,$newcategory) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update('#__emundus_setup_action_tag')
+            ->set($db->quoteName('category') . ' = ' . $db->quote($newcategory))
+            ->where($db->quoteName('category') . ' = ' . $db->quote($oldcategory));
+
+        try {
+            $db->setQuery($query);
+            return $db->execute();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/settings | Cannot create a tag : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function createTagCategory() {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $result = new stdClass;
+
+        $query->select('count(distinct category)')
+            ->from($db->quoteName('#__emundus_setup_action_tag'));
+        $db->setQuery($query);
+        $index = $db->loadResult();
+
+        $category = 'Nouvelle catégorie ' . ($index+1);
+
+        $query->clear()
+            ->insert('#__emundus_setup_action_tag')
+            ->set($db->quoteName('label') . ' = ' . $db->quote('Nouvelle étiquette'))
+            ->set($db->quoteName('class') . ' = ' . $db->quote('label-default'))
+            ->set($db->quoteName('category') . ' = ' . $db->quote($category));
+
+        try {
+            $db->setQuery($query);
+            $db->execute();
+            $result->category = $category;
+            $newtagid = $db->insertid();
+
+            $query->clear()
+                ->select('*')
+                ->from ($db->quoteName('#__emundus_setup_action_tag'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($newtagid));
+
+            $db->setQuery($query);
+            $result->{0} = $db->loadObjectList();
+            return $result;
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/settings | Cannot create a tag : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;

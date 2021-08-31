@@ -44,7 +44,7 @@
                 <i class="fas fa-check"></i><span class="mr-1">{{Saved}}</span>
               </div>
             </transition>
-            <button type="button" v-if="menuHighlight != 0 && menuHighlight != 7" @click="saveCurrentPage()" class="bouton-sauvergarder-et-continuer" :style="'right: 10%'">{{ Save }}</button>
+            <button type="button" v-if="menuHighlight != 0 && menuHighlight != 7 && menuHighlight != 5" @click="saveCurrentPage()" class="bouton-sauvergarder-et-continuer" :style="'right: 10%'">{{ Save }}</button>
           </div>
         </div>
         <transition name="slide-right">

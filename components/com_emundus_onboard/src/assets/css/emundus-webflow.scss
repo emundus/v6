@@ -1137,7 +1137,7 @@ span.draggable {
 }
 .container-evaluation {
   position: relative;
-  margin: 0 0 0 30px;
+  //margin: 0 0 0 30px;
 }
 #email-form {
   .vdatetime {
@@ -1954,13 +1954,36 @@ textarea {
   margin: 30px;
   max-height: 50px;
 }
+.tags__list-block{
+  left: 50%;
+  transform: translateX(-40%);
+}
 .tags__category-block{
   height: 50vh;
   background: white;
   padding: 16px !important;
   border-radius: 5px;
   margin-top: 20px;
-  border: solid 1px #cecece;
+  margin-right: 20px;
+  margin-left: 20px;
+  border: 2px solid #eeebeb;
+  box-shadow: 1px 2px 2px rgb(39 39 39 / 3%);
+}
+.tags__category-block-empty{
+  height: 50vh;
+  padding: 16px !important;
+  margin-top: 20px;
+  margin-right: 20px;
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background: #ebebeb;
+  .fa-plus-circle{
+    font-size: 2.5em;
+    opacity: 0.5;
+  }
 }
 .tags__tag-item{
   margin: 10px 0;
@@ -1970,6 +1993,20 @@ textarea {
   padding: 10px;
   margin: 10px;
   border-radius: 25px;
+}
+.tags__add-button{
+  width: 80%;
+  position: absolute;
+  bottom: 20px;
+  justify-content: center;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tags__edit-label{
+  font-size: 12px;
+  opacity: 0.5;
+  margin-left: 10px;
 }
 
 /**** CUSTOM VUE DROPZONE ****/
