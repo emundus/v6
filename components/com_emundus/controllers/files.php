@@ -2896,11 +2896,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         $name = $m_checklist->formatFileName($fileName, $fnum, $post).'.pdf';
                     }
                     $filename = $application_form_name . DS . $name;
-                    if (!$zip->addFile($admission_file, $filename )) {
-                        continue;
-                    }
-                } else {
-                    continue;
+                    $zip->addFile($admission_file, $filename);
                 }
 
                 if ($attachment || !empty($attachids)) {
