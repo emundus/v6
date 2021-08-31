@@ -5281,18 +5281,15 @@ $(document).ready(function() {
                     cancelButtonText: Joomla.JText._('CANCEL_CHANGE_STATUT'),
                 }).then(function (result) {
                     if(result.value) {
+                        addDimmer();
+                        $('#em-modal-actions').modal('hide');
+
                         $.ajax({
                             type:'post',
                             url:'index.php?option=com_emundus&controller=files&task=notifycandidat',
                             dataType:'json',
                             data: { data:data, state: state },
                             success: function(tags) {
-                                addDimmer();
-                                $('#em-modal-actions').modal('hide');
-                                reloadData();
-                                reloadActions($('#view').val(), undefined, false);
-                                $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
-                                $('body').removeClass('modal-open');
 
                                 if(tags.status) {
                                     Swal.fire({
@@ -5313,13 +5310,6 @@ $(document).ready(function() {
                                 }
 
                             }, error: function(result) {
-                                addDimmer();
-                                $('#em-modal-actions').modal('hide');
-
-                                reloadData();
-                                reloadActions($('#view').val(), undefined, false);
-                                $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-                                $('body').removeClass('modal-open');
 
                                 Swal.fire({
                                     position: 'center',
@@ -5330,6 +5320,11 @@ $(document).ready(function() {
                                 });
                             }
                         })
+
+                        reloadData();
+                        reloadActions($('#view').val(), undefined, false);
+                        $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
+                        $('body').removeClass('modal-open');
                     } else {
                         console.log('false');
                     }
