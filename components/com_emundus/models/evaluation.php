@@ -2389,22 +2389,7 @@ if (JFactory::getUser()->id == 63)
                     ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
 
                 $this->_db->setQuery($query);
-                $letters = $this->_db->loadObjectList();
-
-                if(empty($letters)) {
-                    $query->clear()
-                        ->select('jesl.*')
-                        ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
-                        ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
-                        ->where($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
-                        ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
-
-                    $this->_db->setQuery($query);
-                    $_letters = $this->_db->loadObjectList();
-                    return $_letters;
-                } else {
-                    return $letters;
-                }
+                return $this->_db->loadObjectList();
             } catch(Exception $e) {
                 JLog::add('Cannot get letter template by single fnum : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                 return false;
@@ -2482,11 +2467,17 @@ if (JFactory::getUser()->id == 63)
 
         $fnum_Array = explode(',', $fnums);
 
+        if(in_array('em-check-all',$fnum_Array)) {
+            foreach(array_keys($fnum_Array,'em-check-all') as $key) {
+                unset($fnum_Array[$key]);
+            }
+        }
+
         $res = new stdClass();
         $res->status = true;
         $res->files = [];
 
-        $letters_ids = $_mEval->getLettersByFnumsTemplates($fnums,$templates);
+        $letters_ids = $_mEval->getLettersByFnumsTemplates(implode(',', $fnum_Array),$templates);
 
         $letter_count = [];
 
@@ -2558,19 +2549,31 @@ if (JFactory::getUser()->id == 63)
                             }
 
                             /// if exists
+                            ///
+
+                            $query = $this->_db->getQuery(true);
+                            $query->clear()
+                                ->delete($this->_db->quoteName('#__emundus_uploads'))
+                                ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+                                ->andWhere($this->_db->quoteName('#__emundus_uploads.attachment_id') . ' = ' . $attachInfo['id'])
+                                ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
+                            $this->_db->setQuery($query);
+                            $this->_db->execute();
+
                             if (file_exists($original_name) or file_exists($path_name))   {
                                 /// remove this file and then create new file (good idea?)
                                 unlink($path_name);
                                 unlink($original_name);
 
                                 /// remove it in database
-                                $query = $this->_db->getQuery(true);
-                                $query->clear()
-                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
-                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
-                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
-                                $this->_db->setQuery($query);
-                                $this->_db->execute();
+//                                $query = $this->_db->getQuery(true);
+//                                $query->clear()
+//                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
+//                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+//                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.attachment_id') . ' = ' . $attachInfo['id'])
+//                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
+//                                $this->_db->setQuery($query);
+//                                $this->_db->execute();
 
                                 /// recopy
                                 copy($file, $path_name);
@@ -2692,18 +2695,27 @@ if (JFactory::getUser()->id == 63)
                                 mkdir($path, 0755, true);
                             }
 
+                            $query = $this->_db->getQuery(true);
+                            $query->clear()
+                                ->delete($this->_db->quoteName('#__emundus_uploads'))
+                                ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+                                ->andWhere($this->_db->quoteName('#__emundus_uploads.attachment_id') . ' = ' . $attachInfo['id'])
+                                ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
+                            $this->_db->setQuery($query);
+                            $this->_db->execute();
+
                             if (file_exists($path_name) or file_exists($original_name)) {
                                 // remove old file and reupdate in database
                                 unlink($original_name);
                                 unlink($path_name);
-                                $query = $this->_db->getQuery(true);
-
-                                $query->clear()
-                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
-                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
-                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
-                                $this->_db->setQuery($query);
-                                $this->_db->execute();
+//                                $query = $this->_db->getQuery(true);
+//
+//                                $query->clear()
+//                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
+//                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+//                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
+//                                $this->_db->setQuery($query);
+//                                $this->_db->execute();
 
                                 $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         ////
 
@@ -2908,19 +2920,28 @@ if (JFactory::getUser()->id == 63)
                                     $res = $m_Export->toPdf($path_name, $dest, $fnum);
                                 }
 
+                                $query = $this->_db->getQuery(true);
+                                $query->clear()
+                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
+                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.attachment_id') . ' = ' . $attachInfo['id'])
+                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
+                                $this->_db->setQuery($query);
+                                $this->_db->execute();
+
                                 /// check if file exists or not
                                 if (file_exists($path_name) or file_exists($original_path)) {
                                     // remove old file and update the database
                                     unlink($path_name);
                                     unlink($original_name);
-                                    $query = $this->_db->getQuery(true);
-
-                                    $query->clear()
-                                        ->delete($this->_db->quoteName('#__emundus_uploads'))
-                                        ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
-                                        ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($filename));
-                                    $this->_db->setQuery($query);
-                                    $this->_db->execute();
+//                                    $query = $this->_db->getQuery(true);
+//
+//                                    $query->clear()
+//                                        ->delete($this->_db->quoteName('#__emundus_uploads'))
+//                                        ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+//                                        ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($filename));
+//                                    $this->_db->setQuery($query);
+//                                    $this->_db->execute();
 
                                     $preprocess->saveAs($path_name);             /// save docx
                                     copy($path_name, $original_name);
@@ -3073,18 +3094,27 @@ if (JFactory::getUser()->id == 63)
                                 mkdir($original_path, 0755, true);
                             }
 
+                            $query = $this->_db->getQuery(true);
+                            $query->clear()
+                                ->delete($this->_db->quoteName('#__emundus_uploads'))
+                                ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+                                ->andWhere($this->_db->quoteName('#__emundus_uploads.attachment_id') . ' = ' . $attachInfo['id'])
+                                ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
+                            $this->_db->setQuery($query);
+                            $this->_db->execute();
+
                             /// check if file exists or not
                             if (file_exists($original_name) or file_exists($path_name)) {
                                 unlink($original_name);
                                 unlink($path_name);
-                                $query = $this->_db->getQuery(true);
-
-                                $query->clear()
-                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
-                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
-                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($filename));
-                                $this->_db->setQuery($query);
-                                $this->_db->execute();
+//                                $query = $this->_db->getQuery(true);
+//
+//                                $query->clear()
+//                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
+//                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+//                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($filename));
+//                                $this->_db->setQuery($query);
+//                                $this->_db->execute();
 
                                 $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
                                 $writer->setIncludeCharts(true);
@@ -3429,9 +3459,9 @@ if (JFactory::getUser()->id == 63)
         }
 
         // build the recap table
-        $query = 'SELECT #__emundus_uploads.attachment_id, COUNT(#__emundus_uploads.attachment_id) AS _count 
+        $query = 'SELECT #__emundus_uploads.attachment_id, COUNT(#__emundus_uploads.attachment_id) AS _count
                     FROM #__emundus_uploads
-                    WHERE #__emundus_uploads.fnum in (' . $fnums . ') 
+                    WHERE #__emundus_uploads.fnum in (' . $fnums . ')
                     AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ')
                     AND DATE(#__emundus_uploads.timedate) = current_date()
                     GROUP BY #__emundus_uploads.attachment_id';
