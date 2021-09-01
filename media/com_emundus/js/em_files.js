@@ -4039,10 +4039,10 @@ $(document).ready(function() {
                             }
                         })
 
-                        checkElement('[id^=felts]').then((selector)=>{
-                            $('[id^=emundus_checkall_tbl_]').trigger('click');
-                            $('.emundusall').prop('checked', true);
-                        })
+                        // checkElement('[id^=felts]').then((selector)=>{
+                        //     $('[id^=emundus_checkall_tbl_]').trigger('click');
+                        //     $('.emundusall').prop('checked', true);
+                        // })
 
                         $.ajax({
                             type:'get',
