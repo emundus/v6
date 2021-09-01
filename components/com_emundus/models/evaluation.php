@@ -2366,7 +2366,7 @@ if (JFactory::getUser()->id == 63)
     }
 
     /// get exactly letter id by fnum and template --> with or without status (for KIT, we have always status // but for NORMANDIE, status is optional)
-    public function getLettersByFnumTemplates($fnum, $templates=array()) {
+    public function getLettersByFnumTemplates($fnum, $templates=array(), $forceGet=null) {
         if(!empty($fnum) and !is_null($fnum) and !empty($templates) and !is_null($templates)) {
             $query = $this->_db->getQuery(true);
 
@@ -2379,17 +2379,30 @@ if (JFactory::getUser()->id == 63)
 
                 /// second :: status, program, templates --> detect the letter id to generate
                 $_fnumStatus = $_mFile->getFnumInfos($fnum)['status'];
-                $query->clear()
-                    ->select('jesl.*')
-                    ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
-                    ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
-                    ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
-                    ->where($this->_db->quoteName('jeslrs.status') . ' = ' . $_fnumStatus)
-                    ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
-                    ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
 
-                $this->_db->setQuery($query);
-                return $this->_db->loadObjectList();
+                if(is_null($forceGet)) {
+                    $query->clear()
+                        ->select('jesl.*')
+                        ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
+                        ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
+                        ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+                        ->where($this->_db->quoteName('jeslrs.status') . ' = ' . $_fnumStatus)
+                        ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
+                        ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
+
+                    $this->_db->setQuery($query);
+                    return $this->_db->loadObjectList();
+                } else {
+                    $query->clear()
+                        ->select('jesl.*')
+                        ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
+                        ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+                        ->where($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
+                        ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
+
+                    $this->_db->setQuery($query);
+                    return $this->_db->loadObjectList();
+                }
             } catch(Exception $e) {
                 JLog::add('Cannot get letter template by single fnum : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                 return false;
@@ -3445,24 +3458,24 @@ if (JFactory::getUser()->id == 63)
         }
 
         // build the recap table
-        $query = 'SELECT #__emundus_uploads.attachment_id, COUNT(#__emundus_uploads.attachment_id) AS _count
-                    FROM #__emundus_uploads
-                    WHERE #__emundus_uploads.fnum in (' . implode(',', $fnum_Array) . ')
-                    AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ')
-                    AND DATE(#__emundus_uploads.timedate) = current_date()
-                    GROUP BY #__emundus_uploads.attachment_id';
-
-        $this->_db->setQuery($query);
-
-        $document_count = $this->_db->loadAssocList();
-
-        $res->recapitulatif_count = [];
-
-        foreach($document_count as $key => $document) {
-            $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $document['attachment_id'];
-            $this->_db->setQuery($query);
-            $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $document['_count']);
-        }
+//        $query = 'SELECT #__emundus_uploads.attachment_id, COUNT(#__emundus_uploads.attachment_id) AS _count
+//                    FROM #__emundus_uploads
+//                    WHERE #__emundus_uploads.fnum in (' . implode(',', $fnum_Array) . ')
+//                    AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ')
+//                    AND DATE(#__emundus_uploads.timedate) = current_date()
+//                    GROUP BY #__emundus_uploads.attachment_id';
+//
+//        $this->_db->setQuery($query);
+//
+//        $document_count = $this->_db->loadAssocList();
+//
+//        $res->recapitulatif_count = [];
+//
+//        foreach($document_count as $key => $document) {
+//            $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $document['attachment_id'];
+//            $this->_db->setQuery($query);
+//            $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $document['_count']);
+//        }
 
         return json_encode($res);
     }

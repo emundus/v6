@@ -1603,6 +1603,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $sending_mode = $data['sending_mode'];
         $attachments =$data['attachments'];
+
+//        var_dump($attachments);die;
+
         $fnums = explode(',', $data['recipients']);
 
         if($fnums == "all") {

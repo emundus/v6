@@ -1386,6 +1386,9 @@ class EmundusModelMessages extends JModelList {
         // get programme info
         $programme = $m_campaign->getProgrammeByTraining($fnum_info['training']);
 
+
+//        var_dump($data);die;
+
         $toAttach = [];
         $post = [
             'FNUM' => $fnum_info['fnum'],
@@ -1549,6 +1552,11 @@ class EmundusModelMessages extends JModelList {
                         }
                     } else {
                         // Envoyer l'email sans documents car aucun document attache avec cette campagne
+                        $forceLetters = $_meval->getLettersByFnumTemplates($fnum, [$setup_letter], $forceGet='force');      /// get $forceGet not null
+
+                        require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
+                        $path = generateLetterFromHtml(reset($forceLetters), $fnum, $fnum_info['applicant_id'], $fnum_info['training']);
+                        $toAttach[] = $path;
                     }
 
                 }
