@@ -3193,6 +3193,14 @@ if (JFactory::getUser()->id == 63)
 
                     if($is_Dir_Empty) {
                         rmdir(EMUNDUS_PATH_ABS . $uid . '--letters');
+
+                        $delete_untotal_files = glob($mergeDirPath . DS . '*');
+                        foreach($delete_untotal_files as $_file) {
+                            if(is_file($_file)) {
+                                unlink($_file);
+                            }
+                        }
+                        rmdir($mergeDirPath);
                     } else {
                         foreach ($fileList as $filename) {
                             // if extension is pdf --> push into the array $pdf_files
