@@ -114,7 +114,7 @@ class EmundusController extends JControllerLegacy {
         $profile_id = $m_profile->getProfileByFnum($fnum);
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, null, null, $profile_id,null,null);
+            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile_id,null,null);
             exit;
         } elseif (EmundusHelperAccess::isApplicant($user->id)) {
             application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile_id,null,null);
