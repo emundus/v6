@@ -1229,5 +1229,116 @@ class EmundusModelEmails extends JModelList {
 
     }
 
+    /**
+     * @param int $email
+     * @param array $groups
+     * @param array $attachments
+     * @return bool
+     */
+    public function sendEmailToGroup(int $email, array $groups, array $attachments = []) : bool {
+
+        if (empty($email) || empty($groups)) {
+            JLog::add('No user or group found in sendEmailToGroup function: ', JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+        $m_messages = new EmundusModelMessages();
+        $template = $m_messages->getEmail($email);
+
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'groups.php');
+        $m_groups = new EmundusModelGroups();
+        $users = $m_groups->getUsersByGroups($groups);
+
+        foreach ($users as $user) {
+            try {
+                $this->sendEmailFromPlatform($user["user_id"], $template, $attachments);
+            } catch (Exception $e) {
+                JLog::add('Error sending an email via the platform: ', JLog::ERROR, 'com_emundus');
+                return false;
+            }
+        }
+        JLog::add(sizeof($users) .' emails sent to the following groups: ' . implode(", ". $groups), JLog::ERROR, 'com_emundus');
+        return true;
+    }
+
+    /**
+     * @param int $user
+     * @param object $template
+     * @param array $attachments
+     * @return void
+     */
+    public function sendEmailFromPlatform(int $user, object $template, array $attachments) : void {
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        $current_user = JFactory::getUser();
+        $user = JFactory::getUser($user);
+        $toAttach = [];
+
+        // Tags are replaced with their corresponding values using the PHP preg_replace function.
+        $tags = $this->setTags($user->id);
+
+        $subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
+        $body =  $template->message;
+        if ($template) {
+            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+        }
+        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+
+        $config = JFactory::getConfig();
+        // Get default mail sender info
+        $mail_from_sys = $config->get('mailfrom');
+        $mail_from_sys_name = $config->get('fromname');
+        // Set sender
+        $sender = [
+            $mail_from_sys,
+            $mail_from_sys_name
+        ];
+
+        // Configure email sender
+        $mailer = JFactory::getMailer();
+        $mailer->setSender($sender);
+        $mailer->addReplyTo($mail_from_sys, $mail_from_sys_name);
+        $mailer->addRecipient($user->email);
+        $mailer->setSubject($subject);
+        $mailer->isHTML(true);
+        $mailer->Encoding = 'base64';
+        $mailer->setBody($body);
+
+        $files = '';
+        // Files uploaded from the frontend.
+        if (!empty($attachments)) {
+            // Here we also build the HTML being logged to show which files were attached to the email.
+            $files = '<ul>';
+            foreach ($attachments as $upload) {
+                if (file_exists(JPATH_BASE.DS.$upload)) {
+                    $toAttach[] = JPATH_BASE.DS.$upload;
+                    $files .= '<li>'.basename($upload).'</li>';
+                }
+            }
+            $files .= '</ul>';
+        }
+
+        $mailer->addAttachment($toAttach);
+
+        // Send and log the email.
+        $send = $mailer->Send();
+        if ($send !== true) {
+            $failed[] = $user->email;
+            echo 'Error sending email: ' . $send->__toString();
+            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+        } else {
+            $sent[] = $user->email;
+            $log = [
+                'user_id_from' => $current_user->id,
+                'user_id_to' => $user->id,
+                'subject' => $subject,
+                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user->email . '</i><br>' . $body . $files,
+                'type' => !empty($template)?$template->type:''
+            ];
+            $this->logEmail($log);
+            // Log the email in the eMundus logging system.
+            EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+        }
+    }
 }
 ?>
