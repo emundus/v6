@@ -40,6 +40,7 @@
                     <actions
                         :data="actions"
                         :selected="this.data.id"
+                        :published="isPublished"
                         @validateFilters="validateFilters()"
                     ></actions>
                   </template>
