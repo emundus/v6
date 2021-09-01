@@ -2457,7 +2457,7 @@ if (JFactory::getUser()->id == 63)
     }
 
     /// generate letters with or without evaluations (if evaluation is available, so $eval_letter !== null and $suffixe !== null)
-    public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode, $eval_letter=null, $suffixe=null) {
+    public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode, $eval_letter=null, $suffixe=null, $forceLetter=null) {
         $eval_letter = null;        /// set $eval_letter == null for KIT
 
         $tmp_path = JPATH_BASE . DS . 'tmp' . DS;
@@ -2504,6 +2504,10 @@ if (JFactory::getUser()->id == 63)
         foreach($fnum_Array as $key => $fnum) {
 
             is_null($eval_letter) ? $generated_letters = $_mEval->getLettersByFnumTemplates($fnum, $templates) : $generated_letters = [$eval_letter];
+
+            if(empty($generated_letters)) {
+                $generated_letters = $forceLetter;
+            }
 
             $fnumInfo = $_mFile->getFnumsTagsInfos([$fnum]);
 

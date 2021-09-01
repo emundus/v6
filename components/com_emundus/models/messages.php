@@ -1555,7 +1555,11 @@ class EmundusModelMessages extends JModelList {
                         $forceLetters = $_meval->getLettersByFnumTemplates($fnum, [$setup_letter], $forceGet='force');      /// get $forceGet not null
 
                         require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-                        $path = generateLetterFromHtml(reset($forceLetters), $fnum, $fnum_info['applicant_id'], $fnum_info['training']);
+                        //$path = generateLetterFromHtml(reset($forceLetters), $fnum, $fnum_info['applicant_id'], $fnum_info['training']);            /// here I should use $_meval->generateLetters :: with optional param = forceLetter
+                        $res = $_meval->generateLetters($fnum, [$setup_letter],0, 0, 0, null,null, $forceLetters);            /// here I should use $_meval->generateLetters :: with optional param = forceLetter
+                        $res_status = json_decode($res)->status;
+                        $res_data = reset(json_decode($res)->files);
+                        $path = EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . DS . $res_data->filename;
                         $toAttach[] = $path;
                     }
 
