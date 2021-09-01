@@ -7050,7 +7050,9 @@ async function setProfiles(json) {
                         $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
 
                         // uncheck all checkbox of each felts
-                        $('#form-exists input:checked').prop('checked', false);
+                        if($('#form-exists input:checked').length > 0) {
+                            $('#form-exists input:checked').prop('checked', false);
+                        }
 
                         // render tables
                         if (checkAllTables !== null || checkAllTables !== undefined || checkAllTables[0] !== "") {
