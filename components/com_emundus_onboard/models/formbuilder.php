@@ -133,26 +133,18 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $content
      * @return false|string|string[]
      */
-    function getTranslation($text,$content){
+    function getTranslation($text,$code_lang){
         $matches = [];
 
-        if(!empty($text)) {
-            $textWithoutTags = str_replace('\'', '', strip_tags($text));
-            $textTofind = $textWithoutTags . "=";
-            $textTofind = "/^" . $textTofind . ".*/mi";
+        $fileName = constant('JPATH_BASE') . '/language/overrides/' . $code_lang . '.override.ini';
+        $strings  = JLanguageHelper::parseIniFile($fileName);
 
-            // Search and return the translation
-            try {
-                preg_match_all($textTofind, $content, $matches, PREG_SET_ORDER, 0);
-                if (!empty($matches)) {
-                    return str_replace("\"", '', explode('=', $matches[0][0], 2)[1]);
-                } else {
-                    return $text;
-                }
-            } catch (Exception $e) {
+        if(!empty($text)) {
+            if(isset($strings[$text])){
+                return $strings[$text];
+            } else {
                 return $text;
             }
-
         } else {
             return '';
         }
@@ -1586,8 +1578,8 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->setQuery($query);
             $db->execute();
 
-            $label_fr = $this->getTranslation($tag, $Content_Folder['fr']);
-            $label_en = $this->getTranslation($tag, $Content_Folder['en']);
+            $label_fr = $this->getTranslation($tag, 'fr-FR');
+            $label_en = $this->getTranslation($tag, 'en-GB');
 
             return array(
                 'elements' => array(),
@@ -2268,8 +2260,8 @@ this.set(words.join(&quot; &quot;));
                         $sub_labels = [];
                         foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
                             $labels_to_duplicate = array(
-                                'fr' => $this->getTranslation($sub_label, $Content_Folder['fr']),
-                                'en' => $this->getTranslation($sub_label, $Content_Folder['en'])
+                                'fr' => $this->getTranslation($sub_label, 'fr-FR'),
+                                'en' => $this->getTranslation($sub_label, 'en-GB')
                             );
                             if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
                                 $labels_to_duplicate = array(
@@ -2286,8 +2278,8 @@ this.set(words.join(&quot; &quot;));
                     $query->update($db->quoteName('#__fabrik_elements'));
 
                     $labels_to_duplicate = array(
-                        'fr' => $this->getTranslation($element->element->label, $Content_Folder['fr']),
-                        'en' => $this->getTranslation($element->element->label, $Content_Folder['en'])
+                        'fr' => $this->getTranslation($element->element->label, 'fr-FR'),
+                        'en' => $this->getTranslation($element->element->label, 'en-GB')
                     );
                     if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
                         $labels_to_duplicate = array(
@@ -2399,7 +2391,7 @@ this.set(words.join(&quot; &quot;));
 
                 if ($el_params->sub_options) {
                     foreach ($el_params->sub_options->sub_labels as $key => $sub_label) {
-                        $el_params->sub_options->sub_labels[$key] = $this->getTranslation($sub_label,$Content_Folder[$actualLanguage]);
+                        $el_params->sub_options->sub_labels[$key] = $this->getTranslation($sub_label,'fr-FR');
                     }
                 }
 
@@ -2407,8 +2399,8 @@ this.set(words.join(&quot; &quot;));
                 ${"element".$o_element->id}->params=$el_params;
                 ${"element".$o_element->id}->label_tag = $o_element->label;
                 ${"element" . $o_element->id}->label = new stdClass;
-                ${"element".$o_element->id}->label->fr = $this->getTranslation(${"element".$o_element->id}->label_tag,$Content_Folder['fr']);
-                ${"element".$o_element->id}->label->en = $this->getTranslation(${"element".$o_element->id}->label_tag,$Content_Folder['en']);
+                ${"element".$o_element->id}->label->fr = $this->getTranslation(${"element".$o_element->id}->label_tag,'fr-FR');
+                ${"element".$o_element->id}->label->en = $this->getTranslation(${"element".$o_element->id}->label_tag,'en-GB');
                 if(${"element" . $o_element->id}->label->fr === false){
                     ${"element" . $o_element->id}->label->fr = $o_element->label;
                 }
@@ -2574,12 +2566,12 @@ this.set(words.join(&quot; &quot;));
 
             foreach ($models as $model) {
                 $model->label = array(
-                    'fr' => $this->getTranslation($model->label,$Content_Folder['fr']),
-                    'en' => $this->getTranslation($model->label,$Content_Folder['en'])
+                    'fr' => $this->getTranslation($model->label,'fr-FR'),
+                    'en' => $this->getTranslation($model->label,'en-GB')
                 );
                 $model->intro = array(
-                    'fr' => $this->getTranslation($model->intro,$Content_Folder['fr']),
-                    'en' => $this->getTranslation($model->intro,$Content_Folder['en'])
+                    'fr' => $this->getTranslation($model->intro,'fr-FR'),
+                    'en' => $this->getTranslation($model->intro,'en-GB')
                 );
             }
 
@@ -2860,7 +2852,7 @@ this.set(words.join(&quot; &quot;));
                 } else {
                     $labels_to_duplicate = array();
                     foreach ($languages as $language) {
-                        $labels_to_duplicate[$language->sef] = $this->getTranslation($group_model->label,$Content_Folder[$language->sef]);
+                        $labels_to_duplicate[$language->sef] = $this->getTranslation($group_model->label,$language->lang_code);
                         if($label[$language->sef] == ''){
                             $label[$language->sef] = $group_model->label;
                         }
@@ -2896,7 +2888,7 @@ this.set(words.join(&quot; &quot;));
                             foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
                                 $labels_to_duplicate = array();
                                 foreach ($languages as $language) {
-                                    $labels_to_duplicate[$language->sef] = $this->getTranslation($sub_label,$Content_Folder[$language->sef]);
+                                    $labels_to_duplicate[$language->sef] = $this->getTranslation($sub_label,$language->lang_code);
                                     if($label[$language->sef] == ''){
                                         $label[$language->sef] = $sub_label;
                                     }
@@ -2911,7 +2903,7 @@ this.set(words.join(&quot; &quot;));
 
                         $labels_to_duplicate = array();
                         foreach ($languages as $language) {
-                            $labels_to_duplicate[$language->sef] = $this->getTranslation($element->element->label,$Content_Folder[$language->sef]);
+                            $labels_to_duplicate[$language->sef] = $this->getTranslation($element->element->label,$language->lang_code);
                             if($label[$language->sef] == ''){
                                 $label[$language->sef] = $element->element->label;
                             }

@@ -194,7 +194,7 @@ class EmundusonboardModelform extends JModelList {
             foreach ( $evaluation_forms as $evaluation_form ) {
                 $label= [];
                 foreach ($languages as $language) {
-                    $label[$language->sef] = $formbuilder->getTranslation($evaluation_form->label,$Content_Folder[$language->sef]) ?: $evaluation_form->label;
+                    $label[$language->sef] = $formbuilder->getTranslation($evaluation_form->label,$language->lang_code) ?: $evaluation_form->label;
                 }
                 $evaluation_form->label=$label;
             }
@@ -681,8 +681,8 @@ class EmundusonboardModelform extends JModelList {
                         $intro = array();
 
                         foreach ($languages as $language) {
-                            $label[$language->sef] = $formbuilder->getTranslation($form->label,$Content_Folder[$language->sef]);
-                            $intro[$language->sef] = $formbuilder->getTranslation($form->intro,$Content_Folder[$language->sef]);
+                            $label[$language->sef] = $formbuilder->getTranslation($form->label,$language->lang_code);
+                            $intro[$language->sef] = $formbuilder->getTranslation($form->intro,$language->lang_code);
                             if($label[$language->sef] == ''){
                                 $label[$language->sef] = $form->label;
                             }
