@@ -10,14 +10,30 @@
       <div class="col-md-12 tags__list-block" style="justify-content: center">
         <div v-for="(category, index) in tags" class="col-md-3 tags__category-block">
           <div class="d-flex mb-1">
-            <h5 class="mb-0" :id="'tags_category_' + index" :contenteditable="editable.category === index" @keypress.enter.prevent="saveCategory(index)">{{category.category}}</h5>
+            <h5 class="mb-0" :class="editable.category === index ? 'tags__category-editing' : ''" :id="'tags_category_' + index" :contenteditable="editable.category === index" @keypress.enter.prevent="saveCategory(index)">{{category.category}}</h5>
             <span @click="setEditableCategory(index,category.category)">
               <i class="fas fa-pen tags__edit-label"></i>
             </span>
           </div>
-          <div>
+          <div class="tags__category-block-list">
             <div v-for="(tag, key) in category[0]" class="tags__tag-item">
-              <span :class="tag.class + ' tags__tag-item-span'">{{tag.label}}</span>
+              <div class="w-100 d-flex">
+                <span :class="['tags__tag-item-span',editable.tag === tag.id ? 'tags__category-editing' : tag.class]" :id="'tags_item_' + tag.id" :contenteditable="editable.tag === tag.id" @keypress.enter.prevent="saveTag(tag.id,index,key)">{{tag.label}}</span>
+                <v-swatches
+                    v-model="tag_class"
+                    v-if="editable.tag === tag.id"
+                    :swatches="swatches"
+                    shapes="circles"
+                    row-length="8"
+                    show-border
+                    popover-x="left"
+                    popover-y="top"
+                    swatch-size="30"
+                ></v-swatches>
+              </div>
+              <span @click="setEditableTag(tag.id, tag.class)">
+                <i class="fas fa-pen tags__edit-label"></i>
+              </span>
             </div>
             <a @click="pushTag(index,category.category)" class="bouton-ajouter-green bouton-ajouter pointer tags__add-button" style="width: max-content">
               <div class="add-button-div">
@@ -73,6 +89,7 @@
             return {
                 tags: [],
                 categories: [],
+                tag_class: '#000',
                 oldcategory: null,
 
                 editable:{
@@ -108,11 +125,11 @@
 
             },
 
-            getHexColors(element) {
-                let tags_class = document.querySelector('.' + element.class);
+            getHexColors(color_class) {
+                let tags_class = document.querySelector('.' + color_class);
                 let style = getComputedStyle(tags_class);
                 let rgbs = style.backgroundColor.split('(')[1].split(')')[0].split(',');
-                element.class = this.rgbToHex(parseInt(rgbs[0]),parseInt(rgbs[1]),parseInt(rgbs[2]));
+                return this.rgbToHex(parseInt(rgbs[0]),parseInt(rgbs[1]),parseInt(rgbs[2]));
             },
 
             rgbToHex(r, g, b) {
@@ -183,8 +200,27 @@
                 this.$emit("StopLoading");
                 this.tags[category].category = document.getElementById('tags_category_' + category).textContent;
               });
-               // console.log(document.getElementById('tags_category_' + category).textContent)
-              // Need to post category label with axios
+            },
+
+            saveTag(tag,index,key) {
+              this.editable.tag = null;
+              axios({
+                method: "post",
+                url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatetag',
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded"
+                },
+                data: qs.stringify({
+                  id: tag,
+                  newtag: document.getElementById('tags_item_' + tag).textContent,
+                  color: this.tag_class
+                })
+              }).then((response) => {
+                this.tag_class = null;
+                console.log(response.data);
+                this.tags[index][0][key].class = 'label-' + response.data;
+                this.$emit("StopLoading");
+              });
             },
 
             setEditableCategory(index,category){
@@ -193,7 +229,14 @@
               setTimeout(function() {
                 document.getElementById('tags_category_' + index).focus();
               }, 100);
+            },
 
+            setEditableTag(tag,class_color){
+              this.editable.tag = tag;
+              this.tag_class = this.getHexColors(class_color)
+              setTimeout(function() {
+                document.getElementById('tags_item_' + tag).focus();
+              }, 100);
             }
         },
 
@@ -224,9 +267,6 @@
         height: 15px;
     }
 
-    .tags-item .vue-swatches__wrapper{
-        right: 3.8em;
-    }
     .bouton-sauvergarder-et-continuer{
       justify-content: center;
     }

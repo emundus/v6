@@ -155,6 +155,28 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
+    function updateTag($id,$tag,$color){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $classes = $this->getColorClasses();
+        $class = array_search($color, $classes);
+
+        $query->update('#__emundus_setup_action_tag')
+            ->set($db->quoteName('label') . ' = ' . $db->quote($tag))
+            ->set($db->quoteName('class') . ' = ' . $db->quote('label-' . $class))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($id));
+
+        try {
+            $db->setQuery($query);
+            $db->execute();
+            return $class;
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/settings | Cannot create a tag : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
     function updateTagCategory($oldcategory,$newcategory) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);

@@ -1360,6 +1360,9 @@ textarea {
   position: absolute;
   right: 0;
 }
+.vue-swatches__container {
+  margin-bottom: -10px !important;
+}
 .vue-swatches__wrapper {
   display: flex;
   flex-wrap: wrap;
@@ -1370,8 +1373,8 @@ textarea {
   justify-content: center;
   margin-top: -10em;
   z-index: 999;
-  right: 4em;
-  &::after {
+  right: 6em;
+  /*&::after {
     width: 0;
     height: 0;
     border-left: 10px solid transparent;
@@ -1381,10 +1384,12 @@ textarea {
     position: absolute;
     bottom: -10px;
     right: 10px;
-  }
+  }*/
 }
 .vue-swatches__trigger {
   cursor: pointer;
+  width: 30px !important;
+  height: 30px !important;
 }
 .vue-swatches__swatch {
   width: 25px !important;
@@ -1969,6 +1974,16 @@ textarea {
   border: 2px solid #eeebeb;
   box-shadow: 1px 2px 2px rgb(39 39 39 / 3%);
 }
+.tags__category-block-list{
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 70%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.tags__category-block-list::-webkit-scrollbar {
+  display: none;
+}
 .tags__category-block-empty{
   height: 50vh;
   padding: 16px !important;
@@ -1985,14 +2000,22 @@ textarea {
     opacity: 0.5;
   }
 }
+.tags__category-editing{
+  border: dashed 1px #bdbdbd;
+  padding: 5px;
+  border-radius: 5px;
+}
 .tags__tag-item{
-  margin: 10px 0;
-  width: 60%;
+  margin: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .tags__tag-item-span{
   padding: 10px;
   margin: 10px;
-  border-radius: 25px;
+  border-radius: 5px;
+  width: 60% !important;
 }
 .tags__add-button{
   width: 80%;
@@ -2007,6 +2030,7 @@ textarea {
   font-size: 12px;
   opacity: 0.5;
   margin-left: 10px;
+  cursor: pointer;
 }
 
 /**** CUSTOM VUE DROPZONE ****/

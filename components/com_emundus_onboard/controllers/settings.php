@@ -88,6 +88,24 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         exit;
     }
 
+    public function updatetag() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $tagid = $jinput->getInt('id');
+            $newtag = $jinput->getString('newtag');
+            $color = $jinput->getString('color');
+            $class = $m_settings->updateTag($tagid,$newtag,$color);
+        }
+        echo $class;
+        exit;
+    }
+
     public function createtagcategory() {
         $user = JFactory::getUser();
 
