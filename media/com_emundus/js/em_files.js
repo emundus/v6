@@ -4349,7 +4349,7 @@ $(document).ready(function() {
                             }),
                             success: function (result) {
                                 if(result.status) {
-                                    $('#filt_save_pdf').append('<option value="' + result.filter + '" selected="">' + filName + '</option>');
+                                    $('#filt_save_pdf').append('<option value="' + result.filter.id + '" selected="">' + result.filter.name + '</option>');
                                     $('#filt_save_pdf').trigger("chosen:updated");
                                     $('#sav-filter').show();
 
