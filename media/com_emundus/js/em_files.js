@@ -3866,12 +3866,100 @@ $(document).ready(function() {
                                        let constraints = result.filter.constraints;
                                        let json = JSON.parse(constraints);
                                        let progCode = json.pdffilter.code;
+                                       let campCode = json.pdffilter.camp;
 
-                                       if($("#em-export-prg option[value='" + progCode + "']").length > 0 === true) {
-                                           setModel(json);      /// if prog is found --> keep going
-                                       } else {
-                                           $('#loadingimg-campaign').remove();
-                                           $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
+                                       /// case 1 :: one program
+                                       if($("#em-export-prg option").length == 2) {
+                                           // if only program is preselected --> check the camp
+                                           if($("#em-export-camp option[value='" + campCode + "']").length > 0 === true) {
+                                               let elements = json.pdffilter.elements;
+                                               let checkAllGroups = json.pdffilter.checkAllGroups;
+                                               let checkAllTables = json.pdffilter.checkAllTables;
+                                               let attachments = json.pdffilter.attachments;
+
+                                               $('#em-export-camp').val(campCode);
+                                               $('#em-export-camp').trigger("chosen:updated");
+                                               $('#em-export-camp').trigger("change");
+
+                                               if (elements[0] !== "") {
+                                                   $.ajax({
+                                                       type: 'post',
+                                                       url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
+                                                       dataType: 'JSON',
+                                                       data: {elts: elements.toString()},
+                                                       async: false,
+                                                       success: function (returnData) {
+                                                           // build profile(s)
+                                                           let profiles = returnData.fabrik_data.profiles;
+
+                                                           profiles.forEach(prf => {
+                                                               checkElement('#felts'+prf.id).then((selector) => {
+                                                                   $('#' + selector.id).show();        // show felts
+                                                                   $('#loadingimg-campaign').remove();
+                                                                   $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
+                                                                   $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
+
+                                                                   // uncheck all checkbox of each felts
+                                                                   if($('#form-exists input:checked').length > 0) {
+                                                                       $('#form-exists input:checked').prop('checked', false);
+                                                                   }
+
+                                                                   // render tables
+                                                                   if (checkAllTables !== null || checkAllTables !== undefined || checkAllTables[0] !== "") {
+                                                                       checkAllTables.forEach(tbl => {
+                                                                           $('#emundus_checkall_tbl_' + tbl).attr('checked', true);
+                                                                       })
+                                                                   }
+
+                                                                   if (checkAllGroups !== null || checkAllGroups !== undefined || checkAllGroups[0] !== "") {
+                                                                       checkAllGroups.forEach(grp => {
+                                                                           $('#emundus_checkall_grp_' + grp).attr('checked', true);
+                                                                       })
+                                                                   }
+
+                                                                   if (elements !== null || elements !== undefined || elements[0] !== "") {
+                                                                       elements.forEach(elt => {
+                                                                           $('#emundus_elm_' + elt).attr('checked', true);
+                                                                       })
+                                                                   }
+                                                               });
+                                                           })
+                                                       }
+                                                   })
+                                               }
+
+                                               /// render attachments
+                                               checkElement('#aelts-' + progCode + campCode).then((selector) => {
+                                                   /// show #aelts
+                                                   $('#' + selector.id).show();
+
+                                                   /// set button css (+ vs -)
+
+                                                   $('#aelts').find('.btn-info').attr('class', 'btn-xs btn btn-elements-success');
+
+                                                   ///btn-xs btn btn-elements-success
+                                                   $('#aelts').find('.glyphicon-plus').attr('class', 'glyphicon glyphicon-minus');
+
+                                                   /// check to selected elements
+                                                   attachments.forEach((doc) => {
+                                                       $('[id="' + doc + '"]').prop('checked', true);
+                                                   })
+                                               })
+
+                                           } else {
+                                               $('#loadingimg-campaign').remove();
+                                               $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
+                                           }
+                                       }
+
+                                       /// case 2 :: many programs
+                                       if($("#em-export-prg option").length > 2) {
+                                           if ($("#em-export-prg option[value='" + progCode + "']").length > 0 === true) {
+                                               setModel(json);      /// if prog is found --> keep going
+                                           } else {
+                                               $('#loadingimg-campaign').remove();
+                                               $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
+                                           }
                                        }
                                }
                            }, error: function(jqXHR) {console.log(jqXHR.responseText);}
@@ -6987,10 +7075,9 @@ function setModel(json) {
 function setProgram(progCode) {
     $('#em-export-prg').val(progCode);
     $('#em-export-prg').trigger("chosen:updated");
-    $('#em-export-prg').trigger("click");
 }
 
-async function setCampaign(progCode,campCode,headers) {
+async function setCampaign(progCode,campCode, campLabel, headers) {
     await setProgram(progCode);
 
     $.ajax({
@@ -6999,18 +7086,19 @@ async function setCampaign(progCode,campCode,headers) {
         dataType: 'json',
         success: function(data) {
             if(data.status) {
-                $('#em-export-camp').empty();
+                // $('#em-export-camp').empty();
 
                 $('#em-export-camp').append(data.html);
 
-                if($("#em-export-camp option[value='" + campCode + "']").length > 0 === true) {
-                    $('#loadingimg-campaign').remove();
-                    $('#camp').show();
-                    $('#em-export-camp').val(campCode);
-                    $('#em-export-camp').trigger("chosen:updated");
-                    $('#em-export-camp').trigger("click");
-                    $('#em-export-camp').trigger("change");
-                }
+                $('#em-export-camp').empty();
+
+                // just keep exactly the val
+                $('#em-export-camp').append('<option value="'+ campCode +'" data-value="' + campCode + '">' + campLabel + '</option>');
+                $('#em-export-camp').trigger("chosen:updated");
+                $('#em-export-camp').trigger("change");
+                $('#camp').show();
+
+                $('#loadingimg-campaign').remove();
 
                 $('#em-export-opt').val(headers);
                 $('#em-export-opt').trigger("chosen:updated");
@@ -7034,7 +7122,9 @@ async function setProfiles(json) {
     let elements = json.pdffilter.elements;
     let headers = json.pdffilter.headers;
 
-    await setCampaign(progCode, campCode, headers);
+    let campLabel = json.pdffilter.camplabel;
+
+    await setCampaign(progCode, campCode, campLabel, headers);
 
     if (elements[0] !== "") {
         $.ajax({
