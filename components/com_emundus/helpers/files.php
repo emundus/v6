@@ -2697,7 +2697,20 @@ class EmundusHelperFiles
 	    $query = $db->getQuery(true);
 
         try {
-        	$query->insert($db->quoteName('#__emundus_filters'))
+            /// check if the model name exists
+            $raw_query = 'SELECT #__emundus_filters.name
+                            FROM #__emundus_filters 
+                            WHERE #__emundus_filters.name = ' . $db->quote($name) .
+                            ' AND SUBSTRING(#__emundus_filters.constraints, 3, 11) =' . $db->quote('excelfilter');
+
+            $db->setQuery($raw_query);
+            $isExistModel = $db->loadObjectList();
+
+            if(!empty($isExistModel)) {
+                $name = $name . '_' . date('d-m-Y-H:i:s');
+            }
+
+            $query->insert($db->quoteName('#__emundus_filters'))
 		        ->columns($db->quoteName(['time_date', 'user', 'name', 'constraints', 'item_id']))
 		        ->values($db->quote($time_date).",".$user_id.",".$db->quote($name).",".$db->quote($constraints).",".$itemid);
             $db->setQuery($query);
