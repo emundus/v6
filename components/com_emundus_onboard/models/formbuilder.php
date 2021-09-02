@@ -697,7 +697,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $params['date_time_format'] = 'H:i';
                     $params['bootstrap_time_class'] = 'input-medium';
                     $params['placeholder'] = 'dd/mm/yyyy';
-                    $params['date_store_as_local'] = 0;
+                    $params['date_store_as_local'] = 1;
                     $params['date_table_format'] = 'd\/m\/Y';
                     $params['date_form_format'] = 'Y-m-d';
                     $params['date_defaulttotoday'] = 0;
