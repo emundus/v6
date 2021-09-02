@@ -2200,13 +2200,12 @@ class EmundusModelApplication extends JModelList
 
                                     if (!empty($element->label) && $element->label!=' ' || $element->plugin === 'display') {
 
-                                        if ($element->plugin == 'date' && $element->content > 0) {
+                                        if ($element->plugin == 'date') {
 
                                             // Empty date elements are set to 0000-00-00 00:00:00 in DB.
-                                            // if ($show_empty_fields == 0 && $element->content == '0000-00-00 00:00:00') {
-                                            //     continue;
-                                            // }
-                                            if (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
+                                            if ($show_empty_fields == 0 && ($element->content == '0000-00-00 00:00:00' || empty($element->content))) {
+                                                continue;
+                                            } elseif (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
                                                 $elt = EmundusHelperDate::displayDate($element->content, $params->date_table_format, (int)$params->date_store_as_local);
                                             } else {
                                                 $elt = '';
