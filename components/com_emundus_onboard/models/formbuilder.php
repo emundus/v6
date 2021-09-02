@@ -1627,6 +1627,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @return mixed
      */
     function createSimpleElement($gid,$plugin,$attachementId = null,$evaluation = 0) {
+        $user = JFactory::getUser();
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -1688,10 +1689,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->set($db->quoteName('checked_out') . ' = 0')
                 ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
                 ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('created_by') . ' = 95')
+                ->set($db->quoteName('created_by') . ' = ' . $user->id)
                 ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
                 ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('modified_by') . ' = 95')
+                ->set($db->quoteName('modified_by') . ' = ' . $user->id)
                 ->set($db->quoteName('width') . ' = 0')
                 ->set($db->quoteName('default') . ' = ' . $db->quote($default))
                 ->set($db->quoteName('hidden') . ' = 0')
@@ -1771,7 +1772,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $query = "ALTER TABLE " . $dbtable . " ADD e_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
                 $db->setQuery($query);
                 $db->execute();
-                if($group_params->repeat_group_button == 1){
+                if($group_params->repeat_group_button == 1 || $fabrik_group->is_join == 1){
                     $repeat_table_name = $dbtable . "_" . $gid . "_repeat";
                     $query = "ALTER TABLE " . $repeat_table_name . " ADD e_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
                     $db->setQuery($query);
@@ -3197,68 +3198,85 @@ this.set(words.join(&quot; &quot;));
                 }
             }
 
+            // Check if the ID and parent_id already exists in the group
+            $ignore_elms = [];
+            foreach ($elements as $element => $value) {
+                if ($value->element->name == 'parent_id' || $value->element->name == 'id') {
+                    $ignore_elms[] = $value->element->name;
+                }
+            }
             // Insert parent_id in elements
-            $query->clear()
-                ->insert($db->quoteName('#__fabrik_elements'))
-                ->set($db->quoteName('name') . ' = ' . $db->quote('parent_id'))
-                ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
-                ->set($db->quoteName('plugin') . ' = ' . $db->quote('field'))
-                ->set($db->quoteName('label') . ' = ' . $db->quote('parent_id'))
-                ->set($db->quoteName('checked_out') . ' = 0')
-                ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('created_by') . ' = ' . $db->quote($user))
-                ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
-                ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
-                ->set($db->quoteName('width') . ' = 0')
-                ->set($db->quoteName('default') . ' = ' . $db->quote(''))
-                ->set($db->quoteName('hidden') . ' = 1')
-                ->set($db->quoteName('eval') . ' = 0')
-                ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
-                ->set($db->quoteName('parent_id') . ' = 0')
-                ->set($db->quoteName('published') . ' = 1')
-                ->set($db->quoteName('access') . ' = 1')
-                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
-            $db->setQuery($query);
-            $db->execute();
-            //
+            
+            if (!in_array('parent_id', $ignore_elms)) {
+                $query
+                    ->clear()
+                    ->insert($db->quoteName('#__fabrik_elements'))
+                    ->set($db->quoteName('name') . ' = ' . $db->quote('parent_id'))
+                    ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                    ->set($db->quoteName('plugin') . ' = ' . $db->quote('field'))
+                    ->set($db->quoteName('label') . ' = ' . $db->quote('parent_id'))
+                    ->set($db->quoteName('checked_out') . ' = 0')
+                    ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('created_by') . ' = ' . $db->quote($user))
+                    ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
+                    ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
+                    ->set($db->quoteName('width') . ' = 0')
+                    ->set($db->quoteName('default') . ' = ' . $db->quote(''))
+                    ->set($db->quoteName('hidden') . ' = 1')
+                    ->set($db->quoteName('eval') . ' = 0')
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
+                    ->set($db->quoteName('parent_id') . ' = 0')
+                    ->set($db->quoteName('published') . ' = 1')
+                    ->set($db->quoteName('access') . ' = 1')
+                    ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+                $db->setQuery($query);
+                $db->execute();
+            }
 
-            // Insert id in elements
-            $query->clear()
-                ->insert($db->quoteName('#__fabrik_elements'))
-                ->set($db->quoteName('name') . ' = ' . $db->quote('id'))
-                ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
-                ->set($db->quoteName('plugin') . ' = ' . $db->quote('internalid'))
-                ->set($db->quoteName('label') . ' = ' . $db->quote('id'))
-                ->set($db->quoteName('checked_out') . ' = 0')
-                ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('created_by') . ' = ' . $db->quote($user))
-                ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
-                ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
-                ->set($db->quoteName('width') . ' = 0')
-                ->set($db->quoteName('default') . ' = ' . $db->quote(''))
-                ->set($db->quoteName('hidden') . ' = 1')
-                ->set($db->quoteName('eval') . ' = 0')
-                ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
-                ->set($db->quoteName('parent_id') . ' = 0')
-                ->set($db->quoteName('published') . ' = 1')
-                ->set($db->quoteName('access') . ' = 1')
-                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
-            $db->setQuery($query);
-            $db->execute();
-            //
+            if (!in_array('id', $ignore_elms)) {
+                // Insert id in elements
+                $query
+                    ->clear()
+                    ->insert($db->quoteName('#__fabrik_elements'))
+                    ->set($db->quoteName('name') . ' = ' . $db->quote('id'))
+                    ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                    ->set($db->quoteName('plugin') . ' = ' . $db->quote('internalid'))
+                    ->set($db->quoteName('label') . ' = ' . $db->quote('id'))
+                    ->set($db->quoteName('checked_out') . ' = 0')
+                    ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('created_by') . ' = ' . $db->quote($user))
+                    ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
+                    ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
+                    ->set($db->quoteName('width') . ' = 0')
+                    ->set($db->quoteName('default') . ' = ' . $db->quote(''))
+                    ->set($db->quoteName('hidden') . ' = 1')
+                    ->set($db->quoteName('eval') . ' = 0')
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
+                    ->set($db->quoteName('parent_id') . ' = 0')
+                    ->set($db->quoteName('published') . ' = 1')
+                    ->set($db->quoteName('access') . ' = 1')
+                    ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+                $db->setQuery($query);
+                $db->execute();
+            }
 
-            $query = "ALTER TABLE " . $newtablename . " ADD COLUMN parent_id int(11) NULL AFTER id";
-            $db->setQuery($query);
-            $db->execute();
+            try {
 
-            $query = "CREATE INDEX fb_parent_fk_parent_id_INDEX ON " . $newtablename . " (parent_id);";
-            $db->setQuery($query);
-            $db->execute();
-            //
+                $query = "ALTER TABLE " . $newtablename . " ADD COLUMN parent_id int(11) NULL AFTER id";
+                $db->setQuery($query);
+                $db->execute();
+
+                $query = "CREATE INDEX fb_parent_fk_parent_id_INDEX ON " . $newtablename . " (parent_id);";
+                $db->setQuery($query);
+                $db->execute();
+
+            } catch(Exception $e) {
+                // This means that the parent_id already exists in the table.
+            }
 
             // Insert leftjoin in fabrik
             $query = $db->getQuery(true);
@@ -3288,7 +3306,11 @@ this.set(words.join(&quot; &quot;));
 
                 $query = "ALTER TABLE " . $newtablename . " ADD e_" . $form_id . "_" . $element->element->id . " " . $dbtype . " NULL";
                 $db->setQuery($query);
-                $db->execute();
+                try {
+                    $db->execute();
+                } catch (Exception $e) {
+                    continue;
+                }
             }
             //
 
