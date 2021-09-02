@@ -106,7 +106,6 @@ class EmundusonboardModelform extends JModelList {
 		if (empty($sort)) {
 			$sort = 'DESC';
 		}
-		$sortDb = 'sp.id ';
 
 		if ($filter == 'Unpublish') {
 			$filterDate = $db->quoteName('sp.status') . ' = 0';
@@ -128,6 +127,19 @@ class EmundusonboardModelform extends JModelList {
         $m_user = new EmundusModelUsers();
         $allowed_programs = $m_user->getUserGroupsProgramme(JFactory::getUser()->id);
 
+        // GET ALL PROFILES THAT ARE NOT LINKED TO A CAMPAIGN
+        $other_profile_query = $db->getQuery(true);
+
+        $other_profile_query->select([
+            'esp.*',
+            'esp.label AS form_label'
+        ])
+        ->from($db->quoteName('#__emundus_setup_profiles', 'esp'))
+        ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.profile_id').' = '.$db->quoteName('esp.id'))
+        ->where($db->quoteName('esc.profile_id') . ' IS NULL')
+        ->andWhere($db->quoteName('esp.published') . ' = 1')
+        ->andWhere($db->quoteName('esp.menutype') . ' IS NOT NULL');
+
         // Now we need to put the query together and get the profiles
 		$query->select([
 			    'sp.*',
@@ -139,8 +151,9 @@ class EmundusonboardModelform extends JModelList {
 			->andWhere($fullRecherche)
 			->andWhere($filterId)
             ->andWhere($db->quoteName('esc.training') . ' IN (' . implode(',', $db->quote($allowed_programs)). ')')
-			->group($sortDb)
-			->order($sortDb . $sort);
+			->group($db->quoteName('id'))
+			->order('id ' . $sort)
+            ->union($other_profile_query);
 
 		try {
 			$db->setQuery($query, $offset, $limit);
