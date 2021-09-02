@@ -28,19 +28,18 @@ use Joomla\CMS\HTML\HTMLHelper;
  * @since 1.5
  */
 class EmundusHelperDate {
-    static function displayDate($date,$format = 'DATE_FORMAT_LC2') {
+    static function displayDate($date,$format = 'DATE_FORMAT_LC2', $local = 1) {
         $config = JFactory::getConfig();
 
-        /**
-         * @TODO
-         * Get offset with emundus config Local or UTC
-         */
+         if ($local) {
+            $offset = $config->get('offset');
 
-        $offset = $config->get('offset');
-
-        $date_time = new DateTime($date, new DateTimeZone($offset));
-        $date_time->setTimezone(new DateTimeZone("UTC"));
-
+            $date_time = new DateTime($date, new DateTimeZone($offset));
+            $date_time->setTimezone(new DateTimeZone("UTC"));
+         } else {
+            $date_time = new DateTime($date);
+         }
+    
         return HtmlHelper::date($date_time->format("Y-m-d H:i:s"), Text::_($format));
     }
 }
