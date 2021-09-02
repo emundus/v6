@@ -111,6 +111,9 @@ export default {
         this.updateProposal++;
       } else {
         this.finishedQcm = true;
+        setTimeout(() => {
+          window.location.reload();
+        },3000);
       }
     },
     saveAnswer(answer){
