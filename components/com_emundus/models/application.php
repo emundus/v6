@@ -35,6 +35,7 @@ class EmundusModelApplication extends JModelList
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+        require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
 
         $this->_mainframe = JFactory::getApplication();
 
@@ -1869,27 +1870,10 @@ class EmundusModelApplication extends JModelList
 
                                                 $params = json_decode($elements[$j]->params);
 
-                                                if ($elements[$j]->plugin == 'date') {
-                                                    if (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
-                                                        $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
-                                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
-                                                        $elt = $dt->format($params->date_form_format);
-                                                    } else {
-                                                        $elt = '';
-                                                    }
+                                                if ($elements[$j]->plugin == 'date' && (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00')) {
+                                                    $elt = EmundusHelperDate::displayDate($r_elt, $params->date_table_format, (int)$params->date_store_as_local);
                                                 } elseif (($elements[$j]->plugin == 'birthday' || $elements[$j]->plugin == 'birthday_remove_slashes') && $r_elt > 0) {
-                                                    preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
-                                                    if (count($matches) == 0) {
-                                                        $elt = $r_elt;
-                                                    } else {
-                                                        $format = $params->list_date_format;
-                                                        $d = DateTime::createFromFormat($format, $r_elt);
-                                                        if ($d && $d->format($format) == $r_elt) {
-                                                            $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
-                                                        } else {
-                                                            $elt = JHtml::_('date', $r_elt, $format);
-                                                        }
-                                                    }
+                                                    $elt = EmundusHelperDate::displayDate($r_elt, $params->list_date_format);
                                                 } elseif ($elements[$j]->plugin == 'databasejoin') {
                                                     $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
 
@@ -2062,28 +2046,10 @@ class EmundusModelApplication extends JModelList
 
                                             if ((!empty($r_elt) || $r_elt == 0) && $key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
-                                                if ($elements[$j]->plugin == 'date') {
-                                                    if (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
-                                                        $date_params = json_decode($elements[$j]->params);
-                                                        $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
-                                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
-                                                        $elt = $dt->format($date_params->date_form_format);
-                                                    } else {
-                                                        $elt = '';
-                                                    }
-                                                } elseif (($elements[$j]->plugin == 'birthday' || $elements[$j]->plugin == 'birthday_remove_slashes') && $r_elt > 0) {
-                                                    preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
-                                                    if (count($matches) == 0) {
-                                                        $elt = $r_elt;
-                                                    } else {
-                                                        $format = json_decode($elements[$j]->params)->list_date_format;
-                                                        $d = DateTime::createFromFormat($format, $r_elt);
-                                                        if ($d && $d->format($format) == $r_elt) {
-                                                            $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
-                                                        } else {
-                                                            $elt = JHtml::_('date', $r_elt, $format);
-                                                        }
-                                                    }
+                                                if ($elements[$j]->plugin == 'date' && (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00')) {
+                                                    $elt = EmundusHelperDate::displayDate($r_elt, $params->date_table_format, (int)$params->date_store_as_local);
+                                                }  elseif (($elements[$j]->plugin == 'birthday' || $elements[$j]->plugin == 'birthday_remove_slashes') && $r_elt > 0) {
+                                                    $elt = EmundusHelperDate::displayDate($r_elt, $params->list_date_format);
                                                 } elseif ($elements[$j]->plugin == 'databasejoin') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
@@ -2237,29 +2203,16 @@ class EmundusModelApplication extends JModelList
                                         if ($element->plugin == 'date' && $element->content > 0) {
 
                                             // Empty date elements are set to 0000-00-00 00:00:00 in DB.
-                                            if ($show_empty_fields == 0 && $element->content == '0000-00-00 00:00:00') {
-                                                continue;
-                                            }
+                                            // if ($show_empty_fields == 0 && $element->content == '0000-00-00 00:00:00') {
+                                            //     continue;
+                                            // }
                                             if (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
-                                                $dt = new DateTime($element->content, new DateTimeZone('UTC'));
-                                                $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
-                                                $elt = $dt->format($params->date_form_format);
+                                                $elt = EmundusHelperDate::displayDate($element->content, $params->date_table_format, (int)$params->date_store_as_local);
                                             } else {
                                                 $elt = '';
                                             }
                                         } elseif (($element->plugin == 'birthday' || $element->plugin == 'birthday_remove_slashes') && $element->content > 0) {
-                                            preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
-                                            if (count($matches) == 0) {
-                                                $elt = $element->content;
-                                            } else {
-                                                $format = $params->list_date_format;
-                                                $d = DateTime::createFromFormat($format, $element->content);
-                                                if ($d && $d->format($format) == $element->content) {
-                                                    $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-                                                } else {
-                                                    $elt = JHtml::_('date', $element->content, $format);
-                                                }
-                                            }
+                                            $elt = EmundusHelperDate::displayDate($element->content, $params->list_date_format);
                                         } elseif ($element->plugin == 'databasejoin') {
                                             $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 
