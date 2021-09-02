@@ -2724,8 +2724,9 @@ class EmundusHelperFiles
         if(!empty($params)) {
             try {
                 // step 1 --> check if the model name exists
-//                $raw_query = 'SELECT #__emundus_filters.name FROM #__emundus_filters WHERE #__emundus_filters.name LIKE ' . $db->quote('%' . $params['name'] . '%');
-                $raw_query = 'SELECT #__emundus_filters.name FROM #__emundus_filters WHERE #__emundus_filters.name = ' . $db->quote($params['name']);
+                $raw_query = 'SELECT #__emundus_filters.name 
+                                FROM #__emundus_filters 
+                                WHERE #__emundus_filters.name = ' . $db->quote($params['name']) . ' AND #__emundus_filters.mode = ' . $db->quote('pdf');
                 $db->setQuery($raw_query);
                 $isExistModel = $db->loadObjectList();
 
