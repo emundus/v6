@@ -3835,6 +3835,7 @@ $(document).ready(function() {
                 $('#filt_save_pdf').on('change', function() {
                     var model = $('#filt_save_pdf').val();
 
+                    $('#model-err-pdf').remove();
                     $('.modal-header').before('<div id="loadingimg-campaign"><img src="'+loading+'" alt="loading"/></div>');
 
                    if(model != 0) {
@@ -3864,8 +3865,14 @@ $(document).ready(function() {
                                    if(result.status) {
                                        let constraints = result.filter.constraints;
                                        let json = JSON.parse(constraints);
+                                       let progCode = json.pdffilter.code;
 
-                                       setModel(json);
+                                       if($("#em-export-prg option[value='" + progCode + "']").length > 0 === true) {
+                                           setModel(json);      /// if prog is found --> keep going
+                                       } else {
+                                           $('#loadingimg-campaign').remove();
+                                           $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
+                                       }
                                }
                            }, error: function(jqXHR) {console.log(jqXHR.responseText);}
                        });
@@ -4342,7 +4349,7 @@ $(document).ready(function() {
                             }),
                             success: function (result) {
                                 if(result.status) {
-                                    $('#filt_save_pdf').append('<option value="' + result.filter + '" selected="">' + filName + '</option>');
+                                    $('#filt_save_pdf').append('<option value="' + result.filter.id + '" selected="">' + result.filter.name + '</option>');
                                     $('#filt_save_pdf').trigger("chosen:updated");
                                     $('#sav-filter').show();
 
@@ -6971,15 +6978,10 @@ function getXMLHttpRequest() {
 
 function setModel(json) {
     let progCode = json.pdffilter.code;
+    let campCode = json.pdffilter.camp;
 
-    if($("#em-export-prg option[value='" + progCode + "']").length > 0 === true) {
-        if(progCode !== $('#em-export-prg').val()) {
-            setProgram(progCode);
-        }
-        // setProfiles(json);
-
-        setDocuments(json);
-    }
+    setProgram(progCode);
+    setDocuments(json);
 }
 
 function setProgram(progCode) {
@@ -7016,8 +7018,9 @@ async function setCampaign(progCode,campCode,headers) {
 
                 $('.modal-header').before('<div id="loadingimg-campaign"><img src="'+loading+'" alt="loading"/></div>');
             }
-        }, error: function(jqXHR) {
-
+        },
+        error: function (jqXHR) {
+            /// show jqXHR.responseText
         }
     })
 }

@@ -2742,7 +2742,7 @@ class EmundusHelperFiles
 
                 $db->setQuery($query);
                 $db->execute();
-                return $db->insertid();
+                return array('id' => $db->insertid(), 'name' => $params['name']);
             } catch (Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                 return false;

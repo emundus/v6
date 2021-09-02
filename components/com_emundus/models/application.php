@@ -1738,9 +1738,15 @@ class EmundusModelApplication extends JModelList
                     $forms .= '<h2' . $breaker . '>';
                     $title = explode('-', JText::_($itemt->label));
                     if (empty($title[1])) {
-                        $forms .= '<b><h2>' . preg_replace('/\s+/', ' ', JText::_(trim($itemt->label))) . '</h2></b>';
+                        $form_label = preg_replace('/\s+/', ' ', JText::_(trim($itemt->label)));
+                        if(!empty($form_label)) {
+                            $forms .= '<b><h2>' . $form_label . '</h2></b>';
+                        }
                     } else {
-                        $forms .= '<b><h2>' . preg_replace('/\s+/', ' ', JText::_(trim($title[1]))) . '</h2></b>';
+                        $form_label = preg_replace('/\s+/', ' ', JText::_(trim($title[1])));
+                        if(!empty($form_label)) {
+                            $forms .= '<b><h2>' . $form_label . '</h2></b>';
+                        }
                     }
                 }
 
@@ -1791,7 +1797,7 @@ class EmundusModelApplication extends JModelList
                             }
                         }
 
-                        $forms .= '<h3 class="group">' . JText::_($itemg->label) . '</h3>';
+                        $group_label =  JText::_($itemg->label);
 
                         if ($itemg->group_id == 14) {
                             $forms .= '<table>';
@@ -1822,6 +1828,9 @@ class EmundusModelApplication extends JModelList
                             $check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
 
                             if ($check_repeat_groups) {
+                                if(!empty($group_label)){
+                                    $forms .= '<h3 class="group">' . $group_label . '</h3>';
+                                }
                                 $forms .= '<p><table class="adminlist"><thead><tr  class="background"> ';
                                 foreach ($elements as &$element) {
                                     $forms .= '<th scope="col" class="background"><strong>' . JText::_($element->label) . '</strong></th>';
@@ -2019,6 +2028,9 @@ class EmundusModelApplication extends JModelList
                             $check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
 
                             if ($check_repeat_groups) {
+                                if(!empty($group_label)){
+                                    $forms .= '<h3 class="group">' . $group_label . '</h3>';
+                                }
                                 if ($itemg->group_id == 174) {
                                     $query = 'SELECT `' . implode("`,`", $t_elt) . '`, id FROM ' . $table . '
                                         WHERE parent_id=(SELECT id FROM ' . $itemt->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum) . ') OR applicant_id=' . $aid;
@@ -2186,6 +2198,9 @@ class EmundusModelApplication extends JModelList
 
                             // AFFICHAGE EN LIGNE
                         } else {
+                            if(!empty($group_label)){
+                                $forms .= '<h3 class="group">' . $group_label . '</h3>';
+                            }
                             $forms .= '<table>';
                             foreach ($elements as $element) {
                                 $params = json_decode($element->params);
@@ -2356,6 +2371,7 @@ class EmundusModelApplication extends JModelList
                         }
                     }
                 }
+                $forms .= '<p></p>';
             }
         }
         $forms .= '</p></p>';
