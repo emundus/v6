@@ -4,13 +4,13 @@
       <transition :name="'slide-down'" type="transition">
         <div>
             <nav aria-label="action" class="actions-dropdown">
-              <a v-on:click="publishSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire'">
+              <a v-on:click="publishSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire' && !published">
                 {{ translations.ActionPublish }}
               </a>
-              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire'">
+              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire' && published">
                 {{ translations.ActionUnpublish }}
               </a>
-              <a v-on:click="publishSelected(checkItem)" class="action-submenu" style="border-right: 0" v-if="data.type === 'formulaire'">
+              <a v-on:click="publishSelected(checkItem)" class="action-submenu" style="border-right: 0" v-if="data.type === 'formulaire' && !published">
                 {{ translations.Restore }}
               </a>
               <a v-if="data.type === 'campaign' || data.type === 'formulaire'"
@@ -21,7 +21,7 @@
               <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire' && data.type !== 'campaign'">
                 {{ translations.ActionDelete }}
               </a>
-              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" style="border-left: 0"  v-if="data.type === 'formulaire'">
+              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" style="border-left: 0"  v-if="data.type === 'formulaire' && published">
                 {{ translations.Archive }}
               </a>
             </nav>
@@ -51,6 +51,7 @@
       data: Object,
       isEmpty: Boolean,
       selected: String,
+      published: Boolean,
     },
 
     computed: {

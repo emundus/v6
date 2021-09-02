@@ -4039,10 +4039,10 @@ $(document).ready(function() {
                             }
                         })
 
-                        checkElement('[id^=felts]').then((selector)=>{
-                            $('[id^=emundus_checkall_tbl_]').trigger('click');
-                            $('.emundusall').prop('checked', true);
-                        })
+                        // checkElement('[id^=felts]').then((selector)=>{
+                        //     $('[id^=emundus_checkall_tbl_]').trigger('click');
+                        //     $('.emundusall').prop('checked', true);
+                        // })
 
                         $.ajax({
                             type:'get',
@@ -6976,7 +6976,9 @@ function setModel(json) {
         if(progCode !== $('#em-export-prg').val()) {
             setProgram(progCode);
         }
-        setProfiles(json);
+        // setProfiles(json);
+
+        setDocuments(json);
     }
 }
 
@@ -7077,6 +7079,31 @@ async function setProfiles(json) {
             }
         })
     }
+}
+
+// this function must wait for setProfiles finish
+async function setDocuments(json) {
+    let progCode = json.pdffilter.code;
+    let campCode = json.pdffilter.camp;
+    let attachments = json.pdffilter.attachments;
+
+    await setProfiles(json);
+    checkElement('#aelts-' + progCode + campCode).then((selector) => {
+        /// show #aelts
+        $('#' + selector.id).show();
+
+        /// set button css (+ vs -)
+
+        $('#aelts').find('.btn-info').attr('class', 'btn-xs btn btn-elements-success');
+
+        ///btn-xs btn btn-elements-success
+        $('#aelts').find('.glyphicon-plus').attr('class', 'glyphicon glyphicon-minus');
+
+        /// check to selected elements
+        attachments.forEach((doc) => {
+            $('[id="' + doc + '"]').prop('checked', true);
+        })
+    })
 }
 
 const checkElement = async selector => {

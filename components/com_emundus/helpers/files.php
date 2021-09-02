@@ -2723,7 +2723,18 @@ class EmundusHelperFiles
 
         if(!empty($params)) {
             try {
-                // step 1 :: insert data here
+                // step 1 --> check if the model name exists
+                $raw_query = 'SELECT #__emundus_filters.name 
+                                FROM #__emundus_filters 
+                                WHERE #__emundus_filters.name = ' . $db->quote($params['name']) . ' AND #__emundus_filters.mode = ' . $db->quote('pdf');
+                $db->setQuery($raw_query);
+                $isExistModel = $db->loadObjectList();
+
+                // step 2 :: insert data here
+                if(!empty($isExistModel)) {
+                    $params['name'] = $params['name'] . '_' . date('d-m-Y-H:i:s');
+                }
+
                 $query->clear()
                     ->insert($db->quoteName('#__emundus_filters'))
                     ->columns($db->quoteName(array_keys($params)))
