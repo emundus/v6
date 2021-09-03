@@ -14,36 +14,37 @@
       @before-open="beforeOpen"
     >
 
-            <div class="fixed-header-modal">
-              <div class="topright">
-                  <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalWarningFormBuilder')">
-                    <em class="fas fa-times"></em>
-                  </button>
-                </div>
-              <div class="update-field-header">
-                <h2 class="update-title-header">
-                   {{Warning}}
-                </h2>
-                <p>
-                  {{FormAffectedToFiles}}
-                </p>
-              </div>
-            </div>
+    <div class="fixed-header-modal">
+      <div class="topright">
+          <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalWarningFormBuilder')">
+            <em class="fas fa-times"></em>
+          </button>
+      </div>
+      <div class="update-field-header">
+        <h2 class="update-title-header">
+          {{Warning}}
+        </h2>
+        <p>
+          {{FormAffectedToFiles}}
+        </p>
+      </div>
 
       <div class="modalC-content">
         <div class="d-flex justify-content-between mb-1">
-        <button class="bouton-sauvergarder-et-continuer w-retour"
-                type="button"
-                @click.prevent="$modal.hide('modalWarningFormBuilder')">
-          {{Retour}}
-        </button>
-          <button class="bouton-sauvergarder-et-continuer mr-1"
+          <button class="bouton-sauvergarder-et-continuer w-retour"
                   type="button"
-                  @click.prevent="formbuilder()">
-          {{ Update }}
-        </button>
+                  @click.prevent="$modal.hide('modalWarningFormBuilder')">
+            {{Retour}}
+          </button>
+            <button class="bouton-sauvergarder-et-continuer mr-1"
+                    type="button"
+                    @click.prevent="formbuilder()">
+            {{ Update }}
+          </button>
+        </div>
       </div>
-      </div>
+    </div>
+
     </modal>
   </span>
 </template>
@@ -118,6 +119,6 @@ export default {
 
 <style scoped>
 .modalC-content{
-  margin-top: 55%;
+  margin-top: 0;
 }
 </style>
