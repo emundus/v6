@@ -201,7 +201,7 @@ class EmundusModelUsers extends JModelList {
             $query .= 'LEFT JOIN #__emundus_final_grade AS efg ON u.id = efg.student_id ';
         }
 
-        $query .= ' where 1=1 AND u.id != 1 ';
+        $query .= ' where 1=1 AND u.id NOT IN (1,62) ';
 
         if (isset($programme) && !empty($programme) && $programme[0] != '%') {
             $query .= ' AND ( esc.training IN ("'.implode('","', $programme).'")
@@ -1404,20 +1404,29 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
-    // get programme associated to user groups
-    public function getUserGroupsProgramme($uid, $index = 'id') {
-        try {
-            $query = "SELECT esg.id, esg.label, esgc.course
-                      FROM #__emundus_groups as g
-                      LEFT JOIN #__emundus_setup_groups AS esg ON g.group_id = esg.id
-                      LEFT JOIN #__emundus_setup_groups_repeat_course AS esgc ON esgc.parent_id=esg.id
-                      WHERE g.user_id = " .$uid;
-            $db = $this->getDbo();
-            $db->setQuery($query);
+    /**
+     * getUserGroupsProgramme
+     *
+     * @param  mixed $uid
+     * @return array
+     */
+    public function getUserGroupsProgramme(int $uid) : array {
 
-            return $db->loadAssocList($index);
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select($db->quoteName('esgc.course'))
+            ->from($db->quoteName('#__emundus_groups', 'g'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups','esg').' ON '.$db->quoteName('g.group_id').' = '.$db->quoteName('esg.id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','esgc').' ON '.$db->quoteName('esgc.parent_id').' = '.$db->quoteName('esg.id'))
+            ->where($db->quoteName('g.user_id') . ' = ' . $uid);
+            
+        $db->setQuery($query);
+        try {
+            return $db->loadColumn();
         } catch(Exception $e) {
-            return false;
+            return [];
         }
     }
 

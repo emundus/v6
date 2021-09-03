@@ -224,63 +224,16 @@ defined('_JEXEC') or die;
     ?>>
     <div style="opacity: 0" class="grey-navbar-icons"></div>
     <ul class="g-toplevel tchooz-vertical-toplevel">
-        <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="<?php echo JURI::base()?>/images/emundus/menus/menu.png" style="width: 30px"></button>
+        <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="<?php echo JURI::base()?>images/emundus/menus/menu.png" style="width: 30px"></button>
         <?php
 
-        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" href="/"><img src="'.JURI::base().'/images/emundus/tchooz_favicon.png" alt="Accueil"></a>
+        if(file_exists(JPATH_SITE . '/images/custom/favicon.png')){
+            $favicon = JURI::base().'/images/custom/favicon.png';
+        } else {
+            $favicon = JURI::base().'/images/emundus/tchooz_favicon.png';
+        }
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo" style="height: auto"><a class="item" href="/"><img src="'.$favicon.'" alt="Accueil"></a>
         </li>';
-
-
-        foreach ($list as $i => &$item) :
-
-            if($item->alias == 'homepage') :
-                $item->anchor_css="item";
-                $class = 'item-'.$item->id.' g-standard';
-                if ($item->id == $active_id) {
-                    $class .= ' current';
-                }
-
-                if (in_array($item->id, $path)) {
-                    $class .= ' active';
-                }
-                elseif ($item->type == 'alias') {
-                    $aliasToId = $item->params->get('aliasoptions');
-                    if (count($path) > 0 && $aliasToId == $path[count($path)-1]) {
-                        $class .= ' active';
-                    }
-                    elseif (in_array($aliasToId, $path)) {
-                        $class .= ' alias-parent-active';
-                    }
-                }
-
-                if ($item->parent) {
-                    $class .= ' g-parent';
-                }
-
-                if (!empty($class)) {
-                    $class = ' class="tchooz-vertical-item g-menu-item g-menu-'.trim($class) .'"';
-                }
-
-                echo '<li'.$class.'>';
-
-                // Render the menu item.
-                switch ($item->type) :
-                    case 'separator':
-                    case 'url':
-                    case 'component':
-                        require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_'.$item->type);
-                        break;
-
-                    default:
-                        require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_url');
-                        break;
-                endswitch;
-
-                echo '</li>';
-                echo '<hr id="menu_separator">';
-            endif;
-            break;
-        endforeach;
 
         if ($display_tchooz) :
             foreach ($tchooz_list as $i => &$item) :

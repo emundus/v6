@@ -76,6 +76,13 @@ class EmundusController extends JControllerLegacy {
         $m_profile = $this->getModel('profile');
         $m_campaign = $this->getModel('campaign');
 
+        $options = array(
+          'aemail',
+          'afnum',
+          'adoc-print',
+          'aapp-sent',
+        );
+
         $infos 		= $m_profile->getFnumDetails($fnum);
         $profile 	= !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
         $h_menu = new EmundusHelperMenu;
@@ -107,10 +114,10 @@ class EmundusController extends JControllerLegacy {
         $profile_id = $m_profile->getProfileByFnum($fnum);
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, null, null, $profile_id);
+            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile_id,null,null);
             exit;
         } elseif (EmundusHelperAccess::isApplicant($user->id)) {
-            application_form_pdf($user->id, $fnum, true, 1, $formid, null, null, $profile_id);
+            application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile_id,null,null);
             exit;
         } else {
             die(JText::_('ACCESS_DENIED'));
@@ -1024,6 +1031,60 @@ class EmundusController extends JControllerLegacy {
                 }
             }
         }
+
+        /// resize image
+        $_upload_file_type = $file['type'];
+
+        if(strpos($_upload_file_type, 'image') !== false) {
+            $file_src = EMUNDUS_PATH_ABS.$user->id.DS.$paths;
+            list($w_src, $h_src, $type) = getimagesize($file_src);
+
+            // get min_resolution, max_resolution from jos_emundus_setup_attachments (param::attachments)
+            $image_resolution_query = "SELECT min_width,max_width,min_height,max_height FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . (int)$attachments;
+            $this->_db->setQuery($image_resolution_query);
+            $image_resolution = $this->_db->loadObject();
+
+            if($w_src * $h_src > (int)$image_resolution->max_width * (int)$image_resolution->max_height) {
+                switch ($type){
+                    case 1:   // gif
+                        $original_img = imagecreatefromgif($file_src);
+                        break;
+                    case 2: // jpeg
+                        $original_img = imagecreatefromjpeg($file_src);
+                        break;
+                    case 3: // png
+                        $original_img = imagecreatefrompng($file_src);
+                        break;
+                    default:    // jpg
+                        $original_img = imagecreatefromjpeg($file_src);
+                        break;
+                }
+
+                $new_width = (int)$image_resolution->max_width;
+                $new_height = (int)$image_resolution->max_height;
+
+                $resized_img = imagecreatetruecolor($new_width, $new_height);
+
+                // copy resample
+                imagecopyresampled($resized_img, $original_img, 0, 0, 0, 0, $new_width, $new_height, $w_src, $h_src);
+
+                // export new image to jpeg
+                imagejpeg($resized_img, $chemin.$user->id.DS.'tn_'.$paths);
+
+                /// remove old image
+                unlink($file_src);
+
+                /// change name the resize image
+                rename($chemin.$user->id.DS.'tn_'.$paths, $file_src);
+
+            } else if($w_src * $h_src < (int)$image_resolution->min_width * (int)$image_resolution->min_height) {
+                $errorInfo = "ERROR_IMAGE_TOO_SMALL";
+                echo '{"aid":"0","status":false,"message":"'.JText::_('ERROR_IMAGE_TOO_SMALL'). " " . (int)$image_resolution->min_width . 'px x ' . (int)$image_resolution->min_height . 'px' . '"}';
+                unlink($file_src);          /// remove uploaded file
+                return false;
+            }
+        }
+
         // delete temp uploaded file
         unlink($file['tmp_name']);
 
@@ -1456,6 +1517,151 @@ class EmundusController extends JControllerLegacy {
         } else {
             echo JText::_('ERROR');
         }
+    }
 
+    // export_fiche_synthese
+    public function export_fiche_synthese() {
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+        $user = JFactory::getSession()->get('emundusUser');
+        $jinput = JFactory::getApplication()->input;
+
+        /// get valid fnum
+        $fnums_post = $jinput->getRaw('checkInput');
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
+
+        $validFnums = array();
+        foreach ($fnums_array as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(35, 'c', $user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
+                $validFnums[] = $fnum;
+        }
+
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $m_files = new EmundusModelFiles;
+        $fnumsInfo = $m_files->getFnumsInfos($validFnums);
+
+        /// set params
+        $file = $jinput->getRaw('file', null);
+        $totalfile = count($validFnums);
+        $model = $jinput->getRaw('model', null);
+        $start = 0;
+        $limit = 2;
+
+        $forms = 0;
+
+        /// from model --> get all model params
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
+        $h_files = new EmundusHelperFiles;
+        $export_model = $h_files->getExportPdfFilterById($model);
+
+        // from export_model --> build fiche de synthese
+        $pdf_elements = array();
+
+        $profiles = json_decode($export_model->constraints)->pdffilter->profiles;           /// type Array
+        $formulaires = json_decode($export_model->constraints)->pdffilter->tables;
+        $groups = json_decode($export_model->constraints)->pdffilter->groups;
+        $elements = json_decode($export_model->constraints)->pdffilter->elements;
+
+        // attachments
+        $attachments = json_decode($export_model->constraints)->pdffilter->attachments;
+
+        /// is_assessment, is_admission, is_decision
+        $assessment = json_decode($export_model->constraints)->pdffilter->assessment;
+        $admission = json_decode($export_model->constraints)->pdffilter->admission;
+        $decision = json_decode($export_model->constraints)->pdffilter->decision;
+
+        if(empty($profiles) and empty($formulaires) and empty($groups) and empty($elements)) { $forms = 0;} else { $forms = 1; }
+
+        $options = json_decode($export_model->constraints)->pdffilter->headers;
+
+        foreach($profiles as $key => $value) {
+            $pdf_elements[$value] = array('fids' => $formulaires, 'gids' => $groups, 'eids' => $elements);
+        }
+
+        /// from pdf elements --> build pdf
+        $files = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+
+        if (!function_exists('application_form_pdf')) {
+            require_once($files);
+        }
+
+        //// pour chaque fnum --> appeler la fonction helpers/export.php/buildFormPDF
+        ///
+        if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $files)) {
+            $files_list = array(JPATH_BASE.DS.'tmp'.DS.$files);
+        } else {
+            $files_list = array();
+        }
+
+        for ($i = $start; $i <= $totalfile; $i++) {
+            $fnum = $validFnums[$i];
+
+            if (is_numeric($fnum) && !empty($fnum)) {
+                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+                $m_profile = new EmundusModelProfile;
+                $infos = $m_profile->getFnumDetails($fnum);
+                $campaign_id = $infos['campaign_id'];
+
+                /// build pdf for forms
+                if(!empty($pdf_elements) and array_keys($pdf_elements)[0] != "") {
+                    $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, null, $options, null, $pdf_elements);
+                }
+
+                /// build pdf for attachments
+                if(!empty($attachments) and $attachments[0] != "") {
+                    $tmpArray = array();
+                    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+                    $m_application = new EmundusModelApplication;
+                    $attachment_to_export = array();
+                    foreach ($attachments as $key=>$aids) {
+                        $detail = explode("|", $aids);
+                        if ((!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training']) && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+                            $attachment_to_export[] = $detail[0];
+                        }
+                    }
+                    if ($attachments || !empty($attachment_to_export)) {
+                        $files = $m_application->getAttachmentsByFnum($fnum, null, $attachment_to_export);
+                        if ($options[0] != "0") {
+                            $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
+                        }
+                        $files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+                    }
+                }
+
+                if ($assessment == 1)
+                    $files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
+                if ($decision == 1)
+                    $files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
+                if ($admission == 1)
+                    $files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
+
+                if(array_keys($pdf_elements)[0] == "" and $attachments[0] == "" and ($assessment != 1) and ($decision != 1) and ($admission != 1) and ($options[0] != "0")) {
+                    $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
+                }
+            }
+        }
+
+        if (count($files_list) > 0) {
+            require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+
+            $pdf = new ConcatPdf();
+
+            $pdf->setFiles($files_list);
+
+            $pdf->concat();
+
+            if (isset($tmpArray)) {
+                foreach ($tmpArray as $fn) {
+                    unlink($fn);
+                }
+            }
+            $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $file, 'F');
+
+            $result = array('status' => true, 'file' => $file, 'msg' => JText::_('FILES_ADDED'));
+        } else {
+            $result = array('status' => false, 'msg' => JText::_('FILE_NOT_FOUND'));
+        }
+
+        echo json_encode((object) $result);
+        exit();
     }
 }

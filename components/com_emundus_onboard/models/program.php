@@ -1214,8 +1214,8 @@ class EmundusonboardModelprogram extends JModelList {
                 $query->update($db->quoteName('#__fabrik_groups'));
 
                 $labels_to_duplicate = array(
-                    'fr' => $formbuilder->getTranslation($group_model->label, $Content_Folder['fr']),
-                    'en' => $formbuilder->getTranslation($group_model->label, $Content_Folder['en'])
+                    'fr' => $formbuilder->getTranslation($group_model->label, 'fr-FR'),
+                    'en' => $formbuilder->getTranslation($group_model->label, 'en-GB')
                 );
                 if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
                     $labels_to_duplicate = array(
@@ -1271,8 +1271,8 @@ class EmundusonboardModelprogram extends JModelList {
                             $sub_labels = [];
                             foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
                                 $labels_to_duplicate = array(
-                                    'fr' => $formbuilder->getTranslation($sub_label, $Content_Folder['fr']),
-                                    'en' => $formbuilder->getTranslation($sub_label, $Content_Folder['en'])
+                                    'fr' => $formbuilder->getTranslation($sub_label, 'fr-FR'),
+                                    'en' => $formbuilder->getTranslation($sub_label, 'en-GB')
                                 );
                                 if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
                                     $labels_to_duplicate = array(
@@ -1289,8 +1289,8 @@ class EmundusonboardModelprogram extends JModelList {
                         $query->update($db->quoteName('#__fabrik_elements'));
 
                         $labels_to_duplicate = array(
-                            'fr' => $formbuilder->getTranslation($element->element->label, $Content_Folder['fr']),
-                            'en' => $formbuilder->getTranslation($element->element->label, $Content_Folder['en'])
+                            'fr' => $formbuilder->getTranslation($element->element->label, 'fr-FR'),
+                            'en' => $formbuilder->getTranslation($element->element->label, 'en-GB')
                         );
                         if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
                             $labels_to_duplicate = array(
