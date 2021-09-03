@@ -699,7 +699,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $params['placeholder'] = 'dd/mm/yyyy';
                     $params['date_store_as_local'] = 1;
                     $params['date_table_format'] = 'd\/m\/Y';
-                    $params['date_form_format'] = 'Y-m-d';
+                    $params['date_form_format'] = 'd/m/Y';
                     $params['date_defaulttotoday'] = 0;
                     $params['date_alwaystoday'] = 0;
                     $params['date_firstday'] = 0;
