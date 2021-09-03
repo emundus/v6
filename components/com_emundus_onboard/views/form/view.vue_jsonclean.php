@@ -99,7 +99,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 $show_title->value = $form->getLabel();
                 $show_title->label = new stdClass;
                 foreach ($languages as $language) {
-                    $show_title->label->{$language->sef} = $formbuilder->getTranslation($form->form->label,$Content_Folder[$language->sef]);
+                    $show_title->label->{$language->sef} = $formbuilder->getTranslation($form->form->label,$language->lang_code);
                 }
                 $returnObject->show_title = $show_title;
             else :
@@ -117,7 +117,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 $returnObject->intro_value = $form->getIntro();
                 $returnObject->intro = new stdClass;
                 foreach ($languages as $language) {
-                    $returnObject->intro->{$language->sef} = $formbuilder->getTranslation($form->form->intro,$Content_Folder[$language->sef]);
+                    $returnObject->intro->{$language->sef} = $formbuilder->getTranslation($form->form->intro,$language->lang_code);
                 }
                 $returnObject->intro_raw = strip_tags($form->form->intro);
             endif;
@@ -155,7 +155,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 ${"group_" . $GroupProperties->id}->group_tag = $group_infos->label != '' ? $group_infos->label : strtoupper($formbuilder->replaceAccents($GroupProperties->name));
                 ${"group_" . $GroupProperties->id}->label = new stdClass;
                 foreach ($languages as $language) {
-                    ${"group_" . $GroupProperties->id}->label->{$language->sef} = $formbuilder->getTranslation($group_infos->label,$Content_Folder[$language->sef]);
+                    ${"group_" . $GroupProperties->id}->label->{$language->sef} = $formbuilder->getTranslation($group_infos->label,$language->lang_code);
                 }
 
                 if ($GroupProperties->class) :
@@ -227,7 +227,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                         ${"element" . $o_element->id}->label_tag = $o_element->label;
                         ${"element" . $o_element->id}->label = new stdClass;
                         foreach ($languages as $language) {
-                            ${"element" . $o_element->id}->label->{$language->sef} = $formbuilder->getTranslation(${"element" . $o_element->id}->label_tag,$Content_Folder[$language->sef]);
+                            ${"element" . $o_element->id}->label->{$language->sef} = $formbuilder->getTranslation(${"element" . $o_element->id}->label_tag,$language->lang_code);
                         }
                         ${"element" . $o_element->id}->labelToFind = $element->label;
                         ${"element" . $o_element->id}->publish = $element->isPublished();

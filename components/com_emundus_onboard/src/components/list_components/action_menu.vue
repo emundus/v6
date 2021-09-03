@@ -4,13 +4,13 @@
       <transition :name="'slide-down'" type="transition">
         <div>
             <nav aria-label="action" class="actions-dropdown">
-              <a v-on:click="publishSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire'">
+              <a v-on:click="publishSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire' && !published">
                 {{ translations.ActionPublish }}
               </a>
-              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire'">
+              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire' && published">
                 {{ translations.ActionUnpublish }}
               </a>
-              <a v-on:click="publishSelected(checkItem)" class="action-submenu" style="border-right: 0" v-if="data.type === 'formulaire'">
+              <a v-on:click="publishSelected(checkItem)" class="action-submenu" style="border-right: 0" v-if="data.type === 'formulaire' && !published">
                 {{ translations.Restore }}
               </a>
               <a v-if="data.type === 'campaign' || data.type === 'formulaire'"
@@ -21,7 +21,7 @@
               <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire' && data.type !== 'campaign'">
                 {{ translations.ActionDelete }}
               </a>
-              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" style="border-left: 0"  v-if="data.type === 'formulaire'">
+              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" style="border-left: 0"  v-if="data.type === 'formulaire' && published">
                 {{ translations.Archive }}
               </a>
             </nav>
@@ -51,6 +51,7 @@
       data: Object,
       isEmpty: Boolean,
       selected: String,
+      published: Boolean,
     },
 
     computed: {
@@ -470,24 +471,7 @@
                   url: "index.php?option=com_emundus_onboard&controller=campaign&task=duplicatecampaign",
                   data: qs.stringify({id})
                 }).then(response => {
-                  this.loading = false;
-                  list.commit("listUpdate", response.data.data);
-                  Swal.fire({
-                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNDUPLICATED"),
-                    type: "success",
-                    showConfirmButton: false,
-                    timer: 2000
-                  });
-                }).then(() => {
-                  axios.get(
-                          "index.php?option=com_emundus_onboard&controller=campaign&task=getcampaigncount"
-                  ).then(response => {
-                    this.total = response.data.data;
-                    this.updateTotal(this.total);
-                    this.$emit('validateFilters');
-                  });
-                }).catch(error => {
-                  console.log(error);
+                  window.location.reload();
                 });
               }
             });

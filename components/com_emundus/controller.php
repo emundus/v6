@@ -76,6 +76,13 @@ class EmundusController extends JControllerLegacy {
         $m_profile = $this->getModel('profile');
         $m_campaign = $this->getModel('campaign');
 
+        $options = array(
+          'aemail',
+          'afnum',
+          'adoc-print',
+          'aapp-sent',
+        );
+
         $infos 		= $m_profile->getFnumDetails($fnum);
         $profile 	= !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
         $h_menu = new EmundusHelperMenu;
@@ -107,10 +114,10 @@ class EmundusController extends JControllerLegacy {
         $profile_id = $m_profile->getProfileByFnum($fnum);
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, null, null, $profile_id,null,null);
+            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile_id,null,null);
             exit;
         } elseif (EmundusHelperAccess::isApplicant($user->id)) {
-            application_form_pdf($user->id, $fnum, true, 1, $formid, null, null, $profile_id,null,null);
+            application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile_id,null,null);
             exit;
         } else {
             die(JText::_('ACCESS_DENIED'));

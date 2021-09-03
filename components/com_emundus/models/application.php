@@ -35,6 +35,7 @@ class EmundusModelApplication extends JModelList
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+        require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
 
         $this->_mainframe = JFactory::getApplication();
 
@@ -1379,9 +1380,6 @@ class EmundusModelApplication extends JModelList
                                                             }
                                                         }
                                                     } elseif ($elements[$j]->plugin == 'databasejoin') {
-                                                        $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
-
-                                                    elseif ($elements[$j]->plugin == 'databasejoin') {
                                                         $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 
                                                         if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
@@ -1741,9 +1739,15 @@ class EmundusModelApplication extends JModelList
                     $forms .= '<h2' . $breaker . '>';
                     $title = explode('-', JText::_($itemt->label));
                     if (empty($title[1])) {
-                        $forms .= '<b><h2>' . strtoupper(preg_replace('/\s+/', ' ', $_formbuilder_model->replaceAccents(JText::_(trim($itemt->label))))) . '</h2></b>';
+                        $form_label = preg_replace('/\s+/', ' ', JText::_(trim($itemt->label)));
+                        if(!empty($form_label)) {
+                            $forms .= '<b><h2>' . $form_label . '</h2></b>';
+                        }
                     } else {
-                        $forms .= '<b><h2>' . strtoupper(preg_replace('/\s+/', ' ', $_formbuilder_model->replaceAccents(JText::_(trim($title[1]))))) . '</h2></b>';
+                        $form_label = preg_replace('/\s+/', ' ', JText::_(trim($title[1])));
+                        if(!empty($form_label)) {
+                            $forms .= '<b><h2>' . $form_label . '</h2></b>';
+                        }
                     }
                 }
 
@@ -1794,7 +1798,7 @@ class EmundusModelApplication extends JModelList
                             }
                         }
 
-                        $forms .= '<h2 class="group">' . JText::_($itemg->label) . '</h2>';
+                        $group_label =  JText::_($itemg->label);
 
                         if ($itemg->group_id == 14) {
                             $forms .= '<table>';
@@ -1825,6 +1829,9 @@ class EmundusModelApplication extends JModelList
                             $check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
 
                             if ($check_repeat_groups) {
+                                if(!empty($group_label)){
+                                    $forms .= '<h3 class="group">' . $group_label . '</h3>';
+                                }
                                 $forms .= '<p><table class="adminlist"><thead><tr  class="background"> ';
                                 foreach ($elements as &$element) {
                                     $forms .= '<th scope="col" class="background"><strong>' . JText::_($element->label) . '</strong></th>';
@@ -1863,27 +1870,10 @@ class EmundusModelApplication extends JModelList
 
                                                 $params = json_decode($elements[$j]->params);
 
-                                                if ($elements[$j]->plugin == 'date') {
-                                                    if (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
-                                                        $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
-                                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
-                                                        $elt = $dt->format($params->date_form_format);
-                                                    } else {
-                                                        $elt = '';
-                                                    }
+                                                if ($elements[$j]->plugin == 'date' && (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00')) {
+                                                    $elt = EmundusHelperDate::displayDate($r_elt, $params->date_table_format, (int)$params->date_store_as_local);
                                                 } elseif (($elements[$j]->plugin == 'birthday' || $elements[$j]->plugin == 'birthday_remove_slashes') && $r_elt > 0) {
-                                                    preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
-                                                    if (count($matches) == 0) {
-                                                        $elt = $r_elt;
-                                                    } else {
-                                                        $format = $params->list_date_format;
-                                                        $d = DateTime::createFromFormat($format, $r_elt);
-                                                        if ($d && $d->format($format) == $r_elt) {
-                                                            $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
-                                                        } else {
-                                                            $elt = JHtml::_('date', $r_elt, $format);
-                                                        }
-                                                    }
+                                                    $elt = EmundusHelperDate::displayDate($r_elt, $params->list_date_format);
                                                 } elseif ($elements[$j]->plugin == 'databasejoin') {
                                                     $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
 
@@ -2022,6 +2012,9 @@ class EmundusModelApplication extends JModelList
                             $check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
 
                             if ($check_repeat_groups) {
+                                if(!empty($group_label)){
+                                    $forms .= '<h3 class="group">' . $group_label . '</h3>';
+                                }
                                 if ($itemg->group_id == 174) {
                                     $query = 'SELECT `' . implode("`,`", $t_elt) . '`, id FROM ' . $table . '
                                         WHERE parent_id=(SELECT id FROM ' . $itemt->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum) . ') OR applicant_id=' . $aid;
@@ -2053,28 +2046,10 @@ class EmundusModelApplication extends JModelList
 
                                             if ((!empty($r_elt) || $r_elt == 0) && $key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
-                                                if ($elements[$j]->plugin == 'date') {
-                                                    if (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
-                                                        $date_params = json_decode($elements[$j]->params);
-                                                        $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
-                                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
-                                                        $elt = $dt->format($date_params->date_form_format);
-                                                    } else {
-                                                        $elt = '';
-                                                    }
-                                                } elseif (($elements[$j]->plugin == 'birthday' || $elements[$j]->plugin == 'birthday_remove_slashes') && $r_elt > 0) {
-                                                    preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
-                                                    if (count($matches) == 0) {
-                                                        $elt = $r_elt;
-                                                    } else {
-                                                        $format = json_decode($elements[$j]->params)->list_date_format;
-                                                        $d = DateTime::createFromFormat($format, $r_elt);
-                                                        if ($d && $d->format($format) == $r_elt) {
-                                                            $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
-                                                        } else {
-                                                            $elt = JHtml::_('date', $r_elt, $format);
-                                                        }
-                                                    }
+                                                if ($elements[$j]->plugin == 'date' && (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00')) {
+                                                    $elt = EmundusHelperDate::displayDate($r_elt, $params->date_table_format, (int)$params->date_store_as_local);
+                                                }  elseif (($elements[$j]->plugin == 'birthday' || $elements[$j]->plugin == 'birthday_remove_slashes') && $r_elt > 0) {
+                                                    $elt = EmundusHelperDate::displayDate($r_elt, $params->list_date_format);
                                                 } elseif ($elements[$j]->plugin == 'databasejoin') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
@@ -2139,9 +2114,9 @@ class EmundusModelApplication extends JModelList
                                                     $elm = array();
                                                     $index = array_intersect($params->sub_options->sub_values,json_decode(@$r_elt));
                                                     foreach($index as $key => $value) {
-                                                        $elm[] = JText::_($params->sub_options->sub_labels[$key]);
+                                                        $elm[] = ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                                                     }
-                                                    $elt = "<ul><li>" . implode("</li><li>", @$elm) . "</li></ul>";
+                                                    $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
                                                 } elseif ($elements[$j]->plugin == 'dropdown' || @$elements[$j] == 'radiobutton') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $index = array_search($r_elt, $params->sub_options->sub_values);
@@ -2189,6 +2164,9 @@ class EmundusModelApplication extends JModelList
 
                             // AFFICHAGE EN LIGNE
                         } else {
+                            if(!empty($group_label)){
+                                $forms .= '<h3 class="group">' . $group_label . '</h3>';
+                            }
                             $forms .= '<table>';
                             foreach ($elements as $element) {
                                 $params = json_decode($element->params);
@@ -2222,36 +2200,19 @@ class EmundusModelApplication extends JModelList
 
                                     if (!empty($element->label) && $element->label!=' ' || $element->plugin === 'display') {
 
-                                        if ($element->plugin == 'date' && $element->content > 0) {
+                                        if ($element->plugin == 'date') {
 
                                             // Empty date elements are set to 0000-00-00 00:00:00 in DB.
-                                            if ($show_empty_fields == 0 && $element->content == '0000-00-00 00:00:00') {
+                                            if ($show_empty_fields == 0 && ($element->content == '0000-00-00 00:00:00' || empty($element->content))) {
                                                 continue;
-                                            }
-                                            if (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
-                                                $dt = new DateTime($element->content, new DateTimeZone('UTC'));
-                                                $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
-                                                $elt = $dt->format($params->date_form_format);
+                                            } elseif (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
+                                                $elt = EmundusHelperDate::displayDate($element->content, $params->date_table_format, (int)$params->date_store_as_local);
                                             } else {
                                                 $elt = '';
                                             }
                                         } elseif (($element->plugin == 'birthday' || $element->plugin == 'birthday_remove_slashes') && $element->content > 0) {
-                                            preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
-                                            if (count($matches) == 0) {
-                                                $elt = $element->content;
-                                            } else {
-                                                $format = $params->list_date_format;
-                                                $d = DateTime::createFromFormat($format, $element->content);
-                                                if ($d && $d->format($format) == $element->content) {
-                                                    $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-                                                } else {
-                                                    $elt = JHtml::_('date', $element->content, $format);
-                                                }
-                                            }
+                                            $elt = EmundusHelperDate::displayDate($element->content, $params->list_date_format);
                                         } elseif ($element->plugin == 'databasejoin') {
-                                            $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
-
-                                        elseif ($element->plugin == 'databasejoin') {
                                             $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 
                                             if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
@@ -2274,7 +2235,7 @@ class EmundusModelApplication extends JModelList
                                                 try {
                                                     $this->_db->setQuery($query);
                                                     $res = $this->_db->loadColumn();
-                                                    $elt = "<ul><li>" . implode("</li><li>", $res) . "</li></ul>";
+                                                    $elt = "<li> - " . implode("</li><li> - ", $res) . "</li>";
                                                 } catch (Exception $e) {
                                                     JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
                                                     throw $e;
@@ -2311,11 +2272,12 @@ class EmundusModelApplication extends JModelList
                                             $elt = JText::_($element->content);
                                         } elseif ($element->plugin == 'checkbox') {
                                             $params = json_decode($element->params);
+                                            $elm = array();
                                             $index = array_intersect(json_decode(@$element->content), $params->sub_options->sub_values);
                                             foreach ($index as $key => $value) {
-                                                $elm[] = $params->sub_options->sub_labels[$key];
+                                                $elm[] = ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                                             }
-                                            $elt = implode(', ', JText::_($elm));
+                                            $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
                                         } elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
                                             $index = array_search($element->content, $params->sub_options->sub_values);
                                             if (strlen($index) > 0) {
@@ -2346,14 +2308,14 @@ class EmundusModelApplication extends JModelList
                                         }
 
                                         if ($element->plugin == 'textarea' || $element->plugin == 'display') {
-                                            $forms .= '<tr><td   colspan="2" ><strong><span style="color: #000000;">'.(!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label).' : ' : '').'</span></strong>'.JText::_($elt).'<br/></td></tr>';
+                                            $forms .= '<tr><td colspan="2"><strong><span style="color: #000000;">'.(!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label).' : ' : '').'</span></strong>'.JText::_($elt).'<br/></td></tr>';
                                         } else {
-                                            $forms .= '<tr ><td ><span style="color: #000000;">'.(!empty(JText::_($element->label)) ? JText::_($element->label).' : ' : '').'</span></td> <td> '.JText::_($elt).'</td></tr>';
+                                            $forms .= '<tr><td colspan="1"><span style="color: #000000;">'.(!empty(JText::_($element->label)) ? JText::_($element->label).' : ' : '').'</span></td> <td> '.JText::_($elt).'</td></tr>';
                                         }
                                     }
                                 } elseif (empty($element->content) && $show_empty_fields == 1) {
                                     if (!empty($element->label) && $element->label!=' ') {
-                                        $forms .= '<tr><td ><span style="color: #000000;">'.JText::_($element->label).' '.'</span></td> <td>'.$element->content.'</td></tr>';
+                                        $forms .= '<tr><td><span style="color: #000000;">'.JText::_($element->label).' '.'</span></td> <td>'.$element->content.'</td></tr>';
                                     }
                                 }
                             }
@@ -2361,6 +2323,7 @@ class EmundusModelApplication extends JModelList
                         }
                     }
                 }
+                $forms .= '<p></p>';
             }
         }
         $forms .= '</p></p>';

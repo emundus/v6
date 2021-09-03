@@ -313,7 +313,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         } else {
             $getJtext = new stdClass();
             foreach ($languages as $language) {
-                $getJtext->{$language->sef} = $m_form->getTranslation($toJTEXT,$Content_Folder[$language->sef]);
+                $getJtext->{$language->sef} = $m_form->getTranslation($toJTEXT,$language->lang_code);
             }
         }
         echo json_encode((object)$getJtext);

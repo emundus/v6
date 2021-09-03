@@ -224,7 +224,7 @@ defined('_JEXEC') or die;
     ?>>
     <div style="opacity: 0" class="grey-navbar-icons"></div>
     <ul class="g-toplevel tchooz-vertical-toplevel">
-        <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="<?php echo JURI::base()?>/images/emundus/menus/menu.png" style="width: 30px"></button>
+        <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="<?php echo JURI::base()?>images/emundus/menus/menu.png" style="width: 30px"></button>
         <?php
 
         if(file_exists(JPATH_SITE . '/images/custom/favicon.png')){
@@ -232,7 +232,7 @@ defined('_JEXEC') or die;
         } else {
             $favicon = JURI::base().'/images/emundus/tchooz_favicon.png';
         }
-        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo" style="height: 50px"><a class="item" href="/"><img src="'.$favicon.'" alt="Accueil"></a>
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo" style="height: auto"><a class="item" href="/"><img src="'.$favicon.'" alt="Accueil"></a>
         </li>';
 
         if ($display_tchooz) :

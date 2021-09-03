@@ -1404,17 +1404,26 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
-    // get programme associated to user groups
-    public function getUserGroupsProgramme(Int $uid, Int $accos_progs = 0) : Array{
-        try {
-            $query = "SELECT esgc.course
-                      FROM #__emundus_groups as g
-                      LEFT JOIN #__emundus_setup_groups AS esg ON g.group_id = esg.id
-                      LEFT JOIN #__emundus_setup_groups_repeat_course AS esgc ON esgc.parent_id=esg.id
-                      WHERE g.user_id = " .$uid;
-            $db = $this->getDbo();
-            $db->setQuery($query);
+    /**
+     * getUserGroupsProgramme
+     *
+     * @param  mixed $uid
+     * @return array
+     */
+    public function getUserGroupsProgramme(int $uid) : array {
 
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select($db->quoteName('esgc.course'))
+            ->from($db->quoteName('#__emundus_groups', 'g'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups','esg').' ON '.$db->quoteName('g.group_id').' = '.$db->quoteName('esg.id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','esgc').' ON '.$db->quoteName('esgc.parent_id').' = '.$db->quoteName('esg.id'))
+            ->where($db->quoteName('g.user_id') . ' = ' . $uid);
+            
+        $db->setQuery($query);
+        try {
             return $db->loadColumn();
         } catch(Exception $e) {
             return [];

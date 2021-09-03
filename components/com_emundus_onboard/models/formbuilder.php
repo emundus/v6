@@ -133,26 +133,18 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $content
      * @return false|string|string[]
      */
-    function getTranslation($text,$content){
+    function getTranslation($text,$code_lang){
         $matches = [];
 
-        if(!empty($text)) {
-            $textWithoutTags = str_replace('\'', '', strip_tags($text));
-            $textTofind = $textWithoutTags . "=";
-            $textTofind = "/^" . $textTofind . ".*/mi";
+        $fileName = constant('JPATH_BASE') . '/language/overrides/' . $code_lang . '.override.ini';
+        $strings  = JLanguageHelper::parseIniFile($fileName);
 
-            // Search and return the translation
-            try {
-                preg_match_all($textTofind, $content, $matches, PREG_SET_ORDER, 0);
-                if (!empty($matches)) {
-                    return str_replace("\"", '', explode('=', $matches[0][0], 2)[1]);
-                } else {
-                    return $text;
-                }
-            } catch (Exception $e) {
+        if(!empty($text)) {
+            if(isset($strings[$text])){
+                return $strings[$text];
+            } else {
                 return $text;
             }
-
         } else {
             return '';
         }
@@ -704,10 +696,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $params['date_showtime'] = 0;
                     $params['date_time_format'] = 'H:i';
                     $params['bootstrap_time_class'] = 'input-medium';
-                    $params['placeholder'] = 'dd\/mm\/yyyy';
-                    $params['date_store_as_local'] = 0;
+                    $params['placeholder'] = 'dd/mm/yyyy';
+                    $params['date_store_as_local'] = 1;
                     $params['date_table_format'] = 'd\/m\/Y';
-                    $params['date_form_format'] = 'Y-m-d';
+                    $params['date_form_format'] = 'd/m/Y';
                     $params['date_defaulttotoday'] = 0;
                     $params['date_alwaystoday'] = 0;
                     $params['date_firstday'] = 0;
@@ -1586,8 +1578,8 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->setQuery($query);
             $db->execute();
 
-            $label_fr = $this->getTranslation($tag, $Content_Folder['fr']);
-            $label_en = $this->getTranslation($tag, $Content_Folder['en']);
+            $label_fr = $this->getTranslation($tag, 'fr-FR');
+            $label_en = $this->getTranslation($tag, 'en-GB');
 
             return array(
                 'elements' => array(),
@@ -1635,6 +1627,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @return mixed
      */
     function createSimpleElement($gid,$plugin,$attachementId = null,$evaluation = 0) {
+        $user = JFactory::getUser();
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -1696,10 +1689,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->set($db->quoteName('checked_out') . ' = 0')
                 ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
                 ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('created_by') . ' = 95')
+                ->set($db->quoteName('created_by') . ' = ' . $user->id)
                 ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
                 ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('modified_by') . ' = 95')
+                ->set($db->quoteName('modified_by') . ' = ' . $user->id)
                 ->set($db->quoteName('width') . ' = 0')
                 ->set($db->quoteName('default') . ' = ' . $db->quote($default))
                 ->set($db->quoteName('hidden') . ' = 0')
@@ -1779,7 +1772,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $query = "ALTER TABLE " . $dbtable . " ADD e_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
                 $db->setQuery($query);
                 $db->execute();
-                if($group_params->repeat_group_button == 1){
+                if($group_params->repeat_group_button == 1 || $fabrik_group->is_join == 1){
                     $repeat_table_name = $dbtable . "_" . $gid . "_repeat";
                     $query = "ALTER TABLE " . $repeat_table_name . " ADD e_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
                     $db->setQuery($query);
@@ -2268,8 +2261,8 @@ this.set(words.join(&quot; &quot;));
                         $sub_labels = [];
                         foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
                             $labels_to_duplicate = array(
-                                'fr' => $this->getTranslation($sub_label, $Content_Folder['fr']),
-                                'en' => $this->getTranslation($sub_label, $Content_Folder['en'])
+                                'fr' => $this->getTranslation($sub_label, 'fr-FR'),
+                                'en' => $this->getTranslation($sub_label, 'en-GB')
                             );
                             if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
                                 $labels_to_duplicate = array(
@@ -2286,8 +2279,8 @@ this.set(words.join(&quot; &quot;));
                     $query->update($db->quoteName('#__fabrik_elements'));
 
                     $labels_to_duplicate = array(
-                        'fr' => $this->getTranslation($element->element->label, $Content_Folder['fr']),
-                        'en' => $this->getTranslation($element->element->label, $Content_Folder['en'])
+                        'fr' => $this->getTranslation($element->element->label, 'fr-FR'),
+                        'en' => $this->getTranslation($element->element->label, 'en-GB')
                     );
                     if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
                         $labels_to_duplicate = array(
@@ -2399,7 +2392,7 @@ this.set(words.join(&quot; &quot;));
 
                 if ($el_params->sub_options) {
                     foreach ($el_params->sub_options->sub_labels as $key => $sub_label) {
-                        $el_params->sub_options->sub_labels[$key] = $this->getTranslation($sub_label,$Content_Folder[$actualLanguage]);
+                        $el_params->sub_options->sub_labels[$key] = $this->getTranslation($sub_label,'fr-FR');
                     }
                 }
 
@@ -2407,8 +2400,8 @@ this.set(words.join(&quot; &quot;));
                 ${"element".$o_element->id}->params=$el_params;
                 ${"element".$o_element->id}->label_tag = $o_element->label;
                 ${"element" . $o_element->id}->label = new stdClass;
-                ${"element".$o_element->id}->label->fr = $this->getTranslation(${"element".$o_element->id}->label_tag,$Content_Folder['fr']);
-                ${"element".$o_element->id}->label->en = $this->getTranslation(${"element".$o_element->id}->label_tag,$Content_Folder['en']);
+                ${"element".$o_element->id}->label->fr = $this->getTranslation(${"element".$o_element->id}->label_tag,'fr-FR');
+                ${"element".$o_element->id}->label->en = $this->getTranslation(${"element".$o_element->id}->label_tag,'en-GB');
                 if(${"element" . $o_element->id}->label->fr === false){
                     ${"element" . $o_element->id}->label->fr = $o_element->label;
                 }
@@ -2574,12 +2567,12 @@ this.set(words.join(&quot; &quot;));
 
             foreach ($models as $model) {
                 $model->label = array(
-                    'fr' => $this->getTranslation($model->label,$Content_Folder['fr']),
-                    'en' => $this->getTranslation($model->label,$Content_Folder['en'])
+                    'fr' => $this->getTranslation($model->label,'fr-FR'),
+                    'en' => $this->getTranslation($model->label,'en-GB')
                 );
                 $model->intro = array(
-                    'fr' => $this->getTranslation($model->intro,$Content_Folder['fr']),
-                    'en' => $this->getTranslation($model->intro,$Content_Folder['en'])
+                    'fr' => $this->getTranslation($model->intro,'fr-FR'),
+                    'en' => $this->getTranslation($model->intro,'en-GB')
                 );
             }
 
@@ -2860,7 +2853,7 @@ this.set(words.join(&quot; &quot;));
                 } else {
                     $labels_to_duplicate = array();
                     foreach ($languages as $language) {
-                        $labels_to_duplicate[$language->sef] = $this->getTranslation($group_model->label,$Content_Folder[$language->sef]);
+                        $labels_to_duplicate[$language->sef] = $this->getTranslation($group_model->label,$language->lang_code);
                         if($label[$language->sef] == ''){
                             $label[$language->sef] = $group_model->label;
                         }
@@ -2896,7 +2889,7 @@ this.set(words.join(&quot; &quot;));
                             foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
                                 $labels_to_duplicate = array();
                                 foreach ($languages as $language) {
-                                    $labels_to_duplicate[$language->sef] = $this->getTranslation($sub_label,$Content_Folder[$language->sef]);
+                                    $labels_to_duplicate[$language->sef] = $this->getTranslation($sub_label,$language->lang_code);
                                     if($label[$language->sef] == ''){
                                         $label[$language->sef] = $sub_label;
                                     }
@@ -2911,7 +2904,7 @@ this.set(words.join(&quot; &quot;));
 
                         $labels_to_duplicate = array();
                         foreach ($languages as $language) {
-                            $labels_to_duplicate[$language->sef] = $this->getTranslation($element->element->label,$Content_Folder[$language->sef]);
+                            $labels_to_duplicate[$language->sef] = $this->getTranslation($element->element->label,$language->lang_code);
                             if($label[$language->sef] == ''){
                                 $label[$language->sef] = $element->element->label;
                             }
@@ -3205,68 +3198,85 @@ this.set(words.join(&quot; &quot;));
                 }
             }
 
+            // Check if the ID and parent_id already exists in the group
+            $ignore_elms = [];
+            foreach ($elements as $element => $value) {
+                if ($value->element->name == 'parent_id' || $value->element->name == 'id') {
+                    $ignore_elms[] = $value->element->name;
+                }
+            }
             // Insert parent_id in elements
-            $query->clear()
-                ->insert($db->quoteName('#__fabrik_elements'))
-                ->set($db->quoteName('name') . ' = ' . $db->quote('parent_id'))
-                ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
-                ->set($db->quoteName('plugin') . ' = ' . $db->quote('field'))
-                ->set($db->quoteName('label') . ' = ' . $db->quote('parent_id'))
-                ->set($db->quoteName('checked_out') . ' = 0')
-                ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('created_by') . ' = ' . $db->quote($user))
-                ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
-                ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
-                ->set($db->quoteName('width') . ' = 0')
-                ->set($db->quoteName('default') . ' = ' . $db->quote(''))
-                ->set($db->quoteName('hidden') . ' = 1')
-                ->set($db->quoteName('eval') . ' = 0')
-                ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
-                ->set($db->quoteName('parent_id') . ' = 0')
-                ->set($db->quoteName('published') . ' = 1')
-                ->set($db->quoteName('access') . ' = 1')
-                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
-            $db->setQuery($query);
-            $db->execute();
-            //
+            
+            if (!in_array('parent_id', $ignore_elms)) {
+                $query
+                    ->clear()
+                    ->insert($db->quoteName('#__fabrik_elements'))
+                    ->set($db->quoteName('name') . ' = ' . $db->quote('parent_id'))
+                    ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                    ->set($db->quoteName('plugin') . ' = ' . $db->quote('field'))
+                    ->set($db->quoteName('label') . ' = ' . $db->quote('parent_id'))
+                    ->set($db->quoteName('checked_out') . ' = 0')
+                    ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('created_by') . ' = ' . $db->quote($user))
+                    ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
+                    ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
+                    ->set($db->quoteName('width') . ' = 0')
+                    ->set($db->quoteName('default') . ' = ' . $db->quote(''))
+                    ->set($db->quoteName('hidden') . ' = 1')
+                    ->set($db->quoteName('eval') . ' = 0')
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
+                    ->set($db->quoteName('parent_id') . ' = 0')
+                    ->set($db->quoteName('published') . ' = 1')
+                    ->set($db->quoteName('access') . ' = 1')
+                    ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+                $db->setQuery($query);
+                $db->execute();
+            }
 
-            // Insert id in elements
-            $query->clear()
-                ->insert($db->quoteName('#__fabrik_elements'))
-                ->set($db->quoteName('name') . ' = ' . $db->quote('id'))
-                ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
-                ->set($db->quoteName('plugin') . ' = ' . $db->quote('internalid'))
-                ->set($db->quoteName('label') . ' = ' . $db->quote('id'))
-                ->set($db->quoteName('checked_out') . ' = 0')
-                ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('created_by') . ' = ' . $db->quote($user))
-                ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
-                ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
-                ->set($db->quoteName('width') . ' = 0')
-                ->set($db->quoteName('default') . ' = ' . $db->quote(''))
-                ->set($db->quoteName('hidden') . ' = 1')
-                ->set($db->quoteName('eval') . ' = 0')
-                ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
-                ->set($db->quoteName('parent_id') . ' = 0')
-                ->set($db->quoteName('published') . ' = 1')
-                ->set($db->quoteName('access') . ' = 1')
-                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
-            $db->setQuery($query);
-            $db->execute();
-            //
+            if (!in_array('id', $ignore_elms)) {
+                // Insert id in elements
+                $query
+                    ->clear()
+                    ->insert($db->quoteName('#__fabrik_elements'))
+                    ->set($db->quoteName('name') . ' = ' . $db->quote('id'))
+                    ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                    ->set($db->quoteName('plugin') . ' = ' . $db->quote('internalid'))
+                    ->set($db->quoteName('label') . ' = ' . $db->quote('id'))
+                    ->set($db->quoteName('checked_out') . ' = 0')
+                    ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('created_by') . ' = ' . $db->quote($user))
+                    ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
+                    ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
+                    ->set($db->quoteName('width') . ' = 0')
+                    ->set($db->quoteName('default') . ' = ' . $db->quote(''))
+                    ->set($db->quoteName('hidden') . ' = 1')
+                    ->set($db->quoteName('eval') . ' = 0')
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
+                    ->set($db->quoteName('parent_id') . ' = 0')
+                    ->set($db->quoteName('published') . ' = 1')
+                    ->set($db->quoteName('access') . ' = 1')
+                    ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+                $db->setQuery($query);
+                $db->execute();
+            }
 
-            $query = "ALTER TABLE " . $newtablename . " ADD COLUMN parent_id int(11) NULL AFTER id";
-            $db->setQuery($query);
-            $db->execute();
+            try {
 
-            $query = "CREATE INDEX fb_parent_fk_parent_id_INDEX ON " . $newtablename . " (parent_id);";
-            $db->setQuery($query);
-            $db->execute();
-            //
+                $query = "ALTER TABLE " . $newtablename . " ADD COLUMN parent_id int(11) NULL AFTER id";
+                $db->setQuery($query);
+                $db->execute();
+
+                $query = "CREATE INDEX fb_parent_fk_parent_id_INDEX ON " . $newtablename . " (parent_id);";
+                $db->setQuery($query);
+                $db->execute();
+
+            } catch(Exception $e) {
+                // This means that the parent_id already exists in the table.
+            }
 
             // Insert leftjoin in fabrik
             $query = $db->getQuery(true);
@@ -3296,7 +3306,11 @@ this.set(words.join(&quot; &quot;));
 
                 $query = "ALTER TABLE " . $newtablename . " ADD e_" . $form_id . "_" . $element->element->id . " " . $dbtype . " NULL";
                 $db->setQuery($query);
-                $db->execute();
+                try {
+                    $db->execute();
+                } catch (Exception $e) {
+                    continue;
+                }
             }
             //
 

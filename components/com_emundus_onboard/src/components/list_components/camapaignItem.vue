@@ -48,6 +48,9 @@
                 <template slot="popover">
                   <actions
                       :data="actions"
+                      :selected="this.data.id"
+                      :published="isPublished"
+                      @validateFilters="validateFilters()"
                   ></actions>
                 </template>
               </v-popover>
@@ -115,6 +118,10 @@ export default {
   },
 
   methods: {
+    validateFilters(){
+      this.$emit('validateFilters');
+    },
+
     moment(date) {
       return moment(date);
     },
