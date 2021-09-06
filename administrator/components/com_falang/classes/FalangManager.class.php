@@ -366,6 +366,23 @@ class FalangManager {
 		return false;
 	}
 
+	/**
+	 * Fetches full langauge data for given code from language cache
+	 *
+	 * @param array()
+	 */
+	function getLanguageByID($id, $active=false){
+		if ($active){
+			if (isset($this) && isset($this->activeLanguagesCacheByID) && array_key_exists($id,$this->activeLanguagesCacheByID))
+				return $this->activeLanguagesCacheByID[$id];
+		}
+		else {
+			if (isset($this) && isset($this->allLanguagesCacheByID) && array_key_exists($id,$this->allLanguagesCacheByID))
+				return $this->allLanguagesCacheByID[$id];
+		}
+		return false;
+	}
+
 
 	function getLanguagesIndexedByCode($active=false){
 		if ($active){

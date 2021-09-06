@@ -22,6 +22,7 @@
 			<field type="text" name="webpage" length="50" maxlength="255" translate="1">Website</field>
 			<field type="htmltext" name="misc" length="50" maxlength="255" translate="1">Misc</field>
             <field type="textarea" name="metadesc"  rows="2" columns="80" translate="1">Metadesc</field>
+			<field type="params" name="params" translate="1">Params</field>
         </table>
 	</reference>
 	<translationfilters>

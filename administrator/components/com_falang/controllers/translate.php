@@ -246,6 +246,7 @@ class TranslateController extends JControllerLegacy   {
 		$this->view->assignRef('actContentObject'   , $actContentObject);
 		$this->view->assignRef('tranFilters'   , $tranFilters);
 		$this->view->assignRef('select_language_id'   , $select_language_id);
+		$this->view->assignRef('contentElementName',$contentElement->Name);
 		$filterlist= array();
 		$this->view->assignRef('filterlist',$filterlist);
 
@@ -566,7 +567,7 @@ class TranslateController extends JControllerLegacy   {
         @ob_end_clean();
 
         $input = JFactory::getApplication()->input;
-        $language_id = $input->get('language_id',0,'int');
+        $language_id = $input->get('select_language_id',0,'int');
 
         if (version_compare(JVERSION, '3.0.0', 'lt')) {
             die('<script>window.parent.SqueezeBox.close();</script>');
