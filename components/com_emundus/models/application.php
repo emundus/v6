@@ -1269,7 +1269,7 @@ class EmundusModelApplication extends JModelList
                         }
 
                         // liste des items par groupe
-                        $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
+                        $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params, fe.default, fe.eval
 	                                FROM #__fabrik_elements fe
 	                                WHERE fe.published=1 AND
 	                                      fe.hidden=0 AND
@@ -1346,15 +1346,15 @@ class EmundusModelApplication extends JModelList
                                             $j = 0;
                                             foreach ($r_element as $key => $r_elt) {
 
+                                                if (!empty($elements[$j])) {
+                                                    $params = json_decode($elements[$j]->params);
+                                                }
+
                                                 // Do not display elements with no value inside them.
-                                                if ($show_empty_fields == 0 && trim($r_elt) == '') {
+                                                if (($show_empty_fields == 0 && trim($r_elt) == '') || empty($params->store_in_db)) {
                                                     $forms .= '<td></td>';
                                                     $j++;
                                                     continue;
-                                                }
-
-                                                if (!empty($elements[$j])) {
-                                                    $params = json_decode($elements[$j]->params);
                                                 }
 
                                                 if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
@@ -1497,6 +1497,9 @@ class EmundusModelApplication extends JModelList
                                                         }
                                                     } elseif ($elements[$j]->plugin == 'yesno') {
                                                         $elt = ($r_elt == 1) ? JText::_("JYES") : JText::_("JNO");
+                                                    } elseif ($elements[$j]->plugin == 'display') {
+                                                        $elements[$j]->content = empty($elements[$j]->eval) ? $elements[$j]->default : $r_elt;
+                                                        $elt = JText::_($elements[$j]->content);
                                                     } else {
                                                         $elt = $r_elt;
                                                     }
@@ -1866,7 +1869,7 @@ class EmundusModelApplication extends JModelList
 
                                         foreach ($r_element as $key => $r_elt) {
 
-                                            if ($key != 'id' && $key != 'parent_id' && isset($elements[$j]) && $elements[$j]->plugin != 'display') {
+                                            if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
                                                 $params = json_decode($elements[$j]->params);
 
