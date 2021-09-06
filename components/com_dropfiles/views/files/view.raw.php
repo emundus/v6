@@ -58,8 +58,9 @@ class DropfilesViewFiles extends JViewLegacy
             } elseif ($category->type === 'dropbox') {
                 $dropbox = new DropfilesDropbox();
                 $files = $dropbox->displayDropboxVersionInfo($file_id);
-            } elseif ($category->type === 'onedrive') { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedElseif -- nothing to do with onedrive here
-                //TODO
+            } elseif ($category->type === 'onedrive') {
+                $onedrive = new DropfilesOneDrive();
+                $files = $onedrive->listVersions($file_id);
             } else {
                 $files = $model->getVersions($file_id);
             }
@@ -74,12 +75,16 @@ class DropfilesViewFiles extends JViewLegacy
                         $rev = $file->meta_id;
                     } elseif ($category->type === 'googledrive') {
                         $version = $file->id_version;
-                        $data_id = $file->id_version;
-                        $rev = '';
-                    } else {
-                        $version = '1';
                         $data_id = $file->id;
-                        $rev = '';
+                        $rev     = $file->id_version;
+                    } elseif ($category->type === 'onedrive') {
+                        $version = $file->id_version;
+                        $data_id = $file->id;
+                        $rev     = $file->id_version;
+                    } else {
+                        $version = $file->id;
+                        $data_id = $file->id;
+                        $rev = $file->id;
                     }
                     $content .= '<td><a title="' . date('H:i:s', strtotime($file->created_time));
                     $content .= '" href="index.php?option=com_dropfiles&task=file.download&version=' . $version;
@@ -171,7 +176,7 @@ class DropfilesViewFiles extends JViewLegacy
             $content          = '<table class="restable">';
             $content          .= '<thead><tr>';
             $array_field_file = array(
-                'type'          => array('#', ''),
+                'type'          => array(JText::_('COM_DROPFILES_FIELD_FILE_TYPE_LABEL_ADMIN'), ''),
                 'title'         => array(JText::_('COM_DROPFILES_FIELD_FILE_TITLE_LABEL'), 'essential'),
                 'size'          => array(JText::_('COM_DROPFILES_FIELD_FILE_FILESIZE_LABEL'), ''),
                 'created_time'  => array(JText::_('COM_DROPFILES_FIELD_FILE_DATEADDED_LABEL'), ''),
@@ -203,17 +208,24 @@ class DropfilesViewFiles extends JViewLegacy
 
 
             foreach ($files as $file) {
-                $httpcheck = isset($file->file) ? $file->file : '';
+                $httpcheck   = isset($file->file) ? $file->file : '';
                 $remote_file = preg_match('(http://|https://)', $httpcheck) ? 'is-remote-url' : '';
-                $unpublish = '';
+                $unpublish   = '';
+                $category    = null;
+                $catId       = '';
+                if (isset($file->catid)) {
+                    $category = $modelCategory->getCategory($file->catid);
+                    $catId    = isset($file->catid) ? $file->catid : $category->id;
+                }
+                $file_ext = isset($file->ext) ? $file->ext : '';
                 if (isset($file->state)) {
                     $unpublish = (int)$file->state === 0 ? 'dropfiles-unpublished' : '';
                 }
                 $content .= '<tr class="file ' . $remote_file . ' ' . $unpublish
-                    . '" data-id-file="' . $file->id . '">';
+                    . '" data-id-file="' . $file->id . '" data-id-category="' . $catId . '">';
 
                 $content .= '<td class="type">';
-                $content .= $file->ext;
+                $content .= '<div class="ext '. $file_ext .'"><span class="txt">'. $file_ext .'</span></div>';
                 $content .= '</td>';
                 $content .= '<td class="title">';
                 $content .= $file->title;
@@ -351,6 +363,38 @@ class DropfilesViewFiles extends JViewLegacy
                     echo '<div class="alert alert-danger"></div>';
                     return '';
                 }
+            } elseif ($category->type === 'onedrivebusiness') {
+                $ordering = JFactory::getApplication()->input->getCmd('orderCol', $params->ordering);
+                if ($ordering !== null) {
+                    if (!in_array($ordering, array(
+                        'ordering',
+                        'type',
+                        'ext',
+                        'title',
+                        'description',
+                        'created_time',
+                        'modified_time',
+                        'size',
+                        'version',
+                        'hits'
+                    ))) {
+                        $ordering = 'ordering';
+                    } else {
+                        $direction = JFactory::getApplication()->input->getCmd('orderDir', $params->orderingdir);
+                        if ($direction !== 'desc') {
+                            $direction = 'asc';
+                        }
+                    }
+                } else {
+                    $ordering = 'ordering';
+                }
+                $modelOnedriveBusiness = JModelLegacy::getInstance('frontonedrivebusiness', 'dropfilesModel');
+                $files = $modelOnedriveBusiness->getItems($category->cloud_id, $ordering, $direction);
+
+                if ($files === false) {
+                    echo '<div class="alert alert-danger"></div>';
+                    return '';
+                }
             } else {
                 $files = $model->getItems();
                 $ordering = $model->getState('list.ordering', false);
@@ -365,35 +409,58 @@ class DropfilesViewFiles extends JViewLegacy
                 $canOrder = false;
             }
 
-            $content = '<table class="restable">';
-            $content .= '<thead><tr>';
-            $array_field_file = array('type' => array('#', ''),
-                'title' => array(JText::_('COM_DROPFILES_FIELD_FILE_TITLE_LABEL'), 'essential'),
-                'size' => array(JText::_('COM_DROPFILES_FIELD_FILE_FILESIZE_LABEL'), ''),
-                'created_time' => array(JText::_('COM_DROPFILES_FIELD_FILE_DATEADDED_LABEL'), ''),
-                'modified_time' => array(JText::_('COM_DROPFILES_FIELD_FILE_DATEMODIFIED_LABEL'), ''),
-                'version' => array(JText::_('COM_DROPFILES_FIELD_FILE_VERSION_LABEL'), ''),
-                'hits' => array(JText::_('COM_DROPFILES_FIELD_HITS_LABEL'), '')
-            );
-            foreach ($array_field_file as $row => $title) {
-                $content .= '<th class="' . $row . '">';
-                if ($canOrder) {
-                    $content .= '<a href="#" class="' . ($ordering === $row ? 'currentOrderingCol' : '')
-                        . '" data-ordering="' . $row . '" data-direction="' . $direction . '">';
+            $refFileParams = (array) $params;
+            $listCateRef = (isset($refFileParams['refToFile'])) ? $refFileParams['refToFile'] : array();
+            $lstAllFile        = null;
+            if (!empty($refFileParams) && isset($refFileParams['refToFile'])) {
+                if (isset($refFileParams['refToFile'])) {
+                    $listCatRef = $refFileParams['refToFile'];
+                    $lstAllFile = $this->getAllFileRef($model, $listCatRef, $ordering, $direction);
                 }
-                $content .= $title[0];
-
-                if ($row === $ordering) {
-                    $icon = 'zmdi-caret-' . ($direction === 'asc' ? 'up' : 'down');
-                    $content .= '<i class="zmdi ' . $icon . '"></i>';
-                }
-
-                if ($canOrder) {
-                    $content .= '</a>';
-                }
-                $content .= '</th>';
             }
-            $content .= '</tr></thead>';
+            if (!empty($lstAllFile)) {
+                $files = array_merge($lstAllFile, $files);
+                $ordering = JFactory::getApplication()->input->getCmd('orderCol', $params->ordering);
+                $direction = JFactory::getApplication()->input->getCmd('orderDir', $params->orderingdir);
+                $files = DropfilesHelper::orderingMultiCategoryFiles($files, $ordering, $direction);
+            }
+
+            if (!empty($files)) {
+                $content = '<table class="restable">';
+                $content .= '<thead><tr>';
+                $array_field_file = array(
+                    'ext'  => array(JText::_('COM_DROPFILES_FIELD_FILE_TYPE_LABEL_ADMIN'), ''),
+                    'title' => array(JText::_('COM_DROPFILES_FIELD_FILE_TITLE_LABEL'), 'essential'),
+                    'size' => array(JText::_('COM_DROPFILES_FIELD_FILE_FILESIZE_LABEL'), ''),
+                    'created_time' => array(JText::_('COM_DROPFILES_FIELD_FILE_DATEADDED_LABEL'), ''),
+                    'modified_time' => array(JText::_('COM_DROPFILES_FIELD_FILE_DATEMODIFIED_LABEL'), ''),
+                    'version' => array(JText::_('COM_DROPFILES_FIELD_FILE_VERSION_LABEL'), ''),
+                    'hits' => array(JText::_('COM_DROPFILES_FIELD_HITS_LABEL'), '')
+                );
+                foreach ($array_field_file as $row => $title) {
+                    $content .= '<th class="' . $row . '">';
+                    if ($canOrder) {
+                        $content .= '<a href="#" class="' . ($ordering === $row ? 'currentOrderingCol' : '')
+                            . '" data-ordering="' . $row . '" data-direction="' . $direction . '">';
+                    }
+                    $content .= $title[0];
+
+                    if ($row === $ordering) {
+                        $icon = 'zmdi-caret-' . ($direction === 'asc' ? 'up' : 'down');
+                        $content .= '<i class="zmdi ' . $icon . '"></i>';
+                    }
+
+                    if ($canOrder) {
+                        $content .= '</a>';
+                    }
+                    $content .= '</th>';
+                }
+                $content .= '</tr></thead>';
+            } else {
+                $content = '<table class="restable">';
+                $content .= '<thead><tr>';
+                $content .= '</tr></thead>';
+            }
             $content .= '<tbody>';
 
 
@@ -402,20 +469,21 @@ class DropfilesViewFiles extends JViewLegacy
                 $remote_file = preg_match('(http://|https://)', $httpcheck) ? 'is-remote-url' : '';
                 $unpublish = '';
                 if (isset($file->state)) {
-                    $unpublish = $file->state === 0 ? 'dropfiles-unpublished' : '';
+                    $unpublish = (int) $file->state === 0 ? 'dropfiles-unpublished' : '';
                 }
                 $link_download = 'index.php?option=com_dropfiles&task=frontfile.download&id=' . $file->id;
                 $link_download .= '&catid=' . (isset($file->catid) ? $file->catid : $category->id);
                 $catId = isset($file->catid) ? $file->catid : $category->id;
                 $link_download_frontend = DropfilesFilesHelper::genUrl($file->id, $catId, $category->title, '', $file->title . '.' . $file->ext);
+                $file_ext = isset($file->ext) ? $file->ext : '';
 
                 $content .= '<tr class="file ' . $remote_file . ' ' . $unpublish
                     . '" data-id-file="';
-                $content .= $file->id . '" data-linkdownload="' . $link_download . '" ';
+                $content .= $file->id . '" data-id-category="' . $catId . '" data-linkdownload="' . $link_download . '" ';
                 $content .= 'data-friendlylinkdownload="' . JRoute::_($link_download_frontend) . '" ';
                 $content .= '>';
                 $content .= '<td class="type">';
-                $content .= $file->ext;
+                $content .= '<div class="ext '. $file_ext .'"><span class="txt">'. $file_ext .'</span></div>';
                 $content .= '</td>';
                 $content .= '<td class="title">';
                 $content .= $file->title;
@@ -449,5 +517,28 @@ class DropfilesViewFiles extends JViewLegacy
             echo $content;
         }
 //            parent::display($tpl);
+    }
+
+    /**
+     * Get all file referent
+     *
+     * @param object $model       Files model
+     * @param array  $listCatRef  List category
+     * @param string $ordering    Ordering
+     * @param string $orderingdir Ordering direction
+     *
+     * @return array
+     */
+    public function getAllFileRef($model, $listCatRef, $ordering, $orderingdir)
+    {
+        $lstAllFile = array();
+        foreach ($listCatRef as $key => $value) {
+            if (is_array($value) && !empty($value)) {
+                $lstFile    = $model->getFilesRef($key, $value, $ordering, $orderingdir);
+                $lstAllFile = array_merge($lstFile, $lstAllFile);
+            }
+        }
+
+        return $lstAllFile;
     }
 }

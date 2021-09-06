@@ -40,7 +40,7 @@ class JFormFieldCustomicon extends JFormFieldMedia
     {
         $params = JComponentHelper::getParams('com_dropfiles');
 
-        if ($params->get('custom_icon', 0) === 0) {
+        if ((int)$params->get('custom_icon', 0) === 0) {
             return '';
         }
         return parent::getLabel();
@@ -55,7 +55,7 @@ class JFormFieldCustomicon extends JFormFieldMedia
     {
         $params = JComponentHelper::getParams('com_dropfiles');
 
-        if ($params->get('custom_icon', 0) === 0) {
+        if ((int)$params->get('custom_icon', 0) === 0) {
             return '';
         }
         return parent::getInput();

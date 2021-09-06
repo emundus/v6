@@ -30,6 +30,8 @@ jQuery(document).ready(function ($) {
             var tempidCat = $(this).data('idcat');
             cParents[tempidCat] = {parent_id: topCat, id: tempidCat, title: $(this).text()};
         })
+        initInputSelected(topCat);
+        initDownloadSelected(topCat);
     });
 
     Handlebars.registerHelper('bytesToSize', function (bytes) {
@@ -51,6 +53,90 @@ jQuery(document).ready(function ($) {
         $('.dropfiles-content-default.dropfiles-content-multi .catlink').click(function (e) {
             e.preventDefault();
             default_load($(this).parents('.dropfiles-content-default.dropfiles-content-multi').data('category'), $(this).data('idcat'), null);
+        });
+    }
+
+    function initInputSelected(sc) {
+        $(document).on('change', ".dropfiles-content-default.dropfiles-content-multi[data-category=" + sc + "] input.cbox_file_download", function () {
+            var rootCat = ".dropfiles-content-default.dropfiles-content-multi[data-category=" + sc + "]";
+            var selectedFiles = $(rootCat + " input.cbox_file_download:checked");
+            var filesId = [];
+            if (selectedFiles.length) {
+                selectedFiles.each(function (index, file) {
+                    filesId.push($(file).data('id'));
+                });
+            }
+            if (filesId.length > 0) {
+                $(rootCat + " .dropfilesSelectedFiles").remove();
+                $('<input type="hidden" class="dropfilesSelectedFiles" value="' + filesId.join(',') + '" />')
+                    .insertAfter($(rootCat).find(" #current_category_slug"));
+                hideDownloadAllBtn(sc, true);
+                $(rootCat + " .default-download-selected").remove();
+                if ($(rootCat).find('.breadcrumbs').length) {
+                    var downloadSelectedBtn = $('<a href="javascript:void(0);" class="default-download-selected download-selected" style="display: block;">' + Joomla.JText._('COM_DROPFILES_DOWNLOAD_SELECTED', 'Download selected') + '<i class="zmdi zmdi-check-all dropfiles-download-category"></i></a>');
+                    downloadSelectedBtn.prependTo($(rootCat).find(".breadcrumbs.dropfiles-breadcrumbs-default"));
+                } else {
+                    var downloadSelectedBtn = $('<a href="javascript:void(0);" class="default-download-selected download-selected" style="display: block;">' + Joomla.JText._('COM_DROPFILES_DOWNLOAD_SELECTED', 'Download selected') + '<i class="zmdi zmdi-check-all dropfiles-download-category"></i></a>');
+                    downloadSelectedBtn.insertAfter($(rootCat).find(" #current_category_slug"));
+                }
+            } else {
+                $(rootCat + " .dropfilesSelectedFiles").remove();
+                $(rootCat + " .default-download-selected").remove();
+                hideDownloadAllBtn(sc, false);
+            }
+        });
+    }
+
+    function hideDownloadAllBtn(sc, hide) {
+        var rootCat = ".dropfiles-content-default.dropfiles-content-multi[data-category=" + sc + "]";
+        var downloadCatButton = $(rootCat + " .default-download-category");
+        var selectFileInputs = $(rootCat + " input.cbox_file_download");
+
+        if (downloadCatButton.length === 0) {
+            if (selectFileInputs.length > 0) {
+                if ($(rootCat).find('.breadcrumbs').length) {
+                    var downloadAllBtn = $('<a href="javascript:void(0);" class="default-download-category download-all" style="display: block;">' + Joomla.JText._('COM_DROPFILES_DOWNLOAD_ALL', 'Download all') + '<i class="zmdi zmdi-check-all"></i></a>');
+                    downloadAllBtn.prependTo($(rootCat).find(".breadcrumbs.dropfiles-breadcrumbs-default"));
+                } else {
+                    var downloadAllBtn = $('<a href="javascript:void(0);" class="default-download-category download-all" style="display: block;">' + Joomla.JText._('COM_DROPFILES_DOWNLOAD_ALL', 'Download all') + '<i class="zmdi zmdi-check-all"></i></a>');
+                    downloadAllBtn.insertAfter($(rootCat).find(" #current_category_slug"));
+                }
+            } else {
+                return;
+            }
+        } else {
+            if (selectFileInputs.length === 0) {
+                downloadCatButton.remove();
+                return;
+            }
+        }
+
+        if (hide) {
+            $(rootCat + " .default-download-category").hide();
+        } else {
+            $(rootCat + " .default-download-category").show();
+        }
+    }
+
+    function initDownloadSelected(sc) {
+        var rootCat = ".dropfiles-content-default.dropfiles-content-multi[data-category=" + sc + "]";
+        $(document).on('click', rootCat + ' .default-download-selected', function () {
+            if ($(rootCat).find('.dropfilesSelectedFiles').length > 0) {
+                var current_category = $(rootCat).find('#current_category').val();
+                var category_name = $(rootCat).find('#current_category_slug').val();
+                var selectedFilesId = $(rootCat).find('.dropfilesSelectedFiles').val();
+                $.ajax({
+                    url: dropfilesBaseUrl + "index.php?option=com_dropfiles&task=frontfile.zipSeletedFiles&filesId=" + selectedFilesId + "&dropfiles_category_id=" + current_category,
+                    dataType: "json",
+                }).done(function (results) {
+                    if (results.status === 'success') {
+                        var hash = results.hash;
+                        window.location.href = dropfilesBaseUrl + "index.php?option=com_dropfiles&task=frontfile.downloadZipedFile&hash=" + hash + "&dropfiles_category_id=" + current_category + "&dropfiles_category_name=" + category_name;
+                    } else {
+                        alert(results.message);
+                    }
+                })
+            }
         });
     }
 
@@ -78,6 +164,7 @@ jQuery(document).ready(function ($) {
 
     function default_load(sourcecat, category, page) {
         var pathname = window.location.pathname;
+        var container = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "]");
         $(document).trigger('dropfiles:category-loading');
         $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "]").find('#current_category').val(category);
         $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default").empty();
@@ -107,14 +194,15 @@ jQuery(document).ready(function ($) {
             default_breadcrum(sourcecat, category);
             default_initClick();
             initManageFile(sourcecat);
+
             if (tree.length) {
+                var currentTree = container.find('.dropfiles-foldertree-default');
+                currentTree.find('li').removeClass('selected');
+                currentTree.find('i.zmdi').removeClass('zmdi-folder').addClass("zmdi-folder");
 
-                tree.find('li').removeClass('selected');
-                tree.find('i.zmdi').removeClass('zmdi-folder').addClass("zmdi-folder");
+                currentTree.jaofoldertree('open', category, currentTree);
 
-                tree.jaofoldertree('open', category);
-
-                var el = tree.find('a[data-file="' + category + '"]').parent();
+                var el = currentTree.find('a[data-file="' + category + '"]').parent();
                 el.find(' > i.zmdi').removeClass("zmdi-folder").addClass("zmdi-folder");
 
                 if (!el.hasClass('selected')) {
@@ -136,6 +224,28 @@ jQuery(document).ready(function ($) {
                 dropfilesColorboxInit();
             }
             dropfiles_remove_loading($(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default"));
+            $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfilesSelectedFiles").remove();
+            $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .default-download-selected").remove();
+            // Check to hide download all
+            $.ajax({
+                url: dropfilesBaseUrl + "index.php?option=com_dropfiles&task=category.isCloudCategory&id_category=" + category,
+                dataType: "json"
+            }).done(function (result) {
+                if (result.status === 'true') {
+                    hideDownloadAllBtn(sourcecat, true);
+                } else {
+                    hideDownloadAllBtn(sourcecat, false);
+                }
+            });
+            if ($(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] #current-category-link").length) {
+                var current_download_link = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] #current-category-link").val().toLowerCase();
+                if ($(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .default-download-category").length) {
+                    var root_download_link = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .default-download-category").attr('href').toLowerCase();
+                    if (current_download_link !== root_download_link) {
+                        $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .default-download-category").attr('href', current_download_link);
+                    }
+                }
+            }
         });
         $(document).trigger('dropfiles:category-loaded');
     }
@@ -173,9 +283,10 @@ jQuery(document).ready(function ($) {
     }
 
     if (tree.length) {
-        tree.each(function (index) {
+        tree.each(function () {
             var topCat = $(this).parents('.dropfiles-content-default.dropfiles-content-multi').data('category');
             var rootCatName = $(this).parents('.dropfiles-content-default.dropfiles-content-multi').data('category-name');
+
             $(this).jaofoldertree({
                 script: dropfilesBaseUrl + 'index.php?option=com_dropfiles&task=frontfile.getSubs&tmpl=component',
                 usecheckboxes: false,
@@ -184,6 +295,13 @@ jQuery(document).ready(function ($) {
                 onclick: function (elem, file) {
                     topCat = $(elem).parents('.dropfiles-content-default.dropfiles-content-multi').data('category');
                     if (topCat != file) {
+
+                        $('.directory', $(elem).parents('.dropfiles-content-default.dropfiles-content-multi')).each(function() {
+                            if (!$(this).hasClass('selected') && $(this).find('> ul > li').length === 0) {
+                                $(this).removeClass('expanded');
+                                $(this).addClass('collapsed');
+                            }
+                        });
 
                         $(elem).parents('.directory').each(function () {
                             var $this = $(this);

@@ -57,6 +57,7 @@ class JFormFieldPhocadownloadsimport extends JFormField
             $tree = self::DRCatTreeOption($data, $tree, $catid, 0, $text);
             $text_slCate = JText::_('COM_DROPFILES_CONFIG_SELECT_A_CATEGORY');
             array_unshift($tree, JHTML::_('select.option', '', '- ' . $text_slCate . ' -', 'value', 'text'));
+            $return = '<div class="import-name"><label class="ju-setting-label">'. JText::_('COM_DROPFILES_CONFIG_IMPORT_AVAILABLE_PHOCA_DOWNLOADS_NAME') .'</label></div>';
             $return .= JHTML::_(
                 'select.genericlist',
                 $tree,
@@ -72,7 +73,7 @@ class JFormFieldPhocadownloadsimport extends JFormField
             $return .= '<button id="phocadownload_import_button" class="btn btn-small">';
             $return .= JText::_('COM_DROPFILES_CONFIG_RUN_PHOCADOWNLOAD_IMPORT') . '</button>';
         } else {
-            $return = '<span class="check-import-hidden" >';
+            $return = '<span class="check-import-hidden no-phoca" >';
             $return .= JText::_('COM_DROPFILES_CONFIG_IMPORT_AVAILABLE_PHOCA_DOWNLOADS') . '</span>';
         }
         return $return;

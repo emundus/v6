@@ -34,24 +34,24 @@
             }
             $this = $(this);
             $.extend(options,o);
-
+            $(this).data('jaofoldertree', $.extend({}, options));
             if(options.showroot!=''){
-                
+
                 $this.html('<ul class="jaofoldertree"><li class="drive directory collapsed selected">' +
-                    '<div class="icon-open-close" ></div>'
+                    '<div class="icon-open-close" data-id="'+options.root+'" data-parent_id="0" data-file="'+options.root+'"></div>'
                     +'<i class="zmdi zmdi-folder dropfiles-folder"></i><a class="catlinks" href="#" data-file="'+options.root+'" data-type="dir">'+options.showroot+'</a></li></ul>');
             }else {
                 $this.html('<ul class="jaofoldertree"><li class="drive directory collapsed selected">' +
                     '<div class="icon-open-close" ></div>'
                     +'<a class="catlinks" href="#" data-file="'+options.root+'" data-type="dir"><i class="zmdi zmdi-folder dropfiles-folder"></i></a></li></ul>');
             }
-            openfolder(options.root);
+            openfolder(options.root, $this);
         },
-        open : function(dir){
-            openfolder(dir);
+        open : function(dir, $this){
+            openfolder(dir, $this);
         },
-        close : function(dir){
-            closedir(dir);
+        close : function(dir, $this){
+            closedir(dir, $this);
         },
         getchecked : function(){
             var list = new Array();            
@@ -79,16 +79,19 @@
         }
     };
 
-    openfolder = function(dir) {
-	    if($this.find('a[data-file="'+dir+'"]').parent().hasClass('expanded')){
-		return;
+    openfolder = function(dir, $this) {
+        if (typeof ($this) === "undefined") {
+            return false;
+        }
+	    if($this.find('a[data-file="'+dir+'"]').parent().hasClass('expanded')) {
+		    return;
 	    }
             var ret;
             ret = $.ajax({
                 url : options.script,
                 data : {id : dir},
                 context : $this,
-		dataType: 'json',
+		        dataType: 'json',
                 beforeSend : function(){this.find('a[data-file="'+dir+'"]').parent().addClass('wait');}
             }).done(function(datas) {
                 ret = '<ul class="jaofoldertree" style="display: none">';
@@ -99,7 +102,7 @@
                     if(datas[ij].count_child > 0){
                         ret += '<div class="icon-open-close" data-id="' + datas[ij].id + '" data-parent_id="' + datas[ij].parent_id + '" data-file="' +datas[ij].id + '" ></div>';
                     }else{
-                        ret += '<div class="icon-open-close" data-id="' + datas[ij].id + '" data-parent_id="' + datas[ij].parent_id + '" data-file="' +datas[ij].id + '" ></div>';
+                        ret += '<div class="icon-open-close no-child" data-id="' + datas[ij].id + '" data-parent_id="' + datas[ij].parent_id + '" data-file="' +datas[ij].id + '" ></div>';
                     }
                     selectedId = dir;
                     if(datas[ij].id === selectedId.toString()) {
@@ -117,7 +120,7 @@
                 this.find('a[data-file="'+dir+'"]').after(ret);
                 this.find('a[data-file="'+dir+'"]').next().slideDown(options.expandSpeed,options.expandEasing);
 
-                setevents(this);
+                setevents($this);
             }).done(function(){
                 //Trigger custom event
                 $this.trigger('afteropen');
@@ -125,7 +128,11 @@
             });
     }
 
-    closedir = function(dir) {
+    closedir = function(dir, $this) {
+        if (typeof ($this) === "undefined") {
+            return false;
+        }
+
             $this.find('a[data-file="'+dir+'"]').next().slideUp(options.collapseSpeed,options.collapseEasing,function(){$(this).remove();});
             $this.find('a[data-file="'+dir+'"]').parent().removeClass('expanded').addClass('collapsed');
             setevents($this);
@@ -137,35 +144,71 @@
     }
 
     setevents = function($this){
+        var options = $this.data('jaofoldertree');
         $this.find('li a, li .icon-open-close').unbind('click');
         //Bind userdefined function on click an element
-        $this.find('li.directory a').bind('click', function() {            
+        $this.find('li.directory a').bind('click', function(e) {
                                   
             $this.find('li').removeClass('selected');
             $this.find('i.zmdi').removeClass('zmdi-folder').addClass("zmdi-folder");
             $(this).parent().addClass('selected');
             $(this).parent().find(' > i.zmdi').addClass("zmdi-folder");
-            
-            options.onclick(this, $(this).attr('data-file'));
+            var $el = $(this);
+            if($el.data('clicked')){
+                // Previously clicked, stop actions
+                e.preventDefault();
+                e.stopPropagation();
+            }else{
+                // Mark to ignore next click
+                $el.data('clicked', true);
+                options.onclick(this, $(this).attr('data-file'));
+                // Unmark after 1 second
+                window.setTimeout(function(){
+                    $el.removeData('clicked');
+                }, 1000)
+            }
             return false;
         });
       
         //Bind for collapse or expand elements
         //$this.find('li.directory.collapsed a').bind('click', function() {methods.open($(this).attr('data-file'));return false;});
        // $this.find('li.directory.expanded a').bind('click', function() {methods.close($(this).attr('data-file'));return false;});        
-        
-           $this.find('li.directory.collapsed .icon-open-close').bind('click', function (e) {
-                e.preventDefault; 
-                methods.open($(this).attr('data-file'));
-            });
-            
-            $this.find('li.directory.expanded .icon-open-close').bind('click', function (e) {
-                e.preventDefault; 
-                methods.close($(this).attr('data-file'));
-            });
-        $this.find('li.directory.expanded .icon-open-close .catlinks').bind('click', function (e) {
+
+        $this.find('li.directory.collapsed .icon-open-close').bind('click', function (e) {
             e.preventDefault;
-            methods.close($(this).attr('data-file'));
+
+            var $el = $(this);
+            if($el.data('clicked')){
+                // Previously clicked, stop actions
+                e.preventDefault();
+                e.stopPropagation();
+            }else{
+                // Mark to ignore next click
+                $el.data('clicked', true);
+                methods.open($(this).attr('data-file'), $this);
+                // Unmark after 1 second
+                window.setTimeout(function(){
+                    $el.removeData('clicked');
+                }, 1000)
+            }
+        });
+
+        $this.find('li.directory.expanded .icon-open-close').bind('click', function (e) {
+            e.preventDefault;
+            var $el = $(this);
+            if($el.data('clicked')){
+                // Previously clicked, stop actions
+                e.preventDefault();
+                e.stopPropagation();
+            }else{
+                // Mark to ignore next click
+                $el.data('clicked', true);
+                methods.close($(this).attr('data-file'), $this);
+                // Unmark after 1 second
+                window.setTimeout(function(){
+                    $el.removeData('clicked');
+                }, 1000)
+            }
         });
     }
 

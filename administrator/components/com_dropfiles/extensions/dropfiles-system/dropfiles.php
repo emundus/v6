@@ -33,7 +33,7 @@ class PlgSystemDropfiles extends JPlugin
     {
         $app = JFactory::getApplication();
         // get the router
-        if ($app->isSite()) {
+        if ($app->isClient('site')) {
             $router = $app->getRouter();
             $router->attachParseRule(array($this, 'replaceRoute'));
         }

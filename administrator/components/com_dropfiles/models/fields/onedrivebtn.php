@@ -79,30 +79,22 @@ class JFormFieldOneDrivebtn extends JFormField
         if (!$onedrive->checkAuth()) {
             $url = $onedrive->getAuthorisationUrl();
             ?>
-            <p><?php echo JText::_('COM_DROPFILES_ONEDRIVE_CONNECT_PART2'); ?></p>
-            <p><a id="ggconnect" class="btn btn-primary btn-onedrive" href="#"
-                  onclick="window.open('<?php echo $url; ?>','foo','width=600,height=600');return false;"><img
-                        src="<?php echo JURI::root(); ?>/components/com_dropfiles/assets/images/onedrive_white.png"
+            <a id="ggconnect" class="btn btn-primary btn-onedrive" href="#"
+               onclick="window.open('<?php echo $url; ?>','foo','width=600,height=600');return false;"><img
+                        src="<?php echo JURI::root(); ?>/components/com_dropfiles/assets/images/icon-onedrive.svg"
                         alt="" width="20px"/> <?php echo JText::_('COM_DROPFILES_ONEDRIVE_CONNECT_PART2_CONNECT'); ?>
-                </a></p>
+            </a>
         <?php } else { ?>
             <?php echo JText::_('COM_DROPFILES_ONEDRIVE_CONNECT_PART3'); ?>
             <a class="btn btn-primary btn-onedrive"
                href="index.php?option=com_dropfiles&task=onedrive.logout">
+                <img src="<?php echo JURI::root(); ?>/components/com_dropfiles/assets/images/icon-onedrive.svg" alt="" width="20px"/>
                 <?php echo JText::_('COM_DROPFILES_ONEDRIVE_CONNECT_PART3_DISCONNECT'); ?>
             </a>
-        <?php }
-
-        $href = 'href="https://www.joomunited.com/documentation/dropfiles-documentation#toc-viii-onedrive-integration" target="__blank"';
-        JText::printf('COM_DROPFILES_ONEDRIVE_CONNECT_PART1_1', $href);
-
+        <?php } ?>
+        <p><?php echo JText::_('COM_DROPFILES_ONEDRIVE_CONNECT_PART2_FIRST'); ?></p>
+        <?php
         JText::printf('COM_DROPFILES_ONEDRIVE_CONNECT_PART1_2', JURI::root() . 'administrator/index.php');
-        $path_com_dropfiles = 'index.php?option=com_config&view=component&component=com_dropfiles&path=';
-        JText::printf(
-            'COM_DROPFILES_ONEDRIVE_CONNECT_PART1_3',
-            'href="#" onclick="window.parent.open(' . $path_com_dropfiles . ',\'_self\');return false;"'
-        );
-
         return ob_get_clean();
     }
 }

@@ -19,7 +19,7 @@ defined('_JEXEC') || die;
         <div id="df-panel-toggle"><span class="icon-arrow-left-2"></span></div>
         <?php if ($this->canDo->get('core.create')) : ?>
             <div id="newcategory"
-                    class="btn-group button-primary btn-categories <?php
+                    class="btn-group button-primary btn-categories withSyncCloud <?php
                     echo $this->params->get('google_credentials', '') ? '' : 'centpc';
                     ?>">
                 <a class="btn btn-default" href="">
@@ -27,7 +27,6 @@ defined('_JEXEC') || die;
                     <?php echo JText::_('COM_DROPFILES_LAYOUT_DROPFILES_NEW_CATEGORY'); ?>
                 </a>
                 <?php if ($this->params->get('google_credentials', '')) : ?>
-                    <a class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
                     <ul class="dropdown-menu pull-right">
                         <li><a href="#" class="googleCat">
                                 <i class="google-drive-icon"></i>
@@ -75,6 +74,10 @@ defined('_JEXEC') || die;
             </ol>
             <input type="hidden" id="categoryToken" name="<?php echo JSession::getFormToken(); ?>"/>
         </div>
+        <div id="dropfiles-hamburger">
+            <div class="material-leftright"></div>
+            <span><?php echo JText::_('COM_DROPFILES_LAYOUT_DROPFILES_CATEGORY'); ?></span>
+        </div>
     </div>
 
 
@@ -90,25 +93,48 @@ defined('_JEXEC') || die;
  */
 function openItem($category, $key, $canDo)
 {
-    $icon = '';
-    if ($category->type === 'googledrive') {
-        $icon = '<i class="google-drive-icon-white"></i> ';
+    switch ($category->type) {
+        case 'googledrive':
+            $icon = '<i class="google-drive-icon-white"></i> ';
+            break;
+        case 'dropbox':
+            $icon = '<i class="dropbox-icon-white"></i> ';
+            break;
+        case 'onedrive':
+            $icon = '<i class="onedrive-icon-white"></i> ';
+            break;
+        case 'onedrivebusiness':
+            $icon = '<i class="onedrive-icon-white"></i> ';
+            break;
+        default:
+            $icon = '<i class="zmdi zmdi-folder dropfiles-folder"></i>';
+            break;
     }
-    $return = '<li class="dd-item dd3-item ' . ($key ? '' : 'active') . '" data-id-category="'
-        . $category->id . '" data-author="' . $category->created_user_id . '">
-        <div class="dd-handle dd3-handle"><i class="zmdi zmdi-folder dropfiles-folder"></i></div>
-        <div class="dd-content dd3-content dd-handle">';
-    if ($canDo->get('core.delete')) {
-        $return .= '<a class="trash"><i class="icon-trash"></i></a>';
-    }
-    if ($canDo->get('core.edit') || $canDo->get('core.edit.own')) {
-        $return .= '<a class="edit"><i class="icon-edit"></i></a>';
-    }
-    $return .= '<a href="" class="t">' . $icon . '
-                <span class="title">' . $category->title . '</span>
-            </a>
-        </div>';
 
+    if (isset($category->disable) && $category->disable) {
+        $disable = ' disable-cat ';
+        $item_id_disable = 'data-item-disable="' . $category->id . '"';
+        $dd_handle = '';
+    } else {
+        $disable = ' not-disable-cat ';
+        $item_id_disable = '';
+        $dd_handle = ' dd-handle ';
+    }
+
+    $return = '<li class="' . $disable . ' dd-item dd3-item ' . ($key ? '' : 'active') . '" data-id-category="';
+    $return .= $category->id . '" data-author="' . $category->created_user_id . '" ' . $item_id_disable . ' >';
+    $return .= '<div class="' . $disable . $dd_handle . ' dd3-handle">' . $icon . '</div>';
+    $return .= '<div class="dd-content dd3-content ' . $dd_handle . $disable . '">';
+    if ($canDo->get('core.delete') && !isset($category->disable)) {
+        $return .= '<a class="trash" title="Delete"><i class="icon-trash"></i></a>';
+    }
+    if ($canDo->get('core.edit') || $canDo->get('core.edit.own') && !isset($category->disable)) {
+        $return .= '<a class="edit" title="Edit"><i class="icon-edit"></i></a>';
+    }
+    $return .= '<a href="" class="t' . $disable . '">
+                <span class="title">' . $category->title . '</span>
+            </a>';
+    $return .= '</div>';
     return $return;
 }
 
@@ -131,11 +157,21 @@ function closeItem()
  */
 function itemContent($category)
 {
-    return '<div class="dd-handle dd3-handle"><i class="zmdi zmdi-folder dropfiles-folder"></i></div>
+    if (isset($category->disable) && $category->disable) {
+        $disable = ' disable-cat ';
+        $dd_handle = '';
+    } else {
+        $disable = '';
+        $dd_handle = ' dd-handle ';
+    }
+
+    return '<div class="' . $disable . $dd_handle . ' dd3-handle">
+                <i class="zmdi zmdi-folder dropfiles-folder"></i>
+            </div>
     <div class="dd-content dd3-content dd-handle"
         <i class="icon-chevron-right"></i>
-        <a class="edit"><i class="icon-edit"></i></a>
-        <a class="trash"><i class="icon-trash"></i></a>
+        <a class="edit" title="Edit"><i class="icon-edit"></i></a>
+        <a class="trash" title="Delete"><i class="icon-trash"></i></a>
         <a href="" class="t">
             <span class="title">' . $category->title . '</span>
         </a>

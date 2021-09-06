@@ -48,7 +48,7 @@ class JFormFieldJavaButton extends JFormField
                 type: \"POST\",
                 data: {fromtheme: $('select[name=\"jform[fromtheme]\"]').val(), newtheme: $('input[name=\"jform[newtheme]\"]').val()},
                 dataType : 'json'
-            }).success(function(res){
+            }).done(function(res){
                 alert(res.datas);
                 $('#jform_newtheme').val('');
                 window.location.reload();
