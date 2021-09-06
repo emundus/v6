@@ -4202,13 +4202,26 @@ $(document).ready(function() {
                     let dataType = $(this).attr('data-check');
                     if(dataType == '.emunduspage') {
                         let profile_id = $(this).attr('id').split('emundus_checkall')[1];
-                        if($('#emundus_checkall'+profile_id).is(":checked")) {
-                            $('#felts' + profile_id + ' :input').attr('checked', true);
-                        } else {
-                            $('#felts' + profile_id + ' :input').attr('checked', false);
+
+                        // if excel found
+                        if($('#appelement').length > 0) {
+                            if ($('#emundus_checkall' + profile_id).is(":checked")) {
+                                $('#emundus_elements :input').prop('checked', true);
+                            } else {
+                                $('#emundus_elements :input').prop('checked', false);
+                            }
+                        }
+
+                        /// if pdf found
+                        if($('#felts' + profile_id).length) {
+                            if ($('#emundus_checkall' + profile_id).is(":checked")) {
+                                $('#felts' + profile_id + ' :input').attr('checked', true);
+                            } else {
+                                $('#felts' + profile_id + ' :input').attr('checked', false);
+                            }
                         }
                     } else {
-
+                        /// do nothing ....
                     }
                 });
 
