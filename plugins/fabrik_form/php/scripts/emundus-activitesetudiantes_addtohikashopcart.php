@@ -14,55 +14,62 @@
     $cartClass = hikashop_get('class.cart');
 
     jimport('joomla.log.log');
-    JLog::addLogger(['text_file' => 'com_emundus.hikashopAddToCart.php'], JLog::ALL, ['com_emundus']);
+    JLog::addLogger(['text_file' => 'com_emundus.hikashopAddToCart.php'], JLog::ALL, ['com_emundus_hikashopAddToCart']);
 
     $fnumInfos = $m_files->getFnumInfos($fnum);
 
-
-    $products = array();
-    $products[]['id'] = (int)$fnumInfos['hikashop_product'];
-    $products[]['qty'] = 1;
-
     // Get Hikashop user
-    $query->select('user_id')
+    $query
+        ->select('user_id')
         ->from($db->quoteName('#__hikashop_user'))
         ->where($db->quoteName('user_cms_id') . ' = ' . $current_user->id);
+
     $db->setQuery($query);
     $hikashop_user = $db->loadResult();
-    //
 
     // Get existing order of the file
-    $query->clear()
+    $query
+        ->clear()
         ->select('id')
         ->from($db->quoteName('#__emundus_hikashop','eh'))
-        ->where($db->quoteName('eh.fnum') . ' = ' . $db->quote($fnum))
-        ->andWhere($db->quoteName('eh.campaign_id') . ' = ' . $db->quote((int)$fnumInfos['id']));
+        ->where($db->quoteName('eh.fnum') . ' = ' . $db->quote($fnum));
+
     $db->setQuery($query);
     $emundus_order = $db->loadResult();
-    //
+
 
     if(!empty($emundus_order)) {
-        $query->clear()
+        $query
+            ->clear()
             ->select('ho.order_id')
             ->from($db->quoteName('#__hikashop_order','ho'))
             ->leftJoin($db->quoteName('#__emundus_hikashop', 'eh') . ' ON ' . $db->quoteName('eh.order_id') . ' = ' . $db->quoteName('ho.order_id'))
             ->where($db->quoteName('eh.fnum') . ' = ' . $db->quote($fnum))
-            ->andWhere($db->quoteName('eh.campaign_id') . ' = ' . $db->quote((int)$fnumInfos['id']))
             ->andWhere($db->quoteName('ho.order_status') . ' = ' . $db->quote('confirmed'));
+
         $db->setQuery($query);
-        $order_confirmed = $db->loadResult();
+        try {
+            $order_confirmed = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('plugin/fabrik_form/php/scripts/emundus-activitesetudiantes_addtohikashopcart error :'.$query->__toString().' : '.$e->getMessage(), JLog::ERROR, 'com_emundus_hikashopAddToCart');
+        }
 
         if(empty($order_confirmed)) {
             // Get existing cart
-            $query->clear()
+            $query
+                ->clear()
                 ->select('hc.cart_id')
                 ->from($db->quoteName('#__emundus_hikashop', 'eh'))
                 ->leftJoin($db->quoteName('#__hikashop_cart', 'hc') . ' ON ' . $db->quoteName('hc.cart_id') . ' = ' . $db->quoteName('eh.cart_id'))
                 ->where($db->quoteName('eh.fnum') . ' = ' . $db->quote($fnum))
                 ->andWhere($db->quoteName('eh.cart_id') . ' IS NOT NULL');
-            $db->setQuery($query);
-            $emundus_cart = $db->loadResult();
-            //
+
+            try {
+                $db->setQuery($query);
+                $emundus_cart = $db->loadResult();
+            } catch (Exception $e) {
+                JLog::add('plugin/fabrik_form/php/scripts/emundus-activitesetudiantes_addtohikashopcart error :'.$query->__toString().' : '.$e->getMessage(), JLog::ERROR, 'com_emundus_hikashopAddToCart');
+            }
 
             if (empty($emundus_cart)) {
                 // Create a new cart
@@ -71,31 +78,46 @@
 
                 $emundus_cart = $cartClass->save($cart);
 
-                $query->clear()
+                $query
+                    ->clear()
                     ->update($db->quoteName('#__emundus_hikashop'))
                     ->set($db->quoteName('cart_id') . ' = ' . $db->quote($emundus_cart))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($emundus_order));
-                $db->setQuery($query);
-                $db->execute();
+
+                try {
+                    $db->setQuery($query);
+                    $db->execute();
+                } catch (Exception $e) {
+                    JLog::add('plugin/fabrik_form/php/scripts/emundus-activitesetudiantes_addtohikashopcart error :'.$query->__toString().' : '.$e->getMessage(), JLog::ERROR, 'com_emundus_hikashopAddToCart');
+                }
             }
 
-            $query->clear()
+            $query
+                ->clear()
                 ->select('count(cart_product_id)')
                 ->from($db->quoteName('#__hikashop_cart_product'))
                 ->where($db->quoteName('cart_id') . ' = ' . $db->quote($emundus_cart))
                 ->andWhere($db->quoteName('product_id') . ' = ' . $db->quote($fnumInfos['hikashop_product']));
-            $db->setQuery($query);
-            $already_added = $db->loadResult();
+
+            try {
+                $db->setQuery($query);
+                $already_added = $db->loadResult();
+            } catch (Exception $e) {
+                JLog::add('plugin/fabrik_form/php/scripts/emundus-activitesetudiantes_addtohikashopcart error :'.$query->__toString().' : '.$e->getMessage(), JLog::ERROR, 'com_emundus_hikashopAddToCart');
+            }
 
             if ($already_added == 0) {
                 $dateTime = new DateTime();
 
-                //$result = $cartClass->addProduct((int)$emundus_cart, $products);
                 $query = "INSERT INTO jos_hikashop_cart_product (cart_id, product_id, cart_product_quantity, cart_product_parent_id, cart_product_modified, cart_product_option_parent_id, cart_product_wishlist_id, cart_product_wishlist_product_id, cart_product_ref_price) 
             VALUES (" . $emundus_cart . "," . (int)$fnumInfos['hikashop_product'] . ", 1, 0, " . $dateTime->getTimestamp() . ", 0, 0, 0, null)";
-                $db->setQuery($query);
-                $adding_product = $db->execute();
-                $query = $db->getQuery(true);
+
+                try {
+                    $db->setQuery($query);
+                    $db->execute();
+                } catch (Exception $e) {
+                    JLog::add('plugin/fabrik_form/php/scripts/emundus-activitesetudiantes_addtohikashopcart error :'.$query.' : '.$e->getMessage(), JLog::ERROR, 'com_emundus_hikashopAddToCart');
+                }
             }
         }
     } else {
@@ -108,37 +130,59 @@
         $columns = ['user', 'fnum', 'campaign_id', 'status', 'cart_id'];
         $values = [$current_user->id, $db->quote($fnum), $fnumInfos['id'], $fnumInfos['status'], $emundus_cart];
 
-        $query->clear()
+        $query
+            ->clear()
             ->insert($db->quoteName('#__emundus_hikashop'))
             ->columns($columns)
             ->values(implode(',', $values));
-        $db->setQuery($query);
-        $db->execute();
+
+        try {
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e) {
+            JLog::add('plugin/fabrik_form/php/scripts/emundus-activitesetudiantes_addtohikashopcart error :'.$query->__toString().' : '.$e->getMessage(), JLog::ERROR, 'com_emundus_hikashopAddToCart');
+        }
 
         $dateTime = new DateTime();
 
-        //$result = $cartClass->addProduct((int)$emundus_cart, $products);
         $query = "INSERT INTO jos_hikashop_cart_product (cart_id, product_id, cart_product_quantity, cart_product_parent_id, cart_product_modified, cart_product_option_parent_id, cart_product_wishlist_id, cart_product_wishlist_product_id, cart_product_ref_price) 
         VALUES (" . $emundus_cart . "," . (int)$fnumInfos['hikashop_product'] . ", 1, 0, " . $dateTime->getTimestamp() . ", 0, 0, 0, null)";
-        $db->setQuery($query);
-        $adding_product = $db->execute();
-        $query = $db->getQuery(true);
+
+        try {
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e) {
+            JLog::add('plugin/fabrik_form/php/scripts/emundus-activitesetudiantes_addtohikashopcart error :'.$query.' : '.$e->getMessage(), JLog::ERROR, 'com_emundus_hikashopAddToCart');
+        }
     }
 
-    if(!empty($emundus_cart)) {
-        // Update current_cart
-        $query->clear()
-            ->update($db->quoteName('#__hikashop_cart'))
-            ->set($db->quoteName('cart_current') . ' = 0')
-            ->where($db->quoteName('user_id') . ' = ' . $db->quote($hikashop_user));
-        $db->setQuery($query);
-        $db->execute();
+if(!empty($emundus_cart)) {
 
-        $query->clear()
-            ->update($db->quoteName('#__hikashop_cart'))
-            ->set($db->quoteName('cart_current') . ' = 1')
-            ->where($db->quoteName('cart_id') . ' = ' . $db->quote($emundus_cart));
+    $query = $db->getQuery(true);
+    // Update current_cart
+    $query
+        ->clear()
+        ->update($db->quoteName('#__hikashop_cart'))
+        ->set($db->quoteName('cart_current') . ' = 0')
+        ->where($db->quoteName('user_id') . ' = ' . $db->quote($hikashop_user));
+
+    try {
         $db->setQuery($query);
         $db->execute();
+    } catch (Exception $e) {
+        JLog::add('plugin/fabrik_form/php/scripts/emundus-activitesetudiantes_addtohikashopcart error :'.$query.' : '.$e->getMessage(), JLog::ERROR, 'com_emundus_hikashopAddToCart');
     }
-    //
+
+    $query
+        ->clear()
+        ->update($db->quoteName('#__hikashop_cart'))
+        ->set($db->quoteName('cart_current') . ' = 1')
+        ->where($db->quoteName('cart_id') . ' = ' . $db->quote($emundus_cart));
+
+    try {
+        $db->setQuery($query);
+        $db->execute();
+    } catch (Exception $e) {
+        JLog::add('plugin/fabrik_form/php/scripts/emundus-activitesetudiantes_addtohikashopcart error :'.$query.' : '.$e->getMessage(), JLog::ERROR, 'com_emundus_hikashopAddToCart');
+    }
+}
