@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<view title="users" hidden="true">
+		<message><![CDATA[Users view to display list of users on the site, used to select a user for registration record]]></message>
+	</view>
+</metadata>

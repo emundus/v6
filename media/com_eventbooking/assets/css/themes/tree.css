@@ -1,0 +1,137 @@
+/*Calendar view for css*/
+.regpro-calendarMonthHeader{
+    background-color: #292215;
+}
+.regpro-calendarWeekDayHeader {
+    background: #383015;
+    color: #fff;
+    border-left: 1px solid #292215;
+}
+.regpro-calendarDay {
+    background-color: #efefef;
+    color: #292215;
+    border-left: 1px solid #FFFFFF;
+    border-top: 1px solid #FFFFFF;
+}
+.regpro-calendarDay:hover {
+    background-color: #DAD9CE;
+}
+.regpro-calendarDay .eb_event_link{
+    color: #fff;
+    background: #292215;
+    border-left: 1px #D0D4D4 solid;
+    border-top: 1px #D0D4D4 solid;
+    border-right: 1px #fff solid;
+    border-bottom: 1px #fff solid;
+}
+.eb-calendar ul.eb-weekdays{background: #383015;}
+#extcalendar .today {
+    color: #606F79;
+    font-weight: bold;
+}
+.eb-topmenu-calendar ul li a {
+    background: #F4F4F4;
+    color: #292215;
+}
+
+.eb-topmenu-calendar ul li a:hover, .eb-topmenu-calendar ul li a.active {
+    background: #292215!important;
+    color: #fff!important;
+}
+#extcalendar .currentmonth, #extcalendar .currentday, #extcalendar .currentweek {
+    background-color: #292215;
+    color: #FFFFFF;
+}
+#extcalendar .previousday, #extcalendar .previousweek, #extcalendar .nextday, #extcalendar .nextweek {
+    background-color: #292215;
+    color: #FFFFFF;
+}
+#extcalendar .tablea {
+    background-color: #F9F9F9;
+    border-top: 1px solid #FFFFFF;
+    color: #999;
+}
+#extcalendar .tableb {
+    background-color: #F4F4F4;
+    border-left: 1px solid #FFFFFF;
+    border-top: 1px solid #FFFFFF;
+    color: black;
+}
+#extcalendar .tablec {
+    background-color: #F9F9F9;
+    border-top: 1px solid #FFFFFF;
+    color: #333333;
+}
+#extcalendar .tableh2 {
+    background: #383015;
+    color: white;
+}
+#extcalendar .eventdesc {
+    color: #606F79;
+}
+
+/* mini calendar */
+.extcal_minical .extcal_navbar {
+    background: #292215;
+}
+a.mod_eb_minicalendar_link, .mod_eb_minicalendar_link a, .mod_eb_minicalendar_link i, .mod_eb_minicalendar_link i:before {
+    color: #fff;
+}
+.mod_eb_mincalendar_td_dayname {
+    background: #383015;
+    color: #fff;
+}
+.mod_eb_mincalendar_table td {
+    border: 1px #ccc solid;
+}
+.mod_eb_mincalendar_table tbody td
+{
+    color: #333;
+}
+td.mod_eb_mincalendar_event{
+    background-color:#292215;
+}
+#eb-categories .eb-box-heading, #eb-events .eb-box-heading, #eb-event-page .eb-box-heading {
+    background: #f2f2f2;
+    border: 1px solid #DBDEE1;
+}
+#eb-categories .eb-description, #eb-events .eb-description, #eb-event-page .eb-description {
+    border-bottom: 1px solid #DBDEE1;
+    border-left: 1px solid #DBDEE1;
+    border-right: 1px solid #DBDEE1;
+}
+/* Upcoming events module */
+ul.eventsmall li {
+    list-style: none;
+    border-top: 1px solid #214865;
+}
+
+span.event-date span.month {
+    background: #214865;
+    border: 1px solid #214865;
+}
+
+span.event-date span.day {
+    border: 1px solid #214865;
+    color: #214865;
+}
+table.eb_event_list td.eb_event
+{
+    line-height: 1.2rem;
+    padding-bottom: 10px;
+}
+
+/* FULL CALENDAR */
+.fc-head .fc-day-header {
+	background: #292215;
+	color: #fff;
+	padding: 10px 20px;
+}
+.fc-head .fc-day-header a {
+	color: #FFF;
+}
+.fc-header-toolbar .fc-today-button, .fc-button-group .fc-state-active {
+	background: #292215;
+	color: #fff;
+	opacity: 1;
+}

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form addfieldpath="/plugins/eventbooking/dates/field">
+    <field
+            name="dates"
+            type="subform"
+            label="Additional Dates"
+            description="Additional Dates"
+            layout="joomla.form.field.subform.repeatable-table"
+            icon="list"
+            multiple="true"
+    >
+        <form hidden="true" name="list_dates" repeat="true">
+            <field
+                    name="id"
+                    type="hidden"
+                    value="0"
+            />
+            <field
+                    name="event_date"
+                    type="calendar"
+                    label="EB_EVENT_START_DATE"
+                    class="input-medium subform-date-picker"
+                    format="%Y-%m-%d %H:%M"
+                    showtime="true"
+                    filter="raw"
+            />
+            <field
+                    name="event_end_date"
+                    type="calendar"
+                    label="EB_EVENT_END_DATE"
+                    size="10"
+                    class="input-medium subform-date-picker"
+                    format="%Y-%m-%d %H:%M"
+                    showtime="true"
+                    filter="raw"
+            />
+            <field
+                    name="registration_start_date"
+                    type="calendar"
+                    label="EB_REGISTRATION_START_DATE"
+                    class="input-medium subform-date-picker"
+                    format="%Y-%m-%d %H:%M"
+                    showtime="true"
+                    filter="raw"
+            />
+            <field
+                    name="cut_off_date"
+                    type="calendar"
+                    label="EB_CUT_OFF_DATE"
+                    class="input-medium subform-date-picker"
+                    format="%Y-%m-%d %H:%M"
+                    showtime="true"
+                    filter="raw"
+            />
+            <field
+                    name="location_id"
+                    type="eblocation"
+                    class="advSelect input-xlarge"
+                    size="1" default="0"
+                    label="EB_LOCATION"
+                    description="Choose the Location which you want to display events"/>
+
+            <field
+                    name="event_capacity"
+                    type="text"
+                    class="input-small"
+                    label="EB_CAPACITY"
+            />
+        </form>
+    </field>
+</form>

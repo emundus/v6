@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <field
+            name="gallery"
+            type="subform"
+            label="Gallery"
+            description="Gallery"
+            layout="joomla.form.field.subform.repeatable-table"
+            icon="list"
+            multiple="true"
+    >
+        <form hidden="true" name="list_images" repeat="true">
+            <field
+                    name="id"
+                    type="hidden"
+                    value="0"
+            />
+            <field
+                    name="title"
+                    type="text"
+                    label="EB_TITLE"
+                    description="Title/Caption of the image"
+                    size="10"
+            />
+            <field
+                    name="image"
+                    type="media"
+                    label="EB_IMAGE"
+                    directory="com_eventbooking/galleries"
+            />
+        </form>
+    </field>
+</form>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Individual Registration Form">
+		<message>
+			Display Individual Registration Form for an event.
+		</message>
+	</layout>
+	<state>
+		<name>Individual Registration Form</name>
+		<description>Display Individual Registration Form for an event.</description>		
+		<fields name="request">			
+			<fieldset name="request"
+				addfieldpath="/administrator/components/com_eventbooking/elements">
+				<field name="event_id" type="ebevent" size="3" required="true" default="0" label="Select Event" description="Select Event which you want users to register for when they access to this menu item" />
+			</fieldset>	
+		</fields>			
+	</state>
+</metadata>
