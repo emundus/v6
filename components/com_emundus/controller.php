@@ -1664,4 +1664,74 @@ class EmundusController extends JControllerLegacy {
         echo json_encode((object) $result);
         exit();
     }
+    
+    /**
+     * unregisterevent
+     *
+     * @return void
+     */
+    function unregisterevent(){
+        $app = JFactory::getApplication();
+        $jinput = $app->input;
+        $fnum = $jinput->get('fnum', null);
+
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        include_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
+        $m_files = new EmundusModelFiles();
+        $m_emails = new EmundusModelEmails();
+        $c_messages = new EmundusControllerMessages();
+
+        $query = $this->_db->getQuery(true);
+
+        if (in_array($fnum, array_keys($this->_user->fnums))){
+            $user = $this->_user;
+
+            $query->select('cc.eb_registration,sc.event,sc.training,sc.label')
+                ->from($this->_db->quoteName('#__emundus_campaign_candidature','cc'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$this->_db->quoteName('sc.id').' = '.$this->_db->quoteName('cc.campaign_id'))
+                ->where($this->_db->quoteName('cc.fnum') . ' = ' . $this->_db->quote($fnum));
+            $this->_db->setQuery($query);
+            $registration = $this->_db->loadObject();
+
+            $query->clear()
+                ->delete('#__eb_registrants')
+                ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($registration->eb_registration));
+            $this->_db->setQuery($query);
+            $this->_db->execute();
+
+            $m_files->updateState((array)$fnum, 3);
+            $m_emails->sendEmailTrigger(3, (array)$registration->training, '0,1', $this->_user);
+
+            $query->clear()
+                ->select('u.email,u.id')
+                ->from($this->_db->quoteName('#__emundus_configuration_activites_repeat_eb_activities','car'))
+                ->leftJoin($this->_db->quoteName('#__emundus_configuration_activites','ca').' ON '.$this->_db->quoteName('ca.id').' = '.$this->_db->quoteName('car.parent_id'))
+                ->leftJoin($this->_db->quoteName('#__users','u').' ON '.$this->_db->quoteName('u.id').' = '.$this->_db->quoteName('ca.eb_referent'))
+                ->where($this->_db->quoteName('car.eb_activities') . ' = ' . $this->_db->quote($registration->event));
+            $this->_db->setQuery($query);
+            $referent_email = $this->_db->loadObject();
+
+            if(!empty($referent_email)) {
+                $post = array(
+                    'CAMPAIGN_LABEL' => $registration->label
+                );
+                $c_messages->sendEmailNoFnum($referent_email->email,82, $post, $referent_email->id);
+            }
+        } else {
+            JError::raiseError(500, JText::_('ACCESS_DENIED'));
+            echo 'false';
+        }
+
+        unset($this->_user->fnums[$fnum]);
+
+        if (in_array($user->fnum, array_keys($user->fnums))) {
+            echo 'true';
+        } else {
+            array_shift($this->_user->fnums);
+            echo 'true';
+        }
+
+        exit();
+    }
 }
