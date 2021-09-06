@@ -9,7 +9,7 @@
 
 // Protect from unauthorized access
 defined('_JEXEC') or die('Restricted access');
-JRequest::checkToken('get') or die('Invalid Token');
+JSession::checkToken('get') or die('Invalid Token');
 
 $kind_array = array(JHtml::_('select.option', JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_FILE'), JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_FILE')),
             JHtml::_('select.option', JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_FOLDER'), JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_FOLDER')));
@@ -24,7 +24,9 @@ $document->addScript(JURI::root().'media/system/js/core.js');
 
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+// Inline javascript to avoid deferring in Joomla 4
+echo '<script src="' . JURI::root(). '/media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>';
+//$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
 // Chosen scripts
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');

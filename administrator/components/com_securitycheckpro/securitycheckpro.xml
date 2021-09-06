@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="3.6" method="upgrade">
 <name>Securitycheck Pro</name>
-<creationDate>01-07-2020</creationDate>
+<creationDate>19-07-2021</creationDate>
 <author>Jose A. Luque</author>
 <authorEmail>contacto@protegetuordenador.com</authorEmail>
 <authorUrl>http://www.protegetuordenador.com</authorUrl>
 <copyright>Copyright www.protegetuordenador.com</copyright>
 <license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
-<version>3.2</version>
+<version>3.4.1</version>
 <description>COM_SECURITYCHECKPRO_DESCRIPTION</description> 
 
 <!-- Public front end files  -->
@@ -31,15 +31,15 @@
 <menu view="cpanel"	img="../media/com_securitycheckpro/images/tick_16x16.png">Securitycheck Pro</menu>
 
 <submenu>
-        <menu link="option=com_securitycheckpro">COM_SECURITYCHECKPRO_CPANEL_MAIN_MENU</menu>
-		<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_vulnerabilities()">COM_SECURITYCHECKPRO_VULNERABILITIES</menu>
-		<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_filemanager()">COM_SECURITYCHECKPRO_CPANEL_FILE_MANAGER_TEXT</menu>
-		<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_fileintegrity()">COM_SECURITYCHECKPRO_CPANEL_FILE_INTEGRITY_TEXT</menu>
-		<menu link="option=com_securitycheckpro&amp;controller=securitycheckpro&amp;view=logs">COM_SECURITYCHECKPRO_CPANEL_VIEW_FIREWALL_LOGS</menu>		
-		<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_htaccess()">COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT</menu>
-		<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_malware()">COM_SECURITYCHECKPRO_MALWARESCAN</menu>		
-	</submenu>
-
+    <menu link="option=com_securitycheckpro">COM_SECURITYCHECKPRO_CPANEL_MAIN_MENU</menu>
+	<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_vulnerabilities()">COM_SECURITYCHECKPRO_VULNERABILITIES</menu>
+	<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_filemanager()">COM_SECURITYCHECKPRO_CPANEL_FILE_MANAGER_TEXT</menu>
+	<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_fileintegrity()">COM_SECURITYCHECKPRO_CPANEL_FILE_INTEGRITY_TEXT</menu>
+	<menu link="option=com_securitycheckpro&amp;controller=securitycheckpro&amp;view=logs">COM_SECURITYCHECKPRO_CPANEL_VIEW_FIREWALL_LOGS</menu>		
+	<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_htaccess()">COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT</menu>
+	<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_malware()">COM_SECURITYCHECKPRO_MALWARESCAN</menu>		
+</submenu>
+	
 <!-- Administration Main File Copy Section -->
 <files folder="backend">
 <filename>securitycheckpro.php</filename>
@@ -119,16 +119,22 @@
 <install>
 <sql>
 <file charset="utf8" driver="mysql">sql/install.sql</file>
+<file charset="utf8" driver="postgresql">sql/install.postgresql.sql</file>
+<file charset="utf8" driver="pgsql">sql/install.postgresql.sql</file>
 </sql>
 </install>
 <uninstall>
 <sql>
 <file charset="utf8" driver="mysql">sql/uninstall.sql</file>
+<file charset="utf8" driver="postgresql">sql/uninstall.postgresql.sql</file>
+<file charset="utf8" driver="pgsql">sql/uninstall.postgresql.sql</file>
 </sql>
 </uninstall>
 <update>
 	<schemas>
 		<schemapath type="mysql">sql/updates</schemapath>
+		<schemapath type="postgresql">sql/updates/postgresql</schemapath>
+		<schemapath type="pgsql">sql/updates/postgresql</schemapath>
 	</schemas>
 </update>
 

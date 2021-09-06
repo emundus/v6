@@ -15,25 +15,11 @@ use Joomla\CMS\Language\Text as JText;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel as JModel;
 use Joomla\CMS\Component\ComponentHelper as JComponentHelper;
 
-if (!class_exists('JoomlaCompatModel')) {
-    if (interface_exists('JModel')) {
-        abstract class JoomlaCompatModel extends JModelLegacy
-        {
-
-        }
-    } else 
-    {
-        class JoomlaCompatModel extends JModel
-        {
-
-        }
-    }
-}
 
 define('SCP_CACERT_PEM', __DIR__ . '/cacert.pem');
 define('SCP_USER_AGENT', 'Securitycheck Pro User agent');
 
-class SecuritycheckproModel extends JoomlaCompatModel
+class SecuritycheckproModel extends \Joomla\CMS\MVC\Model\BaseDatabaseModel
 {
 
     /**
@@ -64,8 +50,6 @@ class SecuritycheckproModel extends JoomlaCompatModel
     private $config = null;
 
     private $defaultConfig = array(
-    'blacklist'            => '',
-    'whitelist'        => '',
     'dynamic_blacklist'        => 1,
     'dynamic_blacklist_time'        => 600,
     'dynamic_blacklist_counter'        => 5,
@@ -120,10 +104,12 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     'periodicity'            => 24,
     'control_center_enabled'    => '0',
     'secret_key'    => '',
+	'control_center_url'    => '',
     'add_geoblock_logs'            => 0,
     'upload_scanner_enabled'    =>    1,
     'check_multiple_extensions'    =>    1,
     'extensions_blacklist'            => 'php,js,exe,xml',
+	'mimetypes_blacklist'	=>	'application/x-dosexec,application/x-msdownload ,text/x-php,application/x-php,application/x-httpd-php,application/x-httpd-php-source,application/javascript,application/xml',
     'delete_files'            => 1,
     'actions_upload_scanner'    =>    0,
     'exclude_exceptions_if_vulnerable'    =>    1,
@@ -143,7 +129,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     'forbid_new_admins'    => 0,
     'spammer_what_to_check'    => array('Email','IP','Username'),
     'strip_all_tags'    =>    1,
-    'tags_to_filter'            => 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,id,iframe,ilayer,layer,link,meta,name,object,script,style,title,xml,svg,input',
+    'tags_to_filter'            => 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,id,iframe,ilayer,layer,link,meta,name,object,script,style,title,xml,svg,input,a',
     'inspector_forbidden_words'    => 'wp-login.php,.git,owl.prev,tmp.php,home.php,Guestbook.php,aska.cgi,default.asp,jax_guestbook.php,bbs.cg,gastenboek.php,light.cgi,yybbs.cgi,wsdl.php,wp-content,cache_aqbmkwwx.php,.suspected,seo-joy.cgi,google-assist.php,wp-main.php,sql_dump.php,xmlsrpc.php',
     'write_log_inspector'    => 1,
     'action_inspector'    =>    2,
@@ -188,6 +174,25 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
                 
         parent::populateState();
     }
+	
+	/* Obtiene los elementos de una tabla pasada como argumento */
+    function getTableData($table)
+    {
+        $db = JFactory::getDBO();
+		$database = "#__securitycheckpro_" . $table;
+		$array_ips = null;
+		
+		try{
+			$query = "SELECT * FROM " . $database;
+			$db->setQuery($query);
+			$db->execute();
+			$array_ips = $db->loadColumn();		
+		} catch (Exception $e)
+        {    		
+			return null;
+        }
+        return $array_ips;    
+    }
 
     /* Obtiene el valor de una opción de configuración */
     public function getValue($key, $default = null, $key_name = 'cparams')
@@ -211,10 +216,10 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         }
         
         if (version_compare(JVERSION, '3.0', 'ge')) {
-            $x = $this->config->set($key, $value);
+            $x = $this->config->set($key, $value);			
         } else
         {
-            $x = $this->config->setValue($key, $value);
+            $x = $this->config->setValue($key, $value);			
         }
     
         if($save) { $this->save($key_name);
@@ -255,9 +260,10 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
+		$query2 = $db->getQuery(true);
     
         $data = $this->config->toArray();
-    
+		    
         if ($key_name != 'inspector') {        
             // Chequeamos si los valores de prioridad son nulos; si lo son, les asignamos un valor
             if ((array_key_exists("priority1", $data)) && (is_null($data['priority1'])) || (!array_key_exists("priority1", $data))) {
@@ -281,33 +287,56 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
             }
         }
         
-        $data = json_encode($data);        
-        $query
-            ->delete($db->quoteName('#__securitycheckpro_storage'))
-            ->where($db->quoteName('storage_key').' = '.$db->quote($key_name));
-        $db->setQuery($query);
-        $db->execute();
+        $data = json_encode($data);
+		
+		if ($data !== false) {
+			//Json is valid			
+			
+			//Get the previous value
+			$query2->select('storage_value');
+            $query2->from('#__securitycheckpro_storage');
+            $query2->where($db->quoteName('storage_key').' = '.$db->quote($key_name));
+			$db->setQuery($query2);
+			$db->execute();
+			$previous_data = $db->loadResult();
+						
+			try {
+				//delete stored value
+				$query
+					->delete($db->quoteName('#__securitycheckpro_storage'))
+					->where($db->quoteName('storage_key').' = '.$db->quote($key_name));
+				$db->setQuery($query);
+				$db->execute();
+				
+				$object = (object)array(
+				'storage_key'        => $key_name,
+				'storage_value'        => $data
+				);
+					
+				$db->insertObject('#__securitycheckpro_storage', $object);
+			
+				JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_CONFIGSAVED'));
+			} catch (Exception $e)
+			{    
+				// Let's restore the previous config
+				$object = (object)array(
+				'storage_key'        => $key_name,
+				'storage_value'        => $previous_data
+				);
+					
+				$db->insertObject('#__securitycheckpro_storage', $object);
+			} 
+		} else {
+			JFactory::getApplication()->enqueueMessage("Error", 'error');
+		}
         
-        $object = (object)array(
-        'storage_key'        => $key_name,
-        'storage_value'        => $data
-        );
-            
-        $db->insertObject('#__securitycheckpro_storage', $object);
-    
-        JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_CONFIGSAVED'));
     }
 
     /* Obtiene la configuración de los parámetros del Firewall Web */
     function getConfig()
     {
-        if (interface_exists('JModel')) {
-            $params = JModelLegacy::getInstance('FirewallConfig', 'SecuritycheckProsModel');
-        } else
-        {
-            $params = JModel::getInstance('FirewallConfig', 'SecuritycheckProsModel');
-        }
-    
+        $params = JModel::getInstance('FirewallConfig', 'SecuritycheckProsModel');
+            
         /* Si por alguna razón la variable $params no está definida, creamos un objeto para definirla */
         if (!$params) {        
             include_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'firewallconfig.php';
@@ -318,7 +347,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     
         $config = array();
         foreach($this->defaultConfig as $k => $v)
-        {
+        {			
             $config[$k] = $params->getValue($k, $v, 'pro_plugin');
         }
         return $config;    
@@ -327,13 +356,8 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     /* Obtiene la configuración de los parámetros del Cron */
     function getCronConfig()
     {
-        if (interface_exists('JModel')) {
-            $params = JModelLegacy::getInstance('FirewallConfig', 'SecuritycheckProsModel');
-        } else 
-        {
-            $params = JModel::getInstance('FirewallConfig', 'SecuritycheckProsModel');
-        }
-    
+        $params = JModel::getInstance('FirewallConfig', 'SecuritycheckProsModel');
+           
         $config = array();
         foreach($this->defaultConfig as $k => $v)
         {
@@ -343,15 +367,10 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     }
 
     /* Obtiene la configuración de los parámetros del Control Center */
-    function getControlCenterConfig()
+    public function getControlCenterConfig()
     {
-        if (interface_exists('JModel')) {
-            $params = JModelLegacy::getInstance('FirewallConfig', 'SecuritycheckProsModel');
-        } else
-        {
-            $params = JModel::getInstance('FirewallConfig', 'SecuritycheckProsModel');
-        }
-    
+        $params = JModel::getInstance('FirewallConfig', 'SecuritycheckProsModel');
+           
         $config = array();
         foreach($this->defaultConfig as $k => $v)
         {
@@ -363,13 +382,8 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     /* Guarda la modificación de los parámetros de la opción 'Mode' */
     function saveConfig($newParams, $key_name = 'cparams')
     {
-        if (interface_exists('JModel')) {
-            $params = JModelLegacy::getInstance('FirewallConfig', 'SecuritycheckProsModel');
-        } else
-        {
-            $params = JModel::getInstance('FirewallConfig', 'SecuritycheckProsModel');
-        }
-    
+        $params = JModel::getInstance('FirewallConfig', 'SecuritycheckProsModel');
+		           
         foreach($newParams as $key => $value)
         {
             // Do not save unnecessary parameters
@@ -418,12 +432,23 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     {
         $aparece = false;
         $igual = false;
+		$array_ips = null;
         $array_ip_peticionaria = explode('.', $ip);
-    
-        if (strlen($lista) > 0) {
-            // Eliminamos los caracteres en blanco antes de introducir los valores en el array
-            $lista = str_replace(' ', '', $lista);
-            $array_ips = explode(',', $lista);
+		
+		$db = JFactory::getDBO();
+		$database = "#__securitycheckpro_" . $lista;
+		
+		try{
+			$query = "SELECT * FROM " . $database;
+			$db->setQuery($query);
+			$db->execute();
+			$array_ips = $db->loadColumn();		
+		} catch (Exception $e)
+        {    		
+			return false;
+        }
+		    
+        if ( !empty($array_ips) ) {            
             if (is_int(array_search($ip, $array_ips))) {    // La ip aparece tal cual en la lista
                   $aparece = true;
             } else
@@ -801,26 +826,30 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         
         $db = JFactory::getDBO();
         if ($opcion == 1) {
-            $query = 'SELECT enabled FROM #__extensions WHERE name="System - Securitycheck Pro"';
+            $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Pro'";
         } else if ($opcion == 2) {
-            $query = 'SELECT enabled FROM #__extensions WHERE name="System - Securitycheck Pro Cron"';
+            $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Pro Cron'";
         } else if ($opcion == 3) {
-            $query = 'SELECT enabled FROM #__extensions WHERE name="System - Securitycheck Pro Update Database"';
+            $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Pro Update Database'";
         } else if ($opcion == 4) {
-            $query = 'SELECT COUNT(*) FROM #__extensions WHERE name="System - Securitycheck Pro Update Database"';
+            $query = "SELECT COUNT(*) FROM #__extensions WHERE name='System - Securitycheck Pro Update Database'";
         } else if ($opcion == 5) {
-            $query = 'SELECT enabled FROM #__extensions WHERE name="System - Securitycheck Spam Protection"';
+            $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Spam Protection'";
         } else if ($opcion == 6) {
-            $query = 'SELECT COUNT(*) FROM #__extensions WHERE name="System - Securitycheck Spam Protection"';
+            $query = "SELECT COUNT(*) FROM #__extensions WHERE name='System - Securitycheck Spam Protection'";
         } else if ($opcion == 7) {
-            $query = 'SELECT enabled FROM #__extensions WHERE name="System - url inspector"';
+            $query = "SELECT enabled FROM #__extensions WHERE name='System - url Inspector'";
         } else if ($opcion == 8) {
-            $query = 'SELECT COUNT(*) FROM #__extensions WHERE name="System - Track Actions"';
+            $query = "SELECT COUNT(*) FROM #__extensions WHERE name='System - Track Actions'";
         }
-    
-        $db->setQuery($query);
-        $db->execute();
-        $enabled = $db->loadResult();
+		try {
+			$db->setQuery($query);
+			$db->execute();
+			$enabled = $db->loadResult();
+		} catch (Exception $e)
+        {    			
+            $enabled = 0;
+        }      
     
         return $enabled;
     }
@@ -834,12 +863,17 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         $bbdd = filter_var($bbdd, FILTER_SANITIZE_STRING);
         $campo = filter_var($campo, FILTER_SANITIZE_STRING);
         
-        // Consultamos el campo de la bbdd
-        $query = $db->getQuery(true)
-            ->select($db->quoteName($campo))
-            ->from($db->quoteName('#__' . $bbdd));
-        $db->setQuery($query);
-        $valor = $db->loadResult();
+		try {
+			// Consultamos el campo de la bbdd
+			$query = $db->getQuery(true)
+				->select($db->quoteName($campo))
+				->from($db->quoteName('#__' . $bbdd));
+			$db->setQuery($query);
+			$valor = $db->loadResult();
+		} catch (Exception $e)
+        {    			
+            $valor = null;
+        }       
     
         return $valor;
     }
@@ -1215,7 +1249,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     {
         
         $db = JFactory::getDBO();
-        $query = 'SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE marked=0';
+		$query = "SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE marked='0'";		
         $db->setQuery($query);
         $db->execute();
         $enabled = $db->loadResult();

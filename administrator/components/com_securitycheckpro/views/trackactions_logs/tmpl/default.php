@@ -14,7 +14,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+// Inline javascript to avoid deferring in Joomla 4
+echo '<script src="' . JURI::root(). '/media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>';
+//$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
 $sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
 JHTML::stylesheet($sweet);
