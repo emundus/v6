@@ -67,6 +67,10 @@ switch ($order) {
             <div class="col-md-7 left-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                 <span><?php echo $currentCampaign->notes ?></span>
             </div>
+        <?php else :?>
+            <div class="col-md-7 left-side campaingapply <?php echo $mod_em_campaign_class; ?>">
+                <span><?php echo $currentCampaign->description ?></span>
+            </div>
         <?php endif; ?>
         <div class="right-side-tchooz col-md-4">
             <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
