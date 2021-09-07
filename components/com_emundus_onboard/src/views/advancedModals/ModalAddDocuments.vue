@@ -293,7 +293,8 @@ export default {
         MinResolutionPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER"),
         MaxResolutionPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER"),
         ErrorResolution: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION"),
-        ErrorResolutionNegative: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NEGATIVE")
+        ErrorResolutionNegative: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NEGATIVE"),
+        ErrorResolutionEmpty: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_EMPTY"),
       }
     };
   },
@@ -460,6 +461,7 @@ export default {
       let sendError = false;
 
         /// check width
+      if(this.form.minResolution.width !== undefined && this.form.maxResolution.width) {
         if ((parseInt(this.form.minResolution.width) > parseInt(this.form.maxResolution.width)) || parseInt(this.form.minResolution.width) <= 0) {
           this.errorWidth.error = true;
           this.errorWidth.message = (parseInt(this.form.minResolution.width) <= 0) ? this.translations.ErrorResolutionNegative : this.translations.ErrorResolution
@@ -468,8 +470,14 @@ export default {
           this.errorWidth.error = false;
           this.errorWidth.message = "";
         }
+      } else {
+        this.errorWidth.error = true;
+        this.errorWidth.message = this.translations.ErrorResolutionEmpty;
+        sendError = true;
+      }
 
         /// check height
+      if(this.form.minResolution.height !== undefined && this.form.maxResolution.height) {
         if ((parseInt(this.form.minResolution.height) > parseInt(this.form.maxResolution.height)) || parseInt(this.form.minResolution.height) <= 0) {
           this.errorHeight.error = true;
           this.errorHeight.message = (parseInt(this.form.minResolution.height) <= 0) ? this.translations.ErrorResolutionNegative : this.translations.ErrorResolution
@@ -478,6 +486,11 @@ export default {
           this.errorHeight.error = false;
           this.errorHeight.message = "";
         }
+      } else {
+        this.errorHeight.error = true;
+        this.errorHeight.message = this.translations.ErrorResolutionEmpty;
+        sendError = true;
+      }
 
       return sendError;
     },

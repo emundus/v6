@@ -225,6 +225,8 @@ JText::script('COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER');
 JText::script('COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION');
 JText::script('COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NEGATIVE');
 
+JText::script('COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_EMPTY');
+
 $vue = 'em-formBuilder-vue';
 if($this->eval != 0){
     $vue = 'em-evaluationBuilder-vue';
