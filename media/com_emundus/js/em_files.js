@@ -344,8 +344,14 @@ function openFiles(fnum, page = 0) {
         type:'get',
         url:'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_files',
         dataType:'html',
-        success: function(result) {
-            $('#em-assoc-files .panel-body').append(result);
+        success: function (result) {
+            if (result) {
+                $('#em-assoc-files .panel-body').append(result);
+                document.getElementById('em-assoc-files').show();
+            } else {
+                document.getElementById('em-assoc-files').hide();
+            }
+            
         },
         error: function (jqXHR) {
             console.log(jqXHR.responseText);
@@ -373,8 +379,14 @@ function openFiles(fnum, page = 0) {
             var panel = result;
             //.main-panel
             $('.main-panel').append('<div class="clearfix"></div><div class="col-md-12" id="em-appli-block"></div>');
-            $('#em-synthesis .panel-body').empty();
-            $('#em-synthesis .panel-body').append(panel);
+            if (result) {
+                $('#em-synthesis .panel-body').empty();
+                $('#em-synthesis .panel-body').append(panel);
+                $('#em-synthesis').show();
+            } else {
+                $('#em-synthesis').hide();
+            }
+            
 
 			$.ajax({
 				type:'get',
@@ -409,32 +421,37 @@ function openFiles(fnum, page = 0) {
 						var firstMenu = menus[numMenu].link;
 						var menuList = '';
 
-						for (var m in menus) {
-							if (isNaN(parseInt(m)) || isNaN(menus[m].id) || typeof(menus[m].title) == 'undefined') {
-								break;
-							}
-
-							url = menus[m].link.fmt({ fnum: fnum.fnum, applicant_id: sid, campaign_id: cid });
-							url += '&fnum='+fnum.fnum;
-							url += '&Itemid='+itemId;
-
-							if(typeof menus[m].notifications != 'undefined'){
-                                menuList += '<a href="'+url+'" class="list-group-item list-item-notifications" title="'+menus[m].title+'" id="'+menus[m].id+'">';
-                            } else {
-                                menuList += '<a href="' + url + '" class="list-group-item" title="' + menus[m].title + '" id="' + menus[m].id + '">';
+                        if (menus.length > 0) {
+                            for (var m in menus) {
+                                if (isNaN(parseInt(m)) || isNaN(menus[m].id) || typeof(menus[m].title) == 'undefined') {
+                                    break;
+                                }
+    
+                                url = menus[m].link.fmt({ fnum: fnum.fnum, applicant_id: sid, campaign_id: cid });
+                                url += '&fnum='+fnum.fnum;
+                                url += '&Itemid='+itemId;
+    
+                                if(typeof menus[m].notifications != 'undefined'){
+                                    menuList += '<a href="'+url+'" class="list-group-item list-item-notifications" title="'+menus[m].title+'" id="'+menus[m].id+'">';
+                                } else {
+                                    menuList += '<a href="' + url + '" class="list-group-item" title="' + menus[m].title + '" id="' + menus[m].id + '">';
+                                }
+    
+                                if (menus[m].hasSons) {
+                                    menuList += '<span class="glyphicon glyphicon-plus" id="'+menus[m].id+'"></span>';
+                                }
+    
+                                if(typeof menus[m].notifications != 'undefined'){
+                                    menuList +=  '<strong>'+menus[m].title+'</strong><span class="notifications-counter">'+menus[m].notifications+'</span></a>';
+                                } else {
+                                    menuList +=  '<strong>'+menus[m].title+'</strong></a>';
+                                }
                             }
-
-							if (menus[m].hasSons) {
-								menuList += '<span class="glyphicon glyphicon-plus" id="'+menus[m].id+'"></span>';
-							}
-
-                            if(typeof menus[m].notifications != 'undefined'){
-                                menuList +=  '<strong>'+menus[m].title+'</strong><span class="notifications-counter">'+menus[m].notifications+'</span></a>';
-                            } else {
-                                menuList +=  '<strong>'+menus[m].title+'</strong></a>';
-                            }
-						}
-						$('#em-appli-menu .list-group').append(menuList);
+                            $('#em-appli-menu .list-group').append(menuList);
+                            $('#em-appli-menu').show();
+                        } else {
+                            $('#em-appli-menu').hide();
+                        }
 
 						$.ajax({
 							type:'get',
@@ -449,7 +466,7 @@ function openFiles(fnum, page = 0) {
 								$('#em-appli-block').empty();
 								$('#em-appli-block').append(result);
 								$('#accordion .panel.panel-default').show();
-								$('#em-appli-menu, #em-last-open, #em-assoc-files, #em-synthesis, .em-open-files > div[id="'+fnum.fnum+'"]').show();
+								$('#em-last-open, .em-open-files > div[id="'+fnum.fnum+'"]').show();
 								menuBar1();
 
 								$('#em-close-multi-file').hide();
