@@ -1517,80 +1517,103 @@ class EmundusModelApplication extends JModelList
 
                                 // AFFICHAGE EN LIGNE
                             } else {
+                                $check_not_empty_group = $this->checkEmptyGroups($elements ,$itemt->db_table_name, $fnum);
 
-                                $forms .= '<table class="em-personalDetail-table-inline"><legend class="legend">' . JText::_($itemg->label) . '</legend>';
+                                if($check_not_empty_group) {
+                                    $forms .= '<table class="em-personalDetail-table-inline"><legend class="legend">' . JText::_($itemg->label) . '</legend>';
 
-                                $modulo = 0;
-                                foreach ($elements as &$element) {
+                                    $modulo = 0;
+                                    foreach ($elements as &$element) {
 
-                                    if (!empty(trim($element->label))) {
-                                        $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$itemt->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
-                                        $this->_db->setQuery( $query );
-                                        $res = $this->_db->loadRow();
+                                        if (!empty(trim($element->label))) {
+                                            $query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE user=' . $aid . ' AND fnum like ' . $this->_db->Quote($fnum);
+                                            $this->_db->setQuery($query);
+                                            $res = $this->_db->loadRow();
 
-                                        $element->content = @$res[1];
-                                        $element->content_id = @$res[0];
+                                            $element->content = @$res[1];
+                                            $element->content_id = @$res[0];
 
-                                        // Do not display elements with no value inside them.
-                                        if ($show_empty_fields == 0 && trim($element->content) == '' && trim($element->content_id) == '') {
-                                            continue;
-                                        }
-
-                                        if ($element->plugin == 'date' && $element->content > 0) {
-                                            if (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
-                                                $date_params = json_decode($element->params);
-                                                $elt = date($date_params->date_form_format, strtotime($element->content));
-                                            } else {
-                                                $elt = '';
+                                            // Do not display elements with no value inside them.
+                                            if ($show_empty_fields == 0 && trim($element->content) == '' && trim($element->content_id) == '') {
+                                                continue;
                                             }
-                                        } elseif (($element->plugin == 'birthday' || $element->plugin == 'birthday_remove_slashes') && $element->content > 0) {
-                                            preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
-                                            if (count($matches) == 0) {
-                                                $elt = $element->content;
-                                            } else {
-                                                $format = json_decode($element->params)->list_date_format;
 
-                                                $d = DateTime::createFromFormat($format, $element->content);
-                                                if ($d && $d->format($format) == $element->content) {
-                                                    $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                            if ($element->plugin == 'date' && $element->content > 0) {
+                                                if (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
+                                                    $date_params = json_decode($element->params);
+                                                    $elt = date($date_params->date_form_format, strtotime($element->content));
                                                 } else {
-                                                    $elt = JHtml::_('date', $element->content, $format);
+                                                    $elt = '';
                                                 }
-                                            }
-                                        } elseif ($element->plugin == 'databasejoin') {
-                                            $params = json_decode($element->params);
-                                            $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
+                                            } elseif (($element->plugin == 'birthday' || $element->plugin == 'birthday_remove_slashes') && $element->content > 0) {
+                                                preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
+                                                if (count($matches) == 0) {
+                                                    $elt = $element->content;
+                                                } else {
+                                                    $format = json_decode($element->params)->list_date_format;
 
-                                            if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
-                                                $db = $this->getDbo();
-                                                $query = $db->getQuery(true);
-
-                                                $parent_id = strlen($element->content_id) > 0 ? $element->content_id : 0;
-                                                $select = $params->join_val_column;
-                                                if (!empty($params->join_val_column_concat)) {
-                                                    $select = $params->join_val_column_concat;
-                                                    $select = preg_replace('#{thistable}#', 'jd', $select);
-                                                    $select = preg_replace('#{shortlang}#', $this->locales, $select);
+                                                    $d = DateTime::createFromFormat($format, $element->content);
+                                                    if ($d && $d->format($format) == $element->content) {
+                                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                                    } else {
+                                                        $elt = JHtml::_('date', $element->content, $format);
+                                                    }
                                                 }
+                                            } elseif ($element->plugin == 'databasejoin') {
+                                                $params = json_decode($element->params);
+                                                $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
 
-                                                $query->select($db->quoteName($select))
-                                                    ->from($db->quoteName($itemt->db_table_name . '_repeat_' . $element->name, 't'))
-                                                    ->leftJoin($db->quoteName($params->join_db_name, 'jd') . ' ON ' . $db->quoteName('jd.' . $params->join_key_column) . ' = ' . $db->quoteName('t.' . $element->name))
-                                                    ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
+                                                if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
+                                                    $db = $this->getDbo();
+                                                    $query = $db->getQuery(true);
 
-                                                try {
+                                                    $parent_id = strlen($element->content_id) > 0 ? $element->content_id : 0;
+                                                    $select = $params->join_val_column;
+                                                    if (!empty($params->join_val_column_concat)) {
+                                                        $select = $params->join_val_column_concat;
+                                                        $select = preg_replace('#{thistable}#', 'jd', $select);
+                                                        $select = preg_replace('#{shortlang}#', $this->locales, $select);
+                                                    }
+
+                                                    $query->select($db->quoteName($select))
+                                                        ->from($db->quoteName($itemt->db_table_name . '_repeat_' . $element->name, 't'))
+                                                        ->leftJoin($db->quoteName($params->join_db_name, 'jd') . ' ON ' . $db->quoteName('jd.' . $params->join_key_column) . ' = ' . $db->quoteName('t.' . $element->name))
+                                                        ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
+
+                                                    try {
+                                                        $this->_db->setQuery($query);
+                                                        $res = $this->_db->loadColumn();
+                                                        $elt = "<ul><li>" . implode("</li><li>", $res) . "</li></ul>";
+                                                    } catch (Exception $e) {
+                                                        JLog::add('Line 997 - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+                                                        throw $e;
+                                                    }
+                                                } else {
+                                                    $from = $params->join_db_name;
+                                                    $where = $params->join_key_column . '=' . $this->_db->Quote($element->content);
+                                                    $query = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
+
+                                                    $query = preg_replace('#{thistable}#', $from, $query);
+                                                    $query = preg_replace('#{my->id}#', $aid, $query);
+                                                    $query = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                     $this->_db->setQuery($query);
-                                                    $res = $this->_db->loadColumn();
-                                                    $elt = "<ul><li>" . implode("</li><li>", $res) . "</li></ul>";
-                                                } catch (Exception $e) {
-                                                    JLog::add('Line 997 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
-                                                    throw $e;
+                                                    $ret = $this->_db->loadResult();
+                                                    if (empty($ret)) {
+                                                        $ret = $element->content;
+                                                    }
+                                                    $elt = JText::_($ret);
                                                 }
-                                            } else {
-                                                $from = $params->join_db_name;
-                                                $where = $params->join_key_column.'='.$this->_db->Quote($element->content);
-                                                $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
-
+                                            } elseif ($element->plugin == 'cascadingdropdown') {
+                                                $params = json_decode($element->params);
+                                                $cascadingdropdown_id = $params->cascadingdropdown_id;
+                                                $r1 = explode('___', $cascadingdropdown_id);
+                                                $cascadingdropdown_label = JText::_($params->cascadingdropdown_label);
+                                                $r2 = explode('___', $cascadingdropdown_label);
+                                                $select = !empty($params->cascadingdropdown_label_concat) ? "CONCAT(" . $params->cascadingdropdown_label_concat . ")" : $r2[1];
+                                                $from = $r2[0];
+                                                $where = $r1[1] . '=' . $this->_db->Quote($element->content);
+                                                $query = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
                                                 $query = preg_replace('#{shortlang}#', $this->locales, $query);
@@ -1601,72 +1624,52 @@ class EmundusModelApplication extends JModelList
                                                     $ret = $element->content;
                                                 }
                                                 $elt = JText::_($ret);
-                                            }
-                                        } elseif ($element->plugin == 'cascadingdropdown') {
-                                            $params = json_decode($element->params);
-                                            $cascadingdropdown_id = $params->cascadingdropdown_id;
-                                            $r1 = explode('___', $cascadingdropdown_id);
-                                            $cascadingdropdown_label = JText::_($params->cascadingdropdown_label);
-                                            $r2 = explode('___', $cascadingdropdown_label);
-                                            $select = !empty($params->cascadingdropdown_label_concat) ? "CONCAT(" . $params->cascadingdropdown_label_concat . ")" : $r2[1];
-                                            $from = $r2[0];
-                                            $where = $r1[1] . '=' . $this->_db->Quote($element->content);
-                                            $query = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
-                                            $query = preg_replace('#{thistable}#', $from, $query);
-                                            $query = preg_replace('#{my->id}#', $aid, $query);
-                                            $query = preg_replace('#{shortlang}#', $this->locales, $query);
+                                            } elseif ($element->plugin == 'checkbox') {
+                                                $elt = implode(", ", json_decode(@$element->content));
+                                            } elseif (($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') && isset($element->content)) {
+                                                $params = json_decode($element->params);
+                                                $index = array_search($element->content, $params->sub_options->sub_values);
 
-                                            $this->_db->setQuery($query);
-                                            $ret = $this->_db->loadResult();
-                                            if (empty($ret)) {
-                                                $ret = $element->content;
-                                            }
-                                            $elt = JText::_($ret);
-                                        } elseif ($element->plugin == 'checkbox') {
-                                            $elt = implode(", ", json_decode(@$element->content));
-                                        } elseif (($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') && isset($element->content)) {
-                                            $params = json_decode($element->params);
-                                            $index = array_search($element->content, $params->sub_options->sub_values);
+                                                if (strlen($index) > 0) {
+                                                    $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                                } elseif (!empty($params->dropdown_populate)) {
+                                                    $elt = $element->content;
+                                                } elseif ($params->multiple == 1) {
+                                                    $elt = $elt = "<ul><li>" . implode("</li><li>", json_decode(@$element->content)) . "</li></ul>";
+                                                } else {
+                                                    $elt = "";
+                                                }
+                                            } elseif ($element->plugin == 'internalid') {
+                                                $elt = '';
+                                            } elseif ($element->plugin == 'yesno') {
+                                                $elt = ($element->content == 1) ? JText::_('JYES') : JText::_('JNO');
+                                            } elseif ($element->plugin == 'field') {
+                                                $params = json_decode($element->params);
 
-                                            if (strlen($index) > 0) {
-                                                $elt = JText::_($params->sub_options->sub_labels[$index]);
-                                            } elseif (!empty($params->dropdown_populate)) {
-                                                $elt = $element->content;
-                                            } elseif($params->multiple == 1){
-                                                $elt = $elt = "<ul><li>" . implode("</li><li>", json_decode(@$element->content)) . "</li></ul>";
-                                            } else {
-                                                $elt = "";
-                                            }
-                                        } elseif ($element->plugin == 'internalid') {
-                                            $elt = '';
-                                        } elseif ($element->plugin == 'yesno') {
-                                            $elt = ($element->content == 1) ? JText::_('JYES') : JText::_('JNO');
-                                        } elseif ($element->plugin == 'field') {
-                                            $params = json_decode($element->params);
-
-                                            if ($params->password == 1) {
-                                                $elt = '******';
-                                            } elseif ($params->password == 3) {
-                                                $elt = '<a href="mailto:' . $element->content . '" title="' . JText::_($element->label) . '">' . $element->content . '</a>';
-                                            } elseif ($params->password == 5) {
-                                                $elt = '<a href="' . $element->content . '" target="_blank" title="' . JText::_($element->label) . '">' . $element->content . '</a>';
+                                                if ($params->password == 1) {
+                                                    $elt = '******';
+                                                } elseif ($params->password == 3) {
+                                                    $elt = '<a href="mailto:' . $element->content . '" title="' . JText::_($element->label) . '">' . $element->content . '</a>';
+                                                } elseif ($params->password == 5) {
+                                                    $elt = '<a href="' . $element->content . '" target="_blank" title="' . JText::_($element->label) . '">' . $element->content . '</a>';
+                                                } else {
+                                                    $elt = $element->content;
+                                                }
+                                            } elseif ($element->plugin == 'yesno') {
+                                                $elt = ($element->content == 1) ? JText::_("JYES") : JText::_("JNO");
                                             } else {
                                                 $elt = $element->content;
                                             }
-                                        } elseif ($element->plugin == 'yesno') {
-                                            $elt = ($element->content == 1) ? JText::_("JYES") : JText::_("JNO");
-                                        } else {
-                                            $elt = $element->content;
-                                        }
 
-                                        // modulo for strips css //
-                                        if ($modulo % 2) {
-                                            $forms .= '<tr class="table-strip-1">'. (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td>' : '') . '<td> '.JText::_($elt).'</td></tr>';
-                                        } else {
-                                            $forms .= '<tr class="table-strip-2">'. (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td>' : '') . '<td> '.JText::_($elt).'</td></tr>';
+                                            // modulo for strips css //
+                                            if ($modulo % 2) {
+                                                $forms .= '<tr class="table-strip-1">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . JText::_($elt) . '</td></tr>';
+                                            } else {
+                                                $forms .= '<tr class="table-strip-2">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . JText::_($elt) . '</td></tr>';
+                                            }
+                                            $modulo++;
+                                            unset($params);
                                         }
-                                        $modulo++;
-                                        unset($params);
                                     }
                                 }
                             }
@@ -2167,162 +2170,166 @@ class EmundusModelApplication extends JModelList
 
                             // AFFICHAGE EN LIGNE
                         } else {
-                            if(!empty($group_label)){
-                                $forms .= '<h3 class="group">' . $group_label . '</h3>';
-                            }
-                            $forms .= '<table>';
-                            foreach ($elements as $element) {
-                                $params = json_decode($element->params);
+                            $check_not_empty_group = $this->checkEmptyGroups($elements ,$itemt->db_table_name, $fnum);
 
-                                if (empty($params->store_in_db)) {
-                                    continue;
+                            if($check_not_empty_group) {
+                                if (!empty($group_label)) {
+                                    $forms .= '<h3 class="group">' . $group_label . '</h3>';
                                 }
+                                $forms .= '<table>';
+                                foreach ($elements as $element) {
+                                    $params = json_decode($element->params);
 
-                                $query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE user=' . $aid . ' AND fnum like ' . $this->_db->Quote($fnum);
-                                try {
-                                    $this->_db->setQuery($query);
-                                    $res = $this->_db->loadRow();
-                                } catch (Exception $e) {
-                                    JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
-                                    throw $e;
-                                }
-
-                                if (count($res) > 1) {
-                                    if ($element->plugin == 'display') {
-                                        $element->content = empty($element->eval) ? $element->default : $res[1];
-                                    } else {
-                                        $element->content = $res[1];
+                                    if (empty($params->store_in_db)) {
+                                        continue;
                                     }
-                                    $element->content_id = $res[0];
-                                } else {
-                                    $element->content = '';
-                                    $element->content_id = -1;
-                                }
 
-                                if (!empty($element->content) || (isset($params->database_join_display_type) && ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist')) || $element->plugin == 'yesno') {
+                                    $query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE user=' . $aid . ' AND fnum like ' . $this->_db->Quote($fnum);
+                                    try {
+                                        $this->_db->setQuery($query);
+                                        $res = $this->_db->loadRow();
+                                    } catch (Exception $e) {
+                                        JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+                                        throw $e;
+                                    }
 
-                                    if (!empty($element->label) && $element->label!=' ' || $element->plugin === 'display') {
+                                    if (count($res) > 1) {
+                                        if ($element->plugin == 'display') {
+                                            $element->content = empty($element->eval) ? $element->default : $res[1];
+                                        } else {
+                                            $element->content = $res[1];
+                                        }
+                                        $element->content_id = $res[0];
+                                    } else {
+                                        $element->content = '';
+                                        $element->content_id = -1;
+                                    }
 
-                                        if ($element->plugin == 'date') {
+                                    if (!empty($element->content) || (isset($params->database_join_display_type) && ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist')) || $element->plugin == 'yesno') {
 
-                                            // Empty date elements are set to 0000-00-00 00:00:00 in DB.
-                                            if ($show_empty_fields == 0 && ($element->content == '0000-00-00 00:00:00' || empty($element->content))) {
-                                                continue;
-                                            } elseif (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
-                                                $elt = EmundusHelperDate::displayDate($element->content, $params->date_table_format, (int)$params->date_store_as_local);
-                                            } else {
-                                                $elt = '';
-                                            }
-                                        } elseif (($element->plugin == 'birthday' || $element->plugin == 'birthday_remove_slashes') && $element->content > 0) {
-                                            $elt = EmundusHelperDate::displayDate($element->content, $params->list_date_format);
-                                        } elseif ($element->plugin == 'databasejoin') {
-                                            $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
+                                        if (!empty($element->label) && $element->label != ' ' || $element->plugin === 'display') {
 
-                                            if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
-                                                $db = $this->getDbo();
-                                                $query = $db->getQuery(true);
+                                            if ($element->plugin == 'date') {
 
-                                                $parent_id = strlen($element->content_id) > 0 ? $element->content_id : 0;
-                                                $select = $params->join_val_column;
-                                                if (!empty($params->join_val_column_concat)) {
-                                                    $select = $params->join_val_column_concat;
-                                                    $select = preg_replace('#{thistable}#', 'jd', $select);
-                                                    $select = preg_replace('#{shortlang}#', $this->locales, $select);
+                                                // Empty date elements are set to 0000-00-00 00:00:00 in DB.
+                                                if ($show_empty_fields == 0 && ($element->content == '0000-00-00 00:00:00' || empty($element->content))) {
+                                                    continue;
+                                                } elseif (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
+                                                    $elt = EmundusHelperDate::displayDate($element->content, $params->date_table_format, (int)$params->date_store_as_local);
+                                                } else {
+                                                    $elt = '';
                                                 }
+                                            } elseif (($element->plugin == 'birthday' || $element->plugin == 'birthday_remove_slashes') && $element->content > 0) {
+                                                $elt = EmundusHelperDate::displayDate($element->content, $params->list_date_format);
+                                            } elseif ($element->plugin == 'databasejoin') {
+                                                $select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
 
-                                                $query->select($db->quoteName($select))
-                                                    ->from($db->quoteName($itemt->db_table_name . '_repeat_' . $element->name, 't'))
-                                                    ->leftJoin($db->quoteName($params->join_db_name, 'jd') . ' ON ' . $db->quoteName('jd.' . $params->join_key_column) . ' = ' . $db->quoteName('t.' . $element->name))
-                                                    ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
+                                                if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
+                                                    $db = $this->getDbo();
+                                                    $query = $db->getQuery(true);
 
-                                                try {
+                                                    $parent_id = strlen($element->content_id) > 0 ? $element->content_id : 0;
+                                                    $select = $params->join_val_column;
+                                                    if (!empty($params->join_val_column_concat)) {
+                                                        $select = $params->join_val_column_concat;
+                                                        $select = preg_replace('#{thistable}#', 'jd', $select);
+                                                        $select = preg_replace('#{shortlang}#', $this->locales, $select);
+                                                    }
+
+                                                    $query->select($db->quoteName($select))
+                                                        ->from($db->quoteName($itemt->db_table_name . '_repeat_' . $element->name, 't'))
+                                                        ->leftJoin($db->quoteName($params->join_db_name, 'jd') . ' ON ' . $db->quoteName('jd.' . $params->join_key_column) . ' = ' . $db->quoteName('t.' . $element->name))
+                                                        ->where($db->quoteName('parent_id') . ' = ' . $db->quote($parent_id));
+
+                                                    try {
+                                                        $this->_db->setQuery($query);
+                                                        $res = $this->_db->loadColumn();
+                                                        $elt = "<li> - " . implode("</li><li> - ", $res) . "</li>";
+                                                    } catch (Exception $e) {
+                                                        JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+                                                        throw $e;
+                                                    }
+                                                } else {
+                                                    $from = $params->join_db_name;
+                                                    $where = $params->join_key_column . '=' . $this->_db->Quote($element->content);
+                                                    $query = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
+
+                                                    $query = preg_replace('#{thistable}#', $from, $query);
+                                                    $query = preg_replace('#{my->id}#', $aid, $query);
+                                                    $query = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                     $this->_db->setQuery($query);
-                                                    $res = $this->_db->loadColumn();
-                                                    $elt = "<li> - " . implode("</li><li> - ", $res) . "</li>";
-                                                } catch (Exception $e) {
-                                                    JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
-                                                    throw $e;
+                                                    $elt = JText::_($this->_db->loadResult());
                                                 }
-                                            } else {
-                                                $from = $params->join_db_name;
-                                                $where = $params->join_key_column . '=' . $this->_db->Quote($element->content);
+                                            } elseif ($element->plugin == 'cascadingdropdown') {
+                                                $cascadingdropdown_id = $params->cascadingdropdown_id;
+                                                $r1 = explode('___', $cascadingdropdown_id);
+                                                $cascadingdropdown_label = $params->cascadingdropdown_label;
+                                                $r2 = explode('___', $cascadingdropdown_label);
+                                                $select = !empty($params->cascadingdropdown_label_concat) ? "CONCAT(" . $params->cascadingdropdown_label_concat . ")" : $r2[1];
+                                                $from = $r2[0];
+                                                $where = $r1[1] . '=' . $this->_db->Quote($element->content);
                                                 $query = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
-
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
                                                 $query = preg_replace('#{shortlang}#', $this->locales, $query);
 
                                                 $this->_db->setQuery($query);
                                                 $elt = JText::_($this->_db->loadResult());
-                                            }
-                                        } elseif ($element->plugin == 'cascadingdropdown') {
-                                            $cascadingdropdown_id = $params->cascadingdropdown_id;
-                                            $r1 = explode('___', $cascadingdropdown_id);
-                                            $cascadingdropdown_label = $params->cascadingdropdown_label;
-                                            $r2 = explode('___', $cascadingdropdown_label);
-                                            $select = !empty($params->cascadingdropdown_label_concat) ? "CONCAT(" . $params->cascadingdropdown_label_concat . ")" : $r2[1];
-                                            $from = $r2[0];
-                                            $where = $r1[1] . '=' . $this->_db->Quote($element->content);
-                                            $query = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
-                                            $query = preg_replace('#{thistable}#', $from, $query);
-                                            $query = preg_replace('#{my->id}#', $aid, $query);
-                                            $query = preg_replace('#{shortlang}#', $this->locales, $query);
 
-                                            $this->_db->setQuery($query);
-                                            $elt = JText::_($this->_db->loadResult());
+                                            } elseif ($element->plugin == 'textarea') {
+                                                $elt = JText::_($element->content);
+                                            } elseif ($element->plugin == 'checkbox') {
+                                                $params = json_decode($element->params);
+                                                $elm = array();
+                                                $index = array_intersect(json_decode(@$element->content), $params->sub_options->sub_values);
+                                                foreach ($index as $key => $value) {
+                                                    $elm[] = ' - ' . JText::_($params->sub_options->sub_labels[$key]);
+                                                }
+                                                $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
+                                            } elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
+                                                $index = array_search($element->content, $params->sub_options->sub_values);
+                                                if (strlen($index) > 0) {
+                                                    $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                                } elseif ($params->multiple == 1) {
+                                                    $elt = implode(", ", json_decode(@$element->content));
+                                                } else {
+                                                    $elt = "";
+                                                }
+                                            } elseif ($element->plugin == 'internalid') {
+                                                $elt = '';
+                                            } elseif ($element->plugin == 'yesno') {
+                                                $elt = ($element->content == 1) ? JText::_('JYES') : JText::_('JNO');
+                                            } elseif ($element->plugin == 'field') {
+                                                $params = json_decode($element->params);
 
-                                        } elseif ($element->plugin == 'textarea') {
-                                            $elt = JText::_($element->content);
-                                        } elseif ($element->plugin == 'checkbox') {
-                                            $params = json_decode($element->params);
-                                            $elm = array();
-                                            $index = array_intersect(json_decode(@$element->content), $params->sub_options->sub_values);
-                                            foreach ($index as $key => $value) {
-                                                $elm[] = ' - ' . JText::_($params->sub_options->sub_labels[$key]);
-                                            }
-                                            $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
-                                        } elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
-                                            $index = array_search($element->content, $params->sub_options->sub_values);
-                                            if (strlen($index) > 0) {
-                                                $elt = JText::_($params->sub_options->sub_labels[$index]);
-                                            } elseif ($params->multiple == 1) {
-                                                $elt = implode(", ", json_decode(@$element->content));
+                                                if ($params->password == 1) {
+                                                    $elt = '******';
+                                                } elseif ($params->password == 3) {
+                                                    $elt = '<a href="mailto:' . $element->content . '" title="' . JText::_($element->label) . '">' . $element->content . '</a>';
+                                                } elseif ($params->password == 5) {
+                                                    $elt = '<a href="' . $element->content . '" target="_blank" title="' . JText::_($element->label) . '">' . $element->content . '</a>';
+                                                } else {
+                                                    $elt = $element->content;
+                                                }
                                             } else {
-                                                $elt = "";
+                                                $elt = JText::_($element->content);
                                             }
-                                        } elseif ($element->plugin == 'internalid') {
-                                            $elt = '';
-                                        } elseif ($element->plugin == 'yesno') {
-                                            $elt = ($element->content == 1) ? JText::_('JYES') : JText::_('JNO');
-                                        } elseif ($element->plugin == 'field') {
-                                            $params = json_decode($element->params);
 
-                                            if ($params->password == 1) {
-                                                $elt = '******';
-                                            } elseif ($params->password == 3) {
-                                                $elt = '<a href="mailto:' . $element->content . '" title="' . JText::_($element->label) . '">' . $element->content . '</a>';
-                                            } elseif ($params->password == 5) {
-                                                $elt = '<a href="' . $element->content . '" target="_blank" title="' . JText::_($element->label) . '">' . $element->content . '</a>';
+                                            if ($element->plugin == 'textarea' || $element->plugin == 'display') {
+                                                $forms .= '<tr><td colspan="2"><strong><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></strong>' . JText::_($elt) . '<br/></td></tr>';
                                             } else {
-                                                $elt = $element->content;
+                                                $forms .= '<tr><td colspan="1"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . JText::_($elt) . '</td></tr>';
                                             }
-                                        } else {
-                                            $elt = JText::_($element->content);
                                         }
-
-                                        if ($element->plugin == 'textarea' || $element->plugin == 'display') {
-                                            $forms .= '<tr><td colspan="2"><strong><span style="color: #000000;">'.(!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label).' : ' : '').'</span></strong>'.JText::_($elt).'<br/></td></tr>';
-                                        } else {
-                                            $forms .= '<tr><td colspan="1"><span style="color: #000000;">'.(!empty(JText::_($element->label)) ? JText::_($element->label).' : ' : '').'</span></td> <td> '.JText::_($elt).'</td></tr>';
+                                    } elseif (empty($element->content) && $show_empty_fields == 1) {
+                                        if (!empty($element->label) && $element->label != ' ') {
+                                            $forms .= '<tr><td><span style="color: #000000;">' . JText::_($element->label) . ' ' . '</span></td> <td>' . $element->content . '</td></tr>';
                                         }
-                                    }
-                                } elseif (empty($element->content) && $show_empty_fields == 1) {
-                                    if (!empty($element->label) && $element->label!=' ') {
-                                        $forms .= '<tr><td><span style="color: #000000;">'.JText::_($element->label).' '.'</span></td> <td>'.$element->content.'</td></tr>';
                                     }
                                 }
+                                $forms .= '</table><div></div>';
                             }
-                            $forms .= '</table><div></div>';
                         }
                     }
                 }
@@ -3804,6 +3811,55 @@ class EmundusModelApplication extends JModelList
         } catch (Exception $e ) {
 	        JLog::add('Error checking if repeat group is empty at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 	        return false;
+        }
+    }
+
+    /**
+     * @param $elements
+     * @param $parent_table
+     * @param $fnum
+     *
+     * @return bool
+     *
+     */
+    public function checkEmptyGroups($elements, $parent_table, $fnum) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+        $subQuery = $db->getQuery(true);
+
+        $elements = array_map(function($obj) {return $obj->name;}, $elements);
+
+        $query
+            ->select(implode(',', $elements))
+            ->from($db->quoteName($parent_table))
+            ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+
+        try {
+            $db->setQuery($query);
+            $db->execute();
+            if ($db->getNumRows() == 1) {
+                $res = $db->loadAssoc();
+
+                $elements = array_map(function($arr) {
+                    if (is_numeric($arr)) {
+                        return (empty(floatval($arr)));
+                    } else {
+                        if ($arr == "0000-00-00 00:00:00") {
+                            return true;
+                        }
+                        return empty($arr);
+                    }
+                }, $res);
+
+                $elements = array_filter($elements, function($el) {return $el === false;});
+                return !empty($elements);
+            }
+
+            return true;
+
+        } catch (Exception $e ) {
+            JLog::add('Error checking if group is empty at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 
