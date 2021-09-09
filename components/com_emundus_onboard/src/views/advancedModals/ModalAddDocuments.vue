@@ -1,149 +1,149 @@
 <template>
   <!-- modalC -->
   <span :id="'modalAddDocuments'">
-    <modal
-        :name="'modalAddDocuments'"
-        height="auto"
-        transition="little-move-left"
-        :min-width="200"
-        :min-height="200"
-        :delay="100"
-        :adaptive="true"
-        :clickToClose="false"
-        @closed="beforeClose"
-        @before-open="beforeOpen"
-    >
-      <div class="fixed-header-modal">
-          <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddDocuments')">
-              <em class="fas fa-times"></em>
-            </button>
-          </div>
-                <div class="update-field-header">
-            <h2 class="update-title-header" v-if="currentDoc ==null">
-               {{ translations.createDocument }}
-            </h2>
-            <h2 class="update-title-header" v-if="currentDoc != null">
-               {{ translations.editDocument }}
-            </h2>
-                </div>
-        </div>
-
-      <div class="modalC-content">
-        <div class="mb-1">
-
-          <a class="d-flex tool-icon">
-            <div class="toggle">
-              <input type="checkbox" class="check" v-model="req" @click="updateRequireMandatory()"/>
-              <strong class="b switch"></strong>
-              <strong class="b track"></strong>
+      <modal
+          :name="'modalAddDocuments'"
+          height="auto"
+          transition="little-move-left"
+          :min-width="200"
+          :min-height="200"
+          :delay="100"
+          :adaptive="true"
+          :clickToClose="false"
+          @closed="beforeClose"
+          @before-open="beforeOpen"
+      >
+        <div class="fixed-header-modal">
+            <div class="topright">
+              <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddDocuments')">
+                <em class="fas fa-times"></em>
+              </button>
             </div>
-            <span class="ml-10px">{{ translations.Required }}</span>
-          </a>
-        </div>
-        <div class="form-group" v-if="can_be_deleted">
-          <button type="button" class="bouton-sauvergarder-et-continuer w-delete" @click="deleteModel">{{translations.DeleteDocTemplate}}</button>
-        </div>
-        <div class="form-group" v-if="currentDoc ==null">
-          <label for="modelName">{{ translations.DocTemplate }} :</label>
-          <select v-model="doc" class="dropdown-toggle" id="modelName" :disabled="Object.keys(models).length <= 0">
-            <option :value="null"></option>
-            <option v-for="(modelT, index) in models" :value="modelT.id">{{ modelT.name[langue] }}  ({{ modelT.allowed_types }})</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="name">{{ translations.Name }}* :</label>
-          <div class="input-can-translate">
-            <input type="text" maxlength="100" class="form__input field-general w-input mb-0"
-                   v-model="form.name[langue]" id="name" :class="{ 'is-invalid': errors.name}"/>
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.name}"
-                    v-if="manyLanguages !== '0'" type="button" @click="translate.name = !translate.name"></button>
+                  <div class="update-field-header">
+              <h2 class="update-title-header" v-if="currentDoc ==null">
+                 {{ translations.createDocument }}
+              </h2>
+              <h2 class="update-title-header" v-if="currentDoc != null">
+                 {{ translations.editDocument }}
+              </h2>
+                  </div>
           </div>
-          <translation :label="form.name" :actualLanguage="langue" v-if="translate.name"></translation>
-          <p v-if="errors.name" class="error col-md-12 mb-2">
-            <span class="error">{{ translations.NameRequired }}</span>
-          </p>
-        </div>
-        <div class="form-group">
-          <label for="description">{{ translations.Description }} :</label>
-          <div class="input-can-translate">
-            <textarea type="text" class="form__input field-general w-input mb-0" v-model="form.description[langue]"
-                      id="description"/>
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.description}"
-                    v-if="manyLanguages !== '0'" type="button"
-                    @click="translate.description = !translate.description"></button>
+
+        <div class="modalC-content">
+          <div class="mb-1">
+
+            <a class="d-flex tool-icon">
+              <div class="toggle">
+                <input type="checkbox" class="check" v-model="req" @click="updateRequireMandatory()"/>
+                <strong class="b switch"></strong>
+                <strong class="b track"></strong>
+              </div>
+              <span class="ml-10px">{{ translations.Required }}</span>
+            </a>
           </div>
-          <translation :label="form.description" :actualLanguage="langue" v-if="translate.description"></translation>
-        </div>
-        <div class="form-group">
-          <label for="nbmax">{{ translations.MaxPerUser }}* :</label>
-          <input type="number" min="1" class="form__input field-general w-input" v-model="form.nbmax" id="nbmax"
-                 :class="{ 'is-invalid': errors.nbmax}"/>
-          <p v-if="errors.nbmax" class="error col-md-12 mb-2">
-            <span class="error">{{ translations.MaxRequired }}</span>
-          </p>
-        </div>
-        <div class="form-group">
-          <label for="nbmax" :class="{ 'is-invalid': errors.selectedTypes}">{{ translations.FileType }}* :</label>
-          <div class="users-block" :class="{ 'is-invalid': errors.selectedUsers}">
-            <div v-for="(type, index) in types" :key="index" class="user-item">
-              <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type.value]" @change="selectType(type)">
-              <div class="ml-10px">
-                  <p>{{ type.title }} ({{ type.value }})</p>
+          <div class="form-group" v-if="can_be_deleted">
+            <button type="button" class="bouton-sauvergarder-et-continuer w-delete" @click="deleteModel">{{translations.DeleteDocTemplate}}</button>
+          </div>
+          <div class="form-group" v-if="currentDoc ==null">
+            <label for="modelName">{{ translations.DocTemplate }} :</label>
+            <select v-model="doc" class="dropdown-toggle" id="modelName" :disabled="Object.keys(models).length <= 0">
+              <option :value="null"></option>
+              <option v-for="(modelT, index) in models" :value="modelT.id">{{ modelT.name[langue] }}  ({{ modelT.allowed_types }})</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="name">{{ translations.Name }}* :</label>
+            <div class="input-can-translate">
+              <input type="text" maxlength="100" class="form__input field-general w-input mb-0"
+                     v-model="form.name[langue]" id="name" :class="{ 'is-invalid': errors.name}"/>
+              <button class="translate-icon" :class="{'translate-icon-selected': translate.name}"
+                      v-if="manyLanguages !== '0'" type="button" @click="translate.name = !translate.name"></button>
+            </div>
+            <translation :label="form.name" :actualLanguage="langue" v-if="translate.name"></translation>
+            <p v-if="errors.name" class="error col-md-12 mb-2">
+              <span class="error">{{ translations.NameRequired }}</span>
+            </p>
+          </div>
+          <div class="form-group">
+            <label for="description">{{ translations.Description }} :</label>
+            <div class="input-can-translate">
+              <textarea type="text" class="form__input field-general w-input mb-0" v-model="form.description[langue]"
+                        id="description"/>
+              <button class="translate-icon" :class="{'translate-icon-selected': translate.description}"
+                      v-if="manyLanguages !== '0'" type="button"
+                      @click="translate.description = !translate.description"></button>
+            </div>
+            <translation :label="form.description" :actualLanguage="langue" v-if="translate.description"></translation>
+          </div>
+          <div class="form-group">
+            <label for="nbmax">{{ translations.MaxPerUser }}* :</label>
+            <input type="number" min="1" class="form__input field-general w-input" v-model="form.nbmax" id="nbmax"
+                   :class="{ 'is-invalid': errors.nbmax}"/>
+            <p v-if="errors.nbmax" class="error col-md-12 mb-2">
+              <span class="error">{{ translations.MaxRequired }}</span>
+            </p>
+          </div>
+          <div class="form-group">
+            <label for="nbmax" :class="{ 'is-invalid': errors.selectedTypes}">{{ translations.FileType }}* :</label>
+            <div class="users-block" :class="{ 'is-invalid': errors.selectedUsers}">
+              <div v-for="(type, index) in types" :key="index" class="user-item">
+                <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type.value]" @change="selectType(type)">
+                <div class="ml-10px">
+                    <p>{{ type.title }} ({{ type.value }})</p>
+                </div>
               </div>
             </div>
+            <p v-if="errors.selectedTypes" class="error col-md-12 mb-2">
+              <span class="error">{{ translations.TypeRequired }}</span>
+            </p>
           </div>
-          <p v-if="errors.selectedTypes" class="error col-md-12 mb-2">
-            <span class="error">{{ translations.TypeRequired }}</span>
-          </p>
         </div>
-      </div>
-      <!-- image resolution -->
-      <div id="imageResolutionZone" v-if="show == true">
-        <hr/>
-        <h4 class="image-resolution-header">{{ translations.ImageDimensionsTitle }}</h4>
-        <div class="image-resolution-tooltips">
-          <i>{{ translations.ImageResolutionTooltips }}</i>
-        </div>
-        <br/>
-        <div class="form-group">
-          <label for="image-min-width">{{ translations.ImageWidth }}</label>
-          <div class="input-can-translate d-flex justify-content-between">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width" min="300" v-model="form.minResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width" min="300"  v-model="form.maxResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
+        <!-- image resolution -->
+        <div id="imageResolutionZone" v-if="show == true">
+          <hr/>
+          <h4 class="image-resolution-header">{{ translations.ImageDimensionsTitle }}</h4>
+          <div class="image-resolution-tooltips">
+            <i>{{ translations.ImageResolutionTooltips }}</i>
           </div>
-          <transition name="fade">
-              <span style="font-size: smaller; color:red" v-if=" errorWidth.error "> {{ errorWidth.message}} </span>
-          </transition>
-        </div>
+          <br/>
+          <div class="form-group">
+            <label for="image-min-width">{{ translations.ImageWidth }}</label>
+            <div class="input-can-translate d-flex justify-content-between">
+              <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width" min="300" v-model="form.minResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
+              <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width" min="300" v-model="form.maxResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
+            </div>
+            <transition name="fade">
+                <span style="font-size: smaller; color:red" v-if=" errorWidth.error "> {{ errorWidth.message}} </span>
+            </transition>
+          </div>
 
-        <div class="form-group">
-          <label for="image-min-height">{{ translations.ImageHeight }}</label>
-          <div class="input-can-translate d-flex justify-content-between">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height" min="300" v-model="form.minResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height" min="300" v-model="form.maxResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
+          <div class="form-group">
+            <label for="image-min-height">{{ translations.ImageHeight }}</label>
+            <div class="input-can-translate d-flex justify-content-between">
+              <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height" min="300" v-model="form.minResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
+              <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height" min="300" v-model="form.maxResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
+            </div>
+            <transition name="fade">
+                <span style="font-size: smaller; color:red" v-if=" errorHeight.error"> {{ errorHeight.message}} </span>
+            </transition>
           </div>
-          <transition name="fade">
-              <span style="font-size: smaller; color:red" v-if=" errorHeight.error"> {{ errorHeight.message}} </span>
-          </transition>
-        </div>
 
-      </div>
-      <div class="d-flex justify-content-between mb-1">
-        <button
-            type="button"
-            class="bouton-sauvergarder-et-continuer w-retour"
-            @click.prevent="$modal.hide('modalAddDocuments')">
-          {{ translations.Retour }}
-        </button>
-        <button type="button"
-                class="bouton-sauvergarder-et-continuer"
-                @click.prevent="createNewDocument()">
-          {{ translations.Continuer }}
-        </button>
-      </div>
-    </modal>
-  </span>
+        </div>
+        <div class="d-flex justify-content-between mb-1">
+          <button
+              type="button"
+              class="bouton-sauvergarder-et-continuer w-retour"
+              @click.prevent="$modal.hide('modalAddDocuments')">
+            {{ translations.Retour }}
+          </button>
+          <button type="button"
+                  class="bouton-sauvergarder-et-continuer"
+                  @click.prevent="createNewDocument()">
+            {{ translations.Continuer }}
+          </button>
+        </div>
+      </modal>
+    </span>
 </template>
 
 <script>
@@ -402,7 +402,7 @@ export default {
         }
 
         if (this.form.name[this.langue] != this.model.value && this.currentDoc == null) {
-            params.isModeleAndUpdate = true;
+          params.isModeleAndUpdate = true;
         }
 
         let y = [];
@@ -646,13 +646,29 @@ export default {
       let id = event.target.id;
       let val = parseInt(event.target.value);
 
+      let min_width = this.form.minResolution.width;
+      let max_width = this.form.maxResolution.width;
+
+      let min_height = this.form.minResolution.height;
+      let max_height = this.form.maxResolution.height;
+
       if (!isNaN(val)) {
+
         if (val < 300) {
           document.getElementById(id).style.color = "red";
           document.getElementById(id).style.setProperty('border-color', 'red', 'important');
 
           if (id == 'image-min-width' || id == 'image-max-width') {
             this.errorWidth.error = true;
+
+            if(parseInt(min_width) < 300 || !min_width) {
+              document.getElementById('image-min-width').style.setProperty('border-color', 'red', 'important');
+            }
+
+            if(parseInt(max_width) < 300 || !max_width) {
+              document.getElementById('image-max-width').style.setProperty('border-color', 'red', 'important');
+            }
+
             this.errorWidth.message = this.translations.ErrorResolutionTooSmall;
           }
 
@@ -663,8 +679,23 @@ export default {
         } else {
           document.getElementById(id).style.color = "unset";
           document.getElementById(id).style.setProperty('border-color', '#ccc', 'important');
-          this.errorWidth.message = "";
-          this.errorHeight.message = "";
+
+          if(min_width >= 300 && max_width >= 300) {
+            this.errorWidth.error = false;
+            this.errorWidth.message = "";
+          }
+
+          if(min_height >= 300 && max_height >= 300) {
+            this.errorHeight.error = false;
+            this.errorHeight.message = "";
+          }
+
+          if(min_width >= 300 && max_width >= 300 && min_height >= 300 && max_height >= 300) {
+            this.errorWidth.error = false;
+            this.errorWidth.message = "";
+            this.errorHeight.error = false;
+            this.errorHeight.message = "";
+          }
         }
       }
       else {
