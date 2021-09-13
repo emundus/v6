@@ -2295,6 +2295,9 @@ $(document).ready(function() {
                                                     $('#admelement').show();
                                                 }
 
+                                                /// add loading
+                                                $('.modal-header').before('<div id="loadingimg-campaign"><img src="'+loading+'" alt="loading"/></div>');
+
                                                 $.ajax({
                                                     type:'get',
                                                     url: 'index.php?option=com_emundus&controller=files&task=getProgramCampaigns&code=' + code,
@@ -2306,6 +2309,7 @@ $(document).ready(function() {
                                                             $('#em-export-camp').append(result.html);
                                                             $('#em-export-camp').trigger("chosen:updated");
 
+                                                            $('#loadingimg-campaign').remove();
                                                             $('#camp').show();
 
                                                             var camp = $("#em-export-camp").val();
@@ -2824,10 +2828,13 @@ $(document).ready(function() {
                             //*** on export excel filter change ******************************/
                             $('#filt_save').on('change', function(e) {
                                 $('#model-err').empty();
-                                $('#em-export').remove();
+                                $('#em-export').remove();                           // reset #em-export
+                                $('#oelts :input').prop('checked', false);          // reset #oelts
+                                $('#forms :input').prop('checked', false);          // reset #forms
                                 $('#em-export-elts').append('<ul id="em-export"></ul></div>');
                                 var id = $(this).val();
                                 if (id != 0) {
+                                    //$('.modal-header').before('<div id="loadingimg-campaign"><img src="'+loading+'" alt="loading"/></div>');
                                     $.ajax({
                                         type:'get',
                                         url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
@@ -2920,6 +2927,9 @@ $(document).ready(function() {
                                                                             }
                                                                             $('#em-export-camp').val(camp);
                                                                             $('#em-export-camp').trigger("chosen:updated");
+
+                                                                            // $('#loadingimg-campaign').remove();
+
                                                                             $('#camp').show();
 
                                                                         }
@@ -3109,7 +3119,8 @@ $(document).ready(function() {
                                                                 $('#elements_detail').hide();
                                                                 $('#elements-popup').hide();
                                                             }
-                                                        } catch(e) {
+                                                        }
+                                                        catch(e) {
                                                             $('#data').append('<br> <div id="model-err-data" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div></br>');
                                                         }
                                                     }
@@ -7043,7 +7054,7 @@ $(document).on('click', '[id^=emundus_elm_]', function(e) {
 /// check all pages
 $(document).on('click', '[id^=emundus_checkall]', function() {
     let dataType = $(this).attr('data-check');
-    let elements = $('[id^=emundus_elm_]');
+    let elements = $('#appelement').find('[id^=emundus_elm_]');
 
     if(dataType == '.emunduspage') {
         let profile_id = $(this).attr('id').split('emundus_checkall')[1];
