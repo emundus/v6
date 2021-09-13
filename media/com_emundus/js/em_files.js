@@ -1946,7 +1946,7 @@ $(document).ready(function() {
 
                                 '</div>' +
                                 '<div class="panel-body">' +
-                                '<select name="em-export-form" id="em-export-form" class="chzn-select"></select><br/>' +
+                                // '<select name="em-export-form" id="em-export-form" class="chzn-select"></select><br/>' +
                                 '<div id="appelement">'+
                                 '<div id="elements-popup" style="width : 95%;margin : auto; display: none; ">' +
                                 '</div>' +
@@ -7023,17 +7023,52 @@ $(document).ready(function() {
 
 });
 
+/// push element ids to em-excel_elts
+$(document).on('click', '[id^=emundus_elm_]', function(e) {
+    let id = $(this).attr('id').split('emundus_elm_')[1];
+
+    /// get value from label for (with for = 'emundus_elm_' + id
+    //let label = $('label[for="emundus_elm_ ' + id + '"]').text();
+    console.log(id);
+    //console.log(label);
+})
+
 /// check all pages
 $(document).on('click', '[id^=emundus_checkall]', function() {
     let dataType = $(this).attr('data-check');
+    let elements = $('[id^=emundus_elm_]');
+
     if(dataType == '.emunduspage') {
         let profile_id = $(this).attr('id').split('emundus_checkall')[1];
         // if excel found
         if($('#appelement').length > 0) {
             if ($('#emundus_checkall' + profile_id).is(":checked")) {
                 $('#emundus_elements :input').prop('checked', true);
+
+                elements.each(function(e) {
+                    let eclass = $(this).attr('class').split('_')[0];
+                    if(eclass == 'emundusitem') {
+                        let eid = $(this).attr('id').split('emundus_elm_')[1];
+                        let elabel = $('label[for="emundus_elm_' + eid + '"]').text();
+
+                        // check exist
+                        if($('#' + eid + '-item').length == 0) {
+                            $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
+                        }
+                    }
+                })
             } else {
                 $('#emundus_elements :input').prop('checked', false);
+
+                elements.each(function(e) {
+                    let eclass = $(this).attr('class').split('_')[0];
+                    if(eclass == 'emundusitem') {
+                        let eid = $(this).attr('id').split('emundus_elm_')[1];
+
+                        // remove all <li>
+                        $('#' + eid + '-item').remove();
+                    }
+                })
             }
         }
 
@@ -7051,9 +7086,36 @@ $(document).on('click', '[id^=emundus_checkall]', function() {
 /// check all children of table
 $(document).on('click', '[id^=emundus_checkall_tbl_]', function() {
     let id = $(this).attr('id').split('emundus_checkall_tbl_')[1];
+
+    /// find all sub-elements
+    let elements = $('#emundus_table_' + id).find('[id^=emundus_elm_]');
+
     if($('#emundus_checkall_tbl_' + id).is(":checked")) {
         $('#emundus_table_' + id + " :input").attr('checked', true);
+
+        elements.each(function(e) {
+            let eclass = $(this).attr('class').split('_')[0];
+            if(eclass == 'emundusitem') {
+                let eid = $(this).attr('id').split('emundus_elm_')[1];
+                let elabel = $('label[for="emundus_elm_' + eid + '"]').text();
+
+                // check exist
+                if($('#' + eid + '-item').length == 0) {
+                    $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
+                }
+            }
+        })
     } else {
+        elements.each(function(e) {
+            let eclass = $(this).attr('class').split('_')[0];
+            if(eclass == 'emundusitem') {
+                let eid = $(this).attr('id').split('emundus_elm_')[1];
+
+                // remove all <li>
+                $('#' + eid + '-item').remove();
+            }
+        })
+
         $('#emundus_table_' + id + " :input").attr('checked', false);
     }
 });
