@@ -7025,12 +7025,19 @@ $(document).ready(function() {
 
 /// push element ids to em-excel_elts
 $(document).on('click', '[id^=emundus_elm_]', function(e) {
-    let id = $(this).attr('id').split('emundus_elm_')[1];
+    let eid = $(this).attr('id').split('emundus_elm_')[1];
+    let elabel = $('label[for="emundus_elm_' + eid + '"]').text();
+    let eclass = $(this).attr('class').split('_')[0];
 
-    /// get value from label for (with for = 'emundus_elm_' + id
-    //let label = $('label[for="emundus_elm_ ' + id + '"]').text();
-    console.log(id);
-    //console.log(label);
+    if($(this).is(":checked")) {
+        if(eclass == 'emundusitem') {
+            if($('#' + eid + '-item').length == 0) {
+                $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
+            }
+        }
+    } else {
+        $('#' + eid + '-item').remove();
+    }
 })
 
 /// check all pages
@@ -7123,10 +7130,36 @@ $(document).on('click', '[id^=emundus_checkall_tbl_]', function() {
 // check all children of group
 $(document).on('click', '[id^=emundus_checkall_grp_]', function(){
     let id = $(this).attr('id').split('emundus_checkall_grp_')[1];
+
+    let elements = $('#emundus_grp_' + id).find('[id^=emundus_elm_]');
+
     if($('#emundus_checkall_grp_' + id).is(":checked")) {
         $('#emundus_grp_' + id + " :input").attr('checked', true);
+
+        elements.each(function(e) {
+            let eclass = $(this).attr('class').split('_')[0];
+            if(eclass == 'emundusitem') {
+                let eid = $(this).attr('id').split('emundus_elm_')[1];
+                let elabel = $('label[for="emundus_elm_' + eid + '"]').text();
+
+                // check exist
+                if($('#' + eid + '-item').length == 0) {
+                    $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
+                }
+            }
+        })
     } else {
         $('#emundus_grp_' + id + " :input").attr('checked', false);
+
+        elements.each(function(e) {
+            let eclass = $(this).attr('class').split('_')[0];
+            if(eclass == 'emundusitem') {
+                let eid = $(this).attr('id').split('emundus_elm_')[1];
+
+                // remove all <li>
+                $('#' + eid + '-item').remove();
+            }
+        })
     }
 });
 
