@@ -4151,11 +4151,6 @@ $(document).ready(function() {
                             }
                         })
 
-                        // checkElement('[id^=felts]').then((selector)=>{
-                        //     $('[id^=emundus_checkall_tbl_]').trigger('click');
-                        //     $('.emundusall').prop('checked', true);
-                        // })
-
                         $.ajax({
                             type:'get',
                             url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
@@ -4211,54 +4206,6 @@ $(document).ready(function() {
                         /// if one of two conditions as above is not correct --> hide the div "felts"
                         $('[id^=form-element]').hide();
                         $('[id^=aelts]').hide();
-                    }
-                });
-
-                /// check all pages
-                $(document).on('click', '[id^=emundus_checkall]', function() {
-                    let dataType = $(this).attr('data-check');
-                    if(dataType == '.emunduspage') {
-                        let profile_id = $(this).attr('id').split('emundus_checkall')[1];
-
-                        // if excel found
-                        if($('#appelement').length > 0) {
-                            if ($('#emundus_checkall' + profile_id).is(":checked")) {
-                                $('#emundus_elements :input').prop('checked', true);
-                            } else {
-                                $('#emundus_elements :input').prop('checked', false);
-                            }
-                        }
-
-                        /// if pdf found
-                        if($('#felts' + profile_id).length) {
-                            if ($('#emundus_checkall' + profile_id).is(":checked")) {
-                                $('#felts' + profile_id + ' :input').attr('checked', true);
-                            } else {
-                                $('#felts' + profile_id + ' :input').attr('checked', false);
-                            }
-                        }
-                    } else {
-                        /// do nothing ....
-                    }
-                });
-
-                /// check all children of table
-                $(document).on('click', '[id^=emundus_checkall_tbl_]', function() {
-                    let id = $(this).attr('id').split('emundus_checkall_tbl_')[1];
-                    if($('#emundus_checkall_tbl_' + id).is(":checked")) {
-                        $('#emundus_table_' + id + " :input").attr('checked', true);
-                    } else {
-                        $('#emundus_table_' + id + " :input").attr('checked', false);
-                    }
-                });
-
-                // check all children of group
-                $(document).on('click', '[id^=emundus_checkall_grp_]', function(){
-                    let id = $(this).attr('id').split('emundus_checkall_grp_')[1];
-                    if($('#emundus_checkall_grp_' + id).is(":checked")) {
-                        $('#emundus_grp_' + id + " :input").attr('checked', true);
-                    } else {
-                        $('#emundus_grp_' + id + " :input").attr('checked', false);
                     }
                 });
 
@@ -7072,7 +7019,55 @@ $(document).ready(function() {
             $('#felts'+ id).hide();
         }
     });
+
+
 });
+
+/// check all pages
+$(document).on('click', '[id^=emundus_checkall]', function() {
+    let dataType = $(this).attr('data-check');
+    if(dataType == '.emunduspage') {
+        let profile_id = $(this).attr('id').split('emundus_checkall')[1];
+        // if excel found
+        if($('#appelement').length > 0) {
+            if ($('#emundus_checkall' + profile_id).is(":checked")) {
+                $('#emundus_elements :input').prop('checked', true);
+            } else {
+                $('#emundus_elements :input').prop('checked', false);
+            }
+        }
+
+        /// if pdf found
+        if($('#felts' + profile_id).length) {
+            if ($('#emundus_checkall' + profile_id).is(":checked")) {
+                $('#felts' + profile_id + ' :input').attr('checked', true);
+            } else {
+                $('#felts' + profile_id + ' :input').attr('checked', false);
+            }
+        }
+    }
+});
+
+/// check all children of table
+$(document).on('click', '[id^=emundus_checkall_tbl_]', function() {
+    let id = $(this).attr('id').split('emundus_checkall_tbl_')[1];
+    if($('#emundus_checkall_tbl_' + id).is(":checked")) {
+        $('#emundus_table_' + id + " :input").attr('checked', true);
+    } else {
+        $('#emundus_table_' + id + " :input").attr('checked', false);
+    }
+});
+
+// check all children of group
+$(document).on('click', '[id^=emundus_checkall_grp_]', function(){
+    let id = $(this).attr('id').split('emundus_checkall_grp_')[1];
+    if($('#emundus_checkall_grp_' + id).is(":checked")) {
+        $('#emundus_grp_' + id + " :input").attr('checked', true);
+    } else {
+        $('#emundus_grp_' + id + " :input").attr('checked', false);
+    }
+});
+
 function getXMLHttpRequest() {
     var xhr = null;
 
