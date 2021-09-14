@@ -2031,6 +2031,9 @@ this.set(words.join(&quot; &quot;));
                 case 'databasejoin':
                     $dbtype = 'INT';
                     break;
+                case 'display':
+                    $dbtype = 'TEXT';
+                    break;
                 default:
                     $dbtype = 'VARCHAR(255)';
             }
@@ -3206,7 +3209,7 @@ this.set(words.join(&quot; &quot;));
                 }
             }
             // Insert parent_id in elements
-            
+
             if (!in_array('parent_id', $ignore_elms)) {
                 $query
                     ->clear()
