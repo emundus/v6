@@ -30,6 +30,7 @@ class SecuritycheckprosModelDatabaseUpdates extends SecuritycheckproModel
     private $vuln_table = 'Not_defined';
     // Variable que contiene la versión de la bbdd local (contendrá el mayor valor del campo 'dbversion' del archivo xml leído)
     private $higher_database_version = '0.0.0';
+	private $scan_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
 	
 	var $global_model = null;
 
@@ -135,6 +136,9 @@ class SecuritycheckprosModelDatabaseUpdates extends SecuritycheckproModel
                         }
                     
                         $insert_result = JFactory::getDbo()->insertObject($this->vuln_table, $nueva_vulnerabilidad, 'id');
+						// Let's write a file to tell securitycheck that new entried have been added to database. This is needed by /com_securitycheckpro/backend/models/securitycheckpros.php		
+						$this->write_file();
+						
                     }    
                 } else if (($key_exists) && ($vulnerability['method'] == 'delete')) {
                     // Método para eliminar una vulnerabilidad
@@ -190,12 +194,14 @@ class SecuritycheckprosModelDatabaseUpdates extends SecuritycheckproModel
             ->select($db->quoteName('last_check'))
             ->from($db->quoteName('#__securitycheckpro_update_database'));
         $db->setQuery($query);
-        $task_time = $db->loadResult();
-    
-        // Si el campo no esta vacío, devolvemos la hora/día actual formateada
-        if ((isset($task_time)) && (!empty($task_time))) {
-			$last_check = $this->global_model->get_Joomla_timestamp();            
-        } 
+        $last_check = $db->loadResult();
+		
+		// Si el campo está vacío, devolvemos la hora/día actual formateada
+        /*if ((isset($last_check)) && (!empty($last_check))) {
+			         
+        } else {
+			$last_check = $this->global_model->get_Joomla_timestamp();   
+		}*/
     
         return $last_check;
     }
@@ -319,12 +325,12 @@ class SecuritycheckprosModelDatabaseUpdates extends SecuritycheckproModel
                 }
             
                 // Si el proceso ha sido correcto, actualizamos la bbdd
-                if ($result) {
+                if ($result) {					
                     // Actualizamos la fecha de la última comprobación y la versión de la bbdd local
 					$timestamp = $this->global_model->get_Joomla_timestamp();
                     $this->set_campo_bbdd('last_check', $timestamp);
                     $this->set_campo_bbdd('version', $this->higher_database_version);
-                    $this->set_campo_bbdd('message', 'PLG_SECURITYCHECKPRO_UPDATE_DATABASE_DATABASE_UPDATED');            
+                    $this->set_campo_bbdd('message', 'PLG_SECURITYCHECKPRO_UPDATE_DATABASE_DATABASE_UPDATED');					
                 } 
             }
         }    
@@ -359,7 +365,8 @@ class SecuritycheckprosModelDatabaseUpdates extends SecuritycheckproModel
     
         // Último chequeo realizado
         $last_check = $this->last_check();
-        // Si no hay consultas previas, establecemos el intervalo a '2' para lanzar una.
+		
+		// Si no hay consultas previas, establecemos el intervalo a '20' para lanzar una.
         if ((!isset($last_check)) || (empty($last_check))) {
             $interval = 20;
         } else
@@ -370,7 +377,7 @@ class SecuritycheckprosModelDatabaseUpdates extends SecuritycheckproModel
 			// Extraemos las horas que han pasado desde el último chequeo
 			$interval = intval($seconds/3600);	    
         }
-        
+		        
         if ($interval > 12) {
             // Comprobamos si existen nuevas actualizaciones
             $this->tarea_comprobacion();        
@@ -384,20 +391,38 @@ class SecuritycheckprosModelDatabaseUpdates extends SecuritycheckproModel
         
         $db = JFactory::getDBO();
         if ($opcion == 1) {
-            $query = 'SELECT enabled FROM #__extensions WHERE name="System - Securitycheck Pro"';
+            $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Pro'";
         } else if ($opcion == 2) {
-            $query = 'SELECT enabled FROM #__extensions WHERE name="System - Securitycheck Pro Cron"';
+            $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Pro Cron'";
         } else if ($opcion == 3) {
-            $query = 'SELECT enabled FROM #__extensions WHERE name="System - Securitycheck Pro Update Database"';
+            $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Pro Update Database'";
         } else if ($opcion == 4) {
-            $query = 'SELECT COUNT(*) FROM #__extensions WHERE name="System - Securitycheck Pro Update Database"';
+            $query = "SELECT COUNT(*) FROM #__extensions WHERE name='System - Securitycheck Pro Update Database'";
         }
-    
-        $db->setQuery($query);
-        $db->execute();
-        $enabled = $db->loadResult();
-    
+		
+		try {
+			$db->setQuery($query);
+			$db->execute();
+			$enabled = $db->loadResult();
+		} catch (Exception $e)
+        {    			
+            $enabled = 0;
+        }    
+           
         return $enabled;
+    }
+	
+	// Writes a file into the scan folder to know that we must update the vulnerabilities database
+	function write_file()
+    {
+				
+		$file_manag = @fopen($this->scan_path."update_vuln_table.php", 'ab');		
+		
+		if (empty($file_manag)) {
+            return;
+        }
+	
+		@fclose($file_manag);
     }
 
 }

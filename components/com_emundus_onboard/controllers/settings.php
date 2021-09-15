@@ -656,6 +656,9 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $datas = JLanguageHelper::getLanguages();
+            usort($datas, function($a, $b) {
+                return (int)$a->lang_id > (int)$b->lang_id ? 1 : -1;
+            });
             $response = array('status' => '1', 'msg' => 'SUCCESS', 'data' => $datas);
         }
         echo json_encode((object)$response);

@@ -20,13 +20,12 @@ $centpc = $this->params->get('google_credentials', '') ? '' : 'centpc';
         <div id="df-panel-toggle"><span class="icon-arrow-left-2"></span></div>
         <?php if ($this->canDo->get('core.create')) : ?>
             <div id="newcategory"
-                 class="btn-group button-primary btn-categories <?php echo $centpc; ?>">
+                 class="btn-group button-primary btn-categories withSyncCloud <?php echo $centpc; ?>">
                 <a class="btn btn-default" href=""><i class="icon-plus">
                         <i class="material-icons material-icons-new_folder">create_new_folder</i></i>
                     <?php echo JText::_('COM_DROPFILES_LAYOUT_DROPFILES_NEW_CATEGORY'); ?>
                 </a>
                 <?php if ($this->params->get('google_credentials', '')) : ?>
-                    <a class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
                     <ul class="dropdown-menu pull-right">
                         <li><a href="#" class="googleCat"><i class="google-drive-icon"></i>
                                 <?php echo JText::_('COM_DROPFILES_LAYOUT_DROPFILES_NEW_GOOGLEDRIVE'); ?>
@@ -97,10 +96,10 @@ function openItem($category, $key, $canDo)
         <div class="dd-handle dd3-handle"><i class="zmdi zmdi-folder dropfiles-folder"></i></div>
         <div class="dd-content dd3-content dd-handle">';
     if ($canDo->get('core.edit') || $canDo->get('core.edit.own')) {
-        $return .= '<a class="edit"><i class="icon-edit"></i></a>';
+        $return .= '<a class="edit" title="Edit"><i class="icon-edit"></i></a>';
     }
     if ($canDo->get('core.delete')) {
-        $return .= '<a class="trash"><i class="icon-trash"></i></a>';
+        $return .= '<a class="trash" title="Delete"><i class="icon-trash"></i></a>';
     }
     $return .= '<a href="" class="t">' . $icon . '
                 <span class="title">' . $category->title . '</span>
@@ -132,8 +131,8 @@ function itemContent($category)
     return '<div class="dd-handle dd3-handle"><i class="zmdi zmdi-folder dropfiles-folder"></i></div>
     <div class="dd-content dd3-content dd-handle"
         <i class="icon-chevron-right"></i>
-        <a class="edit"><i class="icon-edit"></i></a>
-        <a class="trash"><i class="icon-trash"></i></a>
+        <a class="edit" title="Edit"><i class="icon-edit"></i></a>
+        <a class="trash" title="Delete"><i class="icon-trash"></i></a>
         <a href="" class="t">
             <span class="title">' . $category->title . '</span>
         </a>

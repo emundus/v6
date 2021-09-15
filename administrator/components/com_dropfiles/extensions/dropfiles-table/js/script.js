@@ -25,14 +25,22 @@ jQuery(document).ready(function ($) {
             var tempidCat = $(this).data('idcat');
             table_cParents[tempidCat] = {parent_id: table_topCat, id: tempidCat, title: $(this).text()};
         })
+        initInputSelected(table_topCat);
+        initDownloadSelected(table_topCat);
     })
 
     //load media tables
     $('.dropfiles-content-table.dropfiles-content .mediaTable').mediaTable();
 
     var source = $("#dropfiles-template-table").html();
-    var tpltable_sourcecategories = $("#dropfiles-template-table-categories").html();
-
+    var type_source   = $("#dropfiles-current-category").html();
+    var tpltable_sourcecategories = '';
+    if ($("#dropfiles-template-table-categories").length) {
+        tpltable_sourcecategories = $("#dropfiles-template-table-categories").html();
+    }
+    if (tpltable_sourcecategories === '') {
+        $('.dropfiles-content-table .dropfiles-categories').addClass('blank');
+    }
     if (typeof source != 'undefined' && source != null) {
         source = source.replace(dropfilesRootUrl, "");
         var reg = new RegExp("/{{", 'g');
@@ -42,6 +50,90 @@ jQuery(document).ready(function ($) {
     Handlebars.registerHelper('bytesToSize', function (bytes) {
         return bytesToSize(bytes);
     });
+
+    function initInputSelected(sc) {
+        $(document).on('change', ".dropfiles-content-table.dropfiles-content-multi[data-category=" + sc + "] input.cbox_file_download", function () {
+            var rootCat = ".dropfiles-content-table.dropfiles-content-multi[data-category=" + sc + "]";
+            var selectedFiles = $(rootCat + " input.cbox_file_download:checked");
+            var filesId = [];
+            if (selectedFiles.length) {
+                selectedFiles.each(function (index, file) {
+                    filesId.push($(file).data('id'));
+                });
+            }
+            if (filesId.length > 0) {
+                $(rootCat + " .dropfilesSelectedFiles").remove();
+                $('<input type="hidden" class="dropfilesSelectedFiles" value="' + filesId.join(',') + '" />')
+                    .insertAfter($(rootCat).find(" #current_category_slug"));
+                hideDownloadAllBtn(sc, true);
+                $(rootCat + " .table-download-selected").remove();
+                if ($(rootCat).find('.breadcrumbs').length) {
+                    var downloadSelectedBtn = $('<a href="javascript:void(0);" class="table-download-selected download-selected" style="display: block;">' + Joomla.JText._('COM_DROPFILES_DOWNLOAD_SELECTED', 'Download selected') + '<i class="zmdi zmdi-check-all dropfiles-download-category"></i></a>');
+                    downloadSelectedBtn.prependTo($(rootCat).find(".breadcrumbs.dropfiles-breadcrumbs-table"));
+                } else {
+                    var downloadSelectedBtn = $('<a href="javascript:void(0);" class="table-download-selected download-selected" style="display: block;">' + Joomla.JText._('COM_DROPFILES_DOWNLOAD_SELECTED', 'Download selected') + '<i class="zmdi zmdi-check-all dropfiles-download-category"></i></a>');
+                    downloadSelectedBtn.insertAfter($(rootCat).find(" #current_category_slug"));
+                }
+            } else {
+                $(rootCat + " .dropfilesSelectedFiles").remove();
+                $(rootCat + " .table-download-selected").remove();
+                hideDownloadAllBtn(sc, false);
+            }
+        });
+    }
+
+    function hideDownloadAllBtn(sc, hide) {
+        var rootCat = ".dropfiles-content-table.dropfiles-content-multi[data-category=" + sc + "]";
+        var downloadCatButton = $(rootCat + " .table-download-category");
+        var selectFileInputs = $(rootCat + " input.cbox_file_download");
+
+        if (downloadCatButton.length === 0) {
+            if (selectFileInputs.length > 0) {
+                if ($(rootCat).find('.breadcrumbs').length) {
+                    var downloadAllBtn = $('<a href="javascript:void(0);" class="table-download-category download-all" style="display: block;">' + Joomla.JText._('COM_DROPFILES_DOWNLOAD_ALL', 'Download all') + '<i class="zmdi zmdi-check-all"></i></a>');
+                    downloadAllBtn.prependTo($(rootCat).find(".breadcrumbs.dropfiles-breadcrumbs-table"));
+                } else {
+                    var downloadAllBtn = $('<a href="javascript:void(0);" class="table-download-category download-all" style="display: block;">' + Joomla.JText._('COM_DROPFILES_DOWNLOAD_ALL', 'Download all') + '<i class="zmdi zmdi-check-all"></i></a>');
+                    downloadAllBtn.insertAfter($(rootCat).find(" #current_category_slug"));
+                }
+            } else {
+                return;
+            }
+        } else {
+            if (selectFileInputs.length === 0) {
+                downloadCatButton.remove();
+                return;
+            }
+        }
+
+        if (hide) {
+            $(rootCat + " .table-download-category").hide();
+        } else {
+            $(rootCat + " .table-download-category").show();
+        }
+    }
+
+    function initDownloadSelected(sc) {
+        var rootCat = ".dropfiles-content-table.dropfiles-content-multi[data-category=" + sc + "]";
+        $(document).on('click', rootCat + ' .table-download-selected', function () {
+            if ($(rootCat).find('.dropfilesSelectedFiles').length > 0) {
+                var current_category = $(rootCat).find('#current_category').val();
+                var category_name = $(rootCat).find('#current_category_slug').val();
+                var selectedFilesId = $(rootCat).find('.dropfilesSelectedFiles').val();
+                $.ajax({
+                    url: dropfilesBaseUrl + "index.php?option=com_dropfiles&task=frontfile.zipSeletedFiles&filesId=" + selectedFilesId + "&dropfiles_category_id=" + current_category,
+                    dataType: "json",
+                }).done(function (results) {
+                    if (results.status === 'success') {
+                        var hash = results.hash;
+                        window.location.href = dropfilesBaseUrl + "index.php?option=com_dropfiles&task=frontfile.downloadZipedFile&hash=" + hash + "&dropfiles_category_id=" + current_category + "&dropfiles_category_name=" + category_name;
+                    } else {
+                        alert(results.message);
+                    }
+                })
+            }
+        });
+    }
 
     function initClick() {
         $('.dropfiles-content-table.dropfiles-content-multi .catlink').click(function (e) {
@@ -75,6 +167,7 @@ jQuery(document).ready(function ($) {
 
     function table_load(sourcecat, category, page) {
         var pathname = window.location.pathname;
+        var container = $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "]");
         $(document).trigger('dropfiles:category-loading');
         $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "]").find('#current_category').val(category);
         $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] table tbody").empty();
@@ -100,13 +193,13 @@ jQuery(document).ready(function ($) {
             $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-categories").prepend(html);
 
             if (table_tree.length) {
+                var currentTree = container.find('.dropfiles-foldertree-table');
+                currentTree.find('li').removeClass('selected');
+                currentTree.find('i.zmdi').removeClass('zmdi-folder').addClass("zmdi-folder");
 
-                table_tree.find('li').removeClass('selected');
-                table_tree.find('i.zmdi').removeClass('zmdi-folder').addClass("zmdi-folder");
+                currentTree.jaofoldertree('open', category, currentTree);
 
-                table_tree.jaofoldertree('open', category);
-
-                var el = table_tree.find('a[data-file="' + category + '"]').parent();
+                var el = currentTree.find('a[data-file="' + category + '"]').parent();
                 el.find(' > i.zmdi').removeClass("zmdi-folder").addClass("zmdi-folder");
 
                 if (!el.hasClass('selected')) {
@@ -123,6 +216,12 @@ jQuery(document).ready(function ($) {
                 $.extend(content, categories);
                 var template = Handlebars.compile(source);
                 var html = template(content);
+                var type_template = Handlebars.compile(type_source);
+                var type_html = type_template(content);
+                if ($(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] #current-category-type").length) {
+                    $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] #current-category-type").remove();
+                }
+                $(type_html).insertBefore($(" .dropfiles-container", $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "]")));
                 $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] table tbody").append(html);
                 $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] table tbody").trigger('change');
                 $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] .mediaTableMenu").find('input').trigger('change');
@@ -137,6 +236,27 @@ jQuery(document).ready(function ($) {
                 initManageFile(sourcecat);
                 if (typeof(dropfilesColorboxInit) !== 'undefined') {
                     dropfilesColorboxInit();
+                }
+                $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfilesSelectedFiles").remove();
+                $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] .table-download-selected").remove();
+                $.ajax({
+                    url: dropfilesBaseUrl + "index.php?option=com_dropfiles&task=category.isCloudCategory&id_category=" + category,
+                    dataType: "json"
+                }).done(function (result) {
+                    if (result.status === 'true') {
+                        hideDownloadAllBtn(sourcecat, true);
+                    } else {
+                        hideDownloadAllBtn(sourcecat, false);
+                    }
+                });
+                if ($(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] #current-category-link").length) {
+                    var current_download_link = $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] #current-category-link").val().toLowerCase();
+                    if ($(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] .table-download-category").length) {
+                        var root_download_link = $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] .table-download-category").attr('href').toLowerCase();
+                        if (current_download_link !== root_download_link) {
+                            $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] .table-download-category").attr('href', current_download_link);
+                        }
+                    }
                 }
             });
         });
@@ -185,6 +305,13 @@ jQuery(document).ready(function ($) {
                 onclick: function (elem, file) {
                     table_topCat = $(elem).parents('.dropfiles-content-table.dropfiles-content-multi').data('category');
                     if (table_topCat != file) {
+
+                        $('.directory', $(elem).parents('.dropfiles-content-table.dropfiles-content-multi')).each(function() {
+                            if (!$(this).hasClass('selected') && $(this).find('> ul > li').length === 0) {
+                                $(this).removeClass('expanded');
+                                $(this).addClass('collapsed');
+                            }
+                        });
 
                         $(elem).parents('.directory').each(function () {
                             var $this = $(this);

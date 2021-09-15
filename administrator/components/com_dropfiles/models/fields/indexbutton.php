@@ -45,7 +45,7 @@ class JFormFieldIndexButton extends JFormField
         $script[] = 'jQuery(document).ready(function($){';
 
         // Show hide index button
-        $script[] = "if($('#jform_plain_text_search1').is(':checked')) {
+        $script[] = "if($('#jform_plain_text_search').is(':checked')) {
                         $('#search_indexer').closest('.control-group ').hide();
                     }
                     $('input[id^=jform_plain_text_search]').change(function() {
@@ -132,7 +132,7 @@ class JFormFieldIndexButton extends JFormField
                         status = JSON.parse(status);
                         if (!status.message) {
                             if (status.n_inindex > 0 && status.n_inindex === status.n_actual + status.n_pending) {
-                                var readyHtml = \"<span style=\\\"color: green; font-size: 15px;\\\">&#9679;</span>\"
+                                var readyHtml = \"<span class=\\\"material-icons\\\" style=\\\"color: #fff; font-size: 20px; margin: 0 10px; vertical-align: text-bottom;\\\">done</span>\"
                                     + \"Index ready! On index: <b>\" + status.n_inindex + \"</b> files\";
                                 $('#indexResult').html(readyHtml);
                             } else {
@@ -162,7 +162,7 @@ class JFormFieldIndexButton extends JFormField
                             $('#indexResult').html(readyHtml);
                         }
                     }";
-        $script[] = 'if ($(\'#jform_plain_text_search0\').is(\':checked\')) {
+        $script[] = 'if ($(\'#jform_plain_text_search\').is(\':checked\')) {
                         pingtimer();
                     }';
         $script[] = 'function ftsAction(action, data, callback) {

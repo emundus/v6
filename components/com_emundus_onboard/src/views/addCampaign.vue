@@ -316,6 +316,7 @@ export default {
     programs: [],
     years: [],
     status: [],
+    languages: [],
 
     session: [],
     old_training: "",
@@ -323,10 +324,7 @@ export default {
     editorKey: 0,
 
     form: {
-      label: {
-        fr: '',
-        en: ''
-      },
+      label: {},
       start_date: "",
       end_date: "",
       short_description: "",
@@ -420,7 +418,7 @@ export default {
 
     let now = new Date();
     this.form.start_date = LuxonDateTime.local(now.getFullYear(),now.getMonth() + 1,now.getDate(),0,0,0).toISO();
-
+    this.getLanguages();
     //Check if we add or edit a campaign
     if (this.campaign !== "") {
       axios.get(
@@ -433,20 +431,12 @@ export default {
           this.programForm = response.data.data.program;
 
           // Check label translations
-          this.form.label = {
-            fr: '',
-            en: '',
-          }
-          if(response.data.data.label.fr == null) {
-            this.form.label.fr = label;
-          } else {
-            this.form.label.fr = response.data.data.label.fr.value;
-          }
-          if(response.data.data.label.en == null) {
-            this.form.label.en = label;
-          } else {
-            this.form.label.en = response.data.data.label.en.value;
-          }
+          this.form.label = response.data.data.label
+          this.languages.forEach((language) => {
+            if(this.form.label[language.sef] === '' || this.form.label[language.sef] == null) {
+              this.form.label[language.sef] = label;
+            }
+          });
           //
 
           // Convert date
@@ -500,6 +490,15 @@ export default {
   },
 
   methods: {
+    getLanguages() {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=settings&task=getactivelanguages"
+      }).then(response => {
+        this.languages = response.data.data;
+      });
+    },
+
     setCategory(e) {
       this.year.programmes = e.target.options[e.target.options.selectedIndex].dataset.category;
       this.programForm = this.programs.find(program => program.code == this.form.training);

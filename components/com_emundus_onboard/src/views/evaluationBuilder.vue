@@ -100,7 +100,6 @@
       <Ring-Loader :color="'#12DB42'" />
     </div>
   </div>
-  <tasks></tasks>
 </template>
 
 

@@ -14,8 +14,8 @@ $class = $item->anchor_css ? 'class="'.$item->anchor_css.'" ' : '';
 $title = $item->anchor_title ? 'title="'.$item->anchor_title.'" ' : '';
 if ($item->menu_image) {
 		$item->params->get('menu_text', 1 ) ?
-		$linktype = '<img src="'.$item->menu_image.'" alt="'.$item->title.'" /><span class="image-title" style="display: none;opacity: 0">'.$item->title.'</span>' :
-		$linktype = '<img src="'.$item->menu_image.'" alt="'.$item->title.'" />';
+        $linktype = '<img src="'.JURI::base().$item->menu_image.'" alt="'.$item->title.'" /><span class="image-title" style="display: none;opacity: 0">'.$item->title.'</span>' :
+        $linktype = '<img src="'.JURI::base().$item->menu_image.'" alt="'.$item->title.'" />';
 } else {
     if(($item->deeper && $item->level == 1) || (!$item->deeper && $item->level == 1)) {
         $linktype = '<span class="simple-letter">' . $item->title[0] . '</span><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';

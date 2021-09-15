@@ -1,11 +1,15 @@
 <?php
 /**
- * FabrikFeed Document class
- *
- * @package     Joomla
- * @subpackage  Fabrik.Documents
- * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
- * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
+ * @version		$Id: rss.php 10381 2008-06-01 03:35:53Z pasamio $
+ * @package		Joomla.Framework
+ * @subpackage	Document
+ * @copyright	Copyright (C) 2005 - 2008 Open Source Matters. All rights reserved.
+ * @license		GNU/GPL, see LICENSE.php
+ * Joomla! is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ * See COPYRIGHT.php for copyright notices and details.
  */
 
 // Check to ensure this file is within the rest of the framework
@@ -150,8 +154,7 @@ class JDocumentRendererrss extends JDocumentRenderer
 			$feed.= "		<item>\n";
 			$feed.= "			<title><![CDATA[" .  htmlspecialchars(strip_tags(html_entity_decode($data->items[$i]->title, ENT_COMPAT, 'UTF-8')), ENT_COMPAT, 'UTF-8') . "]]></title>\n";
 			$feed.= "			<link>" . $url . $data->items[$i]->link . "</link>\n";
-			//$feed.= "			<description><![CDATA[" . htmlspecialchars(html_entity_decode($this->_relToAbs($data->items[$i]->description), ENT_COMPAT, 'UTF-8'), ENT_COMPAT, 'UTF-8') . "]]></description>\n";
-			$feed.= "			<description><![CDATA[" . html_entity_decode($this->_relToAbs($data->items[$i]->description), ENT_COMPAT, 'UTF-8') . "]]></description>\n";
+			$feed.= "			<description><![CDATA[" . htmlspecialchars(html_entity_decode($this->_relToAbs($data->items[$i]->description), ENT_COMPAT, 'UTF-8'), ENT_COMPAT, 'UTF-8') . "]]></description>\n";
 
 			if ($data->items[$i]->author != "")
 			{

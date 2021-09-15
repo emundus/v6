@@ -190,7 +190,7 @@ class EmundusmessengerControllermessages extends JControllerLegacy
             if (move_uploaded_file($file["tmp_name"], $target_file)) {
                 $message = '<p>' . $message_input . '</p><a href="'.$target_file.'" download><img src="/images/emundus/messenger/file_download.svg" class="messages__download_icon" alt="'.$filename.'">'.$filename.'</a>';
                 $new_message = $m_messages->sendMessage($message,$fnum);
-                if($applicant && !empty($attachment)){
+                if($applicant){
                     $upload_emundus = $m_messages->moveToUploadedFile($fnumInfos,$attachment,$filesrc,$target_file);
                 }
                 echo json_encode(array('msg' => $upload_emundus,'data' => $new_message));

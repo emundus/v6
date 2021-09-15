@@ -350,10 +350,10 @@ export default {
   color: #12DB42;
 }
 .bouton-sauvergarder-et-continuer,.loading-form-save{
-  position: fixed;
+  position: absolute;
   z-index: 10;
   width: auto;
-  margin-top: -14px;
+  margin-top: -33px;
   margin-right: 20px;
 }
 

@@ -30,6 +30,7 @@
         <label style="font-size: small">{{tipData}}</label>
       </div>
     </div>-->
+    </div>
   </div>
 </template>
 

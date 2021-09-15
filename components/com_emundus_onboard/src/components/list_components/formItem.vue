@@ -6,29 +6,46 @@
           <div class="column-inner-block w-col w-col-8 pl-30px">
             <div class="list-item-header">
               <div class="block-label">
-                <a class="item-select w-inline-block"
+<!--                <a class="item-select w-inline-block"
                    v-on:click="selectItem(data.id)"
                    :class="{ active: isActive }">
-                </a>
+                </a>-->
                 <h2 class="nom-campagne-block">{{ data.form_label }}</h2>
               </div>
+            </div>
+            <div>
+              <p class="associated-campaigns" v-if="campaigns.length == 1">{{translations.campaignAssociated}} :</p>
+              <p class="associated-campaigns" v-if="campaigns.length > 1">{{translations.campaignsAssociated}} :</p>
+              <ul style="margin-top: 10px;margin-left: 0">
+                <li v-for="(campaign, index) in campaigns" class="campaigns-item">{{campaign.label}}</li>
+              </ul>
+            </div>
+            <div class="d-flex">
               <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
                 {{ isPublished ? translations.publishedTag : translations.unpublishedTag }}
               </div>
             </div>
             <div>
-              <p class="pl-30px associated-campaigns" v-if="campaigns.length == 1">{{translations.campaignAssociated}} :</p>
-              <p class="pl-30px associated-campaigns" v-if="campaigns.length > 1">{{translations.campaignsAssociated}} :</p>
-              <ul style="margin-top: 10px">
-                <li v-for="(campaign, index) in campaigns" class="campaigns-item">{{campaign.label}}</li>
-              </ul>
-            </div>
-            <div class="stats-block" style="justify-content: flex-end">
-              <a class="bouton-ajouter pointer add-button-div"
-                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
-                 :title="translations.Modify">
-                <em class="fas fa-pen"></em> Éditer
-              </a>
+              <hr class="divider-card">
+              <div class="stats-block">
+                <a class="bouton-ajouter pointer add-button-div"
+                   @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
+                   :title="translations.Modify">
+                  <em class="fas fa-pen"></em> Éditer
+                </a>
+                <v-popover :popoverArrowClass="'custom-popover-arrow'">
+                  <button class="tooltip-target b3 card-button"></button>
+
+                  <template slot="popover">
+                    <actions
+                        :data="actions"
+                        :selected="this.data.id"
+                        :published="isPublished"
+                        @validateFilters="validateFilters()"
+                    ></actions>
+                  </template>
+                </v-popover>
+              </div>
             </div>
           </div>
         </div>
@@ -40,14 +57,17 @@
 <script>
 import { list } from "../../store";
 import axios from "axios";
+import actions from "./action_menu";
 
 const qs = require("qs");
 
 export default {
   name: "formItem",
+  components: {actions},
   props: {
     data: Object,
-    selectItem: Function
+    selectItem: Function,
+    actions: Object,
   },
   data() {
     return {
@@ -65,6 +85,10 @@ export default {
   },
 
   methods: {
+    validateFilters(){
+      this.$emit('validateFilters');
+    },
+
     redirectJRoute(link) {
       axios({
         method: "get",

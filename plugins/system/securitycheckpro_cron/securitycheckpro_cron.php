@@ -175,7 +175,7 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
     private function look_for_remote_tasks()
     {
 		$db = JFactory::getDBO();
-        $query = 'SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key="remote_task"';
+        $query = "SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key='remote_task'";
         $db->setQuery($query);
         $db->execute();
         $task_pending = $db->loadResult();
@@ -202,6 +202,14 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
     
     function onAfterInitialise()
     {
+		// Is an admin logged in? If so tasks will not be launched to avoid, for instance, getting an error 504 after updating the extension and launch a task in the next query
+		$admin = JFactory::getApplication()->isClient('administrator');
+		$guest = JFactory::getUser()->guest;
+				
+		if ($admin && !$guest ) {
+			return;
+		}
+		
 		// Look for remote tasks pending
 		$this->look_for_remote_tasks();
 		
@@ -232,7 +240,7 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
             // Creamos un nuevo objeto query ...
             $db = $model->getDbo();
             // y consultamos si se está ejecutando una tarea por el plugin
-            $query = 'SELECT cron_tasks_launched FROM #__securitycheckpro_file_manager WHERE id=1';
+            $query = "SELECT cron_tasks_launched FROM #__securitycheckpro_file_manager WHERE id=1";
             $db->setQuery($query);
             $launched = $db->loadResult();
 			

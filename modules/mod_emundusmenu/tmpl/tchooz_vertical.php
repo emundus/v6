@@ -103,6 +103,14 @@ defined('_JEXEC') or die;
         width: 50px;
         margin: 5px 10px !important;
     }
+
+    .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo > a {
+        margin-bottom: 50px;
+    }
+    .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo img {
+        width: 30px;
+    }
+
     #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container{
         border-bottom: unset !important;
     }
@@ -216,63 +224,16 @@ defined('_JEXEC') or die;
     ?>>
     <div style="opacity: 0" class="grey-navbar-icons"></div>
     <ul class="g-toplevel tchooz-vertical-toplevel">
-        <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="/images/emundus/menus/menu.png" style="width: 30px"></button>
+        <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="<?php echo JURI::base()?>images/emundus/menus/menu.png" style="width: 30px"></button>
         <?php
 
-        echo '<li class="g-menu-item g-standard tchooz-vertical-item" style="margin-bottom: 50px !important;"><a class="item" href="/"><img src="/images/emundus/tchooz_favicon.png" alt="Accueil" style="width: 30px"></a>
+        if(file_exists(JPATH_SITE . '/images/custom/favicon.png')){
+            $favicon = JURI::base().'/images/custom/favicon.png';
+        } else {
+            $favicon = JURI::base().'/images/emundus/tchooz_favicon.png';
+        }
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo" style="height: auto"><a class="item" href="/"><img src="'.$favicon.'" alt="Accueil"></a>
         </li>';
-
-
-        foreach ($list as $i => &$item) :
-
-            if($item->alias == 'homepage') :
-                $item->anchor_css="item";
-                $class = 'item-'.$item->id.' g-standard';
-                if ($item->id == $active_id) {
-                    $class .= ' current';
-                }
-
-                if (in_array($item->id, $path)) {
-                    $class .= ' active';
-                }
-                elseif ($item->type == 'alias') {
-                    $aliasToId = $item->params->get('aliasoptions');
-                    if (count($path) > 0 && $aliasToId == $path[count($path)-1]) {
-                        $class .= ' active';
-                    }
-                    elseif (in_array($aliasToId, $path)) {
-                        $class .= ' alias-parent-active';
-                    }
-                }
-
-                if ($item->parent) {
-                    $class .= ' g-parent';
-                }
-
-                if (!empty($class)) {
-                    $class = ' class="tchooz-vertical-item g-menu-item g-menu-'.trim($class) .'"';
-                }
-
-                echo '<li'.$class.'>';
-
-                // Render the menu item.
-                switch ($item->type) :
-                    case 'separator':
-                    case 'url':
-                    case 'component':
-                        require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_'.$item->type);
-                        break;
-
-                    default:
-                        require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_url');
-                        break;
-                endswitch;
-
-                echo '</li>';
-                echo '<hr id="menu_separator">';
-            endif;
-            break;
-        endforeach;
 
         if ($display_tchooz) :
             foreach ($tchooz_list as $i => &$item) :
@@ -529,6 +490,7 @@ defined('_JEXEC') or die;
             jQuery(".sidebar-formbuilder").css("opacity","0");
             if(window.innerWidth >= 1280) {
                 jQuery("#g-footer").css("padding-left", "300px");
+                jQuery("#footer-rgpd").css("padding-left", "300px");
                 jQuery("#g-container-main").css("padding-left", "180px");
                 jQuery("#header-a").css("opacity", "1");
             }
@@ -547,6 +509,7 @@ defined('_JEXEC') or die;
             jQuery(".sidebar-formbuilder").css("opacity","0");
             if(window.innerWidth >= 1280) {
                 jQuery("#g-footer").css("padding-left", "300px");
+                jQuery("#footer-rgpd").css("padding-left", "300px");
                 jQuery("#g-container-main").css("padding-left", "180px");
                 jQuery("#header-a").css("opacity", "1");
             }
@@ -568,6 +531,7 @@ defined('_JEXEC') or die;
             if(window.innerWidth >= 1280) {
                 jQuery("#g-container-main").css("padding-left", "0");
                 jQuery("#g-footer").css("padding-left", "80px");
+                jQuery("#footer-rgpd").css("padding-left", "80px");
                 jQuery("#header-a").css("opacity", "0");
             }
             setTimeout(() =>{

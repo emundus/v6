@@ -74,7 +74,7 @@ const qs = require("qs");
 
 export default {
   name: "modalAffectCampaign",
-  props: { prid: Number, testing: Boolean },
+  props: { prid: String, testing: Boolean },
   data() {
     return {
       campaigns: [],

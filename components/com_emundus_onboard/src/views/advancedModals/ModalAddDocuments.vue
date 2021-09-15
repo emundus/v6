@@ -87,7 +87,7 @@
           <label for="nbmax" :class="{ 'is-invalid': errors.selectedTypes}">{{ translations.FileType }}* :</label>
           <div class="users-block" :class="{ 'is-invalid': errors.selectedUsers}">
             <div v-for="(type, index) in types" :key="index" class="user-item">
-              <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type.value]">
+              <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type.value]" @change="selectType(type)">
               <div class="ml-10px">
                   <p>{{ type.title }} ({{ type.value }})</p>
               </div>
@@ -97,6 +97,36 @@
             <span class="error">{{ translations.TypeRequired }}</span>
           </p>
         </div>
+      </div>
+      <!-- image resolution -->
+      <div id="imageResolutionZone" v-if="show == true">
+        <hr style="margin-top: unset"/>
+        <div class="toogle" style="font-size: smaller; color: #16AFE1;">
+          <span>{{ translations.MinResolutionTooltips }}</span>
+        </div>
+        <br/>
+        <div class="form-group">
+          <label for="image-min-width">{{ translations.ImageWidth }}</label>
+          <div class="input-can-translate d-flex justify-content-between">
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width" min="0" v-model="form.minResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width" min="0"  v-model="form.maxResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
+          </div>
+          <transition name="fade">
+              <span style="font-size: smaller; color:red" v-if=" errorWidth.error "> {{ errorWidth.message}} </span>
+          </transition>
+        </div>
+
+        <div class="form-group">
+          <label for="image-min-height">{{ translations.ImageHeight }}</label>
+          <div class="input-can-translate d-flex justify-content-between">
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height" min="0" v-model="form.minResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
+            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height" min="0" v-model="form.maxResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
+          </div>
+          <transition name="fade">
+              <span style="font-size: smaller; color:red" v-if=" errorHeight.error"> {{ errorHeight.message}} </span>
+          </transition>
+        </div>
+
       </div>
       <div class="d-flex justify-content-between mb-1">
         <button
@@ -136,6 +166,15 @@ export default {
   },
   data() {
     return {
+      show: false,
+      errorWidth: {
+        error: false,
+        message: ""
+      },
+      errorHeight: {
+        error: false,
+        message: ""
+      },
       doc: null,
       model: {
         allowed_types: '',
@@ -148,7 +187,7 @@ export default {
         },
         id: "",
         lbl: "",
-        mandatory: "",
+        mandatory: 0,
         name: {
           'fr':'',
           'en':'',
@@ -158,7 +197,17 @@ export default {
         ordering: "",
         published: "",
         value: "",
-        video_max_length:''
+        video_max_length:'',
+
+        minResolution: {
+          width: 300,
+          height: 300,
+        },
+        // max resolution by default
+        maxResolution: {
+          width: null,
+          height: null,
+        },
       },
       form: {
         name: {
@@ -172,11 +221,21 @@ export default {
         nbmax: 1,
         selectedTypes: {
           pdf: false,
-          'jpg;png;gif': false,
+          'jpeg;jpg;png;gif': false,
           'doc;docx;odt': false,
           'xls;xlsx;odf': false,
         },
-        mandatory: 0
+        mandatory: 0,
+        //min resolution by default
+        minResolution: {
+          width: null,
+          height: null,
+        },
+        // max resolution by default
+        maxResolution: {
+          width: null,
+          height: null,
+        },
       },
       translate: {
         name: false,
@@ -195,7 +254,7 @@ export default {
         },
         {
           title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS"),
-          value: 'jpg;png;gif'
+          value: 'jpeg;jpg;png;gif'
         },
         {
           title: Joomla.JText._("COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS"),
@@ -227,14 +286,25 @@ export default {
         TypeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED_REQUIRED"),
         TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
         Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
+        ImageWidth: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMAGE_WIDTH"),
+        ImageHeight: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMAGE_HEIGHT"),
+        MinResolutionTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_TOOLTIPS"),
+        MaxResolutionTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_TOOLTIPS"),
+        MinResolutionPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER"),
+        MaxResolutionPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER"),
+        ErrorResolution: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION"),
+        ErrorResolutionNegative: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NEGATIVE")
       }
     };
   },
   methods: {
     beforeClose(event) {
+      this.show = false;
       this.doc = null;
       this.currentDoc = null;
       this.can_be_deleted = false;
+      this.errorWidth.error = false;
+      this.errorHeight.error = false;
 
       this.form = {
         name: {
@@ -248,9 +318,18 @@ export default {
         nbmax: 1,
         selectedTypes: {
           pdf: false,
-          'jpg;png;gif': false,
+          'jpeg;jpg;png;gif': false,
           'doc;docx;odt': false,
           'xls;xlsx;odf': false,
+        },
+        minResolution: {
+          width: null,
+          height: null,
+        },
+        // max resolution by default
+        maxResolution: {
+          width: null,
+          height: null,
         },
       };
 
@@ -260,114 +339,105 @@ export default {
       this.getModelsDocs();
     },
     createNewDocument() {
+      if(!this.isImageError()) {
+        this.errors = {
+          name: false,
+          nbmax: false,
+          selectedTypes: false
+        };
 
-      this.errors = {
-        name: false,
-        nbmax: false,
-        selectedTypes: false
-      };
+        if (this.form.name[this.langue] === '') {
+          this.errors.name = true;
 
-      if (this.form.name[this.langue] === '') {
-        this.errors.name = true;
+          return 0;
+        }
+        if (this.form.nbmax === '' || this.form.nbmax === 0) {
+          this.errors.nbmax = true;
+          return 0;
+        }
+        if (Object.values(this.form.selectedTypes).every((val, i) => val === false)) {
+          this.errors.selectedTypes = true;
+          return 0;
+        }
 
-        return 0;
-      }
-      if (this.form.nbmax === '' || this.form.nbmax === 0) {
-        this.errors.nbmax = true;
-        return 0;
-      }
-      if (Object.values(this.form.selectedTypes).every((val, i) => val === false)) {
-        this.errors.selectedTypes = true;
-        return 0;
-      }
+        if (this.translate.name === false) {
 
-      if (this.translate.name === false) {
+          if (this.manyLanguages == 0 && this.langue == "en") {
+            this.form.name.fr = this.form.name.en
+          }
+          if (this.manyLanguages == 0 && this.langue === "fr") {
+            this.form.name.en = this.form.name.fr;
+          }
+        }
 
-        if (this.manyLanguages == 0 && this.langue == "en") {
+        if (this.translate.description === false) {
 
-          this.form.name.fr = this.form.name.en
+          if (this.manyLanguages == 0 && this.langue == "en") {
+
+            this.form.description.fr = this.form.description.en;
+
+          } else {
+
+            this.form.description.en = this.form.description.fr;
+
+          }
+        }
+
+        let types = [];
+        Object.keys(this.form.selectedTypes).forEach(key => {
+          if (this.form.selectedTypes[key] == true) {
+            types.push(key);
+          }
+        });
+
+        let params = {
+          document: this.form,
+          types: types,
+          cid: this.cid,
+          pid: this.pid,
+          isModeleAndUpdate: false
+        }
+
+        if (this.form.name[this.langue] != this.model.value && this.currentDoc == null) {
+            params.isModeleAndUpdate = true;
+        }
+
+        let y = [];
+        if (this.model.allowed_types.includes('pdf')) {
+          y.push('pdf');
+        }
+        if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('jpeg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
+          y.push('jpeg;jpg;png;gif')
+        }
+        if (this.model.allowed_types.includes('xls') || this.model.allowed_types.includes('xlsx') || this.model.allowed_types.includes('odf')) {
+          y.push('xls;xlsx;odf')
+        }
+
+        let diffenceBetweenNewType = y.filter(x => !types.includes(x));
+
+
+        if (diffenceBetweenNewType.length > 0 && this.currentDoc == null) {
+          params.isModeleAndUpdate = true;
+        }
+
+
+        let url = 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument';
+
+        if (this.form.name[this.langue] === this.model.value && this.doc != null) {
+          url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
+
+          params.did = this.doc;
+
+        }
+        if (this.currentDoc != null) {
+
+          url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
+          params.did = this.doc;
 
 
         }
-        if (this.manyLanguages == 0 && this.langue == "fr") {
 
-
-          this.form.name.en = this.form.name.fr;
-
-        }
-      }
-
-      if (this.translate.description === false) {
-
-        if (this.manyLanguages == 0 && this.langue == "en") {
-
-          this.form.description.fr = this.form.description.en;
-
-        } else {
-
-          this.form.description.en = this.form.description.fr;
-
-        }
-      }
-
-      let types = [];
-      Object.keys(this.form.selectedTypes).forEach(key => {
-        if (this.form.selectedTypes[key] == true) {
-          types.push(key);
-        }
-      });
-
-      let params = {
-        document: this.form,
-        types: types,
-        cid: this.cid,
-        pid: this.pid,
-        isModeleAndUpdate: false
-      }
-
-      if (
-
-          this.form.name[this.langue] != this.model.value && this.currentDoc == null) {
-        params.isModeleAndUpdate = true;
-
-      }
-
-      let y = [];
-      if (this.model.allowed_types.includes('pdf')) {
-        y.push('pdf');
-      }
-      if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
-        y.push('jpg;png;gif')
-      }
-      if (this.model.allowed_types.includes('xls') || this.model.allowed_types.includes('xlsx') || this.model.allowed_types.includes('odf')) {
-        y.push('xls;xlsx;odf')
-      }
-
-      let diffenceBetweenNewType = y.filter(x => !types.includes(x));
-
-
-      if (diffenceBetweenNewType.length > 0 && this.currentDoc == null) {
-        params.isModeleAndUpdate = true;
-      }
-
-
-      let url = 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument';
-
-      if (this.form.name[this.langue] === this.model.value && this.doc != null) {
-        url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
-
-        params.did = this.doc;
-
-      }
-      if (this.currentDoc != null) {
-
-        url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
-        params.did = this.doc;
-
-
-      }
-
-      axios({
+        axios({
           method: "post",
           url: url,
           headers: {
@@ -376,11 +446,40 @@ export default {
           data: qs.stringify(params)
         }).then((rep) => {
 
-          this.req=false;
+          this.req = false;
           this.$emit("UpdateDocuments");
           this.$modal.hide('modalAddDocuments')
 
         });
+      } else {
+        return false;
+      }
+    },
+
+    isImageError() {
+      let sendError = false;
+
+        /// check width
+        if ((parseInt(this.form.minResolution.width) > parseInt(this.form.maxResolution.width)) || parseInt(this.form.minResolution.width) <= 0) {
+          this.errorWidth.error = true;
+          this.errorWidth.message = (parseInt(this.form.minResolution.width) <= 0) ? this.translations.ErrorResolutionNegative : this.translations.ErrorResolution
+          sendError = true;
+        } else {
+          this.errorWidth.error = false;
+          this.errorWidth.message = "";
+        }
+
+        /// check height
+        if ((parseInt(this.form.minResolution.height) > parseInt(this.form.maxResolution.height)) || parseInt(this.form.minResolution.height) <= 0) {
+          this.errorHeight.error = true;
+          this.errorHeight.message = (parseInt(this.form.minResolution.height) <= 0) ? this.translations.ErrorResolutionNegative : this.translations.ErrorResolution
+          sendError = true;
+        } else {
+          this.errorHeight.error = false;
+          this.errorHeight.message = "";
+        }
+
+      return sendError;
     },
 
     deleteModel(){
@@ -435,7 +534,6 @@ export default {
         url: "index.php?option=com_emundus_onboard&controller=form&task=getundocuments",
       }).then(response => {
         this.models = response.data.data;
-
         if (this.currentDoc != null) {
           this.doc = this.currentDoc;
         }
@@ -445,36 +543,29 @@ export default {
 
       if (this.req == true) {
         this.form.mandatory = 0
-
       } else {
         this.form.mandatory = 1
-
       }
-      /*setTimeout(() => {
-        axios({
-          method: "post",
-          url:
-              "index.php?option=com_emundus_onboard&controller=formbuilder&task=changerequire",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
-            element: this.element
-          })
-        }).then(() => {
-          this.$emit("updateRequireEvent");
-        }).catch(e => {
-          this.$emit(
-              "show",
-              "foo-velocity",
-              "error",
-              this.updateFailed,
-              this.updating
-          );
-          console.log(e);
-        });
-      }, 300);*/
     },
+
+    selectType(e) {
+      let raw_val = e.value;
+      let val = raw_val.split(';');
+
+      if(val.includes('jpeg') || val.includes('jpg') || val.includes('png') || val.includes('gif')) {
+        this.show = !this.show;
+      }
+    },
+
+    ZeroOrNegative() {
+      let id = event.target.id;
+      let val = parseInt(event.target.value);
+      if(val == 0 || val < 0) {
+        document.getElementById(id).style.color = "red";
+      } else {
+        document.getElementById(id).style.color = "unset";
+      }
+    }
   },
 
   watch: {
@@ -485,34 +576,37 @@ export default {
         this.form.name = this.model.name;
         this.form.description = this.model.description;
         this.form.mandatory = this.model.mandatory
-        //this.form.mandatory=1;
-        if (this.model.mandatory == 1) {
+        this.form.minResolution = {};
+        this.form.maxResolution = {};
 
-          this.req = true;
+        this.req = this.model.mandatory;
+
+        this.form.selectedTypes.pdf = this.model.allowed_types.includes('pdf')
+
+        if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('jpeg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
+          /// bind image resolution -- min resolution
+          if(this.model.min_width !== null && this.model.min_height !== null) {
+            this.form.minResolution.width = this.model.min_width;
+            this.form.minResolution.height = this.model.min_height;
+          }
+
+          /// bind image resolution -- max resolution
+          if(this.model.max_width !== null && this.model.max_height !== null) {
+            this.form.maxResolution.width = this.model.max_width;
+            this.form.maxResolution.height = this.model.max_height;
+          }
+
+          this.form.selectedTypes['jpeg;jpg;png;gif'] = true;
+          this.show = true;
 
         } else {
-          this.req = false;
+          this.form.selectedTypes['jpeg;jpg;png;gif'] = false;
+          this.show = false;
         }
-        if (this.model.allowed_types.includes('pdf')) {
-          this.form.selectedTypes.pdf = true;
-        } else {
-          this.form.selectedTypes.pdf = false;
-        }
-        if (this.model.allowed_types.includes('jpg') || this.model.allowed_types.includes('png') || this.model.allowed_types.includes('gif')) {
-          this.form.selectedTypes['jpg;png;gif'] = true;
-        } else {
-          this.form.selectedTypes['jpg;png;gif'] = false;
-        }
-        if (this.model.allowed_types.includes('xls') || this.model.allowed_types.includes('xlsx') || this.model.allowed_types.includes('odf')) {
-          this.form.selectedTypes['xls;xlsx;odf'] = true;
-        } else {
-          this.form.selectedTypes['xls;xlsx;odf'] = false;
-        }
-        if(this.model.can_be_deleted){
-          this.can_be_deleted = true;
-        } else {
-          this.can_be_deleted = false;
-        }
+        this.form.selectedTypes['xls;xlsx;odf'] = this.model.allowed_types.includes('xls') || this.model.allowed_types.includes('xlsx') || this.model.allowed_types.includes('odf');
+
+        this.can_be_deleted = this.model.can_be_deleted;
+
         this.form.nbmax = this.model.nbmax;
       } else {
         this.form = {
@@ -527,7 +621,7 @@ export default {
           nbmax: 1,
           selectedTypes: {
             pdf: false,
-            'jpg;png;gif': false,
+            'jpeg;jpg;png;gif': false,
             'doc;docx;odt': false,
             'xls;xlsx;odf': false,
           },
@@ -589,4 +683,12 @@ export default {
   align-items: end;
   margin-bottom: 1em;
 }
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
 </style>

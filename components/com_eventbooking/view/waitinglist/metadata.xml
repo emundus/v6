@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<view title="waitling" hidden="true">
+		<message><![CDATA[Waitinglist view to display form so that users can fill-in to register specific event]]></message>
+	</view>
+</metadata>

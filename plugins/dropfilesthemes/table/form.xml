@@ -3,30 +3,10 @@
     <fields name="params">
         <fieldset name="params" mainpart="true" addrulepath="/administrator/components/com_dropfiles/models/rules">
             <field
-                name="table_styling"
-                type="list"
-                label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_STYLING_LABEL"
-                description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_STYLING_DESC"
-                default="1"
-                class="inline">
-                <option value="1">JYES</option>
-                <option value="0">JNO</option>
-            </field>
-            <field
                 name="table_stylingmenu"
                 type="list"
                 label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_STYLINGMENU_LABEL"
                 description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_STYLINGMENU_DESC"
-                default="1"
-                class="inline">
-                <option value="1">JYES</option>
-                <option value="0">JNO</option>
-            </field>
-            <field
-                name="table_showborderbg"
-                type="list"
-                label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_ODD_BD_LABEL"
-                description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_ODD_BD_DESC"
                 default="1"
                 class="inline">
                 <option value="1">JYES</option>
@@ -146,7 +126,7 @@
                 label="COM_DROPFILES_THEME_TABLE_PARAM_SHOW_CATEGORIES_POSITION_LABEL"
                 description="COM_DROPFILES_THEME_TABLE_PARAM_SHOW_CATEGORIES_POSITION_DESC"
                 default="0"
-                class="inline">
+                class="inline inputbox dropfilesinput">
                 <option value="1">COM_DROPFILES_THEME_TABLE_PARAM_SHOW_CATEGORIES_BEFORETITLE</option>
                 <option value="0">COM_DROPFILES_THEME_TABLE_PARAM_SHOW_CATEGORIES_AFTERTITLE</option>
             </field>

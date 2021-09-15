@@ -31,7 +31,7 @@ class TranslatorDefault {
 	public function getDefaultLanguage(){
 		return $this->defaultLanguage;
 	}
-	
+
 	static private $languageCodeInISO = array (
 			'af-za' => 'AF',	// Afrikaans
 			'sq-al' => 'AL', 	// Albanian
@@ -39,17 +39,17 @@ class TranslatorDefault {
 			'hy-am' => 'HY', 	// Armenian
 			'az-az' => 'AZ', 	// Azeri
 			'eu-es' => 'EU', 	// Basque
-			'be-by' => 'BY',	// Belarusian
+			'be-by' => 'be',	// Belarusian Google only
 			'bn-bd' => 'BN',	// Bengali
 			'bs-ba' => 'BS', 	// Bosnian
-			'bg-bg' => 'BU', 	// Bulgarian
+			'bg-bg' => 'bg', 	// Bulgarian
 			'ca-es' => 'CA',	// Catalan
 			'ckb-iq' => 'KU', 	// Central Kurdish
-			'zh-cn' => 'CN', 	// Chine simplified
-			'zh-tw' => 'TW',	// Chinese traditional
-			'hr-hr' => 'CR', 	// Croation
+			'zh-cn' => 'zh', 	// Chine simplified zh-Hans/bing , zh-CN ou zh google
+			'zh-tw' => 'zh-tw',	// Chinese traditional zh-Hant/bing , zh-TW google
+			'hr-hr' => 'hr', 	// Croation
 			'cs-cz' => 'CS',	// Czech
-			'da-dk' => 'DK', 	// Danish
+			'da-dk' => 'DA', 	// Danish
 			// 'prs-AF' => '',		// Dari Persian
 			'nl-nl' => 'NL', 	// Dutch
 			'en-au' => 'EN', 	// English Australia
@@ -66,29 +66,29 @@ class TranslatorDefault {
 			'ka-ge' => 'KA',	// Georgian
 			'de-de' => 'DE', 	// German
 			'de-at' => 'AT',	// German
-			'el-gr' => 'GR', 	// Greek
+			'el-gr' => 'el', 	// Greek
 			'he-il' => 'IL',	// Hebrew
 			'hi-in' => 'HI',	// Hindi
 			'hu-hu' => 'HU', 	// Hungarian
 			'id-id' => 'ID', 	// Indonesian
-			'ga-IE' => 'GA',		// Irish
+			'ga-ie' => 'ga',	// Irish
 			'it-it' => 'IT', 	// Italian
-			'ja-jp' => 'JP',	// Japanese
+			'ja-jp' => 'ja',	// Japanese
 			'km-kh' => 'KM', 	// Khmer
-			'ko-kr' => 'KR', 	// Korean
+			'ko-kr' => 'ko', 	// Korean
 			'lo-la' => 'LO', 	// Loation
 			'lv-lv' => 'LV', 	// Latvian
 			'lt-lt' => 'LT', 	// Lithuanian
 			'mk-mk' => 'MK',	// Macedonian
 			'ml-in' => 'ML', 	// Malayalam
 			'mn-mn' => 'MN',	// Mongolian
-			'ms-MY' => 'MS',		// Malay
-			'srp-ME' => 'SRP',		// Montenegrin
+			'ms-my' => 'MS',		// Malay
+			'srp-me' => 'SRP',		// Montenegrin
 			'nb-no' => 'NO',	// Norwegian
 			'nn-no' => 'NO', 	// Norwegian
 			'fa-ir' => 'FA',	// Persian
 			'pl-pl' => 'PL',	// Polish
-			'pt-br'	=> 'BR',	// Portuguese Brazil
+			'pt-br'	=> 'pt',	// Portuguese Brazil pt-br/bing, pt/google
 			'pt-pt' => 'PT',	// Portuuese
 			'ro-ro' => 'RO',	// Romanian
 			'ru-ru' => 'RU', 	// Russian
@@ -97,16 +97,17 @@ class TranslatorDefault {
 			'sr-yu' => 'SR',	// Serbian Latin
 			'sk-sk' => 'SK', 	// Slovak
 			'es-es' => 'ES',	// Spanish
-			'sw-ke' => 'SI',	// Swahili
-			'sv-se' => 'SW', 	// Swedish
+			'sw-ke' => 'sw',	// Swahili
+		    'sl-si' => 'sl',    // Slovenian
+			'sv-se' => 'sv', 	// Swedish
 			'sy-iq' => 'SYR',	// Syriac
 			'ta-in' => 'TA', 	// Tamil
 			'th-th' => 'TH',	// Thai
 			'tr-tr' => 'TR',	// Turkish
-			'uk-ua' => 'UA', 	// Ukrainian
+			'uk-ua' => 'uk', 	// Ukrainian
 			'ur-pk' => 'UR', 	// Urdu
 			'ug-cn'	=> 'UG',	// Uyghur
-			'vi-vn' => 'VU', 	// Vietnamese
+			'vi-vn' => 'vi', 	// Vietnamese
 			'cy-gb' => 'CY', 	// Welsh
 	);
 	

@@ -8,25 +8,7 @@ defined('_JEXEC') or die();
     jQuery(document).ready(function() {        
         Disable();    
         
-        jQuery( "#li_europe_tab" ).click(function() {
-            SetActiveTabContinent('europe');
-        });
-        jQuery( "#li_northAmerica_tab" ).click(function() {
-            SetActiveTabContinent('northAmerica');
-        });
-        jQuery( "#li_southAmerica_tab" ).click(function() {
-            SetActiveTabContinent('southAmerica');
-        });
-        jQuery( "#africa" ).click(function() {
-            SetActiveTabContinent('africa');
-        });
-        jQuery( "#asia" ).click(function() {
-            SetActiveTabContinent('asia');
-        });
-        jQuery( "#oceania" ).click(function() {
-            SetActiveTabContinent('oceania');
-        });
-        jQuery( "#enable_url_inspector_button" ).click(function() {
+		jQuery( "#enable_url_inspector_button" ).click(function() {
             Joomla.submitbutton('enable_url_inspector');
         });
         jQuery( "#li_lists_tab" ).click(function() {
@@ -56,9 +38,6 @@ defined('_JEXEC') or die();
         jQuery( "#li_session_protection_tab" ).click(function() {
             SetActiveTab('session_protection');
         });
-        jQuery( "#li_geoblock_tab" ).click(function() {
-            SetActiveTab('geoblock');
-        });
         jQuery( "#li_upload_scanner_tab" ).click(function() {
             SetActiveTab('upload_scanner');
         });
@@ -85,21 +64,27 @@ defined('_JEXEC') or die();
             SetActiveTabLists('whitelist');
         });
         jQuery( "#upload_import_button" ).click(function() {
-            Joomla.submitbutton('import_blacklist');
+            Joomla.submitbutton('import_list');
         });
-        jQuery( "#add_ip_whitelist_button" ).click(function() {
-            setOwnIP(); 
-            Joomla.submitbutton('addip_whitelist');
+        jQuery( "#add_ip_whitelist_button" ).click(function() {			
+            setOwnIP();
+			Joomla.submitbutton('addip_whitelist');
         });
         jQuery( "#add_ip_whitelist_button2" ).click(function() {
-            setOwnIP(); 
-            Joomla.submitbutton('addip_whitelist');
+			setOwnIP(); 
+			Joomla.submitbutton('addip_whitelist');
         });
-        jQuery( "#add_ip_blacklist_button" ).click(function() {
-            Joomla.submitbutton('addip_blacklist'); 
+        jQuery( "#add_ip_blacklist_button" ).click(function() {				
+			var el = '<input type="hidden" name="task" value="addip_blacklist"></input>';
+			jQuery('#adminForm').append(el);
+			adminForm.submit();
+            //Joomla.submitbutton('addip_blacklist'); 
         });
         jQuery( "#export_blacklist_button" ).click(function() {
-            Joomla.submitbutton('Export_blacklist');
+			var el = '<input type="hidden" name="export" value="blacklist"></input>';
+			jQuery('#adminForm').append(el);
+			adminForm.submit();
+            Joomla.submitbutton('export_list');
         });
         jQuery( "#delete_ip_blacklist_button" ).click(function() {
             Joomla.submitbutton('deleteip_blacklist');
@@ -111,13 +96,26 @@ defined('_JEXEC') or die();
             Joomla.checkAll(this);
         });
         jQuery( "#import_whitelist_button" ).click(function() {
-            Joomla.submitbutton('import_whitelist');
+            Joomla.submitbutton('import_list');
         });
         jQuery( "#addip_whitelist_button" ).click(function() {
-            Joomla.submitbutton('addip_whitelist');
+            var el = '<input type="hidden" name="task" value="addip_whitelist"></input>';
+			jQuery('#adminForm').append(el);
+			adminForm.submit();			
         });
-        jQuery( "#export_whitelist_button" ).click(function() {
-            Joomla.submitbutton('Export_whitelist');
+        jQuery( "#select_blacklist_file_to_upload" ).click(function() {
+            var el = '<input type="hidden" id="import" name="import" value="blacklist"></input>';
+			jQuery('#div_boton_subida_blacklist').append(el);
+        });	
+		jQuery( "#select_whitelist_file_to_upload" ).click(function() {
+            var el = '<input type="hidden" id="import" name="import" value="whitelist"></input>';
+			jQuery('#div_boton_subida_whitelist').append(el);
+        });	
+		jQuery( "#export_whitelist_button" ).click(function() {
+            var el = '<input type="hidden" name="export" value="whitelist"></input>';
+			jQuery('#adminForm').append(el);
+			adminForm.submit();
+            Joomla.submitbutton('export_list');
         });
         jQuery( "#deleteip_whitelist_button" ).click(function() {
             Joomla.submitbutton('deleteip_whitelist');
@@ -142,43 +140,7 @@ defined('_JEXEC') or die();
         });
         jQuery( "#li_secondlevel_tab" ).click(function() {
             SetActiveTabExceptions('secondlevel');
-        });
-        jQuery( "#check_all_europe_table_button" ).click(function() {
-            CheckAll('europe_table',true,'continentEU');
-        });
-        jQuery( "#uncheck_all_europe_table_button" ).click(function() {
-            CheckAll('europe_table',false,'continentEU');
-        });
-        jQuery( "#check_all_northamerica_table_button" ).click(function() {
-            CheckAll('northamerica_table',true,'continentNA');
-        });
-        jQuery( "#unccheck_all_northamerica_table_button" ).click(function() {
-            CheckAll('northamerica_table',false,'continentNA');
-        });
-        jQuery( "#check_all_southamerica_table_button" ).click(function() {
-            CheckAll('southamerica_table',true,'continentSA');
-        });
-        jQuery( "#uncheck_all_southamerica_table_button" ).click(function() {
-            CheckAll('southamerica_table',false,'continentSA');
-        });
-        jQuery( "#check_all_africa_table_button" ).click(function() {
-            CheckAll('africa_table',true,'continentAF');
-        });
-        jQuery( "#uncheck_all_africa_table_button" ).click(function() {
-            CheckAll('africa_table',false,'continentAF');
-        });
-        jQuery( "#check_all_asia_table_button" ).click(function() {
-            CheckAll('asia_table',true,'continentAS');
-        });
-        jQuery( "#uncheck_all_asia_table_button" ).click(function() {
-            CheckAll('asia_table',false,'continentAS');
-        });
-        jQuery( "#check_all_oceania_table_button" ).click(function() {
-            CheckAll('oceania_table',true,'continentOC');
-        });
-        jQuery( "#uncheck_all_oceania_table_button" ).click(function() {
-            CheckAll('oceania_table',false,'continentOC');
-        });
+        });       
         
         jQuery( "#second_level_words" ).focusin(function() {
             if (textdecoded == "no") {                
@@ -336,8 +298,7 @@ defined('_JEXEC') or die();
     var ActiveTab = "lists"; 
     var ActiveTabLists = "blacklist";
     var ExceptionsActiveTab = "header_referer";
-    var ActiveTabContinent = "europe";    
-    
+        
     function SetActiveTab($value) {
         ActiveTab = $value;
         storeValue('active', ActiveTab);
@@ -357,11 +318,6 @@ defined('_JEXEC') or die();
     function SetActiveTabLists($value) {
         ActiveTabLists = $value;
         storeValue('activelists', ActiveTabLists);
-    }
-    
-    function SetActiveTabContinent($value) {
-        ActiveTabContinent = $value;
-        storeValue('activecontinent', ActiveTabContinent);
     }
     
     function SetActiveTabExceptions($value) {
@@ -408,15 +364,8 @@ defined('_JEXEC') or die();
             $('.nav-tabs a[href="#' + ExceptionsActiveTab + '"]').tab('show');
         } else {
             $('.nav-tabs a[href="#header_referer"]').parent().addClass('active');
-        }
-        
-        ActiveTabContinent = getStoredValue('activecontinent');        
-        if (ActiveTabContinent) {            
-            $('.nav-tabs a[href="#' + ActiveTabContinent + '"]').parent().addClass('active');
-            $('.nav-tabs a[href="#' + ActiveTabContinent + '"]').tab('show');
-        } else {
-            $('.nav-tabs a[href="#europe"]').parent().addClass('active');
-        }
+        }       
+       
                 
     };
     

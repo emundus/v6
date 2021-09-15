@@ -2,16 +2,16 @@
 <form>
     <field name="id" type="hidden"/>
     <fieldset addrulepath="/administrator/components/com_dropfiles/models/rules">
-        <field name="access" type="accesslevel" class="inputbox dropfilesinput" labelclass="control-label"
+        <field name="access" type="daccesslevel" class="inputbox dropfilesinput" labelclass="control-label"
                label="COM_DROPFILES_FIELD_ACCESS_LABEL"
                description="COM_DROPFILES_FIELD_ACCESS_DESC" required="false"/>
         <fields name="params">
-            <field name="usergroup" type="usergroup" class="inputbox dropfilesinput" labelclass="control-label"
+            <field name="usergroup" type="dusergroup" class="inputbox dropfilesinput" labelclass="control-label"
                    label="COM_DROPFILES_FIELD_USER_GROUP_LABEL"
-                   description="COM_DROPFILES_FIELD_USER_GROUP_DESC" required="false" multiple="true" default="1"/>
+                   description="COM_DROPFILES_FIELD_USER_GROUP_DESC" required="false" multiple="true" default="-1"/>
             <field name="ordering" type="list" class="inputbox dropfilesinput"
                    label="COM_DROPFILES_FIELD_ORDERING_LABEL"
-                   desc="COM_DROPFILES_FIELD_ORDERING_DESC">
+                   description="COM_DROPFILES_FIELD_ORDERING_DESC">
                 <option value="ordering">COM_DROPFILES_FIELD_FILE_ORDERING_LABEL</option>
                 <option value="ext">COM_DROPFILES_FIELD_FILE_EXT_LABEL</option>
                 <option value="title">COM_DROPFILES_FIELD_FILE_TITLE_LABEL</option>
@@ -25,7 +25,7 @@
 
             <field name="orderingdir" type="list" class="inputbox dropfilesinput"
                    label="COM_DROPFILES_FIELD_ORDERING_DIR_LABEL"
-                   desc="COM_DROPFILES_FIELD_ORDERING_DIR_DESC">
+                   description="COM_DROPFILES_FIELD_ORDERING_DIR_DESC">
                 <option value="asc">COM_DROPFILES_FIELD_ORDERING_DIR_ASC</option>
                 <option value="desc">COM_DROPFILES_FIELD_ORDERING_DIR_DES</option>
             </field>

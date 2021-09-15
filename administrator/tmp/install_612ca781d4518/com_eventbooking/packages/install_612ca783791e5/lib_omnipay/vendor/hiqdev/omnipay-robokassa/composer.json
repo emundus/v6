@@ -1,0 +1,60 @@
+{
+    "name": "hiqdev/omnipay-robokassa",
+    "type": "library",
+    "description": "RoboKassa driver for Omnipay PHP payment library",
+    "keywords": [
+        "php",
+        "omnipay",
+        "robokassa",
+        "merchant",
+        "payment"
+    ],
+    "homepage": "https://github.com/hiqdev/omnipay-robokassa",
+    "license": "MIT",
+    "support": {
+        "email": "support@hiqdev.com",
+        "source": "https://github.com/hiqdev/omnipay-robokassa",
+        "issues": "https://github.com/hiqdev/omnipay-robokassa/issues",
+        "wiki": "https://github.com/hiqdev/omnipay-robokassa/wiki",
+        "forum": "http://forum.hiqdev.com/"
+    },
+    "authors": [
+        {
+            "name": "Andrii Vasyliev",
+            "role": "Project lead",
+            "email": "sol@hiqdev.com",
+            "homepage": "http://hipanel.com/"
+        },
+        {
+            "name": "Dmitry Naumenko",
+            "role": "Lead backend developer",
+            "email": "d.naumenko.a@gmail.com",
+            "homepage": "http://silverfire.me/"
+        },
+        {
+            "name": "Andrey Klochok",
+            "role": "Lead frontend developer",
+            "email": "andreyklochok@gmail.com",
+            "homepage": "http://hiqdev.com/"
+        },
+        {
+            "name": "Yuriy Myronchuk",
+            "role": "QA Lead",
+            "email": "bladeroot@gmail.com",
+            "homepage": "http://hiqdev.com/"
+        }
+    ],
+    "require": {
+        "omnipay/common": "^3.0"
+    },
+    "require-dev": {
+        "omnipay/tests": "^3.0",
+        "hiqdev/hidev-php": "<2.0",
+        "hiqdev/hidev-hiqdev": "<2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Omnipay\\RoboKassa\\": "src"
+        }
+    }
+}
