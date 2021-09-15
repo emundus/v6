@@ -2003,7 +2003,6 @@ class EmundusModelApplication extends JModelList
 
                             // TABLEAU DE PLUSIEURS LIGNES sans tenir compte du nombre de lignes
                         } elseif ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) {
-
                             //-- Entrée du tableau -- */
                             $t_elt = array();
                             foreach ($elements as &$element) {
@@ -2152,10 +2151,12 @@ class EmundusModelApplication extends JModelList
                                                 }
 
                                                 if ($show_empty_fields == 1 || !empty($elt)) {
-                                                    if ($elements[$j]->plugin == 'textarea') {
-                                                        $forms .= '<tr><td colspan="2" style=" border-right: 1px solid black;"><span style="color: #000071;">' . JText::_($elements[$j]->label) . '</span> <br>' . $elt . '</td></tr>';
+                                                    if ($elements[$j]->plugin == 'display') {
+                                                        $forms .= '<tr><td colspan="2"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
+                                                    } elseif ($elements[$j]->plugin == 'textarea') {
+                                                        $forms .= '<tr><td colspan="2"><span style="color: #000000;">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">    ' . JText::_($elt) . '</span></td></tr>';
                                                     } else {
-                                                        $forms .= '<tr><td style=" border-right: 1px solid black;"><span style="color: #000071;">' . JText::_($elements[$j]->label) . '</span></td> <td > ' . $elt . '</td></tr>';
+                                                        $forms .= '<tr><td colspan="1"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . JText::_($elt) . '</td></tr>';
                                                     }
                                                 }
                                             }
@@ -2316,8 +2317,10 @@ class EmundusModelApplication extends JModelList
                                                 $elt = JText::_($element->content);
                                             }
 
-                                            if ($element->plugin == 'textarea' || $element->plugin == 'display') {
-                                                $forms .= '<tr><td colspan="2"><strong><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></strong>' . JText::_($elt) . '<br/></td></tr>';
+                                            if ($element->plugin == 'display') {
+                                                $forms .= '<tr><td colspan="2"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
+                                            } elseif ($element->plugin == 'textarea') {
+                                                $forms .= '<tr><td colspan="2"><span style="color: #000000;">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</span></td></tr><tr><td><span style="color: #000000;">  ' . JText::_($elt) . '</span></td></tr>';
                                             } else {
                                                 $forms .= '<tr><td colspan="1"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . JText::_($elt) . '</td></tr>';
                                             }
