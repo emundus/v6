@@ -2243,7 +2243,7 @@ if (JFactory::getUser()->id == 63)
         $query = $this->_db->getQuery(true);
 
             $query
-                ->select($this->_db->quoteName('*'))
+                ->select('*')
                 ->from($this->_db->quoteName('#__emundus_setup_attachments'))
                 ->where($this->_db->quoteName('#__emundus_setup_attachments.id') . 'IN ('. implode(',', $ids) . ')');
 
