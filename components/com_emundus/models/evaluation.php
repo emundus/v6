@@ -3063,44 +3063,37 @@ if (JFactory::getUser()->id == 63)
                 $user_info = $_mUser->getUserById($uid);
 
                 if($mergeMode == 0) {
-                    //unset($res->zip_data_by_candidat);
-                    $_zipName = $uid . '_' . date("Y-m-d") . '_' . '.zip';                                         // make zip file name
+                    $_zipName = $uid . '_' . date("Y-m-d") . '_' . '.zip';                                                 // make zip file name
 
-                    if(!file_exists($tmp_path . $_zipName)) {
-                        $this->ZipLetter(EMUNDUS_PATH_ABS . $uid . '--letters', $tmp_path . $_zipName, 'true');             // zip file (for example: ../95 --> tmp/95xxxx.zip
-                    } else {
-                        unlink($tmp_path . $_zipName);
-                        $this->ZipLetter(EMUNDUS_PATH_ABS . $uid . '--letters', $tmp_path . $_zipName, 'true');
-                    }
+                    if(file_exists($tmp_path . $_zipName)) { unlink($tmp_path . $_zipName); }                   // if zip name exist in /tmp/ :: remove
 
-                    $mergeZipAllName = date("Y-m-d") . '-total-by-candidats';                                                            // make zip --all file name
+                    $this->ZipLetter(EMUNDUS_PATH_ABS . $uid . '--letters', $tmp_path . $_zipName, 'true');
+
+                    $mergeZipAllName = date("Y-m-d") . '-total-by-candidats';                                                    // make zip --all file name
                     $mergeZipAllPath = $tmp_path . $mergeZipAllName;                                                                   // make the zip --all path
 
-                    if(!file_exists($mergeZipAllPath)) {
-                        mkdir($mergeZipAllPath, 0755, true);
-                    }
+                    if(!file_exists($mergeZipAllPath)) { mkdir($mergeZipAllPath, 0755, true); }
 
-                    copy($tmp_path . $_zipName,$mergeZipAllPath . DS . $_zipName);                                          // copy old zip name to zip --all folder
+                    $fileList = glob(EMUNDUS_PATH_ABS . $uid . '--letters' . DS . '*');
+
+                    foreach ($fileList as $_fl) {
+                        /// recursive move all '--letter' filers into $mergeZipAllPath
+                        $_flName = end(explode('/', $_fl));
+                        rename($_fl, $mergeZipAllPath . DS . $_flName);
+                    }
 
                     /// lastly, zip this folder
                     $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '.zip', true);                       // zip this new file
-
-
                     $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'zip_url' => DS . 'tmp/' . $_zipName);
                 }
 
                 // merge pdf by candidats
                 if($mergeMode == 1) {
-                    //unset($res->zip_data_by_candidat);
-
                     /// if merge mode --> 1, mkdir new directory in / tmp / with suffix "--merge"
-
                     $mergeDirName = $uid . '--merge';                 // for example: 95--merge
                     $mergeDirPath = $tmp_path . $mergeDirName;       // for example: /tmp/95--merge
 
-                    if (!file_exists($mergeDirPath)) {
-                        mkdir($mergeDirPath, 0755, true);
-                    }
+                    if (!file_exists($mergeDirPath)) { mkdir($mergeDirPath, 0755, true); }
 
                     /// begin -- merge zip all
                     $mergeZipAllName = date("Y-m-d") . '--merge-total-by-candidats';
@@ -3147,24 +3140,25 @@ if (JFactory::getUser()->id == 63)
                     }
 
                     // last one :: make a zip folder of merge
-                    $_mergeZipName = $mergeDirName . '_' . date("Y-m-d") . '.zip';            // for example: 95--merge.zip
+                    $_mergeZipName = $mergeDirName . '_' . date("Y-m-d") . '.zip';                        // for example: 95--merge.zip
 
-                    $_mergeZipPath = $tmp_path . $_mergeZipName;                                     // for example: / tmp / 95--merge.zip
+                    $_mergeZipPath = $tmp_path . $_mergeZipName;                                                // for example: / tmp / 95--merge.zip
                     $this->ZipLetter($mergeDirPath, $_mergeZipPath, true);
 
-                    /// copy all merge files into a single folder
-                    copy($_mergeZipPath,$mergeZipAllPath . DS . $_mergeZipName);
+                    $mergeFiles = glob($mergeDirPath . DS . '*');
+
+                    foreach($mergeFiles as $_mF) {
+                        ///copy $_mF into $_mergeZipPath . DS . $_mF
+                        $_mFName = end(explode('/', $_mF));
+                        copy($_mF, $mergeZipAllPath . DS . $_mFName);
+                    }
 
                     /// lastly, zip this folder
                     $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '.zip', true);
 
                     /// remove all unzipped files -- no merge files
                     $delete_untotal_files = glob($mergeDirPath . DS . '*');
-                    foreach($delete_untotal_files as $_file) {
-                        if(is_file($_file)) {
-                            unlink($_file);
-                        }
-                    }
+                    foreach($delete_untotal_files as $_file) { if(is_file($_file)) { unlink($_file); } }
                     rmdir($mergeDirPath);
                     $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'merge_zip_url' => DS . 'tmp/' . $_mergeZipName);
                 }
@@ -3172,11 +3166,7 @@ if (JFactory::getUser()->id == 63)
 
             /// delete unzip file
             $delete_files = glob($mergeZipAllPath . '/*');
-            foreach($delete_files as $_file) {
-                if(is_file($_file)) {
-                    unlink($_file);
-                }
-            }
+            foreach($delete_files as $_file) { if(is_file($_file)) { unlink($_file); } }
             rmdir($mergeZipAllPath);
 
             $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
