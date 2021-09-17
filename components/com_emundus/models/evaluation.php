@@ -3122,21 +3122,11 @@ if (JFactory::getUser()->id == 63)
                     if (count($pdf_files) >= 1) {
                         /// check if the merged file exists
                         $mergePdfName = $mergeDirPath . DS . $uid . '--merge.pdf';
-                        if (!file_exists($mergePdfName, 'F')) {
-                            $pdf = new ConcatPdf();
-                            $pdf->setFiles($pdf_files);
-                            $pdf->concat();
-                            $pdf->Output($mergePdfName, 'F');
-                        } else {
-                            // unlink it
-                            unlink($mergePdfName);
-
-                            ///redo
-                            $pdf = new ConcatPdf();
-                            $pdf->setFiles($pdf_files);
-                            $pdf->concat();
-                            $pdf->Output($mergePdfName, 'F');
-                        }
+                        if (file_exists($mergePdfName, 'F')) { unlink($mergePdfName); }
+                        $pdf = new ConcatPdf();
+                        $pdf->setFiles($pdf_files);
+                        $pdf->concat();
+                        $pdf->Output($mergePdfName, 'F');
                     }
 
                     // last one :: make a zip folder of merge
@@ -3189,13 +3179,9 @@ if (JFactory::getUser()->id == 63)
             $zip_All_Merge_Path = $tmp_path . $zip_All_Merge_Name;
 
             if($mergeMode == 0) {
-                if(!file_exists($zip_All_Path)) {
-                    mkdir($zip_All_Path, 0755, true);
-                }
+                if(!file_exists($zip_All_Path)) { mkdir($zip_All_Path, 0755, true); }
             } else {
-                if(!file_exists($zip_All_Merge_Path)) {
-                    mkdir($zip_All_Merge_Path, 0755, true);
-                }
+                if(!file_exists($zip_All_Merge_Path)) { mkdir($zip_All_Merge_Path, 0755, true); }
             }
 
             foreach ($templates as $index => $template) {
@@ -3210,14 +3196,8 @@ if (JFactory::getUser()->id == 63)
                 if(!file_exists($dir_Name_Path)) {
                     mkdir($dir_Name_Path, 0755, true);
                     if($mergeMode == 1) {
-                        if (!file_exists($dir_Merge_Path)) {
-                            mkdir($dir_Merge_Path, 0755, true);
-                        } else {
-
-                        }
+                        if (!file_exists($dir_Merge_Path)) { mkdir($dir_Merge_Path, 0755, true); }
                     }
-                } else {
-
                 }
 
                 $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                       /// get uploaded file by fnums
@@ -3248,35 +3228,39 @@ if (JFactory::getUser()->id == 63)
                         /// from $pdf_files --> concat them
                         if (count($pdf_files) >= 1) {
                             $mergeFileName = $dir_Merge_Path . DS . $attachInfos['lbl'] . '.pdf';
-                            if (!file_exists($mergeFileName)) {
-                                $pdf = new ConcatPdf();
-                                $pdf->setFiles($pdf_files);
-                                $pdf->concat();
-
-                                $pdf->Output($mergeFileName, 'F');          /// export the merged pdf
-                            } else {
+                            if (file_exists($mergeFileName)) {
                                 // remove old file
                                 unlink($mergeFileName);
-
-                                // redo
-                                $pdf = new ConcatPdf();
-                                $pdf->setFiles($pdf_files);
-                                $pdf->concat();
-                                $pdf->Output($mergeFileName, 'F');          /// export the merged pdf
                             }
+                            $pdf = new ConcatPdf();
+                            $pdf->setFiles($pdf_files);
+                            $pdf->concat();
+                            $pdf->Output($mergeFileName, 'F');          /// export the merged pdf
                         }
 
                         /// last one --> zip this --merge into / tmp /
                         $_mergeZipName = $dir_Merge_Name . '_' . date("Y-m-d") . '.zip';
                         $this->ZipLetter($dir_Merge_Path, $tmp_path . $_mergeZipName, true);
 
-                        /// copy all --merge.zip to --merge-total
-                        copy($tmp_path . $_mergeZipName, $zip_All_Merge_Path . DS . $_mergeZipName);         /// copy
+
+                        $mergeFiles = glob($dir_Merge_Path . DS . '*');
+
+                        foreach($mergeFiles as $_mF) {
+                            // get the name
+                            $_mFName = end(explode('/', $_mF));
+                            copy($_mF, $zip_All_Merge_Path . DS . $_mFName);
+
+                        }
 
                         /// last one, zip this --total file
                         $this->ZipLetter($zip_All_Merge_Path, $zip_All_Merge_Path . '_' . '.zip', true);
                     } else {
-                        copy($zip_dir, $zip_All_Path . DS . $_zipName);
+                        $unMergeFiles = glob($dir_Name_Path . DS . '*');
+
+                        foreach($unMergeFiles as $_uF) {
+                            $_uFNames = end(explode('/', $_uF));
+                            copy($_uF, $zip_All_Path . DS . $_uFNames);
+                        }
                         $this->ZipLetter($zip_All_Path, $zip_All_Path . '_' . '.zip', true);
                     }
                 }
@@ -3300,32 +3284,20 @@ if (JFactory::getUser()->id == 63)
 
                 $delete_files = glob($dir_Name_Path . DS . '*');
 
-                foreach($delete_files as $_file) {
-                    if(is_file($_file)) {
-                        unlink($_file);
-                    }
-                }
+                foreach($delete_files as $_file) { if(is_file($_file)) { unlink($_file); } }
 
                 rmdir($dir_Name_Path);
             }
 
             if($mergeMode == 1) {
                 $delete_total_files = glob($zip_All_Merge_Path . DS . '*');
-                foreach($delete_total_files as $_file) {
-                    if(is_file($_file)) {
-                        unlink($_file);
-                    }
-                }
+                foreach($delete_total_files as $_file) { if(is_file($_file)) { unlink($_file); }}
                 rmdir($zip_All_Merge_Path);
                 $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name . '_.zip';
 
             } else {
                 $delete_total_files = glob($zip_All_Path . DS . '*');
-                foreach($delete_total_files as $_file) {
-                    if(is_file($_file)) {
-                        unlink($_file);
-                    }
-                }
+                foreach($delete_total_files as $_file) { if(is_file($_file)) {unlink($_file);} }
                 rmdir($zip_All_Path);
                 $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name . '_.zip';
             }
@@ -3337,11 +3309,7 @@ if (JFactory::getUser()->id == 63)
             $fnum_info = $_mFile->getFnumInfos($fnum);
 
             $tmp_letter_folder = glob(EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . '--letters' . DS . '*');
-            foreach($tmp_letter_folder as $file) {
-                if(is_file($file)) {
-                    unlink($file);
-                }
-            }
+            foreach($tmp_letter_folder as $file) { if(is_file($file)) { unlink($file); } }
             rmdir(EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . '--letters');
         }
 
