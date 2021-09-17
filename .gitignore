@@ -20,9 +20,9 @@ templates/g5_helium/templatesDetails.xml
 /templates/g5_helium/templatesDetails.xml
 templates/emundus_vanilla/*
 /templates/emundus_vanilla/*
-#images/emundus/import/*
-#images/emundus/photo/*
-#images/stories/*
+images/emundus/import/*
+images/emundus/photo/*
+images/stories/*
 templates/emundus_serp/*
 /templates/emundus_serp/*
 templates/LaScala/*
