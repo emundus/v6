@@ -12,16 +12,22 @@ defined('_JEXEC') or die;
 $state			= $this->get('state');
 $message1		= $state->get('message');
 $message2		= $state->get('extension.message');
+
+//use for message
+JFactory::getDocument()->addScript('components/com_falang/assets/js/toast.js');
+
 ?>
+    <script type="text/javascript">
+        toastr.options = { "progressBar": true, "positionClass": "toast-top-center","showDuration": "300","hideDuration": "500","timeOut": "3500"};
+
+    </script>
 <?php if($message1) { ?>
-<div class="alert alert-success">
-    <button class="close" type="button" data-dismiss="alert">×</button>
-    <div class="alert-message"><?php echo JText::_($message1) ?></div>
-</div>
+    <script type="text/javascript">
+        toastr.success('<?php echo JText::_($message1) ?>');
+    </script>
 <?php } ?>
 <?php if($message2) { ?>
-    <div class="alert alert-success">
-        <button class="close" type="button" data-dismiss="alert">×</button>
-        <div class="alert-message"><?php echo JText::_($message2) ?></div>
-    </div>
+    <script type="text/javascript">
+        toastr.success('<?php echo JText::_($message2) ?>');
+    </script>
 <?php } ?>

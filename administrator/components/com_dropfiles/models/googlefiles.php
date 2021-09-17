@@ -110,7 +110,7 @@ class DropfilesModelGooglefiles extends JModelLegacy
         $query = 'SELECT * FROM #__dropfiles_google_files WHERE file_id=' . $dbo->quote($id_file);
         $dbo->setQuery($query);
 
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
         return $dbo->loadObject();
@@ -148,7 +148,7 @@ class DropfilesModelGooglefiles extends JModelLegacy
             $query = 'UPDATE #__dropfiles_google_files SET ordering = ' . intval($key);
             $query .= ' WHERE file_id=' . $dbo->quote($file);
             $dbo->setQuery($query);
-            if (!$dbo->query()) {
+            if (!$dbo->execute()) {
                 return false;
             }
         }
@@ -173,7 +173,7 @@ class DropfilesModelGooglefiles extends JModelLegacy
         $query .= ' FROM #__dropfiles_google_files WHERE catid=' . $dbo->quote($catid);
         $query .= ' Order By ' . $dbo->escape($ordering . ' ' . $dir);
         $dbo->setQuery($query);
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
         return $dbo->loadObjectList();
@@ -192,7 +192,7 @@ class DropfilesModelGooglefiles extends JModelLegacy
         $dbo = $this->getDbo();
         $query = 'DELETE From #__dropfiles_google_files WHERE file_id =' . $dbo->quote($id_file);
         $dbo->setQuery($query);
-        $dbo->query();
+        $dbo->execute();
     }
 
 
@@ -211,7 +211,7 @@ class DropfilesModelGooglefiles extends JModelLegacy
         $query = 'UPDATE #__dropfiles_google_files SET size = ' . intval($filesize);
         $query .= ' WHERE file_id=' . $dbo->quote($id);
         $dbo->setQuery($query);
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
         return true;

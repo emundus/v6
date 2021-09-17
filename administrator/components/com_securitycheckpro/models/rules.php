@@ -18,7 +18,7 @@ use Joomla\CMS\Pagination\Pagination as JPagination;
 /**
  * Modelo Securitycheck
  */
-class SecuritycheckprosModelRules extends JModelLegacy
+class SecuritycheckprosModelRules extends \Joomla\CMS\MVC\Model\BaseDatabaseModel
 {
 
     /**
@@ -83,13 +83,12 @@ class SecuritycheckprosModelRules extends JModelLegacy
     /* Función para cargar los grupos del sistema */
     function load()
     {
-
         // Creamos un nuevo objeto query
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         // Obtenemos los grupos de Joomla
-        $query_groups = 'SELECT * FROM ' . $db->quoteName('#__usergroups');
+        $query_groups = "SELECT * FROM #__usergroups";
         $db->setQuery($query_groups);
         $joomla_groups = $db->loadObjectList();
     
@@ -107,7 +106,7 @@ class SecuritycheckprosModelRules extends JModelLegacy
             $title = $array_val["title"];
             $rules_applied = (int) 1;
                 
-            $query_rules = 'SELECT * FROM ' . $db->quoteName("#__securitycheckpro_rules") . ' WHERE  group_id = ' . $group_id;
+            $query_rules = "SELECT * FROM #__securitycheckpro_rules WHERE group_id = " . $db->escape($group_id);
         
             $db->setQuery($query_rules);
             $element_exists = $db->loadObjectList();
@@ -130,7 +129,7 @@ class SecuritycheckprosModelRules extends JModelLegacy
         // Añadimos los niveles de cada grupo...
         $query->select('COUNT(DISTINCT c2.id) AS level')
             ->join('LEFT OUTER', $db->quoteName('#__usergroups') . ' AS c2 ON a.lft > c2.lft AND a.rgt < c2.rgt')
-            ->group('a.id, a.lft, a.rgt, a.parent_id, a.title, b.rules_applied, b.last_change');
+            ->group('a.id, b.group_id, a.lft, a.rgt, a.parent_id, a.title, b.rules_applied, b.last_change');
     
         // ... y si las reglas han de aplicarse
         $query->select('b.group_id, b.rules_applied, b.last_change')
@@ -151,15 +150,14 @@ class SecuritycheckprosModelRules extends JModelLegacy
     
         // Ordenamos la consulta
         $query->order($db->escape($this->getState('list.ordering', 'a.lft')) . ' ' . $db->escape($this->getState('list.direction', 'ASC')));
-
-        $db->setQuery($query);
+		$db->setQuery($query);
         $groups = $db->loadObjectList();
         
-        /* Obtenemos el número de registros del array que hemos de mostrar. Si el límite superior es '0', entonces devolvemos todo el array */
+        //Obtenemos el número de registros del array que hemos de mostrar. Si el límite superior es '0', entonces devolvemos todo el array
         $upper_limit = $this->getState('limitstart');
         $lower_limit = $this->getState('limit');
     
-        /* Devolvemos sólo el contenido delimitado por la paginación */
+        // Devolvemos sólo el contenido delimitado por la paginación 
         $groups = array_splice($groups, $upper_limit, $lower_limit);
     
         return $groups;
@@ -184,7 +182,7 @@ class SecuritycheckprosModelRules extends JModelLegacy
         {
             try 
             {
-                  $sql = "UPDATE `#__securitycheckpro_rules` SET rules_applied=1,last_change='" .$timestamp ."' WHERE group_id='{$uid}'";
+                  $sql = "UPDATE #__securitycheckpro_rules SET rules_applied=1,last_change='" .$timestamp ."' WHERE group_id='{$uid}'";
                   $db->setQuery($sql);
                   $db->execute();    
             } catch (Exception $e)
@@ -217,7 +215,7 @@ class SecuritycheckprosModelRules extends JModelLegacy
         {
             try 
             {
-                  $sql = "UPDATE `#__securitycheckpro_rules` SET rules_applied=0,last_change='" .$timestamp ."' WHERE group_id='{$uid}'";
+                  $sql = "UPDATE #__securitycheckpro_rules SET rules_applied=0,last_change='" .$timestamp ."' WHERE group_id='{$uid}'";
                   $db->setQuery($sql);
                   $db->execute();
             }    catch (Exception $e)

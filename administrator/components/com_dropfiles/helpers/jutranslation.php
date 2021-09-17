@@ -85,7 +85,7 @@ class Jutranslation
 
         //Get all installed languages
         $languages = array();
-        foreach (JLanguageMultilang::getSiteLangs() as $lang) {
+        foreach (JLanguageHelper::getInstalledLanguages(0) as $lang) {
             $langObject = new stdClass();
             $langObject->installed = false;
             $langObject->extension_version = '';
@@ -342,7 +342,7 @@ class Jutranslation
         if (!$dbo->setQuery($query)) {
             return false;
         }
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
         $component = $dbo->loadResult();
@@ -355,5 +355,29 @@ class Jutranslation
             return false;
         }
         return json_decode($table->manifest_cache);
+    }
+
+    /**
+     * Get config token
+     *
+     * @return string
+     * @since  version
+     */
+    public static function juGetToken()
+    {
+        $token = null;
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('value');
+        $query->from('#__joomunited_config');
+        $query->where('name="ju_user_token"');
+        $db->setQuery($query);
+        $res = $db->loadObject();
+
+        if (!empty($res) && !empty($res->value)) {
+            $token = str_replace('token=', '', $res->value);
+        }
+
+        return $token;
     }
 }

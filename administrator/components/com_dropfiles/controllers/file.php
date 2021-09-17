@@ -41,8 +41,26 @@ class DropfilesControllerFile extends JControllerForm
         $app = JFactory::getApplication();
         $model = $this->getModel();
         $modelFiles = $this->getModel('files');
+        $modelCat = $this->getModel('category');
+        $idCateint = JFactory::getApplication()->input->getInt('catid', 0);
         $table = $model->getTable();
         $data = $app->input->post->get('jform', array(), 'array');
+        //file_multi_category
+        $file_multi_category = (isset($data['file_multi_category'])) ? $data['file_multi_category'] : array();
+        $idmfcat[] = JFactory::getApplication()->input->getString('catid', 0);
+        $file_multi_category = array_merge($file_multi_category, $idmfcat);
+        $data['file_multi_category'] = implode(',', $file_multi_category);
+        $file_multi_category_old = '';
+        $idmc = 0;
+        if (isset($data['id'])) {
+            $idmc = $data['id'];
+            $filemc = $modelFiles->getFile($data['id']);
+            $file_multi_category_old = (isset($filemc->file_multi_category)) ? explode(',', $filemc->file_multi_category) : array();
+            unset($file_multi_category_old[count($file_multi_category_old) - 1]);
+            unset($file_multi_category[count($file_multi_category) - 1]);
+            $this->saveCatRefToFiles($modelCat, $file_multi_category_old, $file_multi_category, $idmc, $idCateint);
+        }
+
         // Access check.
         if (!$this->allowSave($data, $key)) {
             $this->exitStatus(JText::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'));
@@ -63,26 +81,43 @@ class DropfilesControllerFile extends JControllerForm
         // Save tags
         if ($data['file_tags'] !== '') {
             $file_tags = explode(',', $data['file_tags']);
+            if (DropfilesBase::isJoomla30()) {
+                JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_tags/tables');
+                $tagTable = JTable::getInstance('Tag', 'TagsTable');
+                foreach ($file_tags as $tag) {
+                    $tagTable->reset();
 
-            JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_tags/tables');
+                    if (!$tagTable->load(array('title' => $tag))) {
+                        $tagTable->id = 0;
+                        $tagTable->title = $tag;
+                        $tagTable->published = 1;
+                        $tagTable->language = '*';
+                        $tagTable->access = 1;
 
-            $tagTable = JTable::getInstance('Tag', 'TagsTable');
+                        $tagTable->setLocation($tagTable->getRootId(), 'last-child');
 
-            foreach ($file_tags as $tag) {
-                $tagTable->reset();
-
-                if (!$tagTable->load(array('title' => $tag))) {
-                    $tagTable->id = 0;
-                    $tagTable->title = $tag;
-                    $tagTable->published = 1;
-                    $tagTable->language = '*';
-                    $tagTable->access = 1;
-
-                    $tagTable->setLocation($tagTable->getRootId(), 'last-child');
-
-                    if ($tagTable->check()) {
-                        $tagTable->path = $tagTable->alias;
-                        $tagTable->store();
+                        if ($tagTable->check()) {
+                            $tagTable->path = $tagTable->alias;
+                            $tagTable->store();
+                        }
+                    }
+                }
+            } else { // Joomla 4
+                $db    = JFactory::getDbo();
+                $jTagModel = new Joomla\Component\Tags\Administrator\Model\TagModel();
+                $jTagTable = new Joomla\Component\Tags\Administrator\Table\TagTable($db);
+                foreach ($file_tags as $tag) {
+                    if (!$jTagTable->load(array('title' => $tag))) {
+                        $tagData = array();
+                        $tagData['title'] = $tag;
+                        $tagData['alias'] = '' ;
+                        $tagData['id'] = 0;
+                        $tagData['parent_id'] = 1;
+                        $tagData['published'] = 1;
+                        $tagData['access'] = 1;
+                        $tagData['language'] = '*';
+                        $tagData['description'] = '';
+                        $jTagModel->save($tagData);
                     }
                 }
             }
@@ -193,6 +228,12 @@ class DropfilesControllerFile extends JControllerForm
             if ($file) {
                 $author_user_id = $file->author;
             }
+        } elseif ($category->type === 'onedrivebusiness') {
+            $modelOnedriveBusiness = $this->getModel('onedrivebusinessfiles');
+            $file = $modelOnedriveBusiness->getFile($data['id']);
+            if ($file) {
+                $author_user_id = $file->author;
+            }
         } else {
             $modelFiles = $this->getModel('files');
             $file = $modelFiles->getFile($data['id']);
@@ -220,11 +261,12 @@ class DropfilesControllerFile extends JControllerForm
         $email_body  = str_replace('{file_name}', $validData['title'], $email_body);
         $currentUser = JFactory::getUser();
         $email_body  = str_replace('{username}', $currentUser->name, $email_body);
+        $uploader       = JFactory::getUser($author_user_id);
+        $email_body     = str_replace('{uploader_username}', $uploader->name, $email_body);
 
         if ((int) $params->get('file_owner', 0) === 1 && (int) $params->get('edit_event', 1) === 1) {
-            $user = JFactory::getUser($author_user_id);
-            $email_body = str_replace('{receiver}', $user->name, $email_body);
-            DropfilesHelper::sendMail($user->email, $email_title, $email_body);
+            $email_body = str_replace('{receiver}', $uploader->name, $email_body);
+            DropfilesHelper::sendMail($uploader->email, $email_title, $email_body);
         }
 
         if ((int) $params->get('category_owner', 0) === 1 && (int) $params->get('edit_event', 1) === 1) {
@@ -304,6 +346,8 @@ class DropfilesControllerFile extends JControllerForm
             $append .= '&type=dropbox&id=' . $id;
         } elseif ($category->type === 'onedrive') {
             $append .= '&type=onedrive&id=' . $id;
+        } elseif ($category->type === 'onedrivebusiness') {
+            $append .= '&type=onedrivebusiness&id=' . $id;
         } else {
             $append .= '&type=default&id=' . $id;
         }
@@ -381,26 +425,42 @@ class DropfilesControllerFile extends JControllerForm
         switch ($category->type) {
             case 'googledrive':
                 $google = new DropfilesGoogle();
-                $file   = $google->download($id, $category->cloud_id, $version);
+                $file   = $google->download($id, $category->cloud_id, $version, 0, false);
 
                 if (!is_object($file)) {
                     $this->setRedirect('index.php');
                     $this->redirect();
                 }
-                $file_name_head = htmlspecialchars($file->title . '.' . $file->ext) . '"';
-                header('Content-Disposition: attachment; filename="' . $file_name_head);
-                header('Content-Description: File Transfer');
-                header('Content-Type: application/octet-stream');
-                header('Content-Transfer-Encoding: binary');
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-                header('Pragma: public');
-                if ($file->size !== 0) {
-                    header('Content-Length: ' . $file->size);
+                $contentType = 'application/octet-stream';
+                $disposition = 'attachment';
+                // Serve download for google document
+                if (strpos($file->mimeType, 'vnd.google-apps') !== false) { // Is google file
+                    // GuzzleHttp\Psr7\Response
+                    $fileData = $google->downloadGoogleDocument($file->id, $file->exportMineType);
+
+                    if ($fileData instanceof \GuzzleHttp\Psr7\Response) {
+                        $contentLength = $fileData->getHeaderLine('Content-Length');
+                        $contentType = $fileData->getHeaderLine('Content-Type');
+
+                        if ($fileData->getStatusCode() === 200) {
+                            header('Content-Disposition: ' . $disposition . '; filename="' . htmlspecialchars($file->title . '.' . $file->exthtmlspecialchars, ENT_QUOTES, 'UTF-8') . '"');
+                            header('Content-Description: File Transfer');
+                            header('Content-Type: ' . $contentType);
+                            header('Content-Transfer-Encoding: binary');
+                            header('Expires: 0');
+                            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+                            header('Pragma: public');
+                            if ($contentLength !== 0) {
+                                header('Content-Length: ' . $contentLength);
+                            }
+                            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- file content output
+                            echo $fileData->getBody();
+                            jexit();
+                        }
+                    }
+                } else {
+                    $google->downloadLargeFile($file, $contentType, $disposition);
                 }
-                ob_clean();
-                flush();
-                echo $file->datas;
                 jexit();
                 break;
             case 'dropbox':
@@ -437,7 +497,7 @@ class DropfilesControllerFile extends JControllerForm
                     $dropOneDrive->downloadVersion($id, $rev);
                 } else {
                     $file     = $dropOneDrive->downloadFile($id);
-                    $filename = htmlspecialchars($file->title . '.' . $file->ext);
+                    $filename = htmlspecialchars($file->title . '.' . $file->ext, ENT_QUOTES, 'UTF-8');
                     header('Content-Disposition: attachment; filename="' . $filename . '"');
                     header('Content-Description: File Transfer');
                     header('Content-Type: application/octet-stream');
@@ -453,6 +513,27 @@ class DropfilesControllerFile extends JControllerForm
                     echo $file->datas;
                     jexit();
                 }
+
+                break;
+            case 'onedrivebusiness':
+                $dropOneDriveBusiness   = new DropfilesOneDriveBusiness();
+                $rev                    = JFactory::getApplication()->input->getString('vid', '');
+                $file                   = $dropOneDriveBusiness->downloadFile($id);
+                $filename               = htmlspecialchars($file->title . '.' . $file->ext, ENT_QUOTES, 'UTF-8');
+                header('Content-Disposition: attachment; filename="' . $filename . '"');
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header('Content-Transfer-Encoding: binary');
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+                header('Pragma: public');
+                if ($file->size !== 0) {
+                    header('Content-Length: ' . $file->size);
+                }
+                ob_clean();
+                flush();
+                echo $file->datas;
+                jexit();
 
                 break;
             default:
@@ -477,7 +558,7 @@ class DropfilesControllerFile extends JControllerForm
                         }
 
                         if (file_exists($sysfile)) {
-                            $filename = htmlspecialchars($file->title . '.' . $file->ext);
+                            $filename = htmlspecialchars($file->title . '.' . $file->ext, ENT_QUOTES, 'UTF-8');
                             header('Content-Disposition: attachment; filename="' . $filename . '"');
                             header('Content-Description: File Transfer');
                             header('Content-Type: application/octet-stream');
@@ -580,6 +661,7 @@ class DropfilesControllerFile extends JControllerForm
 
         $modelC   = $this->getModel('category');
         $category = $modelC->getCategory($catid);
+
         if ($category->type === 'dropbox') {
             $dropbox = new DropfilesDropbox();
             $dropbox->restoreVersion($id_file, $rev);
@@ -666,5 +748,44 @@ class DropfilesControllerFile extends JControllerForm
             }
         }
         $this->exitStatus(true);
+    }
+
+    /**
+     * Save multiple category to file meta
+     *
+     * @param mixed   $modelCat                Category model
+     * @param array   $file_multi_category_old Old category list
+     * @param array   $file_multi_category     Category list
+     * @param string  $id_file                 File id
+     * @param integer $idCategory              Category id
+     *
+     * @return void
+     */
+    public function saveCatRefToFiles($modelCat, $file_multi_category_old, $file_multi_category, $id_file, $idCategory)
+    {
+        $lst_catRef_del = array();
+        if ((!empty($file_multi_category_old) && $file_multi_category) && $file_multi_category_old) {
+            $lst_catRef_del = array_diff($file_multi_category_old, $file_multi_category);
+        }
+        if (!empty($file_multi_category) && $file_multi_category) {
+            foreach ($file_multi_category as $value) {
+                if (trim($value) !== '') {
+                    $modelCat->saveRefToFiles($value, $id_file, $idCategory);
+                }
+            }
+            if (!empty($lst_catRef_del) && $lst_catRef_del) {
+                foreach ($lst_catRef_del as $value) {
+                    if (trim($value) !== '') {
+                        $modelCat->deleteRefToFiles($value, $id_file, $idCategory);
+                    }
+                }
+            }
+        } elseif (!empty($file_multi_category_old)) {
+            foreach ($file_multi_category_old as $value) {
+                if (trim($value) !== '') {
+                    $modelCat->deleteRefToFiles($value, $id_file, $idCategory);
+                }
+            }
+        }
     }
 }

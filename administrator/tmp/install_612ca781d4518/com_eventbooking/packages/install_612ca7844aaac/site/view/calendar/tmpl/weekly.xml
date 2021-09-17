@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Calendar - Weekly Layout">
+		<message>
+			Display events in weekly calendar
+		</message>
+	</layout>
+	<state>
+		<name>Calendar - Weekly Layout</name>
+		<description>Display events in weekly calendar</description>
+		<fields name="request">
+			<fieldset name="request"
+					  addfieldpath="/administrator/components/com_eventbooking/elements">
+				<field name="id" type="ebcategory" size="3" default="0" label="Select Category"
+					   description="Choose the category which you want to display events"/>
+			</fieldset>
+		</fields>
+	</state>
+</metadata>

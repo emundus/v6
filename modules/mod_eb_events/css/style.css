@@ -1,0 +1,65 @@
+.ebm-upcoming-events {
+    margin: 0;
+    padding: 0;
+}
+
+.ebm-upcoming-events li {
+    list-style: none;
+    padding: 0 0 10px;
+    margin: 0 0 10px;
+    border-bottom: 1px solid #e6ecf0;
+    line-height: 1.8;
+}
+
+.eb-events-list-module li:last-child {
+    padding: 0;
+    margin: 0;
+    border-bottom: none;
+}
+
+.ebm-upcoming-events .ebm-event-link {
+    font-size: 110%;
+    font-weight: bold;
+}
+
+.ebm-upcoming-events .ebm-event-thumb {    
+    margin: 0 0 8px;
+    display: block;
+}
+
+/* Upcoming events improved layout style*/
+.ebm-upcoming-events-improved div.ebm-event-date {
+    width: 40px;
+    display: block;
+    text-align: center;
+}
+
+.ebm-upcoming-events-improved div.ebm-event-month, .ebm-upcoming-events-improved div.ebm-event-day {
+    padding: 3px;
+}
+
+.ebm-upcoming-events-improved div.ebm-event-month {
+    color: #fff;
+    text-transform: uppercase;
+    line-height: 1.1em;
+    font-weight: bold;
+}
+
+.ebm-upcoming-events-improved div.ebm-event-day {
+    background: #fff;
+    border-top: none;
+    font-size: 18px;
+    line-height: 18px;
+    font-weight: bold;
+    padding: 1px;
+}
+
+.ebm-upcoming-events-improved div.ebm-event-month{
+    background: #214865;
+    border: 1px solid #214865;
+}
+
+.ebm-upcoming-events-improved div.ebm-event-day {
+    border: 1px solid #214865;
+    color: #214865;
+}

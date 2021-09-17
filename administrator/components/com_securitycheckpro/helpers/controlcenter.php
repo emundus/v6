@@ -48,5 +48,17 @@ echo '<link href="/media/com_securitycheckpro/new/vendor/chosen/chosen.css" rel=
           .join('');  
       }    
         
-    };    
+    };
+
+	// Add element to a form
+	function add_element_to_form(name,value) {
+		var input = document.createElement("input");
+		input.setAttribute("type", "hidden");
+		input.setAttribute("name", name);
+		input.setAttribute("value", value);
+
+		//append to form element that you want .
+		document.getElementById("adminForm").appendChild(input);
+	}
+	
 </script>

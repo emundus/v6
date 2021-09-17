@@ -91,7 +91,7 @@ class TranslateModelTranslate extends JFModel
 			$translation->load($translationid);
 
 			if (!isset($translation) || $translation->id == 0)		{
-				$this->setState('message', JText::sprintf('NO_SUCH_TRANSLATION', $translationid));
+				$this->setState('message', JText::sprintf('COM_FALANG_NO_SUCH_TRANSLATION', $translationid));
 				continue;
 			}
 

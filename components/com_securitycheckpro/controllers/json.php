@@ -33,15 +33,18 @@ class SecuritycheckprosControllerJson extends SecuritycheckproController
 	 */
 	public function json()
 	{
+		$referrer = null;
 		
 		// String json de la petición
 		$clientJSON = $this->input->get('json', null, 'raw', 2);
 						
 		// Decodificamos el string para añadir el referrer, que será usado en caso de fallo (por ejemplo cuando las claves secretas no coinciden)
 		$request = json_decode($clientJSON, true);
-		$referrer = $_SERVER['HTTP_REFERER'];
+		if (array_key_exists('HTTP_REFERER', $_SERVER)) {
+			$referrer = $_SERVER['HTTP_REFERER'];
+		}		
 		
-		if ( (!is_null($request)) && (is_array($request)) )
+		if ( (!is_null($request)) && (is_array($request)) && (!is_null($referrer)) )
 		{
 			$request['referrer'] = $referrer;
 		}

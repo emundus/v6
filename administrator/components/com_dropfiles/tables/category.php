@@ -16,15 +16,11 @@
 // No direct access
 defined('_JEXEC') || die;
 
-$path_admin_category = JPATH_ROOT . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components';
-$path_admin_category .= DIRECTORY_SEPARATOR . 'com_categories' . DIRECTORY_SEPARATOR . 'tables';
-$path_admin_category .= DIRECTORY_SEPARATOR . 'category.php';
-require_once($path_admin_category);
 
 /**
  * Category Table class
  */
-class DropfilesTableCategory extends CategoriesTableCategory
+class DropfilesTableCategory extends JTableCategory
 {
     /**
      * Method to store category
@@ -42,17 +38,4 @@ class DropfilesTableCategory extends CategoriesTableCategory
         $this->metadata = json_encode($meta);
         return parent::store($updateNulls);
     }
-
-    /**
-     * Method to delete category
-     *
-     * @param integer |null $pk       Pk
-     * @param boolean       $children Children
-     *
-     * @return boolean
-     */
-//    public function delete($pk = null, $children = false)
-//    {
-//        return parent::delete($pk, $children);
-//    }
 }

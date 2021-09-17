@@ -344,8 +344,14 @@ function openFiles(fnum, page = 0) {
         type:'get',
         url:'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_files',
         dataType:'html',
-        success: function(result) {
-            $('#em-assoc-files .panel-body').append(result);
+        success: function (result) {
+            if (result) {
+                $('#em-assoc-files .panel-body').append(result);
+                document.getElementById('em-assoc-files').show();
+            } else {
+                document.getElementById('em-assoc-files').hide();
+            }
+            
         },
         error: function (jqXHR) {
             console.log(jqXHR.responseText);
@@ -373,8 +379,14 @@ function openFiles(fnum, page = 0) {
             var panel = result;
             //.main-panel
             $('.main-panel').append('<div class="clearfix"></div><div class="col-md-12" id="em-appli-block"></div>');
-            $('#em-synthesis .panel-body').empty();
-            $('#em-synthesis .panel-body').append(panel);
+            if (result) {
+                $('#em-synthesis .panel-body').empty();
+                $('#em-synthesis .panel-body').append(panel);
+                $('#em-synthesis').show();
+            } else {
+                $('#em-synthesis').hide();
+            }
+            
 
 			$.ajax({
 				type:'get',
@@ -409,32 +421,37 @@ function openFiles(fnum, page = 0) {
 						var firstMenu = menus[numMenu].link;
 						var menuList = '';
 
-						for (var m in menus) {
-							if (isNaN(parseInt(m)) || isNaN(menus[m].id) || typeof(menus[m].title) == 'undefined') {
-								break;
-							}
-
-							url = menus[m].link.fmt({ fnum: fnum.fnum, applicant_id: sid, campaign_id: cid });
-							url += '&fnum='+fnum.fnum;
-							url += '&Itemid='+itemId;
-
-							if(typeof menus[m].notifications != 'undefined'){
-                                menuList += '<a href="'+url+'" class="list-group-item list-item-notifications" title="'+menus[m].title+'" id="'+menus[m].id+'">';
-                            } else {
-                                menuList += '<a href="' + url + '" class="list-group-item" title="' + menus[m].title + '" id="' + menus[m].id + '">';
+                        if (menus.length > 0) {
+                            for (var m in menus) {
+                                if (isNaN(parseInt(m)) || isNaN(menus[m].id) || typeof(menus[m].title) == 'undefined') {
+                                    break;
+                                }
+    
+                                url = menus[m].link.fmt({ fnum: fnum.fnum, applicant_id: sid, campaign_id: cid });
+                                url += '&fnum='+fnum.fnum;
+                                url += '&Itemid='+itemId;
+    
+                                if(typeof menus[m].notifications != 'undefined'){
+                                    menuList += '<a href="'+url+'" class="list-group-item list-item-notifications" title="'+menus[m].title+'" id="'+menus[m].id+'">';
+                                } else {
+                                    menuList += '<a href="' + url + '" class="list-group-item" title="' + menus[m].title + '" id="' + menus[m].id + '">';
+                                }
+    
+                                if (menus[m].hasSons) {
+                                    menuList += '<span class="glyphicon glyphicon-plus" id="'+menus[m].id+'"></span>';
+                                }
+    
+                                if(typeof menus[m].notifications != 'undefined'){
+                                    menuList +=  '<strong>'+menus[m].title+'</strong><span class="notifications-counter">'+menus[m].notifications+'</span></a>';
+                                } else {
+                                    menuList +=  '<strong>'+menus[m].title+'</strong></a>';
+                                }
                             }
-
-							if (menus[m].hasSons) {
-								menuList += '<span class="glyphicon glyphicon-plus" id="'+menus[m].id+'"></span>';
-							}
-
-                            if(typeof menus[m].notifications != 'undefined'){
-                                menuList +=  '<strong>'+menus[m].title+'</strong><span class="notifications-counter">'+menus[m].notifications+'</span></a>';
-                            } else {
-                                menuList +=  '<strong>'+menus[m].title+'</strong></a>';
-                            }
-						}
-						$('#em-appli-menu .list-group').append(menuList);
+                            $('#em-appli-menu .list-group').append(menuList);
+                            $('#em-appli-menu').show();
+                        } else {
+                            $('#em-appli-menu').hide();
+                        }
 
 						$.ajax({
 							type:'get',
@@ -449,7 +466,7 @@ function openFiles(fnum, page = 0) {
 								$('#em-appli-block').empty();
 								$('#em-appli-block').append(result);
 								$('#accordion .panel.panel-default').show();
-								$('#em-appli-menu, #em-last-open, #em-assoc-files, #em-synthesis, .em-open-files > div[id="'+fnum.fnum+'"]').show();
+								$('#em-last-open, .em-open-files > div[id="'+fnum.fnum+'"]').show();
 								menuBar1();
 
 								$('#em-close-multi-file').hide();
@@ -1929,7 +1946,7 @@ $(document).ready(function() {
 
                                 '</div>' +
                                 '<div class="panel-body">' +
-                                '<select name="em-export-form" id="em-export-form" class="chzn-select"></select><br/>' +
+                                // '<select name="em-export-form" id="em-export-form" class="chzn-select"></select><br/>' +
                                 '<div id="appelement">'+
                                 '<div id="elements-popup" style="width : 95%;margin : auto; display: none; ">' +
                                 '</div>' +
@@ -2278,6 +2295,9 @@ $(document).ready(function() {
                                                     $('#admelement').show();
                                                 }
 
+                                                /// add loading
+                                                $('.modal-header').before('<div id="loadingimg-campaign"><img src="'+loading+'" alt="loading"/></div>');
+
                                                 $.ajax({
                                                     type:'get',
                                                     url: 'index.php?option=com_emundus&controller=files&task=getProgramCampaigns&code=' + code,
@@ -2289,6 +2309,7 @@ $(document).ready(function() {
                                                             $('#em-export-camp').append(result.html);
                                                             $('#em-export-camp').trigger("chosen:updated");
 
+                                                            $('#loadingimg-campaign').remove();
                                                             $('#camp').show();
 
                                                             var camp = $("#em-export-camp").val();
@@ -2807,10 +2828,13 @@ $(document).ready(function() {
                             //*** on export excel filter change ******************************/
                             $('#filt_save').on('change', function(e) {
                                 $('#model-err').empty();
-                                $('#em-export').remove();
+                                $('#em-export').remove();                           // reset #em-export
+                                $('#oelts :input').prop('checked', false);          // reset #oelts
+                                $('#forms :input').prop('checked', false);          // reset #forms
                                 $('#em-export-elts').append('<ul id="em-export"></ul></div>');
                                 var id = $(this).val();
                                 if (id != 0) {
+                                    //$('.modal-header').before('<div id="loadingimg-campaign"><img src="'+loading+'" alt="loading"/></div>');
                                     $.ajax({
                                         type:'get',
                                         url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
@@ -2903,6 +2927,9 @@ $(document).ready(function() {
                                                                             }
                                                                             $('#em-export-camp').val(camp);
                                                                             $('#em-export-camp').trigger("chosen:updated");
+
+                                                                            // $('#loadingimg-campaign').remove();
+
                                                                             $('#camp').show();
 
                                                                         }
@@ -3092,7 +3119,8 @@ $(document).ready(function() {
                                                                 $('#elements_detail').hide();
                                                                 $('#elements-popup').hide();
                                                             }
-                                                        } catch(e) {
+                                                        }
+                                                        catch(e) {
                                                             $('#data').append('<br> <div id="model-err-data" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div></br>');
                                                         }
                                                     }
@@ -4134,11 +4162,6 @@ $(document).ready(function() {
                             }
                         })
 
-                        // checkElement('[id^=felts]').then((selector)=>{
-                        //     $('[id^=emundus_checkall_tbl_]').trigger('click');
-                        //     $('.emundusall').prop('checked', true);
-                        // })
-
                         $.ajax({
                             type:'get',
                             url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
@@ -4194,41 +4217,6 @@ $(document).ready(function() {
                         /// if one of two conditions as above is not correct --> hide the div "felts"
                         $('[id^=form-element]').hide();
                         $('[id^=aelts]').hide();
-                    }
-                });
-
-                /// check all pages
-                $(document).on('click', '[id^=emundus_checkall]', function() {
-                    let dataType = $(this).attr('data-check');
-                    if(dataType == '.emunduspage') {
-                        let profile_id = $(this).attr('id').split('emundus_checkall')[1];
-                        if($('#emundus_checkall'+profile_id).is(":checked")) {
-                            $('#felts' + profile_id + ' :input').attr('checked', true);
-                        } else {
-                            $('#felts' + profile_id + ' :input').attr('checked', false);
-                        }
-                    } else {
-
-                    }
-                });
-
-                /// check all children of table
-                $(document).on('click', '[id^=emundus_checkall_tbl_]', function() {
-                    let id = $(this).attr('id').split('emundus_checkall_tbl_')[1];
-                    if($('#emundus_checkall_tbl_' + id).is(":checked")) {
-                        $('#emundus_table_' + id + " :input").attr('checked', true);
-                    } else {
-                        $('#emundus_table_' + id + " :input").attr('checked', false);
-                    }
-                });
-
-                // check all children of group
-                $(document).on('click', '[id^=emundus_checkall_grp_]', function(){
-                    let id = $(this).attr('id').split('emundus_checkall_grp_')[1];
-                    if($('#emundus_checkall_grp_' + id).is(":checked")) {
-                        $('#emundus_grp_' + id + " :input").attr('checked', true);
-                    } else {
-                        $('#emundus_grp_' + id + " :input").attr('checked', false);
                     }
                 });
 
@@ -7042,7 +7030,150 @@ $(document).ready(function() {
             $('#felts'+ id).hide();
         }
     });
+
+
 });
+
+/// push element ids to em-excel_elts
+$(document).on('click', '[id^=emundus_elm_]', function(e) {
+    let eid = $(this).attr('id').split('emundus_elm_')[1];
+    let elabel = $('label[for="emundus_elm_' + eid + '"]').text();
+    let eclass = $(this).attr('class').split('_')[0];
+
+    if($(this).is(":checked")) {
+        if(eclass == 'emundusitem') {
+            if($('#' + eid + '-item').length == 0) {
+                $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
+            }
+        }
+    } else {
+        $('#' + eid + '-item').remove();
+    }
+})
+
+/// check all pages
+$(document).on('click', '[id^=emundus_checkall]', function() {
+    let dataType = $(this).attr('data-check');
+    let elements = $('#appelement').find('[id^=emundus_elm_]');
+
+    if(dataType == '.emunduspage') {
+        let profile_id = $(this).attr('id').split('emundus_checkall')[1];
+        // if excel found
+        if($('#appelement').length > 0) {
+            if ($('#emundus_checkall' + profile_id).is(":checked")) {
+                $('#emundus_elements :input').prop('checked', true);
+
+                elements.each(function(e) {
+                    let eclass = $(this).attr('class').split('_')[0];
+                    if(eclass == 'emundusitem') {
+                        let eid = $(this).attr('id').split('emundus_elm_')[1];
+                        let elabel = $('label[for="emundus_elm_' + eid + '"]').text();
+
+                        // check exist
+                        if($('#' + eid + '-item').length == 0) {
+                            $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
+                        }
+                    }
+                })
+            } else {
+                $('#emundus_elements :input').prop('checked', false);
+
+                elements.each(function(e) {
+                    let eclass = $(this).attr('class').split('_')[0];
+                    if(eclass == 'emundusitem') {
+                        let eid = $(this).attr('id').split('emundus_elm_')[1];
+
+                        // remove all <li>
+                        $('#' + eid + '-item').remove();
+                    }
+                })
+            }
+        }
+
+        /// if pdf found
+        if($('#felts' + profile_id).length) {
+            if ($('#emundus_checkall' + profile_id).is(":checked")) {
+                $('#felts' + profile_id + ' :input').attr('checked', true);
+            } else {
+                $('#felts' + profile_id + ' :input').attr('checked', false);
+            }
+        }
+    }
+});
+
+/// check all children of table
+$(document).on('click', '[id^=emundus_checkall_tbl_]', function() {
+    let id = $(this).attr('id').split('emundus_checkall_tbl_')[1];
+
+    /// find all sub-elements
+    let elements = $('#emundus_table_' + id).find('[id^=emundus_elm_]');
+
+    if($('#emundus_checkall_tbl_' + id).is(":checked")) {
+        $('#emundus_table_' + id + " :input").attr('checked', true);
+
+        elements.each(function(e) {
+            let eclass = $(this).attr('class').split('_')[0];
+            if(eclass == 'emundusitem') {
+                let eid = $(this).attr('id').split('emundus_elm_')[1];
+                let elabel = $('label[for="emundus_elm_' + eid + '"]').text();
+
+                // check exist
+                if($('#' + eid + '-item').length == 0) {
+                    $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
+                }
+            }
+        })
+    } else {
+        elements.each(function(e) {
+            let eclass = $(this).attr('class').split('_')[0];
+            if(eclass == 'emundusitem') {
+                let eid = $(this).attr('id').split('emundus_elm_')[1];
+
+                // remove all <li>
+                $('#' + eid + '-item').remove();
+            }
+        })
+
+        $('#emundus_table_' + id + " :input").attr('checked', false);
+    }
+});
+
+// check all children of group
+$(document).on('click', '[id^=emundus_checkall_grp_]', function(){
+    let id = $(this).attr('id').split('emundus_checkall_grp_')[1];
+
+    let elements = $('#emundus_grp_' + id).find('[id^=emundus_elm_]');
+
+    if($('#emundus_checkall_grp_' + id).is(":checked")) {
+        $('#emundus_grp_' + id + " :input").attr('checked', true);
+
+        elements.each(function(e) {
+            let eclass = $(this).attr('class').split('_')[0];
+            if(eclass == 'emundusitem') {
+                let eid = $(this).attr('id').split('emundus_elm_')[1];
+                let elabel = $('label[for="emundus_elm_' + eid + '"]').text();
+
+                // check exist
+                if($('#' + eid + '-item').length == 0) {
+                    $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
+                }
+            }
+        })
+    } else {
+        $('#emundus_grp_' + id + " :input").attr('checked', false);
+
+        elements.each(function(e) {
+            let eclass = $(this).attr('class').split('_')[0];
+            if(eclass == 'emundusitem') {
+                let eid = $(this).attr('id').split('emundus_elm_')[1];
+
+                // remove all <li>
+                $('#' + eid + '-item').remove();
+            }
+        })
+    }
+});
+
 function getXMLHttpRequest() {
     var xhr = null;
 

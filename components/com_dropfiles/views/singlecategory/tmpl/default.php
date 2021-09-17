@@ -16,41 +16,67 @@
 // No direct access.
 defined('_JEXEC') || die;
 
+// Load the JavaScript and css
 JHtml::_('behavior.keepalive');
-JHtml::_('behavior.framework');
-JHtml::_('behavior.colorpicker');
-JHtml::_('behavior.calendar');
-JHtml::_('script', 'jui/chosen.jquery.min.js', false, true, false, false);
-JHtml::_('stylesheet', 'jui/chosen.css', false, true);
+JHtml::_('jquery.framework');
+$doc = JFactory::getDocument();
+if (DropfilesBase::isJoomla40()) {
+    JHtml::_('behavior.core');
+    JHtml::_('bootstrap.framework');
+
+    $doc->addScript(JURI::root() . 'components/com_dropfiles/assets/js/chosen.jquery.min.js');
+    $doc->addStyleSheet(JURI::root() . 'components/com_dropfiles/assets/css/chosen.css');
+    $doc->addScript(JURI::root() . 'components/com_dropfiles/assets/js/jquery.minicolors.min.js');
+    $doc->addStyleSheet(JURI::root() . 'components/com_dropfiles/assets/css/jquery.minicolors.css');
+} else { // Joomla 3
+    JHtml::_('behavior.framework', true);
+    JHtml::_('behavior.modal', 'a.modal');
+    JHtml::_('behavior.colorpicker');
+    JHtml::_('behavior.calendar');
+    JHtml::_('script', 'jui/chosen.jquery.min.js', false, true, false, false);
+    JHtml::_('stylesheet', 'jui/chosen.css', false, true);
+    $doc->addScript(JURI::root() . 'components/com_dropfiles/assets/js/fielduser.min.js');
+    $doc->addScript(JURI::root() . 'components/com_dropfiles/assets/js/fieldmultiuser.js');
+}
+
 jimport('joomla.application.component.helper');
+$params = JComponentHelper::getParams('com_dropfiles');
+if ($params->get('custom_icon', 0)) {
+    JHtml::_('script', 'media/mediafield.min.js', array('version' => 'auto', 'relative' => true));
+}
 
 $app = JFactory::getApplication();
 $function = $app->input->get('function', 'jInsertCategory');
 
+JText::script('COM_DROPFILES_JS_DELETE');
+JText::script('COM_DROPFILES_JS_EDIT');
+JText::script('COM_DROPFILES_JS_CANCEL');
+JText::script('COM_DROPFILES_JS_OK');
+JText::script('COM_DROPFILES_JS_CONFIRM');
+JText::script('COM_DROPFILES_JS_SAVE');
+JText::script('COM_DROPFILES_JS_SAVED');
 JText::script('COM_DROPFILES_JS_DROP_FILES_HERE');
 JText::script('COM_DROPFILES_JS_USE_UPLOAD_BUTTON');
 JText::script('COM_DROPFILES_JS_ADD_REMOTE_FILE');
 JText::script('COM_DROPFILES_JS_ARE_YOU_SURE');
-JText::script('COM_DROPFILES_JS_DELETE');
-JText::script('COM_DROPFILES_JS_EDIT');
 JText::script('COM_DROPFILES_JS_BROWSER_NOT_SUPPORT_HTML5');
 JText::script('COM_DROPFILES_JS_TOO_ANY_FILES');
+JText::script('COM_DROPFILES_CTRL_FILES_UPLOAD_FILE_SUCCESS');
+JText::script('COM_DROPFILES_CTRL_FILES_WRONG_FILE_EXTENSION');
 JText::script('COM_DROPFILES_JS_FILE_TOO_LARGE');
 JText::script('COM_DROPFILES_JS_ONLY_IMAGE_ALLOWED');
 JText::script('COM_DROPFILES_JS_DBLCLICK_TO_EDIT_TITLE');
 JText::script('COM_DROPFILES_JS_WANT_DELETE_CATEGORY');
 JText::script('COM_DROPFILES_JS_SELECT_FILES');
 JText::script('COM_DROPFILES_JS_IMAGE_PARAMETERS');
-JText::script('COM_DROPFILES_JS_CANCEL');
-JText::script('COM_DROPFILES_JS_OK');
-JText::script('COM_DROPFILES_JS_CONFIRM');
-JText::script('COM_DROPFILES_JS_SAVE');
 JText::script('COM_DROPFILES_JS_X_FILES_IMPORTED');
 JText::script('COM_DROPFILES_JS_WAIT_UPLOADING');
+JText::script('COM_DROPFILES_JS_ARE_YOU_SURE_DELETE');
 JText::script('COM_DROPFILES_JS_FILE_MOVED');
 JText::script('COM_DROPFILES_JS_FILE_COPIED');
 JText::script('COM_DROPFILES_JS_FILES_MOVED');
 JText::script('COM_DROPFILES_JS_FILES_COPIED');
+JText::script('COM_DROPFILES_JS_FILES_REMOVED');
 JText::script('COM_DROPFILES_JS_LINK_COPIED');
 JText::script('COM_DROPFILES_JS_NO_FILES_SELETED');
 JText::script('COM_DROPFILES_JS_NO_FILES_COPIED_CUT');
@@ -59,22 +85,14 @@ JText::script('COM_DROPFILES_JS_REMOTE_FILE_TITLE');
 JText::script('COM_DROPFILES_JS_REMOTE_FILE_URL');
 JText::script('COM_DROPFILES_JS_REMOTE_FILE_REMOTE_URL');
 JText::script('COM_DROPFILES_JS_REMOTE_FILE_TYPE');
-JText::script('COM_DROPFILES_JS_SAVED');
-JText::script('COM_DROPFILES_CTRL_FILES_WRONG_FILE_EXTENSION');
-
 JText::script('COM_DROPFILES_JS_CATEGORY_ORDER');
 JText::script('COM_DROPFILES_JS_CATEGORY_SAVED');
 JText::script('COM_DROPFILES_JS_CATEGORY_CREATED');
 JText::script('COM_DROPFILES_JS_CATEGORY_RENAMED');
 JText::script('COM_DROPFILES_JS_CATEGORY_REMOVED');
 JText::script('COM_DROPFILES_JS_PLEASE_CREATE_A_FOLDER');
-JText::script('COM_DROPFILES_JS_FILES_REMOVED');
-JText::script('COM_DROPFILES_CTRL_FILES_UPLOAD_FILE_SUCCESS');
-
-$params = JComponentHelper::getParams('com_dropfiles');
-$doc = JFactory::getDocument();
-$doc->addScript(JURI::root() . 'components/com_dropfiles/assets/js/fielduser.min.js');
-$doc->addScript(JURI::root() . 'components/com_dropfiles/assets/js/fieldmultiuser.js');
+JText::script('COM_DROPFILES_MULTI_CATEGORY_FILE');
+JText::script('COM_DROPFILES_MULTI_CATEGORY_EDIT_ORIGINAL_FILE');
 
 $doc->addScriptDeclaration('gcaninsert=' . ($app->input->getBool('caninsert', false) ? 'true' : 'false') . ';');
 $doc->addScriptDeclaration('e_name="' . $app->input->getString('e_name') . '";');
@@ -103,6 +121,7 @@ $declaration =
     . 'Dropfiles.collapse=' . ($collapse ? 'true' : 'false') . ';'
     . "Dropfiles.version='" . DropfilesComponentHelper::getVersion() . "';"
     . 'Dropfiles.maxfilesize = ' . $params->get('maxinputfile', 10) . ';'
+    . 'Dropfiles.chunkSize = ' . DropfilesComponentHelper::getTrunkSize() . ';'
     . 'Dropfiles.addRemoteFile = ' . (int)$params->get('addremotefile', 0) . ';'
     . 'Dropfiles.indexgoogle = ' . (int)$params->get('indexgoogle', 1) . ';'
     . "Dropfiles.ajaxurl = '" . JUri::root() . "';"
@@ -115,8 +134,8 @@ $doc->addScriptDeclaration($declaration);
 if (DropfilesBase::isJoomla30()) {
     echo 'joomla30';
 } ?>
-<?php if (DropfilesBase::isJoomla25()) {
-    echo 'joomla25';
+<?php if (DropfilesBase::isJoomla40()) {
+    echo 'joomla4';
 } ?>">
     <?php echo $this->loadTemplate('cats'); ?>
 
@@ -154,9 +173,7 @@ if (DropfilesBase::isJoomla30()) {
                             <h4><?php echo JText::_('COM_DROPFILES_LAYOUT_DROPFILES_THEME'); ?></h4>
                             <div id="themeselect">
                                 <?php
-                                JPluginHelper::importPlugin('dropfilesthemes');
-                                $dispatcher = JDispatcher::getInstance();
-                                $themes = $dispatcher->trigger('getThemeName');
+                                $themes = DropfilesBase::getDropfilesThemes();
                                 foreach ($themes as $theme) : ?>
                                     <a class="themebtn <?php echo strtolower($theme['name']); ?>" href="#"
                                        data-theme="<?php echo strtolower($theme['name']); ?>"
@@ -211,7 +228,6 @@ if (DropfilesBase::isJoomla30()) {
                                     <span class="message">
                                         <?php echo JText::_('COM_DROPFILES_JS_DROP_FILES_HERE'); ?>
                                     </span>
-                                    <input class="hide" type="file" id="upload_input_version">
                                     <a href="" id="upload_button_version" class="btn btn-large btn-primary">
                                         <?php echo JText::_('COM_DROPFILES_JS_SELECT_FILES'); ?>
                                     </a>
@@ -220,6 +236,7 @@ if (DropfilesBase::isJoomla30()) {
                                     <div class="bar" style="width: 0;"></div>
                                 </div>
                             </div>
+                            <input class="hide" type="file" id="upload_input_version">
                             <div class="clr"></div>
                         </div>
                     </div>
