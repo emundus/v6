@@ -20,6 +20,10 @@ templates/g5_helium/templatesDetails.xml
 /templates/g5_helium/templatesDetails.xml
 templates/emundus_vanilla/*
 /templates/emundus_vanilla/*
+templates/emundus_serp/*
+/templates/emundus_serp/*
+templates/LaScala/*
+/templates/LaScala/*
 /images/emundus/files/*
 /images/emundus/letters/*
 /image/logo.png
