@@ -6851,21 +6851,11 @@ $(document).ready(function() {
     $(document).on('change', '#em-doc-export-mode', function() {
         let showMode = $('#em-doc-export-mode').val();
         $('#export-tooltips').empty();
-        // $('#merge-tooltips').empty();
 
-        if(showMode == 2) {
-            $("label[for='em-combine-pdf']").css('color', 'red');
-            $("label[for='em-combine-pdf']").css('text-decoration', 'line-through');
-            $('#merge-tooltips').empty();
-            $('#em-doc-pdf-merge').prop('disabled', true);
-            $('#em-doc-pdf-merge').empty();
-            $('#em-doc-pdf-merge').append('<option value="-1" selected="">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</option>');
-            $('#em-doc-pdf-merge').css('background-color', '#5352524a');
-            $('#em-doc-pdf-merge').css('color', 'red');
-            //$('#merge-tooltips').append('<div id="forbidden-merge-tooltip" style="font-size: .8rem; color: darkorange">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</div>');
-        }
+        if(showMode == 2) { $('#merge-div').hide(); }
 
         else {
+            $('#merge-div').show();
             $("label[for='em-combine-pdf']").css('text-decoration', 'none');
             if(showMode == 0) {
                 $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP') + '</div>');
