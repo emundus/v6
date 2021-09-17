@@ -166,6 +166,9 @@
           <p v-if="errors.short_description" class="error col-md-12 mb-2">
             <span class="error">{{translations.ResumeRequired}}</span>
           </p>
+          <div class="form-group controls">
+            <editor :height="'30em'" :text="form.description" v-model="form.description" :enable_variables="false" :placeholder="translations.Description"></editor>
+          </div>
           <!--<div class="form-group campaign-label">
             <label for="campDescription" style="top: 12em">{{Description}}</label>
             <textarea

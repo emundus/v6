@@ -100,16 +100,17 @@
       </div>
       <!-- image resolution -->
       <div id="imageResolutionZone" v-if="show == true">
-        <hr style="margin-top: unset"/>
-        <div class="toogle" style="font-size: smaller; color: #16AFE1;">
-          <span>{{ translations.MinResolutionTooltips }}</span>
+          <hr/>
+          <h4 class="image-resolution-header">{{ translations.ImageDimensionsTitle }}</h4>
+          <div class="image-resolution-tooltips">
+            <i>{{ translations.ImageResolutionTooltips }}</i>
         </div>
         <br/>
         <div class="form-group">
           <label for="image-min-width">{{ translations.ImageWidth }}</label>
           <div class="input-can-translate d-flex justify-content-between">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width" min="0" v-model="form.minResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width" min="0"  v-model="form.maxResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
+              <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width" min="300" v-model="form.minResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
+              <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width" min="300" v-model="form.maxResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
           </div>
           <transition name="fade">
               <span style="font-size: smaller; color:red" v-if=" errorWidth.error "> {{ errorWidth.message}} </span>
@@ -119,8 +120,8 @@
         <div class="form-group">
           <label for="image-min-height">{{ translations.ImageHeight }}</label>
           <div class="input-can-translate d-flex justify-content-between">
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height" min="0" v-model="form.minResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
-            <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height" min="0" v-model="form.maxResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
+              <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height" min="300" v-model="form.minResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
+              <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height" min="300" v-model="form.maxResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
           </div>
           <transition name="fade">
               <span style="font-size: smaller; color:red" v-if=" errorHeight.error"> {{ errorHeight.message}} </span>
@@ -288,12 +289,14 @@ export default {
         Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
         ImageWidth: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMAGE_WIDTH"),
         ImageHeight: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMAGE_HEIGHT"),
-        MinResolutionTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_TOOLTIPS"),
-        MaxResolutionTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_TOOLTIPS"),
+        ImageResolutionTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMAGE_RESOLUTION_TOOLTIPS"),
         MinResolutionPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER"),
         MaxResolutionPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER"),
         ErrorResolution: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION"),
-        ErrorResolutionNegative: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NEGATIVE")
+        ErrorResolutionNegative: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NEGATIVE"),
+        ErrorResolutionTooSmall: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_TOO_SMALL"),
+        ErrorResolutionNotNumber: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NOT_NUMBER"),
+        ImageDimensionsTitle: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMAGE_DIMENSION_TITLE"),
       }
     };
   },
@@ -339,6 +342,8 @@ export default {
       this.getModelsDocs();
     },
     createNewDocument() {
+      this.isImageError();
+
       if(!this.isImageError()) {
         this.errors = {
           name: false,
@@ -399,7 +404,7 @@ export default {
         }
 
         if (this.form.name[this.langue] != this.model.value && this.currentDoc == null) {
-            params.isModeleAndUpdate = true;
+          params.isModeleAndUpdate = true;
         }
 
         let y = [];
@@ -459,26 +464,108 @@ export default {
     isImageError() {
       let sendError = false;
 
+      const min_contains_value = Object.values(this.form.minResolution).some(v => v);
+      const max_contains_value = Object.values(this.form.maxResolution).some(v => v);
+
+      /// both width and height are empty
+      if(!min_contains_value && !max_contains_value) {
+        document.getElementById('image-min-width').style.setProperty('border-color', '#ccc', 'important');    /// set css
+        document.getElementById('image-max-width').style.setProperty('border-color', '#ccc', 'important');    /// set css
+
+        document.getElementById('image-min-height').style.setProperty('border-color', '#ccc', 'important');    /// set css
+        document.getElementById('image-max-height').style.setProperty('border-color', '#ccc', 'important');    /// set css
+
+        sendError = false;
+        this.errorWidth.message = "";
+        this.errorHeight.message = "";
+      }
+
+      else {
         /// check width
-        if ((parseInt(this.form.minResolution.width) > parseInt(this.form.maxResolution.width)) || parseInt(this.form.minResolution.width) <= 0) {
-          this.errorWidth.error = true;
-          this.errorWidth.message = (parseInt(this.form.minResolution.width) <= 0) ? this.translations.ErrorResolutionNegative : this.translations.ErrorResolution
-          sendError = true;
-        } else {
-          this.errorWidth.error = false;
-          this.errorWidth.message = "";
+          if(this.form.minResolution.height && this.form.maxResolution.height) {
+            if (parseInt(this.form.minResolution.width) >= 300 && parseInt(this.form.maxResolution.width) >= 300) {
+              if ((parseInt(this.form.minResolution.width) > parseInt(this.form.maxResolution.width))) {
+                this.errorWidth.error = true;
+                this.errorWidth.message = (parseInt(this.form.minResolution.width) <= 0) ? this.translations.ErrorResolutionNegative : this.translations.ErrorResolution;
+                document.getElementById('image-min-width').style.setProperty('border-color', 'red', 'important');
+                sendError = true;
+              } else {
+                this.errorWidth.error = false;
+                this.errorWidth.message = "";
+                document.getElementById('image-min-width').style.setProperty('border-color', '#ccc', 'important');    /// set css
+                document.getElementById('image-max-width').style.setProperty('border-color', '#ccc', 'important');    /// set css
+              }
+            } else {
+              this.errorWidth.error = true;
+              this.errorWidth.message = this.translations.ErrorResolutionTooSmall;
+              sendError = true;
+
+              if (parseInt(this.form.minResolution.width) < 300) {
+                document.getElementById('image-min-width').style.setProperty('border-color', 'red', 'important');
+              }
+
+              if (parseInt(this.form.maxResolution.width) < 300) {
+                document.getElementById('image-max-width').style.setProperty('border-color', 'red', 'important');
+              }
+            }
+          } else {
+            this.errorHeight.error = true;
+            this.errorHeight.message = this.translations.ErrorResolutionTooSmall;
+            sendError = true;
+
+            /// if min_height || max_height not exist
+            if(!this.form.minResolution.height || this.form.minResolution.height === '') {
+              document.getElementById('image-min-height').style.setProperty('border-color', 'red', 'important');
+            }
+
+            if(!this.form.maxResolution.height || this.form.maxResolution.height === '') {
+              document.getElementById('image-max-height').style.setProperty('border-color', 'red', 'important');
+            }
+
         }
 
-        /// check height
-        if ((parseInt(this.form.minResolution.height) > parseInt(this.form.maxResolution.height)) || parseInt(this.form.minResolution.height) <= 0) {
-          this.errorHeight.error = true;
-          this.errorHeight.message = (parseInt(this.form.minResolution.height) <= 0) ? this.translations.ErrorResolutionNegative : this.translations.ErrorResolution
-          sendError = true;
-        } else {
-          this.errorHeight.error = false;
-          this.errorHeight.message = "";
-        }
+        //// check height
+          if(this.form.minResolution.width && this.form.maxResolution.width) {
+            if (parseInt(this.form.minResolution.height) >= 300 && parseInt(this.form.maxResolution.height) >= 300) {
+              if ((parseInt(this.form.minResolution.height) > parseInt(this.form.maxResolution.height))) {
+                this.errorHeight.error = true;
+                this.errorHeight.message = (parseInt(this.form.minResolution.height) <= 0) ? this.translations.ErrorResolutionNegative : this.translations.ErrorResolution;
+                document.getElementById('image-min-height').style.setProperty('border-color', 'red', 'important');
+                sendError = true;
+              } else {
+                this.errorHeight.error = false;
+                this.errorHeight.message = "";
+                document.getElementById('image-min-height').style.setProperty('border-color', '#ccc', 'important');    /// set css
+                document.getElementById('image-max-height').style.setProperty('border-color', '#ccc', 'important');    /// set css
+              }
+            } else {
+              this.errorHeight.error = true;
+              this.errorHeight.message = this.translations.ErrorResolutionTooSmall;
+              sendError = true;
 
+              if (parseInt(this.form.minResolution.height) < 300) {
+                document.getElementById('image-min-height').style.setProperty('border-color', 'red', 'important');
+              }
+
+              if (parseInt(this.form.maxResolution.height) < 300) {
+                document.getElementById('image-max-height').style.setProperty('border-color', 'red', 'important');
+              }
+            }
+          } else {
+            this.errorWidth.error = true;
+            this.errorWidth.message = this.translations.ErrorResolutionTooSmall;
+            sendError = true;
+
+            /// if min_height || max_height not exist
+            if(!this.form.minResolution.width || this.form.minResolution.width === '') {
+              document.getElementById('image-min-width').style.setProperty('border-color', 'red', 'important');
+            }
+
+            if(!this.form.maxResolution.width || this.form.maxResolution.width === '') {
+              document.getElementById('image-max-width').style.setProperty('border-color', 'red', 'important');
+            }
+          }
+        }
       return sendError;
     },
 
@@ -560,10 +647,95 @@ export default {
     ZeroOrNegative() {
       let id = event.target.id;
       let val = parseInt(event.target.value);
-      if(val == 0 || val < 0) {
+
+      let min_width = this.form.minResolution.width;
+      let max_width = this.form.maxResolution.width;
+
+      let min_height = this.form.minResolution.height;
+      let max_height = this.form.maxResolution.height;
+
+      if (!isNaN(val)) {
+
+        if (val < 300) {
+          document.getElementById(id).style.color = "red";
+          document.getElementById(id).style.setProperty('border-color', 'red', 'important');
+
+          if (id == 'image-min-width' || id == 'image-max-width') {
+            this.errorWidth.error = true;
+
+            if(parseInt(min_width) < 300 || !min_width) {
+              document.getElementById('image-min-width').style.setProperty('border-color', 'red', 'important');
+            }
+
+            if(parseInt(max_width) < 300 || !max_width) {
+              document.getElementById('image-max-width').style.setProperty('border-color', 'red', 'important');
+            }
+
+            this.errorWidth.message = this.translations.ErrorResolutionTooSmall;
+          }
+
+          if (id == 'image-min-height' || id == 'image-max-height') {
+            this.errorHeight.error = true;
+
+            if(parseInt(min_height) < 300 || !min_height) {
+              document.getElementById('image-min-height').style.setProperty('border-color', 'red', 'important');
+            }
+
+            if(parseInt(max_height) < 300 || !max_height) {
+              document.getElementById('image-max-height').style.setProperty('border-color', 'red', 'important');
+            }
+
+            this.errorHeight.message = this.translations.ErrorResolutionTooSmall;
+          }
+        } else {
+          document.getElementById(id).style.color = "unset";
+          document.getElementById(id).style.setProperty('border-color', '#ccc', 'important');
+
+          if(parseInt(min_width) >= 300 && parseInt(max_width) >= 300) {
+            if(parseInt(min_width) > parseInt(max_width)) {
+              document.getElementById('image-min-width').style.setProperty('border-color', 'red', 'important');
+              this.errorWidth.error = true;
+              this.errorWidth.message = this.translations.ErrorResolution;
+            } else {
+              document.getElementById('image-min-width').style.setProperty('border-color', '#ccc', 'important');
+              this.errorWidth.error = false;
+              this.errorWidth.message = "";
+            }
+          }
+
+          if(min_height >= 300 && max_height >= 300) {
+            if(parseInt(min_height) > parseInt(max_height)) {
+              document.getElementById('image-min-height').style.setProperty('border-color', 'red', 'important');
+              this.errorHeight.error = true;
+              this.errorHeight.message = this.translations.ErrorResolution;
+            } else {
+              document.getElementById('image-min-height').style.setProperty('border-color', '#ccc', 'important');
+              this.errorHeight.error = false;
+              this.errorHeight.message = "";
+            }
+          }
+
+          if(min_width >= 300 && max_width >= 300 && min_height >= 300 && max_height >= 300 && max_width >= min_width && max_height >= min_height) {
+            this.errorWidth.error = false;
+            this.errorWidth.message = "";
+            this.errorHeight.error = false;
+            this.errorHeight.message = "";
+          }
+        }
+      }
+      else {
         document.getElementById(id).style.color = "red";
-      } else {
-        document.getElementById(id).style.color = "unset";
+        document.getElementById(id).style.setProperty('border-color', 'red', 'important');
+
+        if (id == 'image-min-width' || id == 'image-max-width') {
+          this.errorWidth.error = true;
+          this.errorWidth.message = this.translations.ErrorResolutionTooSmall;
+        }
+
+        if (id == 'image-min-height' || id == 'image-max-height') {
+          this.errorHeight.error = true;
+          this.errorHeight.message = this.translations.ErrorResolutionTooSmall;
+        }
       }
     }
   },
@@ -689,6 +861,16 @@ export default {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+
+.image-resolution-header {
+  margin-top: unset;
+  margin-bottom: 20px;
+}
+
+.image-resolution-tooltips {
+  font-size: smaller;
+  color: #16AFE1;
 }
 
 </style>

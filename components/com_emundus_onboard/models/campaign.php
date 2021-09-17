@@ -77,24 +77,10 @@ class EmundusonboardModelcampaign extends JModelList
         if (empty($recherche)) {
             $fullRecherche = 1;
         } else {
-            $rechercheLbl =
+            $fullRecherche =
                 $db->quoteName('sc.label') .
                 ' LIKE ' .
                 $db->quote('%' . $recherche . '%');
-            $rechercheResume =
-                $db->quoteName('sc.short_description') .
-                ' LIKE ' .
-                $db->quote('%' . $recherche . '%');
-            $rechercheDescription =
-                $db->quoteName('sc.description') .
-                ' LIKE ' .
-                $db->quote('%' . $recherche . '%');
-            $fullRecherche =
-                $rechercheLbl .
-                ' OR ' .
-                $rechercheResume .
-                ' OR ' .
-                $rechercheDescription;
         }
 
         $query
@@ -182,24 +168,10 @@ class EmundusonboardModelcampaign extends JModelList
         if (empty($recherche)) {
             $fullRecherche = 1;
         } else {
-            $rechercheLbl =
+            $fullRecherche =
                 $db->quoteName('sc.label') .
                 ' LIKE ' .
                 $db->quote('%' . $recherche . '%');
-            $rechercheResume =
-                $db->quoteName('sc.short_description') .
-                ' LIKE ' .
-                $db->quote('%' . $recherche . '%');
-            $rechercheDescription =
-                $db->quoteName('sc.description') .
-                ' LIKE ' .
-                $db->quote('%' . $recherche . '%');
-            $fullRecherche =
-                $rechercheLbl .
-                ' OR ' .
-                $rechercheResume .
-                ' OR ' .
-                $rechercheDescription;
         }
 
         $query
@@ -795,7 +767,7 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/campaign | Error getting campaigns without setup_profiles associated: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/campaign | Error getting campaigns without setup_profiles associated: ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }

@@ -43,18 +43,36 @@ class EmundusonboardModelform extends JModelList {
 		if (empty($recherche)) {
 			$fullRecherche = 1;
 		} else {
-			$rechercheLbl = $db->quoteName('sp.label').' LIKE '.$db->quote('%' . $recherche . '%');
-			$rechercheResume = $db->quoteName('sp.description').' LIKE '.$db->quote('%' . $recherche . '%');
-			$fullRecherche = $rechercheLbl.' OR '.$rechercheResume;
+			$fullRecherche = $db->quoteName('sp.label').' LIKE '.$db->quote('%' . $recherche . '%');
 		}
 
 		$filterId = $db->quoteName('sp.published') . ' = 1';
+
+        // GET ALL PROFILES THAT ARE NOT LINKED TO A CAMPAIGN
+        $other_profile_query = $db->getQuery(true);
+
+        if (empty($recherche)) {
+			$other_profile_full_recherche = 1;
+		} else {
+			$other_profile_full_recherche = $db->quoteName('esp.label').' LIKE '.$db->quote('%' . $recherche . '%');
+		}
+
+        $other_profile_query->select([
+            'COUNT(esp.id)',
+        ])
+        ->from($db->quoteName('#__emundus_setup_profiles', 'esp'))
+        ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.profile_id').' = '.$db->quoteName('esp.id'))
+        ->where($db->quoteName('esc.profile_id') . ' IS NULL')
+        ->andWhere($db->quoteName('esp.published') . ' = 1')
+        ->andWhere($other_profile_full_recherche)
+        ->andWhere($db->quoteName('esp.menutype') . ' IS NOT NULL');
 
 		$query->select('COUNT(sp.id)')
 			->from($db->quoteName('#__emundus_setup_profiles', 'sp'))
 			->where($filterId)
 			->andWhere($filterCount)
-			->andWhere($fullRecherche);
+			->andWhere($fullRecherche)
+            ->union($other_profile_query);
 
 		try {
 			$db->setQuery($query);
@@ -118,9 +136,7 @@ class EmundusonboardModelform extends JModelList {
 		if (empty($recherche)) {
 			$fullRecherche = 1;
 		} else {
-			$rechercheLbl = $db->quoteName('sp.label').' LIKE '.$db->quote('%' . $recherche . '%');
-			$rechercheResume = $db->quoteName('sp.description').' LIKE '.$db->quote('%' . $recherche . '%');
-			$fullRecherche = $rechercheLbl.' OR '.$rechercheResume;
+			$fullRecherche = $db->quoteName('sp.label').' LIKE '.$db->quote('%' . $recherche . '%');
 		}
 
 		// Get program codes linked to the user's group to later filter
@@ -130,6 +146,12 @@ class EmundusonboardModelform extends JModelList {
         // GET ALL PROFILES THAT ARE NOT LINKED TO A CAMPAIGN
         $other_profile_query = $db->getQuery(true);
 
+        if (empty($recherche)) {
+			$other_profile_full_recherche = 1;
+		} else {
+			$other_profile_full_recherche = $db->quoteName('esp.label').' LIKE '.$db->quote('%' . $recherche . '%');
+		}
+
         $other_profile_query->select([
             'esp.*',
             'esp.label AS form_label'
@@ -138,6 +160,7 @@ class EmundusonboardModelform extends JModelList {
         ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.profile_id').' = '.$db->quoteName('esp.id'))
         ->where($db->quoteName('esc.profile_id') . ' IS NULL')
         ->andWhere($db->quoteName('esp.published') . ' = 1')
+        ->andWhere($other_profile_full_recherche)
         ->andWhere($db->quoteName('esp.menutype') . ' IS NOT NULL');
 
         // Now we need to put the query together and get the profiles
