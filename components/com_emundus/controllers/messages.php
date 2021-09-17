@@ -1604,7 +1604,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mailer->Encoding = 'base64';
         $mailer->setBody($body);
 
-        $attachments = $_meval->getLettersByFnums($fnum, $attachments = true);
+        $attachments = $_meval->getLettersByFnums($fnum, true);
 
         $attachment_ids = array();
         foreach ($attachments as $key => $value) {

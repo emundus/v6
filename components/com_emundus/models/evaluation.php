@@ -2239,93 +2239,68 @@ if (JFactory::getUser()->id == 63)
     }
 
     /// get distinct attachment
-    public function getAttachmentByIds($ids) {
+    public function getAttachmentByIds(array $ids) : array{
         $query = $this->_db->getQuery(true);
 
-        try {
-            $query->clear()
-                ->select('distinct #__emundus_setup_attachments.*')
+            $query
+                ->select($this->_db->quoteName('*'))
                 ->from($this->_db->quoteName('#__emundus_setup_attachments'))
                 ->where($this->_db->quoteName('#__emundus_setup_attachments.id') . 'IN ('. implode(',', $ids) . ')');
 
             $this->_db->setQuery($query);
+        try {
             return $this->_db->loadAssocList();
         } catch(Exception $e) {
-            return $e->getMessage();
+            return [];
         }
     }
 
-    /// get letters from attachmene_id
-    public function getLettersByListID($lid) {
-        $query = $this->_db->getQuery(true);
+    /// get letters by fnums
+    public function getLettersByFnums($fnums, $attachments = false) {
 
-        if(!empty($lid) or !is_null($lid)) {
-            try {
-                $query->clear()
-                    ->select('#__emundus_setup_letters.id')
-                    ->from($this->_db->quoteName('#__emundus_setup_letters'))
-                    ->where($this->_db->quoteName('#__emundus_setup_letters.attachment_id') . '=' . (int)$lid);
-
-                $this->_db->setQuery($query);
-                return $this->_db->loadAssocList();
-            } catch(Exception $e) {
-                return $e->getMessage();
-            }
-        } else {
+        if (empty($fnums)) {
             return false;
         }
-    }
 
-    /// get letters by status
-    public function getLettersByFnums($fnums, $attachments=false) {
-        $query = $this->_db->getQuery(true);
-        if(!empty($fnums) or !is_null($fnums)) {
-            try {
-                /// first --> from fnum --> get fnum info
-                $_mFile = new EmundusModelFiles;
-                $_fnumArray = explode(',', $fnums);
+        try {
+            /// first --> from fnum --> get fnum info
+            $_mFile = new EmundusModelFiles;
+            $_fnumArray = explode(',', $fnums);
 
-                $_fnumsInfo = $_mFile->getFnumsInfos($_fnumArray);
+            $_fnumsInfo = $_mFile->getFnumsInfos($_fnumArray);
 
-                $_programs = [];
-                $_campaigns = [];
-                $_status = [];
+            $_programs = [];
+            $_status = [];
 
-                foreach($_fnumsInfo as $key => $value) {
-                    $_programs[] = $value['training'];
-                    $_campaigns[] = $value['campaign_id'];
-                    $_status[] = $value['step'];
-                }
+            foreach($_fnumsInfo as $fnum) {
+                $_programs[] = $fnum['training'];
+                $_status[] = $fnum['step'];
+            }
 
-                $_letters = $this->getLettersByProgrammesStatus($_programs,$_status);
+            $_letters = $this->getLettersByProgrammesStatus($_programs,$_status);
 
-                if(!empty($_letters)) {
-                    if ($attachments == true) {
-                        /// from $_letters --> get distinct attachment_id
-                        $_letter_attachment_ids = [];
-                        foreach ($_letters as $key => $value) {
-                            $_letter_attachment_ids[] = $value->attachment_id;
-                        }
-
-                        $_letter_attachment_ids = array_unique($_letter_attachment_ids);
-                        $_attachment_ids = $this->getAttachmentByIds($_letter_attachment_ids);
-                        return $_attachment_ids;
-                    } else {
-                        /// from $_letters -> det distinct letter id
-                        $_letter_ids = [];
-                        foreach ($_letters as $key => $value) {
-                            $_letter_ids[] = $value->id;
-                        }
-                        return $_letter_ids;
+            if(!empty($_letters)) {
+                if ($attachments == true) {
+                    /// from $_letters --> get distinct attachment_id
+                    $_letter_attachment_ids = [];
+                    foreach ($_letters as $letter) {
+                        $_letter_attachment_ids[] = $letter->attachment_id;
                     }
+
+                    return $this->getAttachmentByIds(array_unique($_letter_attachment_ids));
                 } else {
-                    return false;
+                    /// from $_letters -> det distinct letter id
+                    $_letter_ids = [];
+                    foreach ($_letters as $letter) {
+                        $_letter_ids[] = $letter->id;
+                    }
+                    return $_letter_ids;
                 }
-            } catch(Exception $e) {
-                return $e->getMessage();
+            } else {
+                return [];
             }
-        } else {
-            return false;
+        } catch(Exception $e) {
+            return [];
         }
     }
 
@@ -2334,7 +2309,7 @@ if (JFactory::getUser()->id == 63)
         $query = $this->_db->getQuery(true);
 
         try {
-            $query->clear()
+            $query
                 ->select('jesl.*')
                 ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
@@ -2346,83 +2321,80 @@ if (JFactory::getUser()->id == 63)
             return $this->_db->loadObjectList();
 
         } catch(Exception $e) {
-            return $e->getMessage();
+            return [];
         }
     }
 
     /// get exactly letter id by fnum and template (32,33,34)
-    public function getLetterTemplateForFnum($fnum,$templates=array()) {
-        if(!empty($fnum) and !empty($templates)) {
-            $query = $this->_db->getQuery(true);
-
-            try {
-                /// first :: get fnum info
-                $_mFile = new EmundusModelFiles;
-
-                $_fnumStatus = $_mFile->getFnumInfos($fnum)['status'];
-                $_fnumProgram = $_mFile->getFnumInfos($fnum)['training'];
-                $_fnumCampaign = $_mFile->getFnumInfos($fnum)['id'];
-
-                /// second :: status, program, templates --> detect the letter id to generate
-                $query->clear()
-                    ->select('jesl.*')
-                    ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
-                    ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
-                    ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
-                    ->where($this->_db->quoteName('jeslrs.status') . ' = ' . $_fnumStatus)
-                    ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
-                    ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
-
-                $this->_db->setQuery($query);
-                return $this->_db->loadObjectList();
-
-            } catch(Exception $e) {
-                return $e->getMessage();
-            }
-        } else {
-            return false;
+    public function getLetterTemplateForFnum($fnum,$templates=array()) : array {
+        if (empty($fnum) || empty($templates)) {
+            return [];
         }
+
+        $query = $this->_db->getQuery(true);
+
+        try {
+            /// first :: get fnum info
+            $_mFile = new EmundusModelFiles;
+            $fnum_infos = $_mFile->getFnumInfos($fnum);
+
+            $_fnumStatus = $fnum_infos['status'];
+            $_fnumProgram = $fnum_infos['training'];
+
+            /// second :: status, program, templates --> detect the letter id to generate
+            $query
+                ->select('jesl.*')
+                ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+                ->where($this->_db->quoteName('jeslrs.status') . ' = ' . $_fnumStatus)
+                ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
+                ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
+
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+
+        } catch(Exception $e) {
+            return [];
+        }
+
     }
 
     /// get affected letters by [fnums] and [templates]
     public function getLettersByFnumsTemplates($fnums=array(), $templates=array()) {
-        if(!empty($fnums) and !empty($templates)) {
-            /// from each fnum --> get fnum infos
-            $_mFile = new EmundusModelFiles;
-            $letter_ids = [];
-            try {
-                $fnum_Array = explode(',', $fnums);
-                foreach($fnum_Array as $data => $fnum) {
-                    $letter_ids[] = $this->getLetterTemplateForFnum($fnum,$templates);
-                }
-            } catch(Exception $e) {
-                return $e->getMessage();
-            }
-        } else {
-            return false;
+        if (empty($fnum) || empty($templates)) {
+            return [];
         }
+        /// from each fnum --> get fnum infos
+        $letter_ids = [];
+        $fnum_Array = explode(',', $fnums);
+
+        foreach($fnum_Array as $fnum) {
+            $letter_ids[] = $this->getLetterTemplateForFnum($fnum,$templates);
+        }
+
         return $letter_ids;
     }
 
     /// get uploaded files by document type and fnums
     public function getFilesByAttachmentFnums($attachment, $fnums=array()) {
+        if (empty($fnums) || empty($attachment)) {
+            return [];
+        }
         $query = $this->_db->getQuery(true);
 
-        if(!empty($attachment) and !empty($fnums)) {
-            try {
-                $query->clear()
-                    ->select('#__emundus_uploads.*, #__emundus_setup_attachments.lbl, #__emundus_setup_attachments.value')
-                    ->from($this->_db->quoteName('#__emundus_uploads'))
-                    ->leftJoin($this->_db->quoteName('#__emundus_setup_attachments') . 'ON' . $this->_db->quoteName('#__emundus_setup_attachments.id') . ' = ' . $this->_db->quoteName('#__emundus_uploads.attachment_id'))
-                    ->where($this->_db->quoteName('#__emundus_uploads.attachment_id') . ' = ' . (int)$attachment)
-                    ->andWhere($this->_db->quoteName('#__emundus_uploads.fnum') . ' IN (' . implode(',', $fnums) . ')');
-                $this->_db->setQuery($query);
-                return $this->_db->loadObjectList();
-            } catch(Exception $e) {
-                return $e->getMessage();
-            }
-        } else {
-            return false;
+        $query
+            ->select('#__emundus_uploads.*, #__emundus_setup_attachments.lbl, #__emundus_setup_attachments.value')
+            ->from($this->_db->quoteName('#__emundus_uploads'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_attachments') . 'ON' . $this->_db->quoteName('#__emundus_setup_attachments.id') . ' = ' . $this->_db->quoteName('#__emundus_uploads.attachment_id'))
+            ->where($this->_db->quoteName('#__emundus_uploads.attachment_id') . ' = ' . (int)$attachment)
+            ->andWhere($this->_db->quoteName('#__emundus_uploads.fnum') . ' IN (' . implode(', ', $this->_db->quote($fnums)) . ')');
+        $this->_db->setQuery($query);
+
+        try {
+            return $this->_db->loadObjectList();
+        } catch(Exception $e) {
+            return [];
         }
     }
 
@@ -2854,13 +2826,6 @@ if (JFactory::getUser()->id == 63)
                                     mkdir($path, 0755, true);
                                 }
 
-                                if ($gotenberg_activation == 1 && $letter->pdf == 1) {
-                                    //convert to PDF
-                                    $dest = str_replace('.docx', '.pdf', $path_name);
-                                    $filename = str_replace('.docx', '.pdf', $filename);
-                                    $res = $m_Export->toPdf($path_name, $dest, $fnum);
-                                }
-
                                 /// check if file exists or not
                                 if (file_exists($path_name) or file_exists($original_path)) {
                                     // remove old file and update the database
@@ -2879,17 +2844,22 @@ if (JFactory::getUser()->id == 63)
                                     copy($path_name, $original_name);
 
                                     $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
-
                                 } else {
                                     $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
 
                                     $preprocess->saveAs($path_name);             /// save docx
                                     /// copy this file to $original path
                                     copy($path_name, $original_name);
-
-                                    $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
                                 }
+
+                                if ($gotenberg_activation == 1 && $letter->pdf == 1) {
+                                    //convert to PDF
+                                    $dest = str_replace('.docx', '.pdf', $original_name);
+                                    $filename = str_replace('.docx', '.pdf', $filename);
+                                    $res = $m_Export->toPdf($original_name, $dest, $fnum);
+                                }
+
+                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
                             }
                             //unset($preprocess);           // need to unset or not?
                         } catch (Exception $e) {

@@ -1159,7 +1159,7 @@ class EmundusModelMessages extends JModelList {
 	    if(!empty($fnum)) {
 	        try {
                 /// first --> get attachment ids from fnums
-                $attachment_ids = $_mEval->getLettersByFnums($fnum, $attachments = true);
+                $attachment_ids = $_mEval->getLettersByFnums($fnum, true);
 
                 $attachment_list = array();
                 foreach ($attachment_ids as $key => $value) {
@@ -1291,7 +1291,7 @@ class EmundusModelMessages extends JModelList {
             $_mFile = new EmundusModelFiles;
 
             try {
-                $attachment_ids = $_mEval->getLettersByFnums($fnum, $attachments = true);
+                $attachment_ids = $_mEval->getLettersByFnums($fnum, true);
 
                 $attachment_list = array();
                 foreach ($attachment_ids as $key => $value) {
