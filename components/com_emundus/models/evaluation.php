@@ -3218,7 +3218,6 @@ if (JFactory::getUser()->id == 63)
 
 
 
-
 //                        /// last one --> zip this --merge into / tmp /
 //                        $_mergeZipName = $dir_Merge_Name . '_' . date("Y-m-d") . '.zip';
 //                        $this->ZipLetter($dir_Merge_Path, $tmp_path . $_mergeZipName, true);
@@ -3234,12 +3233,15 @@ if (JFactory::getUser()->id == 63)
 //                        /// last one, zip this --total file
 //                        $this->ZipLetter($zip_All_Merge_Path, $zip_All_Merge_Path . '_' . '.zip', true);
                     } else {
-                        $unMergeFiles = glob($dir_Name_Path . DS . '*');
+                        $this->copy_directory($dir_Name_Path, $zip_All_Path . DS . end(explode('/', $dir_Name_Path)));
+
+                        /// may be used
+                        /*$unMergeFiles = glob($dir_Name_Path . DS . '*');
 
                         foreach($unMergeFiles as $_uF) {
                             $_uFNames = end(explode('/', $_uF));
                             copy($_uF, $zip_All_Path . DS . $_uFNames);
-                        }
+                        }*/
                         $this->ZipLetter($zip_All_Path, $zip_All_Path . '_' . '.zip', true);
                     }
                 }
@@ -3248,14 +3250,14 @@ if (JFactory::getUser()->id == 63)
                     $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_merge_dir' => DS . 'tmp/' . $_mergeZipName);
 
                     // remove --merge path
-                    $delete_merge_files = glob($dir_Merge_Path . DS . '*');
-                    foreach($delete_merge_files as $_file) {
-                        if(is_file($_file)) {
-                            unlink($_file);
-                        }
-                    }
-                    rmdir($dir_Merge_Path);
-                    unlink($zip_dir);
+//                    $delete_merge_files = glob($dir_Merge_Path . DS . '*');
+//                    foreach($delete_merge_files as $_file) {
+//                        if(is_file($_file)) {
+//                            unlink($_file);
+//                        }
+//                    }
+//                    rmdir($dir_Merge_Path);
+//                    unlink($zip_dir);
 
                 } else {
                     $res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_dir' => DS. 'tmp/' . $_zipName);
@@ -3265,21 +3267,21 @@ if (JFactory::getUser()->id == 63)
 
                 foreach($delete_files as $_file) { if(is_file($_file)) { unlink($_file); } }
 
-                rmdir($dir_Name_Path);
+                //rmdir($dir_Name_Path);
             }
 
-            if($mergeMode == 1) {
-                $delete_total_files = glob($zip_All_Merge_Path . DS . '*');
-                foreach($delete_total_files as $_file) { if(is_file($_file)) { unlink($_file); }}
-                rmdir($zip_All_Merge_Path);
-                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name . '_.zip';
-
-            } else {
-                $delete_total_files = glob($zip_All_Path . DS . '*');
-                foreach($delete_total_files as $_file) { if(is_file($_file)) {unlink($_file);} }
-                rmdir($zip_All_Path);
-                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name . '_.zip';
-            }
+//            if($mergeMode == 1) {
+//                $delete_total_files = glob($zip_All_Merge_Path . DS . '*');
+//                foreach($delete_total_files as $_file) { if(is_file($_file)) { unlink($_file); }}
+//                rmdir($zip_All_Merge_Path);
+//                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name . '_.zip';
+//
+//            } else {
+//                $delete_total_files = glob($zip_All_Path . DS . '*');
+//                foreach($delete_total_files as $_file) { if(is_file($_file)) {unlink($_file);} }
+//                rmdir($zip_All_Path);
+//                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name . '_.zip';
+//            }
         }
 
         // remove temporary folder for letters
