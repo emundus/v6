@@ -62,6 +62,12 @@ $template_type = array(
     // get all letters from fnums
     var fnums = $('input:hidden[name="em-doc-fnums"]').val();
 
+    if(fnums.split(',').length === 1) {
+        $('#merge-div').remove();
+        $("#em-doc-export-mode option[value='0']").remove();        /// remove "regrouper par candidat"
+        $("#em-doc-export-mode option[value='1']").remove();        /// remove "regrouper par type de document"
+    }
+
     $.ajax({
         type: 'post',
         url: 'index.php?option=com_emundus&controller=evaluation&task=getattachmentletters',
@@ -70,8 +76,9 @@ $template_type = array(
         success: function(result) {
             if(result.status) {
                 let attachment_letters = result.attachment_letters;
+                $('#can-val').append('<button id="em-generate" style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOCUMENT')+'</button>');
                 attachment_letters.forEach(letter => {
-                    $('#em-doc-tmpl').append('<option value="' + letter.id + '">' + letter.value + '</option>');
+                    $('#em-doc-tmpl').append('<option value="' + letter.id + '" selected>' + letter.value + '</option>');           /// set selected by default
                     $('#em-doc-tmpl').trigger("chosen:updated");
                 })
             } else {
