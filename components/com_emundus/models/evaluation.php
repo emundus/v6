@@ -2431,6 +2431,8 @@ class EmundusModelEvaluation extends JModelList {
             }
         }
 
+        $available_fnums = [];
+
         /// a partir de $fnums + $templates --> generer les lettres qui correspondent
         foreach($fnum_Array as $key => $fnum) {
             $generated_letters = $_mEval->getLetterTemplateForFnum($fnum,$templates); // return :: Array
@@ -2442,6 +2444,8 @@ class EmundusModelEvaluation extends JModelList {
                 $url = JURI::base() . EMUNDUS_PATH_REL . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp' . DS;
 
                 if(!file_exists($path)) {mkdir($path, 0755, true);}
+            } else {
+                $available_fnums[] = $fnum;
             }
 
             foreach($generated_letters as $key => $letter) {
@@ -2488,11 +2492,17 @@ class EmundusModelEvaluation extends JModelList {
                                 unlink($original_name);
 
                                 /// remove it in database
-                                $query = $this->_db->getQuery(true);
-                                $query->clear()
-                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
-                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
-                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
+//                                $query = $this->_db->getQuery(true);
+//                                $query->clear()
+//                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
+//                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+//                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
+
+                                $query = 'DELETE FROM #__emundus_uploads 
+                                                WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                    ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
+                                                        ' AND DATE(#__emundus_uploads.timedate) = current_date()';
+
                                 $this->_db->setQuery($query);
                                 $this->_db->execute();
 
@@ -2616,12 +2626,18 @@ class EmundusModelEvaluation extends JModelList {
                                 // remove old file and reupdate in database
                                 unlink($original_name);
                                 unlink($path_name);
-                                $query = $this->_db->getQuery(true);
+//                                $query = $this->_db->getQuery(true);
+//
+//                                $query->clear()
+//                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
+//                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+//                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
 
-                                $query->clear()
-                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
-                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
-                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
+                                $query = 'DELETE FROM #__emundus_uploads 
+                                                WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                    ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
+                                                        ' AND DATE(#__emundus_uploads.timedate) = current_date()';
+
                                 $this->_db->setQuery($query);
                                 $this->_db->execute();
 
@@ -2812,12 +2828,17 @@ class EmundusModelEvaluation extends JModelList {
                                     // remove old file and update the database
                                     unlink($path_name);
                                     unlink($original_name);
-                                    $query = $this->_db->getQuery(true);
+//                                    $query = $this->_db->getQuery(true);
+//
+//                                    $query->clear()
+//                                        ->delete($this->_db->quoteName('#__emundus_uploads'))
+//                                        ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+//                                        ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($filename));
+                                    $query = 'DELETE FROM #__emundus_uploads 
+                                                    WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                        ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
+                                                            ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
-                                    $query->clear()
-                                        ->delete($this->_db->quoteName('#__emundus_uploads'))
-                                        ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
-                                        ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($filename));
                                     $this->_db->setQuery($query);
                                     $this->_db->execute();
 
@@ -2981,12 +3002,17 @@ class EmundusModelEvaluation extends JModelList {
                             if (file_exists($original_name) or file_exists($path_name)) {
                                 unlink($original_name);
                                 unlink($path_name);
-                                $query = $this->_db->getQuery(true);
+//                                $query = $this->_db->getQuery(true);
+//
+//                                $query->clear()
+//                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
+//                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+//                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($filename));
+                                $query = 'DELETE FROM #__emundus_uploads 
+                                                    WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                        ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
+                                                            ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
-                                $query->clear()
-                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
-                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
-                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($filename));
                                 $this->_db->setQuery($query);
                                 $this->_db->execute();
 
@@ -3304,10 +3330,11 @@ class EmundusModelEvaluation extends JModelList {
 
         // build the recap table
         $query = 'SELECT #__emundus_uploads.attachment_id, COUNT(#__emundus_uploads.attachment_id) AS _count 
-                    FROM #__emundus_uploads
-                    WHERE #__emundus_uploads.fnum in (' . $fnums . ') 
-                    AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ')
-                    GROUP BY #__emundus_uploads.attachment_id';
+                        FROM #__emundus_uploads
+                            WHERE #__emundus_uploads.fnum in (' . implode(',' , $available_fnums) . ') 
+                                AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ')
+                                    AND DATE(#__emundus_uploads.timedate) = current_date()
+                                        GROUP BY #__emundus_uploads.attachment_id';
 
         $this->_db->setQuery($query);
 
