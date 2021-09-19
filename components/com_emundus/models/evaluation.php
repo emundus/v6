@@ -3027,14 +3027,14 @@ if (JFactory::getUser()->id == 63)
             unset($res->zip_all_data_by_document);
 
             foreach ($applicant_id as $key => $uid) {
-                $user_info = $_mUser->getUserById($uid);
+                $user_info = $_mUser->getUsersById($uid);           /// change "getUserById" to "getUsersById"
 
                 if($mergeMode == 0) {
-                    $_zipName = $user_info[0]->firstname . "_" . $user_info[0]->lastname . '_' . date("Y-m-d") . '_' . '.zip';            // make zip file name
+                    $_zipName = $user_info[0]->name . '_' . date("Y-m-d") . '_' . '.zip';            // make zip file name
 
                     if(file_exists($tmp_path . $_zipName)) { unlink($tmp_path . $_zipName); }                   // if zip name exist in /tmp/ :: remove
 
-                    $_tmpFolder = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->firstname . " " . $user_info[0]->lastname . '_tmp';
+                    $_tmpFolder = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->name . '_tmp';
 
                     $this->ZipLetter($_tmpFolder, $tmp_path . $_zipName, 'true');
 
@@ -3055,13 +3055,13 @@ if (JFactory::getUser()->id == 63)
 
                     /// lastly, zip this folder
                     $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '.zip', true);                       // zip this new file
-                    $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'zip_url' => DS . 'tmp/' . $_zipName);
+                    $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->name, 'zip_url' => DS . 'tmp/' . $_zipName);
                 }
 
                 // merge pdf by candidats
                 if($mergeMode == 1) {
                     /// if merge mode --> 1, mkdir new directory in / tmp / with suffix "--merge"
-                    $mergeDirName = $user_info[0]->firstname . "_" . $user_info[0]->lastname . '__merge';                 // for example: 95--merge
+                    $mergeDirName = $user_info[0]->name . '__merge';                 // for example: 95--merge
                     $mergeDirPath = $tmp_path . $mergeDirName;       // for example: /tmp/95--merge
 
                     if (!file_exists($mergeDirPath)) { mkdir($mergeDirPath, 0755, true); }
@@ -3074,7 +3074,7 @@ if (JFactory::getUser()->id == 63)
                     /// end -- merge zip all
 
                     $pdf_files = array();
-                    $_tmpFolder = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->firstname . " " . $user_info[0]->lastname . '_tmp';
+                    $_tmpFolder = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info->name . '_tmp';
 
                     $fileList = glob($_tmpFolder . DS . '*');
 
@@ -3092,7 +3092,7 @@ if (JFactory::getUser()->id == 63)
 
                     if (count($pdf_files) >= 1) {
                         /// check if the merged file exists
-                        $mergePdfName = $mergeDirPath . DS . $user_info[0]->firstname . "_" . $user_info[0]->lastname . '__merge.pdf';
+                        $mergePdfName = $mergeDirPath . DS . $user_info[0]->name . '__merge.pdf';
                         if (file_exists($mergePdfName, 'F')) { unlink($mergePdfName); }
                         $pdf = new ConcatPdf();
                         $pdf->setFiles($pdf_files);
@@ -3127,7 +3127,7 @@ if (JFactory::getUser()->id == 63)
                     rmdir($mergeDirPath);
 
                     if(sizeof($mergeFiles) > 0) {
-                        $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->firstname . " " . $user_info[0]->lastname, 'merge_zip_url' => DS . 'tmp/' . $_mergeZipName);
+                        $res->zip_data_by_candidat[] = array('applicant_id' => $uid, 'applicant_name' => $user_info[0]->name, 'merge_zip_url' => DS . 'tmp/' . $_mergeZipName);
                     }
                 }
             }
@@ -3283,13 +3283,15 @@ if (JFactory::getUser()->id == 63)
 
         // remove temporary folder for letters
 
-        foreach($fnum_Array as $key => $fnum) {
-            $fnum_info = $_mFile->getFnumInfos($fnum);
+//        foreach($fnum_Array as $key => $fnum) {
+//            $fnum_info = $_mFile->getFnumInfos($fnum);
+//
+//            $tmp_letter_folder = glob(EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . '--letters' . DS . '*');
+//            foreach($tmp_letter_folder as $file) { if(is_file($file)) { unlink($file); } }
+//            rmdir(EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . '--letters');
+//        }
 
-            $tmp_letter_folder = glob(EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . '--letters' . DS . '*');
-            foreach($tmp_letter_folder as $file) { if(is_file($file)) { unlink($file); } }
-            rmdir(EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . '--letters');
-        }
+//        var_dump('here');die;
 
         // build the recap table
         $query = 'SELECT #__emundus_uploads.attachment_id, COUNT(#__emundus_uploads.attachment_id) AS _count 
