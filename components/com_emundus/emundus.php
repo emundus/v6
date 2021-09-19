@@ -394,6 +394,7 @@ JText::script('CAMPAIGN_YEAR');
 JText::script('CANDIDATE_EMAIL');
 JText::script('EMAIL_TAGS');
 JText::script('SEND_EMAIL_TOOLTIPS');
+JText::script('COM_EMUNDUS_UNAVAILABLE_FEATURES');
 
 // EXPORT EXCEL MODEL
 JText::script('COM_EMUNDUS_CHOOSE_LETTER');

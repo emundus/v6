@@ -23,20 +23,22 @@ $template_type = array(
 
     </br>
 
-    <hr style="border: 1.5px dashed #ccc"/>
+    <hr id='breaking-line' style="border: 1.5px dashed #ccc"/>
 
-    <label for="em-export-mode"><?= JText::_('COM_EMUNDUS_EXPORT_MODE'); ?></label>
+    <div id="export-div" style="display: none">
+        <label for="em-export-mode"><?= JText::_('COM_EMUNDUS_EXPORT_MODE'); ?></label>
 
-    </br>
+        </br>
 
-    <select name="mode" id="em-doc-export-mode" class="form-control">
-        <option value="0"><?= JText::_('COM_EMUNDUS_EXPORT_BY_CANDIDAT'); ?></option>
-        <option value="1"><?= JText::_('COM_EMUNDUS_EXPORT_BY_DOCUMENT'); ?></option>
-        <option value="2" selected><?= JText::_('COM_EMUNDUS_EXPORT_BY_FILES'); ?></option>
-    </select>
+        <select name="mode" id="em-doc-export-mode" class="form-control">
+            <option value="0"><?= JText::_('COM_EMUNDUS_EXPORT_BY_CANDIDAT'); ?></option>
+            <option value="1"><?= JText::_('COM_EMUNDUS_EXPORT_BY_DOCUMENT'); ?></option>
+            <option value="2" selected><?= JText::_('COM_EMUNDUS_EXPORT_BY_FILES'); ?></option>
+        </select>
 
-    </br>
-    <div id="export-tooltips"></div>
+        </br>
+        <div id="export-tooltips"></div>
+    </div>
 
     </br>
 
@@ -77,6 +79,7 @@ $template_type = array(
             if(result.status) {
                 let attachment_letters = result.attachment_letters;
                 $('#can-val').append('<button id="em-generate" style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOCUMENT')+'</button>');
+                $('#export-div').show();
                 attachment_letters.forEach(letter => {
                     $('#em-doc-tmpl').append('<option value="' + letter.id + '" selected>' + letter.value + '</option>');           /// set selected by default
                     $('#em-doc-tmpl').trigger("chosen:updated");
@@ -84,7 +87,30 @@ $template_type = array(
             } else {
                 $('#em-doc-tmpl').append('<option value="-1" selected>' + Joomla.JText._('NO_LETTER_FOUND') + '</option>');
                 $('#em-doc-tmpl').trigger("chosen:updated");
+                $('#export-div').remove();
+                $('#merge-div').remove();
+                $('.modal-body').append('<span id="unavailable-msg" style="color: red">' + Joomla.JText._('COM_EMUNDUS_UNAVAILABLE_FEATURES') + '</span');
             }
+        }
+    })
+
+    $('#em-doc-tmpl').on('change', function() {
+        let tmpl = $(this).val();
+        if(tmpl == null || tmpl.includes('-1')) {
+            $('#em-generate').remove();
+            $('#export-div').hide();
+            $('#merge-div').hide();
+            $('.modal-body').append('<span id="unavailable-msg" style="color: red">' + Joomla.JText._('COM_EMUNDUS_UNAVAILABLE_FEATURES') + '</span');
+        } else {
+            if($('#em-generate').length == 0){ $('#can-val').append('<button id="em-generate" style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOCUMENT')+'</button>');}
+
+            $('#export-div').show();
+
+            /// reset to default option of #export-div
+            $('#em-doc-export-mode option[value="2"]').prop('selected', true);
+            $('#em-doc-export-mode').trigger("change");
+
+            $('#unavailable-msg').remove();
         }
     })
 </script>
