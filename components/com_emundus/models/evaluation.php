@@ -3170,11 +3170,8 @@ class EmundusModelEvaluation extends JModelList {
                 }
             }
 
-            /// delete unzip file               //// @@@ error here
-            $delete_files = glob($mergeZipAllPath . '/*');
-            foreach($delete_files as $_file) { if(is_file($_file)) { unlink($_file); } }
-            rmdir($mergeZipAllPath);
-
+            /// remove unzipped folder
+            $this->deleteAll($mergeZipAllPath);
             $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
         }
 
@@ -3318,17 +3315,15 @@ class EmundusModelEvaluation extends JModelList {
             }
         }
 
-        // remove temporary folder for letters
+        /// remove temporary folders in images/emundus/files/tmp
+        foreach($fnum_Array as $key => $fnum) {
+            $fnum_info = $_mFile->getFnumInfos($fnum);
 
-//        foreach($fnum_Array as $key => $fnum) {
-//            $fnum_info = $_mFile->getFnumInfos($fnum);
-//
-//            $tmp_letter_folder = glob(EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . '--letters' . DS . '*');
-//            foreach($tmp_letter_folder as $file) { if(is_file($file)) { unlink($file); } }
-//            rmdir(EMUNDUS_PATH_ABS . $fnum_info['applicant_id'] . '--letters');
-//        }
+            $_tmpFolders = glob(EMUNDUS_PATH_ABS . 'tmp' . DS . '*');
+            foreach($_tmpFolders as $_tmpFolder) { $this->deleteAll($_tmpFolder); }
+        }
 
-        // build the recap table
+        // build the recap table (just get generated documents of current date)
         $query = 'SELECT #__emundus_uploads.attachment_id, COUNT(#__emundus_uploads.attachment_id) AS _count 
                         FROM #__emundus_uploads
                             WHERE #__emundus_uploads.fnum in (' . implode(',' , $available_fnums) . ') 
@@ -3426,6 +3421,15 @@ class EmundusModelEvaluation extends JModelList {
             }
         }
         closedir($dir);
+        return 0;
+    }
+
+    private function deleteAll($dir) {
+        foreach(glob($dir . '/*') as $file) {
+            if(is_dir($file)) { deleteAll($file); }
+            else { unlink($file); }
+        }
+        rmdir($dir);
         return 0;
     }
 }
