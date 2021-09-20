@@ -2500,8 +2500,8 @@ class EmundusModelEvaluation extends JModelList {
 
                                 $query = 'DELETE FROM #__emundus_uploads 
                                                 WHERE #__emundus_uploads.fnum = ' . $fnum .
-                                                    ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
-                                                        ' AND DATE(#__emundus_uploads.timedate) = current_date()';
+                                    ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
+                                    ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
                                 $this->_db->setQuery($query);
                                 $this->_db->execute();
@@ -2624,36 +2624,23 @@ class EmundusModelEvaluation extends JModelList {
 
                             if (file_exists($path_name) or file_exists($original_name)) {
                                 // remove old file and reupdate in database
-                                unlink($original_name);
-                                unlink($path_name);
-//                                $query = $this->_db->getQuery(true);
-//
-//                                $query->clear()
-//                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
-//                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
-//                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
+                                // unlink($original_name);
+                                // unlink($path_name);
 
                                 $query = 'DELETE FROM #__emundus_uploads 
                                                 WHERE #__emundus_uploads.fnum = ' . $fnum .
-                                                    ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
-                                                        ' AND DATE(#__emundus_uploads.timedate) = current_date()';
+                                    ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
+                                    ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
                                 $this->_db->setQuery($query);
                                 $this->_db->execute();
-
-                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         ////
-
-                                $pdf->Output($path_name, 'F');
-                                $pdf->Output($original_name, 'F');
-                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
-                            } else {
-                                /// copy generated letter to --letters folder
-                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         ////
-
-                                $pdf->Output($path_name, 'F');
-                                $pdf->Output($original_name, 'F');
-                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
                             }
+                            /// copy generated letter to --letters folder
+                            $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         ////
+
+                            $pdf->Output($path_name, 'F');
+                            $pdf->Output($original_name, 'F');
+                            $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
                         }
                         unset($pdf, $path_name, $name, $url, $upIdn);
                         unset($pdf, $original_name, $name, $original_url, $upIdn);
@@ -2825,45 +2812,35 @@ class EmundusModelEvaluation extends JModelList {
 
                                 /// check if file exists or not
                                 if (file_exists($path_name) or file_exists($original_path)) {
-                                    // remove old file and update the database
-                                    unlink($path_name);
-                                    unlink($original_name);
-//                                    $query = $this->_db->getQuery(true);
-//
-//                                    $query->clear()
-//                                        ->delete($this->_db->quoteName('#__emundus_uploads'))
-//                                        ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
-//                                        ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($filename));
                                     $query = 'DELETE FROM #__emundus_uploads 
                                                     WHERE #__emundus_uploads.fnum = ' . $fnum .
-                                                        ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
-                                                            ' AND DATE(#__emundus_uploads.timedate) = current_date()';
+                                        ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
+                                        ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
                                     $this->_db->setQuery($query);
                                     $this->_db->execute();
-
-                                    $preprocess->saveAs($path_name);             /// save docx
-                                    copy($path_name, $original_name);
-
-                                    $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                } else {
-                                    $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-
-                                    $preprocess->saveAs($path_name);             /// save docx
-                                    /// copy this file to $original path
-                                    copy($path_name, $original_name);
                                 }
 
+                                $preprocess->saveAs($original_name);
                                 if ($gotenberg_activation == 1 && $letter->pdf == 1) {
                                     //convert to PDF
                                     $dest = str_replace('.docx', '.pdf', $original_name);
                                     $filename = str_replace('.docx', '.pdf', $filename);
-                                    $res = $m_Export->toPdf($original_name, $dest, $fnum);
+                                    $m_Export->toPdf($original_name, $dest, $fnum);
+                                    unlink($original_name);
+
+                                    $query = 'DELETE FROM #__emundus_uploads 
+                                                    WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                        ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
+                                        ' AND DATE(#__emundus_uploads.timedate) = current_date()';
+
+                                    $this->_db->setQuery($query);
+                                    $this->_db->execute();
                                 }
 
+                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
                                 $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
                             }
-                            //unset($preprocess);           // need to unset or not?
                         } catch (Exception $e) {
                             $res->status = false;
                             $res->msg = JText::_("AN_ERROR_OCURRED") . ':' . $e->getMessage();
@@ -3002,16 +2979,10 @@ class EmundusModelEvaluation extends JModelList {
                             if (file_exists($original_name) or file_exists($path_name)) {
                                 unlink($original_name);
                                 unlink($path_name);
-//                                $query = $this->_db->getQuery(true);
-//
-//                                $query->clear()
-//                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
-//                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
-//                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($filename));
                                 $query = 'DELETE FROM #__emundus_uploads 
                                                     WHERE #__emundus_uploads.fnum = ' . $fnum .
-                                                        ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
-                                                            ' AND DATE(#__emundus_uploads.timedate) = current_date()';
+                                    ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
+                                    ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
                                 $this->_db->setQuery($query);
                                 $this->_db->execute();
@@ -3148,14 +3119,6 @@ class EmundusModelEvaluation extends JModelList {
 
                     if(sizeof($mergeFiles) > 0) { $this->copy_directory($mergeDirPath, $mergeZipAllPath . DS . end(explode('/', $mergeDirPath))); }
 
-                    // can be used
-                    /*$mergeFiles = glob($mergeDirPath . DS . '*');
-                    foreach($mergeFiles as $_mF) {
-                        ///copy $_mF into $_mergeZipPath . DS . $_mF
-                        $_mFName = end(explode('/', $_mF));
-                        copy($_mF, $mergeZipAllPath . DS . $_mFName);
-                    }*/
-
                     /// lastly, zip this folder
                     $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '.zip', true);
 
@@ -3257,28 +3220,12 @@ class EmundusModelEvaluation extends JModelList {
 
                         $this->copy_directory($dir_Merge_Path, $zip_All_Merge_Path . DS . str_replace('__merge', '', end(explode('/', $dir_Merge_Path))));
 
-                        // can be used
-                        /*$mergeFiles = glob($dir_Merge_Path . DS . '*');
-
-                        foreach($mergeFiles as $_mF) {
-                            // get the name
-                            $_mFName = end(explode('/', $_mF));
-                            copy($_mF, $zip_All_Merge_Path . DS . $_mFName);
-                        }*/
 //                        /// last one, zip this --total file
 
                         $this->ZipLetter($dir_Merge_Path, $tmp_path . $_mergeZipName, true);
                         $this->ZipLetter($zip_All_Merge_Path, $zip_All_Merge_Path . '_' . '.zip', true);
                     } else {
                         $this->copy_directory($dir_Name_Path, $zip_All_Path . DS . end(explode('/', $dir_Name_Path)));
-
-                        /// may be used
-                        /*$unMergeFiles = glob($dir_Name_Path . DS . '*');
-
-                        foreach($unMergeFiles as $_uF) {
-                            $_uFNames = end(explode('/', $_uF));
-                            copy($_uF, $zip_All_Path . DS . $_uFNames);
-                        }*/
                         $this->ZipLetter($zip_All_Path, $zip_All_Path . '_' . '.zip', true);
                     }
                 }
