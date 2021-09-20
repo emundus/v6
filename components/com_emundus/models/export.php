@@ -71,7 +71,7 @@ class EmundusModelExport extends JModelList {
 
             ///
             $src = $file_src;
-            $file = array_pop(explode('/',$file_src));
+            $file = end(explode('/',$file_src));
             $dest = $file_dest;
 
             //TODO: parse URL to make it cleaner
