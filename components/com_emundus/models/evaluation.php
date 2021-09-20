@@ -2983,12 +2983,7 @@ class EmundusModelEvaluation extends JModelList {
                             if (file_exists($original_name) or file_exists($path_name)) {
                                 unlink($original_name);
                                 unlink($path_name);
-//                                $query = $this->_db->getQuery(true);
-//
-//                                $query->clear()
-//                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
-//                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
-//                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($filename));
+
                                 $query = 'DELETE FROM #__emundus_uploads 
                                                     WHERE #__emundus_uploads.fnum = ' . $fnum .
                                     ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
@@ -3060,16 +3055,8 @@ class EmundusModelEvaluation extends JModelList {
 
                     if(sizeof($_isEmptyTmpFolder) > 0) {
                         $this->ZipLetter($_tmpFolder, $tmp_path . $_zipName, 'true');
-                        $this->copy_directory($_tmpFolder . DS, $mergeZipAllPath . DS . end(explode('/', $_tmpFolder)));
+                        $this->copy_directory($_tmpFolder . DS, $mergeZipAllPath . DS . str_replace('_tmp' , '', end(explode('/', $_tmpFolder))));
                     }
-
-                    /// can be used
-                    /*$_tmpFiles = glob($_tmpFolder . DS . '*');
-                    foreach ($_tmpFiles as $_fl) {
-                        /// recursive move all '_tmp' folder into $mergeZipAllPath
-                        $_flName = end(explode('/', $_fl));
-                        rename($_fl, $mergeZipAllPath . DS . $_flName);
-                    }*/
 
                     /// lastly, zip this folder
                     $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '.zip', true);                       // zip this new file
@@ -3127,15 +3114,7 @@ class EmundusModelEvaluation extends JModelList {
 
                     $mergeFiles = glob($mergeDirPath . DS . '*');
 
-                    if(sizeof($mergeFiles) > 0) { $this->copy_directory($mergeDirPath, $mergeZipAllPath . DS . end(explode('/', $mergeDirPath))); }
-
-                    // can be used
-                    /*$mergeFiles = glob($mergeDirPath . DS . '*');
-                    foreach($mergeFiles as $_mF) {
-                        ///copy $_mF into $_mergeZipPath . DS . $_mF
-                        $_mFName = end(explode('/', $_mF));
-                        copy($_mF, $mergeZipAllPath . DS . $_mFName);
-                    }*/
+                    if(sizeof($mergeFiles) > 0) { $this->copy_directory($mergeDirPath, $mergeZipAllPath . DS . str_replace('_tmp', '', end(explode('/', $mergeDirPath)))); }
 
                     /// lastly, zip this folder
                     $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '.zip', true);
@@ -3236,30 +3215,13 @@ class EmundusModelEvaluation extends JModelList {
                         /// last one --> zip this --merge into / tmp /
                         $_mergeZipName = $dir_Merge_Name . '_' . date("Y-m-d") . '.zip';
 
-                        $this->copy_directory($dir_Merge_Path, $zip_All_Merge_Path . DS . str_replace('__merge', '', end(explode('/', $dir_Merge_Path))));
-
-                        // can be used
-                        /*$mergeFiles = glob($dir_Merge_Path . DS . '*');
-
-                        foreach($mergeFiles as $_mF) {
-                            // get the name
-                            $_mFName = end(explode('/', $_mF));
-                            copy($_mF, $zip_All_Merge_Path . DS . $_mFName);
-                        }*/
-//                        /// last one, zip this --total file
+                        $this->copy_directory($dir_Merge_Path, $zip_All_Merge_Path . DS . str_replace('__merge', '', str_replace('_tmp', '', end(explode('/', $dir_Merge_Path)))));
 
                         $this->ZipLetter($dir_Merge_Path, $tmp_path . $_mergeZipName, true);
                         $this->ZipLetter($zip_All_Merge_Path, $zip_All_Merge_Path . '_' . '.zip', true);
                     } else {
-                        $this->copy_directory($dir_Name_Path, $zip_All_Path . DS . end(explode('/', $dir_Name_Path)));
+                        $this->copy_directory($dir_Name_Path, $zip_All_Path . DS . str_replace('_tmp', '', end(explode('/', $dir_Name_Path))));
 
-                        /// may be used
-                        /*$unMergeFiles = glob($dir_Name_Path . DS . '*');
-
-                        foreach($unMergeFiles as $_uF) {
-                            $_uFNames = end(explode('/', $_uF));
-                            copy($_uF, $zip_All_Path . DS . $_uFNames);
-                        }*/
                         $this->ZipLetter($zip_All_Path, $zip_All_Path . '_' . '.zip', true);
                     }
                 }
