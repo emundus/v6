@@ -76,6 +76,13 @@ class EmundusController extends JControllerLegacy {
         $m_profile = $this->getModel('profile');
         $m_campaign = $this->getModel('campaign');
 
+        $options = array(
+          'aemail',
+          'afnum',
+          'adoc-print',
+          'aapp-sent',
+        );
+
         $infos 		= $m_profile->getFnumDetails($fnum);
         $profile 	= !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
         $h_menu = new EmundusHelperMenu;
@@ -107,10 +114,10 @@ class EmundusController extends JControllerLegacy {
         $profile_id = $m_profile->getProfileByFnum($fnum);
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, null, null, $profile_id,null,null);
+            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile_id,null,null);
             exit;
         } elseif (EmundusHelperAccess::isApplicant($user->id)) {
-            application_form_pdf($user->id, $fnum, true, 1, $formid, null, null, $profile_id,null,null);
+            application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile_id,null,null);
             exit;
         } else {
             die(JText::_('ACCESS_DENIED'));
@@ -1024,6 +1031,62 @@ class EmundusController extends JControllerLegacy {
                 }
             }
         }
+
+        /// resize image
+        $_upload_file_type = $file['type'];
+
+        if(strpos($_upload_file_type, 'image') !== false) {
+            $file_src = EMUNDUS_PATH_ABS.$user->id.DS.$paths;
+            list($w_src, $h_src, $type) = getimagesize($file_src);
+
+            // get min_resolution, max_resolution from jos_emundus_setup_attachments (param::attachments)
+            $image_resolution_query = "SELECT min_width,max_width,min_height,max_height FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . (int)$attachments;
+            $this->_db->setQuery($image_resolution_query);
+            $image_resolution = $this->_db->loadObject();
+
+            if(is_null($image_resolution->min_width) and is_null($image_resolution->max_width) and is_null($image_resolution->min_height) and is_null($image_resolution->max_height)) { }
+            else {
+                if ($w_src * $h_src > (int)$image_resolution->max_width * (int)$image_resolution->max_height) {
+                    switch ($type) {
+                        case 1:   // gif
+                            $original_img = imagecreatefromgif($file_src);
+                            break;
+                        case 2: // jpeg
+                            $original_img = imagecreatefromjpeg($file_src);
+                            break;
+                        case 3: // png
+                            $original_img = imagecreatefrompng($file_src);
+                            break;
+                        default:    // jpg
+                            $original_img = imagecreatefromjpeg($file_src);
+                            break;
+                    }
+
+                    $new_width = (int)$image_resolution->max_width;
+                    $new_height = (int)$image_resolution->max_height;
+
+                    $resized_img = imagecreatetruecolor($new_width, $new_height);
+
+                    // copy resample
+                    imagecopyresampled($resized_img, $original_img, 0, 0, 0, 0, $new_width, $new_height, $w_src, $h_src);
+
+                    // export new image to jpeg
+                    imagejpeg($resized_img, $chemin . $user->id . DS . 'tn_' . $paths);
+
+                    /// remove old image
+                    unlink($file_src);
+
+                    /// change name the resize image
+                    rename($chemin . $user->id . DS . 'tn_' . $paths, $file_src);
+                } else if ($w_src * $h_src < (int)$image_resolution->min_width * (int)$image_resolution->min_height) {
+                    $errorInfo = "ERROR_IMAGE_TOO_SMALL";
+                    echo '{"aid":"0","status":false,"message":"' . JText::_('ERROR_IMAGE_TOO_SMALL') . " " . (int)$image_resolution->min_width . 'px x ' . (int)$image_resolution->min_height . 'px' . '"}';
+                    unlink($file_src);          /// remove uploaded file
+                    return false;
+                }
+            }
+        }
+
         // delete temp uploaded file
         unlink($file['tmp_name']);
 
@@ -1601,6 +1664,76 @@ class EmundusController extends JControllerLegacy {
         }
 
         echo json_encode((object) $result);
+        exit();
+    }
+    
+    /**
+     * unregisterevent
+     *
+     * @return void
+     */
+    function unregisterevent(){
+        $app = JFactory::getApplication();
+        $jinput = $app->input;
+        $fnum = $jinput->get('fnum', null);
+
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        include_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
+        $m_files = new EmundusModelFiles();
+        $m_emails = new EmundusModelEmails();
+        $c_messages = new EmundusControllerMessages();
+
+        $query = $this->_db->getQuery(true);
+
+        if (in_array($fnum, array_keys($this->_user->fnums))){
+            $user = $this->_user;
+
+            $query->select('cc.eb_registration,sc.event,sc.training,sc.label')
+                ->from($this->_db->quoteName('#__emundus_campaign_candidature','cc'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$this->_db->quoteName('sc.id').' = '.$this->_db->quoteName('cc.campaign_id'))
+                ->where($this->_db->quoteName('cc.fnum') . ' = ' . $this->_db->quote($fnum));
+            $this->_db->setQuery($query);
+            $registration = $this->_db->loadObject();
+
+            $query->clear()
+                ->delete('#__eb_registrants')
+                ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($registration->eb_registration));
+            $this->_db->setQuery($query);
+            $this->_db->execute();
+
+            $m_files->updateState((array)$fnum, 3);
+            $m_emails->sendEmailTrigger(3, (array)$registration->training, '0,1', $this->_user);
+
+            $query->clear()
+                ->select('u.email,u.id')
+                ->from($this->_db->quoteName('#__emundus_configuration_activites_repeat_eb_activities','car'))
+                ->leftJoin($this->_db->quoteName('#__emundus_configuration_activites','ca').' ON '.$this->_db->quoteName('ca.id').' = '.$this->_db->quoteName('car.parent_id'))
+                ->leftJoin($this->_db->quoteName('#__users','u').' ON '.$this->_db->quoteName('u.id').' = '.$this->_db->quoteName('ca.eb_referent'))
+                ->where($this->_db->quoteName('car.eb_activities') . ' = ' . $this->_db->quote($registration->event));
+            $this->_db->setQuery($query);
+            $referent_email = $this->_db->loadObject();
+
+            if(!empty($referent_email)) {
+                $post = array(
+                    'CAMPAIGN_LABEL' => $registration->label
+                );
+                $c_messages->sendEmailNoFnum($referent_email->email,82, $post, $referent_email->id);
+            }
+        } else {
+            JError::raiseError(500, JText::_('ACCESS_DENIED'));
+            echo 'false';
+        }
+
+        unset($this->_user->fnums[$fnum]);
+
+        if (in_array($user->fnum, array_keys($user->fnums))) {
+            echo 'true';
+        } else {
+            array_shift($this->_user->fnums);
+            echo 'true';
+        }
+
         exit();
     }
 }

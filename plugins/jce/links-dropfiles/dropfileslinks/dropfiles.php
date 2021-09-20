@@ -245,7 +245,7 @@ class DropfileslinksDropfiles extends JObject
         }
 
         $db->setQuery($query);
-        if ($db->query()) {
+        if ($db->execute()) {
             return $db->loadObject();
         }
 

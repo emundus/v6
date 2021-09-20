@@ -86,100 +86,109 @@ class PlgSystemurl_Inspector extends JPlugin
 
 		// Get remote IP
 		$remote_ip = self::get_ip();
+		
+		// Check if the IP already belongs to blacklist
+		include_once JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/library/model.php';
+        $model = new SecuritycheckproModel;
+		
+		$aparece_lista_negra = $model->chequear_ip_en_lista($remote_ip, "blacklist");
+		
+		if (!$aparece_lista_negra) {
 
-					// Get uri and url
-		$uri = JUri::getInstance();
-		$url = rawurldecode($uri->toString(array('scheme', 'host', 'port', 'path', 'query', 'fragment')));
-		$url = filter_var($url, FILTER_SANITIZE_STRING);
+			// Get uri and url
+			$uri = JUri::getInstance();
+			$url = rawurldecode($uri->toString(array('scheme', 'host', 'port', 'path', 'query', 'fragment')));
+			$url = filter_var($url, FILTER_SANITIZE_STRING);
 
-		if ((!is_null(self::$parameters)) && (array_key_exists('write_log_inspector', self::$parameters)))
-		{
-			$write_log_inspector = self::$parameters['write_log_inspector'];
-		}
-		else
-		{
-					$write_log_inspector = 1;
-		}
-
-		if ((!is_null(self::$parameters)) && (array_key_exists('inspector_forbidden_words', self::$parameters)))
-		{
-			$inspector_forbidden_words = self::$parameters['inspector_forbidden_words'];
-		}
-		else
-		{
-			$inspector_forbidden_words = 'wp-login.php,.git,owl.prev,tmp.php,home.php,Guestbook.php,aska.cgi,default.asp,jax_guestbook.php,bbs.cg,gastenboek.php,light.cgi,yybbs.cgi,wsdl.php,wp-content,cache_aqbmkwwx.php,.suspected,seo-joy.cgi,google-assist.php,wp-main.php,sql_dump.php,xmlsrpc.php';
-		}
-
-		if ((!is_null(self::$parameters)) && (array_key_exists('action_inspector', self::$parameters)))
-		{
-			$action_inspector = self::$parameters['action_inspector'];
-		}
-		else
-		{
-			$action_inspector = 2;
-		}
-
-		$inspector_forbidden_words_array = explode(",", $inspector_forbidden_words);
-		$found = false;
-
-		foreach ($inspector_forbidden_words_array as $word)
-		{
-			$word = filter_var($word, FILTER_SANITIZE_STRING);
-
-			if (!empty($word))
+			if ((!is_null(self::$parameters)) && (array_key_exists('write_log_inspector', self::$parameters)))
 			{
-							$found = strstr($url, $word);
+				$write_log_inspector = self::$parameters['write_log_inspector'];
+			}
+			else
+			{
+				$write_log_inspector = 1;
+			}
 
-				if ($found)
+			if ((!is_null(self::$parameters)) && (array_key_exists('inspector_forbidden_words', self::$parameters)))
+			{
+				$inspector_forbidden_words = self::$parameters['inspector_forbidden_words'];
+			}
+			else
+			{
+				$inspector_forbidden_words = 'wp-login.php,.git,owl.prev,tmp.php,home.php,Guestbook.php,aska.cgi,default.asp,jax_guestbook.php,bbs.cg,gastenboek.php,light.cgi,yybbs.cgi,wsdl.php,wp-content,cache_aqbmkwwx.php,.suspected,seo-joy.cgi,google-assist.php,wp-main.php,sql_dump.php,xmlsrpc.php';
+			}
+
+			if ((!is_null(self::$parameters)) && (array_key_exists('action_inspector', self::$parameters)))
+			{
+				$action_inspector = self::$parameters['action_inspector'];
+			}
+			else
+			{
+				$action_inspector = 2;
+			}
+
+			$inspector_forbidden_words_array = explode(",", $inspector_forbidden_words);
+			$found = false;
+			
+			foreach ($inspector_forbidden_words_array as $word)
+			{
+				$word = filter_var($word, FILTER_SANITIZE_STRING);
+
+				if (!empty($word))
 				{
-								$forbidden_words .= $word;
-								break;
+					$found = strstr($url, $word);
+
+					if ($found)
+					{
+						$forbidden_words .= $word;
+						break;
+					}
 				}
 			}
-		}
-
-		// Forbidden words found; take actions
-		if ($found)
-		{
-			// Adds IP, uri and date to url_inspector database
-			$data = (object) array(
-			'ip' => $remote_ip,
-			'uri' => $url,
-			'forbidden_words'    => $forbidden_words,
-			'date_added' => JFactory::getDate()->toSql()
-			);
-
-			try
+			
+			// Forbidden words found; take actions
+			if ($found)
 			{
-				$db->insertObject('#__securitycheckpro_url_inspector_logs', $data, 'id');
-			}
-			catch (Exception $e)
-			{
-			// JErrorPage::render(new Exception(JText::_('PLG_SYSTEM_REDIRECT_ERROR_UPDATING_DATABASE'), 500, $e));
-			}
+				// Adds IP, uri and date to url_inspector database
+				$data = (object) array(
+				'ip' => $remote_ip,
+				'uri' => $url,
+				'forbidden_words'    => $forbidden_words,
+				'date_added' => JFactory::getDate()->toSql()
+				);
 
-			// Write a log (if set to do it) in Securitycheck Pro logs
-			$access_attempt = self::$lang_firewall->_('COM_SECURITYCHECKPRO_CPANEL_URL_INSPECTOR_TEXT');
-			$not_applicable = self::$lang_firewall->_('COM_SECURITYCHECKPRO_NOT_APPLICABLE');
-			self::$objeto->grabar_log($write_log_inspector, $remote_ip, 'URL_FORBIDDEN_WORDS', $forbidden_words, 'URL_INSPECTOR', $url, $not_applicable, '---', '---');
+				try
+				{
+					$db->insertObject('#__securitycheckpro_url_inspector_logs', $data, 'id');
+				}
+				catch (Exception $e)
+				{
+				// JErrorPage::render(new Exception(JText::_('PLG_SYSTEM_REDIRECT_ERROR_UPDATING_DATABASE'), 500, $e));
+				}
 
-			// Actions
-			if ($action_inspector == 1)
-			{
-				// Add to dynamic blacklist
-				self::$objeto->actualizar_lista_dinamica($remote_ip);
-			}
-			elseif ($action_inspector == 2)
-			{
-				// Add to blacklist
-				JLoader::register('SecuritycheckproModel', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'library' . DIRECTORY_SEPARATOR . 'model.php');
-				include_once JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'firewallconfig.php';
-				$firewallconfig_object = new SecuritycheckprosModelFirewallConfig;
-				$firewallconfig_object->manage_list('blacklist', 'add', $remote_ip, false);
+				// Write a log (if set to do it) in Securitycheck Pro logs
+				$access_attempt = self::$lang_firewall->_('COM_SECURITYCHECKPRO_CPANEL_URL_INSPECTOR_TEXT');
+				$not_applicable = self::$lang_firewall->_('COM_SECURITYCHECKPRO_NOT_APPLICABLE');			
+				self::$objeto->grabar_log($write_log_inspector, $remote_ip, 'URL_FORBIDDEN_WORDS', $forbidden_words, 'URL_INSPECTOR', $url, $not_applicable, '---', '---');
 
-				// Redireccionamos para evitar que las peticiones continuen
-				$error_403 = self::$lang_firewall->_('COM_SECURITYCHECKPRO_403_ERROR');
-				self::$objeto->redirection(403, $error_403, true);
+				// Actions
+				if ($action_inspector == 1)
+				{
+					// Add to dynamic blacklist
+					self::$objeto->actualizar_lista_dinamica($remote_ip);
+				}
+				elseif ($action_inspector == 2)
+				{
+					// Add to blacklist
+					JLoader::register('SecuritycheckproModel', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'library' . DIRECTORY_SEPARATOR . 'model.php');
+					include_once JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'firewallconfig.php';
+					$firewallconfig_object = new SecuritycheckprosModelFirewallConfig;
+					$firewallconfig_object->manage_list('blacklist', 'add', $remote_ip, false);
+
+					// Redireccionamos para evitar que las peticiones continuen
+					$error_403 = self::$lang_firewall->_('COM_SECURITYCHECKPRO_403_ERROR');
+					self::$objeto->redirection(403, $error_403, true);
+				}
 			}
 		}
 
@@ -312,13 +321,13 @@ class PlgSystemurl_Inspector extends JPlugin
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-								// Initialize variables
+		//Initialize variables
 		$forbidden_words = null;
 
-				// Get remote IP
+		// Get remote IP
 		$remote_ip = self::get_ip();
 
-						// Get uri and url
+		// Get uri and url
 		$uri = JUri::getInstance();
 		$url = rawurldecode($uri->toString(array('scheme', 'host', 'port', 'path', 'query', 'fragment')));
 		$url = filter_var($url, FILTER_SANITIZE_STRING);

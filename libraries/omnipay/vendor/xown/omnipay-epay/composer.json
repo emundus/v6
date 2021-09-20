@@ -1,0 +1,18 @@
+{
+    "name": "xown/omnipay-epay",
+    "description": "ePay driver for the Omnipay payment processing library",
+    "require": {
+        "omnipay/common": "~2.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Saidul Islam",
+            "email": "saidul.04@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": { "Omnipay\\Epay\\" : "src/" }
+    }
+}

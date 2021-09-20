@@ -258,6 +258,10 @@ ul {
   border-bottom: none;
 }
 
+.contentpane.modal form#job-form[name="adminForm"] .em-container-trombi {
+  justify-content: flex-start !important;
+  flex-direction: column !important;
+}
 
 .modal {
   position: relative;
@@ -1375,11 +1379,15 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .fabrikFilterContainer .fabrik_actions .fabrik_filter_submit {
-    background: $dark-green;
-    border: 1px solid $dark-green;
-    border-radius: 25px;
+    background: grey;
+    border: 1px solid grey;
+    border-radius: 4px;
     padding: 7px 20px;
   }
+
+.fabrikFilterContainer .fabrik_actions > div {
+ text-align: end !important;
+}
 
   .fabrikForm legend {
     color: $base-primary-color;
@@ -2302,7 +2310,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       align-items: center;
       flex-direction: row-reverse;
       justify-content: space-between;
-      margin: 100px 0 0 0;
     }
   }
 
@@ -2314,7 +2321,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .alert {
     a {
-      font-size: 16px;
+      font-size: 16px !important;
 
       &:hover {
         font-size: 16px;
@@ -2872,11 +2879,24 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
         }
       }
 
-      a.fabrik_edit,
+      a.fabrik_edit {
+        background: $dark-green;
+        border-color: $dark-green;
+        margin-right: 5px;
+        &:hover,
+        &:active,
+        &:focus {
+          background: #fff;
+          border-color: $dark-green;
+          color: $dark-green;
+        }
+      }
+
       a.fabrik_view,
       a.listplugin {
         background: $dark-blue;
         border-color: $dark-blue;
+        margin-right: 5px;
 
         &:hover,
         &:active,
@@ -3319,7 +3339,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       display: none;
     }
 
-    .homepage .campaigns-list .below-content a.btn.btn-primary.btn-creux.btn-orange {
+    .homepage .campaigns-list .below-content a.btn.btn-primary.btn-creux.btn-orange , .homepage .campaigns-list .below-content a.btn.btn-primary.btn-plein.btn-blue {
       margin-bottom: 5px;
     }
 

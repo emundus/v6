@@ -775,7 +775,7 @@ class Spreadsheet_Excel_Reader
                     if ($val == '') {
                         $val = '&nbsp;';
                     } else {
-                        $val = htmlentities($val);
+                        $val = htmlentities($val, ENT_QUOTES, 'UTF-8');
                         $link = $this->hyperlink($row, $col, $sheet);
                         if ($link != '') {
                             $val = "<a href=\"$link\">$val</a>";

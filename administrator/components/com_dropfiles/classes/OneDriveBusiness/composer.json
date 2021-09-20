@@ -1,0 +1,10 @@
+{
+  "name": "joomunited/onedrive-graph-sdk",
+  "config": {
+    "vendor-dir": "packages"
+  },
+  "require": {
+    "krizalys/onedrive-php-sdk": "^2.0",
+    "guzzlehttp/guzzle": "^6.5"
+  }
+}

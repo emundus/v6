@@ -17,7 +17,7 @@ use Joomla\CMS\Pagination\Pagination as JPagination;
 /**
  * Modelo Securitycheck
  */
-class SecuritycheckprosModelRulesLogs extends JModelLegacy
+class SecuritycheckprosModelRulesLogs extends \Joomla\CMS\MVC\Model\BaseDatabaseModel
 {
 
     /**

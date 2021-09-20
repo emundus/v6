@@ -536,11 +536,12 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
     public function updateDocumentFalang(){
 
         $jinput = JFactory::getApplication()->input;
-        $textfr=$jinput->getString('text_fr');
-        $texten=$jinput->getString('text_en');
+        $text = new stdClass;
+        $text->fr=$jinput->getString('text_fr');
+        $text->en=$jinput->getString('text_en');
         $reference_id=$jinput->getInt('did');
         $falang=$this->getModel('falang');
-        $result=$falang->updateFalang($textfr,$texten,$reference_id,'emundus_setup_attachments','value');
+        $result=$falang->updateFalang($text,$reference_id,'emundus_setup_attachments','value');
 
         if ($result) {
             $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_UPDATED'), 'data' => $result);

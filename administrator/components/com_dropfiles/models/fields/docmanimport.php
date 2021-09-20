@@ -38,7 +38,8 @@ class JFormFieldDocmanimport extends JFormField
         // Initialize some field attributes.
         $class = $this->element['class'] ? ' ' . (string)$this->element['class'] . '' : '';
         if (JComponentHelper::isInstalled('com_docman')) {
-            $return = '<select name="' . $this->name . '" id="' . $this->id . '" class="' . $class . '">';
+            $return = '<div class="import-name isinstall-docmanName"><label class="ju-setting-label">'. JText::_('COM_DROPFILES_CONFIG_IMPORT_AVAILABLE_DOCMAN_NAME') .'</label></div>';
+            $return .= '<select name="' . $this->name . '" id="' . $this->id . '" class="' . $class . '">';
             $return .= '<option value="0">' . JText::_('COM_DROPFILES_CONFIG_SELECT_A_CATEGORY') . '</option>';
             $url_obj_docman = 'com://admin/docman.controller.category';
             $cats = KObjectManager::getInstance()->getObject($url_obj_docman)->limit(0)->sort('title')->browse();
@@ -53,7 +54,7 @@ class JFormFieldDocmanimport extends JFormField
             $return .= '<button id="docman_import_button" class="btn btn-small">';
             $return .= JText::_('COM_DROPFILES_CONFIG_RUN_DOCMAN_IMPORT') . '</button>';
         } else {
-            $return = '<span class="check-import-hidden" >';
+            $return = '<span class="check-import-hidden no-docman" >';
             $return .= JText::_('COM_DROPFILES_CONFIG_IMPORT_AVAILABLE_DOCMAN') . '</span>';
         }
         return $return;

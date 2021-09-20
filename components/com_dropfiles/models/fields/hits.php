@@ -40,7 +40,7 @@ class JFormFieldHits extends JFormField
         $html_hits_reset = '<input size="6" type="text" name="' . $this->name . '" id="' . $this->id . '"';
         $html_hits_reset .= ' readonly="true" value="' . (int)$this->value . '" class=" ' . $class . '">';
         $html_hits_reset .= '<button type="button" class="btn" onclick="jQuery(\'#' . $this->id . '\').val(0);";" >';
-        $html_hits_reset .= JText::_('COM_DROPFILES_FIELD_HITS_RESET') . '</button><div class="clearfix"></div>';
+        $html_hits_reset .= '<i class="material-icons reset-icons">autorenew</i>' . JText::_('COM_DROPFILES_FIELD_HITS_RESET') . '</button><div class="clearfix"></div>';
         return $html_hits_reset;
     }
 }

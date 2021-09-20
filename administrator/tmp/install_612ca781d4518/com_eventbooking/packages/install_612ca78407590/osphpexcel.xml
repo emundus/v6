@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="library" version="3.0" method="upgrade">
+	<name>PHPExcel Library</name>
+	<libraryname>osphpexcel</libraryname>
+	<description>PHPExcel - OpenXML - Read, Write and Create Excel documents in PHP</description>
+	<creationDate>Aguust 2016</creationDate>
+	<author>Tuan Pham Ngoc</author>
+	<authorEmail>tuanpn@joomdonation.com</authorEmail>
+	<authorUrl>http://www.joomdonation.com</authorUrl>
+	<copyright>Copyright (c) 2006 - 2016 PHPExcel</copyright>
+	<license>LGPL http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt</license>
+	<version>1.0.0</version>
+	<files>
+		<folder>PHPExcel</folder>		
+		<filename>PHPExcel.php</filename>
+	</files>
+	<files target="administrator/manifests/libraries">
+		<file>osphpexcel.xml</file>
+	</files>
+</extension>

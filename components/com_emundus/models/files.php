@@ -2838,9 +2838,9 @@ class EmundusModelFiles extends JModelLegacy
      * @param $fnums
      * @return bool|mixed
      */
-    public function getAssessorsByFnums($fnums)
+    public function getAssessorsByFnums($fnums,$column = 'uname')
     {
-        $query = 'select cc.fnum,  GROUP_CONCAT( DISTINCT u.name ) as uname
+        $query = 'select cc.fnum,  GROUP_CONCAT( DISTINCT u.name ) as uname, GROUP_CONCAT( DISTINCT u.id ) as uids
                   from #__emundus_campaign_candidature as cc
                   left join #__emundus_users_assoc as eua on eua.fnum = cc.fnum
                   left join #__users as u on u.id = eua.user_id
@@ -2849,7 +2849,7 @@ class EmundusModelFiles extends JModelLegacy
         {
             $db = $this->getDbo();
             $db->setQuery($query);
-            return $db->loadAssocList('fnum', 'uname');
+            return $db->loadAssocList('fnum', $column);
         }
         catch(Exception $e)
         {

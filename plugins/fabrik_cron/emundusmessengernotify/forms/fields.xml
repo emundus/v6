@@ -8,7 +8,13 @@
 				   description="PLG_CRON_EMAIL_TEMPLATE_DESC"
 				   label="PLG_CRON_EMAIL_TEMPLATE"
 				   size="30"
-				   default="15" />
+				   default="78" />
+
+			<field name="reminder_mail_id_coordinator"
+				   type="text"
+				   label="PLG_CRON_EMAIL_TEMPLATE_COORDINATOR"
+				   size="30"
+				   default="80" />
 		</fieldset>
 
 	</fields>

@@ -90,7 +90,7 @@ class DropfilesModelFrontcategories extends JModelList
             $params = new JRegistry();
 
         if ($active) {
-            $params->loadString($active->params);
+            $params->loadString($active->getParams());
         }
 
         $options               = array();
@@ -110,6 +110,7 @@ class DropfilesModelFrontcategories extends JModelList
             $user = JFactory::getUser();
         if ($dropfiles_params->get('categoryrestriction', 'accesslevel') === 'accesslevel') {
             $groups = $user->getAuthorisedViewLevels();
+
             if (count($cats)) {
                 foreach ($cats as $key => $cat) {
                     if (!in_array($cat->access, $groups)) {

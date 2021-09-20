@@ -189,3 +189,4 @@ $form_id = $form->id;
         <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
         <?php print_r($this->hiddenFields);?>
 </form>
+<?= $this->nav; ?>

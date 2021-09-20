@@ -31,6 +31,8 @@ class plgSystemFalangdriver extends JPlugin
 		//load plugin language
 		$this->loadLanguage();
 
+		$this->setupCoreFileOverride();
+
         // This plugin is only relevant for use within the frontend!
 		if (JFactory::getApplication()->isAdmin())
 		{
@@ -384,7 +386,15 @@ class plgSystemFalangdriver extends JPlugin
 				}
 			}
 
+			//fix for virtuemart / lang must be reset
+			if (JComponentHelper::isEnabled('com_virtuemart', true)){
+				if (!class_exists( 'VmConfig' )) require(JPATH_ROOT .'/administrator/components/com_virtuemart/helpers/config.php');
+				VmConfig::loadConfig();
+				vmLanguage::$jSelLangTag = false;
+				vmLanguage::initialise(true);
+			}
 		}
+
 		return array();
 	}
 
@@ -618,7 +628,7 @@ class plgSystemFalangdriver extends JPlugin
 
 		$input = JFactory::getApplication()->input;
 		$catid = $input->get('catid');
-		$language_id = $input->get('language_id');
+		$language_id = $input->get('select_language_id');
 		$reference_id = $input->get('reference_id');
 		$formData = new JRegistry($input->get('jform', '', 'array'));
 		$context = $catid;
@@ -740,14 +750,23 @@ class plgSystemFalangdriver extends JPlugin
 		if (empty($translations)) {
 			return;
 		}
+		//supposed to be array
+		$json_value = json_decode($translations,true);
 
-		$json_value = json_decode($translations);
+		if (isset($json_value[$field->name])) {
 
-		if (isset($json_value->{$field->name})) {
-			$field->valueUntranslated = $field->value;
+			$field->valueUntranslated    = $field->value;
 			$field->rawvalueUntranslated = $field->rawvalue;
-			$field->value = $json_value->{$field->name};
-			$field->rawvalue = $json_value->{$field->name};
+
+			if ($field->type != 'repeatable'){
+				$field->value                = $json_value[$field->name];
+				$field->rawvalue             = $json_value[$field->name];
+			} else {
+				//repeatable value are json encoded
+				$field->value                = json_encode($json_value[$field->name]);
+				$field->rawvalue             = json_encode($json_value[$field->name]);
+			}
+
 		}
 
 	}
@@ -786,4 +805,15 @@ class plgSystemFalangdriver extends JPlugin
 		}
 	}
 
+	//@since 3.4.3
+	public function setupCoreFileOverride(){
+		//for front and back
+		//override Front-end Language file for site and admin section. use for user language configuration
+		JLoader::register('Joomla\CMS\Form\Field\FrontendlanguageField', dirname(__FILE__).'/overrides/libraries/src/Form/Field/FrontendlanguageField.php', true);
+
+		//for back
+
+		//for front
+
+	}
 }

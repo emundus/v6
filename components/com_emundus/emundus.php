@@ -280,7 +280,6 @@ JText::script('PROGRAM_NAME');
 JText::script('CHOOSE_YOUR_OPTION');
 JText::script('RESTRICTED_ACCESS_OTHERS_EVAL');
 JText::script('GENERATE_EXCEL');
-JText::script('COM_EMUNDUS_CHOOSE_LETTER');
 
 //Export PDF
 JText::script('COM_EMUNDUS_PDF_GENERATION');
@@ -361,6 +360,8 @@ JText::script('COM_EMUNDUS_PLEASE_SELECT');
 JText::script('COM_EMUNDUS_MESSENGER_SEND');
 JText::script('COM_EMUNDUS_MESSENGER_WRITE_MESSAGE');
 JText::script('COM_EMUNDUS_MESSENGER_TYPE_ATTACHMENT');
+
+// GENERATE LETTER
 JText::script('COM_EMUNDUS_EXPORT_MODE');
 JText::script('COM_EMUNDUS_EXPORT_BY_CANDIDAT');
 JText::script('COM_EMUNDUS_EXPORT_BY_DOCUMENT');
@@ -371,18 +372,17 @@ JText::script('COM_EMUNDUS_DOCUMENT_EXPORT_TOOLTIP');
 JText::script('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP');
 JText::script('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP');
 JText::script('COM_EMUNDUS_SELECT_IMPOSSIBLE');
-
+JText::script('COM_EMUNDUS_MESSENGER_ATTACHMENTS');
+JText::script('GENERATE_DOCUMENT');
+JText::script('DOWNLOAD_DOCUMENT');
+JText::script('NO_LETTER_FOUND');
 JText::script('AFFECTED_CANDIDATS');
 JText::script('GENERATED_DOCUMENTS_LABEL');
 JText::script('GENERATED_DOCUMENTS_COUNT');
-JText::script('GENERATE_DOCUMENT');
-JText::script('DOWNLOAD_DOCUMENT');
-
 JText::script('CANDIDAT_GENERATED');
 JText::script('DOCUMENT_GENERATED');
 JText::script('CANDIDATE');
 JText::script('DOCUMENT_NAME');
-
 JText::script('CANDIDAT_INFORMATION');
 JText::script('CANDIDAT_STATUS');
 JText::script('EMAIL_SUBJECT');
@@ -393,11 +393,14 @@ JText::script('EMAIL_FAILED');
 JText::script('CAMPAIGN_YEAR');
 JText::script('CANDIDATE_EMAIL');
 JText::script('EMAIL_TAGS');
-
 JText::script('SEND_EMAIL_TOOLTIPS');
-JText::script('NO_LETTER_FOUND');
 
+// EXPORT EXCEL MODEL
+JText::script('COM_EMUNDUS_CHOOSE_LETTER');
 JText::script('COM_EMUNDUS_MODEL_ERR');
+
+// UPLOADED IMAGE IS TOO SMALL
+JText::script('ERROR_IMAGE_TOO_SMALL');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');

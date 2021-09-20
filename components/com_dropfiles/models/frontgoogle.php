@@ -107,7 +107,7 @@ class DropfilesModelFrontgoogle extends JModelLegacy
         $dbo = $this->getDbo();
         $query = 'SELECT * FROM #__dropfiles_google_files WHERE file_id=' . $dbo->quote($id_file);
         $dbo->setQuery($query);
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -143,7 +143,7 @@ class DropfilesModelFrontgoogle extends JModelLegacy
         $query .= ' Order By ' . $dbo->escape($ordering . ' ' . $dir);
 
         $dbo->setQuery($query);
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -165,7 +165,7 @@ class DropfilesModelFrontgoogle extends JModelLegacy
 
         $dbo->setQuery($query);
 
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -190,7 +190,46 @@ class DropfilesModelFrontgoogle extends JModelLegacy
         }
         $query = "DELETE From #__dropfiles_google_files WHERE file_id IN ('" . implode('\',\'', $files_clean) . "')";
         $dbo->setQuery($query);
-        $dbo->query();
+        $dbo->execute();
+    }
+
+    /**
+     *  Get all categories of google drive
+     *
+     * @param integer $catId     Category ID
+     * @param boolean $recursive Recursive get children category
+     *
+     * @return mixed
+     *
+     * @since version
+     */
+    public function getChildrenGoogleCategories($catId, $recursive = true)
+    {
+        $categories = JCategories::getInstance('dropfiles');
+        $cat = $categories->get((int)$catId);
+        $listCat = array();
+        if ($cat) {
+            $idList = array();
+            $children = $cat->getChildren($recursive);
+            if ($recursive) {
+                $idList[] =  $catId;
+            }
+            if (!empty($children)) {
+                foreach ($children as $child) {
+                    $idList[] = $child->id;
+                }
+            }
+
+            if (!empty($idList)) {
+                $dbo = $this->getDbo();
+                $query = 'SELECT d.type,d.cloud_id, c.id, c.title FROM #__categories as c, #__dropfiles as d';
+                $query .= " WHERE c.id=d.id AND c.extension = 'com_dropfiles'  AND d.type = 'googledrive' AND c.id IN (". implode(',', $idList).')';
+                $query .= ' Order by c.lft ASC';
+                $dbo->setQuery($query);
+                $listCat = $dbo->loadObjectList();
+            }
+        }
+        return $listCat;
     }
 
     /**
@@ -203,11 +242,11 @@ class DropfilesModelFrontgoogle extends JModelLegacy
     public function getAllGoogleCategories()
     {
         $dbo = $this->getDbo();
-        $query = 'SELECT d.type,d.cloud_id, c.title FROM #__categories as c, #__dropfiles as d';
-        $query .= " WHERE c.id=d.id AND c.extension = 'com_dropfiles'  AND d.type = 'googledrive'";
+        $query = 'SELECT d.type,d.cloud_id, c.id, c.title, c.level FROM #__categories as c, #__dropfiles as d';
+        $query .= " WHERE c.published = 1 AND c.id=d.id AND c.extension = 'com_dropfiles'  AND d.type = 'googledrive'";
         $query .= ' Order by c.lft ASC';
         $dbo->setQuery($query);
-        $dbo->query();
+        $dbo->execute();
         $listCat = $dbo->loadObjectList();
 
         return $listCat;
@@ -277,7 +316,7 @@ class DropfilesModelFrontgoogle extends JModelLegacy
         $query = 'SELECT f.id, f.file_id, f.catid, f.modified_time FROM #__dropfiles_google_files AS f';
         $query .= ' Order by f.catid ASC';
         $dbo->setQuery($query);
-        $dbo->query();
+        $dbo->execute();
         $listFiles = $dbo->loadObjectList();
 
         return $listFiles;

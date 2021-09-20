@@ -174,11 +174,11 @@ class pkg_falangInstallerScript
 <div class="faboba-installation-wrap row-fluid">
 			<div class="span4 faboba-installation-left span2">
                    <!-- image -->   
-				     <img src="../administrator/components/com_falang/assets/images/icon-48-falang.png" alt="Falang" />
+				     <img src="../administrator/components/com_falang/assets/images/logo-80.png" alt="Falang" />
             </div> 
              <div class="faboba-installation-right span8">
                 <div class="faboba-installation-texts">
-	                <h2>Falang basic<span>3.3.0</span></h2>
+	                <h2>Falang basic<span>3.4.6</span></h2>
 	                <p>The easiest way to build a multilanguage site on Joomla</p>
                 </div>
                 <div class="faboba-installation-footer">

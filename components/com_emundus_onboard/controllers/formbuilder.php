@@ -312,8 +312,9 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
             $getJtext = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $getJtext = new stdClass();
-            $getJtext->fr = $m_form->getTranslation($toJTEXT,$Content_Folder['fr']);
-            $getJtext->en = $m_form->getTranslation($toJTEXT,$Content_Folder['en']);
+            foreach ($languages as $language) {
+                $getJtext->{$language->sef} = $m_form->getTranslation($toJTEXT,$language->lang_code);
+            }
         }
         echo json_encode((object)$getJtext);
         exit;
@@ -707,6 +708,25 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
             $gid = $jinput->getInt('gid');
 
             $state = $m_form->disableRepeatGroup($gid);
+
+            $tab = array('status' => $state, 'msg' => 'worked');
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function displayhidegroup() {
+        $user = JFactory::getUser();
+
+        $m_form = $this->model;
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $gid = $jinput->getInt('gid');
+
+            $state = $m_form->displayHideGroup($gid);
 
             $tab = array('status' => $state, 'msg' => 'worked');
         }

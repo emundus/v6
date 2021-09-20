@@ -76,24 +76,24 @@ $listDirn = $this->escape($this->state->get('list.direction'));
             <?php echo JText::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
         </div>
     <?php else : ?>
-        <table class="table table-striped table-condensed">
+        <table class="table table-striped table-condensed widefat">
             <thead>
             <tr>
                 <th style="width: 15px"></th>
-                <th class="left">
+                <th class="left manage-colum">
                     <?php echo JHtml::_('grid.sort', 'COM_DROPFILES_HEADING_NAME', 'a.name', $listDirn, $listOrder); ?>
                 </th>
-                <th class="nowrap" width="25%">
+                <th class="nowrap manage-colum" width="25%">
                     <?php echo JHtml::_('grid.sort', 'JGLOBAL_USERNAME', 'a.username', $listDirn, $listOrder); ?>
                 </th>
-                <th class="nowrap" width="25%">
+                <th class="nowrap manage-colum" width="25%">
                     <?php echo JText::_('COM_DROPFILES_HEADING_GROUPS'); ?>
                 </th>
             </tr>
             </thead>
             <tfoot>
             <tr>
-                <td colspan="15">
+                <td colspan="15" class="user-pagination">
                     <?php echo $this->pagination->getListFooter(); ?>
                 </td>
             </tr>
@@ -105,20 +105,20 @@ $listDirn = $this->escape($this->state->get('list.direction'));
             foreach ($this->items as $item) : ?>
                 <tr class="row<?php echo $i % 2; ?>">
                     <?php $checked = in_array((string) $item->id, $selected) ? 'checked="checked"' : ''; ?>
-                    <td><input class="user-select"
+                    <td class="column-check"><input class="user-select"
                                data-user-value="<?php echo $item->id; ?>"
                                data-user-name="<?php echo $this->escape($item->name); ?>"
                                data-user-field="<?php echo $this->escape($field); ?>"
-                               type="checkbox"
+                               type="checkbox" onchange="jSelectMultipleUser(this)"
                             <?php echo $checked; ?>
                         /></td>
-                    <td>
+                    <td class="column-name">
                         <?php echo $item->name; ?>
                     </td>
-                    <td align="center">
+                    <td align="center" class="column-username">
                         <?php echo $item->username; ?>
                     </td>
-                    <td align="left">
+                    <td align="left" class="column-role">
                         <?php echo nl2br($item->group_names); ?>
                     </td>
                 </tr>
@@ -135,3 +135,13 @@ $listDirn = $this->escape($this->state->get('list.direction'));
         <?php echo JHtml::_('form.token'); ?>
     </div>
 </form>
+<script>
+    function jSelectMultipleUser(e) {
+
+        if (jQuery(e).is(':checked')) {
+            window.parent.multipleUser.setValue(jQuery(e).data('user-value'), jQuery(e).data('user-name'));
+        } else {
+            window.parent.multipleUser.unsetValue(jQuery(e).data('user-value'), jQuery(e).data('user-name'));
+        }
+    }
+</script>

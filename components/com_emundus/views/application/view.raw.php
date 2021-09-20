@@ -72,47 +72,47 @@ class EmundusViewApplication extends JViewLegacy {
         if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
             switch ($layout) {
                 case "synthesis":
-                    $program = $m_application->getProgramSynthesis($fnumInfos['campaign_id']);
-                    $campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], $fnumInfos['campaign_id']);
-                    $m_email = new EmundusModelEmails();
-                    $tag = array(
-                        'FNUM' => $fnum,
-                        'CAMPAIGN_NAME' => $fnum,
-                        'APPLICATION_STATUS' => $fnum,
-                        'APPLICATION_TAGS' => $fnum,
-                        'APPLICATION_PROGRESS' => $fnum
-                    );
-
-                    $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum);
                     $synthesis = new stdClass();
-                    $synthesis->program = $program;
-                    $synthesis->camp = $campaignInfo;
-                    $synthesis->fnum = $fnum;
-                    $synthesis->block = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
-                    // replace {fabrik_element_ids} in body
-
-                    $element_ids = $m_email->getFabrikElementIDs($synthesis->block);
-                    if (count(@$element_ids[0]) > 0) {
-                        $element_values = $m_email->getFabrikElementValues($fnum, $element_ids[1]);
-                        $synthesis->block = $m_email->setElementValues($synthesis->block, $element_values);
+                    $program = $m_application->getProgramSynthesis($fnumInfos['campaign_id']);
+                    if (!empty($program->synthesis)) {
+                        $campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], $fnumInfos['campaign_id']);
+                        $m_email = new EmundusModelEmails();
+                        $tag = array(
+                            'FNUM' => $fnum,
+                            'CAMPAIGN_NAME' => $fnum,
+                            'APPLICATION_STATUS' => $fnum,
+                            'APPLICATION_TAGS' => $fnum,
+                            'APPLICATION_PROGRESS' => $fnum
+                        );
+    
+                        $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum);
+                        
+                        $synthesis->program = $program;
+                        $synthesis->camp = $campaignInfo;
+                        $synthesis->fnum = $fnum;
+                        $synthesis->block = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
+                        // replace {fabrik_element_ids} in body
+    
+                        $element_ids = $m_email->getFabrikElementIDs($synthesis->block);
+                        if (count(@$element_ids[0]) > 0) {
+                            $element_values = $m_email->getFabrikElementValues($fnum, $element_ids[1]);
+                            $synthesis->block = $m_email->setElementValues($synthesis->block, $element_values);
+                        }
                     }
-
                     $this->assignRef('synthesis', $synthesis);
                     break;
 
                 case 'assoc_files':
                     $show_related_files = $params->get('show_related_files', 0);
-
-                    if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asManagerAccessLevel($this->_user->id)) {
+                    $assoc_files = new stdClass();
+                    
+                    if($show_related_files && (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asManagerAccessLevel($this->_user->id))) {
                         $campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id']);
-                    } else {
-                        $campaignInfo = $m_application->getCampaignByFnum($fnum);
+                        $assoc_files->camps = $campaignInfo;
+                        $assoc_files->fnumInfos = $fnumInfos;
+                        $assoc_files->fnum = $fnum;
                     }
-
-                    $this->synthesis = new stdClass();
-                    $this->synthesis->camps = $campaignInfo;
-                    $this->synthesis->fnumInfos = $fnumInfos;
-                    $this->synthesis->fnum = $fnum;
+                    $this->assignRef('assoc_files', $assoc_files);
                     break;
 
                 case 'attachment':

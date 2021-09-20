@@ -34,7 +34,6 @@ class DropfilesViewFrontfiles extends JViewLegacy
         $category = $modelCat->getCategory();
         $modelConfig = JModelLegacy::getInstance('Frontconfig', 'dropfilesModel');
 
-
         if (!$category) {
             return false;
         }
@@ -105,16 +104,48 @@ class DropfilesViewFrontfiles extends JViewLegacy
 
             $modelOnedrive = JModelLegacy::getInstance('Frontonedrive', 'dropfilesModel');
             $files = $modelOnedrive->getItems($category->cloud_id, $ordering, $direction);
+        } elseif ($category->type === 'onedrivebusiness') {
+            if (isset($params->params->ordering)) {
+                $ordering = $params->params->ordering;
+            } else {
+                $ordering = 'ordering';
+            }
+            if (isset($params->params->orderingdir)) {
+                $direction = $params->params->orderingdir;
+            } else {
+                $direction = 'asc';
+            }
+
+            $modelOnedriveBusiness = JModelLegacy::getInstance('Frontonedrivebusiness', 'dropfilesModel');
+            $files = $modelOnedriveBusiness->getItems($category->cloud_id, $ordering, $direction);
         } else {
             $model->getState('onsenfout'); //To autopopulate state
             $model->setState('filter.access', false);
+            $subparams    = (array) $params->params;
+            $lstAllFile   = null;
+            $ordering     = (isset($params->params->ordering)) ? $params->params->ordering : '';
+            $orderingdir  = (isset($params->params->orderingdir)) ? $params->params->orderingdir : '';
             if (isset($params->params->ordering)) {
                 $model->setState('list.ordering', $params->params->ordering);
             }
             if (isset($params->params->orderingdir)) {
                 $model->setState('list.direction', $params->params->orderingdir);
             }
+            if (!empty($subparams) && isset($subparams['refToFile'])) {
+                if (isset($subparams['refToFile'])) {
+                    $listCatRef = $subparams['refToFile'];
+                    $lstAllFile = $this->getAllFileRef($model, $listCatRef, $ordering, $orderingdir);
+                }
+            }
             $files = $model->getItems();
+            if (!empty($lstAllFile)) {
+                $files = array_merge($lstAllFile, $files);
+                if (isset($params->params->ordering) && isset($params->params->orderingdir)) {
+                    $ordering = $params->params->ordering;
+                    $direction = $params->params->orderingdir;
+                    $files = DropfilesHelper::orderingMultiCategoryFiles($files, $ordering, $direction);
+                }
+            }
         }
 
         $content = new stdClass();
@@ -123,5 +154,27 @@ class DropfilesViewFrontfiles extends JViewLegacy
 
         echo json_encode($content);
         JFactory::getApplication()->close();
+    }
+
+    /**
+     * Get all file referent
+     *
+     * @param object $model       Files model
+     * @param array  $listCatRef  List category
+     * @param string $ordering    Ordering
+     * @param string $orderingdir Ordering direction
+     *
+     * @return array
+     */
+    public function getAllFileRef($model, $listCatRef, $ordering, $orderingdir)
+    {
+        $lstAllFile = array();
+        foreach ($listCatRef as $key => $value) {
+            if (is_array($value) && !empty($value)) {
+                $lstFile    = $model->getFilesRef($key, $value, $ordering, $orderingdir);
+                $lstAllFile = array_merge($lstFile, $lstAllFile);
+            }
+        }
+        return $lstAllFile;
     }
 }

@@ -123,7 +123,7 @@ class DropfilesModelFrontonedrive extends JModelLegacy
         $query .= ' Order By ' . $dbo->escape($ordering . ' ' . $dir);
 
         $dbo->setQuery($query);
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -145,7 +145,7 @@ class DropfilesModelFrontonedrive extends JModelLegacy
 
         $dbo->setQuery($query);
 
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -180,7 +180,7 @@ class DropfilesModelFrontonedrive extends JModelLegacy
         $query->where('state = 1');
         $dbo->setQuery($query);
 
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -206,7 +206,7 @@ class DropfilesModelFrontonedrive extends JModelLegacy
 
         $query = 'DELETE From #__dropfiles_onedrive_files WHERE file_id IN (' . implode(',', $files_clean) . ')';
         $dbo->setQuery($query);
-        $dbo->query();
+        $dbo->execute();
     }
 
     /**
@@ -221,7 +221,7 @@ class DropfilesModelFrontonedrive extends JModelLegacy
         $query .= " WHERE c.id=d.id AND c.extension = 'com_dropfiles'  AND d.type = 'onedrive'";
         $query .= ' Order by c.lft ASC';
         $dbo->setQuery($query);
-        $dbo->query();
+        $dbo->execute();
         $listCat = $dbo->loadObjectList();
 
         return $listCat;
@@ -238,7 +238,7 @@ class DropfilesModelFrontonedrive extends JModelLegacy
         $query = 'SELECT f.id, f.file_id, f.catid, f.modified_time FROM #__dropfiles_onedrive_files AS f';
         $query .= ' Order by f.catid ASC';
         $dbo->setQuery($query);
-        $dbo->query();
+        $dbo->execute();
         $listFiles = $dbo->loadObjectList();
 
         $results = array();

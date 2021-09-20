@@ -92,7 +92,7 @@ class DropfilesModelUsers extends JModelList
         $groups = json_decode(base64_decode($app->input->get('groups', '', 'BASE64')));
 
         if (isset($groups)) {
-            JArrayHelper::toInteger($groups);
+            Joomla\Utilities\ArrayHelper::toInteger($groups);
         }
 
         $this->setState('filter.groups', $groups);
@@ -100,7 +100,7 @@ class DropfilesModelUsers extends JModelList
         $excluded = json_decode(base64_decode($app->input->get('excluded', '', 'BASE64')));
 
         if (isset($excluded)) {
-            JArrayHelper::toInteger($excluded);
+            Joomla\Utilities\ArrayHelper::toInteger($excluded);
         }
 
         $this->setState('filter.excluded', $excluded);
@@ -167,7 +167,6 @@ class DropfilesModelUsers extends JModelList
 
                 return $items;
             }
-
             // Joining the groups with the main query is a performance hog.
             // Find the information only on the result set.
 
@@ -401,7 +400,9 @@ class DropfilesModelUsers extends JModelList
 
         // Filter by excluded users
         $excluded = $this->getState('filter.excluded');
-
+        $excluded = array_filter($excluded, function ($value) {
+            return !empty($value);
+        });
         if (!empty($excluded)) {
             $query->where('id NOT IN (' . implode(',', $excluded) . ')');
         }
@@ -412,7 +413,6 @@ class DropfilesModelUsers extends JModelList
                 $db->escape($this->getState('list.ordering', 'a.name'))
             ) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
         );
-
         return $query;
     }
 
