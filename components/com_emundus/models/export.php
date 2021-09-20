@@ -119,7 +119,7 @@ class EmundusModelExport extends JModelList {
             }
 
             $res->status = true;
-            $res->msg = '<a href="'.$dest.'" target="_blank">'.$dest.'</a>';
+            //$res->msg = '<a href="'.$dest.'" target="_blank">'.$dest.'</a>';
             return $res;
         }
         else

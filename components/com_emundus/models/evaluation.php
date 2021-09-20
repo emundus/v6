@@ -2492,11 +2492,6 @@ class EmundusModelEvaluation extends JModelList {
                                 unlink($original_name);
 
                                 /// remove it in database
-//                                $query = $this->_db->getQuery(true);
-//                                $query->clear()
-//                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
-//                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
-//                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($name));
 
                                 $query = 'DELETE FROM #__emundus_uploads 
                                                 WHERE #__emundus_uploads.fnum = ' . $fnum .
@@ -2624,8 +2619,8 @@ class EmundusModelEvaluation extends JModelList {
 
                             if (file_exists($path_name) or file_exists($original_name)) {
                                 // remove old file and reupdate in database
-                                // unlink($original_name);
-                                // unlink($path_name);
+                                unlink($original_name);
+                                unlink($path_name);
 
                                 $query = 'DELETE FROM #__emundus_uploads 
                                                 WHERE #__emundus_uploads.fnum = ' . $fnum .
@@ -2819,6 +2814,9 @@ class EmundusModelEvaluation extends JModelList {
 
                                     $this->_db->setQuery($query);
                                     $this->_db->execute();
+
+                                    unlink($original_name);
+                                    unlink($path_name);
                                 }
 
                                 $preprocess->saveAs($original_name);
@@ -2827,7 +2825,11 @@ class EmundusModelEvaluation extends JModelList {
                                     $dest = str_replace('.docx', '.pdf', $original_name);
                                     $filename = str_replace('.docx', '.pdf', $filename);
                                     $m_Export->toPdf($original_name, $dest, $fnum);
-                                    unlink($original_name);
+
+                                    copy($original_path . DS . $filename, $path . DS . $filename);
+
+                                    unlink($path . $original_name);
+                                    unlink($$original_path . DS . $original_name);
 
                                     $query = 'DELETE FROM #__emundus_uploads 
                                                     WHERE #__emundus_uploads.fnum = ' . $fnum .
@@ -2836,6 +2838,8 @@ class EmundusModelEvaluation extends JModelList {
 
                                     $this->_db->setQuery($query);
                                     $this->_db->execute();
+                                } else {
+                                    copy($original_name, $path_name);
                                 }
 
                                 $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
@@ -2979,6 +2983,12 @@ class EmundusModelEvaluation extends JModelList {
                             if (file_exists($original_name) or file_exists($path_name)) {
                                 unlink($original_name);
                                 unlink($path_name);
+//                                $query = $this->_db->getQuery(true);
+//
+//                                $query->clear()
+//                                    ->delete($this->_db->quoteName('#__emundus_uploads'))
+//                                    ->where($this->_db->quoteName('#__emundus_uploads.fnum') . ' = ' . $fnum)
+//                                    ->andWhere($this->_db->quoteName('#__emundus_uploads.filename') . ' = ' . $this->_db->quote($filename));
                                 $query = 'DELETE FROM #__emundus_uploads 
                                                     WHERE #__emundus_uploads.fnum = ' . $fnum .
                                     ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
@@ -3119,6 +3129,14 @@ class EmundusModelEvaluation extends JModelList {
 
                     if(sizeof($mergeFiles) > 0) { $this->copy_directory($mergeDirPath, $mergeZipAllPath . DS . end(explode('/', $mergeDirPath))); }
 
+                    // can be used
+                    /*$mergeFiles = glob($mergeDirPath . DS . '*');
+                    foreach($mergeFiles as $_mF) {
+                        ///copy $_mF into $_mergeZipPath . DS . $_mF
+                        $_mFName = end(explode('/', $_mF));
+                        copy($_mF, $mergeZipAllPath . DS . $_mFName);
+                    }*/
+
                     /// lastly, zip this folder
                     $this->ZipLetter($mergeZipAllPath,$mergeZipAllPath . '.zip', true);
 
@@ -3220,12 +3238,28 @@ class EmundusModelEvaluation extends JModelList {
 
                         $this->copy_directory($dir_Merge_Path, $zip_All_Merge_Path . DS . str_replace('__merge', '', end(explode('/', $dir_Merge_Path))));
 
+                        // can be used
+                        /*$mergeFiles = glob($dir_Merge_Path . DS . '*');
+
+                        foreach($mergeFiles as $_mF) {
+                            // get the name
+                            $_mFName = end(explode('/', $_mF));
+                            copy($_mF, $zip_All_Merge_Path . DS . $_mFName);
+                        }*/
 //                        /// last one, zip this --total file
 
                         $this->ZipLetter($dir_Merge_Path, $tmp_path . $_mergeZipName, true);
                         $this->ZipLetter($zip_All_Merge_Path, $zip_All_Merge_Path . '_' . '.zip', true);
                     } else {
                         $this->copy_directory($dir_Name_Path, $zip_All_Path . DS . end(explode('/', $dir_Name_Path)));
+
+                        /// may be used
+                        /*$unMergeFiles = glob($dir_Name_Path . DS . '*');
+
+                        foreach($unMergeFiles as $_uF) {
+                            $_uFNames = end(explode('/', $_uF));
+                            copy($_uF, $zip_All_Path . DS . $_uFNames);
+                        }*/
                         $this->ZipLetter($zip_All_Path, $zip_All_Path . '_' . '.zip', true);
                     }
                 }
@@ -3264,7 +3298,7 @@ class EmundusModelEvaluation extends JModelList {
             }
         }
 
-        /// remove temporary folders in images/emundus/files/tmp
+        // remove temporary folders in images/emundus/files/tmp
         foreach($fnum_Array as $key => $fnum) {
             $fnum_info = $_mFile->getFnumInfos($fnum);
 

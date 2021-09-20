@@ -3590,7 +3590,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
         $files = $m_files->getAttachmentsById($idFiles);
 
-        $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'_x'.(count($files)-1).'.zip';
+        // $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'_x'.(count($files)-1).'.zip';
+        $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'.zip';
         $path = JPATH_BASE.DS.'tmp'.DS.$nom;
 
         if (extension_loaded('zip')) {
@@ -3642,7 +3643,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function exportonedoc() {
         //require_once JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php';
-require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
             $rendererName = \PhpOffice\PhpWord\Settings::PDF_RENDERER_TCPDF;
