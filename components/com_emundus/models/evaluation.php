@@ -3171,7 +3171,9 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             /// remove unzipped folder
-            $this->deleteAll($mergeZipAllPath);
+            $_deleteFolders = glob($mergeZipAllPath . DS . '*');
+            foreach($_deleteFolders as $_deleteFolder) { $this->deleteAll($_deleteFolder); }
+            rmdir($mergeZipAllPath);
             $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
         }
 
@@ -3302,15 +3304,15 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             if($mergeMode == 1) {
-                $delete_total_files = glob($zip_All_Merge_Path . DS . '*');
-                foreach($delete_total_files as $_file) { if(is_file($_file)) { unlink($_file); }}
-                rmdir($zip_All_Merge_Path);
+                $_deleteFolders = glob($zip_All_Merge_Path . DS . '*');
+                foreach($_deleteFolders as $_deleteFolder) { $this->deleteAll($_deleteFolder); }
+                $this->deleteAll($zip_All_Merge_Path);
                 $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name . '_.zip';
 
             } else {
-                $delete_total_files = glob($zip_All_Path . DS . '*');
-                foreach($delete_total_files as $_file) { if(is_file($_file)) {unlink($_file);} }
-                rmdir($zip_All_Path);
+                $_deleteFolders = glob($zip_All_Path . DS . '*');
+                foreach($_deleteFolders as $_deleteFolder) { $this->deleteAll($_deleteFolder); }
+                $this->deleteAll($zip_All_Path);
                 $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name . '_.zip';
             }
         }
