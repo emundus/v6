@@ -71,12 +71,13 @@ class EmundusModelExport extends JModelList {
 
             ///
             $src = $file_src;
+            $file = array_pop(explode('/',$file_src));
             $dest = $file_dest;
 
             //TODO: parse URL to make it cleaner
             $client = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client());
             $files = [
-                DocumentFactory::makeFromPath(explode('/',$file_src)[8], $src),
+                DocumentFactory::makeFromPath($file, $src),
             ];
 
             try {
