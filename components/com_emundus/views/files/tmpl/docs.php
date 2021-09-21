@@ -16,10 +16,12 @@ $template_type = array(
     </br>
 
     <label for="em-doc-cansee"><?= JText::_('CAN_BE_VIEWED'); ?></label>
-    <select name="cansee" id="em-doc-cansee" class="form-control">
-        <option value="0"><?= JText::_('JNO'); ?></option>
-        <option value="1"><?= JText::_('JYES'); ?></option>
-    </select>
+    </br>
+
+    <label class="em-switch">
+        <input type="checkbox" name="type" id="em-doc-cansee">
+        <span class="em-slider em-round"></span>
+    </label>
 
     </br>
 
@@ -47,10 +49,15 @@ $template_type = array(
 
         </br>
 
-        <select name="merge" id="em-doc-pdf-merge" class="form-control">
-            <option value="0"><?= JText::_('JNO'); ?></option>
-            <option value="1"><?= JText::_('JYES'); ?></option>
-        </select>
+<!--        <select name="merge" id="em-doc-pdf-merge" class="form-control">-->
+<!--            <option value="0">--><?//= JText::_('JNO'); ?><!--</option>-->
+<!--            <option value="1">--><?//= JText::_('JYES'); ?><!--</option>-->
+<!--        </select>-->
+
+        <label class="em-switch">
+            <input type="checkbox" name="type" id="em-doc-pdf-merge">
+            <span class="em-slider em-round"></span>
+        </label>
 
         </br>
         <div id="merge-tooltips"></div>
@@ -114,3 +121,62 @@ $template_type = array(
         }
     })
 </script>
+
+<style>
+    .em-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* The slider */
+    .em-slider {
+        /*position: absolute;*/
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #a2a1a1;
+        -webkit-transition: .4s;
+        transition: .4s;
+        display: block;
+    }
+
+    .em-slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 20px;
+        transition: .4s;
+        background: #f9f5f5;
+    }
+
+    input:checked + .em-slider {
+        background-color: #12db42;
+    }
+
+    input:focus + .em-slider {
+        box-shadow: 0 0 1px #F4F4F6;
+    }
+
+    input:checked + .em-slider:before {
+        -webkit-transform: translateX(32px);
+        -ms-transform: translateX(32px);
+        transform: translateX(32px);
+        /*display: block;*/
+    }
+
+    .em-slider.em-round {
+        border-radius: 34px;
+        width: 60px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+    }
+
+    .em-slider.em-round:before {
+        border-radius: 50%;
+    }
+</style>

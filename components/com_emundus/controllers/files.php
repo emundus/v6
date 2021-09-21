@@ -4266,8 +4266,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = $jinput->post->getRaw('fnums');
         $templates = $jinput->post->getRaw('ids_tmpl');
         $canSee = $jinput->post->getRaw('cansee', 0);
+
+        if($canSee == 'on') { $canSee = 1; } else { $canSee = 0; }
+
         $showMode = $jinput->post->getRaw('showMode', 0);
         $mergeMode = $jinput->post->getRaw('mergeMode', 0);
+
+        if($mergeMode == 'on') { $mergeMode = 1; } else { $mergeMode = 0; }
 
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
         $_mEval = new EmundusModelEvaluation;
