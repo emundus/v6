@@ -32,11 +32,13 @@ class modEmundusCustomHelper {
 			die(json_encode((object)['status' => false, 'msg' => 'Aucun numéro de dossier envoyé.']));
 		}
 
-		$query->select($db->quoteName(['tu.max_occupants', 'cc.campaign_id', 'c.training']))
-			->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
-			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
-			->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 'tu').' ON '.$db->quoteName('tu.code').' = '.$db->quoteName('c.training'))
-			->where($db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum));
+        $query->select($db->quoteName(['tu.max_occupants', 'cc.campaign_id', 'c.training']))
+            ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
+            ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 'tu').' ON '.$db->quoteName('tu.code').' = '.$db->quoteName('c.training'))
+            ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 'tu2').' ON '.$db->quoteName('tu.schoolyear').' = '.$db->quoteName('c.year'))
+            ->where($db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum))
+            ->group($db->quoteName('cc.campaign_id'));
 		$db->setQuery($query);
 		try {
 			$res = $db->loadObject();
