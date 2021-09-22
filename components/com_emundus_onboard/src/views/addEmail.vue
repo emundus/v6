@@ -476,9 +476,9 @@ import Multiselect from 'vue-multiselect';
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
-          data: qs.stringify({ body: this.form, code: this.email })
+          data: qs.stringify({ body: this.form, code: this.email, selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC, selectedLetters: this.selectedLetter})
         }).then(response => {
-          this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+          //this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
         }).catch(error => {
           console.log(error);
         });
