@@ -200,7 +200,40 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 	        $data = $jinput->getRaw('body');
 	        $m_email = $this->model;
 
-            $result = $m_email->createEmail($data);
+            $receivers_cc = $jinput->getRaw('selectedReceiversCC');
+            $receivers_bcc = $jinput->getRaw('selectedReceiversBCC');
+            $letters = $jinput->getRaw('selectedLetters');
+
+            $cc_list = [];
+            $bcc_list = [];
+            $letter_list = [];
+
+            // get receiver cc from cc list
+            if(!empty($receivers_cc) and !is_null($receivers_cc)) {
+                foreach ($receivers_cc as $key => $value) {
+                    if(!empty($value['email']) or !is_null($value['email'])) {
+                        $cc_list[] = $value['email'];
+                    }
+                }
+            }
+
+            // get receiver bcc from cc list
+            if(!empty($receivers_bcc) and !is_null($receivers_bcc)) {
+                foreach ($receivers_bcc as $key => $value) {
+                    if(!empty($value['email']) or !is_null($value['email'])) {
+                        $bcc_list[] = $value['email'];
+                    }
+                }
+            }
+
+            // get letters
+            if(!empty($letters) and !is_null($letters)) { foreach ($letters as $letter) { $letter_list[] = $letter['id']; } }
+
+            $_save_letters = implode(',', $letter_list);
+
+            $data['letter_attachment'] = $_save_letters;
+
+            $result = $m_email->createEmail($data, $cc_list, $bcc_list);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);
@@ -252,6 +285,9 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 	        $m_email = $this->model;
 
             $email = $m_email->getEmailById($id);
+
+//            var_dump($email);die;
+
             if (!empty($email)) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $email);
             } else {
