@@ -478,7 +478,8 @@ import Multiselect from 'vue-multiselect';
           },
           data: qs.stringify({ body: this.form, code: this.email, selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC, selectedLetters: this.selectedLetter})
         }).then(response => {
-          //this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+          // this.redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + this.email);
+          this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
         }).catch(error => {
           console.log(error);
         });
@@ -503,6 +504,7 @@ import Multiselect from 'vue-multiselect';
               users: this.selectedUsers
             })
           }).then((rep) => {
+            // this.redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + this.email);
             this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
           });
         }).catch(error => {

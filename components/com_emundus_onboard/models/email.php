@@ -810,4 +810,30 @@ class EmundusonboardModelemail extends JModelList {
             return false;
         }
     }
+
+    // get receivers from fabrik tags
+    public function getEmailsFromFabrikIds($ids) {
+        $db = JFactory::getDbo();
+
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'files.php');
+
+        $m_files_onboard = new EmundusModelFiles;
+
+        $output = [];
+
+        $fabrik_results = $m_files_onboard->getValueFabrikByIds($ids);
+
+        foreach($fabrik_results as $key => $fabrik) {
+            $query = 'SELECT ' . $fabrik['db_table_name'] . '.' . $fabrik['name'] . ' FROM ' . $fabrik['db_table_name'] . ' WHERE ' . $fabrik['db_table_name'] . '.' . $fabrik['name'] . ' IS NOT NULL';
+            $db->setQuery($query);
+            $output[] = $db->loadObjectList();
+        }
+
+        $array_reduce = (array) array_reduce($output, 'array_merge', array());
+
+        $result = [];
+        foreach($array_reduce as $key => $value) { foreach((array)$value as $index => $data) { $result[] = $data; } }
+
+        return array_unique($result);       // return array unique
+    }
 }

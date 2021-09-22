@@ -4283,6 +4283,32 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
+    // get fabrik value by id --> need to integrate to KIT project
+    public function getfabrikvaluebyid() {
+        $jinput = JFactory::getApplication()->input;
+
+        $fabrikIds = $jinput->post->getRaw('elements', null);
+
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'email.php');
+
+        $m_emails = new EmundusonboardModelemail;
+        $m_files = $this->getModel('Files');
+
+        $tag_ids = [];
+
+        foreach($fabrikIds as $key => $tag) {
+            $tag_ids[] = reset($m_files->getVariables($tag));
+        }
+
+        $res = $m_emails->getEmailsFromFabrikIds($tag_ids);
+
+        if($res) {
+            echo json_encode((object)(array('status' => true, 'data' => $res)));
+        } else {
+            echo json_encode((object)(array('status' => false, 'data' => null)));
+        }
+        exit;
+    }
 }
 
 
