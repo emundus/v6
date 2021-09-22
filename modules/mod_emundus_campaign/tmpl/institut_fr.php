@@ -18,6 +18,12 @@ $site_offset = $config->get('offset');
 
 ?>
 
+<style>
+    .hide {
+        display: none !important;
+    }
+</style>
+
 <div class = "navfilter">
     <div class = "depositor">
         <select id = "depositor_select" onchange="searchCampaign()">

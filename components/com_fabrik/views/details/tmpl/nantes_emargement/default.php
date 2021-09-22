@@ -27,7 +27,6 @@ $now = date('d/m/Y');
         <div class="em-headerdompdf-title">
             <h1><?= $form->label; ?></h1>
             <span><?= $this->data["jos_emundus_emargemnt___campaign_id"];?></span>
-            <span>Année universitaire <?= $this->data["jos_emundus_emargemnt___schoolyear"];?></span>
             <span>FEUILLE D'EMARGEMENT</span>
             <span><?= $now ?></span>
         </div>
@@ -77,3 +76,4 @@ echo $this->loadTemplate('actions');
 echo '</div>';
 echo $form->outro;
 echo $this->pluginend;
+echo $this->nav;
