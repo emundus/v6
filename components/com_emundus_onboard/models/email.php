@@ -260,6 +260,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             $email_Info = $db->loadObject();           /// get email info
 
+//            var_dump($email_Info);die;
             /// get receivers cc
             $query->clear()
                 ->select('#__emundus_setup_emails_receivers_repeat.*')
@@ -290,13 +291,15 @@ class EmundusonboardModelemail extends JModelList {
             $template_Info = $db->loadObjectList();
 
             /// get associated letters
-            $query->clear()
-                ->select('#__emundus_setup_attachments.*')
-                ->from($db->quoteName('#__emundus_setup_attachments'))
-                ->where($db->quoteName('#__emundus_setup_attachments.id') . ' IN ( ' . $email_Info->letter_attachment . ' )');
+            if(!is_null($email_Info->letter_attachment)) {
+                $query->clear()
+                    ->select('#__emundus_setup_attachments.*')
+                    ->from($db->quoteName('#__emundus_setup_attachments'))
+                    ->where($db->quoteName('#__emundus_setup_attachments.id') . ' IN ( ' . $email_Info->letter_attachment . ' )');
 
-            $db->setQuery($query);
-            $letter_Info = $db->loadObjectList();         /// get attachment info
+                $db->setQuery($query);
+                $letter_Info = $db->loadObjectList();         /// get attachment info
+            } else { $letter_Info = null; }
 
             return array('email' => $email_Info, 'receivers' => $receiver_Info, 'template' => $template_Info, 'letter_attachment' => $letter_Info);
         } catch(Exception $e) {

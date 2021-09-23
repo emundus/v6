@@ -1677,4 +1677,21 @@ class EmundusControllerMessages extends JControllerLegacy {
         }
         exit;
     }
+
+    // get attachments by profiles
+    public function getattachmentsbyprofiles() {
+        $jinput = JFactory::getApplication()->input;
+
+        $fnums = explode(',', $jinput->post->getRaw('fnums'));
+
+        $_mMessages = $this->getModel('Messages');
+        $_results = $_mMessages->getAttachmentsByProfiles($fnums);
+
+        if($_results) {
+            echo json_encode(['status' => true, 'attachments' => $_results]);
+        } else {
+            echo json_encode(['status' => false, 'attachments' => null]);
+        }
+        exit;
+    }
 }
