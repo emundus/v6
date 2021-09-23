@@ -1,121 +1,145 @@
 <template>
   <div class="container-evaluation">
     <ModalAddDocuments
-            :cid="this.campaignId"
-            :pid="this.profileId"
-            :doc="this.currentDoc"
-            :langue="langue"
-            :manyLanguages="manyLanguages"
-            @UpdateDocuments="updateList"
+        :cid="this.campaignId"
+        :pid="this.profileId"
+        :doc="this.currentDoc"
+        :langue="langue"
+        :manyLanguages="manyLanguages"
+        @UpdateDocuments="updateList"
     />
+
+    <a @click="$modal.show('modalAddDocuments')" class="bouton-ajouter bouton-ajouter-green pointer" style="width: max-content">
+      <div class="add-button-div">
+        <em class="fas fa-plus mr-1"></em>
+        {{ createDocument }}
+      </div>
+    </a>
+
     <transition :name="'slide-down'" type="transition">
-    <div class="w-form">
-      <ul style="padding-left: 0">
-        <draggable
-          v-model="documents"
-          tag="ul"
-          class="list-group"
-          handle=".handle"
-          v-bind="dragOptions"
-        >
-          <transition-group type="transition" :value="!drag ? 'flip-list' : null">
-            <li class="list-group-item"
-              :id="'itemDoc' + document.id"
-              v-for="(document, indexDoc) in documents"
-              :key="indexDoc">
-              <em class="fas fa-grip-vertical handle" style="color: #cecece;"></em>
-              <div style="display: inline;">
-                <span class="draggable">
-                  {{ document.value }}
-                  <span class="document-allowed_types">({{ document.allowed_types }})</span>
-                </span>
-                <button type="button" class="buttonDeleteDoc" style="margin-left: 0" @click="openUpdateDoc(document)">
-                  <em class="fas fa-pencil-alt"></em>
-                </button>
-                <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
-                  <em class="fas fa-times"></em>
-                </button>
-                <div style="float: right"
-                     :class="document.need == 1
-                     ? 'text-required'
-                     : ''">
-                  {{ inners[langue][2] }}
-                </div>
-                <div @click="changeState(indexDoc, document.id)"
-                  :id="'spanDoc' + document.id"
-                  style="float: right; margin: 0 12px"
-                  class="toggle changeStateDoc">
-                  <input
-                    type="checkbox"
-                    true-value="1"
-                    false-value="0"
-                    class="check"
-                    id="published"
-                    name="published"
-                    v-model="document.need"
-                  />
-                  <strong class="b switch"></strong>
-                  <strong class="b track"></strong>
-                </div>
-                <div style="float: right"
-                     :class="document.need == 0
-                     ? 'text-non-required'
-                     : ''">
-                  {{ inners[langue][1] }}
-                </div>
-              </div>
-            </li>
-          </transition-group>
-        </draggable>
-      </ul>
-
-      <hr>
-
-      <ul style="padding-left: 0">
-        <draggable
-          v-model="undocuments"
-          tag="ul"
-          class="list-group"
-          handle=".handle"
-          v-bind="undocDragOptions">
-          <transition-group type="transition" :value="!drag ? 'flip-list' : null">
-            <li
-              class="list-group-item undocuments-item"
-              :class="
-                undocument.need == 1
-                  ? 'documentObligatoire'
-                  : undocument.need == 0
-                  ? 'documentFacultatif'
-                  : ''
-              "
-              :id="'itemDoc' + undocument.id"
-              v-for="(undocument, indexUndoc) in undocuments"
-              :key="indexUndoc"
-            >
-              <button type="button" @click="addUndoc(indexUndoc)" class="buttonAddDoc">
-                <em class="fas fa-plus"></em>
-              </button>
-              <div style="display: inline;">
-                <span class="draggable">{{ undocument.value }} <span class="document-allowed_types">({{ undocument.allowed_types }})</span></span>
-                <button type="button" class="buttonDeleteDoc" style="margin-left: 0" @click="openUpdateDoc(undocument)">
-                  <em class="fas fa-pencil-alt"></em>
-                </button>
-                <div :id="'spanDoc' + undocument.id" class="text-no-assigned">
-                  <span class="col-md-10">{{ inners[langue][0] }}</span>
-                  <div v-show="undocument.can_be_deleted" class="ml-10px" @click="deleteDocument(undocument.id,indexUndoc)">
-                    <em class="fas fa-trash-alt" style="color: red; cursor: pointer"></em>
+      <div class="w-form d-flex" style="align-items: unset">
+        <ul style="padding-left: 0" class="ml-0 w-50">
+          <h2 class="blue-text-instruction" v-html="documentNoAssigned"></h2>
+          <draggable
+              v-model="undocuments"
+              v-bind="dragOptionsUndoc"
+              tag="ul"
+              class="list-group ml-0"
+              handle=".handle"
+              @end="addingToDocs($event)"
+              group="documents">
+            <transition-group type="transition" :value="!drag ? 'flip-list' : null">
+              <li class="list-doc-item undocuments-item"
+                  :class="
+                  undocument.need == 1
+                    ? 'documentObligatoire'
+                    : undocument.need == 0
+                    ? 'documentFacultatif'
+                    : ''
+                "
+                  :id="'undoc_' + indexUndoc"
+                  v-for="(undocument, indexUndoc) in undocuments"
+                  :key="indexUndoc"
+              >
+                <div class="justify-content-between d-flex">
+                  <div class="d-flex">
+                    <em class="fas fa-grip-vertical handle" style="color: #cecece;"></em>
+                    <span class="d-flex ml-10px">
+                      {{ undocument.value }}
+                      <span class="document-allowed_types">({{ undocument.allowed_types }})</span>
+                    </span>
+                  </div>
+                  <div :id="'spanDoc' + undocument.id" class="text-no-assigned">
+                    <button type="button" @click="addUndoc(indexUndoc)" class="buttonAddDoc" :title="addDoc">
+                      <em class="fas fa-plus"></em>
+                    </button>
+                    <button type="button" v-show="undocument.can_be_deleted" class="ml-10px buttonDeleteDoc" :title="deleteDoc" @click="deleteDocument(undocument.id,indexUndoc)">
+                      <em class="fas fa-trash-alt" style="color: white"></em>
+                    </button>
                   </div>
                 </div>
-              </div>
-            </li>
-          </transition-group>
-        </draggable>
-      </ul>
-      <div class="text-center">
-        <button class="bouton-sauvergarder-et-continuer-3" style="float: none" type="button" @click="$modal.show('modalAddDocuments')">{{createDocument}}</button>
+                <div class="d-flex doc-desc">
+                  <p v-html="undocument.description"></p>
+                  <a @click="openUpdateDoc(undocument)" class="cta-block pointer">
+                    <em class="fas fa-pen"></em>
+                  </a>
+                </div>
+              </li>
+            </transition-group>
+          </draggable>
+        </ul>
+
+        <hr class="vertical-divider">
+
+        <ul style="padding-left: 0" class="ml-0 w-50">
+          <h2 class="blue-text-instruction" v-html="documentAssigned"></h2>
+          <draggable
+              v-model="documents"
+              tag="ul"
+              class="list-group ml-0"
+              handle=".handle"
+              @end="removeToDocs($event)"
+              v-bind="dragOptions"
+              group="documents"
+          >
+            <transition-group type="transition" :value="!drag ? 'flip-list' : null" style="display: block;min-height: 200px">
+              <li class="list-doc-item"
+                  :id="'itemDoc' + document.id"
+                  v-for="(document, indexDoc) in documents"
+                  :key="indexDoc">
+                <div class="justify-content-between d-flex">
+                  <div class="d-flex">
+                    <em class="fas fa-grip-vertical handle" style="color: #cecece;"></em>
+                    <span class="d-flex ml-10px">
+                      <span>{{ document.value }}</span>
+                      <span class="document-allowed_types">({{ document.allowed_types }})</span>
+                    </span>
+                  </div>
+                  <div class="d-flex">
+                    <div class="d-flex" style="margin-right: 30px">
+                      <div @click="updateMandatory(document)"
+                           :id="'spanDoc' + document.id"
+                           style="float: right; margin: 0 12px"
+                           class="toggle changeStateDoc">
+                        <input
+                            type="checkbox"
+                            true-value="1"
+                            false-value="0"
+                            class="check"
+                            id="published"
+                            name="published"
+                            v-model="document.need"
+                        />
+                        <strong class="b switch"></strong>
+                        <strong class="b track"></strong>
+                      </div>
+                      <div :class="document.need == 1
+                           ? 'text-required'
+                           : ''">
+                        {{ Mandatory }}
+                      </div>
+                    </div>
+                    <button type="button" @click="deleteDocFromForm(indexDoc)" :title="removeDoc" class="buttonDeleteDoc">
+                      <em class="fas fa-times"></em>
+                    </button>
+                  </div>
+                </div>
+                <div class="d-flex doc-desc">
+                  <p>{{ document.description }}</p>
+                  <a @click="openUpdateDoc(document)" class="cta-block pointer">
+                    <em class="fas fa-pen"></em>
+                  </a>
+                </div>
+              </li>
+            </transition-group>
+          </draggable>
+        </ul>
       </div>
-    </div>
     </transition>
+
+    <div class="loading-form" v-if="loading">
+      <Ring-Loader :color="'#12DB42'" />
+    </div>
   </div>
 </template>
 
@@ -150,14 +174,10 @@ export default {
   data() {
     return {
       drag: false,
+      loading: false,
 
       obligatoireDoc: 0,
       currentDoc: null,
-
-      inners: {
-        fr: ["Non assigné", "Facultatif", "Obligatoire"],
-        en: ["Unassigned", "Optional", "Mandatory"]
-      },
 
       documents: [],
       undocuments: [],
@@ -168,8 +188,14 @@ export default {
       unid: [],
 
       Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+      Mandatory: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
       Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-      createDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT")
+      createDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT"),
+      deleteDoc: Joomla.JText._("COM_EMUNDUS_ONBOARD_DELETE_DOCUMENT"),
+      removeDoc: Joomla.JText._("COM_EMUNDUS_ONBOARD_REMOVE_DOCUMENT"),
+      addDoc: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_DOCUMENT"),
+      documentAssigned: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENT_ASSIGNED_TO_FORM"),
+      documentNoAssigned: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENT_NO_ASSIGNED_TO_FORM")
     };
   },
 
@@ -186,70 +212,85 @@ export default {
     },
 
     getDocuments() {
+      this.loading = true;
       axios.get("index.php?option=com_emundus_onboard&controller=form&task=getalldocuments&prid=" + this.profileId + "&cid=" + this.campaignId)
-              .then(response => {
-                for (let i = 0; i < response.data.data.length; i++) {
-                  this.unid.push(response.data.data[i].id);
-                  this.documents.push(response.data.data[i]);
+          .then(response => {
+            for (let i = 0; i < response.data.data.length; i++) {
+              this.unid.push(response.data.data[i].id);
+              this.documents.push(response.data.data[i]);
+            }
+          }).then(() => {
+        axios.get("index.php?option=com_emundus_onboard&controller=form&task=getundocuments")
+            .then(response => {
+              var currentId = 0;
+
+              for (let i = 0; i < response.data.data.length; i++) {
+                currentId = response.data.data[i].id;
+
+                if (!this.unid.includes(currentId)) {
+                  this.unattachments.push(response.data.data[i]);
                 }
-              }).then(() => {
-                axios.get("index.php?option=com_emundus_onboard&controller=form&task=getundocuments")
-                        .then(response => {
-                          var currentId = 0;
+              }
 
-                          for (let i = 0; i < response.data.data.length; i++) {
-                            currentId = response.data.data[i].id;
-
-                            if (!this.unid.includes(currentId)) {
-                              this.unattachments.push(response.data.data[i]);
-                            }
-                          }
-
-                          this.undocuments = this.unattachments.map(function(unattachment) {
-                            var infos = {
-                              id: unattachment.id,
-                              value: unattachment.value,
-                              value_fr: unattachment.value_fr,
-                              value_en: unattachment.value_en,
-                              description_fr: unattachment.description_fr,
-                              description_en: unattachment.description_en,
-                              nbmax: unattachment.nbmax,
-                              ordering: unattachment.ordering,
-                              can_be_deleted: unattachment.can_be_deleted,
-                              allowed_types: unattachment.allowed_types,
-                              need: -1
-                            };
-                            return infos;
-                          });
-
-                          this.currentDoc = null;
-                        }).catch(e => {
-                          console.log(e);
-                        });
-              }).catch(e => {
-                console.log(e);
+              this.undocuments = this.unattachments.map(function(unattachment) {
+                var infos = {
+                  id: unattachment.id,
+                  value: unattachment.value,
+                  value_fr: unattachment.value_fr,
+                  value_en: unattachment.value_en,
+                  description_fr: unattachment.description_fr,
+                  description_en: unattachment.description_en,
+                  nbmax: unattachment.nbmax,
+                  ordering: unattachment.ordering,
+                  can_be_deleted: unattachment.can_be_deleted,
+                  allowed_types: unattachment.allowed_types,
+                  need: -1
+                };
+                return infos;
               });
+
+              this.currentDoc = null;
+
+              this.loading = false;
+            }).catch(e => {
+          console.log(e);
+        });
+      }).catch(e => {
+        console.log(e);
+      });
     },
 
-    updateDocuments() {
-      for (let j = 0; j < this.documents.length; j++) {
-        this.documents[j].ordering = j;
-      }
-
+    updateMandatory(doc){
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=updatedocuments",
+        url: "index.php?option=com_emundus_onboard&controller=form&task=updatemandatory",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        data: qs.stringify({ body: this.documents, prid: this.profileId, cid: this.campaignId })
-      })
-        .then(() => {
-          //this.$parent.next();
-        })
-        .catch(error => {
-          console.log(error);
-        });
+        data: qs.stringify({ did: doc.id, prid: this.profileId, cid: this.campaignId })
+      }).then(() => {
+        /*if(doc.need == 0){
+          doc.need = 1;
+        } else {
+          doc.need = 0;
+        }*/
+      }).catch(error => {
+        console.log(error);
+      });
+    },
+
+    addDocument(undoc){
+      axios({
+        method: "post",
+        url: "index.php?option=com_emundus_onboard&controller=form&task=adddocument",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({ did: undoc.id, prid: this.profileId, cid: this.campaignId })
+      }).then(() => {
+      }).catch(error => {
+        console.log(error);
+      });
     },
 
     removeDocument(id) {
@@ -261,12 +302,12 @@ export default {
         },
         data: qs.stringify({ did: id, prid: this.profileId, cid: this.campaignId })
       })
-              .then(() => {
-                //this.$parent.next();
-              })
-              .catch(error => {
-                console.log(error);
-              });
+          .then(() => {
+            //this.$parent.next();
+          })
+          .catch(error => {
+            console.log(error);
+          });
     },
 
     deleteDocument(id,index) {
@@ -297,31 +338,25 @@ export default {
       });
     },
 
-    changeState(index, id) {
-      this.obligatoireDoc = this.documents[index].need;
-
-      if (this.obligatoireDoc < 1 && this.obligatoireDoc >= -1) {
-        this.documents[index].need++;
-      } else {
-        this.documents[index].need = 0;
-      }
-      this.updateDocuments()
+    deleteDocFromForm(index) {
+      let newIndex = this.undocuments.push(this.documents[index])-1;
+      this.documents.splice(index,1);
+      this.removeDocument(this.undocuments[newIndex].id);
     },
 
-    deleteDoc(index,id) {
-      this.documents[index].need = -1;
-      var oldDoc = this.documents[index];
-      this.documents.splice(index, 1);
-      this.undocuments.push(oldDoc);
-      this.removeDocument(id);
+    addingToDocs: function(evt) {
+      this.addDocument(this.documents[evt.newIndex]);
+    },
+
+    removeToDocs: function(evt) {
+      let index = evt.newIndex;
+      this.deleteDoc(index,this.undocuments[index]);
     },
 
     addUndoc(index) {
-      this.undocuments[index].need = 0;
-      var oldUndoc = this.undocuments[index];
-      this.undocuments.splice(index, 1);
-      this.documents.push(oldUndoc);
-      this.updateDocuments();
+      let newIndex = this.documents.push(this.undocuments[index])-1;
+      this.undocuments.splice(index,1);
+      this.addDocument(this.documents[newIndex]);
     },
 
     openUpdateDoc(document) {
@@ -337,8 +372,25 @@ export default {
 
     dragOptions() {
       return {
+        group: {
+          name: "documents",
+          put: false
+        },
         animation: 200,
-        group: "description",
+        sort: true,
+        disabled: false,
+        ghostClass: "ghost"
+      };
+      },
+
+    dragOptionsUndoc() {
+      return {
+        group: {
+          name: "documents",
+          put: false
+        },
+        animation: 200,
+        sort: false,
         disabled: false,
         ghostClass: "ghost"
       };
@@ -357,16 +409,17 @@ export default {
 };
 </script>
 <style scoped>
-  .text-required{
-    color: #de6339;
-  }
-  .text-non-required{
-    color: #de6339;
-  }
+.text-no-assigned{
+  float: right;
+  display: flex;
+  width: auto;
+}
 
-  .text-no-assigned{
-    float: right;
-    display: flex;
-    width: 100px
-  }
+.cta-block{
+  position: relative;
+  right: 0;
+  bottom: -30%;
+  width: 27px;
+  height: 27px;
+}
 </style>

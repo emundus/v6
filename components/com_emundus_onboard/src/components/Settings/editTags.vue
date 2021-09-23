@@ -1,7 +1,13 @@
 <template>
     <div class="container-evaluation">
+      <a @click="pushTag" class="bouton-ajouter-green bouton-ajouter pointer mb-1" style="width: max-content">
+        <div class="add-button-div">
+          <em class="fas fa-plus mr-1"></em>
+          {{ addTag }}
+        </div>
+      </a>
         <div v-for="(tag, index) in tags" class="status-item tags-item" :id="'tag_' + tag.id">
-            <div :style="{background: tag.class}" class="status-field">
+            <div class="status-field">
                 <input type="text" v-model="tag.label">
                 <input type="hidden" :class="tag.class">
             </div>
@@ -14,9 +20,8 @@
                     popover-x="left"
                     popover-y="top"
             ></v-swatches>
-            <button type="button" @click="removeTag(tag,index)" class="remove-tag"><i class="fas fa-trash"></i></button>
+            <button type="button" @click="removeTag(tag,index)" class="remove-tag"><i class="fas fa-times"></i></button>
         </div>
-        <a @click="pushTag" class="bouton-sauvergarder-et-continuer-3 create-tag">{{ addTag }}</a>
     </div>
 </template>
 
@@ -113,13 +118,7 @@
         }
     };
 </script>
-<style>
-    .create-tag{
-        text-align: center;
-        width: 100%;
-        margin-bottom: 4em;
-    }
-
+<style scoped>
     .remove-tag{
         border-radius: 50%;
         height: 42px;
@@ -143,5 +142,12 @@
 
     .tags-item .vue-swatches__wrapper{
         right: 3.8em;
+    }
+    .bouton-sauvergarder-et-continuer{
+      justify-content: center;
+    }
+    .create-tag{
+      width: max-content;
+      margin-bottom: 20px;
     }
 </style>

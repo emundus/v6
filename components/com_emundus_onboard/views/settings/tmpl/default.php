@@ -10,8 +10,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors.js');
-$document->addStyleSheet('media/com_emundus_onboard/app.css');
+$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
+$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 
@@ -86,6 +86,13 @@ JText::script('COM_EMUNDUS_ONBOARD_SAVED');
 JText::script('COM_EMUNDUS_ONBOARD_COLUMN');
 JText::script('COM_EMUNDUS_ONBOARD_PREVIEW');
 JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
+JText::script('COM_EMUNDUS_ONBOARD_ICON');
+JText::script('COM_EMUNDUS_ONBOARD_UPDATE_BACKGROUND');
+JText::script('COM_EMUNDUS_ONBOARD_BACKGROUND');
+JText::script('COM_EMUNDUS_ONBOARD_DISPLAY_BACKGROUND');
+JText::script('COM_EMUNDUS_ONBOARD_HOME_TITLE');
+JText::script('COM_EMUNDUS_ONBOARD_HOME_CONTENT');
+JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER');
 
 ## TUTORIAL ##
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
@@ -95,6 +102,26 @@ JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_REWIND');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_REWIND_SUCCESS');
+JText::script('COM_EMUNDUS_ONBOARD_REMOVE_ICON');
+JText::script('COM_EMUNDUS_ONBOARD_REMOVE_ICON_TEXT');
+JText::script('COM_EMUNDUS_ONBOARD_UPDATE_COLORS');
+JText::script('COM_EMUNDUS_ONBOARD_DELETE_STATUS');
+JText::script('COM_EMUNDUS_ONBOARD_INSERT_HEADER_IMAGE');
+JText::script('COM_EMUNDUS_ONBOARD_INSERT_LOGO');
+JText::script('COM_EMUNDUS_ONBOARD_INSERT_ICON');
+## END ##
+
+## eMUNDUS CONFIG ##
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_RENEW');
+JText::script('JNO');
+JText::script('JYES');
+JText::script('COM_EMUNDUS_APPLICANT_CAN_RENEW_CAMPAIGN');
+JText::script('COM_EMUNDUS_APPLICANT_CAN_RENEW_YEAR');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_EDIT_UNTIL_DEADLINE');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANTS_DESC');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANTS');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_COPY_APPLICATION_FORM');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_SUBMIT_ENCRYPTED');
 ## END ##
 
 $lang = JFactory::getLanguage();
@@ -112,4 +139,4 @@ $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 
 <div id="em-globalSettings-vue" actualLanguage="<?= $actualLanguage ?>" coordinatorAccess="<?= $coordinator_access ?>" manyLanguages="<?= $many_languages ?>"></div>
 
-<script src="media/com_emundus_onboard/app.js"></script>
+<script src="media/com_emundus_onboard/app_onboard.js"></script>

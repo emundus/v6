@@ -23,73 +23,6 @@ jimport('joomla.application.component.modellist');
  */
 class DropfilesModelFrontsearch extends JModelList
 {
-    /**
-     * Get file content
-     *
-     * @param string $filepath File path
-     * @param string $filetype File type
-     *
-     * @return string
-     *
-     * @since version
-     */
-    public function getFileContent($filepath, $filetype)
-    {
-        $strs = '';
-        $arr1 = array('doc', 'docx', 'pdf');
-        switch ($filetype) {
-            case in_array($filetype, $arr1):
-                $handle = new Filetotext($filepath);
-                $strs = $handle->convertToText();
-                break;
-            case 'xls':
-                if (is_readable($filepath)) {
-                    $handle = new Spreadsheet_Excel_Reader($filepath);
-                    $row_numbers = false;
-                    $col_letters = true;
-                    $sheet = 0;
-                    $table_class = 'excel';
-                    $text = $handle->dump(
-                        $row_numbers,
-                        $col_letters,
-                        $sheet,
-                        $table_class
-                    );
-                    $strs = $text;
-                }
-                break;
-            case 'xlsx':
-                $xlsx = new SimpleXLSX($filepath);
-                $worksheets = count($xlsx->dimension());
-                $text = '';
-                if ($xlsx->rows()) {
-                    for ($i = 1; $i <= $worksheets; $i++) {
-                        list($num_cols, $num_rows) = $xlsx->dimension();
-                        foreach ((array)$xlsx->rows($i) as $r) {
-                            for ($j = 0; $j < $num_cols; $j++) {
-                                $text .= ((!empty($r[$j])) ? $r[$j] : '&nbsp;') . ' ';
-                            }
-                        }
-                    }
-                }
-                $strs = $text;
-                break;
-            case 'txt':
-                if (is_readable($filepath) && filesize($filepath)) {
-                    $handle = fopen($filepath, 'r');
-                    $strs = fread($handle, filesize($filepath));
-                    fclose($handle);
-                } else {
-                    $strs = '';
-                }
-                break;
-            default:
-                $strs = '';
-                break;
-        }
-
-        return html_entity_decode($strs);
-    }
 
     /**
      * Check string exist
@@ -105,7 +38,7 @@ class DropfilesModelFrontsearch extends JModelList
             return false;
         }
 
-        $substrEntity = htmlentities($substr);
+        $substrEntity = htmlentities($substr, ENT_QUOTES, 'UTF-8');
         if ($str !== null && $substr !== null && (strpos(strtolower($str), strtolower($substr)) !== false || strpos(strtolower($str), strtolower($substrEntity)) !== false)) {
             return true;
         } else {
@@ -131,7 +64,7 @@ class DropfilesModelFrontsearch extends JModelList
         $output = str_replace($substr, '<span style="background: #FFFFCC;">' . $substr . '</span>', $text);
 
         // Highlight text for description with htmlentity
-        $words = htmlentities($words);
+        $words = htmlentities($words, ENT_QUOTES, 'UTF-8');
         if ($words !== null && $output !== null) {
             $substr = substr($output, strpos(strtolower($output), strtolower($words)), strlen($words));
         } else {
@@ -148,37 +81,51 @@ class DropfilesModelFrontsearch extends JModelList
      * @param string  $keywords     Keywords
      * @param string  $cond         Search condition
      * @param boolean $read_content Search in content
+     * @param array   $lstAllFile   RefFiles
      *
      * @return mixed
      */
-    public function listFiles($keywords, $cond, $read_content = false)
+    public function listFiles($keywords, $cond, $read_content = false, $lstAllFile = array())
     {
         $condition = '';
-        //$arr_ext = array('doc', 'docx', 'xls', 'xlsx', 'pdf', 'txt');
         $db = $this->getDbo();
         if ($cond !== '') {
             $condition = ' AND ' . $cond;
         }
-//        $query = "SELECT a.*,c.title as cattitle FROM #__dropfiles_files AS a,#__categories as c";
-//        $query .= " WHERE a.catid = c.id " . $condition;
         if ($read_content) {
             $query = str_replace('{CONDITIONS}', $condition, $this->buildQuery($keywords));
         } else {
             $query = 'SELECT a.*,c.title as cattitle FROM #__dropfiles_files AS a,#__categories as c';
             $query .= ' WHERE a.catid = c.id ' . $condition;
         }
+        $refFileList = array();
+        if (is_array($lstAllFile) && !empty($lstAllFile)) {
+            $searchCate = $lstAllFile['searchCate'];
+            $catequery = 'SELECT * FROM #__categories WHERE id=' . $searchCate;
+            $cateresult = $db->setQuery($catequery);
+            $refCate = null;
+            $refCate = $cateresult->loadObject();
+            foreach ($lstAllFile as $key => $item) {
+                if ($key === 'searchCate') {
+                    continue;
+                }
+                $refquery = 'SELECT * FROM #__dropfiles_files';
+                $refquery .= ' WHERE id= ' . $item['id'] ;
+                $result = $db->setQuery($refquery);
+                $refFile = null;
+                $refFile = $result->loadObject();
+                $refFile->cattitle = $refCate->title;
+                $refFileList[] = $refFile;
+            }
+        }
         $result = $db->setQuery($query);
         $files = null;
         $files = $result->loadObjectList();
+        if (!empty($refFileList)) {
+            $files = array_merge($refFileList, $files);
+        }
         foreach ($files as $file) {
-            $file->title = html_entity_decode($file->title, ENT_QUOTES);
-//            if ($read_content == true && in_array($file->ext, $arr_ext)) {
-//                $filepath = JPATH_ROOT . '/media/com_dropfiles/' . $file->catid . '/' . $file->file;
-//                $contentFile = $this->getFileContent($filepath, $file->ext);
-//                $file->content = str_replace("\xC2\xA0", ' ', $contentFile);
-//            } else {
-//                $file->content = "";
-//            }
+            $file->title = html_entity_decode($file->title, ENT_QUOTES, 'UTF-8');
         }
 
         return $files;
@@ -408,14 +355,15 @@ class DropfilesModelFrontsearch extends JModelList
     /**
      * Method get file search
      *
-     * @param string $words     Words
-     * @param array  $searchby  Search by
-     * @param strong $condition Condition
-     * @param string $phrases   Phrases
+     * @param string $words      Words
+     * @param array  $searchby   Search by
+     * @param strong $condition  Condition
+     * @param string $phrases    Phrases
+     * @param array  $lstAllFile RefFiles
      *
      * @return array
      */
-    public function getFilesSearch($words, $searchby, $condition, $phrases = null)
+    public function getFilesSearch($words, $searchby, $condition, $phrases = null, $lstAllFile = array())
     {
         $results = array();
 
@@ -427,9 +375,7 @@ class DropfilesModelFrontsearch extends JModelList
             unset($searchby['content']);
             $read_content = false;
         }
-
-        $files = $this->listFiles($words, $condition, $read_content);
-
+        $files = $this->listFiles($words, $condition, $read_content, $lstAllFile);
         if ($read_content) {
             return $files;
         }
@@ -613,7 +559,7 @@ class DropfilesModelFrontsearch extends JModelList
 
         $query .= ' Order by c.lft ASC';
         $dbo->setQuery($query);
-        $dbo->query();
+        $dbo->execute();
         $listCat = $dbo->loadObjectList();
         JModelLegacy::addIncludePath(JPATH_ROOT . '/components/com_dropfiles/models/', 'DropfilesModelFrontconfig');
         $modelConfig = JModelLegacy::getInstance('Frontconfig', 'dropfilesModel');
@@ -657,7 +603,7 @@ class DropfilesModelFrontsearch extends JModelList
                 }
             }
 
-            if ($value->cloud_id !== '') {
+            if (!empty($value->cloud_id)) {
                 $value->id = $value->cloud_id;
             }
             if ($value->type === 'googledrive' && $dropfiles_params->get('google_credentials', '') === '') {
@@ -680,7 +626,7 @@ class DropfilesModelFrontsearch extends JModelList
         $dbo = $this->getDbo();
         $query = 'SELECT id FROM #__dropfiles WHERE cloud_id =' . $dbo->quote($cloudID);
         $dbo->setQuery($query);
-        $dbo->query();
+        $dbo->execute();
         $listCat = $dbo->loadObject();
         if ($listCat) {
             return $listCat->id;
@@ -701,7 +647,7 @@ class DropfilesModelFrontsearch extends JModelList
         $dbo = $this->getDbo();
         $query = 'SELECT type FROM #__dropfiles WHERE cloud_id =' . $dbo->quote($cloudID);
         $dbo->setQuery($query);
-        $dbo->query();
+        $dbo->execute();
         $listCat = $dbo->loadObject();
 
         return $listCat->type;
@@ -807,6 +753,10 @@ class DropfilesModelFrontsearch extends JModelList
         $conditionGoogle = '1=1';
         $conditionDropbox = '1=1';
         $cloud_cond[] = "mimeType != 'application/vnd.google-apps.folder' and trashed =false";
+        $modelConfig  = JModelLegacy::getInstance('Frontconfig', 'DropfilesModel');
+        $modelFiles   = JModelLegacy::getInstance('Frontfiles', 'DropfilesModel');
+        $excludeCategory = $params->get('ref_exclude_category_id');
+        $excludeCategory = (isset($excludeCategory)) ? $excludeCategory : array();
         if (isset($data['q']) && $data['q'] !== '') {
             $cloud_cond[] = "title contains '" . $data['q'] . "'";
         }
@@ -901,9 +851,26 @@ class DropfilesModelFrontsearch extends JModelList
         $query = 'SELECT a.*,c.title as cattitle FROM #__dropfiles_files as a,#__categories as c ';
         $query .= ' WHERE ' . $condition . ' ORDER BY created_time';
         if (isset($data['catid']) && is_numeric($data['catid'])) {
+            $modelConfig    = JModelLegacy::getInstance('Frontconfig', 'DropfilesModel');
+            $modelFile      = JModelLegacy::getInstance('Frontfile', 'dropfilesModel');
+            $cateParams     = $modelConfig->getParams($data['catid']);
+            $subparams      = (array) $cateParams->params;
+            $refToFile      = (!empty($subparams)) ? $subparams['refToFile'] : array();
+            $lstAllFile = array();
+            if (isset($refToFile)) {
+                foreach ($refToFile as $key => $value) {
+                    if (is_array($value) && !empty($value)) {
+                        foreach ($value as $item) {
+                            $lstFile = (array) $modelFile->getFile($item);
+                            $lstAllFile[] = $lstFile;
+                        }
+                    }
+                }
+            }
+            $lstAllFile['searchCate'] = $data['catid'];
             if (isset($data['q']) && $data['q'] !== '') {
                 $searchby = array('title' => 'title', 'description' => 'description', 'content' => 'content');
-                $results = $this->getFilesSearch($data['q'], $searchby, $condition, $phrases = null);
+                $results = $this->getFilesSearch($data['q'], $searchby, $condition, $phrases = null, $lstAllFile);
                 //$results =$datas;
             } else {
                 $results = $this->searchFileLocal($query);
@@ -995,6 +962,28 @@ class DropfilesModelFrontsearch extends JModelList
             if (isset($data['q']) && $data['q'] !== '') {
                 $results = $this->getPropertySearch($data['q'], array('title', 'description'), $results);
             }
+        } elseif (isset($data['cattype']) && $data['cattype'] === 'onedrivebusiness') {
+            //is onedrive business category
+            $conditionOnedriveBusiness = $conditionDropbox . ' AND a.catid = ' . $dbo->quote($data['catid']) . '';
+
+            $queryOnedriveBusiness = 'SELECT a.* FROM #__dropfiles_onedrive_business_files as a ';
+            $queryOnedriveBusiness .= ' WHERE ' . $conditionOnedriveBusiness . ' ORDER BY created_time';
+            $results = $this->searchFileLocal($queryOnedriveBusiness);
+            if (!empty($results)) {
+                foreach ($results as $item) {
+                    $item->id = $item->file_id;
+                    $item->catid = $this->getOneCatLocalByCloudID($item->catid);
+                    if (!$item->catid) {
+                        continue;
+                    }
+                    $cattegory = $this->getCat($item->catid);
+                    $item->cattitle = $cattegory->title;
+                }
+            }
+
+            if (isset($data['q']) && $data['q'] !== '') {
+                $results = $this->getPropertySearch($data['q'], array('title', 'description'), $results);
+            }
         } else {
             $array1 = array();
             if ($params->get('google_credentials', '')) {
@@ -1004,7 +993,11 @@ class DropfilesModelFrontsearch extends JModelList
                     $array1 = $this->searchFileLocal($queryGoogle);
 
                     if (!empty($array1)) {
-                        foreach ($array1 as $item) {
+                        foreach ($array1 as $key => $item) {
+                            if (!empty($excludeCategory) && in_array($item->catid, $excludeCategory)) {
+                                unset($array1[$key]);
+                                continue;
+                            }
                             $item->id = $item->file_id;
                             $item->catid = $this->getOneCatLocalByCloudID($item->catid);
                             if (!$item->catid) {
@@ -1023,51 +1016,87 @@ class DropfilesModelFrontsearch extends JModelList
                 }
             }
 
-
-            $queryDropbox = 'SELECT a.* FROM #__dropfiles_dropbox_files as a ';
-            $queryDropbox .= ' WHERE ' . $conditionDropbox . ' ORDER BY created_time';
-            $resultsDropbox = $this->searchFileLocal($queryDropbox);
-            if (!empty($resultsDropbox)) {
-                foreach ($resultsDropbox as $item) {
-                    $item->id = $item->file_id;
-                    $item->catid = $this->getOneCatLocalByCloudID($item->catid);
-                    if (!$item->catid) {
-                        continue;
+            if ($params->get('dropbox_token', '')) {
+                $queryDropbox = 'SELECT a.* FROM #__dropfiles_dropbox_files as a ';
+                $queryDropbox .= ' WHERE ' . $conditionDropbox . ' ORDER BY created_time';
+                $resultsDropbox = $this->searchFileLocal($queryDropbox);
+                if (!empty($resultsDropbox)) {
+                    foreach ($resultsDropbox as $key => $item) {
+                        if (!empty($excludeCategory) && in_array($item->catid, $excludeCategory)) {
+                            unset($resultsDropbox[$key]);
+                            continue;
+                        }
+                        $item->id = $item->file_id;
+                        $item->catid = $this->getOneCatLocalByCloudID($item->catid);
+                        if (!$item->catid) {
+                            continue;
+                        }
+                        $cattegory = $this->getCat($item->catid);
+                        $item->cattitle = $cattegory->title;
                     }
-                    $cattegory = $this->getCat($item->catid);
-                    $item->cattitle = $cattegory->title;
                 }
+
+                if (isset($data['q']) && $data['q'] !== '') {
+                    $resultsDropbox = $this->getPropertySearch($data['q'], array(
+                        'title',
+                        'description'
+                    ), $resultsDropbox);
+                }
+                $array1 = array_merge($array1, $resultsDropbox);
             }
 
-            if (isset($data['q']) && $data['q'] !== '') {
-                $resultsDropbox = $this->getPropertySearch($data['q'], array(
-                    'title',
-                    'description'
-                ), $resultsDropbox);
-            }
-
-            $queryOnedrive = 'SELECT a.* FROM #__dropfiles_onedrive_files as a ';
-            $queryOnedrive .= ' WHERE ' . $conditionDropbox . ' ORDER BY created_time';
-            $resultsOnedrive = $this->searchFileLocal($queryOnedrive);
-            if (!empty($resultsOnedrive)) {
-                foreach ($resultsOnedrive as $item) {
-                    $item->id = $item->file_id;
-                    $item->catid = $this->getOneCatLocalByCloudID($item->catid);
-                    if (!$item->catid) {
-                        continue;
+            if ($params->get('onedriveCredentials', '')) {
+                $queryOnedrive = 'SELECT a.* FROM #__dropfiles_onedrive_files as a ';
+                $queryOnedrive .= ' WHERE ' . $conditionDropbox . ' ORDER BY created_time';
+                $resultsOnedrive = $this->searchFileLocal($queryOnedrive);
+                if (!empty($resultsOnedrive)) {
+                    foreach ($resultsOnedrive as $key => $item) {
+                        if (!empty($excludeCategory) && in_array($item->catid, $excludeCategory)) {
+                            unset($resultsOnedrive[$key]);
+                            continue;
+                        }
+                        $item->id = $item->file_id;
+                        $item->catid = $this->getOneCatLocalByCloudID($item->catid);
+                        if (!$item->catid) {
+                            continue;
+                        }
+                        $cattegory = $this->getCat($item->catid);
+                        $item->cattitle = $cattegory->title;
                     }
-                    $cattegory = $this->getCat($item->catid);
-                    $item->cattitle = $cattegory->title;
                 }
+
+                if (isset($data['q']) && $data['q'] !== '') {
+                    $resultsOnedrive = $this->getPropertySearch($data['q'], array('title', 'description'), $resultsOnedrive);
+                }
+                $array1 = array_merge($array1, $resultsOnedrive);
             }
 
-            if (isset($data['q']) && $data['q'] !== '') {
-                $resultsOnedrive = $this->getPropertySearch($data['q'], array('title', 'description'), $resultsOnedrive);
+            if (!is_null($params->get('onedriveBusinessConnected')) && (int) $params->get('onedriveBusinessConnected') === 1) {
+                $queryOnedriveBusiness  = 'SELECT a.* FROM #__dropfiles_onedrive_business_files as a ';
+                $queryOnedriveBusiness .= ' WHERE ' . $conditionDropbox . ' ORDER BY created_time';
+                $resultsOnedriveBusiness = $this->searchFileLocal($queryOnedriveBusiness);
+                if (!empty($resultsOnedriveBusiness)) {
+                    foreach ($resultsOnedriveBusiness as $key => $item) {
+                        if (!empty($excludeCategory) && in_array($item->catid, $excludeCategory)) {
+                            unset($resultsOnedriveBusiness[$key]);
+                            continue;
+                        }
+                        $item->id = $item->file_id;
+                        $item->catid = $this->getOneCatLocalByCloudID($item->catid);
+                        if (!$item->catid) {
+                            continue;
+                        }
+                        $cattegory = $this->getCat($item->catid);
+                        $item->cattitle = $cattegory->title;
+                    }
+                }
+
+                if (isset($data['q']) && $data['q'] !== '') {
+                    $resultsOnedriveBusiness = $this->getPropertySearch($data['q'], array('title', 'description'), $resultsOnedriveBusiness);
+                }
+                $array1 = array_merge($array1, $resultsOnedriveBusiness);
             }
 
-
-            $array1 = array_merge($array1, $resultsDropbox);
-            $array1 = array_merge($array1, $resultsOnedrive);
 
             if (isset($data['ftags']) && $data['ftags'] !== '') {
                 $results2 = array();
@@ -1087,6 +1116,14 @@ class DropfilesModelFrontsearch extends JModelList
                 //$results =$datas;
             } else {
                 $array2 = $this->searchFileLocal($query);
+            }
+
+            if (!empty($array2)) {
+                foreach ($array2 as $key => $item) {
+                    if (!empty($excludeCategory) && in_array($item->catid, $excludeCategory)) {
+                        unset($array2[$key]);
+                    }
+                }
             }
 
             if (is_array($array1) && is_array($array2)) {
@@ -1117,9 +1154,11 @@ class DropfilesModelFrontsearch extends JModelList
                 $fileCat = $catModel->getCategory($file->catid);
 
                 if ($params->get('categoryrestriction', 'accesslevel') === 'accesslevel') {
-                    if (!in_array($fileCat->access, $groups)) {
-                        unset($results[$k]);
-                        continue;
+                    if (isset($fileCat->access)) {
+                        if (!in_array($fileCat->access, $groups)) {
+                            unset($results[$k]);
+                            continue;
+                        }
                     }
                 } else {
                     $catparams = $modelConfig->getParams($file->catid);
@@ -1132,14 +1171,14 @@ class DropfilesModelFrontsearch extends JModelList
                     }
                 }
 
-                if (!DropfilesFilesHelper::isUserCanViewFile($file) && JFactory::getApplication()->isSite()) {
+                if (!DropfilesFilesHelper::isUserCanViewFile($file) && JFactory::getApplication()->isClient('site')) {
                     unset($results[$k]);
                     continue;
                 }
 
                 $category = new stdClass();
                 $category->id = $file->catid;
-                $category->title = $file->cattitle;
+                $category->title = (isset($file->cattitle)) ? $file->cattitle : '';
                 DropfilesFilesHelper::addInfosToFile($file, $category);
             }
         } else {
@@ -1208,6 +1247,8 @@ class DropfilesModelFrontsearch extends JModelList
         $params      = JComponentHelper::getParams('com_dropfiles');
         $user        = JFactory::getUser();
         $groups      = $user->getAuthorisedViewLevels();
+        JModelLegacy::addIncludePath(JPATH_ROOT . '/components/com_dropfiles/models/', 'DropfilesModelFrontconfig');
+        $modelConfig = JModelLegacy::getInstance('Frontconfig', 'DropfilesModel');
 
         foreach ($data_cat as $key => $catid) {
             $cloud_cond = array();
@@ -1243,6 +1284,29 @@ class DropfilesModelFrontsearch extends JModelList
 
             if (is_numeric($catid)) {
                 $results = $this->searchFileLocal($query);
+                // mutile category
+                $catParams = $modelConfig->getParams($catid);
+                $subparams   = (array) $catParams->params;
+                if (!empty($subparams) && isset($subparams['refToFile'])) {
+                    $listCatRef = $subparams['refToFile'];
+                    $modelFiles = JModelLegacy::getInstance('Frontfiles', 'DropfilesModel');
+                    $lstAllFile = array();
+                    foreach ($listCatRef as $key => $value) {
+                        if (is_array($value) && !empty($value)) {
+                            $lstFile = $modelFiles->getFilesRef($key, $value, '', '');
+                            $lstAllFile = array_merge($lstFile, $lstAllFile);
+                        }
+                    }
+                    foreach ($lstAllFile as $item) {
+                        $item->cattitle = $item->category_title;
+                    }
+
+                    $results = array_merge($results, $lstAllFile);
+                    if ($data['fOrderType'] && $data['fDer']) {
+                        JLoader::register('DropfilesHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/dropfiles.php');
+                        $results = DropfilesHelper::orderingMultiCategoryFiles($results, $data['fOrderType'], $data['fDer']);
+                    }
+                }
             } elseif (is_string($catid) && $catid !== '') {
                 $cat_typle = $this->getOneCatTypeByCloudID($catid);
                 $results = array();
@@ -1646,7 +1710,7 @@ class DropfilesModelFrontsearch extends JModelList
      */
     private function cmpHit($a, $b)
     {
-        return ($a->hit > $b->hit);
+        return ($a->hits > $b->hits);
     }
 
     /**
@@ -1659,7 +1723,7 @@ class DropfilesModelFrontsearch extends JModelList
      */
     private function cmpHitDesc($a, $b)
     {
-        return ($b->hit < $a->hit);
+        return ($b->hits < $a->hits);
     }
 
     /**
@@ -1674,7 +1738,7 @@ class DropfilesModelFrontsearch extends JModelList
         //search file on local
         $dbo = $this->getDbo();
         $dbo->setQuery($query);
-        $dbo->query();
+        $dbo->execute();
         $results = $dbo->loadObjectList();
 
         return $results;
@@ -1795,8 +1859,8 @@ class DropfilesModelFrontsearch extends JModelList
         }
 
         JPluginHelper::importPlugin('dropfilesthemes');
-        $dispatcher = JDispatcher::getInstance();
-        $result = $dispatcher->trigger('onShowFrontFile', array(
+        $app = JFactory::getApplication();
+        $result = $app->triggerEvent('onShowFrontFile', array(
             array(
                 'file'     => $file,
                 'category' => $category,

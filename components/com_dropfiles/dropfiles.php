@@ -34,12 +34,14 @@ if (preg_match('/^front.*/', $task) ||
     require_once JPATH_COMPONENT . '/helpers/query.php';
     require_once JPATH_COMPONENT . '/helpers/class.exceltotext.php';
     require_once JPATH_COMPONENT . '/helpers/class.filetotext.php';
-    require_once JPATH_COMPONENT . '/helpers/class.simplexlsx.php';
 } else {
+    if ($view !== 'singlecategory' && $view !== 'files'  && $view !== 'manage' && !DropfilesHelper::validateFrontTask($task) && !JFactory::getUser()->authorise('core.manage', 'com_dropfiles')) {
+        $app = JFactory::getApplication();
+        $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+        return false;
+    }
+
     DropfilesBase::initComponent();
-//    if ($task!='googledrive.googlesync' && !JFactory::getUser()->authorise('core.manage', 'com_dropfiles')) {
-//    return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
-//    }
 
     // Execute the task.
     if ($view === 'dropfiles' || $view === 'users' || $view === null) {

@@ -61,7 +61,7 @@ span:hover {
 						<?php else :?>
                             <td></td>
                         <?php endif; ?>
-							
+
 						<?php if ($action['is_r'] == 1) :?>
 							<td action="r" class="action">
 								<?php if ($action['r'] == 1) :?>
@@ -85,7 +85,7 @@ span:hover {
 						<?php else: ?>
                             <td></td>
                         <?php endif; ?>
-						
+
 						<?php if ($action['is_d'] == 1) :?>
 							<td action="d" class="action">
 								<?php if ($action['d'] == 1) :?>
@@ -112,6 +112,9 @@ span:hover {
 			<?php endforeach;?>
 			</ul>
 		<?php endif;?>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success"><a href="index.php" style="color: unset"><?php echo JText::_('OK');?></a></button>
+        </div>
 	</fieldset>
 <?php endforeach;?>
 

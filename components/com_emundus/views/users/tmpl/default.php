@@ -21,9 +21,13 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 			<div style="float:left; position:absolute">
 				<h3 class="panel-title"><?php echo JText::_('FILTERS')?></h3> &ensp;&ensp;
 			</div>
-			<div class="buttons" style="float:right; margin-top:0px">
-                <input value="&#xf0e2" type="button" class="btn btn-sm btn-danger" id="clear-search" style="font-family: 'FontAwesome';" title="<?php echo JText::_('CLEAR_BTN');?>"/>
-			</div>
+            <div class="buttons" style="float:right; margin-top:0px">
+                <label for="clear-search">
+                    <img src="<?php echo JURI::base()?>/media/com_emundus/images/icones/clear-filters.png" style="width: 30px;filter: invert(1);"/>
+                </label>
+
+                <input type="button" style="display: none" id="clear-search" title="<?php echo JText::_('CLEAR_BTN');?>"/>
+            </div>
 		</div>
 		<div class="panel-body em-containerFilter-body">
 

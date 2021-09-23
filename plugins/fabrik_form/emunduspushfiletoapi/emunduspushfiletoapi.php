@@ -213,7 +213,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 
 			foreach ($tableuser as $key => $itemt) {
 
-				$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
+				$query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
                             WHERE ff.group_id = fg.id AND
                                   ff.form_id = "'.$itemt->form_id.'"
@@ -227,7 +227,13 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 				}
 				foreach ($groups as $group) {
 
-					$query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
+                    if(!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int)$g_params->access)) {
+                        continue;
+                    }
+
+                    $g_params = json_decode($group->params);
+
+                    $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
                                 FROM #__fabrik_elements fe
                                 WHERE fe.published=1 AND
                                       fe.group_id = "'.$group->group_id.'"
@@ -266,7 +272,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 								}
 							}
 
-						} elseif ($group->repeated > 0 || $group->repeated_1 > 0) {
+						} elseif ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) {
 
 							$t_elt = array();
 							foreach ($elements as &$element) {

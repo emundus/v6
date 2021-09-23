@@ -73,8 +73,8 @@ abstract class modFaLangHelper
 
             if (class_exists($class) && is_callable(array($class, 'getAssociations')))
             {
-                //don't load association for eshop
-                if ( $class != 'eshopHelperAssociation'){
+	            //don't load association for eshop and hikashop
+	            if ( $class != 'eshopHelperAssociation' && $class != 'hikashopHelperAssociation'){
                     $cassociations = call_user_func(array($class, 'getAssociations'));
                 }
             }
@@ -98,6 +98,7 @@ abstract class modFaLangHelper
                 $language->display = true;
             }
 
+            //TOOD fix bug when association exist the editmode is bypassed
             if (modFaLangHelper::isEditMode()){
                 $language->display = false;
             }
@@ -118,12 +119,10 @@ abstract class modFaLangHelper
                     $language->display = true;
                     $itemid = $associations[$language->lang_code];
 
-	                //if ($app->input->get->get(‘option’, ‘’) !== ‘com_mojishop’) {
-	                //since 2.9.3 it's no more necessary
-//                    if (isset($_GET['option']) && $_GET['option'] != 'com_mijoshop') {
-//                        $vars['Itemid'] = $itemid;
-//                    }
-	                $language->link = JRoute::_('index.php?lang=' . $language->sef . '&Itemid=' . $itemid);
+	                //3.4 Hikashop try to fix on product swither with native joomla menu
+	                $extraparams = modFaLangHelper::fixHikashopProductSwitch($language,$lang,$default_lang,$vars);
+
+	                $language->link = JRoute::_('index.php?lang=' . $language->sef . '&Itemid=' . $itemid .$extraparams  );
 
                 }
                 else {
@@ -557,6 +556,13 @@ abstract class modFaLangHelper
 		    $db->setQuery($query);
 		    $originalPath = $db->loadResult();
 
+		    //v3.4.4
+		    //fix case for item linked to a blog menu and display submenu (the itemId is releated to the blog menu
+		    //not item
+		    if (($originalPath == $translatedPath) || empty($translatedPath)){
+			    return JUri::getInstance()->toString(array('scheme', 'host', 'port', 'path', 'query'));
+		    }
+
 		    //si language de boucle et language site
 		    if (isset($translatedPath)){
 		    	$link = $translatedPath;
@@ -573,4 +579,73 @@ abstract class modFaLangHelper
 	    }
 	    return JUri::getInstance()->toString(array('scheme', 'host', 'port', 'path', 'query'));
     }
+
+	/**
+	 *
+	 * get the extra param's to build the route for hikahsop product page with default joomal menu
+	 * $loop_language language in the loop of flang
+	 * $site_language Language tag displayed on the site
+	 * $default_language site default language
+	 * $vars
+	 *
+	 * @since version 3.4
+	 */
+	public static function fixHikashopProductSwitch($loop_language,$site_language,$default_lang,$vars){
+		$name ='';
+		if (isset($vars['option']) && $vars['option'] == 'com_hikashop') {
+			if (isset($vars['ctrl']) && $vars['ctrl'] == 'product' && isset($vars['task'])  && $vars['task'] == 'show') {
+				if (isset($vars['cid'])) {
+					//si langue deu site la variable name est la bonne
+					if ($loop_language == $site_language){
+						$name = $vars['name'];
+					}
+					// si pas la langue par default traduction dans falang
+					elseif ( $default_lang != $loop_language->lang_code ) {
+						$fManager = FalangManager::getInstance();
+						$id_lang  = $fManager->getLanguageID( $loop_language->lang_code );
+						$db       = JFactory::getDbo();
+						$dbQuery  = $db->getQuery( true )
+							->select( 'fc.value' )
+							->from( '#__falang_content fc' )
+							->where( 'fc.reference_id = ' . (int) $vars['cid'] )
+							->where( 'fc.language_id = ' . (int) $id_lang )
+							->where( 'fc.reference_field = \'product_alias\'' )
+							->where( 'fc.published = 1' )
+							->where( 'fc.reference_table = \'hikashop_product\'' );
+
+						$db->setQuery( $dbQuery );
+						$alias = $db->loadResult();
+						if ( isset( $alias ) ) {
+							$name = $alias;
+						}
+
+					}
+
+					//pas de traduction et pas de langue du site affiché
+					//on prends l'alias du produit
+					if (empty($name)){
+						// translated languague look in native table
+						$db      = JFactory::getDbo();
+						$dbQuery = $db->getQuery( true )
+							->select( 'product_alias' )
+							->from( '#__hikashop_product' )
+							->where( 'product_id = ' . (int) $vars['cid'] );
+						$db->setQuery( $dbQuery );
+						$alias = $db->loadResult();
+						if ( isset( $alias ) ) {
+							$name = $alias;
+						}
+
+					}
+					return '&cid='.$vars['cid'].'&name='.$name.'&ctrl=product';
+				}
+
+			}
+
+		}
+
+
+		return $name;
+
+	}
 }

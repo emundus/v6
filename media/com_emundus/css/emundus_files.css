@@ -112,7 +112,7 @@ button.close {
     width: 15px;
     position: fixed;
     top: 25%;
-    left: 0;
+    left: 75px;
     cursor: pointer;
 }
 /*TABLEAUX*/
@@ -192,6 +192,19 @@ table .btn-group > .btn {
 .table>tfoot>tr>td {
     border: 0 solid;
 }
+
+#em-candidat-panel th {
+    border:1px solid;
+    width: 25%;
+}
+
+#em-candidat-panel td {
+    border:1px solid;
+}
+
+#em-candidat-panel tr:nth-child(even){background-color: #fafafa;}
+
+#em-candidat-panel tr:hover {background-color: #ddd;}
 
 .em-cell a:focus {
     color: #2a363b;
@@ -491,6 +504,10 @@ div#em-appli-block .active.content fieldset {
     margin-bottom: 0px;
 }
 
+.panel-body.Marginpanel-body.em-container-form-body .em-personalDetail{
+    overflow:scroll;
+}
+
 div#em-appli-block .legend {
     font-weight: 500;
     margin-bottom: 0px;
@@ -659,6 +676,29 @@ div#em-modal-actions label.col-lg-2.control-label {
 div#em-modal-actions .panel-heading h5 {
     color: #2a363b;
 }
+
+div#em-modal-actions #form-element{
+    padding: 15px 15px 15px 2rem;
+}
+
+div#em-modal-actions #savePDFfilter, div#em-modal-actions #savefilter{
+    margin-left: 0;
+    margin-right: 1%;
+    border-radius: 4px;
+    margin-top: 10px;
+    background: #12db42;
+    border: solid 1px #12db42;
+}
+div#em-modal-actions #savePDFfilter:hover, div#em-modal-actions #savefilter:hover{
+    background: transparent;
+    color: #12db42;
+}
+
+div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
+    padding: 8px 12px;
+    margin-top: 10px;
+}
+
 /* CHECK BOX FOR EXPORTS */
 
 .modal-body input[type="checkbox"]+label {
@@ -752,7 +792,7 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 .g-back-office-emundus-tableau .panel-body {
-    background-color: #fafafa;
+    background-color: #f8f8f8;
 }
 
 .g-back-office-emundus-tableau.view-export_select_columns .panel-body {
@@ -845,7 +885,7 @@ div#em-modal-actions .panel-heading h5 {
 .g-back-office-emundus-tableau .panel-info {
     box-shadow: none;
     border-radius:0;
-    border-right: 2px solid #eee;
+   border-right: 2px solid #eee;
     border-left:none;
     border-bottom:none;
     margin-bottom: 0px !important;
@@ -870,6 +910,9 @@ div#em-modal-actions .panel-heading h5 {
 
 #em_filters .chosen-container-single .chosen-single span {
     margin-top: -3.5px;
+    font-style: italic;
+    opacity: 0.4;
+    font-size: 15px;
 }
 
 #em-files-filters td,
@@ -925,6 +968,24 @@ div#em-synthesis .panel-heading h3 {
 
 .list-group-item {
     padding: 6px 20px;
+}
+
+.list-item-notifications{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.notifications-counter{
+    background: red;
+    padding: 10px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .list-group-item b {
@@ -1233,7 +1294,7 @@ label {
     font-weight: normal !important;
     text-align: center !important;
     vertical-align: middle !important;
-    cursor: pointer !important;
+    cursor: pointer;
     background-image: none !important;
     border: 1px solid transparent ;
     white-space: nowrap !important;
@@ -1336,7 +1397,7 @@ thead th:hover {
     top: 50%;
     left: 0;
     background-color: rgba(142, 142, 142, 0.83);
-    z-index: 999;
+    z-index: 10;
 }
 
 #em-hide-filters:hover {
@@ -2085,9 +2146,6 @@ label[for="em-file_to_upload"]:hover {
 .xclsform {
     margin: 35px auto auto !important;
 }
-.xclsform button#savefilter {
-    margin:0 20px!important;
-}
 
 .xclsform .panel-info > .panel-heading label {
     color: #fff !important;
@@ -2111,7 +2169,7 @@ label[for="em-file_to_upload"]:hover {
     padding: 20px;
 }
 footer#g-footer {
-    padding: 20px !important;
+    padding: 20px 20px 20px 80px !important;
 }
 footer#g-footer {
     background: transparent;
@@ -2178,13 +2236,14 @@ div#em-assoc-files .panel > .panel-heading {
     box-shadow: none !important;
     text-shadow: none;
     color: #FFFFFF;
-    padding: 6px 12px !important;
+    padding: 0px 12px !important;
     border-radius: 4px !important;
 }
 
 .g-back-office-emundus-tableau #em_select_filter #del-filter {
-    font-size: 15px !important;
+    font-size: 19px !important;
     border-radius: 4px !important;
+    padding-top: 0px;
 }
 
 .g-back-office-emundus-tableau button#search:hover ,  .g-back-office-emundus-tableau button#clear-search:hover, .g-back-office-emundus-tableau button#save-filter:hover , .g-back-office-emundus-tableau button#add-filter:hover,  .g-back-office-emundus-tableau input#search:hover ,  .g-back-office-emundus-tableau input#clear-search:hover, .g-back-office-emundus-tableau input#save-filter:hover , .g-back-office-emundus-tableau input#add-filter:hover  {
@@ -2202,7 +2261,7 @@ div#em-assoc-files .panel > .panel-heading {
 .g-back-office-emundus-tableau button#search:focus ,  .g-back-office-emundus-tableau button#clear-search:focus, .g-back-office-emundus-tableau button#save-filter:focus , .g-back-office-emundus-tableau button#add-filter:focus,  .g-back-office-emundus-tableau input#search:focus ,  .g-back-office-emundus-tableau input#clear-search:focus, .g-back-office-emundus-tableau input#save-filter:focus , .g-back-office-emundus-tableau input#add-filter:focus  {
     box-shadow: none !important;
     text-shadow: none;
-    color: #ffffff !important;
+    /*color: #ffffff !important;*/
 }
 
 .g-back-office-emundus-tableau button#showhide,  .g-back-office-emundus-tableau input#showhide {
@@ -2511,4 +2570,91 @@ a.copy-0:focus {
     #em_select_filter label {
         font-size: 0.8rem;
     }
+}
+
+.email___candidat {
+    display: flex;
+    padding: 0px;
+}
+
+.email___candidat .email___candidat_panel {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    background: #FCFCFC;
+    box-shadow: 0px 6px 10px rgba(5, 47, 55, 0.07), 0px 1px 18px rgba(5, 47, 55, 0.06), 0px 3px 5px rgba(5, 47, 55, 0.1);
+    border-radius: 4px;
+    margin-right: 32px;
+}
+
+.email___candidat .email___candidat_panel .email___candidat_panel_item {
+    padding: 0px;
+    margin-bottom: 24px;
+}
+
+.email___candidat .email___message_body {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    background: #FCFCFC;
+    box-shadow: 0px 6px 10px rgba(5, 47, 55, 0.07), 0px 1px 18px rgba(5, 47, 55, 0.06), 0px 3px 5px rgba(5, 47, 55, 0.1);
+    border-radius: 4px;
+    max-width: 500px !important;
+    overflow-y: scroll;
+}
+
+.email___candidat .email___message_body .email___message_body_item {
+    padding: 0px;
+}
+
+/* email editor */
+.email___editor {
+    display: flex;
+    padding: 0px;
+}
+
+.email___editor .email___editor_category {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    background: #FCFCFC;
+    box-shadow: 0px 6px 10px rgba(5, 47, 55, 0.07), 0px 1px 18px rgba(5, 47, 55, 0.06), 0px 3px 5px rgba(5, 47, 55, 0.1);
+    border-radius: 4px;
+    margin-right: 32px;
+}
+
+.email___editor .email___editor_category .email___editor_category_item {
+    padding: 0px;
+}
+
+.email__editor .email___editor_sending {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    background: #FCFCFC;
+    box-shadow: 0px 6px 10px rgba(5, 47, 55, 0.07), 0px 1px 18px rgba(5, 47, 55, 0.06), 0px 3px 5px rgba(5, 47, 55, 0.1);
+    border-radius: 4px;
+    max-width: 500px !important;
+    overflow-y: scroll;
+}
+
+.email__editor .email___editor_sending .email___editor_sending_input {
+    padding: 0px;
+}
+
+.email__editor .email___editor_sending .email___editor_sending_input .email___editor_sending_input_label {
+    width: 85px;
+    height: 40px;
+    text-align: right;
+}
+
+.email__editor .email___editor_sending .email___editor_sending_input .email___editor_sending_input_input {
+    width: 100%;
+    heigth: 40px;
+}
+
+.email__editor .email___editor_sending .email___editor_sending_wysiwyg {
+    width: auto;
+    height: 300px;
+    overflow-y: scroll;
 }

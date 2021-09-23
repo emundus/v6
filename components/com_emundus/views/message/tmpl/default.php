@@ -19,7 +19,7 @@ $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
 
 // Load the WYSIWYG editor used to edit the mail body.
 $editor = JFactory::getEditor('tinymce');
-$mail_body = $editor->display('mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, array('mode' => 'simple'));
+$mail_body = $editor->display('mail_body', JText::_('DEAR').' [NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, array('mode' => 'simple'));
 
 $m_messages = new EmundusModelMessages();
 
@@ -33,11 +33,11 @@ $email_list = array();
 
 $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($current_user->id);
 if ($allowed_attachments !== true) {
-	foreach ($setup_attachments as $key => $att) {
-		if (!in_array($att->id, $allowed_attachments)) {
-			unset($setup_attachments[$key]);
-		}
-	}
+    foreach ($setup_attachments as $key => $att) {
+        if (!in_array($att->id, $allowed_attachments)) {
+            unset($setup_attachments[$key]);
+        }
+    }
 }
 ?>
 
@@ -114,50 +114,50 @@ if ($allowed_attachments !== true) {
 						</span>
 
                         <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
-					<?php endif; ?>
+                    <?php endif; ?>
 
-				<?php endforeach; ?>
-			</div>
-		</div>
-		<div class="form-group em-form-sender">
-			<div class="inputbox input-xlarge form-control form-inline">
-				<span class='label label-grey' for="mail_from" ><?= JText::_('FROM'); ?>:</span>
-				<div class="form-group" style="display:inline-block !important;" id="mail_from_name" contenteditable="true"><?= $current_user->name; ?> </div>
-				<div class="form-group" style="display:inline-block !important;" id="mail_from" contenteditable="true"><strong> <?= $current_user->email; ?></strong></div>
-			</div>
-		</div>
-		<div class="form-group em-form-subject">
-			<div class="inputbox input-xlarge form-control form-inline">
-				<span class='label label-grey' for="mail_from" ><?= JText::_('SUBJECT'); ?>:</span>
-				<div class="form-group" style="display:inline-block !important;" id="mail_subject" contenteditable="true"><?= JFactory::getConfig()->get('sitename'); ?></div>
-			</div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <div class="form-group em-form-sender">
+            <div class="inputbox input-xlarge form-control form-inline">
+                <span class='label label-grey' for="mail_from" ><?= JText::_('FROM'); ?>:</span>
+                <div class="form-group" style="display:inline-block !important;" id="mail_from_name" contenteditable="true"><?= $current_user->name; ?> </div>
+                <div class="form-group" style="display:inline-block !important;" id="mail_from" contenteditable="true"><strong> <?= $current_user->email; ?></strong></div>
+            </div>
+        </div>
+        <div class="form-group em-form-subject">
+            <div class="inputbox input-xlarge form-control form-inline">
+                <span class='label label-grey' for="mail_from" ><?= JText::_('SUBJECT'); ?>:</span>
+                <div class="form-group" style="display:inline-block !important;" id="mail_subject" contenteditable="true"><?= JFactory::getConfig()->get('sitename'); ?></div>
+            </div>
 
-			<!-- Email WYSIWYG -->
-			<?= $mail_body; ?>
-		</div>
+            <!-- Email WYSIWYG -->
+            <?= $mail_body; ?>
+        </div>
 
-		<div class="form-group">
-			<br>
-			<hr>
-		</div>
+        <div class="form-group">
+            <br>
+            <hr>
+        </div>
 
-		<div class="form-inline row em-form-attachments">
-			<div class="form-group col-sm-12 col-md-5">
-				<label for="em-select_attachment_type" ><?= JText::_('SELECT_ATTACHMENT_TYPE'); ?></label>
-				<select name="em-select_attachment_type" id="em-select_attachment_type" class="form-control download" onChange="toggleAttachmentType(this);">
-					<option value=""> <?= JText::_('PLEASE_SELECT'); ?> </option>
-					<option value="upload"> <?= JText::_('UPLOAD'); ?> </option>
-					<?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
-					    <option value="candidate_file"> <?= JText::_('CANDIDATE_FILE'); ?> </option>
-					<?php endif; ?>
-					<?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
-					    <option value="setup_letters"> <?= JText::_('SETUP_LETTERS_ATTACH'); ?> </option>
-					<?php endif; ?>
-				</select>
-			</div>
+        <div class="form-inline row em-form-attachments">
+            <div class="form-group col-sm-12 col-md-5">
+                <label for="em-select_attachment_type" ><?= JText::_('SELECT_ATTACHMENT_TYPE'); ?></label>
+                <select name="em-select_attachment_type" id="em-select_attachment_type" class="form-control download" onChange="toggleAttachmentType(this);">
+                    <option value=""> <?= JText::_('PLEASE_SELECT'); ?> </option>
+                    <option value="upload"> <?= JText::_('UPLOAD'); ?> </option>
+                    <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
+                        <option value="candidate_file"> <?= JText::_('CANDIDATE_FILE'); ?> </option>
+                    <?php endif; ?>
+                    <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
+                        <option value="setup_letters"> <?= JText::_('SETUP_LETTERS_ATTACH'); ?> </option>
+                    <?php endif; ?>
+                </select>
+            </div>
 
-			<div class="form-group col-sm-12 col-md-7">
-				<!-- Upload a file from computer -->
+            <div class="form-group col-sm-12 col-md-7">
+                <!-- Upload a file from computer -->
                 <div class="hidden upload-file em-form-attachments-uploadFile" id="upload_file">
 
                     <div class="file-browse">
@@ -180,12 +180,12 @@ if ($allowed_attachments !== true) {
                         <select id="em-select_candidate_file" name="candidate_file" class="form-control download">
                             <?php if (!$setup_attachments) :?>
                                 <option value="%"> <?= JText::_('NO_FILES_FOUND'); ?> </option>
-	                        <?php else: ?>
+                            <?php else: ?>
                                 <option value="%"> <?= JText::_('PLEASE_SELECT'); ?> </option>
-		                        <?php foreach ($setup_attachments as $attachment): ?>
+                                <?php foreach ($setup_attachments as $attachment): ?>
                                     <option value="<?= $attachment->id; ?>"> <?= $attachment->value; ?></option>
-		                        <?php endforeach; ?>
-	                        <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </select>
                         <span class="input-group-btn">
                               <a class="btn btn-grey hidden" type="button" id="uploadButton" style="top:23px; float: right;" onClick="addFile();"><?= JText::_('ADD_ATTACHMENT'); ?></a>
@@ -261,6 +261,7 @@ if ($allowed_attachments !== true) {
 
     // Loads the template and updates the WYSIWYG editor
     function getTemplate(select) {
+        $('#em-attachment-list').empty();
 
         $.ajax({
             type: "POST",
@@ -342,24 +343,38 @@ if ($allowed_attachments !== true) {
                 // TODO: Rights?
                 // Get the attached candidate files if there are any.
                 if (typeof(email.tmpl.letter_attachments) != 'undefined' && email.tmpl.letter_attachments != null) {
-
+                    var fnums = $('input:hidden[name="fnums"]').val();
                     // We need another AJAX to get the info about the letter, we only have the IDs and we need the names.
                     $.ajax({
                         type: 'POST',
-                        url: 'index.php?option=com_emundus&controller=messages&task=getletterfilenames',
+                        url: 'index.php?option=com_emundus&controller=messages&task=getavailableletters',
+                        dataType: 'JSON',
                         data : {
-                            attachments : email.tmpl.letter_attachments
+                            fnums : fnums,
+                            tmplId : $('#message_template').val(),
                         },
-                        success: function (attachments) {
-                            attachments = JSON.parse(attachments);
-                            if (attachments.status) {
+                        success: function (letter_tmpls) {
+                            if(letter_tmpls.status) {
+                                let letters = letter_tmpls.attached_letters;
 
-                                // Add the attachments to the list and deselect the corresponding selects from the option.
-                                attachments.attachments.forEach(function(attachment) {
-                                    $('#em-attachment-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+attachment.id+'</div>'+attachment.title+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
-                                    $('#em-select_setup_letters option[value="'+attachment.id+'"]').prop('disabled', true);
-                                });
+                                letters.forEach(letter => {
+                                    $('#em-attachment-list').append('' +
+                                        '<li class="list-group-item setup_letters" style="padding: 15px 15px">' +
+                                        '<div class="value hidden">' + letter.id + '</div>' + letter.value +
+                                        '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
+                                        '<span class="glyphicon glyphicon-remove"></span>' +
+                                        '</span>' +
+                                        '<span class="badge">' +
+                                        '<span class="glyphicon glyphicon-envelope">' + '</span>' +
+                                        '</span>' +
+                                        '</li>');
+                                })
+                            } else {
+                                $('#em-attachment-list').append('ERROR_HERE');
                             }
+
+                        }, error: function(jqXHR) {
+                            console.log(jqXHR.responseText);
                         }
                     })
                 }

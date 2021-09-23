@@ -2,13 +2,13 @@
   <div id="dropdownF">
     <div class="row rowmodal">
       <div class="form-group">
-        <label>{{helptext}} :</label>
+        <label>{{translations.helptext}} :</label>
         <input type="text" class="form__input field-general w-input" v-model="element.params.rollover" />
       </div>
-      <div class="col-md-8 flex">
-        <label class="require col-md-3">{{suboptions}} :</label>
+      <div class="d-flex mb-1">
+        <label class="require col-md-3">{{translations.suboptions}} :</label>
       </div>
-      <div class="col-md-10 form-group flex">
+      <div class="col-md-12 form-group flex">
         <div class="toggle">
         <input type="checkbox"
                true-value="true"
@@ -19,7 +19,7 @@
           <strong class="b switch"></strong>
           <strong class="b track"></strong>
         </div>
-        <label for="no_default_value" class="ml-10px mb-0">{{ No_Default_Value }}</label>
+        <label for="no_default_value" class="ml-10px mb-0">{{ translations.No_Default_Value }}</label>
       </div>
       <div class="col-md-10 form-group flex">
         <div class="toggle">
@@ -34,7 +34,7 @@
           <strong class="b switch"></strong>
           <strong class="b track"></strong>
         </div>
-        <label for="databasejoin_check" class="ml-10px mb-0">{{ DataTables  }}</label>
+        <label for="databasejoin_check" class="ml-10px mb-0">{{ translations.DataTables  }}</label>
       </div>
       <div class="col-md-10">
         <draggable
@@ -42,18 +42,24 @@
                 v-if="databasejoin != 1"
                 @end="needtoemit()"
                 handle=".handle">
-        <div v-for="(sub_values, i) in arraySubValues" :key="i" class="dpflex" v-if="display_first_option != i">
+        <div v-for="(sub_values, i) in arraySubValues" :key="i" class="d-flex mb-1" v-if="display_first_option != i">
           <span class="icon-handle">
             <em class="fas fa-grip-vertical handle"></em>
           </span>
-          <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input" style="height: 35px" :id="'suboption_' + i" @keyup.enter="add"/>
+          <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input mb-0" style="height: 35px" :id="'suboption_' + i" @keyup.enter="add"/>
           <button @click.prevent="leave(i)" type="button" class="remove-option">-</button>
         </div>
         </draggable>
-        <button @click.prevent="add" type="button" v-if="databasejoin != 1" class="bouton-sauvergarder-et-continuer-3 button-add-option" style="margin-bottom: 2em">{{AddOption}}</button>
+        <button @click.prevent="add" type="button" v-if="databasejoin != 1" class="bouton-sauvergarder-et-continuer-3 button-add-option" style="margin-bottom: 2em">{{translations.AddOption}}</button>
         <select v-if="databasejoin == 1" class="dropdown-toggle" v-model="databasejoin_data" style="margin: 20px 0 30px 0;">
           <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
         </select>
+<!--        <div v-if="databasejoin_data">
+          <label>{{translations.OrderBy}}</label>
+          <select class="dropdown-toggle" v-model="databasejoin_data_order" style="margin: 20px 0 30px 0;">
+            <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
+          </select>
+        </div>-->
       </div>
     </div>
   </div>
@@ -79,11 +85,15 @@ export default {
       no_default_value: false,
       display_first_option: null,
       databasejoin_data: 0,
-      helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
-      suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
-      AddOption: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS"),
-      DataTables: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN"),
-      No_Default_Value: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_NO_DEFAULT_VALUE"),
+      databasejoin_data_order: 'id',
+      translations: {
+        helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
+        suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
+        AddOption: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS"),
+        DataTables: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN"),
+        No_Default_Value: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_NO_DEFAULT_VALUE"),
+        OrderBy: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ORDER_BY"),
+      }
     };
   },
   methods: {
@@ -251,7 +261,7 @@ export default {
   margin-bottom: 0.5em;
 }
 #dropdownF{
-  padding: 10px;
+  padding: 10px 0;
 }
 .icon-handle{
   color: #cecece;

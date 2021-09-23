@@ -220,7 +220,7 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 		$opts                       = json_encode($opts);
 		$ref                        = $this->getJSRenderContext();
 		$js                         = array();
-		$js[]                       = "\t$ref = new FbGoogleMapViz('table_map', $opts)";
+		$js[]                       = "\t$ref = new FbGoogleMapViz('table_map_{$ref}', {$opts})";
 		$js[]                       = "\t" . "Fabrik.addBlock('$ref', $ref);";
 		$js[]                       = "\n";
 
@@ -532,7 +532,16 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 							 */
 							$iconImgPath = FArrayHelper::getValue($markerImagesPath, $c, 'media');
 
-							$iconImg = FArrayHelper::getValue($rowData, $iconImg, '');
+							$iconImgRaw = $iconImg . '_raw';
+							$iconImg = FArrayHelper::getValue(
+								$rowData,
+								$iconImgRaw,
+								FArrayHelper::getValue(
+									$rowData,
+									$iconImg,
+									''
+								)
+							);
 
 							// Normalize the $iconimg so it is either a file path relative to J! root, or a non-local URL
 							switch ($iconImgPath) {

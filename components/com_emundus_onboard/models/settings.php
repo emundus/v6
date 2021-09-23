@@ -52,6 +52,7 @@ class EmundusonboardModelsettings extends JModelList {
     function getStatus() {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
         $query->select('*')
             ->from ($db->quoteName('#__emundus_setup_status'))
@@ -62,38 +63,19 @@ class EmundusonboardModelsettings extends JModelList {
             $status = $db->loadObjectList();
             foreach ($status as $statu){
                 $statu->label = new stdClass;
-                $statu->label->en = '';
-                $statu->label->fr = '';
 
+                $statu->label = $falang->getFalang($statu->step,'emundus_setup_status','value',$statu->value);
+
+                $statu->edit = 1;
                 $query->clear()
-                    ->select('value')
-                    ->from($db->quoteName('#__falang_content'))
-                    ->where(array(
-                        $db->quoteName('reference_id') . ' = ' . $db->quote($statu->step),
-                        $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
-                        $db->quoteName('reference_field') . ' = ' . $db->quote('value'),
-                        $db->quoteName('language_id') . ' = 1'
-                    ));
+                    ->select('count(id)')
+                    ->from($db->quoteName('#__emundus_campaign_candidature'))
+                    ->where($db->quoteName('status') . ' = ' . $db->quote($statu->step));
                 $db->setQuery($query);
-                $en_value = $db->loadResult();
+                $files = $db->loadResult();
 
-                $query->clear()
-                    ->select('value')
-                    ->from($db->quoteName('#__falang_content'))
-                    ->where(array(
-                        $db->quoteName('reference_id') . ' = ' . $db->quote($statu->step),
-                        $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
-                        $db->quoteName('reference_field') . ' = ' . $db->quote('value'),
-                        $db->quoteName('language_id') . ' = 2'
-                    ));
-                $db->setQuery($query);
-                $fr_value = $db->loadResult();
-
-                if ($en_value != null) {
-                    $statu->label->en = $en_value;
-                }
-                if ($fr_value != null) {
-                    $statu->label->fr = $fr_value;
+                if($files > 0){
+                    $statu->edit = 0;
                 }
             }
 
@@ -205,20 +187,6 @@ class EmundusonboardModelsettings extends JModelList {
             $newstatusid = $db->insertid();
 
             $query->clear()
-                ->insert('#__falang_content')
-                ->set(array(
-                    $db->quoteName('value') . ' = ' . $db->quote('default'),
-                    $db->quoteName('reference_id') . ' = ' . $db->quote($newstep),
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('class'),
-                    $db->quoteName('language_id') . ' = 2'
-                ));
-            $db->setQuery($query);
-            $results[] = $db->execute();
-
-            $results[] = $falang->insertFalang('Nouveau statut', 'New status', $newstep, 'emundus_setup_status', 'value');
-
-            $query->clear()
                 ->select('*')
                 ->from ($db->quoteName('#__emundus_setup_status'))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($newstatusid));
@@ -229,6 +197,8 @@ class EmundusonboardModelsettings extends JModelList {
             $status->label = new stdClass;
             $status->label->fr = 'Nouveau statut';
             $status->label->en = 'New status';
+
+            $falang->insertFalang($status->label, $newstep, 'emundus_setup_status', 'value');
 
             return $status;
         } catch(Exception $e) {
@@ -268,7 +238,7 @@ class EmundusonboardModelsettings extends JModelList {
                 $db->setQuery($query);
                 $results[] = $db->execute();
 
-                $results[] = $falang->updateFalang($statu['label']['fr'], $statu['label']['en'], $statu['step'], 'emundus_setup_status', 'value');
+                $results[] = $falang->updateFalang($statu['label'], $statu['step'], 'emundus_setup_status', 'value');
             }
 
             return $results;
@@ -461,13 +431,38 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
-    function updateHomepage($content) {
+    function updateHomepage($content,$label,$color) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         $results = [];
 
-        $query->update($db->quoteName('#__content'))
+        // Update label
+        $query->select('id,content')
+            ->from($db->quoteName('#__modules'))
+            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_custom'))
+            ->andWhere($db->quoteName('title') . ' LIKE ' . $db->quote('Homepage background'));
+
+        $db->setQuery($query);
+        $module = $db->loadObject();
+        $old_content = $module->content;
+        $id_module = $module->id;
+
+        $title_to_complete = explode('<h1 class="welcome-message">',$old_content);
+        $new_content = $title_to_complete[0] . '<h1 class="welcome-message">' . $label[0] . '</h1></div>';
+
+        $query->clear()
+            ->update($db->quoteName('#__modules'))
+            ->set($db->quoteName('content') . ' = ' . $db->quote($new_content))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($id_module));
+
+        $db->setQuery($query);
+        $results[] = $db->execute();
+        //
+
+        // Update content
+        $query->clear()
+            ->update($db->quoteName('#__content'))
             ->set($db->quoteName('introtext') . ' = ' . $db->quote($content['fr']))
             ->where($db->quoteName('id') . ' = ' . 52);
 
@@ -490,6 +485,7 @@ class EmundusonboardModelsettings extends JModelList {
             JLog::add('component/com_emundus_onboard/models/settings | Error at updating homepage article : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
+        //
 
         return $results;
     }
@@ -924,6 +920,9 @@ class EmundusonboardModelsettings extends JModelList {
             $orderings = $db->loadColumn();
             $order = $orderings[sizeof($orderings) - 1] + 1;
 
+            $dateTime = new Date('now', 'UTC');
+            $now = $dateTime->toSQL();
+
             $query->clear()
                 ->insert($db->quoteName('#__dropfiles_files'));
             $query->set($db->quoteName('catid') . ' = ' . $db->quote($campaign_cat))
@@ -936,9 +935,9 @@ class EmundusonboardModelsettings extends JModelList {
                 ->set($db->quoteName('size') . ' = ' . $db->quote($filesize))
                 ->set($db->quoteName('hits') . ' = ' . $db->quote(0))
                 ->set($db->quoteName('version') . ' = ' . $db->quote(''))
-                ->set($db->quoteName('created_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('modified_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('publish') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('created_time') . ' = ' . $db->quote($now))
+                ->set($db->quoteName('modified_time') . ' = ' . $db->quote($now))
+                ->set($db->quoteName('publish') . ' = ' . $db->quote($now))
                 ->set($db->quoteName('author') . ' = ' . $db->quote(JFactory::getUser()->id))
                 ->set($db->quoteName('language') . ' = ' . $db->quote(''));
             $db->setQuery($query);
@@ -957,7 +956,7 @@ class EmundusonboardModelsettings extends JModelList {
         $user = JFactory::getUser();
         $form_module = null;
 
-        $html = '<li class="col-md-6 em-print-button" id="' . explode('.',$file)[0] . '" style="margin-bottom: 10px"><a id="print" style="border-radius: 4px;text-decoration: unset" href="' . $dir . $file . '" download="">' . $filename . '</a></li>';
+        $html = '<li class="col-md-6 em-print-button" id="' . explode('.',$file)[0] . '" style="margin-bottom: 10px"><a id="print" style="border-radius: 4px;text-decoration: unset" href="' . $dir . $file . '" download=""><i class="fas fa-arrow-circle-down"></i>' . $filename . '</a></li>';
 
         try {
             $query->select('*')

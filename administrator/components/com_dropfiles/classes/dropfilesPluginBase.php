@@ -58,7 +58,7 @@ class DropfilesPluginBase extends JPlugin
      *
      * @return array
      */
-    public function getThemeName()
+    public function onThemeName()
     {
         $doc = JFactory::getDocument();
         $uriBtn = JURI::root() . 'plugins/dropfilesthemes/' . $this->name . '/images/btn.png';
@@ -77,7 +77,7 @@ class DropfilesPluginBase extends JPlugin
      *
      * @return null|void
      */
-    public function getConfigForm($theme, &$form)
+    public function onConfigForm($theme, &$form)
     {
         if ($theme === '') {
             $theme = 'default';

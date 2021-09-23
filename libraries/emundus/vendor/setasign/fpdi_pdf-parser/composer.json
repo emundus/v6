@@ -1,0 +1,39 @@
+{
+    "name": "setasign/fpdi-pdf-parser",
+    "homepage": "https://www.setasign.com/fpdi-pdf-parser",
+    "description": "A commercial add-on for FPDI which allows PHP developer to import PDF document which use a special compression technic introduced in PDF 1.5.",
+    "type": "library",
+    "keywords": [
+        "pdf",
+        "fpdi",
+        "fpdf"
+    ],
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Jan Slabon",
+            "email": "jan.slabon@setasign.com",
+            "homepage": "https://www.setasign.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "setasign\\FpdiPdfParser\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "setasign\\FpdiPdfParser\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^5.6 || ^7.0 || ^8.0",
+        "setasign/fpdi": "^2.3.2"
+    },
+    "require-dev": {
+        "bamarni/composer-bin-plugin": "^1.4",
+        "setasign/fpdf": "^1.8",
+        "tecnickcom/tcpdf": "~6.2",
+        "phpunit/phpunit": "^5.7"
+    }
+}

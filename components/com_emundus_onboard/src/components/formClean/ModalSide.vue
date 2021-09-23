@@ -4,34 +4,30 @@
     <modal
       :name="'modalSide' + ID"
       height="auto"
-      transition="nice-modal-fade"
+      transition="little-move-left"
       :min-width="200"
       :min-height="200"
       :delay="100"
       :adaptive="true"
-      :clickToClose="false"
+      :clickToClose="true"
       @closed="beforeClose"
-      @before-open="beforeOpen"
-    >
-      <div class="modalC-content">
-        <div class="update-field-header">
-          <div class="topright">
-            <button
-              type="button"
-              class="btnCloseModal"
-              @click.prevent="$modal.hide('modalSide' + ID)"
-            >
-              <em class="fas fa-times-circle"></em>
+      @before-open="beforeOpen">
+      <div class="fixed-header-modal">
+        <div class="topright">
+            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalSide' + ID)">
+              <em class="fas fa-times"></em>
             </button>
           </div>
-
+        <div class="update-field-header">
           <h2 class="update-title-header">
-             {{editMenu}}
+             {{translations.editMenu}}
           </h2>
         </div>
+      </div>
+      <div class="modalC-content">
 
         <div class="form-group" :class="{ 'mb-0': translate.label}">
-            <label>{{Name}} :</label>
+            <label>{{translations.Name}} :</label>
           <div class="input-can-translate">
             <input v-model="label[actualLanguage]" type="text" maxlength="40" class="form__input field-general w-input" style="margin: 0" :class="{ 'is-invalid': errors}"/>
             <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" v-if="manyLanguages !== '0'" @click="translate.label = !translate.label"></button>
@@ -39,37 +35,67 @@
           <translation :label="label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
         </div>
         <p v-if="errors" class="error col-md-12 mb-2">
-          <span class="error">{{LabelRequired}}</span>
+          <span class="error">{{translations.LabelRequired}}</span>
         </p>
 
         <div class="form-group mt-1" :class="{'mb-0': translate.intro}">
-          <label>{{Intro}} :</label>
-          <div class="input-can-translate">
+          <div class="d-flex">
+            <label>{{translations.Intro}}</label>
+            <button class="translate-icon" style="right: 0" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>
+          </div>
+          <div>
+            <div class="d-flex" v-if="translate.intro">
+              <span>{{translations.TranslateIn}} : </span>
+              <select v-model="selectedLanguage" v-if="manyLanguages !== '0'" @change="dynamicComponent++" style="margin: 10px 0;">
+                <option v-for="(language,index_group) in languages" :value="language.sef">{{language.title_native}}</option>
+              </select>
+            </div>
+            <div class="input-can-translate">
+  <!--              <textarea v-model="intro[actualLanguage]" class="form__input field-general w-input" rows="3" maxlength="2000" style="margin: 0"></textarea>-->
+                <editor v-for="(language,index_group) in languages"
+                        v-if="language.sef === selectedLanguage && intro[language.sef]"
+                        :height="'30em'"
+                        :text="intro[language.sef]"
+                        :lang="actualLanguage"
+                        :enable_variables="false"
+                        :id="'editor_' + language.sef"
+                        :key="dynamicComponent"
+                        v-model="intro[language.sef]"></editor>
+  <!--              <button class="translate-icon" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>-->
+            </div>
+          </div>
+<!--          <div class="input-can-translate">
             <textarea v-model="intro[actualLanguage]" class="form__input field-general w-input" rows="3" maxlength="300" style="margin: 0"></textarea>
             <button class="translate-icon" :class="{'translate-icon-selected': translate.intro}" type="button" v-if="manyLanguages !== '0'" @click="translate.intro = !translate.intro"></button>
           </div>
-          <translation :label="intro" :actualLanguage="actualLanguage" v-if="translate.intro"></translation>
+          <translation :label="intro" :actualLanguage="actualLanguage" v-if="translate.intro"></translation>-->
         </div>
 
-        <div class="col-md-12 d-flex mb-1" style="align-items: center">
+        <div class="form-group d-flex mb-1" id="template_checkbox" style="align-items: center">
           <input type="checkbox" v-model="template">
-          <label class="ml-10px mb-0">{{SaveAsTemplate}}</label>
+          <label class="ml-10px mb-0">{{translations.SaveAsTemplate}}</label>
         </div>
 
-        <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-between mb-1">
           <button
-            class="bouton-sauvergarder-et-continuer"
-            @click.prevent="$modal.hide('modalSide' + ID) & UpdateParams()"
-          >{{Continuer}}</button>
-          <button class="bouton-sauvergarder-et-continuer w-delete"
-             @click.prevent="deleteMenu()"
-             v-if="menus.length > 1 && files == 0">
-            {{Delete}}
+              class="bouton-sauvergarder-et-continuer w-retour"
+              @click.prevent="$modal.hide('modalSide' + ID)">
+            {{translations.Retour}}
           </button>
+          <div class="d-flex">
           <button
-            class="bouton-sauvergarder-et-continuer w-retour"
-            @click.prevent="$modal.hide('modalSide' + ID)"
-          >{{Retour}}</button>
+              class="bouton-sauvergarder-et-continuer"
+              @click.prevent="$modal.hide('modalSide' + ID) & UpdateParams()">
+            {{translations.Continuer}}
+          </button>
+          </div>
+        </div>
+        <div class="form-group d-flex mb-1">
+          <button class="bouton-sauvergarder-et-continuer w-delete"
+                  @click.prevent="deleteMenu()"
+                  v-if="menus.length > 1 && files == 0">
+            {{translations.Delete}}
+          </button>
         </div>
       </div>
     </modal>
@@ -80,15 +106,19 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 import Translation from "@/components/translation"
+import Editor from "../editor";
+import List from "../../views/list";
 
 const qs = require("qs");
 
 export default {
   name: "modalSide",
   components: {
+    List,
+    Editor,
     Translation
   },
-  props: { ID: Number, element: Object, index: Number, menus: Array, files: Number, link: String, manyLanguages: Number, actualLanguage: String },
+  props: { ID: String, element: Object, index: Number, menus: Array, files: Number, link: String, manyLanguages: String, actualLanguage: String,  languages: Array },
   data() {
     return {
       tempEl: [],
@@ -96,29 +126,28 @@ export default {
         label: false,
         intro: false
       },
-      label: {
-        fr: '',
-        en: ''
-      },
-      intro: {
-        fr: '',
-        en: ''
-      },
+      label: {},
+      intro: {},
+      dynamicComponent: 0,
       template: false,
       errors: false,
       changes: false,
-      Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-      dataSaved: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED"),
-      informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS"),
-      orderingMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_MENUORDERING"),
-      editMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EDITMENU"),
-      Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
-      Intro: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_INTRO"),
-      Delete: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
-      TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-      LabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
-      SaveAsTemplate: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE_AS_TEMPLATE"),
+      selectedLanguage: this.actualLanguage,
+      translations: {
+        Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+        dataSaved: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED"),
+        informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS"),
+        orderingMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_MENUORDERING"),
+        editMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EDITMENU"),
+        Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
+        Intro: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_INTRO"),
+        Delete: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
+        TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+        LabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
+        SaveAsTemplate: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE_AS_TEMPLATE"),
+        TranslateIn: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_IN"),
+      }
     };
   },
   methods: {
@@ -143,6 +172,7 @@ export default {
         );
         this.changes = false;
       }
+      this.$emit("modalClosed");
     },
     beforeOpen(event) {
       this.initialisation();
@@ -176,17 +206,18 @@ export default {
         })
       }).then((result) => {});
     },
-    axiostrad: function(totrad) {
-      return axios({
-        method: "post",
-        url:
-          "index.php?option=com_emundus_onboard&controller=formbuilder&task=getalltranslations",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+    async axiostrad(totrad) {
+      return await axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getalltranslations",
+        params: {
+          toJTEXT: totrad ,
         },
-        data: qs.stringify({
-          toJTEXT: totrad
-        })
+        paramsSerializer: params => {
+           return qs.stringify(params);
+        }
+      }).then((rep) => {
+        return rep.data;
       });
     },
     deleteMenu() {
@@ -253,20 +284,18 @@ export default {
     initialisation() {
       this.tempEl = JSON.parse(JSON.stringify(this.element));
       this.axiostrad(this.tempEl.intro_raw)
-        .then(response => {
-          this.intro.fr = response.data.fr;
-          this.intro.en = response.data.en;
+        .then((intro_translated) => {
+          this.intro = intro_translated
         })
-        .catch(function(response) {
-          console.log(response);
+        .catch(function(intro_translated) {
+          console.log(intro_translated);
         });
       this.axiostrad(this.tempEl.show_title.titleraw)
-        .then(response => {
-          this.label.fr = response.data.fr;
-          this.label.en = response.data.en;
+        .then((label_translated) => {
+          this.label = label_translated
         })
-        .catch(function(response) {
-          console.log(response);
+        .catch(function(label_translated) {
+          console.log(label_translated);
         });
       this.checkIfTemplate();
     },
@@ -276,11 +305,12 @@ export default {
       this.tempEl = JSON.parse(JSON.stringify(this.element));
     }
   },
-  created: function() {
-    //this.initialisation();
-  }
+  created: function() {}
 };
 </script>
 
 <style scoped>
+#template_checkbox input{
+  margin: 0 !important;
+}
 </style>

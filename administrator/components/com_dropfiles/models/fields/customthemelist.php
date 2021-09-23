@@ -70,8 +70,8 @@ class JFormFieldCustomThemeList extends JFormField
         $defaultThemes = DropfilesPluginBase::getDropfilesThemes();
 
         JPluginHelper::importPlugin('dropfilesthemes');
-        $dispatcher = JEventDispatcher::getInstance();
-        $availableThemes = $dispatcher->trigger('getThemeName');
+        JLoader::register('DropfilesBase', JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesBase.php');
+        $availableThemes = DropfilesBase::getDropfilesThemes();
 
         foreach ($availableThemes as $theme) {
             if (!in_array($theme['id'], $defaultThemes)) {

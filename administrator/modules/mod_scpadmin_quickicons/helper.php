@@ -106,13 +106,13 @@ abstract class modScpadminQuickIconsHelper
             
                 // Vulnerable components
                 $db = JFactory::getDBO();
-                $query = 'SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable="Si"';
+                $query = "SELECT COUNT(*) FROM #__securitycheckpro WHERE 'Vulnerable'='Si'";
                 $db->setQuery($query);
                 $db->execute();    
                 $vuln_extensions = $db->loadResult();
             
                 // Undefined vulnerable components
-                $query = 'SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable="Indefinido"';
+                $query = "SELECT COUNT(*) FROM #__securitycheckpro WHERE 'Vulnerable'='Indefinido'";
                 $db->setQuery($query);
                 $db->execute();    
                 $undefined_vuln_extensions = $db->loadResult();

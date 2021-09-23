@@ -51,6 +51,21 @@ jQuery(document).ready(function($) {
                     }
                     loader.show();
 
+                    $(document).unbind('click', '#dropfiles-box-loading, .dropfiles-loading-close').on('click', '#dropfiles-box-loading, .dropfiles-loading-close', function () {
+                     $("#dropfiles-box-loading").remove();
+                    });
+
+                     var timeout = 5000; // After 5s display waiting notify
+                     // Set time out to display close notification
+                     loading = setTimeout(function() {
+                         var currentLoading = $('#dropfiles-box-loading');
+                         if (currentLoading.length > 0) {
+                             $('.dropfiles-loading-status', currentLoading).remove();
+                             var status = $('<div class="dropfiles-loading-status" style="text-align:center;">' + Joomla.JText._('COM_DROPFILES_LIGHT_BOX_LOADING_STATUS', 'The preview is still loading, you can <span class="dropfiles-loading-close">cancel</span> it at any time...') + '</div>');
+                             currentLoading.append(status);
+                         }
+                     }, timeout);
+
                     //player box init
                     pBox = $("#dropfiles-box-player");
                     if(pBox.length===0){

@@ -18,6 +18,15 @@ administrator/cache/*
 templates/rt_afterburner2/css/rt_afterburner2-custom.css
 templates/g5_helium/templatesDetails.xml
 /templates/g5_helium/templatesDetails.xml
+templates/emundus_vanilla/*
+/templates/emundus_vanilla/*
+images/emundus/import/*
+images/emundus/photo/*
+images/stories/*
+templates/emundus_serp/*
+/templates/emundus_serp/*
+templates/LaScala/*
+/templates/LaScala/*
 /images/emundus/files/*
 /images/emundus/letters/*
 /image/logo.png
@@ -41,6 +50,7 @@ emundus_bdd*
 /administrator/templates/isis/images/logo.png
 administrator/templates/isis/images/joomla.png
 administrator/templates/isis/images/logo.png
+plugins/fabrik_form/php/emundus-csv_import_ehesp.php
 
 ### macOS ###
 *.DS_Store
@@ -59,12 +69,10 @@ administrator/templates/isis/images/logo.png
 ### NodeJS ###
 *~
 /components/com_emundus_onboard/node_modules/
-media/com_emundus_onboard/
-
-components/com_emundus_onboard/src/components/formClean/Plugin/autocomplete.vue
-
-components/com_emundus_onboard/src/components/formClean/Plugin/cascadingdropdown.vue
-
-components/com_emundus_onboard/src/components/formClean/Plugin/media.vue
+## media/com_emundus_onboard/
+## media/mod_emundus_dashboard_vue/
+/modules/mod_emundus_dashboard_vue/node_modules/
 
 
+/components/node_modules/
+/components/com_emundus_messenger/node_modules/

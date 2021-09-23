@@ -5,7 +5,7 @@
         <label>{{helptext}} :</label>
         <input type="text" class="form__input field-general w-input" v-model="element.params.rollover" />
       </div>
-      <div class="col-md-8 flex">
+      <div class="d-flex mb-1">
         <label class="require col-md-3">{{suboptions}} :</label>
       </div>
       <div class="col-md-10">
@@ -14,11 +14,11 @@
                 @end="needtoemit()"
                 handle=".handle"
                 style="padding-bottom: 2em">
-          <div v-for="(sub_values, i) in arraySubValues" :key="i" class="dpflex">
+          <div v-for="(sub_values, i) in arraySubValues" :key="i" class="d-flex mb-1">
             <span class="icon-handle">
               <em class="fas fa-grip-vertical handle"></em>
             </span>
-            <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input" style="height: 35px" :id="'suboption_' + i" @keyup.enter="add"/>
+            <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input mb-0" style="height: 35px" :id="'suboption_' + i" @keyup.enter="add"/>
             <button @click.prevent="leave(i)" type="button" class="remove-option">-</button>
           </div>
         </draggable>
@@ -110,7 +110,7 @@ export default {
     margin-bottom: 0.5em;
   }
   #radiobtnF{
-    padding: 10px;
+    padding: 10px 0;
   }
 .icon-handle{
   color: #cecece;

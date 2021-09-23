@@ -209,6 +209,34 @@ class CMSApplication extends WebApplication
 			$this->render();
 		}
 
+		if ($this->get('block_floc', 1))
+		{
+			$headers = $this->getHeaders();
+
+			$notPresent = true;
+
+			foreach ($headers as $header)
+			{
+				if (strtolower($header['name']) === 'permissions-policy')
+				{
+					// Append interest-cohort if the Permissions-Policy is not set
+					if (strpos($header['value'], 'interest-cohort') === false)
+					{
+						$this->setHeader('Permissions-Policy', $header['value'] . ', interest-cohort=()', true);
+					}
+
+					$notPresent = false;
+
+					break;
+				}
+			}
+
+			if ($notPresent)
+			{
+				$this->setHeader('Permissions-Policy', 'interest-cohort=()');
+			}
+		}
+
 		// If gzip compression is enabled in configuration and the server is compliant, compress the output.
 		if ($this->get('gzip') && !ini_get('zlib.output_compression') && ini_get('output_handler') !== 'ob_gzhandler')
 		{
@@ -305,14 +333,14 @@ class CMSApplication extends WebApplication
 	 * @return  mixed  The user state.
 	 *
 	 * @since   3.2
-	 * @deprecated  4.0  Use get() instead
+	 * @deprecated  5.0  Use get() instead
 	 */
 	public function getCfg($varname, $default = null)
 	{
 		try
 		{
 			\JLog::add(
-				sprintf('%s() is deprecated and will be removed in 4.0. Use JFactory->getApplication()->get() instead.', __METHOD__),
+				sprintf('%s() is deprecated and will be removed in 5.0. Use JFactory->getApplication()->get() instead.', __METHOD__),
 				\JLog::WARNING,
 				'deprecated'
 			);
@@ -664,7 +692,7 @@ class CMSApplication extends WebApplication
 				'deprecated'
 			);
 		}
-		catch (RuntimeException $exception)
+		catch (\RuntimeException $exception)
 		{
 			// Informational log only
 		}
@@ -690,7 +718,7 @@ class CMSApplication extends WebApplication
 				'deprecated'
 			);
 		}
-		catch (RuntimeException $exception)
+		catch (\RuntimeException $exception)
 		{
 			// Informational log only
 		}

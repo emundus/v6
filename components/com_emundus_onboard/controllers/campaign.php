@@ -24,6 +24,7 @@ jimport('joomla.application.component.controller');
 class EmundusonboardControllercampaign extends JControllerLegacy {
 
     var $model = null;
+
     public function __construct($config = array()) {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         parent::__construct($config);
@@ -486,6 +487,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             $types = $jinput->getRaw('types');
             $cid = $jinput->getInt('cid');
             $pid = $jinput->getInt('pid');
+
             $m_camp = $this->model;
 
             $result = $m_camp->createDocument($document,$types,$cid,$pid);
@@ -510,10 +512,15 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $document = $jinput->getRaw('document');
             $types = $jinput->getRaw('types');
+            $isModeleAndUpdate=$jinput->get('isModeleAndUpdate');
             $did = $jinput->getInt('did');
+            $cid = $jinput->getInt('cid');
+            $pid = $jinput->getInt('pid');
+
+
             $m_camp = $this->model;
 
-            $result = $m_camp->updateDocument($document,$types,$did);
+            $result = $m_camp->updateDocument($document,$types,$did,$pid,$isModeleAndUpdate);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_UPDATED'), 'data' => $result);
@@ -524,6 +531,42 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+
+    public function updateDocumentFalang(){
+
+        $jinput = JFactory::getApplication()->input;
+        $text = new stdClass;
+        $text->fr=$jinput->getString('text_fr');
+        $text->en=$jinput->getString('text_en');
+        $reference_id=$jinput->getInt('did');
+        $falang=$this->getModel('falang');
+        $result=$falang->updateFalang($text,$reference_id,'emundus_setup_attachments','value');
+
+        if ($result) {
+            $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_UPDATED'), 'data' => $result);
+        } else {
+            $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => $result);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+    public function getDocumentFalang()  {
+        $jinput = JFactory::getApplication()->input;
+
+        $reference_id=$jinput->getInt('docid');
+        //echo "hello";
+        $falang=$this->getModel('falang');
+        $result=$falang->getFalang($reference_id,'emundus_setup_attachments','value');
+
+        if ($result) {
+            $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_UPDATE'), 'data' => $result);
+        } else {
+            $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => $result);
+        }
+        echo json_encode((object)$tab);
+        exit;
+        }
 
     public function getdocumentsdropfiles() {
         $user = JFactory::getUser();

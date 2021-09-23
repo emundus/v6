@@ -54,7 +54,7 @@ form[action="/connexion-candidater"] i.icon-star.small  {
 /* CONNEXION - CANDIDATER */
 
 ul.unstyled.em-linkForgot{
-    background:#fafafa;
+    background:#fff;
     display: flex;
     justify-content: space-between;
     border: none;
@@ -129,6 +129,7 @@ ul.unstyled.em-linkForgot li a span::before {
 
     .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form {
         width: 100%;
+        padding: 20px !important;
     }
 
     .view-form.em-formRegistrationCenter ul.unstyled.em-linkForgot {

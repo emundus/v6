@@ -1,56 +1,90 @@
 <template class="email-item">
-  <div class="main-column-block w-row">
-    <div class="column-block w-col w-col-11">
+  <div class="main-column-block" >
+    <ModalEmailPreview
+        :model="this.email_to_preview"
+        :models="this.models"
+    />
+
+    <div class="column-block w-100" >
       <div class="block-dash" :class="isPublished ? '' : 'unpublishedBlock'">
         <div class="column-blocks w-row">
           <div class="column-inner-block w-col w-col-8 pl-30px">
             <div class="list-item-header">
               <div class="block-label">
-                <a v-if="data.type == 2"
+<!--                <a v-if="data.type == 2"
                    class="item-select w-inline-block"
                    v-on:click="selectItem(data.id)"
                    :class="{ active: isActive }"
-                ></a>
-                <h1 class="nom-campagne-block white">{{ data.subject }}</h1>
+                ></a>-->
+                <h2 class="nom-campagne-block" :style="data.type != 2 ? 'margin-left: 35px' : ''">{{ data.subject }}</h2>
               </div>
             </div>
-            <p class="description-block white"><span v-html="data.message"></span></p>
+<!--            <p class="description-block"><span v-html="data.message"></span></p>-->
+            <div class="d-flex">
+              <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
+                {{ isPublished ? publishedTag : unpublishedTag }}
+              </div>
+              <div class="nb-dossier">
+                <div>{{ type[langue][data.type - 1] }}</div>
+              </div>
+            </div>
+            <div>
+              <hr class="divider-card">
+              <div class="stats-block">
+                <a @click="redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id)"
+                   class="bouton-ajouter pointer add-button-div"
+                   :title="Modify">
+                  <em class="fas fa-pen"></em>
+                  <span>{{Modify}}</span>
+                </a>
+                <div class="d-flex">
+                  <button class="cta-block" style="height: unset" type="button" :title="Visualize" @click="$modal.show('modalEmailPreview_' + data.id)">
+                    <em class="fas fa-eye"></em>
+                  </button>
+                  <v-popover :popoverArrowClass="'custom-popover-arraow'">
+                    <button class="tooltip-target b3 card-button"></button>
+
+                    <template slot="popover">
+                      <actions
+                          :data="actions"
+                          :selected="this.data.id"
+                          :published="isPublished"
+                          @validateFilters="validateFilters()"
+                      ></actions>
+                    </template>
+                  </v-popover>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="column-inner-block-2 w-clearfix w-col w-col-4" style="min-height: 150px !important">
-            <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
-              {{ isPublished ? publishedTag : unpublishedTag }}
-            </div>
-            <a href="#" class="button-programme ml-10px">{{ type[langue][data.type - 1] }}</a>
-            <div class="container-gerer-modifier-visualiser">
-              <a class="cta-block pointer"
-                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id)"
-                 :title="Modify">
-                <em class="fas fa-edit"></em>
-              </a>
-            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
 import { list } from "../../store";
 import axios from "axios";
+import ModalEmailPreview from "@/views/advancedModals/ModalEmailPreview";
+import actions from "./action_menu";
 
 const qs = require("qs");
 
 export default {
   name: "emailItem",
+  components: {ModalEmailPreview,actions},
   props: {
     data: Object,
     selectItem: Function,
-    actualLanguage: String
+    actualLanguage: String,
+    models: Array,
+    actions: Object,
   },
   data() {
     return {
       langue: 0,
+      email_to_preview: -1,
 
       selectedData: [],
       publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
@@ -67,6 +101,10 @@ export default {
   },
 
   methods: {
+    validateFilters(){
+      this.$emit('validateFilters');
+    },
+
     redirectJRoute(link) {
       axios({
         method: "get",
@@ -80,7 +118,7 @@ export default {
       }).then(response => {
         window.location.href = window.location.pathname + response.data.data;
       });
-    }
+    },
   },
 
   computed: {
@@ -97,15 +135,12 @@ export default {
     if (this.actualLanguage == "en") {
       this.langue = 1;
     }
+    this.email_to_preview = this.data.id;
   }
 };
 </script>
 
 <style scoped>
-a.button-programme:hover {
-  color: white;
-  cursor: default;
-}
 .w-row{
   margin-bottom: 0;
 }

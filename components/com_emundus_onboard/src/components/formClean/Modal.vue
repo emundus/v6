@@ -4,25 +4,42 @@
     <modal
             :name="'modalEditElement' + ID"
             height="auto"
-            transition="nice-modal-fade"
+            transition="little-move-left"
             :min-width="200"
             :min-height="200"
             :delay="100"
             :adaptive="true"
-            :clickToClose="false"
+            :clickToClose="true"
             @closed="beforeClose"
             @before-open="beforeOpen"
     >
-      <div v-if="element != null" class="modalC-content">
-        <div class="update-field-header">
-          <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalEditElement' + ID)">
-              <em class="fas fa-times-circle"></em>
-            </button>
+      <div class="fixed-header-modal">
+            <div class="topright">
+              <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalEditElement' + ID)">
+                <em class="fas fa-times"></em>
+              </button>
+            </div>
+          <div class="update-field-header">
+            <h2 class="update-title-header">
+              {{ElementOptions}}
+            </h2>
           </div>
-          <h2 class="update-title-header">
-            {{label[actualLanguage]}}
-          </h2>
+        </div>
+      <div v-if="element != null" class="modalC-content">
+        <div class="mb-1">
+          <a class="d-flex tool-icon mb-1" @click="publishUnpublishElement()">
+            <em :class="[element.publish ? 'fa-eye-slash' : 'fa-eye','far']" style="width: 45px" :id="'publish_icon_' + element.id"></em>
+            <span class="ml-10px" v-if="element.publish">{{Unpublish}}</span>
+            <span class="ml-10px" v-if="!element.publish">{{Publish}}</span>
+          </a>
+          <a class="d-flex tool-icon" v-if="plugin != 'display'">
+            <div class="toggle">
+              <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement()"/>
+              <strong class="b switch"></strong>
+              <strong class="b track"></strong>
+            </div>
+            <span class="ml-10px">{{Required}}</span>
+          </a>
         </div>
         <div class="form-group mb-2">
           <label>{{fieldType}} :</label>
@@ -40,20 +57,23 @@
           <radiobtnF v-if="plugin == 'radiobutton'" :element="element" @subOptions="subOptions"></radiobtnF>
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
           <displayF v-if="plugin =='display'" :element="element"></displayF>
+          <fileF v-if="plugin =='emundus_fileupload'" :element="element" :prid="profileId"></fileF>
+          <yesnoF v-if="plugin=='yesno'" :element="element"></yesnoF>
         </div>
       </div>
-      <div class="col-md-12 mb-1">
+      <div class="d-flex justify-content-between mb-1">
+        <button type="button"
+                class="bouton-sauvergarder-et-continuer w-retour"
+                @click.prevent="$modal.hide('modalEditElement' + ID)">
+          {{Retour}}
+        </button>
         <button type="button"
                 class="bouton-sauvergarder-et-continuer"
                 @click.prevent="UpdateParams"
         >{{ Continuer }}</button>
-        <button type="button"
-                class="bouton-sauvergarder-et-continuer w-retour"
-                @click.prevent="$modal.hide('modalEditElement' + ID)"
-        >{{Retour}}</button>
       </div>
       <div class="loading-form" v-if="loading">
-        <Ring-Loader :color="'#de6339'" />
+        <Ring-Loader :color="'#12DB42'" />
       </div>
     </modal>
   </span>
@@ -68,11 +88,15 @@
   import radiobtnF from "./Plugin/radiobtn";
   import textareaF from "./Plugin/textarea";
   import displayF from "./Plugin/display";
+  import fileF from "./Plugin/fileupload";
+  import yesnoF from './Plugin/yesno';
+
+
   const qs = require("qs");
 
   export default {
     name: "modalEditElement",
-    props: { ID: Number, gid: Number, files: Number, manyLanguages: Number, actualLanguage: String },
+    props: { ID: Number, gid: Number, files: Number, manyLanguages: Number, actualLanguage: String, profileId:Number },
     components: {
       fieldF,
       birthdayF,
@@ -80,7 +104,9 @@
       dropdownF,
       radiobtnF,
       textareaF,
-      displayF
+      displayF,
+      fileF,
+      yesnoF,
     },
     data() {
       return {
@@ -127,19 +153,36 @@
             value: 'display',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
+          fileupload: {
+            value: 'emundus_fileupload',
+            name:  Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FILE")
+          },
+          yesno: {
+            value: 'yesno',
+            name:  'yesno'
+            /*Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_YESNO")*/
+          }
         },
         databases: [],
         // Translations
         Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
         Require: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_REQUIRED"),
         Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE"),
         dataSaved: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED"),
         informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS"),
         fieldType: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_TYPE"),
         Delete: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
         LabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
         TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+        ElementOptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ELEMENT_OPTIONS"),
+        Unpublish: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH"),
+        Publish: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_PUBLISH"),
+        Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
+        update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
+        updating: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
+        updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
+        updateFailed: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
         //
       };
     },
@@ -152,6 +195,8 @@
         if(typeof this.element.params.sub_options !== 'undefined') {
           this.element.params.sub_options.sub_values = this.sublabel;
         }
+
+
         axios({
           method: "post",
           url:
@@ -239,6 +284,7 @@
                   this.informations
           );
         }
+        this.$emit("modalClosed");
       },
       beforeOpen(event) {
         this.initialisation();
@@ -246,6 +292,66 @@
       initialisation() {
         this.getElement();
         this.getDatabases();
+      },
+
+      publishUnpublishElement() {
+        axios({
+          method: "post",
+          url:
+              "index.php?option=com_emundus_onboard&controller=formbuilder&task=publishunpublishelement",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            element: this.element.id,
+          })
+        }).then(response => {
+          this.element.publish = !this.element.publish;
+          this.$emit("publishUnpublishEvent");
+          this.$emit(
+              "show",
+              "foo-velocity",
+              "success",
+              this.updateSuccess,
+              this.update
+          );
+        }).catch(e => {
+          this.$emit(
+              "show",
+              "foo-velocity",
+              "error",
+              this.updateFailed,
+              this.updating
+          );
+          console.log(e);
+        });
+      },
+
+      updateRequireElement() {
+        setTimeout(() => {
+          axios({
+            method: "post",
+            url:
+                "index.php?option=com_emundus_onboard&controller=formbuilder&task=changerequire",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              element: this.element
+            })
+          }).then(() => {
+            this.$emit("updateRequireEvent");
+          }).catch(e => {
+            this.$emit(
+                "show",
+                "foo-velocity",
+                "error",
+                this.updateFailed,
+                this.updating
+            );
+            console.log(e);
+          });
+        }, 300);
       },
     },
     computed: {
@@ -278,4 +384,7 @@
 </script>
 
 <style scoped>
+  .check{
+    width: 100%;
+  }
 </style>

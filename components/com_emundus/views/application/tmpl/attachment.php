@@ -114,7 +114,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                 </div>
                             </div>
                         </div>
-          
+
                         <div class="em-collapse">
                             <div class="panel-heading fileCollapse">
                                 <div class="em-title-collapse">
@@ -187,7 +187,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                       <td>' . $checkbox . ' ' . $i . '</td>
                                       <td>'.$label.'</td>
                                       <td>' . date('l, d F Y H:i', strtotime($attachment->timedate)) . '</td>
-                                      <td>' . $attachment->description . '</td>
+                                      <td>' . ($attachment->applicant_description ?: $attachment->description) . '</td>
                                       <td>' . $attachment->year . '</td>
                                       <td>' . $validation . '</td>
                                   </tr>';
@@ -351,20 +351,20 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
     $(document).on('click', '#em_export_pdf', function() {
         var checkedInput = getJsonChecked();
         var checked = getChecked();
-        /*String.prototype.fmt = function (hash) {
-            var string = this, key;
-            for (key in hash) string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]); return string;
-        }*/
 
-        //var url = $(this).attr('link')+'&ids='+encodeURIComponent(JSON.stringify(checkedInput));
         if (Array.isArray(checked) && checked.length){
 
-        var url = "index.php?option=com_emundus&controller=application&task=exportpdf&fnum=<?php echo $this->fnum; ?>&student_id=<?php echo $this->student_id; ?>&ids="+checked;
-        //url = url.fmt({ids: checkedInput});
+        var url = "index.php?option=com_emundus&controller=application&task=exportpdf";
+
         $.ajax({
-            type:'get',
+            type:'post',
             url: url,
             dataType:'json',
+            data: {
+                'fnum': '<?php echo $this->fnum; ?>',
+                'student_id': '<?php echo $this->student_id; ?>',
+                'ids': checked
+            },
             success: function(result) {
                 if (result.status) {
                     var link = window.open('', '_blank');

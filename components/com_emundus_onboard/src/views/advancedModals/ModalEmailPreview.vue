@@ -1,8 +1,8 @@
 <template>
   <!-- modalC -->
-  <span :id="'modalEmailPreview'">
+  <span :id="'modalEmailPreview_' + model">
     <modal
-            :name="'modalEmailPreview'"
+            :name="'modalEmailPreview_' + model"
             height="auto"
             transition="nice-modal-fade"
             :min-width="200"
@@ -14,18 +14,21 @@
             @closed="beforeClose"
             @before-open="beforeOpen"
     >
-      <div class="modalC-content">
-        <div class="update-field-header">
-          <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalEmailPreview')">
-              <em class="fas fa-times-circle"></em>
-            </button>
-          </div>
-          <h2 class="update-title-header">
+      <div class="fixed-header-modal">
+        <div class="update-field-header d-flex justify-content-between">
+          <h2 class="update-title-header" style="margin-bottom: 10px">
              {{ModelPreview}}
           </h2>
-          <p class="description-block" v-if="email != null"><span v-html="email.message"></span></p>
+          <div class="topright">
+            <button type="button" class="btnCloseModal" @click="$modal.hide('modalEmailPreview_' + model)">
+              <em class="fas fa-times"></em>
+            </button>
+          </div>
         </div>
+        </div>
+
+      <div class="modalC-content">
+          <p v-if="email != null"><span v-html="email.message"></span></p>
       </div>
     </modal>
   </span>
@@ -36,7 +39,7 @@
 
   export default {
     name: "modalEmailPreview",
-    props: { model: Number, models: Array },
+    props: { model: String, models: Array },
     data() {
       return {
         email: null,
@@ -58,4 +61,9 @@
 </script>
 
 <style scoped>
+.description-block{
+  overflow: auto;
+  white-space: normal;
+  height: 100%;
+}
 </style>

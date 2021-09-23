@@ -10,8 +10,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors.js');
-$document->addStyleSheet('media/com_emundus_onboard/app.css');
+$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
+$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 
@@ -22,6 +22,10 @@ JText::script('COM_EMUNDUS_ONBOARD_OK');
 JText::script('COM_EMUNDUS_ONBOARD_CANCEL');
 JText::script('COM_EMUNDUS_ONBOARD_ALL');
 JText::script('COM_EMUNDUS_ONBOARD_SYSTEM');
+JText::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS');
+JText::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_DESC');
+JText::script('COM_EMUNDUS_ONBOARD_FILES');
+JText::script('COM_EMUNDUS_ONBOARD_FILE');
 ## END ##
 
 ## ACTIONS ##
@@ -83,4 +87,4 @@ $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 
 <list id="em-list-vue" type="campaign" coordinatorAccess="<?= $coordinator_access ?>"></list>
 
-<script src="media/com_emundus_onboard/app.js"></script>
+<script src="media/com_emundus_onboard/app_onboard.js"></script>

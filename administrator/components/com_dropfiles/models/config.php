@@ -55,8 +55,8 @@ class DropfilesModelConfig extends JModelAdmin
 
         // If type is already known we can load the plugin form
         JPluginHelper::importPlugin('dropfilesthemes');
-        $dispatcher = JDispatcher::getInstance();
-        $dispatcher->trigger('getConfigForm', array($theme, &$form));
+        $app = JFactory::getApplication();
+        $app->triggerEvent('onConfigForm', array($theme, &$form));
 
         if (isset($loadData) && $loadData) {
             // Get the data for the form.
@@ -94,7 +94,7 @@ class DropfilesModelConfig extends JModelAdmin
         $query = 'UPDATE #__dropfiles SET params=' . $dbo->quote(json_encode($data['params']));
         $query .= ' WHERE id=' . (int)$data['id'];
         $dbo->setQuery($query);
-        if ($dbo->query()) {
+        if ($dbo->execute()) {
             return true;
         }
 
@@ -115,10 +115,9 @@ class DropfilesModelConfig extends JModelAdmin
         $dbo = $this->getDbo();
         $query = 'SELECT params FROM #__dropfiles WHERE id=' . (int)$id;
         $dbo->setQuery($query);
-        if ($dbo->query()) {
+        if ($dbo->execute()) {
             return json_decode($dbo->loadResult());
         }
-
         return false;
     }
 
@@ -133,7 +132,7 @@ class DropfilesModelConfig extends JModelAdmin
     {
         $dbo = $this->getDbo();
         $dbo->setQuery();
-        if ($dbo->query()) {
+        if ($dbo->execute()) {
             return $dbo->loadResult();
         }
 
@@ -143,18 +142,19 @@ class DropfilesModelConfig extends JModelAdmin
     /**
      * Method to set theme
      *
-     * @param string  $theme Theme name
-     * @param integer $id    Category id
+     * @param string  $theme  Theme name
+     * @param integer $id     Category id
+     * @param string  $params Params
      *
      * @return boolean
      * @since  version
      */
-    public function setTheme($theme, $id)
+    public function setTheme($theme, $id, $params)
     {
         $dbo = $this->getDbo();
-        $query = 'UPDATE #__dropfiles SET theme=' . $dbo->quote($theme) . ', params="" WHERE id=' . (int)$id;
+        $query = 'UPDATE #__dropfiles SET theme=' . $dbo->quote($theme) . ', params='. $dbo->quote($params) .' WHERE id=' . (int)$id;
         $dbo->setQuery($query);
-        if ($dbo->query()) {
+        if ($dbo->execute()) {
             return true;
         }
 
@@ -274,12 +274,12 @@ class DropfilesModelConfig extends JModelAdmin
         $meta->copyright    = '';
         $meta->authorEmail  = 'contact@joomunited.com';
         $meta->authorUrl    = 'http://www.joomunited.com';
-        $meta->version      = '5.2.5';
+        $meta->version      = '5.7.7';
         $meta->description  = ucfirst($themeName) . ' theme for Dropfiles';
         $meta->group        = '';
         $meta->filename     = $themeName;
 
-        $query = 'INSERT INTO `#__extensions` (name, type, element, folder, client_id, enabled, access, protected, manifest_cache, params) VALUE (' . $db->quote($meta->name) . ', \'plugin\', ' . $db->quote($themeName) . ', \'dropfilesthemes\', 0, 1, 1, 0, ' . $db->quote(stripslashes(json_encode($meta))) . ', ' . $db->quote($params) . ');';
+        $query = 'INSERT INTO `#__extensions` (name, type, element, folder, client_id, enabled, access, protected, manifest_cache, params, custom_data) VALUE (' . $db->quote($meta->name) . ', \'plugin\', ' . $db->quote($themeName) . ', \'dropfilesthemes\', 0, 1, 1, 0, ' . $db->quote(stripslashes(json_encode($meta))) . ', ' . $db->quote($params) . ',"");';
         $db->setQuery($query);
         $db->execute();
     }
@@ -347,6 +347,9 @@ class DropfilesModelConfig extends JModelAdmin
                             $file_contents = str_replace('name="table_', 'name="' . strtolower($newTheme) . '_', $file_contents);
                         }
                     } else {
+                        if ($cloneTheme === 'default') {
+                            $file_contents = str_replace('default=', 'p45jdi=', $file_contents);
+                        }
                         $file_contents = str_replace($cloneTheme, $newTheme, $file_contents);
                         $file_contents = str_replace(
                             ucfirst($cloneTheme),
@@ -355,6 +358,7 @@ class DropfilesModelConfig extends JModelAdmin
                         );
 
                         if ($cloneTheme === 'default') {
+                            $file_contents = str_replace('p45jdi=', 'default=', $file_contents);
                             if (strtolower($ext) === 'xml') {
                                 $file_contents = str_replace('name="params', 'p45jdi="params', $file_contents);
                                 $file_contents = str_replace('name="', 'name="' . $newTheme . '_', $file_contents);

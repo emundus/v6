@@ -10,9 +10,10 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors.js');
-$document->addStyleSheet('media/com_emundus_onboard/app.css');
+$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
+$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
+JText::script('COM_EMUNDUS_ONBOARD_ADD_EMAIL');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER');
@@ -59,10 +60,13 @@ JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
 ## END ##
 
+JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TAGS');
+JText::script('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT');
+
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0, 2);
 ?>
 
 <div id="em-addEmail-vue" email="<?= $this->id ;?>" actualLanguage="<?= $actualLanguage ?>"></div>
 
-<script src="media/com_emundus_onboard/app.js"></script>
+<script src="media/com_emundus_onboard/app_onboard.js"></script>

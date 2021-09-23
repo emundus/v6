@@ -10,8 +10,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors.js');
-$document->addStyleSheet('media/com_emundus_onboard/app.css');
+$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
+$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 
@@ -22,6 +22,10 @@ JText::script('COM_EMUNDUS_ONBOARD_OK');
 JText::script('COM_EMUNDUS_ONBOARD_CANCEL');
 JText::script('COM_EMUNDUS_ONBOARD_ALL');
 JText::script('COM_EMUNDUS_ONBOARD_SYSTEM');
+JText::script('COM_EMUNDUS_ONBOARD_EMAILS');
+JText::script('COM_EMUNDUS_ONBOARD_EMAILS_DESC');
+JText::script('COM_EMUNDUS_ONBOARD_EMAIL_PREVIEWMODEL');
+JText::script('COM_EMUNDUS_ONBOARD_CATEGORIES');
 ## END ##
 
 ## ACTIONS ##
@@ -67,10 +71,13 @@ JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
 ## END ##
 
+JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TAGS');
+JText::script('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT');
+
 $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
 <list id="em-list-vue" type="email" coordinatorAccess="<?= $coordinator_access ?>"></list>
 
-<script src="media/com_emundus_onboard/app.js"></script>
+<script src="media/com_emundus_onboard/app_onboard.js"></script>

@@ -1019,7 +1019,9 @@ class EmundusonboardModelprogram extends JModelList {
                 ->from($db->quoteName('#__fabrik_formgroup'))
                 ->where($db->quoteName('group_id') . ' = ' . $db->quote($fabrik_groups[0]));
             $db->setQuery($query);
-            return $db->loadResult();
+
+          return  $db->loadResult();
+
         } catch (Exception $e){
             JLog::add('component/com_emundus_onboard/models/program | Error at getting evaluation grid of the program ' . $pid . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
@@ -1212,8 +1214,8 @@ class EmundusonboardModelprogram extends JModelList {
                 $query->update($db->quoteName('#__fabrik_groups'));
 
                 $labels_to_duplicate = array(
-                    'fr' => $formbuilder->getTranslation($group_model->label, $Content_Folder['fr']),
-                    'en' => $formbuilder->getTranslation($group_model->label, $Content_Folder['en'])
+                    'fr' => $formbuilder->getTranslation($group_model->label, 'fr-FR'),
+                    'en' => $formbuilder->getTranslation($group_model->label, 'en-GB')
                 );
                 if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
                     $labels_to_duplicate = array(
@@ -1244,7 +1246,7 @@ class EmundusonboardModelprogram extends JModelList {
                         $dbnull = 'NULL';
                         //
 
-                        $newelement = $element->copyRow($element->element->id, 'Copy of %s', $newgroupid);
+                        $newelement = $element->copyRow($element->element->id, '%s', $newgroupid);
                         //add to array
                         $newElementArray[] =$newelement->id;
 
@@ -1269,8 +1271,8 @@ class EmundusonboardModelprogram extends JModelList {
                             $sub_labels = [];
                             foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
                                 $labels_to_duplicate = array(
-                                    'fr' => $formbuilder->getTranslation($sub_label, $Content_Folder['fr']),
-                                    'en' => $formbuilder->getTranslation($sub_label, $Content_Folder['en'])
+                                    'fr' => $formbuilder->getTranslation($sub_label, 'fr-FR'),
+                                    'en' => $formbuilder->getTranslation($sub_label, 'en-GB')
                                 );
                                 if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
                                     $labels_to_duplicate = array(
@@ -1287,8 +1289,8 @@ class EmundusonboardModelprogram extends JModelList {
                         $query->update($db->quoteName('#__fabrik_elements'));
 
                         $labels_to_duplicate = array(
-                            'fr' => $formbuilder->getTranslation($element->element->label, $Content_Folder['fr']),
-                            'en' => $formbuilder->getTranslation($element->element->label, $Content_Folder['en'])
+                            'fr' => $formbuilder->getTranslation($element->element->label, 'fr-FR'),
+                            'en' => $formbuilder->getTranslation($element->element->label, 'en-GB')
                         );
                         if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
                             $labels_to_duplicate = array(
@@ -1441,7 +1443,7 @@ class EmundusonboardModelprogram extends JModelList {
             $db->execute();
             //
 
-            $formbuilder->createHiddenGroup($formid);
+            $formbuilder->createHiddenGroup($formid,1);
             $group = $formbuilder->createGroup($label,$formid);
 
             // Link groups to program
@@ -1463,6 +1465,31 @@ class EmundusonboardModelprogram extends JModelList {
             return true;
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/program | Cannot create a grid in the program' . $pid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function deleteGrid($grid,$pid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update($db->quoteName('#__emundus_setup_programmes'))
+            ->set($db->quoteName('fabrik_group_id') . ' = NULL')
+            ->where($db->quoteName('id') . ' = ' . $pid);
+
+        try {
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__fabrik_forms'))
+                ->set($db->quoteName('published') . ' = 0')
+                ->where($db->quoteName('id') . ' = ' . $grid);
+
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/program | Error at delete the grid ' . $grid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1613,6 +1640,23 @@ class EmundusonboardModelprogram extends JModelList {
             return $db->loadResult();
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/program | Error at getting groups by parent ' . $parent . ' of the program ' . $code . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function getCampaignsByProgram($program){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('c.*')
+                ->from($db->quoteName('#__emundus_setup_campaigns','c'))
+                ->leftJoin($db->quoteName('#__emundus_setup_programmes','sg').' ON '.$db->quoteName('sg.code').' = '.$db->quoteName('c.training'))
+                ->where($db->quoteName('sg.id') . ' = '. $db->quote($program));
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting campaigns by program ' . $program . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }

@@ -7,16 +7,24 @@
             :speed="500"
             :classes="'vue-notification-custom'"
     />
-    <div class="w-container">
+    <div class="w-container general-information">
+      <div class="section-sub-menu sub-form" v-if="campaign == ''">
+        <div class="container-2 w-container" style="max-width: unset">
+          <div class="d-flex">
+            <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
+            <h1 class="tchooz-section-titles">{{translations.AddCampaign}}</h1>
+          </div>
+        </div>
+      </div>
       <form id="campaign-form" @submit.prevent="submit">
         <div class="sous-container">
-          <p class="required">{{RequiredFieldsIndicate}}</p>
-          <div class="heading-form">
+          <p class="required mb-1">{{translations.RequiredFieldsIndicate}}</p>
+<!--          <div class="heading-form">
             <div class="icon-title"></div>
             <h2 class="heading">{{ Parameter }}</h2>
-          </div>
+          </div>-->
           <div class="form-group campaign-label">
-            <label for="campLabel">{{CampName}} *</label>
+            <label for="campLabel">{{translations.CampName}} <span style="color: #E5283B">*</span></label>
             <div class="input-can-translate">
                 <input
                   id="campLabel"
@@ -33,43 +41,45 @@
             <translation :label="form.label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
           </div>
           <p v-if="errors.label" class="error col-md-12 mb-2">
-            <span class="error">{{LabelRequired}}</span>
+            <span class="error">{{translations.LabelRequired}}</span>
           </p>
-          <div class="w-row">
-            <div class="w-col w-col-6">
+          <div class="d-flex justify-content-between">
+            <div class="w-col col-md-5">
               <div class="w-form">
-                <label for="campLabel">{{StartDate}} *</label>
+                <label for="startDate">{{translations.StartDate}} <span style="color: #E5283B">*</span></label>
                 <datetime
-                  :placeholder="StartDate"
+                    id="startDate"
+                  :placeholder="translations.StartDate"
                   type="datetime"
                   :input-id="'start_date'"
                   v-model="form.start_date"
-                  :phrases="{ok: OK, cancel: Cancel}"
+                  :phrases="{ok: translations.OK, cancel: translations.Cancel}"
                 ></datetime>
               </div>
             </div>
-            <div class="w-col w-col-6">
+            <div class="w-col col-md-5">
               <div class="w-form">
-                <label for="campLabel">{{EndDate}} *</label>
+                <label for="endDate">{{translations.EndDate}} <span style="color: #E5283B">*</span></label>
                 <datetime
-                  :placeholder="EndDate + ' *'"
+                    id="endDate"
+                  :placeholder="translations.EndDate + ' *'"
                   type="datetime"
                   :input-id="'end_date'"
                   :min-datetime="minDate"
                   v-model="form.end_date"
-                  :phrases="{ok: OK, cancel: Cancel}"
+                  :phrases="{ok: translations.OK, cancel: translations.Cancel}"
                 ></datetime>
               </div>
             </div>
           </div>
           <div class="form-group campaign-label">
-            <label for="campLabel">{{PickYear}} *</label>
+            <label for="year">{{translations.PickYear}} <span style="color: #E5283B">*</span></label>
             <autocomplete
-                    :id="'year'"
-                    @searched="onSearchYear"
-                    :items="this.session"
-                    :year="form.year"
-                    :name="'2020 - 2021'"
+                :id="'year'"
+                @searched="onSearchYear"
+                :items="this.session"
+                :year="form.year"
+                :name="'2020 - 2021'"
             />
           </div>
           <div class="form-group d-flex">
@@ -85,7 +95,7 @@
               <strong class="b switch"></strong>
               <strong class="b track"></strong>
             </div>
-            <label for="published" class="ml-10px">{{ Publish }}</label>
+            <span for="published" class="ml-10px">{{ translations.Publish }}</span>
           </div>
           <div class="form-group d-flex">
             <div class="toggle">
@@ -100,12 +110,12 @@
               <strong class="b switch"></strong>
               <strong class="b track"></strong>
             </div>
-            <label for="limit" class="ml-10px">{{ FilesLimit }}</label>
+            <span for="limit" class="ml-10px">{{ translations.FilesLimit }}</span>
           </div>
           <transition name="'slide-down'">
             <div v-if="form.is_limited == 1">
               <div class="form-group campaign-label">
-                <label for="campLabel">{{FilesNumberLimit}} *</label>
+                <label for="campLabel">{{translations.FilesNumberLimit}} <span style="color: #E5283B">*</span></label>
                 <input type="number"
                        class="form__input field-general w-input"
                        v-model="form.limit"
@@ -113,10 +123,10 @@
                 />
               </div>
               <p v-if="errors.limit_files_number" class="error">
-                <span class="error">{{FilesLimitRequired}}</span>
+                <span class="error">{{translations.FilesLimitRequired}}</span>
               </p>
               <div class="form-group campaign-label">
-                <label for="campLabel">{{StatusLimit}} *</label>
+                <label for="campLabel">{{translations.StatusLimit}} <span style="color: #E5283B">*</span></label>
                 <div class="users-block" :class="{ 'is-invalid': errors.limit_status}">
                   <div v-for="(statu, index) in status" :key="index" class="user-item">
                     <input type="checkbox" class="form-check-input bigbox" v-model="form.limit_status[statu.step]">
@@ -126,7 +136,7 @@
                   </div>
                 </div>
                 <p v-if="errors.limit_status" class="error">
-                  <span class="error">{{StatusLimitRequired}}</span>
+                  <span class="error">{{translations.StatusLimitRequired}}</span>
                 </p>
               </div>
             </div>
@@ -137,19 +147,15 @@
 
         <div class="sous-container">
           <div class="heading-form">
-            <div class="icon-title informations"></div>
-            <h2 class="heading">{{ Information }}</h2>
+            <h2 class="heading">{{ translations.Information }}</h2>
           </div>
-          <p class="paragraphe-sous-titre">
-            {{ InformationDesc }}
-          </p>
           <div class="form-group campaign-label">
-            <label for="campResume" style="top: 5em">{{Resume}} *</label>
+            <label for="campResume" style="top: 5em">{{translations.Resume}} <span style="color: #E5283B"></span></label>
             <textarea
               type="textarea"
               rows="2"
               id="campResume"
-              maxlength="200"
+              maxlength="500"
               class="form__input field-general w-input"
               placeholder=" "
               v-model="form.short_description"
@@ -158,8 +164,11 @@
             />
           </div>
           <p v-if="errors.short_description" class="error col-md-12 mb-2">
-            <span class="error">{{ResumeRequired}}</span>
+            <span class="error">{{translations.ResumeRequired}}</span>
           </p>
+          <div class="form-group controls">
+            <editor :height="'30em'" :text="form.description" v-model="form.description" :enable_variables="false" :placeholder="translations.Description"></editor>
+          </div>
           <!--<div class="form-group campaign-label">
             <label for="campDescription" style="top: 12em">{{Description}}</label>
             <textarea
@@ -180,12 +189,8 @@
 
         <div class="sous-container last-container">
           <div class="heading-form">
-            <div class="icon-title programme"></div>
-            <h2 class="heading">{{ Program }}</h2>
+            <h2 class="heading">{{ translations.Program }}</h2>
           </div>
-          <p class="paragraphe-sous-titre">
-            {{ ProgramDesc }}
-          </p>
           <div class="form-group container-flexbox-choisir-ou-plus w-clearfix">
             <select
               class="dropdown-toggle w-select" style="margin-bottom: 0"
@@ -194,7 +199,7 @@
               v-on:change="setCategory"
               :disabled="this.programs.length <= 0"
             >
-              <option value="">{{ ChooseProg }}</option>
+              <option value="">{{ translations.ChooseProg }}</option>
               <option
                 v-for="(item, index) in this.programs"
                 v-bind:value="item.code"
@@ -203,22 +208,19 @@
                 {{ item.label }}
               </option>
             </select>
-            <div v-if="coordinatorAccess != 0"
-              @click="displayProgram"
-              id="add-program"
-              class="addCampProgEmail">
-            </div>
+            <button v-if="coordinatorAccess != 0" :title="translations.AddProgram" type="button" @click="displayProgram" class="buttonAddDoc" id="add-program">
+              <em class="fas fa-plus"></em>
+            </button>
+          </div>
+          <div class="form-group controls">
+            <editor :height="'30em'" :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" v-if="form.training" :placeholder="translations.ProgramResume" :id="'program_campaign_'" :key="editorKey"></editor>
           </div>
 
           <transition name="slide-fade">
-            <div class="sous-container program-addCampaign" v-if="isHiddenProgram">
-              <h2 class="heading">{{ AddProgram }}</h2>
-              <p class="paragraphe-sous-titre">
-                {{ AddProgramDesc }}
-              </p>
+            <div class="program-addCampaign" v-if="isHiddenProgram">
               <div class="w-form">
                 <div class="form-group prog-label">
-                  <label for="prog_label" style="top: 5.7em">{{ProgName}} *</label>
+                  <label for="prog_label" style="top: 5.7em">{{translations.ProgName}} <span style="color: #E5283B">*</span></label>
                   <input
                     type="text"
                     id="prog_label"
@@ -230,52 +232,10 @@
                   />
                 </div>
                 <p v-if="errors.progLabel" class="error col-md-12 mb-2">
-                  <span class="error">{{ProgLabelRequired}}</span>
+                  <span class="error">{{translations.ProgLabelRequired}}</span>
                 </p>
-
-                <div class="form-group campaign-label">
-                  <label style="top: 10.7em">{{ChooseCategory}}</label>
-                  <autocomplete
-                    @searched="onSearchCategory"
-                    :items="this.categories"
-                    :year="programForm.programmes"
-                  />
-                </div>
-
                 <div class="form-group controls">
-                  <editor :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" :placeholder="ProgramResume" :id="'program_campaign'"></editor>
-                </div>
-
-                <div class="form-group d-flex">
-                  <div class="toggle">
-                    <input type="checkbox"
-                           true-value="1"
-                           false-value="0"
-                           class="check"
-                           id="prog_published"
-                           name="prog_published"
-                           v-model="programForm.published"
-                    />
-                    <strong class="b switch"></strong>
-                    <strong class="b track"></strong>
-                  </div>
-                  <label for="prog_published" class="ml-10px">{{ Publish }}</label>
-                </div>
-
-                <div class="form-group d-flex">
-                  <div class="toggle">
-                    <input type="checkbox"
-                           true-value="1"
-                           false-value="0"
-                           class="check"
-                           id="apply"
-                           name="apply"
-                           v-model="programForm.apply_online"
-                    />
-                    <strong class="b switch"></strong>
-                    <strong class="b track"></strong>
-                  </div>
-                  <label for="apply" class="ml-10px mb-0">{{ DepotDeDossier }}</label>
+                  <editor :height="'30em'" :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" :placeholder="translations.ProgramResume" :id="'new_program_campaign_'" :key="editorKey"></editor>
                 </div>
               </div>
             </div>
@@ -285,35 +245,30 @@
         <div class="divider"></div>
 
         <div class="section-sauvegarder-et-continuer">
-          <div class="w-container">
-            <div class="container-evaluation w-clearfix">
+          <div class="w-container btns-sauvegarder-et-continuer">
+            <div class="container-evaluation d-flex justify-content-between">
               <button
-                type="button"
-                class="bouton-sauvergarder-et-continuer"
-                @click="quit = 1; submit()">
-                {{ Continuer }}
+                  type="button"
+                  class="bouton-sauvergarder-et-continuer w-retour"
+                  onclick="history.go(-1)">
+                {{ translations.Retour }}
               </button>
-              <button
-                type="button"
-                class="bouton-sauvergarder-et-continuer w-quitter"
-                @click="quit = 0; submit()">
-                {{ Quitter }}
-              </button>
-              <button
-                type="button"
-                class="bouton-sauvergarder-et-continuer w-retour"
-                onclick="history.go(-1)">
-                {{ Retour }}
-              </button>
+              <div class="d-flex">
+                <button
+                    type="button"
+                    class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green"
+                    @click="quit = 1; submit()">
+                  {{ translations.Continuer }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </form>
     </div>
     <div class="loading-form" v-if="submitted">
-      <RingLoader :color="'#de6339'" />
+      <RingLoader :color="'#12DB42'" />
     </div>
-    <tasks></tasks>
   </div>
 </template>
 
@@ -363,18 +318,16 @@ export default {
 
     programs: [],
     years: [],
-    categories: [],
     status: [],
-
-    new_category: "",
+    languages: [],
 
     session: [],
+    old_training: "",
+    old_program_form: "",
+    editorKey: 0,
 
     form: {
-      label: {
-        fr: '',
-        en: ''
-      },
+      label: {},
       start_date: "",
       end_date: "",
       short_description: "",
@@ -383,6 +336,7 @@ export default {
       year: "",
       published: 1,
       is_limited: 0,
+      profile_id: 9,
       limit: 50,
       limit_status: [],
     },
@@ -420,39 +374,42 @@ export default {
       limit_status: false
     },
 
-    Parameter: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER"),
-    CampName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME"),
-    StartDate: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE"),
-    EndDate: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE"),
-    Information: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
-    Resume: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME"),
-    Description: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
-    Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
-    AddProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDPROGRAM"),
-    ChooseProg: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG"),
-    PickYear: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR"),
-    Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-    Quitter: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_QUITTER"),
-    Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-    Publish: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-    DepotDeDossier: Joomla.JText._("COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER"),
-    ProgName: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGNAME"),
-    ProgCode: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGCODE"),
-    ChooseCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
-    NameCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_NAMECATEGORY"),
-    LabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
-    RequiredFieldsIndicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
-    ProgramResume: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_RESUME"),
-    ProgLabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL"),
-    ResumeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMP_REQUIRED_RESUME"),
-    OK: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-    Cancel: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
-    TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-    FilesLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT"),
-    FilesNumberLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER"),
-    StatusLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS"),
-    StatusLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
-    FilesLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED"),
+    translations: {
+      Parameter: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER"),
+      CampName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME"),
+      StartDate: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE"),
+      EndDate: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE"),
+      Information: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
+      Resume: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME"),
+      Description: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
+      Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+      AddProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDPROGRAM"),
+      ChooseProg: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG"),
+      PickYear: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR"),
+      Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+      Quitter: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_QUITTER"),
+      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+      Publish: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
+      DepotDeDossier: Joomla.JText._("COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER"),
+      ProgName: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGNAME"),
+      ProgCode: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGCODE"),
+      ChooseCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
+      NameCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_NAMECATEGORY"),
+      LabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
+      RequiredFieldsIndicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
+      ProgramResume: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_RESUME"),
+      ProgLabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL"),
+      ResumeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMP_REQUIRED_RESUME"),
+      OK: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+      Cancel: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+      TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+      FilesLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT"),
+      FilesNumberLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER"),
+      StatusLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS"),
+      StatusLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
+      FilesLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED"),
+      AddCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
+    },
 
     submitted: false
   }),
@@ -464,45 +421,51 @@ export default {
 
     let now = new Date();
     this.form.start_date = LuxonDateTime.local(now.getFullYear(),now.getMonth() + 1,now.getDate(),0,0,0).toISO();
-
+    this.getLanguages();
     //Check if we add or edit a campaign
     if (this.campaign !== "") {
       axios.get(
           `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaign}`
         ).then(response => {
-          if(response.data.data.label.fr == null && response.data.data.label.en == null){
-            this.form.label.fr = response.data.data.campaign.label;
-            this.form.label.en = response.data.data.campaign.label;
-          } else {
-            this.form.label.fr = response.data.data.label.fr.value;
-            this.form.label.en = response.data.data.label.en.value;
-          }
-          this.form.published = response.data.data.campaign.published;
-          this.form.description = response.data.data.campaign.description;
-          this.form.short_description = response.data.data.campaign.short_description;
-          this.form.start_date = response.data.data.campaign.start_date;
-          this.form.end_date = response.data.data.campaign.end_date;
-          this.form.training = response.data.data.campaign.training;
-          this.form.year = response.data.data.campaign.year;
-          this.form.is_limited = response.data.data.campaign.is_limited;
-          this.form.limit = response.data.data.campaign.limit;
+          let label = response.data.data.campaign.label;
+
+          this.form = response.data.data.campaign;
+          this.$emit('getInformations',this.form);
+          this.programForm = response.data.data.program;
+
+          // Check label translations
+          this.form.label = response.data.data.label
+          this.languages.forEach((language) => {
+            if(this.form.label[language.sef] === '' || this.form.label[language.sef] == null) {
+              this.form.label[language.sef] = label;
+            }
+          });
+          //
+
+          // Convert date
           this.form.start_date = LuxonDateTime.fromSQL(this.form.start_date);
           this.form.end_date = LuxonDateTime.fromSQL(this.form.end_date);
-          if(typeof response.data.data.campaign.status != 'undefined') {
-            Object.values(response.data.data.campaign.status).forEach((statu) => {
-              this.form.limit_status[parseInt(statu.limit_status)] = true;
-            });
-          }
           if (this.form.end_date == "0000-00-00T00:00:00.000Z") {
             this.form.end_date = "";
           } else {
             this.olderDate = this.form.end_date;
+          }
+          //
+
+          if(typeof response.data.data.campaign.status != 'undefined') {
+            Object.values(response.data.data.campaign.status).forEach((statu) => {
+              this.form.limit_status[parseInt(statu.limit_status)] = true;
+            });
+          } else {
+            this.form.limit_status = [];
           }
         }).catch(e => {
           console.log(e);
         });
     }
     //
+
+    // Get all programs
     axios.get("index.php?option=com_emundus_onboard&controller=program&task=getallprogram")
       .then(response => {
         this.programs = response.data.data;
@@ -512,7 +475,9 @@ export default {
       }).catch(e => {
         console.log(e);
       });
+    //
 
+    // Get years
     axios.get("index.php?option=com_emundus_onboard&controller=campaign&task=getyears")
       .then(response => {
         this.years = response.data.data;
@@ -523,21 +488,25 @@ export default {
       }).catch(e => {
         console.log(e);
       });
-
-    axios.get("index.php?option=com_emundus_onboard&controller=program&task=getprogramcategories")
-      .then(response => {
-        this.categories  = response.data.data;
-      }).catch(e => {
-        console.log(e);
-      });
+    //
     this.getStatus();
   },
 
   methods: {
-    setCategory(e) {
-      this.year.programmes = e.target.options[e.target.options.selectedIndex].dataset.category;
+    getLanguages() {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=settings&task=getactivelanguages"
+      }).then(response => {
+        this.languages = response.data.data;
+      });
     },
 
+    setCategory(e) {
+      this.year.programmes = e.target.options[e.target.options.selectedIndex].dataset.category;
+      this.programForm = this.programs.find(program => program.code == this.form.training);
+      this.editorKey++;
+    },
     updateCode() {
       if(this.programForm.label !== ''){
         this.programForm.code = this.programForm.label.toUpperCase().replace(/[^a-zA-Z0-9]/g,'_').substring(0,10) + '_00';
@@ -558,19 +527,6 @@ export default {
       }
     },
 
-    checkCode() {
-      this.programs.forEach((element, index) => {
-        if(this.programForm.code == element.code){
-          let newCode = parseInt(element.code.split('_')[1]) + 1;
-          if(newCode > 10) {
-            this.programForm.code = this.programForm.label.toUpperCase()  + '_' + newCode;
-          } else {
-            this.programForm.code = this.programForm.label.toUpperCase()  + '_0' + newCode;
-          }
-        }
-      });
-    },
-
     enableLabelTranslation(){
       this.translate.label = !this.translate.label
       if(this.translate.label){
@@ -587,6 +543,54 @@ export default {
               });
     },
 
+    createCampaignWithExistingProgram(form_data){
+
+      axios({
+        method: "post",
+        url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({body: form_data})
+      }).then(response => {
+        this.campaign = response.data.data;
+        this.quitFunnelOrContinue(this.quit);
+      }).catch(error => {
+        console.log(error);
+      });
+    },
+
+    createCampainWithNoExistingProgram(programForm){
+
+
+      axios({
+        method: "post",
+        url: "index.php?option=com_emundus_onboard&controller=program&task=createprogram",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({body: programForm})
+      }).then(() => {
+          this.form.training = programForm.code;
+          this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+          this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({body: this.form})
+        }).then(response => {
+          this.campaign = response.data.data;
+         this.quitFunnelOrContinue(this.quit);
+        }).catch(error => {
+          console.log(error);
+        });
+      });
+    },
+
+
     submit() {
       // Checking errors
       this.errors = {
@@ -597,7 +601,7 @@ export default {
         limit_files_number: false,
         limit_status: false
       }
-      if(this.form.label.fr == ""){
+      if(this.form.label.fr == "" && this.form.label.en == ""){
          window.scrollTo({ top: 0, behavior: 'smooth' });
          this.errors.label = true;
          return 0;
@@ -631,13 +635,6 @@ export default {
         }
       }
 
-      if (this.form.short_description == "") {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        document.getElementById('campResume').focus();
-        this.errors.short_description = true;
-        return 0;
-      }
-
       if (this.form.training == "") {
         if(this.isHiddenProgram){
           if (this.programForm.label == "") {
@@ -648,8 +645,6 @@ export default {
             this.errors.progCode = true;
             document.getElementById('prog_code').focus();
             return 0;
-          } else {
-            this.form.training = this.programForm.code;
           }
         } else {
           document.getElementById('select_prog').focus();
@@ -672,83 +667,86 @@ export default {
 
       this.submitted = true;
 
-      axios({
-        method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=program&task=createprogram",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({ body: this.programForm })
-      }).then(() => {
-          let newsession = true;
+      let newsession = false;
 
-          if (this.campaign !== "") {
-            if(typeof this.form.start_date == 'object'){
-              this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-            }
-            if(typeof this.form.end_date == 'object'){
-              this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
-            }
-            axios({
-              method: "post",
-              url: "index.php?option=com_emundus_onboard&controller=campaign&task=updatecampaign",
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-              },
-              data: qs.stringify({ body: this.form, cid: this.campaign })
-            }).then(response => {
-                this.quitFunnelOrContinue(this.quit);
-              }).catch(error => {
-                console.log(error);
-              });
-          } else {
-            if(typeof this.form.start_date == 'object'){
-              this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-            }
-            if(typeof this.form.end_date == 'object'){
-              this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
-            }
-            axios({
-              method: "post",
-              url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-              },
-              data: qs.stringify({ body: this.form })
-            }).then(response => {
-                this.campaign = response.data.data;
-                this.quitFunnelOrContinue(this.quit);
-              }).catch(error => {
-                console.log(error);
-              });
-          }
-        this.years.forEach((elt) => {
-          if(elt.schoolyear == this.year.schoolyear){
-            newsession = false;
-          }
-        });
-          if(newsession) {
-            axios({
-              method: "post",
-              url: "index.php?option=com_emundus_onboard&controller=campaign&task=createyear",
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-              },
-              data: qs.stringify({body: this.year})
-            }).then(response => {})
-                .catch(error => {
-                  console.log(error);
-                });
-          }
+
+      if (this.campaign !== "") {
+        let task = 'createprogram';
+        let params = {body: this.programForm}
+
+        if(this.form.training != ""){
+
+          task = 'updateprogram';
+          params = { body: this.programForm, id: this.form.progid };
+        }
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=program&task=" + task,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify(params)
+        }).then((response) => {
+          this.form.training = this.programForm.code;
+
+
+          this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+          this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus_onboard&controller=campaign&task=updatecampaign",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({ body: this.form, cid: this.campaign })
+          }).then(response => {
+            this.$emit('nextSection')
+          }).catch(error => {
+            console.log(error);
+          });
         }).catch(error => {
           console.log(error);
         });
-    },
+      } else {
+
+        // get program code if there is training value
+
+        if(this.form.training !=="")  {
+
+          this.programForm = this.programs.find(program => program.code == this.form.training);
+          this.form.training = this.programForm.code;
+          this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+          this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+          this.createCampaignWithExistingProgram(this.form);
+        } else {
+            this.createCampainWithNoExistingProgram(this.programForm);
+        }
+      }
+
+      /*this.years.forEach((elt) => {
+        if(elt.schoolyear == this.year.schoolyear){
+          newsession = true;
+        }
+      });
+      if(newsession){
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=campaign&task=createyear",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({ body: this.year })
+        }).then(response => {}).catch(error => {
+          console.log(error);
+        });
+      }*/
+  },
 
     quitFunnelOrContinue(quit) {
       if (quit == 0) {
-        window.location.href = '/configuration-campaigns'
+        this.redirectJRoute('index.php?option=com_emundus_onboard&view=campaign');
       } else if (quit == 1) {
+        document.cookie = 'campaign_'+this.campaign+'_menu = 2; expires=Session; path=/'
         this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.campaign + '&index=0')
       }
     },
@@ -785,9 +783,26 @@ export default {
     },
 
     displayProgram() {
-      this.isHiddenProgram ? document.getElementById('add-program').style = 'transform: rotate(0)' : document.getElementById('add-program').style = 'transform: rotate(135deg)';
-      this.form.training = "";
-      this.isHiddenProgram ? document.getElementById('select_prog').removeAttribute('disabled') : document.getElementById('select_prog').setAttribute('disabled', 'disabled');
+      if(this.isHiddenProgram){
+        document.getElementById('add-program').style = 'transform: rotate(0)';
+        this.form.training = this.old_training;
+        this.programForm = this.old_program_form;
+        document.getElementById('select_prog').removeAttribute('disabled');
+      } else {
+        this.old_training = this.form.training;
+        this.old_program_form = this.programForm;
+        this.form.training = "";
+        this.programForm = {
+          code: "",
+          label: "",
+          notes: "",
+          programmes: "",
+          published: 1,
+          apply_online: 1
+        }
+        document.getElementById('add-program').style = 'transform: rotate(135deg)';
+        document.getElementById('select_prog').setAttribute('disabled', 'disabled');
+      }
       this.isHiddenProgram = !this.isHiddenProgram;
     },
 
@@ -827,7 +842,7 @@ export default {
         group,
         title: `${title}`,
         text,
-        duration: 10000
+        duration: 100000
       });
     },
     clean(group) {
@@ -853,5 +868,19 @@ export default {
 .addCampProgEmail{
   width: 32px;
   height: 30px;
+  filter: invert(1);
 }
+
+  .w-container.general-information {
+    max-width: inherit !important;
+  }
+
+   .w-container.btns-sauvegarder-et-continuer {
+     max-width: inherit !important;
+  }
+
+  .w-container.btns-sauvegarder-et-continuer .container-evaluation {
+    margin: 0;
+  }
+
 </style>

@@ -18,9 +18,16 @@ jimport('joomla.database.table');
 class EmundusonboardModelform extends JModelList {
 
     var $model_campaign = null;
+    var $model_menus = null;
     public function __construct($config = array()) {
         parent::__construct($config);
         $this->model_campaign = JModelLegacy::getInstance('campaign', 'EmundusonboardModel');
+
+        // Get MenuItemModel.
+        JLoader::register('MenusHelper', JPATH_ADMINISTRATOR . '/components/com_menus/helpers/menus.php');
+        JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_menus/models/', 'MenusModel');
+        JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_menus/tables/');
+        $this->model_menus = JModelLegacy::getInstance('Item', 'MenusModel');
     }
 
 	function getFormCount($filter, $recherche) {
@@ -36,33 +43,72 @@ class EmundusonboardModelform extends JModelList {
 		if (empty($recherche)) {
 			$fullRecherche = 1;
 		} else {
-			$rechercheLbl = $db->quoteName('sp.label').' LIKE '.$db->quote('%' . $recherche . '%');
-			$rechercheResume = $db->quoteName('sp.description').' LIKE '.$db->quote('%' . $recherche . '%');
-			$fullRecherche = $rechercheLbl.' OR '.$rechercheResume;
+			$fullRecherche = $db->quoteName('sp.label').' LIKE '.$db->quote('%' . $recherche . '%');
 		}
 
 		$filterId = $db->quoteName('sp.published') . ' = 1';
+
+        // GET ALL PROFILES THAT ARE NOT LINKED TO A CAMPAIGN
+        $other_profile_query = $db->getQuery(true);
+
+        if (empty($recherche)) {
+			$other_profile_full_recherche = 1;
+		} else {
+			$other_profile_full_recherche = $db->quoteName('esp.label').' LIKE '.$db->quote('%' . $recherche . '%');
+		}
+
+        $other_profile_query->select([
+            'COUNT(esp.id)',
+        ])
+        ->from($db->quoteName('#__emundus_setup_profiles', 'esp'))
+        ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.profile_id').' = '.$db->quoteName('esp.id'))
+        ->where($db->quoteName('esc.profile_id') . ' IS NULL')
+        ->andWhere($db->quoteName('esp.published') . ' = 1')
+        ->andWhere($other_profile_full_recherche)
+        ->andWhere($db->quoteName('esp.menutype') . ' IS NOT NULL');
 
 		$query->select('COUNT(sp.id)')
 			->from($db->quoteName('#__emundus_setup_profiles', 'sp'))
 			->where($filterId)
 			->andWhere($filterCount)
 			->andWhere($fullRecherche)
-            ->andWhere($db->quoteName('acl_aro_groups') . ' = ' . $db->quote(2));
+            ->union($other_profile_query);
 
 		try {
 			$db->setQuery($query);
 			return $db->loadResult();
 		} catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Cannot getting the form count : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Cannot getting the form count : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 			return 0;
 		}
 	}
 
-	function getAllForms($filter, $sort, $recherche, $lim, $page) {
+    /**
+     * @param String $filter
+     * @param String $sort
+     * @param String $recherche
+     * @param Int $lim
+     * @param Int $page
+     * @return array|stdClass
+     */
+    function getAllForms(String $filter = "", String $sort = "", String $recherche = "", Int $lim = 0, Int $page = 0) : Array {
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+
+        // Get translation files
+        $path_to_file = basename(__FILE__) . '/../language/overrides/';
+        $path_to_files = array();
+        $Content_Folder = array();
+        $languages = JLanguageHelper::getLanguages();
+        foreach ($languages as $language) {
+            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+        }
+
+
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        // Build filter / limit / pagination part of the query
 		if (empty($lim)) {
 			$limit = 25;
 		} else {
@@ -78,7 +124,6 @@ class EmundusonboardModelform extends JModelList {
 		if (empty($sort)) {
 			$sort = 'DESC';
 		}
-		$sortDb = 'sp.id ';
 
 		if ($filter == 'Unpublish') {
 			$filterDate = $db->quoteName('sp.status') . ' = 0';
@@ -91,82 +136,110 @@ class EmundusonboardModelform extends JModelList {
 		if (empty($recherche)) {
 			$fullRecherche = 1;
 		} else {
-			$rechercheLbl = $db->quoteName('sp.label').' LIKE '.$db->quote('%' . $recherche . '%');
-			$rechercheResume = $db->quoteName('sp.description').' LIKE '.$db->quote('%' . $recherche . '%');
-			$fullRecherche = $rechercheLbl.' OR '.$rechercheResume;
+			$fullRecherche = $db->quoteName('sp.label').' LIKE '.$db->quote('%' . $recherche . '%');
 		}
 
+		// Get program codes linked to the user's group to later filter
+        $m_user = new EmundusModelUsers();
+        $allowed_programs = $m_user->getUserGroupsProgramme(JFactory::getUser()->id);
+
+        // GET ALL PROFILES THAT ARE NOT LINKED TO A CAMPAIGN
+        $other_profile_query = $db->getQuery(true);
+
+        if (empty($recherche)) {
+			$other_profile_full_recherche = 1;
+		} else {
+			$other_profile_full_recherche = $db->quoteName('esp.label').' LIKE '.$db->quote('%' . $recherche . '%');
+		}
+
+        $other_profile_query->select([
+            'esp.*',
+            'esp.label AS form_label'
+        ])
+        ->from($db->quoteName('#__emundus_setup_profiles', 'esp'))
+        ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.profile_id').' = '.$db->quoteName('esp.id'))
+        ->where($db->quoteName('esc.profile_id') . ' IS NULL')
+        ->andWhere($db->quoteName('esp.published') . ' = 1')
+        ->andWhere($other_profile_full_recherche)
+        ->andWhere($db->quoteName('esp.menutype') . ' IS NOT NULL');
+
+        // Now we need to put the query together and get the profiles
 		$query->select([
 			    'sp.*',
                 'sp.label AS form_label'
             ])
 			->from($db->quoteName('#__emundus_setup_profiles', 'sp'))
+            ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.profile_id').' = '.$db->quoteName('sp.id'))
 			->where($filterDate)
 			->andWhere($fullRecherche)
 			->andWhere($filterId)
-            ->andWhere($db->quoteName('acl_aro_groups') . ' = ' . $db->quote(2))
-			->group($sortDb)
-			->order($sortDb . $sort);
+            ->andWhere($db->quoteName('esc.training') . ' IN (' . implode(',', $db->quote($allowed_programs)). ')')
+			->group($db->quoteName('id'))
+			->order('id ' . $sort)
+            ->union($other_profile_query);
 
 		try {
 			$db->setQuery($query, $offset, $limit);
-			return $db->loadObjectList();
+            return $db->loadObjectList();
 		} catch (Exception $e) {
+		    echo $e->getMessage();
             JLog::add('component/com_emundus_onboard/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-			return new stdClass();
+			return [];
 		}
 	}
 
-	function getFormsUpdated() {
+    /**
+     * TODO: Add filters / recherche etc./.. At the moment, it's not working
+     * @param $filter
+     * @param $sort
+     * @param $recherche
+     * @param $lim
+     * @param $page
+     * @return array
+     */
+    function getAllGrilleEval($filter, $sort, $recherche, $lim, $page) : array{
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+        $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
+
+        // Get translation files
+        $path_to_file = basename(__FILE__) . '/../language/overrides/';
+        $path_to_files = array();
+        $Content_Folder = array();
+        $languages = JLanguageHelper::getLanguages();
+        foreach ($languages as $language) {
+            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+        }
+
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         try {
-            $access_profiles = [];
+            // We need to get the list of fabrik forms that are linked to the jos_emundus_evaluations table
+            $query->clear();
             $query
-                ->select('id')
-                ->from($db->quoteName('#__emundus_setup_profiles'))
-                ->where($db->quoteName('published') . ' = 1')
-                ->andWhere($db->quoteName('status') . ' = 1')
-                ->andWhere($db->quoteName('acl_aro_groups') . ' = ' . $db->quote(2));
+                ->select([$db->quoteName('ff.id'), $db->quoteName('ff.label'), '"grilleEval" AS type'])
+                ->from($db->quoteName('#__fabrik_forms', 'ff'))
+                ->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ff.id'))
+                ->where($db->quoteName('fl.db_table_name').' = '.$db->quote('jos_emundus_evaluations' ));
             $db->setQuery($query);
-            $access_profiles[] = $db->loadColumn();
 
-            $campaigns = $this->model_campaign->getAssociatedCampaigns('', '', '', 100, '');
-            $campaigns_id = [];
-            $profiles_campaign_associated = [];
-            foreach ($campaigns as $campaign) {
-                if ($campaign->profile_id != null) {
-                    $profiles_campaign_associated[] = $campaign->profile_id;
+            $evaluation_forms = $db->loadObjectList();
+
+            // Get the form translation value
+            foreach ( $evaluation_forms as $evaluation_form ) {
+                $label= [];
+                foreach ($languages as $language) {
+                    $label[$language->sef] = $formbuilder->getTranslation($evaluation_form->label,$language->lang_code) ?: $evaluation_form->label;
                 }
-                $campaigns_id[] = $campaign->id;
+                $evaluation_form->label=$label;
             }
 
-            if (!empty($campaigns_id)) {
-                $query
-                    ->clear()
-                    ->select('*')
-                    ->from($db->quoteName('#__emundus_setup_campaigns'))
-                    ->where($db->quoteName('id') . ' NOT IN (' . implode(',', $db->quote($campaigns_id)) . ')');
-                $db->setQuery($query);
-                $campaigns_not_user = $db->loadObjectList();
-            } else {
-                $campaigns_not_user = [];
-            }
+            return $evaluation_forms;
 
-            foreach ($campaigns_not_user as $campaign) {
-                if ($campaign->profile_id != null) {
-                    if (!in_array($campaign->profile_id, $profiles_campaign_associated)) {
-                        array_splice($access_profiles, array_search($campaign->profile_id, $access_profiles), 1);
-                    }
-                }
-            }
-
-            sort($access_profiles);
-
-            return $access_profiles;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Cannot getting the forms that can be updating : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            echo $e->getMessage();
+            JLog::add('component/com_emundus_onboard/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
         }
     }
@@ -189,7 +262,7 @@ class EmundusonboardModelform extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Cannot getting the published forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Cannot getting the published forms : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();
         }
     }
@@ -462,11 +535,11 @@ class EmundusonboardModelform extends JModelList {
                     return $db->execute();
 
 				} catch (Exception $e) {
-                    JLog::add('component/com_emundus_onboard/models/form | Error when try to delete forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                    JLog::add('component/com_emundus_onboard/models/form | Error when try to delete forms : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 					return false;
 				}
 			} catch (Exception $e) {
-                JLog::add('component/com_emundus_onboard/models/form | Error when try to delete forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                JLog::add('component/com_emundus_onboard/models/form | Error when try to delete forms : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 				return false;
 			}
 		} else {
@@ -495,7 +568,7 @@ class EmundusonboardModelform extends JModelList {
 				$db->setQuery($query);
 				return $db->execute();
 			} catch (Exception $e) {
-                JLog::add('component/com_emundus_onboard/models/form | Error when unpublish forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                JLog::add('component/com_emundus_onboard/models/form | Error when unpublish forms : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 				return false;
 			}
 		} else {
@@ -524,7 +597,7 @@ class EmundusonboardModelform extends JModelList {
 				$db->setQuery($query);
 				return $db->execute();
 			} catch (Exception $e) {
-                JLog::add('component/com_emundus_onboard/models/form | Error when publish forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                JLog::add('component/com_emundus_onboard/models/form | Error when publish forms : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 				return false;
 			}
 		} else {
@@ -640,22 +713,15 @@ class EmundusonboardModelform extends JModelList {
                         $db->setQuery($query);
                         $form = $db->loadObject();
 
-                        $label = array(
-                            'fr' => $formbuilder->getTranslation($form->label,$Content_Folder['fr']),
-                            'en' => $formbuilder->getTranslation($form->label,$Content_Folder['en']),
-                        );
+                        $label = array();
+                        $intro = array();
 
-                        $intro = array(
-                            'fr' => $formbuilder->getTranslation($form->intro,$Content_Folder['fr']),
-                            'en' => $formbuilder->getTranslation($form->intro,$Content_Folder['en']),
-                        );
-
-                        // Manage old platforms without translation
-                        if($label['fr'] == '') {
-                            $label['fr'] = $form->label;
-                        }
-                        if($label['en'] == '') {
-                            $label['en'] = $form->label;
+                        foreach ($languages as $language) {
+                            $label[$language->sef] = $formbuilder->getTranslation($form->label,$language->lang_code);
+                            $intro[$language->sef] = $formbuilder->getTranslation($form->intro,$language->lang_code);
+                            if($label[$language->sef] == ''){
+                                $label[$language->sef] = $form->label;
+                            }
                         }
 
                         $formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile);
@@ -664,7 +730,7 @@ class EmundusonboardModelform extends JModelList {
 
                 return $newprofile;
             } catch (Exception $e) {
-                JLog::add('component/com_emundus_onboard/models/form | Error when duplicate forms : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                JLog::add('component/com_emundus_onboard/models/form | Error when duplicate forms : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;
             }
         } else {
@@ -691,7 +757,7 @@ class EmundusonboardModelform extends JModelList {
 			$db->setQuery($query);
 			return $db->loadObject();
 		} catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error when get form by id ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Error when get form by id ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -761,7 +827,6 @@ class EmundusonboardModelform extends JModelList {
 				$db->setQuery($query);
 				$db->execute();
 				$newprofile = $db->insertid();
-
                 $this->createMenuType('menu-profile' . $newprofile,$data['label']);
 
                 $query->clear()
@@ -775,6 +840,8 @@ class EmundusonboardModelform extends JModelList {
 
 				// Create a first page
                 $label = array(
+                    //'fr' => $newprofile.' - Ma première page',
+                    //'en' => $newprofile.' - My first page'
                     'fr' => 'Ma première page',
                     'en' => 'My first page'
                 );
@@ -800,7 +867,7 @@ class EmundusonboardModelform extends JModelList {
 
 				return $newprofile;
 			} catch (Exception $e) {
-                JLog::add('component/com_emundus_onboard/models/form | Error when create a setup_profile : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                JLog::add('component/com_emundus_onboard/models/form | Error when create a setup_profile : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 				return false;
 			}
 		} else {
@@ -839,7 +906,7 @@ class EmundusonboardModelform extends JModelList {
 			$db->setQuery($query);
 			return $db->execute();
 		} catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Cannot create the menutype ' . $menutype . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Cannot create the menutype ' . $menutype . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -911,7 +978,7 @@ class EmundusonboardModelform extends JModelList {
 			$db->setQuery($query);
 			return $db->execute();
 		} catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Cannot create the menu : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Cannot create the menu : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -937,13 +1004,49 @@ class EmundusonboardModelform extends JModelList {
 				$db->setQuery($query_pid);
 				return $db->execute();
 			} catch (Exception $e) {
-                JLog::add('component/com_emundus_onboard/models/form | Cannot update the form ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query_pid->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                JLog::add('component/com_emundus_onboard/models/form | Cannot update the form ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query_pid.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 				return false;
 			}
 		} else {
 			return false;
 		}
 	}
+
+	public function updateFormLabel($prid,$label){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
+        $results = array();
+
+        try {
+            $query->update($db->quoteName('#__menu_types'))
+                ->set($db->quoteName('title') . ' = ' . $db->quote($label))
+                ->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile'.$prid));
+            $db->setQuery($query);
+            $results[] = $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__menu'))
+                ->set($db->quoteName('title') . ' = ' . $db->quote($label))
+                ->set($db->quoteName('alias') . ' = ' . $db->quote(str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($label).'-'.$prid)))
+                ->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile'.$prid))
+                ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
+            $db->setQuery($query);
+            $results[] = $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__emundus_setup_profiles'))
+                ->set($db->quoteName('label') . ' = ' . $db->quote($label))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($prid));
+            $db->setQuery($query);
+            $results[] = $db->execute();
+            return $results;
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/form | Cannot update the form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 
 
 	public function getAllDocuments($prid, $cid)
@@ -1031,7 +1134,7 @@ class EmundusonboardModelform extends JModelList {
 
 			return $documents;
 		} catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error at getting documents of the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Error at getting documents of the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -1040,13 +1143,15 @@ class EmundusonboardModelform extends JModelList {
 	public function getUnDocuments() {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
+        $languages = JLanguageHelper::getLanguages();
 
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
-		$query->select('*')
-			->from($db->quoteName('#__emundus_setup_attachments'))
-			->where($db->quoteName('published') . ' = ' . 1)
+		$query->select(array(' DISTINCT a.*', 'b.mandatory'))
+			->from($db->quoteName('#__emundus_setup_attachments','a'))
+            ->join('LEFT', $db->quoteName('#__emundus_setup_attachment_profiles', 'b') . ' ON ' . $db->quoteName('b.attachment_id') . ' = ' . $db->quoteName('a.id'))
+			->where($db->quoteName('a.published') . ' = ' . 1)
 			->order($db->quoteName('ordering'));
 
 		$db->setQuery($query);
@@ -1055,6 +1160,7 @@ class EmundusonboardModelform extends JModelList {
 			$db->setQuery($query);
 			$undocuments = $db->loadObjectList();
 
+
 			foreach ($undocuments as $undocument){
 			    if(strpos($undocument->lbl, '_em') === 0){
                     $undocument->can_be_deleted = true;
@@ -1062,97 +1168,15 @@ class EmundusonboardModelform extends JModelList {
                     $undocument->can_be_deleted = false;
                 }
 
-                $f_values = $falang->getFalang($undocument->id,'emundus_setup_attachments','value');
-                $undocument->value_en = $f_values->en->value;
-                $undocument->value_fr = $f_values->fr->value;
-
-                $f_descriptions = $falang->getFalang($undocument->id,'emundus_setup_attachments','description');
-                $undocument->description_en = $f_descriptions->en->value;
-                $undocument->description_fr = $f_descriptions->fr->value;
+                $f_values = $falang->getFalang($undocument->id,'emundus_setup_attachments','value',$undocument->value);
+                $f_descriptions = $falang->getFalang($undocument->id,'emundus_setup_attachments','description',$undocument->description);
+			    $undocument->name = $f_values;
+                $undocument->description = $f_descriptions;
             }
 
 			return $undocuments;
 		} catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error getting documents not associated : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-			return false;
-		}
-	}
-
-	public function updateDocuments($data, $prid, $cid) {
-		$db = $this->getDbo();
-
-		$allDocuments = EmundusonboardModelform::getAllDocuments($prid, $cid);
-		$allDocumentsIds = [];
-
-		foreach ($allDocuments as $documents) {
-			array_push($allDocumentsIds, $documents->id);
-		}
-
-		if (!empty($data)) {
-			$values = [];
-
-			foreach ($data as $vals) {
-				foreach ($vals as $key => $val) {
-					if ($key == 'id') {
-						$did = $val;
-
-						if (in_array($val, $allDocumentsIds)) {
-							unset($allDocumentsIds[array_search($val, $allDocumentsIds)]);
-						}
-					} elseif ($key == 'ordering') {
-						$ordering = $val;
-					} elseif ($key == 'need') {
-						$need = $val;
-					}
-				}
-
-				array_push($values, '(' . $did . ',' . $cid . ',' . $prid . ',1,' . $ordering . ',' . $need . ', 1)');
-			}
-
-			$query =
-				'INSERT INTO jos_emundus_setup_attachment_profiles 
-            (attachment_id, campaign_id, profile_id, displayed, ordering, mandatory, published)
-            VALUES 
-            ' .
-				implode(',', $values) .
-				'
-            ON DUPLICATE KEY UPDATE 
-            campaign_id = VALUES(campaign_id),
-            profile_id = VALUES(profile_id),
-            displayed = VALUES(displayed),
-            ordering = VALUES(ordering),
-            mandatory = VALUES(mandatory),
-            published = VALUES(published)
-            ;';
-
-			try {
-				$db->setQuery($query);
-				$db->execute();
-
-				// Create checklist menu if documents are asked
-                $query = $db->getQuery(true);
-                $query->clear()
-                    ->select('*')
-                    ->from($db->quoteName('#__menu'))
-                    ->where($db->quoteName('alias') . ' = ' . $db->quote('checklist-' . $prid));
-                $db->setQuery($query);
-                $checklist = $db->loadObject();
-
-                if ($checklist == null) {
-                    $this->addChecklistMenu($prid);
-                }
-            } catch (Exception $e) {
-                JLog::add('component/com_emundus_onboard/models/form | Error updating documents : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-				return false;
-			}
-
-			$this->deleteRemainingDocuments(
-				$prid,
-				$allDocumentsIds
-			);
-
-			return true;
-		} else {
+            JLog::add('component/com_emundus_onboard/models/form | Error getting documents not associated : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -1183,7 +1207,7 @@ class EmundusonboardModelform extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error deleting documents : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Error deleting documents : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1209,7 +1233,82 @@ class EmundusonboardModelform extends JModelList {
 
             return true;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error remove document ' . $did . ' associated to the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Error remove document ' . $did . ' associated to the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function updateMandatory($did,$prid,$cid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id,mandatory')
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
+                ->andWhere($db->quoteName('profile_id') . ' = ' . $db->quote($prid))
+                ->andWhere($db->quoteName('campaign_id') . ' = ' . $db->quote($cid));
+            $db->setQuery($query);
+            $attachment = $db->loadObject();
+            $mandatory = intval($attachment->mandatory);
+
+            if($mandatory == 0){
+                $mandatory = 1;
+            } else {
+                $mandatory = 0;
+            }
+
+            $query->clear()
+                ->update($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->set($db->quoteName('mandatory') . ' = ' . $db->quote($mandatory))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($attachment->id));
+
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/form | Error remove document ' . $did . ' associated to the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function addDocument($did,$profile,$campaign){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            // Create checklist menu if documents are asked
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__menu'))
+                ->where($db->quoteName('alias') . ' = ' . $db->quote('checklist-' . $profile));
+            $db->setQuery($query);
+            $checklist = $db->loadObject();
+
+            if ($checklist == null) {
+                $this->addChecklistMenu($profile);
+            }
+            //
+
+            $query->clear()
+                ->insert($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
+                ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign))
+                ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
+                ->set($db->quoteName('displayed') . ' = ' . $db->quote(1))
+                ->set($db->quoteName('mandatory') . ' = ' . $db->quote(0))
+                ->set($db->quoteName('ordering') . ' = ' . $db->quote(0));
+            $db->setQuery($query);
+            $db->execute();
+
+            $documents_campaign = EmundusonboardModelform::getAllDocuments($profile, $campaign);
+
+            if (empty($documents_campaign)) {
+                $this->removeChecklistMenu($profile);
+            }
+
+            return true;
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/form | Error remove document ' . $did . ' associated to the campaign ' . $campaign . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1238,7 +1337,7 @@ class EmundusonboardModelform extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error when delete the document ' . $did . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Error when delete the document ' . $did . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1249,66 +1348,118 @@ class EmundusonboardModelform extends JModelList {
 
         $modules = [93,102,103,104,168,170];
 
-        $query->clear()
-            ->select('*')
-            ->from($db->quoteName('#__menu'))
-            ->where($db->quoteName('alias') . ' = ' . $db->quote('checklist'));
         try {
-            $db->setQuery($query);
-            $checklist_model = $db->loadObject();
+            // Create the menu
+                $params = array(
+                    'custom_title' => "",
+                    'show_info_panel' => "0",
+                    'show_info_legend' => "1",
+                    'show_browse_button' => "0",
+                    'show_shortdesc_input' => "0",
+                    'required_desc' => "0",
+                    'show_nb_column' => "1",
+                    'is_admission' => "0",
+                    'notify_complete_file' => 0,
+                    'menu-anchor_title' => "Documents",
+                    'menu-anchor_css' => "huge circular inverted blue upload outline icon",
+                    'menu_image' => "0",
+                    'menu_image_css' => "0",
+                    'menu_text' => 1,
+                    'menu_show' => 1,
+                    'page_title' => "Documents",
+                    'show_page_heading' => "",
+                    'page_heading' => "",
+                    'pageclass_sfx' => "applicant-form",
+                    'meta_description' => "",
+                    'meta_keywords' => "",
+                    'robots' => "",
+                    'secure' => 0,
+                );
+                $datas = array(
+                    'menutype' => $db->quote("menu-profile" . $prid),
+                    'title' => $db->quote('Documents'),
+                    'alias' => $db->quote('checklist-' . $prid),
+                    'note' => $db->quote(''),
+                    'path' => $db->quote('checklist-' . $prid),
+                    'link' => $db->quote('index.php?option=com_emundus&view=checklist'),
+                    'type' => $db->quote('component'),
+                    'published' => 1,
+                    'parent_id' => 1,
+                    'level' => 1,
+                    'component_id' => 11369,
+                    'checked_out' => 0,
+                    'checked_out_time' => $db->quote(date('Y-m-d h:i:s')),
+                    'browserNav' => 0,
+                    'access' => 1,
+                    'img' => $db->quote(''),
+                    'template_style_id' => 22,
+                    'params' => $db->quote(json_encode($params)),
+                    'lft' => 0,
+                    'rgt' => 0,
+                    'home' => 0,
+                    'language' => $db->quote('*'),
+                    'client_id' => 0,
+                );
 
             $query->clear()
-                ->insert($db->quoteName('#__menu'));
+                ->insert($db->quoteName('#__menu'))
+                ->columns($db->quoteName(array_keys($datas)))
+                ->values(implode(',',array_values($datas)));
+            $db->setQuery($query);
 
-            foreach ($checklist_model as $key => $row) {
-                if ($key != 'id' && $key != 'alias' && $key != 'path' && $key != 'menutype') {
-                    $query->set($key . ' = ' . $db->quote($row));
-                } elseif ($key == 'alias' || $key == 'path') {
-                    $query->set($key . ' = ' . $db->quote('checklist-' . $prid));
-                } elseif ($key == 'menutype') {
-                    $query->set($key . ' = ' . $db->quote('menu-profile' . $prid));
+            if ($db->execute()) {
+                $newmenuid = $db->insertid();
+                $submittion_page = $this->getSubmittionPage($prid);
+
+                $query->clear()
+                    ->update($db->quoteName('#__menu'))
+                    ->set($db->quoteName('lft') . ' = ' . $db->quote($submittion_page->rgt-3))
+                    ->set($db->quoteName('rgt') . ' = ' . $db->quote($submittion_page->rgt-2))
+                    ->where($db->quoteName('id') . ' = ' . $newmenuid);
+                $db->setQuery($query);
+                $db->execute();
+
+                // Affect modules to this menu
+                foreach ($modules as $module) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__modules_menu'))
+                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
+                        ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
+                    $db->setQuery($query);
+                    $db->execute();
                 }
-            }
-            $db->setQuery($query);
-            $db->execute();
-            $newmenuid = $db->insertid();
 
-            // Affect modules to this menu
-            foreach ($modules as $module) {
+                // Affect documents module to each menus of profile
                 $query->clear()
-                    ->insert($db->quoteName('#__modules_menu'))
-                    ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
-                    ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
+                    ->select('*')
+                    ->from($db->quoteName('#__menu'))
+                    ->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile' . $prid));
                 $db->setQuery($query);
-                $db->execute();
+                $menus = $db->loadObjectList();
+
+                foreach ($menus as $menu) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__modules_menu'))
+                        ->set($db->quoteName('moduleid') . ' = 103')
+                        ->set($db->quoteName('menuid') . ' = ' . $db->quote($menu->id));
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    $query->clear()
+                        ->insert($db->quoteName('#__modules_menu'))
+                        ->set($db->quoteName('moduleid') . ' = 104')
+                        ->set($db->quoteName('menuid') . ' = ' . $db->quote($menu->id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+                //
+                return $newmenuid;
+            } else {
+                JLog::add('component/com_emundus_onboard/models/form | Error at menu creation of the profile ' . $prid, JLog::ERROR, 'com_emundus');
+                return false;
             }
-
-            $query->clear()
-                ->select('*')
-                ->from($db->quoteName('#__menu'))
-                ->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile' . $prid));
-            $db->setQuery($query);
-            $menus = $db->loadObjectList();
-
-            foreach ($menus as $menu) {
-                $query->clear()
-                    ->insert($db->quoteName('#__modules_menu'))
-                    ->set($db->quoteName('moduleid') . ' = 103')
-                    ->set($db->quoteName('menuid') . ' = ' . $db->quote($menu->id));
-                $db->setQuery($query);
-                $db->execute();
-
-                $query->clear()
-                    ->insert($db->quoteName('#__modules_menu'))
-                    ->set($db->quoteName('moduleid') . ' = 104')
-                    ->set($db->quoteName('menuid') . ' = ' . $db->quote($menu->id));
-                $db->setQuery($query);
-                $db->execute();
-            }
-
-            return $newmenuid;
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error to add the checklist module to form (' . $prid . ') menus : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/form | Error to add the checklist module to form (' . $prid . ') menus : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1358,7 +1509,7 @@ class EmundusonboardModelform extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error to remove the checklist module to form (' . $prid . ') menus : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Error to remove the checklist module to form (' . $prid . ') menus : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1392,17 +1543,19 @@ class EmundusonboardModelform extends JModelList {
 			foreach ($forms as $form){
 			    $link = explode('=', $form->link);
                 $form->id = $link[sizeof($link) - 1];
+
                 $query->clear()
                     ->select('label')
                     ->from($db->quoteName('#__fabrik_forms'))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($form->id));
                 $db->setQuery($query);
                 $form->label = $formbuilder->getJTEXT($db->loadResult());
+                print_r($forms->label);
             }
 
 			return $forms;
 		} catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error at getting form pages by profile_id ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Error at getting form pages by profile_id ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -1434,7 +1587,7 @@ class EmundusonboardModelform extends JModelList {
 
             return $groups;
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error at getting groups by form_id ' . $form_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Error at getting groups by form_id ' . $form_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1477,7 +1630,7 @@ class EmundusonboardModelform extends JModelList {
             }
             return $sub_page;
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error at getting the submittion page of the form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Error at getting the submittion page of the form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -1499,7 +1652,7 @@ class EmundusonboardModelform extends JModelList {
 			$db->setQuery($query);
 			return $db->loadObject();
 		} catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error at getting name of the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Error at getting name of the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -1533,7 +1686,7 @@ class EmundusonboardModelform extends JModelList {
 
             return $files;
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error at getting files by form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Error at getting files by form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1542,7 +1695,7 @@ class EmundusonboardModelform extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('id')
+        $query->select(['id as id','label as label'])
             ->from ($db->quoteName('#__emundus_setup_campaigns'))
             ->where($db->quoteName('profile_id') . ' = ' . $db->quote($profile_id));
 
@@ -1550,7 +1703,37 @@ class EmundusonboardModelform extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/form | Error at getting campaigns link to the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/form | Error at getting campaigns link to the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function getAssociatedProgram($form_id) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select(['group_id as id'])
+            ->from ($db->quoteName('#__fabrik_formgroup'))
+            ->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+
+        try {
+            $db->setQuery($query);
+            $group_id=$db->loadRow();
+            //var_dump($group_id);
+
+
+            $query->clear()
+                ->select('*')
+                ->from ($db->quoteName('#__emundus_setup_programmes'))
+                ->where($db->quoteName('fabrik_group_id') . ' = '.$db->quote($group_id[0]));
+
+            $db->setQuery($query);
+            $programme = $db->loadObject();
+            //var_dump($programme);
+            return $programme;
+
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/form | Error at getting eval form program link to the form ' . $form_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1584,11 +1767,97 @@ class EmundusonboardModelform extends JModelList {
                 $db->execute();
 
             } catch (Exception $e) {
-                JLog::add('component/com_emundus_onboard/models/form | Error when affect campaigns to the form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                JLog::add('component/com_emundus_onboard/models/form | Error when affect campaigns to the form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;
             }
         }
 
         return true;
     }
+
+    function getDocumentsByProfile($prid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('sa.id as docid,sa.value as label,sap.*')
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles','sap'))
+                ->leftJoin($db->quoteName('#__emundus_setup_attachments','sa').' ON '.$db->quoteName('sa.id').' = '.$db->quoteName('sap.attachment_id'))
+                ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid))
+                ->order('sap.ordering');
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/form | Error cannot get documents by profile_id : ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function reorderDocuments($documents){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $results = array();
+
+        try {
+            foreach ($documents as $document) {
+
+                $query->update($db->quoteName('#__emundus_setup_attachment_profiles'))
+                    ->set($db->quoteName('ordering') . ' = ' . (int)$document['ordering'])
+                    ->where($db->quoteName('id') . ' = ' . (int)$document['id']);
+                $db->setQuery($query);
+
+                $results[] = $db->execute();
+                $query->clear();
+            }
+
+            return $results;
+
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/form | Error cannot reorder documents : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function removeDocumentFromProfile($did){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->delete($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('id') . ' = ' . (int)$did);
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/form | Error cannot remove document : ' . $did . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function deleteModelDocument($did){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('count(id)')
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('attachment_id') . ' = ' . $db->quote($did));
+            $db->setQuery($query);
+            $attachment_used = $db->loadResult();
+
+            if($attachment_used == 0) {
+                $query->clear()
+                    ->delete($db->quoteName('#__emundus_setup_attachments'))
+                    ->where($db->quoteName('id') . ' = ' . (int)$did);
+                $db->setQuery($query);
+                return $db->execute();
+            } else {
+                return false;
+            }
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/form | Error cannot delete document template : ' . $did . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
 }

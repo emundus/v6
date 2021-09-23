@@ -201,7 +201,7 @@ class EmundusModelUsers extends JModelList {
             $query .= 'LEFT JOIN #__emundus_final_grade AS efg ON u.id = efg.student_id ';
         }
 
-        $query .= ' where 1=1 AND u.id != 1 ';
+        $query .= ' where 1=1 AND u.id NOT IN (1,62) ';
 
         if (isset($programme) && !empty($programme) && $programme[0] != '%') {
             $query .= ' AND ( esc.training IN ("'.implode('","', $programme).'")
@@ -796,12 +796,22 @@ class EmundusModelUsers extends JModelList {
         $news = $params['news'];
         $univ_id = $params['univ_id'];
 
+        if(!empty($params['id_ehesp'])){
+            $id_ehesp = $params['id_ehesp'];
+        }
+
         $dispatcher->trigger('onBeforeSaveEmundusUser', [$user_id, $params]);
-        if (empty($univ_id)) {
+        if(!empty($id_ehesp)){
+            $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id,id_ehesp) VALUES ('',".$user_id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','','".$univ_id."','".$id_ehesp."')";
+            $db->setQuery($query);
+            $db->execute();
+        }
+        elseif (empty($univ_id)) {
             $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','',0)";
             $db->setQuery($query);
             $db->execute();
-        } else {
+        }
+        else {
             $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','','".$univ_id."')";
             $db->setQuery($query);
             $db->execute();
@@ -1394,20 +1404,29 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
-    // get programme associated to user groups
-    public function getUserGroupsProgramme($uid, $index = 'id') {
-        try {
-            $query = "SELECT esg.id, esg.label, esgc.course
-                      FROM #__emundus_groups as g
-                      LEFT JOIN #__emundus_setup_groups AS esg ON g.group_id = esg.id
-                      LEFT JOIN #__emundus_setup_groups_repeat_course AS esgc ON esgc.parent_id=esg.id
-                      WHERE g.user_id = " .$uid;
-            $db = $this->getDbo();
-            $db->setQuery($query);
+    /**
+     * getUserGroupsProgramme
+     *
+     * @param  mixed $uid
+     * @return array
+     */
+    public function getUserGroupsProgramme(int $uid) : array {
 
-            return $db->loadAssocList($index);
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select($db->quoteName('esgc.course'))
+            ->from($db->quoteName('#__emundus_groups', 'g'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups','esg').' ON '.$db->quoteName('g.group_id').' = '.$db->quoteName('esg.id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','esgc').' ON '.$db->quoteName('esgc.parent_id').' = '.$db->quoteName('esg.id'))
+            ->where($db->quoteName('g.user_id') . ' = ' . $uid);
+            
+        $db->setQuery($query);
+        try {
+            return $db->loadColumn();
         } catch(Exception $e) {
-            return false;
+            return [];
         }
     }
 
@@ -2000,6 +2019,10 @@ class EmundusModelUsers extends JModelList {
 
 		$config = JFactory::getConfig();
 
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+
+        $m_emails = new EmundusModelEmails();
+
 		// Load the com_users language tags in order to call the Joomla user JText.
 		$language =& JFactory::getLanguage();
 		$extension = 'com_users';
@@ -2086,10 +2109,10 @@ class EmundusModelUsers extends JModelList {
 		$mode = $config->get('force_ssl', 0) == 2 ? 1 : (-1);
 		$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token;
 
+        $mailer = JFactory::getMailer();
+
 		// Put together the email template data.
 		$data = $user->getProperties();
-		$data['fromname'] = $config->get('fromname');
-		$data['mailfrom'] = $config->get('mailfrom');
 		$data['sitename'] = $config->get('sitename');
 		$data['link_text'] = JRoute::_($link, false, $mode);
 		$data['link_html'] = '<a href='.JRoute::_($link, true, $mode).'> '.JRoute::_($link, true, $mode).'</a>';
@@ -2099,12 +2122,21 @@ class EmundusModelUsers extends JModelList {
 		$subject = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $data['sitename']);
 		$body = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_BODY', $data['sitename'], $data['token'], $data['link_html']);
 
+        $post = [
+            'USER_NAME' => $user->name,
+            'SITE_URL' => JURI::base(),
+            'USER_EMAIL' => $user->email
+        ];
+
+        $tags = $m_emails->setTags($user->id, $post);
+
+        $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
+
 		// Get and apply the template.
 		$query->clear()
 			->select($db->quoteName('Template'))
 			->from($db->quoteName('#__emundus_email_templates'))
 			->where($db->quoteName('id').' = 1');
-
 		$db->setQuery($query);
 
 		try {
@@ -2116,9 +2148,24 @@ class EmundusModelUsers extends JModelList {
 		}
 
         $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/", "/\[SITE_NAME\]/"], [$subject, $body, $data['sitename']], $template);
+        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+
+        // Set sender
+        $sender = [
+            $config->get('mailfrom'),
+            $config->get('fromname')
+        ];
+
+        $mailer->setSender($sender);
+        $mailer->addReplyTo($config->get('mailfrom'), $config->get('fromname'));
+        $mailer->addRecipient($user->email);
+        $mailer->setSubject($subject);
+        $mailer->isHTML(true);
+        $mailer->Encoding = 'base64';
+        $mailer->setBody($body);
 
 		// Send the password reset request email.
-		$send = JFactory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $user->email, $subject, $body, true);
+		$send = $mailer->Send();
 
 		// Check for an error.
 		if ($send !== true) {

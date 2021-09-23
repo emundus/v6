@@ -1,29 +1,51 @@
 <template class="form-item">
-  <div class="main-column-block w-row max900">
-    <div class="column-block w-col w-col-11">
+  <div class="main-column-block">
+    <div class="column-block w-100">
       <div class="block-dash" :class="isPublished ? '' : 'unpublishedBlock'">
         <div class="column-blocks w-row">
           <div class="column-inner-block w-col w-col-8 pl-30px">
             <div class="list-item-header">
               <div class="block-label">
-                <a class="item-select w-inline-block"
+<!--                <a class="item-select w-inline-block"
                    v-on:click="selectItem(data.id)"
                    :class="{ active: isActive }">
-                </a>
-                <h1 class="nom-campagne-block white">{{ data.form_label }}</h1>
+                </a>-->
+                <h2 class="nom-campagne-block">{{ data.form_label }}</h2>
               </div>
             </div>
-          </div>
-          <div class="column-inner-block-2 w-clearfix w-col w-col-4">
-            <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
-              {{ isPublished ? publishedTag : unpublishedTag }}
+            <div>
+              <p class="associated-campaigns" v-if="campaigns.length == 1">{{translations.campaignAssociated}} :</p>
+              <p class="associated-campaigns" v-if="campaigns.length > 1">{{translations.campaignsAssociated}} :</p>
+              <ul style="margin-top: 10px;margin-left: 0">
+                <li v-for="(campaign, index) in campaigns" class="campaigns-item">{{campaign.label}}</li>
+              </ul>
             </div>
-            <div v-if="updateAccess" class="container-gerer-modifier-visualiser">
-              <a class="cta-block pointer"
-                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
-                 :title="Modify">
-                <em class="fas fa-edit"></em>
-              </a>
+            <div class="d-flex">
+              <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
+                {{ isPublished ? translations.publishedTag : translations.unpublishedTag }}
+              </div>
+            </div>
+            <div>
+              <hr class="divider-card">
+              <div class="stats-block">
+                <a class="bouton-ajouter pointer add-button-div"
+                   @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
+                   :title="translations.Modify">
+                  <em class="fas fa-pen"></em> Éditer
+                </a>
+                <v-popover :popoverArrowClass="'custom-popover-arrow'">
+                  <button class="tooltip-target b3 card-button"></button>
+
+                  <template slot="popover">
+                    <actions
+                        :data="actions"
+                        :selected="this.data.id"
+                        :published="isPublished"
+                        @validateFilters="validateFilters()"
+                    ></actions>
+                  </template>
+                </v-popover>
+              </div>
             </div>
           </div>
         </div>
@@ -35,28 +57,38 @@
 <script>
 import { list } from "../../store";
 import axios from "axios";
+import actions from "./action_menu";
 
 const qs = require("qs");
 
 export default {
   name: "formItem",
+  components: {actions},
   props: {
     data: Object,
-    selectItem: Function
+    selectItem: Function,
+    actions: Object,
   },
   data() {
     return {
       selectedData: [],
       updateAccess: false,
-      publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-      unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
-      passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
-      Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-      Visualize: Joomla.JText._("COM_EMUNDUS_ONBOARD_VISUALIZE")
+      campaigns: [],
+      translations:{
+        publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM"),
+        unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM"),
+        Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
+        campaignAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED"),
+        campaignsAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED")
+      },
     };
   },
 
   methods: {
+    validateFilters(){
+      this.$emit('validateFilters');
+    },
+
     redirectJRoute(link) {
       axios({
         method: "get",
@@ -70,15 +102,33 @@ export default {
       }).then(response => {
         window.location.href = window.location.pathname + response.data.data;
       });
+    },
+
+    getAssociatedCampaigns(){
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=form&task=getassociatedcampaign",
+        params: {
+          pid: this.data.id,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        this.campaigns = response.data.data;
+      });
     }
   },
 
   created() {
+
     list.getters.formsAccess[0].forEach(element => {
       if(element === this.data.id){
         this.updateAccess = true;
       }
     });
+
+    this.getAssociatedCampaigns();
   },
 
   computed: {
@@ -93,17 +143,11 @@ export default {
 };
 </script>
 <style scoped>
-a.button-programme:hover {
-  color: white;
-  cursor: default;
-}
-
   .w-row{
     margin-bottom: 0;
   }
-
-.description-block{
-  max-height: 160px;
-  overflow: hidden;
-}
+  .associated-campaigns{
+    font-style: italic;
+    font-size: 12px;
+  }
 </style>

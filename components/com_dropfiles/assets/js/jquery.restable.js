@@ -99,7 +99,7 @@
 
            //init columns selection box
            if(this.options.selectCol===true){
-                   colHtml = '<div class="restableMenu restableMenuClosed" id="restableMenu'+instancesCount+'"><a class="restableMenuButton" href="#"><i class="material-icons">filter_list</i></a><i class="material-icons dropfiles-flip">flip</i><ul>';
+                   colHtml = '<div class="restableMenu restableMenuClosed" id="restableMenu'+instancesCount+'"><a class="restableMenuButton" href="#"><i class="material-icons">filter_list</i></a><i class="material-icons dropfiles-flip">arrow_right_alt</i><ul>';
                    cols = $(this.element).find('tr:first-child th');
                    if(cols.length===0){
                        cols = $(this.element).find('tr:first-child td');

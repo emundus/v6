@@ -48,6 +48,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$show_document_step = $params->get('show_document_step', 1);
 	$show_form_step = $params->get('show_form_step', 1);
 	$show_status = $params->get('show_status', 1);
+    $show_hikashop = $params->get('show_hikashop', 1);
 	$show_deadline  = $params->get('show_deadline', 0);
     $admission  = $params->get('admission', 0);
     $layout = $params->get('layout', 'default');
@@ -131,8 +132,12 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	}
 
 	if (isset($user->fnum) && !empty($user->fnum)) {
-		$attachments = $m_application->getAttachmentsProgress($user->fnum);
-		$forms = $m_application->getFormsProgress($user->fnum);
+
+        $attachments = $m_application->getAttachmentsProgress($user->fnum);
+        $attachment_list = !empty($m_profile->getAttachments($user->profile, true));
+
+        $forms = $m_application->getFormsProgress($user->fnum);
+        $form_list = !empty($m_checklist->getFormsList());
 
 		$current_application = $m_application->getApplication($user->fnum);
 		$sent = $m_checklist->getSent();

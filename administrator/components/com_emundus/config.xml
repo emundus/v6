@@ -164,7 +164,16 @@
 		<field name="export_path" type="text" size="6" label="COM_EMUNDUS_EXPORT_PATH" description="COM_EMUNDUS_EXPORT_PATH_DESC"/>
 		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"/>
 		<field name="attachment_order" type="text" size="6" label="COM_EMUNDUS_CANDIDACY_FORM_ORDER" description="COM_EMUNDUS_CANDIDACY_FORM_ORDER_DESC"/>
+		<field
+				name="spacer1"
+				type="spacer"
+				hr="true"
+		/>
+		<field name="note22" type="note" class="alert alert-info" label="EMUNDUS_DOCUMENT_NAMES"/>
 		<field name="application_form_name" type="text" default="application_form_pdf" size="6" label="COM_EMUNDUS_CANDIDACY_FILE_NAME" description="COM_EMUNDUS_CANDIDACY_FILE_NAME_DESC"/>
+		<field name="applicant_file_name" type="text" default="" size="6" label="COM_EMUNDUS_APPLICANT_FILE_NAME" description="COM_EMUNDUS_APPLICANT_FILE_NAME_DESC"/>
+		<field name="generated_doc_name" type="text" default="" label="COM_EMUNDUS_GENERATED_DOC_NAME" description="COM_EMUNDUS_GENERATED_DOC_NAME_DESC"/>
+		<field name="application_admission_name" type="text" default="" size="6" label="COM_EMUNDUS_CANDIDACY_ADMISSION_NAME" description="COM_EMUNDUS_CANDIDACY_ADMISSION_NAME_DESC"/>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_EMAIL_REMINDER" name="email" description="COM_EMUNDUS_EMAIL_REMINDER_DESC">
 		<field name="nb_email_per_batch" type="text" size="3" default="50" label="NB_EMAIL_PER_BATCH" description="NB_EMAIL_PER_BATCH_DESC" />
@@ -174,29 +183,6 @@
 				type="spacer"
 				hr="true"
 		/>
-		<!--
-                <field name="reminder" type="text" default="30" label="NUMBER_OF_DAYS_BETWEEN_EACH_REMIND" description="NUMBER_OF_DAYS_BETWEEN_EACH_REMIND_DESC" />
-                <field name="reminder_mail_id" type="text" default="" label="EMAIL_SENT_TO_APPLICANTS" description="EMAIL_SENT_TO_APPLICANTS_DESC" />
-                <field name="particular_remind" type="text" default="14,7,1" label="PARTICULAR_REMIND" description="PARTICULAR_REMIND_DESC" />
-                <field
-                    name="spacer2"
-                    type="spacer"
-                    hr="true"
-                    />
-                <field name="reminder_element_date_id" type="text" default="" label="DATE_OF_BEGIN_REMIND" description="DATE_OF_BEGIN_REMIND_DESC" />
-                <field name="report_remind_mail_id" type="text" default="16" label="EMAIL_SENT_TO_APPLICANTS" description="EMAIL_SENT_TO_APPLICANTS_DESC" />
-                <field name="remind_days" type="text" default="90,120,150" label="REMIND_DAYS" description="REMIND_DAYS_DESC" />
-                <field name="reminder_attanchment_id" type="text" default="" label="ATTACHMENT_EXIST" description="ATTACHMENT_EXIST_DESC" />
-                <field name="reminder_profile_id" type="text" default="" label="PROFILES_CONCERNED" description="PROFILES_CONCERNED_DESC" />
-                <field
-                    name="spacer3"
-                    type="spacer"
-                    hr="true"
-                    />
-                <field name="keyid" type="text" label="Key id for the reminder email" description="REMINDERKEY" />
-                <field name="reference_table" type="text" label="COM_EMUNDUS_REFERENCE_TABLE" description="COM_EMUNDUS_REFERENCE_TABLE_DESC" />
-                <field name="reference_field" type="text" label="COM_EMUNDUS_REFERENCE_FIELD" description="COM_EMUNDUS_REFERENCE_FIELD_DESC" />
-        -->
 		<field name="expert_fabrikformid" type="text" default="110" label="COM_EMUNDUS_EXPERT_FIELD" description="COM_EMUNDUS_EXPERT_FIELD_DESC" />
 		<field name="expert_document_id" type="text" default="36" label="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD" description="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD_DESC" />
 		<field name="default_email_tmpl" type="text" default="expert" label="COM_EMUNDUS_EXPERT_DEFAULT_EMAIL_TMPL_FIELD" description="COM_EMUNDUS_EXPERT_DEFAULT_EMAIL_TMPL_FIELD_DESC" />
@@ -209,7 +195,7 @@
             <field name="export_pdf" type="text" size="60" default="" label="Select items for the pdf export"/>
         </fieldset>
     -->
-	
+
 	<fieldset label="COM_EMUNDUS_OFFERS" name="offers" description="COM_EMUNDUS_OFFERS_DESC">
 		<field name="fabrik_elements_title" type="text" required="false" label="COM_EMUNDUS_OFFERS_PDF_TITLE_LABEL" description="COM_EMUNDUS_OFFERS_PDF_TITLE_DESC" class="inputbox" default="2113" />
 		<field name="fabrik_elements_pdf" type="text" required="false" label="COM_EMUNDUS_OFFERS_PDF_ELEMENTS_LABEL" description="COM_EMUNDUS_OFFERS_PDF_ELEMENTS_DESC" class="inputbox" default="2111, 2112, 2114, 2117, 2133, 2119, 2120, 2121, 2123, 2124, 2125, 2126, 2127, 2116, 2118, 2122" ForcedDisplay="value"/>
@@ -219,7 +205,7 @@
 		<field name="validation" menu="hide" type="list" default="0" label="COM_EMUNDUS_OFFERS_VALIDATION_LABEL" description="COM_EMUNDUS_OFFERS_VALIDATION_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
-		</field>	
+		</field>
 	</fieldset>
 
 	<fieldset label="COM_EMUNDUS_CALENDAR" name="calendar" description="COM_EMUNDUS_CALENDAR_DESC">
@@ -374,5 +360,11 @@
 				class="inputbox" filter="rules" validate="rules"
 				label="JCONFIG_PERMISSIONS_LABEL"
 				section="component" />
+	</fieldset>
+	<fieldset label="COM_EMUNDUS_MESSENGER" name="messenger" description="COM_EMUNDUS_MESSENGER_DESC">
+		<field name="messenger_anonymous_coordinator" type="list" default="0" label="COM_EMUNDUS_MESSENGER_ANONYMOUS" description="COM_EMUNDUS_MESSENGER_ANONYMOUS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 </config>

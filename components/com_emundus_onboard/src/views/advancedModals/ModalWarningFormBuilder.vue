@@ -13,33 +13,38 @@
       @closed="beforeClose"
       @before-open="beforeOpen"
     >
+
+    <div class="fixed-header-modal">
+      <div class="topright">
+          <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalWarningFormBuilder')">
+            <em class="fas fa-times"></em>
+          </button>
+      </div>
+      <div class="update-field-header">
+        <h2 class="update-title-header">
+          {{Warning}}
+        </h2>
+        <p>
+          {{FormAffectedToFiles}}
+        </p>
+      </div>
+
       <div class="modalC-content">
-        <div class="update-field-header">
-          <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalWarningFormBuilder')">
-              <em class="fas fa-times-circle"></em>
-            </button>
-          </div>
-          <h2 class="update-title-header">
-             {{Warning}}
-          </h2>
-          <p>
-            {{FormAffectedToFiles}}
-          </p>
+        <div class="d-flex justify-content-between mb-1">
+          <button class="bouton-sauvergarder-et-continuer w-retour"
+                  type="button"
+                  @click.prevent="$modal.hide('modalWarningFormBuilder')">
+            {{Retour}}
+          </button>
+            <button class="bouton-sauvergarder-et-continuer mr-1"
+                    type="button"
+                    @click.prevent="formbuilder()">
+            {{ Update }}
+          </button>
         </div>
       </div>
-      <div class="col-md-12 mb-1">
-        <button class="bouton-sauvergarder-et-continuer mr-1"
-                type="button"
-           @click.prevent="formbuilder()">
-          {{ Update }}
-        </button>
-        <button class="bouton-sauvergarder-et-continuer w-retour"
-                type="button"
-           @click.prevent="$modal.hide('modalWarningFormBuilder')">
-          {{Retour}}
-        </button>
-      </div>
+    </div>
+
     </modal>
   </span>
 </template>
@@ -113,4 +118,7 @@ export default {
 </script>
 
 <style scoped>
+.modalC-content{
+  margin-top: 0;
+}
 </style>
