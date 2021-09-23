@@ -92,7 +92,7 @@ $template_type = array(
                     $('#em-doc-tmpl').trigger("chosen:updated");
                 })
             } else {
-                $('#em-doc-tmpl').append('<option value="-1" selected>' + Joomla.JText._('NO_LETTER_FOUND') + '</option>');
+                $('#em-doc-tmpl').append('<option value="-1" selected disabled>' + Joomla.JText._('NO_LETTER_FOUND') + '</option>');
                 $('#em-doc-tmpl').trigger("chosen:updated");
                 $('#export-div').remove();
                 $('#merge-div').remove();

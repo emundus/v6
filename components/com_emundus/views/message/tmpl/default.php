@@ -27,13 +27,14 @@ $m_messages = new EmundusModelMessages();
 $message_categories = $m_messages->getAllCategories();
 $message_templates = $m_messages->getAllMessages();
 
-//$setup_attachments = $m_messages->getAttachments();
 $setup_attachments = $m_messages->getAttachmentsByProfiles($this->fnums);
 
-//$setup_letters = $m_messages->getLetters();
 $setup_letters = $m_messages->getAllDocumentsLetters();                 // get all attachments being letter 👻
 
-//var_dump($setup_letters);die;
+require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+$_mEval = new EmundusModelEvaluation;
+
+$_applicant_letters = $_mEval->getLettersByFnums(implode(',', $this->fnums), false);
 
 $email_list = array();
 
@@ -163,9 +164,11 @@ if ($allowed_attachments !== true) {
                     <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
                         <option value="candidate_file"> <?= JText::_('CANDIDATE_FILE'); ?> </option>
                     <?php endif; ?>
-                    <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
-                        <option value="setup_letters"> <?= JText::_('SETUP_LETTERS_ATTACH'); ?> </option>
-                    <?php endif; ?>
+                    <?php if(!empty($_applicant_letters)) { ?>
+                        <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
+                            <option value="setup_letters"> <?= JText::_('SETUP_LETTERS_ATTACH'); ?> </option>
+                        <?php endif; ?>
+                    <?php } ?>
                 </select>
             </div>
 
@@ -208,25 +211,23 @@ if ($allowed_attachments !== true) {
                 <?php endif; ?>
 
                 <!-- Get a file from setup_letters -->
-                <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
-                    <div class="hidden em-form-attachments-setupLetters" id="setup_letters">
-                        <label for="em-select_setup_letters" ><?= JText::_('UPLOAD'); ?></label>
-                        <select id="em-select_setup_letters" name="setup_letters" class="form-control" onchange="addFile();">
-                            <?php if (!$setup_letters) :?>
-                                <option value="%"> <?= JText::_('NO_FILES_FOUND'); ?> </option>
-                            <?php else: ?>
-                                <option value="%"> <?= JText::_('PLEASE_SELECT'); ?> </option>
-                                <?php foreach ($setup_letters as $letter): ?>
-<!--                                    <option value="--><?//= $letter->id; ?><!--"> --><?//= $letter->title; ?><!--</option>-->
-                                    <option value="<?= $letter->id; ?>"> <?= $letter->value; ?></option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
-<!--                        <span class="input-group-btn">-->
-<!--                            <a class="btn btn-grey" type="button" id="uploadButton" style="top:23px; float: right;" onClick="addFile();">--><?//= JText::_('ADD_ATTACHMENT'); ?><!--</a>-->
-<!--                        </span>-->
-                    </div>
-                <?php endif; ?>
+                <?php if(!empty($_applicant_letters)) { ?>
+                    <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
+                        <div class="hidden em-form-attachments-setupLetters" id="setup_letters">
+                            <label for="em-select_setup_letters" ><?= JText::_('UPLOAD'); ?></label>
+                            <select id="em-select_setup_letters" name="setup_letters" class="form-control" onchange="addFile();">
+                                <?php if (!$setup_letters) :?>
+                                    <option value="%"> <?= JText::_('NO_FILES_FOUND'); ?> </option>
+                                <?php else: ?>
+                                    <option value="%"> <?= JText::_('PLEASE_SELECT'); ?> </option>
+                                    <?php foreach ($setup_letters as $letter): ?>
+                                        <option value="<?= $letter->id; ?>"> <?= $letter->value; ?></option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+                    <?php endif; ?>
+                <?php } ?>
             </div>
         </div>
     </div>
@@ -317,7 +318,7 @@ if ($allowed_attachments !== true) {
                 /// get profile label
                 let profile_label = data.attachments[profile].label;
 
-                $('#em-select_candidate_file').append('<optgroup label ="'+ profile_label +'" style="font-size: x-large">');
+                $('#em-select_candidate_file').append('<optgroup label ="_______'+ profile_label +'_______" style="color:#16afe1">');
 
                 ///get all attachments for each profile_id
                 let letters = data.attachments[profile].letters;
@@ -386,6 +387,21 @@ if ($allowed_attachments !== true) {
                 if(data.status) {
                     $('#can-val').css('cursor', '');
                     $('#can-val .btn-success').attr('disabled', false);
+
+                    /// reset #em-select_candidate_file
+                    $('#em-select_candidate_file option').each(function() {
+                        if($(this).is(":disabled")) { $(this).prop('disabled', false); }
+                        $('#em-select_candidate_file option:selected').removeAttr('selected');
+                    })
+
+                    /// reset #em-select_setup_letters
+                    $('#em-select_setup_letters option').each(function() {
+                        if($(this).is(":disabled")) { $(this).prop('disabled', false); }
+                        $('#em-select_setup_letters option:selected').removeAttr('selected');
+                    })
+
+                    /// reset #em-select_attachment_type
+                    $('#em-select_attachment_type option:selected').removeAttr('selected');
 
                     if (data.data.receivers != null && data.data.receivers != undefined && data.data.receivers != "") {
                         let receivers = data.data.receivers;
@@ -496,19 +512,21 @@ if ($allowed_attachments !== true) {
                     tinyMCE.execCommand("mceRepaint");
 
                     /// get letter attachments block
-                    let letters = data.data.letter_attachment;
-                    letters.forEach(letter => {
-                        $('#em-attachment-list').append('' +
-                            '<li class="list-group-item setup_letters" style="padding: 15px 15px">' +
-                            '<div class="value hidden">' + letter.id + '</div>' + letter.value +
-                            '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
-                            '<span class="glyphicon glyphicon-remove"></span>' +
-                            '</span>' +
-                            '<span class="badge">' +
-                            '<span class="glyphicon glyphicon-envelope">' + '</span>' +
-                            '</span>' +
-                            '</li>');
-                    })
+                    if(data.data.letter_attachment !== null) {
+                        let letters = data.data.letter_attachment;
+                        letters.forEach(letter => {
+                            $('#em-attachment-list').append('' +
+                                '<li class="list-group-item setup_letters" style="padding: 15px 15px">' +
+                                '<div class="value hidden">' + letter.id + '</div>' + letter.value +
+                                '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
+                                '<span class="glyphicon glyphicon-remove"></span>' +
+                                '</span>' +
+                                '<span class="badge">' +
+                                '<span class="glyphicon glyphicon-envelope">' + '</span>' +
+                                '</span>' +
+                                '</li>');
+                        })
+                    }
                     // console.log(letters);
                 } else {
                     /// lock send button

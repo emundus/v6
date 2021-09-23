@@ -707,8 +707,6 @@ class EmundusControllerMessages extends JControllerLegacy {
                 // Get from DB and generate using the tags.
                 foreach ($attachments['setup_letters'] as $setup_letter) {
 
-//                    $letter = $m_messages->get_letter($setup_letter);
-
                     $_fnum = $fnum->fnum;
 
                     require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
