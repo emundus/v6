@@ -3929,13 +3929,13 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    public function getletter() {
+    public function getexcelletter() {
         $h_files = new EmundusHelperFiles;
 
         $jinput = JFactory::getApplication()->input;
         $lid = $jinput->getVar('letter', null);
 
-        $letter = $h_files->getLetterById($lid);
+        $letter = $h_files->getExcelLetterById($lid);
 
         echo json_encode((object)(array('status' => true, 'letter' => $letter)));
         exit;

@@ -2327,9 +2327,7 @@ class EmundusModelEvaluation extends JModelList {
 
     /// get exactly letter id by fnum and template (32,33,34)
     public function getLetterTemplateForFnum($fnum,$templates=array()) : array {
-        if (empty($fnum) || empty($templates)) {
-            return [];
-        }
+        if (empty($fnum) || empty($templates)) { return []; }
 
         $query = $this->_db->getQuery(true);
 

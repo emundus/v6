@@ -5823,30 +5823,45 @@ $(document).ready(function() {
                     tags            : $('#tags').val(),
                 };
 
-                $('#cc-bcc div[data-value]').each(function () {
-                    let val = $(this).attr('data-value');
+                // $('#cc-bcc div[data-value]').each(function () {
+                //     let val = $(this).attr('data-value');
+                //
+                //     var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                //
+                //     if (val.split(':')[0] === 'BCC') {
+                //
+                //         // Here we format the string from BCC: Bcc: <email@email.com> to just email@email.com
+                //         val = val.substring(val.lastIndexOf(":") + 1).trim().slice(1,-1);
+                //         if (REGEX_EMAIL.test(val)) {
+                //             data.bcc.push(val);
+                //         }
+                //
+                //     } else if (val.split(':')[0] === 'CC') {
+                //
+                //         // Here we format the string from CC: Cc: <email@email.com> to just email@email.com
+                //         val = val.substring(val.lastIndexOf(":") + 1).trim().slice(1,-1);
+                //         if (REGEX_EMAIL.test(val)) {
+                //             data.cc.push(val);
+                //         }
+                //
+                //     }
+                // });
 
+                // cc emails
+                $('#cc-box div[data-value]').each(function () {
+                    let val = $(this).attr('data-value').split('CC: ')[1];
+                    // let val = $(this).attr('data-value');
                     var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    if (REGEX_EMAIL.test(val)) { data.cc.push(val); }
+                })
 
-                    if (val.split(':')[0] === 'BCC') {
-
-                        // Here we format the string from BCC: Bcc: <email@email.com> to just email@email.com
-                        val = val.substring(val.lastIndexOf(":") + 1).trim().slice(1,-1);
-                        if (REGEX_EMAIL.test(val)) {
-                            data.bcc.push(val);
-                        }
-
-                    } else if (val.split(':')[0] === 'CC') {
-
-                        // Here we format the string from CC: Cc: <email@email.com> to just email@email.com
-                        val = val.substring(val.lastIndexOf(":") + 1).trim().slice(1,-1);
-                        if (REGEX_EMAIL.test(val)) {
-                            data.cc.push(val);
-                        }
-
-                    }
-                });
-
+                // bcc emails
+                $('#bcc-box div[data-value]').each(function () {
+                    let val = $(this).attr('data-value').split('BCC: ')[1];
+                    // let val = $(this).attr('data-value');
+                    var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    if (REGEX_EMAIL.test(val)) { data.bcc.push(val); }
+                })
 
                 // Attachments object used for sorting the different attachment types.
                 var attachments = {
