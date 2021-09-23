@@ -768,8 +768,6 @@ if ($allowed_attachments !== true) {
 
                 var alreadyPicked = $('#em-attachment-list li.candidate_file').find('.value:contains("'+file.val()+'")');
 
-                console.log(alreadyPicked.length);
-
                 if (alreadyPicked.length == 1) {
 
                     // Flash the line a certain color to show it's already picked.
@@ -813,7 +811,6 @@ if ($allowed_attachments !== true) {
                 if (alreadyPicked.length == 1) {
 
                     // Flash the line a certain color to show it's already picked.
-                    console.log(alreadyPicked.parent());
                     alreadyPicked.parent().css("background-color", "#C5EFF7");
                     alreadyPicked.parent().css("display", "flex");
                     alreadyPicked.parent().css("align-items", "center");
