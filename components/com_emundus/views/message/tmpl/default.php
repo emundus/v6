@@ -795,16 +795,23 @@ if ($allowed_attachments !== true) {
 
                 // We need to note the reference to the setup_letters file.
                 var file = $('#em-select_setup_letters :selected');
+                // var alreadyPicked = $('#em-attachment-list li.setup_letters').find('.value:contains("'+file.val()+'")');
 
                 var alreadyPicked = $('#em-attachment-list li.setup_letters').find('.value:contains("'+file.val()+'")');
 
-                if (alreadyPicked.text() != '') {
+                if (alreadyPicked.length == 1) {
 
                     // Flash the line a certain color to show it's already picked.
-                    alreadyPicked.parent().attr("style", "background-color: #C5EFF7");
-                    setTimeout(function(){
-                        alreadyPicked.parent().attr("style", "");
-                    }, 500);
+                    console.log(alreadyPicked.parent());
+                    alreadyPicked.parent().css("background-color", "#C5EFF7");
+                    alreadyPicked.parent().css("display", "flex");
+                    alreadyPicked.parent().css("align-items", "center");
+                    alreadyPicked.parent().css("justify-content","space-between");
+                    alreadyPicked.parent().css("padding", "6px 12px");
+
+                    setTimeout(function(){ alreadyPicked.parent().css("background-color", ""); }, 500);
+
+                    $('#em-select_setup_letters option[value="' + file.val() + '"]').prop('disabled', true);
 
                 } else {
 
