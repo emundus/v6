@@ -516,14 +516,12 @@ if ($allowed_attachments !== true) {
                         let letters = data.data.letter_attachment;
                         letters.forEach(letter => {
                             $('#em-attachment-list').append('' +
-                                '<li class="list-group-item setup_letters" style="padding: 15px 15px">' +
-                                '<div class="value hidden">' + letter.id + '</div>' + letter.value +
-                                '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
-                                '<span class="glyphicon glyphicon-remove"></span>' +
-                                '</span>' +
-                                '<span class="badge">' +
-                                '<span class="glyphicon glyphicon-envelope">' + '</span>' +
-                                '</span>' +
+                                '<li class="list-group-item setup_letters" style="padding: 6px 12px; display: flex; align-content: center; justify-content: space-between">' +
+                                    '<div class="value hidden">' + letter.id + '</div>' + letter.value +
+                                    '<div>' +
+                                        '<span class="badge">' + '<span class="glyphicon glyphicon-envelope">' + '</span>' + '</span>' +
+                                        '<span class="badge btn-danger" onClick="removeAttachment(this);">' + '<span class="glyphicon glyphicon-remove"></span>' + '</span>' +
+                                    '</div>' +
                                 '</li>');
                         })
                     }
@@ -781,8 +779,14 @@ if ($allowed_attachments !== true) {
                     // Disable the file from the dropdown.
                     file.prop('disabled', true);
                     // Add the file to the list.
-                    $('#em-attachment-list').append('<li class="list-group-item candidate_file"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span></li>');
-
+                    $('#em-attachment-list').append(
+                        '<li class="list-group-item candidate_file" style="padding: 6px 12px; display: flex; align-content: center; justify-content: space-between">' +
+                            '<div class="value hidden">'+file.val()+'</div>'+file.text()+
+                            '<div>' +
+                                '<span class="badge"><span class="glyphicon glyphicon-paperclip"></span></span>' +
+                                '<span class="badge btn-danger" onclick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span>' +
+                            '</div>' +
+                        '</li>');
                 }
 
                 break;
@@ -807,7 +811,14 @@ if ($allowed_attachments !== true) {
                     // Disable the file from the dropdown.
                     file.prop('disabled', true);
                     // Add the file to the list.
-                    $('#em-attachment-list').append('<li class="list-group-item setup_letters"><div class="value hidden">'+file.val()+'</div>'+file.text()+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-envelope"></span></span></li>');
+                    $('#em-attachment-list').append(
+                        '<li class="list-group-item setup_letters" style="padding: 6px 12px; display: flex; align-content: center; justify-content: space-between">' +
+                            '<div class="value hidden">'+file.val()+'</div>'+file.text()+
+                            '<div>' +
+                                '<span class="badge"><span class="glyphicon glyphicon-envelope"></span></span>' +
+                                '<span class="badge btn-danger" onclick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span>' +
+                            '</div>' +
+                        '</li>');
 
                 }
 
@@ -828,19 +839,20 @@ if ($allowed_attachments !== true) {
 
         element = $(element);
 
-        if (element.parent().hasClass('candidate_file')) {
+        if (element.parent().parent().hasClass('candidate_file')) {
 
             // Remove 'disabled' attr from select options.
-            $('#em-select_candidate_file option[value="'+element.parent().find('.value').text()+'"]').prop('disabled', false);
+            $('#em-select_candidate_file option[value="'+element.parent().parent().find('.value').text()+'"]').prop('disabled', false);
 
-        } else if (element.parent().hasClass('setup_letters')) {
+        } else if (element.parent().parent().hasClass('setup_letters')) {
+            console.log('setup letters');
 
             // Remove 'disabled' attr from select options.
-            $('#em-select_setup_letters option[value="'+element.parent().find('.value').text()+'"]').prop('disabled', false);
+            $('#em-select_setup_letters option[value="'+element.parent().parent().find('.value').text()+'"]').prop('disabled', false);
 
         }
 
-        $(element).parent().remove();
+        $(element).parent().parent().remove();
     }
 
 
@@ -880,7 +892,14 @@ if ($allowed_attachments !== true) {
                 data = JSON.parse(data);
 
                 if (data.status) {
-                    $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">'+data.file_path+'</div>'+data.file_name+'<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
+                    $('#em-attachment-list').append(
+                        '<li class="list-group-item upload" style="padding: 6px 12px; display: flex; align-content: center; justify-content: space-between">' +
+                            '<div class="value hidden">'+data.file_path+'</div>'+data.file_name+
+                            '<div>' +
+                                '<span class="badge"><span class="glyphicon glyphicon-saved"></span></span>' +
+                                '<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span>' +
+                            '</div>' +
+                        '</li>');
                 } else {
                     $("#em-file_to_upload").append('<span class="alert"> <?= JText::_('UPLOAD_FAILED'); ?> </span>')
                 }
