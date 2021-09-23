@@ -33,7 +33,7 @@ $setup_attachments = $m_messages->getAttachmentsByProfiles($this->fnums);
 //$setup_letters = $m_messages->getLetters();
 $setup_letters = $m_messages->getAllDocumentsLetters();                 // get all attachments being letter 👻
 
-//var_dump($setup_attachments);die;
+//var_dump($setup_letters);die;
 
 $email_list = array();
 
@@ -190,7 +190,7 @@ if ($allowed_attachments !== true) {
                 <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
                     <div class="hidden em-form-attachments-candidateFile" id="candidate_file">
                         <label for="em-select_candidate_file" ><?= JText::_('UPLOAD'); ?></label>
-                        <select id="em-select_candidate_file" name="candidate_file" class="form-control download">
+                        <select id="em-select_candidate_file" name="candidate_file" class="form-control download" onchange="addFile();">
                             <?php if (!$setup_attachments) :?>
                                 <option value="%"> <?= JText::_('NO_FILES_FOUND'); ?> </option>
                             <?php else: ?>
@@ -201,9 +201,9 @@ if ($allowed_attachments !== true) {
 <!--                                --><?php //endforeach; ?>
                             <?php endif; ?>
                         </select>
-                        <span class="input-group-btn">
-                              <a class="btn btn-grey hidden" type="button" id="uploadButton" style="top:23px; float: right;" onClick="addFile();"><?= JText::_('ADD_ATTACHMENT'); ?></a>
-                        </span>
+<!--                        <span class="input-group-btn">-->
+<!--                              <a class="btn btn-grey hidden" type="button" id="uploadButton" style="top:23px; float: right;" onClick="addFile();">--><?//= JText::_('ADD_ATTACHMENT'); ?><!--</a>-->
+<!--                        </span>-->
                     </div>
                 <?php endif; ?>
 
@@ -211,19 +211,20 @@ if ($allowed_attachments !== true) {
                 <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
                     <div class="hidden em-form-attachments-setupLetters" id="setup_letters">
                         <label for="em-select_setup_letters" ><?= JText::_('UPLOAD'); ?></label>
-                        <select id="em-select_setup_letters" name="setup_letters" class="form-control">
+                        <select id="em-select_setup_letters" name="setup_letters" class="form-control" onchange="addFile();">
                             <?php if (!$setup_letters) :?>
                                 <option value="%"> <?= JText::_('NO_FILES_FOUND'); ?> </option>
                             <?php else: ?>
                                 <option value="%"> <?= JText::_('PLEASE_SELECT'); ?> </option>
                                 <?php foreach ($setup_letters as $letter): ?>
-                                    <option value="<?= $letter->id; ?>"> <?= $letter->title; ?></option>
+<!--                                    <option value="--><?//= $letter->id; ?><!--"> --><?//= $letter->title; ?><!--</option>-->
+                                    <option value="<?= $letter->id; ?>"> <?= $letter->value; ?></option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </select>
-                        <span class="input-group-btn">
-                            <a class="btn btn-grey" type="button" id="uploadButton" style="top:23px; float: right;" onClick="addFile();"><?= JText::_('ADD_ATTACHMENT'); ?></a>
-                        </span>
+<!--                        <span class="input-group-btn">-->
+<!--                            <a class="btn btn-grey" type="button" id="uploadButton" style="top:23px; float: right;" onClick="addFile();">--><?//= JText::_('ADD_ATTACHMENT'); ?><!--</a>-->
+<!--                        </span>-->
                     </div>
                 <?php endif; ?>
             </div>
@@ -485,7 +486,7 @@ if ($allowed_attachments !== true) {
                     // email raw info
                     let email = data.data.email;
 
-                    console.log(email);
+                    // console.log(email);
 
                     $("#mail_subject").text(email.subject);
                     $("#mail_from").text(email.emailfrom);
@@ -493,6 +494,22 @@ if ($allowed_attachments !== true) {
                     $("#mail_body").val(email.message);
                     tinyMCE.execCommand("mceSetContent", false, email.message);
                     tinyMCE.execCommand("mceRepaint");
+
+                    /// get letter attachments block
+                    let letters = data.data.letter_attachment;
+                    letters.forEach(letter => {
+                        $('#em-attachment-list').append('' +
+                            '<li class="list-group-item setup_letters" style="padding: 15px 15px">' +
+                            '<div class="value hidden">' + letter.id + '</div>' + letter.value +
+                            '<span class="badge btn-danger" onClick="removeAttachment(this);">' +
+                            '<span class="glyphicon glyphicon-remove"></span>' +
+                            '</span>' +
+                            '<span class="badge">' +
+                            '<span class="glyphicon glyphicon-envelope">' + '</span>' +
+                            '</span>' +
+                            '</li>');
+                    })
+                    // console.log(letters);
                 } else {
                     /// lock send button
                     $('#can-val').css('cursor', 'not-allowed');
