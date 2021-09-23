@@ -70,7 +70,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$firstname = $jinput->post->get('firstname', null, null);
 		$lastname = $jinput->post->get('lastname', null, null);
 		$username = $jinput->post->get('login', null, null);
-		$name = strtolower($firstname).' '.strtoupper($lastname);
+		$name = ucfirst($firstname).' '.strtoupper($lastname);
 		$email = $jinput->post->get('email', null, null);
 		$profile = $jinput->post->get('profile', null, null);
 		$oprofiles = $jinput->post->get('oprofiles', null, 'string');
