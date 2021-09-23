@@ -24,7 +24,7 @@
             <div v-if="applicant" class="messages__attach_applicant_doc">
               <label for="applicant_attachment_input">{{translations.typeAttachment}}</label>
               <select v-model="attachment_input" id="applicant_attachment_input">
-                <option :value="0"></option>
+                <option :value="0">{{translations.pleaseSelect }}</option>
                 <option v-for="type in types" :value="type.id">{{type.value}}</option>
               </select>
             </div>
@@ -52,7 +52,7 @@
           <div v-if="action === 2">
             <label for="attachment_input">{{translations.typeAttachment}}</label>
             <select v-model="attachment_input" id="attachment_input">
-              <option :value="0"></option>
+              <option :value="0">{{translations.pleaseSelect }}</option>
               <option v-for="type in types" :value="type.id">{{type.value}}</option>
             </select>
           </div>
@@ -103,6 +103,7 @@ export default {
         DropHere: Joomla.JText._("COM_EMUNDUS_MESSENGER_DROP_HERE"),
         send: Joomla.JText._("COM_EMUNDUS_MESSENGER_SEND"),
         typeAttachment: Joomla.JText._("COM_EMUNDUS_MESSENGER_TYPE_ATTACHMENT"),
+        pleaseSelect: Joomla.JText._("COM_EMUNDUS_PLEASE_SELECT")
       },
       types: [],
       message_input: '',

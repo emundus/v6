@@ -45,7 +45,13 @@
                 </div>
                 <div v-for="message in messages" v-if="date.messages.includes(message.message_id)" class="messages__message-item" :class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'">
                   <div class="messages__message-item-block" @click="showDate != message.message_id ? showDate = message.message_id : showDate = 0" :class="user == message.user_id_from ? 'messages__text-align-right' : 'messages__text-align-left'">
-                    <p><span class="messages__message-item-from">{{message.name}} - {{ moment(message.date_time).format("HH:mm") }}</span></p>
+                    <p>
+                      <span class="messages__message-item-from">
+                        <span v-if="anonymous === 0 && user != message.user_id_from">{{message.name}} - </span>
+                        <span v-if="user == message.user_id_from">{{message.name}} - </span>
+                        {{ moment(message.date_time).format("HH:mm") }}
+                      </span>
+                    </p>
                     <span class="messages__message-item-span" :class="user == message.user_id_from ? 'messages__message-item-span_current-user' : 'messages__message-item-span_other-user'" v-html="message.message"></span>
                     <p><span class="messages__message-item-from" v-if="showDate == message.message_id">{{ moment(message.date_time).format("DD/MM/YYYY HH:mm") }}</span></p>
                   </div>
@@ -98,6 +104,7 @@ export default {
     return {
       dates: [],
       messages: [],
+      anonymous: 0,
       files: [],
       fileSelected: 0,
       message: '',
@@ -153,6 +160,7 @@ export default {
       }).then(response => {
         this.messages = response.data.data.messages;
         this.dates = response.data.data.dates;
+        this.anonymous = parseInt(response.data.data.anonymous);
         this.markAsRead();
         if(scroll) {
           this.scrollToBottom();

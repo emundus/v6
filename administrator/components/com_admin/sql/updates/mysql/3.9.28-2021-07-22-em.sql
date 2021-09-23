@@ -19,6 +19,8 @@ create table jos_emundus_hikashop_programs
     product_id int unsigned null
 ) collate=utf8mb4_unicode_ci;
 
+ALTER TABLE jos_hikashop_product ENGINE = InnoDB;
+
 alter table jos_emundus_hikashop_programs
     add constraint jos_emundus_hikashop_programs_jos_hikashop_product_product_id_fk
         foreign key (product_id) references jos_hikashop_product (product_id)

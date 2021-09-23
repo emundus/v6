@@ -45,6 +45,9 @@ class DropfilesViewFrontfile extends JViewLegacy
         } elseif ($category->type === 'onedrive') {
             $modelOnedrive = JModelLegacy::getInstance('Frontonedrive', 'dropfilesModel');
             $file = $modelOnedrive->getFile($id);
+        } elseif ($category->type === 'onedrivebusiness') {
+            $modelOnedriveBusiness = JModelLegacy::getInstance('Frontonedrivebusiness', 'dropfilesModel');
+            $file = $modelOnedriveBusiness->getFile($id);
         } else {
             $file = $model->getFile($id);
             if (!$file) {
@@ -53,9 +56,19 @@ class DropfilesViewFrontfile extends JViewLegacy
         }
 
         $user = JFactory::getUser();
-        $groups = $user->getAuthorisedViewLevels();
-        if (!in_array($category->access, $groups)) {
-            return json_encode(new stdClass());
+        $config = JComponentHelper::getParams('com_dropfiles');
+        if ($config->get('categoryrestriction', 'accesslevel') === 'accesslevel') {
+            $groups = $user->getAuthorisedViewLevels();
+            if (!in_array($category->access, $groups)) {
+                return json_encode(new stdClass());
+            }
+        } else {
+            $usergroup = isset($category->params->usergroup) ? $category->params->usergroup : array();
+
+            $result = array_intersect($user->getAuthorisedGroups(), $usergroup);
+            if (!count($result)) {
+                return json_encode(new stdClass());
+            }
         }
 
         $content = new stdClass();

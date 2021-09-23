@@ -378,7 +378,7 @@ class PDF2Text
                             if (isset($transformations[$chex])) {
                                 $chex = $transformations[$chex];
                             }
-                            $document .= html_entity_decode('&#x'.$chex.';');
+                            $document .= html_entity_decode('&#x'.$chex.';', ENT_COMPAT,'UTF-8');
                         }
                         $isHex = false;
                         break;
@@ -407,7 +407,7 @@ class PDF2Text
                         } elseif ($c2 >= '0' && $c2 <= '9') {
                             $oct = preg_replace('#[^0-9]#', '', substr($texts[$i], $j + 1, 3));
                             $j += strlen($oct) - 1;
-                            $plain .= html_entity_decode('&#'.octdec($oct).';', $this->convertquotes);
+                            $plain .= html_entity_decode('&#'.octdec($oct).';', $this->convertquotes, 'UTF-8');
                         }
                         $j++;
                         break;

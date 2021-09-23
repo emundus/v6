@@ -95,7 +95,6 @@ class EmundusonboardModelemail extends JModelList {
             ->from($db->quoteName('#__emundus_setup_emails', 'se'))
             ->where($filterDate)
             ->where($fullRecherche)
-            ->where($db->quoteName('se.type') . ' != ' . $db->quote(1))
 
             ->group($sortDb)
             ->order($sortDb.$sort);
@@ -352,6 +351,7 @@ class EmundusonboardModelemail extends JModelList {
 
         $query->select('DISTINCT(category)')
             ->from ($db->quoteName('#__emundus_setup_emails'))
+            ->where($db->quoteName('category') . ' <> ""')
             ->order('id DESC');
 
         $db->setQuery($query);

@@ -28,23 +28,16 @@ class SecuritycheckProsViewCpanel extends JViewLegacy
         //  Parámetros del plugin
         $items= $model->getConfig();
                                 
-        // Extraemos los elementos de las distintas listas...
-        $blacklist_elements= array();
+        // Lista negra
+		$blacklist_elements = $model->getTableData("blacklist");        
         $pagination_blacklist = null;
-        if ((!is_null($items['blacklist'])) && ($items['blacklist'] != '')) {
-            $items['blacklist'] = str_replace(' ', '', $items['blacklist']);
-            $blacklist_elements = explode(',', trim($items['blacklist']));
-        }
 
         $dynamic_blacklist_elements= $model->get_dynamic_blacklist_ips();
 
-        $whitelist_elements= array();
-        $pagination_whitelist = null;
+        // Lista blanca
+		$whitelist_elements = $model->getTableData("whitelist");		
+		$pagination_whitelist = null;
 
-        if ((!is_null($items['whitelist'])) && ($items['whitelist'] != '')) {    
-            $items['whitelist'] = str_replace(' ', '', $items['whitelist']);
-            $whitelist_elements = explode(',', trim($items['whitelist']));
-        }
         
         $firewall_plugin_enabled = $model->PluginStatus(1);
         $cron_plugin_enabled = $model->PluginStatus(2);

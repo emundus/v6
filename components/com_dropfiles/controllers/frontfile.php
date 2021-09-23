@@ -97,6 +97,23 @@ class DropfilesControllerFrontfile extends JControllerLegacy
             }
         }
 
+        if ($config->get('restrictfile', 0)) {
+            $user_id = (int) $user->id;
+            $modelConfig = $this->getModel('frontconfig');
+            $params = $modelConfig->getParams($catid);
+            $canViewCategory = isset($params->params->canview) ? (int) $params->params->canview : 0;
+            if ($user_id) {
+                if (!($canViewCategory === $user_id || $canViewCategory === 0)) {
+                    $this->setRedirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+                    $this->redirect();
+                }
+            } else {
+                if ($canViewCategory !== 0) {
+                    $this->setRedirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+                    $this->redirect();
+                }
+            }
+        }
 
         $author_user_id = 0;
         $file = array();
@@ -107,7 +124,8 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                 $path_dropfilesgoogle = JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesGoogle.php';
                 JLoader::register('DropfilesGoogle', $path_dropfilesgoogle);
                 $google = new DropfilesGoogle();
-                $file = $google->download($id, $category->cloud_id, false, $preview);
+                $file = $google->download($id);
+                $userId = (isset($user->id)) ? $user->id : 0;
 
                 if (!is_object($file)) {
                     $this->setRedirect('index.php');
@@ -117,7 +135,7 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                 //$google->incrHits($id);
                 $modelGoogle = $this->getModel('Frontgoogle');
                 $modelGoogle->incrHits($id);
-                $model->addCountChart($id);
+                $model->addCountChart($id, $userId);
 
                 $file2 = $modelGoogle->getFile($id);
                 if ($file2) {
@@ -128,26 +146,40 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                 } else {
                     $contentType = 'application/octet-stream';
                 }
-                if ((int) $config->get('open_pdf_in', 0) === 1 && $file->ext === 'pdf' && (int) $preview === 1) {
-                    header('Content-Disposition: inline; filename="'
-                        . htmlspecialchars($file->title . '.' . $file->ext) . '"');
-                } else {
-                    header('Content-Disposition: attachment; filename="'
-                        . htmlspecialchars($file->title . '.' . $file->ext) . '"');
-                }
 
-                header('Content-Description: File Transfer');
-                header('Content-Type: ' . $contentType);
-                header('Content-Transfer-Encoding: binary');
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-                header('Pragma: public');
-                if ($file->size !== 0) {
-                    header('Content-Length: ' . $file->size);
+                if ((int) $config->get('open_pdf_in', 0) === 1 && $file->ext === 'pdf' && (int) $preview === 1) {
+                    $disposition = 'inline';
+                } else {
+                    $disposition = 'attachment';
                 }
-                ob_clean();
-                flush();
-                echo $file->datas;
+                // Serve download for google document
+                if (strpos($file->mimeType, 'vnd.google-apps') !== false) { // Is google file
+                    // GuzzleHttp\Psr7\Response
+                    $fileData = $google->downloadGoogleDocument($file->id, $file->exportMineType);
+
+                    if ($fileData instanceof \GuzzleHttp\Psr7\Response) {
+                        $contentLength = $fileData->getHeaderLine('Content-Length');
+                        $contentType = $fileData->getHeaderLine('Content-Type');
+
+                        if ($fileData->getStatusCode() === 200) {
+                            header('Content-Disposition: ' . $disposition . '; filename="' . htmlspecialchars($file->title . '.' . $file->ext, ENT_QUOTES, 'UTF-8') . '"');
+                            header('Content-Description: File Transfer');
+                            header('Content-Type: ' . $contentType);
+                            header('Content-Transfer-Encoding: binary');
+                            header('Expires: 0');
+                            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+                            header('Pragma: public');
+                            if ($contentLength !== 0) {
+                                header('Content-Length: ' . $contentLength);
+                            }
+                            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- file content output
+                            echo $fileData->getBody();
+                            jexit();
+                        }
+                    }
+                } else {
+                    $google->downloadLargeFile($file, $contentType, $disposition);
+                }
 
                 break;
             case 'dropbox':
@@ -156,6 +188,7 @@ class DropfilesControllerFrontfile extends JControllerLegacy
 
                 $dropCate = new DropfilesDropbox();
                 $rev = JFactory::getApplication()->input->getString('vid', '');
+                $userId = (isset($user->id)) ? $user->id : 0;
                 if ($rev !== '') {
                     $dropCate->downloadVersion($id, $rev);
                 } else {
@@ -164,7 +197,7 @@ class DropfilesControllerFrontfile extends JControllerLegacy
 
                     $modelDropbox = $this->getModel('Frontdropbox');
                     $modelDropbox->incrHits($id);
-                    $model->addCountChart($id);
+                    $model->addCountChart($id, $userId);
 
                     $file2 = $modelDropbox->getFile($id);
                     if ($file2) {
@@ -199,7 +232,6 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                 }
 
                 break;
-
             case 'onedrive':
                 $path_drf_onedrive = JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesOneDrive.php';
                 JLoader::register('DropfilesOneDrive', $path_drf_onedrive);
@@ -211,7 +243,7 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                     $file = $dropOneDrive->downloadFile($id);
 
                     header('Content-Disposition: attachment; filename="'
-                        . htmlspecialchars($file->title . '.' . $file->ext) . '"');
+                        . htmlspecialchars($file->title . '.' . $file->ext, ENT_QUOTES, 'UTF-8') . '"');
                     header('Content-Description: File Transfer');
                     header('Content-Type: application/octet-stream');
                     header('Content-Transfer-Encoding: binary');
@@ -228,14 +260,43 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                 }
 
                 break;
+            case 'onedrivebusiness':
+                $path_drf_onedrive_business = JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesOneDriveBusiness.php';
+                JLoader::register('DropfilesOneDriveBusiness', $path_drf_onedrive_business);
+                $dropOneDriveBusiness   = new DropfilesOneDriveBusiness();
+                $rev                    = JFactory::getApplication()->input->getString('vid', '');
+                $file                   = $dropOneDriveBusiness->downloadFile($id);
+                $filename               = htmlspecialchars($file->title . '.' . $file->ext, ENT_QUOTES, 'UTF-8');
+                if ($preview) {
+                    $contentType = DropfilesFilesHelper::mimeType($file->ext);
+                } else {
+                    $contentType = 'application/octet-stream';
+                }
+                header('Content-Disposition: attachment; filename="' . $filename . '"');
+                header('Content-Description: File Transfer');
+                header('Content-Type: ' . $contentType);
+                header('Content-Transfer-Encoding: binary');
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+                header('Pragma: public');
+                if ($file->size !== 0) {
+                    header('Content-Length: ' . $file->size);
+                }
+                ob_clean();
+                flush();
+                echo $file->datas;
+                jexit();
+
+                break;
             default:
                 $file = $model->getFile($id);
+                $userId = (isset($user->id)) ? $user->id : 0;
                 if (!$file) {
                     $this->setRedirect('index.php');
                     $this->redirect();
                 }
                 $model->hit($id);
-                $model->addCountChart($id);
+                $model->addCountChart($id, $userId);
 
                 $modelFiles = $this->getModel('frontfile');
                 $file2 = $modelFiles->getFile($id);
@@ -265,6 +326,7 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                                 if (empty($fileTitle)) {
                                     $fileTitle = $file->title;
                                 }
+                                $contentType = DropfilesFilesHelper::mimeType($file->ext);
                             }
 
                             $fileTitle .= '.' . $file->ext;
@@ -290,56 +352,53 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                             if (in_array($file->ext, $videoTypes) && $preview) {
                                 // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged -- Not print any error when download file
                                 $fp = @fopen($sysfile, 'rb');
+                                $fileSize   = filesize($sysfile); // File size
 
-                                $size   = filesize($sysfile); // File size
-                                $length = $size;              // Content length
-                                $start  = 0;                  // Start byte
-                                $end    = $size - 1;          // End byte
-
-                                header('Accept-Ranges: bytes');
                                 if (isset($_SERVER['HTTP_RANGE'])) {
-                                    $c_end = $end;
-                                    list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
-                                    if (strpos($range, ',') !== false) {
-                                        header('HTTP/1.1 416 Requested Range Not Satisfiable');
-                                        //header("Content-Range: bytes $start-$end/$size");
-                                        header(sprintf('Content-Range: bytes %d-%d/%d', $start, $end, $size));
-                                        exit;
-                                    }
-                                    if ($range === '-') {
-                                        $c_start = $size - substr($range, 1);
+                                    list($sizeUnit, $rangeOrig) = explode('=', $_SERVER['HTTP_RANGE'], 2);
+                                    if ($sizeUnit === 'bytes') {
+                                        // multiple ranges could be specified at the same time,
+                                        // but for simplicity only serve the first range
+                                        // http://tools.ietf.org/id/draft-ietf-http-range-retrieval-00.txt
+                                        list($range, $extraRanges) = explode(',', $rangeOrig, 2);
                                     } else {
-                                        $range   = explode('-', $range);
-                                        $c_start = $range[0];
-                                        $c_end   = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $size;
-                                    }
-                                    $c_end = ($c_end > $end) ? $end : $c_end;
-                                    if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size) {
+                                        $range = '';
                                         header('HTTP/1.1 416 Requested Range Not Satisfiable');
-                                        //header("Content-Range: bytes $start-$end/$size");
-                                        header(sprintf('Content-Range: bytes %d-%d/%d', $start, $end, $size));
-                                        exit;
+
+                                        jexit();
                                     }
-                                    $start = $c_start;
-                                    $end = $c_end;
-                                    $length = $end - $start + 1;
-                                    fseek($fp, $start);
-                                    if ($length < $size) {
-                                        header('HTTP/1.1 206 Partial Content');
+                                } else {
+                                    $range = '';
+                                }
+                                // figure out download piece from range (if set)
+                                list($seekStart, $seekEnd) = explode('-', $range, 2);
+                                // set start and end based on range (if set), else set defaults
+                                // also check for invalid ranges.
+                                $seekEnd   = (empty($seekEnd)) ? ($fileSize - 1) : min(abs(intval($seekEnd)), ($fileSize - 1));
+                                $seekStart = (empty($seekStart) || $seekEnd < abs(intval($seekStart))) ?
+                                    0 : max(abs(intval($seekStart)), 0);
+                                // Only send partial content header if downloading a piece of the file (IE workaround)
+                                if ($seekStart > 0 || $seekEnd < ($fileSize - 1)) {
+                                    header('HTTP/1.1 206 Partial Content');
+                                    header('Content-Range: bytes ' . $seekStart . '-' . $seekEnd . '/' . $fileSize);
+                                    if (stripos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') === false) {
+                                        header('Content-Length: ' . ($seekEnd - $seekStart + 1));
+                                    }
+                                } else {
+                                    if (stripos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') === false) {
+                                        header('Content-Length: ' . $fileSize);
                                     }
                                 }
 
-                                //header("Content-Range: bytes $start-$end/$size");
-                                header(sprintf('Content-Range: bytes %d-%d/%d', $start, $end, $size));
-                                header('Content-Length: ' . $length);
-
-
+                                header('Accept-Ranges: bytes');
+                                // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged -- Not print any error when download file
+                                @set_time_limit(0);
                                 $buffer = 1024 * 8;
-                                while (!feof($fp) && ($p = ftell($fp)) <= $end) {
-                                    if ($p + $buffer > $end) {
-                                        $buffer = $end - $p + 1;
+                                fseek($fp, $seekStart);
+                                while (!feof($fp) && ($p = ftell($fp)) <= $seekEnd) {
+                                    if ($p + $buffer > $seekEnd) {
+                                        $buffer = $seekEnd - $p + 1;
                                     }
-                                    set_time_limit(0);
                                     echo fread($fp, $buffer);
                                     flush();
                                 }
@@ -347,6 +406,7 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                                 fclose($fp);
                                 exit();
                             }
+
 
                             $params = JComponentHelper::getParams('com_dropfiles');
                             if ((int) $params->get('readfiletype', 0) === 0) {
@@ -383,11 +443,11 @@ class DropfilesControllerFrontfile extends JControllerLegacy
         $email_body         = str_replace('{file_name}', $file->title, $email_body);
         $currentUser        = JFactory::getUser();
         $email_body         = str_replace('{username}', $currentUser->name, $email_body);
-
+        $uploader       = JFactory::getUser($author_user_id);
+        $email_body     = str_replace('{uploader_username}', $uploader->name, $email_body);
         if ((int) $params->get('file_owner', 0) === 1 && (int) $params->get('download_event', 0) === 1) {
-            $user = JFactory::getUser($author_user_id);
-            $email_body = str_replace('{receiver}', $user->name, $email_body);
-            DropfilesHelper::sendMail($user->email, $email_title, $email_body);
+            $email_body = str_replace('{receiver}', $uploader->name, $email_body);
+            DropfilesHelper::sendMail($uploader->email, $email_title, $email_body);
         }
 
         if ((int)$params->get('category_owner', 0) === 1 && (int) $params->get('download_event', 0) === 1) {
@@ -444,5 +504,490 @@ class DropfilesControllerFrontfile extends JControllerLegacy
         }
         echo json_encode($cats);
         die();
+    }
+
+    /**
+     * Method to download files in categories
+     *
+     * @param integer $category_id   Category id
+     * @param string  $category_name Category name
+     *
+     * @return void
+     *
+     * @throws Exception Throw when error of download files
+     */
+    public function downloadCategory($category_id = null, $category_name = null)
+    {
+        $app       = JFactory::getApplication();
+        $modelCate = $this->getModel('frontcategory', 'DropfilesModel');
+        if ($category_id === null && $category_name === null) {
+            $category_id = $app->input->getInt('cate_id', 0);
+        }
+        $category = $modelCate->getCategory($category_id);
+        $category_name  = $category->title;
+        $upload_dir = JPATH_ROOT . '/media/com_dropfiles/';
+        $listFiles  = $this->getAllFiles($category_id);
+        if (empty($listFiles) && !$listFiles) {
+            $app->enqueueMessage(JText::_('COM_DROPFILES_ERROR_EMPTY_CATEGORY'), 'error');
+        } else {
+            // Calculate zip file name
+            $zipName      = $upload_dir . $category_id . '-';
+            $allFilesName = '';
+            foreach ($listFiles as $file) {
+                $allFilesName .= $file->title;
+                $allFilesName .= $file->size;
+                if ($file->size < 0) {
+                    continue;
+                } else {
+                    if (!file_exists($upload_dir . $file->catid . '/' . $file->file)) {
+                        continue;
+                    }
+                    $allFilesName .= filemtime($upload_dir . $file->catid . '/' . $file->file);
+                }
+            }
+
+            $zipName .= md5($allFilesName) . '.zip';
+
+            if (!file_exists($zipName)) {
+                // Remove all old files with same category id
+                $files = glob($upload_dir . $category_id . '-*.zip');
+                if (!empty($files) && count($files) > 0) {
+                    foreach ($files as $file) {
+                        if (is_file($file)) {
+                            $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                            if ($ext === 'zip') {
+                                unlink($file);
+                            }
+                        }
+                    }
+                }
+
+                // Start zip new file
+                $zipFiles = new ZipArchive();
+                $zipFiles->open($zipName, ZipArchive::CREATE);
+                if (!empty($listFiles) && count($listFiles) > 0) {
+                    foreach ($listFiles as $key => $filevl) {
+                        $sysfile = $upload_dir . $filevl->catid . '/' . $filevl->file;
+                        $file_name =  trim($filevl->title);
+                        $count = 0;
+                        for ($i = 0; $i < $zipFiles->numFiles; $i++) {
+                            if ($zipFiles->getNameIndex($i) === $file_name . '.' . $filevl->ext) {
+                                $count++;
+                            }
+                        }
+                        if ($count > 0) {
+                            $file_name = $file_name . '(' . $count . ')';
+                        }
+                        $zipFiles->addFile($sysfile, $file_name . '.' . $filevl->ext);
+                    }
+                }
+                $zipFiles->close();
+            }
+            $this->SendDownload($zipName, $category_name . '.zip', 'zip');
+            exit();
+        }
+    }
+
+    /**
+     * Get all file referent
+     *
+     * @param object $model       Files model
+     * @param array  $listCatRef  List category
+     * @param string $ordering    Ordering
+     * @param string $orderingdir Ordering direction
+     *
+     * @return array
+     */
+    private function getAllFileRef($model, $listCatRef, $ordering, $orderingdir)
+    {
+        $lstAllFile = array();
+        foreach ($listCatRef as $key => $value) {
+            if (is_array($value) && !empty($value)) {
+                $lstFile    = $model->getFilesRef($key, $value, $ordering, $orderingdir);
+                $lstAllFile = array_merge($lstFile, $lstAllFile);
+            }
+        }
+        return $lstAllFile;
+    }
+
+    /**
+     * Get all files in category
+     *
+     * @param integer $catid Category id
+     *
+     * @return array|string
+     *
+     * @throws Exception Throw when error of get all files
+     */
+    private function getAllFiles($catid)
+    {
+        $app = JFactory::getApplication();
+        $modelFiles  = $this->getModel('frontfiles', 'dropfilesModel');
+        $modelCate   = $this->getModel('frontcategory', 'dropfilesModel');
+        $category    = $modelCate->getCategory($catid);
+        $params      = $category->params;
+        $files       = $modelFiles->getListOfCate($catid);
+        $subparams   = (array) $params;
+        $lstAllFile  = null;
+        $ordering    = (isset($params->ordering)) ? $params->ordering : '';
+        $orderingdir = (isset($params->orderingdir)) ? $params->orderingdir : '';
+
+        if (!empty($subparams) && isset($subparams['refToFile'])) {
+            if (isset($subparams['refToFile'])) {
+                $listCatRef = $subparams['refToFile'];
+                $lstAllFile = $this->getAllFileRef($modelFiles, $listCatRef, $ordering, $orderingdir);
+            }
+        }
+
+        if (!empty($lstAllFile)) {
+            $files = array_merge($lstAllFile, $files);
+        }
+
+        return $files;
+    }
+
+    /**
+     * Send Download File to the browser
+     *
+     * @param string $filePath Absolute path to the file
+     * @param string $fileName File name return to Browser
+     * @param string $fileExt  File extension for check it mime
+     *
+     *
+     * Copyright 2012 Armand Niculescu - media-division.com
+     * Redistribution and use in source and binary forms, with or without modification,
+     * are permitted provided that the following conditions are met:
+     * 1. Redistributions of source code must retain the above copyright notice,
+     * this list of conditions and the following disclaimer.
+     * 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the
+     * following disclaimer in the documentation and/or other materials provided with the distribution.
+     * THIS SOFTWARE IS PROVIDED BY THE FREEBSD PROJECT "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
+     * BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+     * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE FREEBSD PROJECT OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+     * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+     * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+     * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+     * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     *
+     * @return boolean|void
+     */
+    public static function sendDownload($filePath, $fileName, $fileExt)
+    {
+        // phpcs:disable Generic.PHP.NoSilencedErrors.Discouraged,WordPress.Security.EscapeOutput.OutputNotEscaped,WordPress.Security.NonceVerification.Recommended -- not print any error to file content, output is file content, $_REQUEST['stream'] is checking condition
+        @ini_set('error_reporting', E_ALL & ~E_NOTICE);
+        @ini_set('zlib.output_compression', 'Off');
+
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        // make sure the file exists on server
+        if (is_file($filePath)) {
+            $fileSize    = filesize($filePath);
+            $fileHandler = @fopen($filePath, 'rb');
+            if ($fileHandler) {
+                // set the headers, prevent caching
+                header('Pragma: public');
+                header('Expires: -1');
+                header('Cache-Control: public, must-revalidate, post-check=0, pre-check=0');
+                // set appropriate headers for attachment or streamed file
+                header('Content-Disposition: attachment; filename="' . $fileName . '"; filename*=UTF-8\'\'' . rawurlencode($fileName));
+                header('Content-Type: ' . self::mimeType($fileExt));
+
+                // check if http_range is sent by browser (or download manager)
+                // todo: Apply multiple ranges
+                if (isset($_SERVER['HTTP_RANGE'])) {
+                    list($sizeUnit, $rangeOrig) = explode('=', $_SERVER['HTTP_RANGE'], 2);
+                    if ($sizeUnit === 'bytes') {
+                        // multiple ranges could be specified at the same time,
+                        // but for simplicity only serve the first range
+                        // http://tools.ietf.org/id/draft-ietf-http-range-retrieval-00.txt
+                        list($range, $extraRanges) = explode(',', $rangeOrig, 2);
+                    } else {
+                        $range = '';
+                        header('HTTP/1.1 416 Requested Range Not Satisfiable');
+
+                        return false;
+                    }
+                } else {
+                    $range = '';
+                }
+                // figure out download piece from range (if set)
+                list($seekStart, $seekEnd) = explode('-', $range, 2);
+                // set start and end based on range (if set), else set defaults
+                // also check for invalid ranges.
+                $seekEnd   = (empty($seekEnd)) ? ($fileSize - 1) : min(abs(intval($seekEnd)), ($fileSize - 1));
+                $seekStart = (empty($seekStart) || $seekEnd < abs(intval($seekStart))) ?
+                    0 : max(abs(intval($seekStart)), 0);
+                // Only send partial content header if downloading a piece of the file (IE workaround)
+                if ($seekStart > 0 || $seekEnd < ($fileSize - 1)) {
+                    header('HTTP/1.1 206 Partial Content');
+                    header('Content-Range: bytes ' . $seekStart . '-' . $seekEnd . '/' . $fileSize);
+                    if (stripos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') === false) {
+                        header('Content-Length: ' . ($seekEnd - $seekStart + 1));
+                    }
+                } else {
+                    if (stripos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') === false) {
+                        header('Content-Length: ' . $fileSize);
+                    }
+                }
+                header('Accept-Ranges: bytes');
+                @set_time_limit(0);
+                fseek($fileHandler, $seekStart);
+                while (!feof($fileHandler)) {
+                    print(@fread($fileHandler, 1024 * 8));
+                    @ob_flush();
+                    flush();
+                    if (connection_status() !== 0) {
+                        @fclose($fileHandler);
+
+                        return true;
+                    }
+                }
+                // File save was a success
+                @fclose($fileHandler);
+
+                return true;
+            } else {
+                // File couldn't be opened
+                header('HTTP/1.0 500 Internal Server Error');
+
+                return false;
+            }
+        } else {
+            // File does not exist
+            header('HTTP/1.0 404 Not Found');
+
+            return false;
+        }
+        // phpcs:enable
+    }
+
+    /**
+     * Get mime type
+     *
+     * @param string $ext Extension
+     *
+     * @return string
+     */
+    public static function mimeType($ext)
+    {
+        $mime_types = array(
+            //flash
+            'swf'   => 'application/x-shockwave-flash',
+            'flv'   => 'video/x-flv',
+            // images
+            'png'   => 'image/png',
+            'jpe'   => 'image/jpeg',
+            'jpeg'  => 'image/jpeg',
+            'jpg'   => 'image/jpeg',
+            'gif'   => 'image/gif',
+            'bmp'   => 'image/bmp',
+            'ico'   => 'image/vnd.microsoft.icon',
+            'tiff'  => 'image/tiff',
+            'tif'   => 'image/tiff',
+            'svg'   => 'image/svg+xml',
+            'svgz'  => 'image/svg+xml',
+
+            // audio
+            'mid'   => 'audio/midi',
+            'midi'  => 'audio/midi',
+            'mp2'   => 'audio/mpeg',
+            'mp3'   => 'audio/mpeg',
+            'mpga'  => 'audio/mpeg',
+            'aif'   => 'audio/x-aiff',
+            'aifc'  => 'audio/x-aiff',
+            'aiff'  => 'audio/x-aiff',
+            'ram'   => 'audio/x-pn-realaudio',
+            'rm'    => 'audio/x-pn-realaudio',
+            'rpm'   => 'audio/x-pn-realaudio-plugin',
+            'ra'    => 'audio/x-realaudio',
+            'wav'   => 'audio/x-wav',
+            'wma'   => 'audio/wma',
+            'm4a'   => 'audio/m4a',
+
+            //Video
+            'mp4'   => 'video/mp4',
+            'mpeg'  => 'video/mpeg',
+            'mpe'   => 'video/mpeg',
+            'mpg'   => 'video/mpeg',
+            'mov'   => 'video/quicktime',
+            'qt'    => 'video/quicktime',
+            'rv'    => 'video/vnd.rn-realvideo',
+            'avi'   => 'video/x-msvideo',
+            'movie' => 'video/x-sgi-movie',
+            '3gp'   => 'video/3gpp',
+            'webm'  => 'video/webm',
+            'ogv'   => 'video/ogg',
+            //doc
+            'pdf'   => 'application/pdf'
+        );
+
+        if (array_key_exists(strtolower($ext), $mime_types)) {
+            return $mime_types[strtolower($ext)];
+        } else {
+            return 'application/octet-stream';
+        }
+    }
+
+    /**
+     * Zip file
+     *
+     * @param null|string  $filesId     Files id
+     * @param null|integer $category_id Category id
+     *
+     * @return void
+     *
+     * @throws Exception Throw when error of zip file
+     */
+    public function zipSeletedFiles($filesId = null, $category_id = null)
+    {
+        $app = JFactory::getApplication();
+        $modelCate = JModelLegacy::getInstance('frontcategory', 'dropfilesModel');
+        if (is_null($category_id)) {
+            $category_id   = $app->input->getInt('dropfiles_category_id', 0);
+        }
+        if (is_null($filesId)) {
+            $filesId   = $app->input->getString('filesId');
+        }
+        if (empty($filesId) || trim($filesId) === '' || empty($category_id) || trim($category_id) === '') {
+            echo json_encode(array('status' => 'error', 'message' => 'Missing files id or category id wrong!'));
+        }
+
+        $category = $modelCate->getCategory($category_id);
+        // Check category for sure it not come from cloud
+        if ($category->type === 'default') {
+            // Get files info
+            $files = explode(',', $filesId);
+
+            // Clean file id
+            $files = array_map(
+                function ($f) {
+                    return intval(trim($f));
+                },
+                $files
+            );
+
+            $fileModel = $this->getModel('frontfile');
+
+            $filesObj    = array();
+            $dropfilesUploadDir = JPATH_ROOT . '/media/com_dropfiles/';
+            $zipName     = $dropfilesUploadDir . $category_id . '.selected-';
+            $allFilesName = '';
+
+            foreach ($files as $fileId) {
+                $file = $fileModel->getFile($fileId);
+                /**
+                 * Filter of file selected to download
+                 *
+                 * @param array
+                 */
+
+                if (!$file) {
+                    continue;
+                }
+
+                // Add file
+                $filesObj[] = $file;
+
+                // Calculate zip file name to made a hash
+                $allFilesName .= $file->title;
+                $allFilesName .= $file->size;
+                if ($file->size < 0) {
+                    continue;
+                } else {
+                    if (!file_exists($dropfilesUploadDir . $file->catid . '/' . $file->file)) {
+                        continue;
+                    }
+                    $allFilesName .= filemtime($dropfilesUploadDir . $file->catid . '/' . $file->file);
+                }
+            }
+            // Create a hash with all files name
+            $hash = md5($allFilesName);
+            $zipName .= $hash . '.zip';
+
+            if (file_exists($zipName)) {
+                echo json_encode(array('status' => 'error', 'message' => 'file zip exists','hash' => $hash));
+                die();
+            }
+            // Zip it
+
+            if (!empty($filesObj) && count($filesObj) > 0) {
+                $zipFiles = new ZipArchive();
+                $zipFiles->open($zipName, ZipArchive::CREATE);
+                foreach ($filesObj as $file) {
+                    $sysfile   = $dropfilesUploadDir . $file->catid . '/' . $file->file;
+                    $file_name =  trim($file->title);
+                    $count = 0;
+                    for ($i = 0; $i < $zipFiles->numFiles; $i++) {
+                        if ($zipFiles->getNameIndex($i) === $file_name . '.' . $file->ext) {
+                            $count++;
+                        }
+                    }
+                    if ($count > 0) {
+                        $file_name = $file_name . '(' . $count . ')';
+                    }
+                    $zipFiles->addFile($sysfile, $file_name . '.' . $file->ext);
+                }
+                $zipFiles->close();
+            } else {
+                echo json_encode(array('status' => 'error', 'message' => 'There is no file to download!'));
+                die();
+            }
+
+            // Return hashed information
+            echo json_encode(array('status' => 'success', 'message' => 'file zip created', 'hash' => $hash));
+            die();
+        } else {
+            echo json_encode(array('status' => 'error', 'message' => 'Sorry, something went wrong! Please contact administrator for more information.'));
+            die();
+        }
+    }
+
+    /**
+     * Download ziped file
+     *
+     * @param null|string  $hash          File hash
+     * @param null|integer $category_id   Category id
+     * @param null|string  $category_name Category name
+     *
+     * @return void
+     *
+     * @throws Exception Throw when error of download ziped file
+     */
+    public function downloadZipedFile($hash = null, $category_id = null, $category_name = null)
+    {
+        $app = JFactory::getApplication();
+        if (is_null($category_id)) {
+            $category_id   = $app->input->getInt('dropfiles_category_id', 0);
+        }
+
+        if (is_null($category_name)) {
+            $category_name   = $app->input->getString('dropfiles_category_name');
+        }
+
+        if (empty($category_name) || $category_name === '') {
+            $category_name = time() . '-category-' . $category_id;
+        }
+
+        if (is_null($hash)) {
+            $hash   = $app->input->getString('hash');
+        }
+        if (empty($hash) || trim($hash) === '' || empty($category_id)) {
+            die(JText::_('COM_DROPFILES_DOWNLOAD_SELECTED_MISSING_HASH_OR_CATEGORY'));
+        }
+
+        // Check hash
+        $dropfilesUploadDir = JPATH_ROOT . '/media/com_dropfiles/';
+        $zipName     = $dropfilesUploadDir . $category_id . '.selected-' . $hash . '.zip';
+
+        if (!file_exists($zipName)) {
+            die(JText::_('COM_DROPFILES_DOWNLOAD_SELECTED_FILE_NOT_EXISTS'));
+        }
+        // Send ziped file if it exists
+        $this->sendDownload($zipName, $category_name . '.zip', 'zip');
+        // Remove file after download
+        unlink($zipName);
+        exit();
     }
 }

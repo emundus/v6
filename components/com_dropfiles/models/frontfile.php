@@ -50,7 +50,7 @@ class DropfilesModelFrontfile extends JModelLegacy
         $query->where('state = 1');
         $dbo->setQuery($query);
 
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -72,7 +72,7 @@ class DropfilesModelFrontfile extends JModelLegacy
 
         $dbo->setQuery($query);
 
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -83,18 +83,19 @@ class DropfilesModelFrontfile extends JModelLegacy
      * Add a record to db
      *
      * @param integer $file_id Fileid
+     * @param integer $userId  Userid
      * @param string  $date    Date
      *
      * @return boolean|mixed
      * @since  version
      */
-    public function addChart($file_id, $date)
+    public function addChart($file_id, $userId, $date)
     {
         $dbo = $this->getDbo();
-        $query = 'INSERT INTO #__dropfiles_statistics (related_id,type,date,count)';
-        $query .= ' VALUES (' . $dbo->quote($file_id) . ',"default","' . $date . '",1)';
+        $query = 'INSERT INTO #__dropfiles_statistics (related_id,related_users,type,date,count)';
+        $query .= ' VALUES (' . $dbo->quote($file_id) . ',' . (int)$userId . ',"default","' . $date . '",1)';
         $dbo->setQuery($query);
-        if ($dbo->query()) {
+        if ($dbo->execute()) {
             return $dbo->insertid();
         }
 
@@ -105,29 +106,30 @@ class DropfilesModelFrontfile extends JModelLegacy
      * Add count chart for file
      *
      * @param integer $file_id File id
+     * @param integer $userId  User id
      *
      * @return boolean
      * @since  version
      */
-    public function addCountChart($file_id)
+    public function addCountChart($file_id, $userId)
     {
         $date = date('Y-m-d');
         $dbo = $this->getDbo();
         $querycheck = 'SELECT * FROM #__dropfiles_statistics';
-        $querycheck .= ' WHERE related_id=' . $dbo->quote($file_id) . ' AND date=' . $dbo->quote($date) . '';
+        $querycheck .= ' WHERE related_id=' . $dbo->quote($file_id) . ' AND related_users=' . (int)$userId . ' AND date=' . $dbo->quote($date) . '';
         $dbo->setQuery($querycheck);
         $object = $dbo->loadObject();
 
         if ($object) {
             $query = 'UPDATE #__dropfiles_statistics SET count=(count+1)';
-            $query .= ' WHERE related_id=' . $dbo->quote($file_id) . ' AND date=' . $dbo->quote($date) . '';
+            $query .= ' WHERE related_id=' . $dbo->quote($file_id) . ' AND related_users=' . (int)$userId . ' AND date=' . $dbo->quote($date) . '';
             $dbo->setQuery($query);
 
-            if (!$dbo->query()) {
+            if (!$dbo->execute()) {
                 return false;
             }
         } else {
-            $this->addChart($file_id, $date);
+            $this->addChart($file_id, $userId, $date);
         }
         return true;
     }

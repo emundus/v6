@@ -22,6 +22,30 @@ defined('_JEXEC') || die;
 class DropfilesViewStatistics extends JViewLegacy
 {
     /**
+     * Default date format for statistics view
+     *
+     * @var string
+     */
+    public $dateFormat = 'd-m-Y';
+
+    /**
+     * Default line color for Total Download
+     *
+     * @var array
+     */
+    public $defaultLineColor = array('r' => 255, 'g' => 99, 'b' => 132);
+
+    /**
+     * Generate random RGB color for chart line
+     *
+     * @return array
+     */
+    public function randomColor()
+    {
+        return array('r' => rand(50, 222), 'g' => rand(50, 222), 'b' => rand(50, 222));
+    }
+
+    /**
      * Display the view
      *
      * @param null|string $tpl Template
@@ -99,7 +123,7 @@ class DropfilesViewStatistics extends JViewLegacy
         $this->allCount = $model->getAllDownloadCount();
         parent::display($tpl);
         $app = JFactory::getApplication();
-        if ($app->isAdmin()) {
+        if ($app->isClient('administrator')) {
             $this->addToolbar();
         }
     }
@@ -122,16 +146,6 @@ class DropfilesViewStatistics extends JViewLegacy
                 'arrow-left',
                 JText::_('COM_DROPFILES_BACK_TO_MAIN_VIEW'),
                 'index.php?option=com_dropfiles'
-            );
-            $toolbar->appendButton(
-                'popup',
-                'help',
-                JText::_('COM_DROPFILES_VIEW_SUPPORT'),
-                'index.php?option=com_dropfiles&view=support&tmpl=component',
-                700,
-                600,
-                0,
-                0
             );
         }
 

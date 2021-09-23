@@ -368,4 +368,52 @@ class DropfilesCloudHelper
 
         return false;
     }
+
+    /*----------- OneDrive Business --------*/
+    /**
+     * Get all OneDrive Business config
+     *
+     * @return array
+     */
+    public static function getAllOneDriveBusinessConfigs()
+    {
+        $params  = JComponentHelper::getParams('com_dropfiles');
+        $default = array(
+            'onedriveBusinessKey'         => (isset($params['onedriveBusinessKey']) && (string) $params['onedriveBusinessKey'] !== '') ? $params['onedriveBusinessKey'] : '',
+            'onedriveBusinessSecret'      => (isset($params['onedriveBusinessSecret']) && (string) $params['onedriveBusinessSecret'] !== '') ? $params['onedriveBusinessSecret'] : '',
+            'onedriveBusinessSyncTime'    => isset($params['onedriveBusinessSyncTime']) ? $params['onedriveBusinessSyncTime'] : '30',
+            'onedriveBusinessSyncMethod'  => isset($params['onedriveBusinessSyncMethod']) ? $params['onedriveBusinessSyncMethod'] : 'sync_page_curl',
+            'onedriveBusinessConnectedBy' => (int)JFactory::getUser()->id,
+            'state'                       =>  isset($params['onedriveBusinessState']) ? $params['onedriveBusinessState'] : array(),
+            'onedriveBusinessBaseFolder'  => isset($params['onedriveBusinessBaseFolder']) ? $params['onedriveBusinessBaseFolder'] : array(),
+            'connected'                   => (isset($params['onedriveBusinessConnected']) && (int)$params['onedriveBusinessConnected'] === 1) ? (int) $params['onedriveBusinessConnected'] : 0
+        );
+
+        return $default;
+    }
+
+    /**
+     * Get onedrive by term id
+     *
+     * @param integer $categoryId Term id
+     *
+     * @return boolean
+     */
+    public static function getOneDriveBusinessIdByTermId($categoryId)
+    {
+        if (empty($categoryId)) {
+            return false;
+        }
+
+        $categoryModel  = JModelLegacy::getInstance('Category', 'dropfilesModel');
+        $category       = $categoryModel->getCategory($categoryId);
+        $result         = $category->cloud_id;
+        $type           = $category->type;
+
+        if ($result && $type === 'onedrivebusiness') {
+            return $result;
+        }
+
+        return false;
+    }
 }

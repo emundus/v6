@@ -195,7 +195,7 @@
             <field name="export_pdf" type="text" size="60" default="" label="Select items for the pdf export"/>
         </fieldset>
     -->
-	
+
 	<fieldset label="COM_EMUNDUS_OFFERS" name="offers" description="COM_EMUNDUS_OFFERS_DESC">
 		<field name="fabrik_elements_title" type="text" required="false" label="COM_EMUNDUS_OFFERS_PDF_TITLE_LABEL" description="COM_EMUNDUS_OFFERS_PDF_TITLE_DESC" class="inputbox" default="2113" />
 		<field name="fabrik_elements_pdf" type="text" required="false" label="COM_EMUNDUS_OFFERS_PDF_ELEMENTS_LABEL" description="COM_EMUNDUS_OFFERS_PDF_ELEMENTS_DESC" class="inputbox" default="2111, 2112, 2114, 2117, 2133, 2119, 2120, 2121, 2123, 2124, 2125, 2126, 2127, 2116, 2118, 2122" ForcedDisplay="value"/>
@@ -205,7 +205,7 @@
 		<field name="validation" menu="hide" type="list" default="0" label="COM_EMUNDUS_OFFERS_VALIDATION_LABEL" description="COM_EMUNDUS_OFFERS_VALIDATION_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
-		</field>	
+		</field>
 	</fieldset>
 
 	<fieldset label="COM_EMUNDUS_CALENDAR" name="calendar" description="COM_EMUNDUS_CALENDAR_DESC">
@@ -360,5 +360,11 @@
 				class="inputbox" filter="rules" validate="rules"
 				label="JCONFIG_PERMISSIONS_LABEL"
 				section="component" />
+	</fieldset>
+	<fieldset label="COM_EMUNDUS_MESSENGER" name="messenger" description="COM_EMUNDUS_MESSENGER_DESC">
+		<field name="messenger_anonymous_coordinator" type="list" default="0" label="COM_EMUNDUS_MESSENGER_ANONYMOUS" description="COM_EMUNDUS_MESSENGER_ANONYMOUS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 </config>

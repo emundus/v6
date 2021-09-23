@@ -133,7 +133,7 @@ function what_to_check( $name, $attribs = null, $selected = null, $id=false )
 }
 
 // Esta parte no se puede eliminar porque de lo contrario las pestañas y la navegación "desaparecen" al navegar por ellas
-if (version_compare(JVERSION, "3.10", "lt")) {
+if (version_compare(JVERSION, "3.20", "lt")) {
 	JHtml::_('behavior.modal');
 }
 
@@ -147,7 +147,9 @@ $document->setHeadData($arrHead);
 
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+// Inline javascript to avoid deferring in Joomla 4
+echo '<script src="' . JURI::root(). '/media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>';
+//$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
 $site_url = JURI::root();
 
@@ -396,12 +398,12 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
                                                                             <label class="red"><?php echo JText::_('COM_SECURITYCHECKPRO_OVERWRITE_WARNING'); ?></label>
                                                                             <h5><?php echo JText::_('COM_SECURITYCHECKPRO_SELECT_EXPORTED_FILE'); ?></h5>                        
                                                                             <div class="controls">
-                                                                                <input class="input_box" id="file_to_import" name="file_to_import" type="file" size="57" />
+                                                                                <input class="input_box" id="file_to_import_blacklist" name="file_to_import_blacklist" type="file" size="57" />
                                                                             </div>
                                                                         </div>                                                                                
                                                                       </div>
-                                                                        <div class="modal-footer" id="div_boton_subida">
-                                                                            <input class="btn btn-primary" id="upload_import_button" type="button" value="<?php echo JText::_('COM_SECURITYCHECKPRO_UPLOAD_AND_IMPORT'); ?>" />
+                                                                        <div class="modal-footer" id="div_boton_subida_blacklist">
+                                                                            <input class="btn btn-primary" id="upload_import_button" type="button" value="<?php echo JText::_('COM_SECURITYCHECKPRO_UPLOAD_AND_IMPORT'); ?>" />								
                                                                             <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo JText::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
                                                                         </div>              
                                                                     </div>
@@ -463,7 +465,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
                                                                         </button>
                                                                     </div>
                                                                     <div class="btn-group pull-left" class="margin-left-10">
-                                                                        <a href="#select_blacklist_file_to_upload" role="button" class="btn btn-secondary" data-toggle="modal"><i class="icon-upload"></i><?php echo JText::_('COM_SECURITYCHECKPRO_IMPORT_IPS'); ?></a>                                
+                                                                        <a href="#select_blacklist_file_to_upload" id="select_blacklist_file_to_upload" role="button" class="btn btn-secondary" data-toggle="modal"><i class="icon-upload"></i><?php echo JText::_('COM_SECURITYCHECKPRO_IMPORT_IPS'); ?></a>                                
                                                                     </div>
                                                                     <div class="btn-group pull-left" class="margin-left-10">
                                                                         <button class="btn btn-info" id="export_blacklist_button" href="#">
@@ -592,8 +594,8 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
                                                                             </div>
                                                                         </div>                                                                                
                                                                       </div>
-                                                                        <div class="modal-footer" id="div_boton_subida">
-                                                                            <input class="btn btn-primary" id="import_whitelist_button" type="button" value="<?php echo JText::_('COM_SECURITYCHECKPRO_UPLOAD_AND_IMPORT'); ?>" />
+                                                                        <div class="modal-footer" id="div_boton_subida_whitelist">
+                                                                            <input class="btn btn-primary" id="import_whitelist_button" type="button" value="<?php echo JText::_('COM_SECURITYCHECKPRO_UPLOAD_AND_IMPORT'); ?>" />												
                                                                             <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo JText::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
                                                                         </div>              
                                                                     </div>
@@ -1192,7 +1194,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
                                                     <?php
                                                     // Listamos todos los grupos presentes en el sistema excepto el grupo 'Guest'
                                                     $db = JFactory::getDBO();
-                                                    $query = "SELECT id,title from `#__usergroups` WHERE title != 'Guest'" ;            
+                                                    $query = "SELECT id,title from #__usergroups WHERE title != 'Guest'";            
                                                     $db->setQuery($query);
                                                     $groups = $db->loadRowList();                        
                                                     foreach ($groups as $key=>$value) {                            
@@ -1305,7 +1307,14 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
                                             <div class="card-header text-white bg-primary">
                                                 <?php echo JText::_('COM_SECURITYCHECKPRO_GLOBAL_PARAMETERS') ?>
                                             </div>
-                                            <div class="card-body">
+                                            <div class="card-body">											
+												<h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_MIMETYPES_BLACKLIST_LABEL'); ?></h4>
+                                                <div class="controls">
+                                                    <textarea cols="35" rows="3" name="mimetypes_blacklist" class="mimetypes-blacklist"><?php echo $this->mimetypes_blacklist ?></textarea>                                
+                                                </div>
+                                                <blockquote class="blockquote" id="block"><footer class="blockquote-footer"><small><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_MIMETYPES_BLACKLIST_DESCRIPTION') ?></small></footer></blockquote>
+												
+												
                                                 <h4 class="card-title"><?php echo JText::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_EXTENSIONS_BLACKLIST_LABEL'); ?></h4>
                                                 <div class="controls">
                                                     <textarea cols="35" rows="3" name="extensions_blacklist" class="extensions-blacklist"><?php echo $this->extensions_blacklist ?></textarea>                                
@@ -1511,7 +1520,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
                                                         <?php
                                                         // Listamos todas las extensiones 
                                                         $db = JFactory::getDBO();
-                                                        $query = "SELECT extension from `#__securitycheckpro_trackactions_extensions`" ;            
+                                                        $query = "SELECT extension from #__securitycheckpro_trackactions_extensions" ;            
                                                         $db->setQuery($query);
                                                         $groups = $db->loadRowList();    
                                                         foreach ($groups as $key=>$value) {                                

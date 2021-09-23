@@ -519,7 +519,18 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_acym','component','6.9.2','<','3.0.0','>=','Acymailing 6 Component','File upload Vulnerability','Mar 24 2020','Version 6','update','6.9.2'),
 ('com_gmapfp','component','3.30','==','3.0.0','>=','GMapFP Component','Other Vulnerability','Apr 14 2020','Version 3.30','update','3.52'),
 ('Joomla!','core','3.9.16','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Apr 22 2020','Joomla 2.5.0 through 3.9.16','update','3.9.18'),
-('Joomla!','core','3.9.18','<=','3.0.0','>=','Joomla! core','Five low vulnerabilities','Jun 03 2020','Joomla 2.5.0 through 3.9.18','update','3.9.19');
+('Joomla!','core','3.9.18','<=','3.0.0','>=','Joomla! core','Five low vulnerabilities','Jun 03 2020','Joomla 2.5.0 through 3.9.18','update','3.9.19'),
+('Joomla!','core','3.9.19','<=','3.0.0','>=','Joomla! core','Several vulnerabilities','Jul 14 2020','Joomla 2.5.0 through 3.9.19','update','3.9.20'),
+('Joomla!','core','3.9.20','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Aug 25 2020','Joomla 2.5.0 through 3.9.20','update','3.9.21'),
+('com_pago','component','2.5.9.0','==','3.0.0','>=','paGO Commerce Component','SQL Injection','Nov 02 2020','Version 2.5.9.0','none','No details'),
+('Joomla!','core','3.9.22','<=','3.0.0','>=','Joomla! core','Seven low vulnerabilities','Nov 11 2020','Joomla 1.7.0 through 3.9.22','update','3.9.23'),
+('Joomla!','core','3.9.23','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Jan 12 2020','Joomla 3.0.0 through 3.9.23','update','3.9.24'),
+('Joomla!','core','3.9.24','<=','3.0.0','>=','Joomla! core','Nine low vulnerabilities','Mar 03 2020','Joomla 2.5.0 through 3.9.24','update','3.9.25'),
+('Joomla!','core','3.9.25','<=','3.0.0','>=','Joomla! core','Two low vulnerabilities','Apr 13 2020','Joomla 3.0.0 through 3.9.25','update','3.9.26'),
+('com_publisher','component','3.0.19','==','3.0.0','>=','Publisher Component','Xss vulnerability','Apr 21 2021','Version 3.0.19','update','3.0.20'),
+('com_yoorecipe','component','1.0.0','>=','3.0.0','>=','Yoorecipe Component','Sql Injection vulnerability','Apr 21 2021','All versions','none','No details'),
+('Joomla!','core','3.9.26','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','May 25 2020','Joomla 3.0.0 through 3.9.26','update','3.9.27'),
+('Joomla!','core','3.9.27','<=','3.0.0','>=','Joomla! core','Five low vulnerabilities','Jul 07 2020','Joomla 2.5.0 through 3.9.27','update','3.9.28');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -641,7 +652,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.76');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.3');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (
@@ -722,3 +733,13 @@ INSERT IGNORE INTO `#__securitycheckpro_trackactions_tables_data` (`id`, `type_t
 (16, 'module', 'com_modules.module', 'title', '{"table_type":"Module","table_prefix":"JTable"}'),
 (17, 'access_level', 'com_users.level', 'title', '{"table_type":"Viewlevel","table_prefix":"JTable"}'),
 (18, 'banner_client', 'com_banners.client', 'name', '{"table_type":"Client","table_prefix":"BannersTable"}');
+
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_blacklist` (
+`ip` VARCHAR(26) NOT NULL,
+PRIMARY KEY (`ip`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `#__securitycheckpro_whitelist` (
+`ip` VARCHAR(26) NOT NULL,
+PRIMARY KEY (`ip`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

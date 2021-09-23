@@ -182,6 +182,8 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
      */
     private $filemalware_log_name = null;
 	
+	private $controlcenter_log_name = null;
+	
 	/**
      * @var object Pagination 
      */
@@ -400,7 +402,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
     }
 
     /* Función que obtiene todos los archivos del sitio */
-    public function getFiles($root = null, $include_exceptions, $recursive, $opcion)
+    public function getFiles(string $root, $include_exceptions, $recursive, $opcion)
     {
         /* Cargamos el lenguaje del sitio */
         $lang = JFactory::getLanguage();
@@ -447,7 +449,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                     $exceptions = $this->skipDirsMalwarescan;
                 } 
                 foreach($exceptions as $file)
-                {
+                {					
                     $last_part = explode(DIRECTORY_SEPARATOR, $file);
                     $excludedFiles[] = end($last_part);
                 }
@@ -459,9 +461,12 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
             } else
             {
                 $files_name = JFolder::files($root, '', true, true, $excludedFiles);
-                // Buscamos si existe el archivo .htaccess en la ruta a escanear (sólo lo buscamos en la ruta base, no en subdirectorios)
+                // Buscamos si existe el archivo .htaccess o .htpasswd en la ruta a escanear (sólo lo buscamos en la ruta base, no en subdirectorios)
                 if (file_exists($root . DIRECTORY_SEPARATOR . ".htaccess")) {
                     $files_name[] = $root . DIRECTORY_SEPARATOR . ".htaccess";
+                }
+				if (file_exists($root . DIRECTORY_SEPARATOR . ".htpasswd")) {
+                    $files_name[] = $root . DIRECTORY_SEPARATOR . ".htpasswd";
                 }
             }        
         }
@@ -597,7 +602,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
             {
                 $this->Stack_Integrity = json_decode($stack, true);
                 $this->stack_resume = json_decode($stack_resume, true);
-                // Actualizamos el valor de los archivos 'inseguros'
+                // Actualizamos el valor de los archivos modificados desde el último escaneo
                 $this->files_with_incorrect_integrity = $this->stack_resume['files_with_incorrect_integrity'];
                 // Cargamos los archivos que están almacenados en la BBDD
                 $this->Stack_Integrity = $this->Stack_Integrity['files_folders'];
@@ -773,16 +778,16 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
             
                 $diff = array_diff($array_hashes_actual, $array_hashes_anterior);
                 $diff = array_keys($diff);
-                        
+				
+				$this->write_log("------- New/modified files --------");
+								
                 foreach($diff as $indice)
                 {
                     try 
                     {
                              $file = $files_name[$indice];                
-                             $file = utf8_encode($file);
-                    
-                             $this->write_log("FILE: " . $file);
-                                                
+                             $file = utf8_encode($file);                    
+                                                                             
                              $safe_integrity = 1;
                              // Chequeamos si el archivo está incluido en las excepciones
                         if ($recursive == 1) {  // Comprobamos si el archivo pertenece a un directorio que está incluido en la lista de excepciones
@@ -821,10 +826,12 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                             $texto_notes = $lang->_('COM_SECURITYCHECKPRO_FILEINTEGRITY_NEW_FILE');
                             $new_file = (int) 1;
                             if ($safe_integrity != 2) {  // El archivo es nuevo y no está en la lista de excepciones
-                                 $safe_integrity = 0;                        
+									$safe_integrity = 0;    
+									$this->write_log("FILE: " . $file . " -- New file");
                             } else
                             {
                                 $texto_notes = $lang->_('COM_SECURITYCHECKPRO_FILEINTEGRITY_IN_EXCEPTIONS_LIST');
+								$this->write_log("FILE: " . $file . " -- In exceptions list");
                             }
                         
                             switch ($hash_alg_db)
@@ -851,7 +858,8 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                         
                         
                         } else 
-                        {    // El archivo existe pero su valor hash ha cambiado                    
+                        {    // El archivo existe pero su valor hash ha cambiado       
+							$this->write_log("FILE: " . $file . " -- Hash changed");
                             $texto_notes = $lang->_('COM_SECURITYCHECKPRO_FILEINTEGRITY_HASH_CHANGED');
                             $new_file = (int) 0;
                         
@@ -1008,10 +1016,10 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                 {
                     foreach($files_name as $file)
                     {
+							
+							$file = utf8_encode($file);
                     
-                             $file = utf8_encode($file);
-                    
-                             $this->write_log("FILE: " . $file);
+                            $this->write_log("FILE: " . $file);
                     
                              /* Dejamos sin efecto el tiempo mximo de ejecucin del script. Esto es necesario cuando existen miles de archivos a escanear */
                              set_time_limit(0);
@@ -1063,7 +1071,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                                 }
                             }
                         }
-                                    
+						                                    
                         // Días desde que el fichero fue modificado
                         $days_since_last_mod = intval(abs((filemtime($file) - time())/86400));
                         // Si el fichero no está en la lista de excepciones, comprobamos si contiene malware
@@ -1080,7 +1088,13 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                         
                             if ((array_key_exists(1, $explodedName)) && (in_array(strtolower($explodedName[1]), $imageExtensions))) {
                                 // Chequeamos si el fichero es una imagen o no utilizando la función 'exif_imagetype', que devolverá un entero en caso afirmativo
-                                $is_image = is_int(exif_imagetype($file));                        
+                                if (function_exists("exif_imagetype")) {
+									$is_image = is_int(exif_imagetype($file));
+									if ($is_image) {
+										$this->write_log("FILE: " . $file . " is an image file");
+									}									
+								} 
+								                        
                             }                    
                                             
                             if ((count($explodedName) > 3) && (strtolower($explodedName[1]) == 'php')) {  // Archivo tipo .php.xxx.yyy
@@ -1094,6 +1108,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                                 $malware_code =  $lang->_('COM_SECURITYCHECKPRO_LINE') . 'Undefined';
                                 $malware_alert_level = 0;
                                 $this->suspicious_files++;
+								$this->write_log("FILE: " . $file . " has multiple extensions");
                             } else if ((count($explodedName) > 2) && (strtolower($explodedName[1]) == 'php')) {  // Archivo tipo .php.xxx
                                 /* Cargamos el lenguaje del sitio */
                                 $lang = JFactory::getLanguage();
@@ -1105,9 +1120,11 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                                 $malware_code =  $lang->_('COM_SECURITYCHECKPRO_LINE') . 'Undefined';
                                 $malware_alert_level = 0;
                                 $this->suspicious_files++;
+								$this->write_log("FILE: " . $file . " has multiple extensions");
                             } else if ((in_array(pathinfo($file, PATHINFO_EXTENSION), $ext) || (!$is_image)) && filesize($file)) {  // Archivo en la lista de extensiones a analizar
                                 $resultado = $this->scan_file($file);
                                 if ($resultado[0][0]) {  // Se ha encontrado contenido malicioso!
+									$this->write_log("FILE: " . $file . " has malicious content");
                                     $safe_malwarescan = 0;
                                     $malware_type = $resultado[0][1];
                                     $malware_description = $resultado[0][2];
@@ -1147,7 +1164,8 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                                     }                        
                                 }
                                 if ($to_move) {
-                                            $moved = JFile::move($file, $quarantined_file_name);                        
+                                            $moved = JFile::move($file, $quarantined_file_name);
+											$this->write_log("FILE: " . $file . " has been moved to quarantine folder");											
                                             // La información a extraer estará en el archivo de cuarentena
                                             $file = $quarantined_file_name;            
                                             $safe_malwarescan = 3;
@@ -1170,7 +1188,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                             'moved_to_quarantine' => $moved,
                             'quarantined_file_name'    =>    $quarantined_file_name
                             );
-                        }                            
+                        }                           
                     }
                 } catch (Exception $e) 
                 {
@@ -1218,12 +1236,19 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                         return $this->filemalware_log_name;
                 }
                 break;
+			case "controlcenter_log":
+                $this->controlcenter_log_name = $temp_name['filename'];
+                if ($devolver) {
+                        return $this->controlcenter_log_name;
+                }
+                break;
             }        
-        }
+        } 
+		return null;
     }
 
     /* Función que obtiene todos los directorios del sitio */
-    public function getDirectories($root = null, $include_exceptions, $recursive, $opcion)
+    public function getDirectories(string $root, $include_exceptions, $recursive, $opcion)
     {
         /* Cargamos el lenguaje del sitio */
         $lang = JFactory::getLanguage();
@@ -1346,6 +1371,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
             $this->get_log_filename("filepermissions_log");
             $this->get_log_filename("fileintegrity_log");
             $this->get_log_filename("filemalware_log");
+			$this->get_log_filename("controlcenter_log");
         
             if (!empty($this->filepermissions_log_name)) {
                 array_push($array_exentos, $this->filepermissions_log_name);
@@ -1358,6 +1384,14 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
             if (!empty($this->filemalware_log_name)) {
                 array_push($array_exentos, $this->filemalware_log_name);
             }
+			
+			if (!empty($this->controlcenter_log_name)) {
+                array_push($array_exentos, $this->controlcenter_log_name);
+            }
+			
+			// Añadimos el fichero de error generado por las tareas del Control center y el que indica que hay que actualizar la bbdd de vulnerabilidades
+			array_push($array_exentos, "error.php");
+			array_push($array_exentos, "update_vuln_table.php");			
         
             // Buscamos ficheros antiguos que no hayan sido borrados...
             $old_files = JFolder::files($this->folder_path, '.', false, true, $array_exentos);
@@ -1902,7 +1936,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
         $this->getFiles($file_check_path, $include_exceptions, $folder_exceptions, $opcion);
         $this->saveStack($opcion);
     
-        $this->write_log("------- End scan: " . strtoupper($opcion) . " --------");
+		$this->write_log("------- End scan: " . strtoupper($opcion) . " --------");
     }
 
     /* Función para establecer el valor de un campo de la tabla '#_securitycheckpro_file_manager' */
@@ -1979,7 +2013,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
         $db->execute();
 
         // Actualizamos los campos de la tabla '#__securitycheckpro_file_manager'
-        $query = 'UPDATE #__securitycheckpro_file_manager SET last_check=null,last_check_integrity=null,last_check_malwarescan=null,files_scanned=0,files_scanned_integrity=0,files_with_incorrect_permissions=0,files_scanned_malwarescan=0,files_with_bad_integrity=0,suspicious_files=0,estado="ENDED",estado_integrity="ENDED",estado_malwarescan="ENDED",cron_tasks_launched=0 where id=1';
+		$query = "UPDATE #__securitycheckpro_file_manager SET last_check=null,last_check_integrity=null,last_check_malwarescan=null,files_scanned=0,files_scanned_integrity=0,files_with_incorrect_permissions=0,files_scanned_malwarescan=0,files_with_bad_integrity=0,suspicious_files=0,estado='ENDED',estado_integrity='ENDED',estado_malwarescan='ENDED',cron_tasks_launched=0 where id=1";
         $db->setQuery($query);
         $db->execute();
     
@@ -2051,7 +2085,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
         $description = filter_var($description, FILTER_SANITIZE_STRING);
         $description = $db->getEscaped($description);
         
-        $sql = "INSERT INTO `#__securitycheckpro_own_logs` (`time`, `description`) VALUES (now(), '{$description}')";
+        $sql = "INSERT INTO #__securitycheckpro_own_logs (time, description) VALUES (now(), '{$description}')";
         $db->setQuery($sql);
         $db->execute();
         
@@ -2364,6 +2398,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                                 // Let's see if this seems a Joomla file, which usually forbids direct access using the JEXEC feature
                                 $content_without_spaces = $this->clean_espaces($content);
                                 // Check the line of the ocurrence; on modified files it's usuallly the first line
+								
                                 foreach ($all_results as $match)
                                 {
                                         $line = $this->calculate_line_number($match[1], $content);
@@ -2454,7 +2489,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
      */
     function calculate_line_number($offset, $file_content)
     {
-        if ($file_content >= 1) {
+        if (strlen($file_content) >= 1) {
             list($first_part) = str_split($file_content, $offset); // fetches all the text before the match
             $line_nr = strlen($first_part) - strlen(str_replace("\n", "", $first_part)) + 1;
             return $line_nr;
@@ -2518,7 +2553,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                 }
             )
         );
-        // Mapeamos slo los valores del campo 'path'
+        // Mapeamos los los valores del campo 'path'
         $this->Stack_Integrity = array_map(
             function ($element) {
                 return $element['path']; 
@@ -2729,7 +2764,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
         JLoader::import('joomla.application.component.model');
         JLoader::import('cpanel', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR. 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
         // ... y lanzamos un escaneo para actualizar los resultados
-        $filemanager_model = JModelLegacy::getInstance('filemanager', 'SecuritycheckprosModel');
+        $filemanager_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('filemanager', 'SecuritycheckprosModel');
         $filemanager_model->set_campo_filemanager('estado', 'IN_PROGRESS'); 
         $filemanager_model->scan("permissions");    
         $filemanager_model->set_campo_filemanager('estado', 'ENDED');
@@ -2807,7 +2842,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
         // Borramos la información de las instalaciones previas     
         try
         {
-            $sql = "DELETE FROM `#__securitycheckpro_storage` WHERE storage_key = 'installs'";
+            $sql = "DELETE FROM #__securitycheckpro_storage WHERE storage_key = 'installs'";
             $db->setQuery($sql);
             $db->execute();
         }catch (Exception $e)
@@ -3470,7 +3505,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
             $threats = $db->escape($threats);
             $infected_files = $db->escape($infected_files);
             
-            $sql = "INSERT INTO `#__securitycheckpro_online_checks` (`filename`, `files_checked`, `threats_found`, `scan_date`, `infected_files`) VALUES ('{$filename}', '{$files_checked}', '{$threats}', now(), '{$infected_files}')";
+            $sql = "INSERT INTO #__securitycheckpro_online_checks (filename, files_checked, threats_found, scan_date, infected_files) VALUES ('{$filename}', '{$files_checked}', '{$threats}', now(), '{$infected_files}')";
             $db->setQuery($sql);
             $db->execute();
         }
@@ -3510,7 +3545,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
     
         $db = JFactory::getDBO();
             
-        $sql = "SELECT COUNT(*) FROM `#__securitycheckpro_online_checks`";
+        $sql = "SELECT COUNT(*) FROM #__securitycheckpro_online_checks";
         $db->setQuery($sql);
         (int) $logs_stored = $db->loadResult();
         
@@ -3695,7 +3730,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
             // Actualizamos el número de archivos sospechosos según el número de archivos que hayamos borrado
             $this->suspicious_files = $this->suspicious_files - $count;
             // salvamos los datos
-            $this->saveStack();
+            $this->saveStack("malwarescan_modified");
             JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_DELETED_FROM_LIST', $count), 'message');    
         }
         
@@ -3732,14 +3767,14 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
     {
     
         // If the log could not be opened we can't continue
-        if (is_null($this->fp)) {
+        if (empty($this->fp)) {
             return;
         }
     
         $string = $level . "    |   ";
         $string .= @strftime("%y%m%d %H:%M:%S") . "   |   $message\r\n";
 
-        @fwrite($this->fp, $string);
+		@fwrite($this->fp, $string);		
     }
 
     function prepareLog($opcion)
@@ -3760,6 +3795,9 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
             break;
         case "malwarescan":
             $storage_value = "filemalware_log";
+            break;
+		case "controlcenter":
+            $storage_value = "controlcenter_log";
             break;
         }
     
@@ -3787,23 +3825,28 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
         {        
     
         }
-    
-        // If another log is open, close it
-        if (is_resource($this->fp)) {
-            $this->close_Log();
-        }
+		
+		// Si preparamos el log para el control center devolvemos el nombre ya que serán necesario para el archivo /frontend/models/json.php
+		if ($storage_value == "controlcenter_log") {
+			return $filename_log;
+		} else {
+			// If another log is open, close it
+			if (is_resource($this->fp)) {
+				$this->close_Log();
+			}
 
-        // Touch the file
-        @touch($this->folder_path.DIRECTORY_SEPARATOR.$filename_log);
-    
-    
-        // Open the log file
-        $this->fp = @fopen($this->folder_path.DIRECTORY_SEPARATOR.$filename_log, 'ab');
-        
-        // If we couldn't open the file set the file pointer to null
-        if ($this->fp === false) {            
-            $this->fp = null;
-        }
+			// Touch the file
+			@touch($this->folder_path.DIRECTORY_SEPARATOR.$filename_log);
+		
+		
+			// Open the log file
+			$this->fp = @fopen($this->folder_path.DIRECTORY_SEPARATOR.$filename_log, 'ab');
+			
+			// If we couldn't open the file set the file pointer to null
+			if ($this->fp === false) {            
+				$this->fp = null;
+			}
+		}
     }
 
     /* Close the currently active log */

@@ -219,7 +219,7 @@ class PlgSearchDropfiles extends JPlugin
                  a.fulltext, c.title, a.alias, c.alias, c.id')
                 ->order($order);
             // Filter by language.
-            if ($app->isSite() && JLanguageMultilang::isEnabled()) {
+            if ($app->isClient('site') && JLanguageMultilang::isEnabled()) {
                 $query->where('a.language in (' . $db->quote($tag) . ',' . $db->quote('*') . ')')
                     ->where('c.language in (' . $db->quote($tag) . ',' . $db->quote('*') . ')');
             }
@@ -273,7 +273,7 @@ class PlgSearchDropfiles extends JPlugin
                 )
                 ->order($order);
             // Filter by language.
-            if ($app->isSite() && JLanguageMultilang::isEnabled()) {
+            if ($app->isClient('site') && JLanguageMultilang::isEnabled()) {
                 $query->where('a.language in (' . $db->quote($tag) . ',' . $db->quote('*') . ')')
                     ->where('c.language in (' . $db->quote($tag) . ',' . $db->quote('*') . ')');
             }
@@ -301,11 +301,11 @@ class PlgSearchDropfiles extends JPlugin
             foreach ($rows as $row) {
                 $new_row = array();
                 foreach ($row as $article) {
-                    // Get the dispatcher and load the users plugins.
-                    $dispatcher = JEventDispatcher::getInstance();
+                    // Get the dispatcher and load the users plugins
                     JPluginHelper::importPlugin('content');
                     // Trigger the data preparation event.
-                    $dispatcher->trigger('onDropfilesContentPrepare', array('com_content.finder', &$article));
+                    $app = JFactory::getApplication();
+                    $app->triggerEvent('onDropfilesContentPrepare', array('com_content.finder', &$article));
                     if (SearchHelper::checkNoHTML(
                         $article,
                         $searchText,

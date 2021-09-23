@@ -45,7 +45,7 @@ class JFormFieldTextcopy extends JFormField
 
 //        $this->value = ($this->value == '') ? isset($file->file) ? $file->file : '' : $this->value;
         $return = '<input disabled type="text" name="' . $this->name . '" id="' . $this->id . '" value="" class=" ' . $class . '" ' . $size . '>';
-        $return .= '<i class="material-icons btn_' . $this->id . '" title="Copy">content_copy</i>';
+        $return .= '<button type="button" class="btn copy-btn"><i class="material-icons btn_' . $this->id . '" title="Copy">content_copy</i>'. JText::_('COM_DROPFILES_COPY') .'</button>';
 
         return $return;
     }

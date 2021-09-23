@@ -161,17 +161,29 @@
     >
         <field name="translator" type="list" default="Bing" required="true" label="COM_FALANG_CONFIG_TRANSLATOR_SELECT_TRANSLATOR" >
             <option value="Bing">Bing / Azure</option>
+            <option value="Google">Google Cloud</option>
             <option value="Yandex">Yandex</option>
+            <option value="Lingvanex">Lingvanex</option>
         </field>
         <field name="translator_bingkey"
                type="text"
                label="COM_FALANG_CONFIG_TRANSLATOR_BING_KEY"
                description="COM_FALANG_CONFIG_TRANSLATOR_BING_KEY_DESC"
         />
+        <field name="translator_googlekey"
+               type="text"
+               label="COM_FALANG_CONFIG_TRANSLATOR_GOOGLE_KEY"
+               description="COM_FALANG_CONFIG_TRANSLATOR_GOOGLE_KEY_DESC"
+        />
         <field name="translator_yandexkey"
                type="text"
                label="COM_FALANG_CONFIG_TRANSLATOR_YANDEX_KEY"
                description="COM_FALANG_CONFIG_TRANSLATOR_YANDEX_KEY_DESC"
+        />
+        <field name="translator_lingvanex"
+               type="text"
+               label="COM_FALANG_CONFIG_TRANSLATOR_LINGVANEX_KEY"
+               description="COM_FALANG_CONFIG_TRANSLATOR_LINGVANEX_KEY_DESC"
         />
     </fieldset>
     <fieldset name="import_export"

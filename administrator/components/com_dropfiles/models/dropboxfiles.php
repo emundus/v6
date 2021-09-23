@@ -113,7 +113,7 @@ class DropfilesModelDropboxfiles extends JModelLegacy
         $dbo = $this->getDbo();
         $query = 'SELECT * FROM #__dropfiles_dropbox_files WHERE file_id = BINARY ' . $dbo->quote($id_file);
         $dbo->setQuery($query);
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
         return $dbo->loadObject();
@@ -134,7 +134,7 @@ class DropfilesModelDropboxfiles extends JModelLegacy
             $query = 'UPDATE #__dropfiles_dropbox_files SET ordering = ' . intval($key);
             $query .= ' WHERE file_id = BINARY ' . $dbo->quote($file);
             $dbo->setQuery($query);
-            if (!$dbo->query()) {
+            if (!$dbo->execute()) {
                 return false;
             }
         }
@@ -159,7 +159,7 @@ class DropfilesModelDropboxfiles extends JModelLegacy
         $query .= ' FROM #__dropfiles_dropbox_files WHERE catid=' . $dbo->quote($catid);
         $query .= ' Order By ' . $dbo->escape($ordering . ' ' . $dir);
         $dbo->setQuery($query);
-        if (!$dbo->query()) {
+        if (!$dbo->execute()) {
             return false;
         }
 
@@ -179,6 +179,6 @@ class DropfilesModelDropboxfiles extends JModelLegacy
         $dbo = $this->getDbo();
         $query = 'DELETE From #__dropfiles_dropbox_files WHERE file_id = BINARY ' . $dbo->quote($id_file);
         $dbo->setQuery($query);
-        $dbo->query();
+        $dbo->execute();
     }
 }

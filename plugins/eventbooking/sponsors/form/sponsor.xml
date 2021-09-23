@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<field
+			name="sponsors"
+			type="subform"
+			label="Sponsors"
+			description="Sponsors List"
+			layout="joomla.form.field.subform.repeatable-table"
+			icon="list"
+			multiple="true"
+	>
+		<form hidden="true" name="list_sponsors" repeat="true">
+			<field
+					name="id"
+					type="hidden"
+					value="0"
+			/>
+			<field
+					name="name"
+					type="text"
+					label="EB_NAME"
+					size="10"
+			/>			
+			<field
+					name="logo"
+					type="media"
+					label="EB_LOGO"
+					size="10"
+					class="input-small"
+					directory="com_eventbooking/sponsors"
+			/>			
+			<field
+					name="website"
+					type="url"
+					label="EB_WEBSITE"
+					size="5"
+			/>
+		</form>
+	</field>
+</form>

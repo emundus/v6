@@ -147,10 +147,15 @@ class TranslateViewTranslate extends FalangViewDefault
 	{
 		// browser title
 		$document = JFactory::getDocument();
+
 		$document->setTitle(JText::_('COM_FALANG_TITLE') . ' :: ' .JText::_('COM_FALANG_TITLE_TRANSLATE'));
 
 		// set page title
-		JToolBarHelper::title( JText::_( 'COM_FALANG_TITLE_TRANSLATE' ), 'translation' );
+		if (isset($this->contentElementName)){
+			JToolBarHelper::title( JText::_( 'COM_FALANG_TITLE_TRANSLATE' ). ': '.$this->contentElementName, 'translation' );
+		} else {
+			JToolBarHelper::title( JText::_( 'COM_FALANG_TITLE_TRANSLATE' ), 'translation' );
+		}
 
         //add specific joomla 3 css
         //TODO specific css file for each joomla version
