@@ -523,6 +523,8 @@ if ($allowed_attachments !== true) {
                                         '<span class="badge btn-danger" onClick="removeAttachment(this);">' + '<span class="glyphicon glyphicon-remove"></span>' + '</span>' +
                                     '</div>' +
                                 '</li>');
+                            /// set selected letter
+                            $('#em-select_setup_letters option[value="' + letter.id + '"]').prop('disabled', true);
                         })
                     }
                     // console.log(letters);
@@ -766,6 +768,8 @@ if ($allowed_attachments !== true) {
 
                 var alreadyPicked = $('#em-attachment-list li.candidate_file').find('.value:contains("'+file.val()+'")');
 
+                console.log(alreadyPicked.length);
+
                 if (alreadyPicked.length == 1) {
 
                     // Flash the line a certain color to show it's already picked.
@@ -792,6 +796,8 @@ if ($allowed_attachments !== true) {
                                 '<span class="badge btn-danger" onclick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span>' +
                             '</div>' +
                         '</li>');
+
+                    $('#em-select_candidate_file [value="' + file.val() + '"]').prop('disabled', true);
                 }
 
                 break;
