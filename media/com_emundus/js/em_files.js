@@ -6354,10 +6354,14 @@ $(document).ready(function() {
 
                 var fnums = $('input:hidden[name="em-doc-fnums"]').val();
                 var idsTmpl = $('#em-doc-tmpl').val();
-                var cansee = $('#em-doc-cansee').val();
+
+                var cansee = 0;
+                if($('#em-doc-cansee').is(':checked')) { cansee = 1; }
 
                 var showMode = $('#em-doc-export-mode').val();          /// show by candidats (0) or show by document type (1)
-                var mergeMode = $('#em-doc-pdf-merge').val();           /// unmerge pdf (0) or merge pdf (1)
+
+                var mergeMode = 0;
+                if($('#em-doc-pdf-merge').is(':checked')) { mergeMode = 1; }
 
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' + '<img src="'+loadingLine+'" alt="loading"/>' + '</div>');

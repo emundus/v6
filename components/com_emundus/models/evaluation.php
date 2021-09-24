@@ -2470,7 +2470,7 @@ class EmundusModelEvaluation extends JModelList {
                             $original_name = $original_path . DS . $name;
 
                             // get file path --> letter path + letter file path, e.g: images/emundus/files/95--letters (they will be removed after using)
-                            $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp';                                  /// temp path
+                            $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'];               /// temp path (remove '_tmp')
                             $path_name = $path . DS . $name;
 
                             // get url of both original and letter cases
@@ -2603,7 +2603,7 @@ class EmundusModelEvaluation extends JModelList {
                             $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
                             $original_name = $original_path . DS . $name;
 
-                            $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp';           /// tmp path
+                            $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'];           /// tmp path (remove '_tmp')
                             $path_name = $path . DS . $name;
 
                             $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
@@ -2793,7 +2793,7 @@ class EmundusModelEvaluation extends JModelList {
                                 $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
                                 $original_name = $original_path . DS . $filename;
 
-                                $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp';
+                                $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'];        /// tmp path (remove '_tmp')
                                 $path_name = $path . DS . $filename;
 
                                 $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
@@ -2967,7 +2967,7 @@ class EmundusModelEvaluation extends JModelList {
                             $original_path = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
                             $original_name = $original_path . DS . $filename;
 
-                            $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . '_tmp';
+                            $path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'];            /// tmp path (remove '_tmp')
                             $path_name = $path . DS . $filename;
 
                             $original_url = JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
@@ -3042,7 +3042,7 @@ class EmundusModelEvaluation extends JModelList {
 
                     if(file_exists($tmp_path . $_zipName)) { unlink($tmp_path . $_zipName); }                   // if zip name exist in /tmp/ :: remove
 
-                    $_tmpFolder = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->name . '_' . $user_info[0]->id. '_tmp';
+                    $_tmpFolder = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->name . '_' . $user_info[0]->id;
 
                     $_isEmptyTmpFolder = glob($_tmpFolder . DS . '*');
 
@@ -3078,7 +3078,7 @@ class EmundusModelEvaluation extends JModelList {
                     /// end -- merge zip all
 
                     $pdf_files = array();
-                    $_tmpFolder = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->name . '_' . $user_info[0]->id. '_tmp';
+                    $_tmpFolder = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->name . '_' . $user_info[0]->id;
 
                     $fileList = glob($_tmpFolder . DS . '*');
 
@@ -3174,7 +3174,7 @@ class EmundusModelEvaluation extends JModelList {
                     $_uName = $_mUser->getUsersById($file->user_id);
 
                     //$source = EMUNDUS_PATH_ABS . $file->user_id . '--letters' . DS . $file->filename;
-                    $source = EMUNDUS_PATH_ABS . 'tmp' . DS . $_uName[0]->name . '_' . $_uName[0]->id. '_tmp' . DS . $file->filename;
+                    $source = EMUNDUS_PATH_ABS . 'tmp' . DS . $_uName[0]->name . '_' . $_uName[0]->id . DS . $file->filename;
                     copy($source, $dir_Name_Path . DS . $file->filename);                                       /// copy file
 
                     /// copy into /tmp/
