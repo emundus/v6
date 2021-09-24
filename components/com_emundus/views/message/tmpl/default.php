@@ -391,12 +391,14 @@ if ($allowed_attachments !== true) {
                     /// reset #em-select_candidate_file
                     $('#em-select_candidate_file option').each(function() {
                         if($(this).is(":disabled")) { $(this).prop('disabled', false); }
+                        $(this).attr('style', '');
                         $('#em-select_candidate_file option:selected').removeAttr('selected');
                     })
 
                     /// reset #em-select_setup_letters
                     $('#em-select_setup_letters option').each(function() {
                         if($(this).is(":disabled")) { $(this).prop('disabled', false); }
+                        $(this).attr('style', '');  /// reset style
                         $('#em-select_setup_letters option:selected').removeAttr('selected');
                     })
 
@@ -525,6 +527,7 @@ if ($allowed_attachments !== true) {
                                 '</li>');
                             /// set selected letter
                             $('#em-select_setup_letters option[value="' + letter.id + '"]').prop('disabled', true);
+                            $('#em-select_setup_letters option[value="' + letter.id + '"]').css('font-style', 'italic');
                         })
                     }
                     // console.log(letters);
@@ -779,12 +782,13 @@ if ($allowed_attachments !== true) {
 
                     setTimeout(function(){ alreadyPicked.parent().css("background-color", ""); }, 500);
 
-                    $('#em-select_candidate_file option[value="' + file.val() + '"]').prop('disabled', true);
-
+                    // $('#em-select_candidate_file option[value="' + file.val() + '"]').css('font-style', 'italic');
+                    // $('#em-select_candidate_file option[value="' + file.val() + '"]').prop('disabled', true);
                 } else {
 
                     // Disable the file from the dropdown.
                     file.prop('disabled', true);
+                    file.css('font-style', 'italic');
                     // Add the file to the list.
                     $('#em-attachment-list').append(
                         '<li class="list-group-item candidate_file" style="padding: 6px 12px; display: flex; align-content: center; justify-content: space-between">' +
@@ -795,8 +799,12 @@ if ($allowed_attachments !== true) {
                             '</div>' +
                         '</li>');
 
-                    $('#em-select_candidate_file [value="' + file.val() + '"]').prop('disabled', true);
+                    // $('#em-select_candidate_file [value="' + file.val() + '"]').prop('disabled', true);
+                    // $('#em-select_candidate_file option[value="' + file.val() + '"]').css('font-style', 'italic');
                 }
+
+                $('#em-select_candidate_file [value="' + file.val() + '"]').prop('disabled', true);
+                $('#em-select_candidate_file option[value="' + file.val() + '"]').css('font-style', 'italic');
 
                 break;
 
@@ -820,11 +828,13 @@ if ($allowed_attachments !== true) {
                     setTimeout(function(){ alreadyPicked.parent().css("background-color", ""); }, 500);
 
                     $('#em-select_setup_letters option[value="' + file.val() + '"]').prop('disabled', true);
+                    $('#em-select_setup_letters option[value="' + file.val() + '"]').css('font-style', 'italic');
 
                 } else {
 
                     // Disable the file from the dropdown.
                     file.prop('disabled', true);
+                    file.css('font-style', 'italic');
                     // Add the file to the list.
                     $('#em-attachment-list').append(
                         '<li class="list-group-item setup_letters" style="padding: 6px 12px; display: flex; align-content: center; justify-content: space-between">' +
