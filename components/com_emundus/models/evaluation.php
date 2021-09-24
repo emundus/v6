@@ -3065,7 +3065,7 @@ class EmundusModelEvaluation extends JModelList {
                 // merge pdf by candidats
                 if($mergeMode == 1) {
                     /// if merge mode --> 1, mkdir new directory in / tmp / with suffix "--merge"
-                    $mergeDirName = $user_info[0]->name . '__merge';                 // for example: 95--merge
+                    $mergeDirName = $user_info[0]->name . '_' . $user_info[0]->id . '__merge';                 // for example: 95--merge
                     $mergeDirPath = $tmp_path . $mergeDirName;       // for example: /tmp/95--merge
 
                     if (!file_exists($mergeDirPath)) { mkdir($mergeDirPath, 0755, true); }
