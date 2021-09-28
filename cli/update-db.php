@@ -74,7 +74,7 @@ class UpdateDb extends JApplicationCli
 //TODO : Config logs
 
 
-    private function getInstalledVersion($component_id)
+    private function loadManifest($component_id)
     {
         $query = $this->db->getQuery(true);
         $query->select('manifest_cache', 'name')
@@ -92,6 +92,46 @@ class UpdateDb extends JApplicationCli
             }
             $this->type = $manifest->type;
         }
+    }
+
+    private function setVersion($component_id) {
+        $xml_path = JPATH_ADMINISTRATOR . '/components/' . $this->name . '/';
+        if (is_dir($xml_path)) {
+            $directory = new DirectoryIterator($xml_path);
+            foreach ($directory as $file) {
+                $filename = $file->getFilename();
+                if (strpos($filename, '.xml')){
+                    $xml_files[] = $xml_path . $filename;
+                }
+            }
+            foreach ($xml_files as $xml) {
+                $xmlf = simplexml_load_file($xml);
+                if ($xmlf->version) {
+
+                    $this->manifest->version = (string)$xmlf->version;
+                    if ($this->manifest->version != (string)$xmlf->version) {
+
+                        echo $this->manifest->version . " change to " . (string)$xmlf->version . " in table extension\n\n";
+                    } else {
+                        echo "No change in extension table\n\n";
+                    }
+                    return;
+                }
+            }
+        }
+        $manifestCache = json_encode($this->manifest);
+        if ($component_id == '700'){
+            $component_id = '3';
+        }
+        $query = $this->db->getQuery(true);
+        $field = array($this->db->qn($manifestCache) . "= '" . $this->manifest . "'");
+        $condition = array($this->db->qn('extension_id') . '= ' . $component_id);
+        $query->update('#__extensions')
+            ->set($field)
+            ->where($condition);
+        $this->db->setQuery($query);
+        $this->db->execute();
+
     }
 
     private function getExtensionsId($table) {
@@ -114,7 +154,7 @@ class UpdateDb extends JApplicationCli
     {
         # Update all components
         if ($this->input->get('a', $this->input->get('all'))) {
-            echo "Update all extensions\n\n";
+            echo "Update all components\n\n";
             foreach ($this->com_schemas as $component) {
                 $component_id = array_search($component, $this->com_schemas);
                 $this->doUpdate($component, $component_id);
@@ -149,11 +189,12 @@ class UpdateDb extends JApplicationCli
 
     public function doUpdate($component, $component_id) {
         # Get manifest info
-        $this->getInstalledVersion($component_id);
+        $this->loadManifest($component_id);
         echo "Update Component id : " . $component_id . "\n";
         echo "Name : " . $this->name . "\n";
         echo "Type : " . $this->type . "\n";
         echo "Actual version (manifest) : " . $this->installedVersion . "\n\n";
+        $this->setVersion($component_id);
 
         # Get update directory path
         $sql_update_path = JPATH_ADMINISTRATOR . '/components/' . $this->name . '/sql/updates/mysql/';
@@ -209,8 +250,9 @@ class UpdateDb extends JApplicationCli
         }
         # Manage case --> No need to update something, we just check if $actual_version_id correspond to last array key
         if ($emundus_array[$arr_len - 1] == ($actual_sql_version)) {
-            echo "\n" . "You are Up-To-Date !\n\n";
-            echo "---------------\n\n";
+            echo "\n" . "You are Up-To-Date !\n";
+
+            echo "\n\n---------------\n\n";
             return;
         }
         # Manage all others
@@ -253,8 +295,7 @@ class UpdateDb extends JApplicationCli
                 $this->db->execute();
                 echo "Finishing update successfuly with : " . $emundus_array[$sqlfile] . " at " . $current_date . "\n";
 
-                # Check version in manifest
-                $this->getInstalledVersion($component_id);
+                # Modify version in table extension
             } catch (Exception $e) {
                 echo "\nError during update with : $emundus_array[$sqlfile] at $current_date";
                 error_log($e->getMessage() . "\n");
@@ -302,10 +343,8 @@ class UpdateDb extends JApplicationCli
               -h, --help                  Help
               
             Update Filters
-              -i, --id ID                 Update by ID
+              -i, --id ID                 Update component/extension by ID
               -a, --all                   All Components
-              -V, --version VER           Version Filter
-              -c, --core                  Joomla! Core Packages
             
             
             EOHELP;
@@ -313,6 +352,8 @@ class UpdateDb extends JApplicationCli
 
     public function doExecute()
     {
+        $executionStartTime = microtime(true);
+
         $this->db = JFactory::getDbo();
         $this->com_schemas = $this->getExtensionsId('schemas');
         $this->com_extensions = $this->getExtensionsId('extensions');
@@ -334,9 +375,13 @@ class UpdateDb extends JApplicationCli
             $this->doEchoHelp();
         }
 
-        if ($version = $this->input->get('v', $this->input->get('version'))) {
-            echo "Version";
+        if ($component = $this->input->get('v', $this->input->get('version'))) {
+            $this->setVersion($component);
         }
+
+        $executionEndTime = microtime(true);
+        $seconds = $executionEndTime - $executionStartTime;
+        echo "\n" . "This script took $seconds to execute.";
     }
 }
 
