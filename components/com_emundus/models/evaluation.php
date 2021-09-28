@@ -2802,7 +2802,9 @@ if (JFactory::getUser()->id == 63)
                                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                         $val = explode(',', $val['val']);
                                         foreach ($val as $k => $v) {
-                                            $val[$k] = date($params->details_date_format, strtotime($v));
+                                            if(!empty($v)){
+                                                $val[$k] = date($params->details_date_format, strtotime($v));
+                                            }
                                         }
                                         $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
                                     }
