@@ -6499,29 +6499,29 @@ $(document).ready(function() {
                                     "</thead>" +
                                     "<tbody>";
 
-                                // files.forEach(file => {
-                                //     table +=
-                                //         "<tr id='" + file.upload + "'>" +
-                                //             "<td>" + file.filename +
-                                //                 " <a id='" + 'em_download_doc_' + file.upload + "' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='"+ file.url + file.filename +"'>" +
-                                //                     "<span class='glyphicon glyphicon-save'></span>" +
-                                //                 "</a>" +
-                                //             "</td>" +
-                                //         "</tr>";
-                                // })
+                                files.forEach(file => {
+                                    table +=
+                                        "<tr id='" + file.upload + "'>" +
+                                        "<td>" + file.filename +
+                                        " <a id='" + 'em_download_doc_' + file.upload + "' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='"+ file.url + file.filename +"'>" +
+                                        "<span class='glyphicon glyphicon-save'></span>" +
+                                        "</a>" +
+                                        "</td>" +
+                                        "</tr>";
+                                })
 
-                                for(let key in files) {
-                                    if(files[key]['filename'] !== undefined) {
-                                        table +=
-                                            "<tr id='" + files[key]['upload'] + "'>" +
-                                            "<td>" + files[key]['filename'] +
-                                            " <a id='" + 'em_download_doc_' + files[key]['upload'] + "' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + files[key]['url'] + files[key]['filename'] + "'>" +
-                                            "<span class='glyphicon glyphicon-save'></span>" +
-                                            "</a>" +
-                                            "</td>" +
-                                            "</tr>";
-                                    }
-                                }
+                                // for(let key in files) {
+                                //     if(files[key]['filename'] !== undefined) {
+                                //         table +=
+                                //             "<tr id='" + files[key]['upload'] + "'>" +
+                                //             "<td>" + files[key]['filename'] +
+                                //             " <a id='" + 'em_download_doc_' + files[key]['upload'] + "' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + files[key]['url'] + files[key]['filename'] + "'>" +
+                                //             "<span class='glyphicon glyphicon-save'></span>" +
+                                //             "</a>" +
+                                //             "</td>" +
+                                //             "</tr>";
+                                //     }
+                                // }
 
                                 table += "</tbody></table>";
                                 $('.modal-body').append(table);

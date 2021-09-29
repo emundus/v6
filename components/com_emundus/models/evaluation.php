@@ -3022,31 +3022,54 @@ class EmundusModelEvaluation extends JModelList {
                         }
                 }
             }
-        }
 
-        /// before zip and merge, we need to refactor $res->file
-        $_files = $res->files;
+            /// reset $res->files
+            $_ids = array();
+            unset($res->files);
+            $__query = "SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum = " . $fnum . " GROUP BY #__emundus_uploads.attachment_id ORDER BY attachment_id DESC";
 
-        for($i = 0; $i <= count($_files); $i++) {
-            // find upload id
-            $_uId = $_files[$i]['upload'];
+            $this->_db->setQuery($__query);
+            $__uploads = $this->_db->loadObjectList();
 
-            if(!is_null($_uId)) {
-                /// make a sql query
-                $_query = 'SELECT COUNT(*) FROM #__emundus_uploads WHERE #__emundus_uploads.id = ' . $_uId;
-                $this->_db->setQuery($_query);
-                $_count = $this->_db->loadResult();
-
-                if($_count == 0) {
-                    unset($_files[$i]);
-                }
-            } else {
-                unset($_files[$i]);
+            foreach($__uploads as $_upload) {
+                $res->files[] = array('filename' => $_upload->filename, 'upload' => $_upload->id, 'url' => JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS);
+                $_ids[] = $_upload->id;
             }
+
+            /// remove unnecessary records for same attachment id
+            $_query = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' )';
+            $this->_db->setQuery($_query);
+            $this->_db->execute();
         }
 
-        unset($res->files);
-        $res->files = $_files;
+        /// for each attachment id, we just get only the last record (if multiple rows)
+        // $__query = "SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum = " . $fnum . ' AND #__emundus_uploads.attachment_id = ' . $attachInfo['id'] . ' ORDER BY id DESC LIMIT 1';
+        // $this->_db->setQuery($__query);
+        // var_dump($this->_db->loadObjectList());
+
+        // /// before zip and merge, we need to refactor $res->file
+        // $_files = $res->files;
+
+        // for($i = 0; $i <= count($_files); $i++) {
+        //     // find upload id
+        //     $_uId = $_files[$i]['upload'];
+
+        //     if(!is_null($_uId)) {
+        //         /// make a sql query
+        //         $_query = 'SELECT COUNT(*) FROM #__emundus_uploads WHERE #__emundus_uploads.id = ' . $_uId;
+        //         $this->_db->setQuery($_query);
+        //         $_count = $this->_db->loadResult();
+
+        //         if($_count == 0) {
+        //             unset($_files[$i]);
+        //         }
+        //     } else {
+        //         unset($_files[$i]);
+        //     }
+        // }
+
+        // unset($res->files);
+        // $res->files = $_files;
 
         // group letters by candidat
 
