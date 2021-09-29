@@ -3023,53 +3023,43 @@ class EmundusModelEvaluation extends JModelList {
                 }
             }
 
-            /// reset $res->files
             $_ids = array();
-            unset($res->files);
-            $__query = "SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum = " . $fnum . " GROUP BY #__emundus_uploads.attachment_id ORDER BY attachment_id DESC";
+            $getLastUploadIdQuery = "SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum = " . $fnum . " GROUP BY #__emundus_uploads.attachment_id ORDER BY attachment_id DESC";
 
-            $this->_db->setQuery($__query);
-            $__uploads = $this->_db->loadObjectList();
+            $this->_db->setQuery($getLastUploadIdQuery);
+            $availableUploads = $this->_db->loadObjectList();
 
-            foreach($__uploads as $_upload) {
-                $res->files[] = array('filename' => $_upload->filename, 'upload' => $_upload->id, 'url' => JURI::base() . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS);
+            foreach($availableUploads as $_upload) {
                 $_ids[] = $_upload->id;
             }
 
-            /// remove unnecessary records for same attachment id
-            $_query = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' )';
-            $this->_db->setQuery($_query);
+            /// remove all duplicate attachments (just keep the last) -- unlink
+            $getDuplicateAttachmentQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum = ' . $fnum;
+
+            $this->_db->setQuery($getDuplicateAttachmentQuery);
+            $duplicateAttachments = $this->_db->loadObjectList();
+
+            foreach($duplicateAttachments as $attachment) {
+                unlink(EMUNDUS_PATH_ABS . $attachment->user_id . DS . $attachment->filename);
+                unlink(EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . DS . $attachment->filename);
+            }
+
+            /// remove unnecessary records for same attachment id in database
+            $deleteDuplicateAttachmentsQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum = ' . $fnum;
+            $this->_db->setQuery($deleteDuplicateAttachmentsQuery);
             $this->_db->execute();
         }
 
-        /// for each attachment id, we just get only the last record (if multiple rows)
-        // $__query = "SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum = " . $fnum . ' AND #__emundus_uploads.attachment_id = ' . $attachInfo['id'] . ' ORDER BY id DESC LIMIT 1';
-        // $this->_db->setQuery($__query);
-        // var_dump($this->_db->loadObjectList());
+        /// lastly, we get all records in jos_emundus_uploads
+        unset($res->files);
 
-        // /// before zip and merge, we need to refactor $res->file
-        // $_files = $res->files;
+        $getAllUploadsQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_Array) . ') AND DATE(#__emundus_uploads.timedate) = current_date()';
+        $this->_db->setQuery($getAllUploadsQuery);
+        $_upAttachments = $this->_db->loadObjectList();
 
-        // for($i = 0; $i <= count($_files); $i++) {
-        //     // find upload id
-        //     $_uId = $_files[$i]['upload'];
-
-        //     if(!is_null($_uId)) {
-        //         /// make a sql query
-        //         $_query = 'SELECT COUNT(*) FROM #__emundus_uploads WHERE #__emundus_uploads.id = ' . $_uId;
-        //         $this->_db->setQuery($_query);
-        //         $_count = $this->_db->loadResult();
-
-        //         if($_count == 0) {
-        //             unset($_files[$i]);
-        //         }
-        //     } else {
-        //         unset($_files[$i]);
-        //     }
-        // }
-
-        // unset($res->files);
-        // $res->files = $_files;
+        foreach($_upAttachments as $_upload) {
+            $res->files[] = array('filename' => $_upload->filename, 'upload' => $_upload->id, 'url' => JURI::base() . EMUNDUS_PATH_REL . $_upload->user_id . DS);
+        }
 
         // group letters by candidat
 
