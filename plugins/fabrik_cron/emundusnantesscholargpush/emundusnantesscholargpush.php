@@ -108,7 +108,9 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 			$db->quoteName('fc.scolarg_label','villeAF'), //NOTE: Required
 			$db->quoteName('pd.city_2'),
 			$db->quoteName('pd.street_1','voieAF'), //NOTE: Required
-			$db->quoteName('cc.fnum')
+			$db->quoteName('cc.fnum'),
+            $db->quoteName('a.codSpecialite1'),
+            $db->quoteName('a.codSpecialite2'),
 		];
 
 		// Get list of files to push
@@ -206,7 +208,13 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 			if (empty($file->codPaysAF)) {
 				$file->codPaysAF = '999';
 			}
-
+            if (empty($file->codSpecialite1)) {
+                unset($file->codSpecialite1);
+            }
+            if (empty($file->codSpecialite2)) {
+                unset($file->codSpecialite2);
+            }
+            
 			// Telephone numbers need to be without spaces
 			$file->numPortable = str_pad(trim(str_replace(' ', '', $file->numPortable), '_'), 10, "0", STR_PAD_LEFT);
 			$file->numTelephoneAF = str_pad(trim(str_replace(' ', '', $file->numTelephoneAF), '_'), 10, "0", STR_PAD_LEFT);
@@ -219,7 +227,7 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 			foreach($file as &$prop) {
 				$prop = trim($prop);
 			}
-			
+
 			// Street numbers longer than 3 chars are not allowed...
 			if (strlen($file->numVoieAF) > 3) {
 				$file->voieAF = $file->numVoieAF.' '.$file->voieAF;
