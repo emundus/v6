@@ -3053,7 +3053,7 @@ class EmundusModelEvaluation extends JModelList {
         /// lastly, we get all records in jos_emundus_uploads
         unset($res->files);
 
-        $getAllUploadsQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_Array) . ') AND DATE(#__emundus_uploads.timedate) = current_date()';
+        $getAllUploadsQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_Array) . ') AND DATE(#__emundus_uploads.timedate) = current_date() AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ' )';
         $this->_db->setQuery($getAllUploadsQuery);
         $_upAttachments = $this->_db->loadObjectList();
 
