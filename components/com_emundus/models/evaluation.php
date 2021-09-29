@@ -2340,22 +2340,30 @@ class EmundusModelEvaluation extends JModelList {
             $_fnumProgram = $fnum_infos['training'];
 
             /// second :: status, program, templates --> detect the letter id to generate
-            $query
-                ->select('jesl.*')
-                ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
-                ->where($this->_db->quoteName('jeslrs.status') . ' = ' . $_fnumStatus)
-                ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
-                ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
+//            $query
+//                ->select('jesl.*')
+//                ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
+//                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
+//                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+//                ->where($this->_db->quoteName('jeslrs.status') . ' = ' . $_fnumStatus)
+//                ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
+//                ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')');
+//
+//            $this->_db->setQuery($query);
+//            return $this->_db->loadObjectList();
+            $query = 'SELECT #__emundus_setup_letters.*
+                        FROM #__emundus_setup_letters 
+                            WHERE #__emundus_setup_letters.attachment_id 
+                                IN ( SELECT jesl.attachment_id FROM #__emundus_setup_letters AS jesl LEFT JOIN #__emundus_setup_letters_repeat_status AS jeslrs ON jesl.id = jeslrs.parent_id LEFT JOIN #__emundus_setup_letters_repeat_training AS jeslrt ON jesl.id = jeslrt.parent_id
+                                        WHERE jeslrs.status = ' .  $_fnumStatus .
+                                            ' AND jeslrt.training = ' . $this->_db->quote($_fnumProgram) .
+                                                'AND jesl.attachment_id IN (' . implode(',', $templates) . ')' . ')';
 
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
-
         } catch(Exception $e) {
             return [];
         }
-
     }
 
     /// get affected letters by [fnums] and [templates]
@@ -3015,6 +3023,30 @@ class EmundusModelEvaluation extends JModelList {
                 }
             }
         }
+
+        /// before zip and merge, we need to refactor $res->file
+        $_files = $res->files;
+
+        for($i = 0; $i <= count($_files); $i++) {
+            // find upload id
+            $_uId = $_files[$i]['upload'];
+
+            if(!is_null($_uId)) {
+                /// make a sql query
+                $_query = 'SELECT COUNT(*) FROM #__emundus_uploads WHERE #__emundus_uploads.id = ' . $_uId;
+                $this->_db->setQuery($_query);
+                $_count = $this->_db->loadResult();
+
+                if($_count == 0) {
+                    unset($_files[$i]);
+                }
+            } else {
+                unset($_files[$i]);
+            }
+        }
+
+        unset($res->files);
+        $res->files = $_files;
 
         // group letters by candidat
 
