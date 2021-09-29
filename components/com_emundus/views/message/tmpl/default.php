@@ -333,7 +333,7 @@ if ($allowed_attachments !== true) {
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
     $(document).ready(function() {
-        $('#can-val .btn-success').attr('disabled', true);
+        // $('#can-val .btn-success').attr('disabled', true);
         // $('#can-val .btn-success').hide();
 
         tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
