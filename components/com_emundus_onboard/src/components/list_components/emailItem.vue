@@ -50,6 +50,7 @@
                           :selected="this.data.id"
                           :published="isPublished"
                           @validateFilters="validateFilters()"
+                          @updateLoading="updateLoading"
                       ></actions>
                     </template>
                   </v-popover>
@@ -101,6 +102,10 @@ export default {
   },
 
   methods: {
+    updateLoading(value){
+      this.$emit('updateLoading',value);
+    },
+
     validateFilters(){
       this.$emit('validateFilters');
     },
