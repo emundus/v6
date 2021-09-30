@@ -66,13 +66,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_dropfiles/install.php';
  */
 class UpdateDb extends JApplicationCli
 {
-
-    public $db = null;
-    public $com_schemas = array();
-
-
 //TODO : Config logs
-
 
     private function loadManifest($component_id)
     {
@@ -85,19 +79,10 @@ class UpdateDb extends JApplicationCli
 
         if ($manifestCache) {
             $manifest = json_decode($manifestCache, true);
-            #$this->installedVersion = $manifest['version'];
             $this->name = $manifest['name'];
-            #$this->element = $manifest->element;
-/*            if ($component_id == '700'){
-                $this->name = 'com_admin';
-            }*/
             $this->type = $manifest['type'];
         }
         return $manifest;
-    }
-
-    private  function xmlFiles(){
-
     }
 
     private function setVersion($component_id, $manifest)
@@ -206,6 +191,7 @@ class UpdateDb extends JApplicationCli
                 $component_id = array_search($component, $this->com_schemas);
                 $this->doUpdate($component, $component_id);
             }*/
+
             # All component type from extensions table
             unset($this->com_extensions[700]);
             unset($this->com_components[3]);
@@ -277,7 +263,6 @@ class UpdateDb extends JApplicationCli
         }
 
         # Query present version id value
-
         $id = $component_id;
         $query = $this->db->getQuery(true);
         $query->select('version_id')
@@ -417,7 +402,6 @@ class UpdateDb extends JApplicationCli
 
     public function doEchoHelp()
     {
-        # $version = _JoomlaCliAutoUpdateVersion;
         echo <<<EOHELP
             Joomla! CLI Update DB
             
@@ -429,6 +413,7 @@ class UpdateDb extends JApplicationCli
             Update Filters
               -i, --id ID                 Update component/extension by ID
               -a, --all                   All Components
+              -c, --core                  Composants Joomla
             
             
             EOHELP;
