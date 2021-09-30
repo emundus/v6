@@ -63,7 +63,7 @@ class EmundusViewDecision extends JViewLegacy
 			case 'menuactions':
 				$display = JFactory::getApplication()->input->getString('display', 'none');
 
-				$items = @EmundusHelperFiles::getMenuList($menu_params);
+				$items = @(new EmundusHelperFiles)->getMenuList($menu_params);
                 //$actions = @EmundusHelperFiles::getActionsACL();
                 $actions = $m_files->getAllActions();
 
@@ -220,11 +220,11 @@ class EmundusViewDecision extends JViewLegacy
 							}
 
 							elseif ($key == 'evaluator') {
-								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-									$userObj->val = !empty($value) ? '<a href="#" data-toggle="modal" data-target="#basicModal" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'">
+								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction(29,'r',$this->_user->id)) {
+									$userObj->val = !empty($value) ? '<a href="' . $form_url_view.$user['evaluation_id'] . '"  target="_blank" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'">
 											<span class="glyphicon icon-eye-open" title="'.JText::_('DETAILS').'">  </span>
 										</a>'.$value : '';
-								}
+                                }
 								else {
 									$userObj->val = $value;
 								}
