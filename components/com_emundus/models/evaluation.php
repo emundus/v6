@@ -2464,11 +2464,30 @@ class EmundusModelEvaluation extends JModelList {
                         $file = JPATH_BASE . $letter->file;
                         if (file_exists($file)) {
                             $res->status = true;
-
+                            $rand = rand(0, 1000000);
+                            $post = [
+                                'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
+                                'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
+                                'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
+                                'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
+                                'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
+                                'USER_EMAIL' => $fnumInfo[$fnum]['applicant_email'],
+                                'FNUM' => $fnum
+                            ];
                             // make file name --- logically, we should avoid to generate many files which have same contents but different name --> fnum will distinguish the file name
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+
                             if (!$anonymize_data) {
-                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];;
+                                $eMConfig = JComponentHelper::getParams('com_emundus');
+                                $generated_doc_name = $eMConfig->get('generated_doc_name', "");
+                                if (!empty($generated_doc_name)) {
+                                    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                                    $m_checklist = new EmundusModelChecklist;
+                                    $name = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
+                                } else {
+                                    $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']);
+                                }
+                                $name = $name.$attachInfo['lbl']."-".md5($rand.time())."_.".pathinfo($file)['extension'];
                             } else {
                                 $name = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_.' . pathinfo($file)['extension'];
                             }
@@ -2603,7 +2622,16 @@ class EmundusModelEvaluation extends JModelList {
                             // make file name --- logically, we should avoid to generate many files which have same contents but different name --> fnum will distinguish the file name
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
-                                $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf";
+                                $eMConfig = JComponentHelper::getParams('com_emundus');
+                                $generated_doc_name = $eMConfig->get('generated_doc_name', "");
+                                if (!empty($generated_doc_name)) {
+                                    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                                    $m_checklist = new EmundusModelChecklist;
+                                    $name = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
+                                } else {
+                                    $name = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']);
+                                }
+                                $name = $name.$attachInfo['lbl']."-".md5($rand.time()).".pdf";
                             } else {
                                 $name = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".pdf";
                             }
@@ -2658,6 +2686,15 @@ class EmundusModelEvaluation extends JModelList {
                         $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
 
                         $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
+                        $post = [
+                            'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
+                            'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
+                            'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
+                            'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
+                            'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
+                            'USER_EMAIL' => $fnumInfo[$fnum]['applicant_email'],
+                            'FNUM' => $fnum
+                        ];
 
                         $special = ['user_dob_age', 'evaluation_radar'];
 
@@ -2727,7 +2764,9 @@ class EmundusModelEvaluation extends JModelList {
                                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                                         $val = explode(',', $val['val']);
                                         foreach ($val as $k => $v) {
-                                            $val[$k] = date($params->details_date_format, strtotime($v));
+                                            if(!empty($v)){
+                                                $val[$k] = date($params->details_date_format, strtotime($v));
+                                            }
                                         }
                                         $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
                                     }
@@ -2793,7 +2832,16 @@ class EmundusModelEvaluation extends JModelList {
                                 /// check if the filename is anonymized -- logically, we should avoid to generate many files which have the same contents, but different name --> bad performance
                                 $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                                 if (!$anonymize_data) {
-                                    $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".docx";
+                                    $eMConfig = JComponentHelper::getParams('com_emundus');
+                                    $generated_doc_name = $eMConfig->get('generated_doc_name', "");
+                                    if (!empty($generated_doc_name)) {
+                                        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                                        $m_checklist = new EmundusModelChecklist;
+                                        $filename = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
+                                    } else {
+                                        $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']);
+                                    }
+                                    $filename = $filename.$attachInfo['lbl']."-".md5($rand.time()).".docx";
                                 } else {
                                     $filename = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".docx";
                                 }
@@ -2870,6 +2918,15 @@ class EmundusModelEvaluation extends JModelList {
                         $spreadsheet = $reader->load($inputFileName);
 
                         $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
+                        $post = [
+                            'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
+                            'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
+                            'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
+                            'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
+                            'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
+                            'USER_EMAIL' => $fnumInfo[$fnum]['applicant_email'],
+                            'FNUM' => $fnum
+                        ];
 
                         $special = ['user_dob_age'];
 
@@ -2967,7 +3024,16 @@ class EmundusModelEvaluation extends JModelList {
                             /// check if the filename is anonymized -- logically, we should avoid to generate many files which have the same contents, but different name --> bad performance
                             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                             if (!$anonymize_data) {
-                                $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".xlsx";
+                                $eMConfig = JComponentHelper::getParams('com_emundus');
+                                $generated_doc_name = $eMConfig->get('generated_doc_name', "");
+                                if (!empty($generated_doc_name)) {
+                                    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                                    $m_checklist = new EmundusModelChecklist;
+                                    $filename = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
+                                } else {
+                                    $filename = $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']);
+                                }
+                                $filename = $filename.$attachInfo['lbl']."-".md5($rand.time()).".xlsx";
                             } else {
                                 $filename = $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".xlsx";
                             }

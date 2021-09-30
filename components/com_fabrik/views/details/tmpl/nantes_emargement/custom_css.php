@@ -47,22 +47,29 @@ if ($rowid !== '')
 echo <<<EOT
 
 /* BEGIN - Your CSS styling starts here */
-h1,h2,h3{
+h1,h2{
     font-family: 'euclidflex-reg' !important;
     color: #002e5d !important;
+    font-size: 16px !important;
 }
 
 body {
     margin-top:110px !important;
     margin-bottom:1.5em;
 }
+.legend {
+    padding:10px;
+    background:#ddd;
+    color:black;
+    text-align:center;
+    width:100%;
+}
 #headerdompdf {
     display:block;
     position: fixed;
     top: 0px;
     width:100%;
-    height:110px;
-    border-bottom: 1px solid black;
+    height:150px;
 }
 
 .em-headerdompdf img {
@@ -70,34 +77,39 @@ body {
 }
 
 .em-headerdompdf-title {
-    width:320px;
     margin-left:175px;
+    margin-bottom: 15px;
+}
+.right{
+    text-align: right !important;
+}
+.center{
     text-align: center !important;
-    line-height: 5
 }
 
 .em-headerdompdf-title h1 {
-    font-size: 1.5rem;
+    font-size: 14px;
     color: #002e5d; 
     margin: 0px !important;
     padding: 0px !important;
 }
 
-.em-headerdompdf-title span {
+.em-headerdompdf-title span, .em-headerdompdf-title p {
     margin: 0px !important;
     padding: 0px !important;
-    width:320px !important;
     line-height: 15px !important;
+    text-align:center;
+    font-size:15px;
     
+}
+.schoolyear, .schoolyear > div{
+display:inline-block !important;
+text-align:center;
 }
 .second-span {
     float: none !important;
     width: 150px !important;
     display: inline-block !important;
-}
-
-.commission-date, .commission-date > div{
-    display: inline !important;
 }
 
 .em-headerdompdf-title br {
@@ -125,8 +137,12 @@ body {
     color:red;
 }
 
-table {
+table, table.repeatGroupTable, table.repeatGroupTable th, table.repeatGroupTable td{
     min-width: 100% !important;
+    border: 2px solid black;
+    padding:0;
+    border-spacing : 0;
+border-collapse : collapse;
 }
 
 td {
@@ -137,19 +153,14 @@ td {
     padding: 0px !important;
 }
 
-.fb_el_jos_emundus_pv___campaign_id_ro{
-    display:none !important;
-}
-
 h3 {
     font-size: 1.2rem !important;
-    text-decoration: underline;
     margin-bottom: 0px !important;
-    padding-bottom: 0px !important;
 }
 
-#group734 {page-break-after: always;}
-
+#group744{
+    display:none;
+}
 
 .repeatGroupTable .fabrikElementReadOnly {
     margin-top: -1px !important;

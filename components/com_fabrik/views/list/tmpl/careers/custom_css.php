@@ -105,6 +105,7 @@ flex: 0 0 60%;
 .careers-image img {
 border-radius: 6px;
 height: 15rem;
+object-fit: cover;
 }
 .careers-text p strong {
 font-weight: bold;
@@ -185,5 +186,6 @@ ul.pagination-list li:not(.active) a{
   background-color: white;
   color:#a51e25;
 }
+
 /* END - Your CSS styling ends here */
 EOT;

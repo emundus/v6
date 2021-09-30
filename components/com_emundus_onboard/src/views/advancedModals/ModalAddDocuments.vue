@@ -342,9 +342,7 @@ export default {
       this.getModelsDocs();
     },
     createNewDocument() {
-      this.isImageError();
 
-      if(!this.isImageError()) {
         this.errors = {
           name: false,
           nbmax: false,
@@ -425,7 +423,12 @@ export default {
           params.isModeleAndUpdate = true;
         }
 
+        let image_error = false;
+        if(types.includes('jpeg;jpg;png;gif')){
+          image_error = this.isImageError()
+        }
 
+      if(!image_error) {
         let url = 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument';
 
         if (this.form.name[this.langue] === this.model.value && this.doc != null) {
