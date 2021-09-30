@@ -63,7 +63,7 @@ class EmundusViewDecision extends JViewLegacy
 			case 'menuactions':
 				$display = JFactory::getApplication()->input->getString('display', 'none');
 
-				$items = @(new EmundusHelperFiles)->getMenuList($menu_params);
+				$items = @EmundusHelperFiles::getMenuList($menu_params);
                 //$actions = @EmundusHelperFiles::getActionsACL();
                 $actions = $m_files->getAllActions();
 
