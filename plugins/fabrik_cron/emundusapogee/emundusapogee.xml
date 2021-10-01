@@ -2,7 +2,7 @@
 <extension group="fabrik_cron" method="upgrade" type="plugin" version="30">
 	<name>plg_fabrik_emundusapogee</name>
 	<author>Duy Tran</author>
-	<creationDate>Octobre 2-21</creationDate>
+	<creationDate>Octobre 2021</creationDate>
 	<copyright>Copyright (C) 2015 emundus.fr - All rights reserved.</copyright>
 	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>duy.tran@emundus.fr</authorEmail>
