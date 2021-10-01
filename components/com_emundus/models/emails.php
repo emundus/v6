@@ -427,7 +427,7 @@ class EmundusModelEmails extends JModelList {
         return $constants;
     }
 
-    public function setTags($user_id, $post=null, $fnum=null, $passwd='')
+    public function setTags($user_id, $post=null, $fnum=null, $passwd='', $content='')
     {
         $db = JFactory::getDBO();
         //$user = JFactory::getUser($user_id);
@@ -441,6 +441,12 @@ class EmundusModelEmails extends JModelList {
         $patterns = $constants['patterns'];
         $replacements = $constants['replacements'];
         foreach ($tags as $tag) {
+            if (!empty($content)){
+                $tag_pattern = '[' . $tag['tag'] . ']';
+                if(!strpos($content, $tag_pattern)){
+                    continue;
+                }
+            }
             $patterns[] = '/\['.$tag['tag'].'\]/';
             $value = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);
 
@@ -493,6 +499,7 @@ class EmundusModelEmails extends JModelList {
 
         return $tags;
     }
+
 
     public function setTagsWord($user_id, $post=null, $fnum=null, $passwd='')
     {

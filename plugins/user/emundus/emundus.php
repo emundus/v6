@@ -205,6 +205,7 @@ class plgUserEmundus extends JPlugin
                 else{
                     $name= $username[1];
                 }
+
                 $details['name'] = $name;
                 $details['emundus_profile']['lastname'] = $name;
                 $details['firstname'] = $username[0];
@@ -285,7 +286,7 @@ class plgUserEmundus extends JPlugin
 
             } elseif (!empty($lastname) && !empty($firstname)) {
                 // Update name and firstname from #__users
-                $db->setQuery('UPDATE #__users SET name='.$db->quote(ucfirst($firstname)).' '.$db->quote(strtoupper($lastname)).' WHERE id='.$user['id']);
+                $db->setQuery('UPDATE #__users SET name='.$db->quote(ucfirst($firstname) . ' ').' '.$db->quote(strtoupper($lastname)).' WHERE id='.$user['id']);
                 $db->execute();
 
                 $db->setQuery('UPDATE #__emundus_users SET lastname='.$db->quote(strtoupper($lastname)).', firstname='.$db->quote(ucfirst($firstname)).' WHERE user_id='.$user['id']);
