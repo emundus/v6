@@ -27,9 +27,6 @@ require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'interview.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
 
-/// add decision
-require_once (JPATH_COMPONENT.DS.'models'.DS.'decision.php');
-
 class EmundusViewApplication extends JViewLegacy {
     protected $_user = null;
     var $_db = null;
@@ -115,8 +112,6 @@ class EmundusViewApplication extends JViewLegacy {
                         $assoc_files->fnumInfos = $fnumInfos;
                         $assoc_files->fnum = $fnum;
 
-                        // get opi code
-                        if(!is_null(reset($_mDecision->getDecisionFnum($fnum))->code_opi)){ $assoc_files->opi = reset($_mDecision->getDecisionFnum($fnum))->code_opi; }
                     }
                     $this->assignRef('assoc_files', $assoc_files);
                     break;

@@ -42,14 +42,14 @@ class XmlDataFilling {
         return(json_decode(file_get_contents(dirname(EMUNDUS_PATH_ABS) . DS . $this->jsonDataFile)));
     }
 
-    public function fillData($xmlDocument, $_description, $fnums) {
+    public function fillData($xmlDocument, $_description, $fnum) {
         /// get schema description
         $jsonDescriptionBody = $_description;
 
         /// get data mapping
         $jsonDataBody = $this->getDataMapping();
 
-        foreach ($fnums as $fnum) {
+        //foreach ($fnums as $fnum) {
             /// get all keys of json data mapping
             $jsonKeys = array_keys((array)$jsonDataBody);
 
@@ -312,7 +312,7 @@ class XmlDataFilling {
                     }
                 }
             }
-        }
+        //}
         return $xmlDocument;
     }
 

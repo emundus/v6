@@ -53,6 +53,26 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         $params = $this->getParams();
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
+        /*
+         * First of all, get all fnums having OPI code (get from jos_emundus_final_grade // where opi_code is not null or empty)
+         * */
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+            ->select('#__emundus_final_grade.fnum')
+            ->from($db->quoteName('#__emundus_final_grade'))
+            ->where($db->quoteName('#__emundus_final_grade.code_opi') . ' is not null')
+            ->andWhere($db->quoteName('#__emundus_final_grade.code_opi') . " != ''");
+
+        $db->setQuery($query);
+        $available_fnums = $db->loadColumn();
+
+//        $available_fnums = ['2021030112462400000300000227', '2021030509242000000330000390'];
+        
+        //echo '<pre>'; var_dump($available_fnums); echo '</pre>'; die;
+
         ///get wsdl url
         $wsdl_url = $params->get('webservice_url');
 
@@ -77,9 +97,13 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
 
         /// filling data
         $_xmlDataObject = new XmlDataFilling($json_request_data);
-        $_xmlDataRequest = $_xmlDataObject->fillData($_xmlSchemaRequest, $_xmlSchemaObject->getSchemaDescription(), ['2021030112462400000300000227']);
+//        $_xmlDataRequest = $_xmlDataObject->fillData($_xmlSchemaRequest, $_xmlSchemaObject->getSchemaDescription(), ['2021030112462400000300000227']);
 
-        $_xmlSchemaObject->exportXMLFile($_xmlDataRequest, EMUNDUS_PATH_ABS .DS . 'duy_1234');die;
+        foreach($available_fnums as $fnum) {
+            $_xmlDataRequest = $_xmlDataObject->fillData($_xmlSchemaRequest, $_xmlSchemaObject->getSchemaDescription(), $fnum);
 
+            $_xmlSchemaObject->exportXMLFile($_xmlDataRequest, EMUNDUS_PATH_ABS . DS . $fnum);
+        }
+        die;
     }
 }

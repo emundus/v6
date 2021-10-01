@@ -44,10 +44,6 @@ if (!empty((array)$this->assoc_files)) : ?>
 								<li><span><strong><?php echo JText::_('SUBMITTED')?> :</strong> <?php echo JText::_('JNO');?></span></li>
 							<?php endif;?>
 
-                            <!-- show opi code if it exists  -->
-                            <?php if(!is_null(((array)$this->assoc_files)['opi'])) { ?>
-                                <li><span><strong><?php echo JText::_('OPI_CODE')?> :</strong> <?php echo ((array)$this->assoc_files)['opi']; ?></span></li>
-                            <?php } ?>
 						</ul>
 
 					</div>
