@@ -622,6 +622,11 @@ class EmundusModelEmails extends JModelList {
                         $fabrikValues[$elt['id']][$fnum]['val'] = $this->getCddLabel($elt, $val['val']);
                     }
                 }
+                if ($elt['plugin'] == 'textarea') {
+                    foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+                        $fabrikValues[$elt['id']][$fnum]['val'] = preg_replace('"','\"',$val['val']);
+                    }
+                }
             }
             $preg = array('patterns' => array(), 'replacements' => array());
             foreach ($fnumsArray as $fnum) {
