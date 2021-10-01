@@ -402,6 +402,9 @@ JText::script('COM_EMUNDUS_MODEL_ERR');
 // UPLOADED IMAGE IS TOO SMALL
 JText::script('ERROR_IMAGE_TOO_SMALL');
 
+// OPI CODE
+JText::script('OPI_CODE');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
 JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );

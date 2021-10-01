@@ -33,7 +33,8 @@ if (!empty((array)$this->assoc_files)) : ?>
 					<div>
 						<ul>
 							<li><span><strong><?php echo JText::_('ACADEMIC_YEAR')?> :</strong> <?php echo $camp->year?></span></li>
-							<li><span><?php echo $camp->training?></span></li>
+<!--							<li><span>--><?php //echo $camp->training?><!--</span></li>-->
+                            <li><span><strong><?php echo JText::_('PROGRAMME_CODE')?> :</strong> <?php echo $camp->training?></span></li>
 							<li><span><strong><?php echo JText::_('F_NUM')?> :</strong> <?php echo $camp->fnum?></span></li>
 							
 							<?php if($camp->submitted==1):?>
@@ -42,6 +43,11 @@ if (!empty((array)$this->assoc_files)) : ?>
 							<?php else:?>
 								<li><span><strong><?php echo JText::_('SUBMITTED')?> :</strong> <?php echo JText::_('JNO');?></span></li>
 							<?php endif;?>
+
+                            <!-- show opi code if it exists  -->
+                            <?php if(!is_null(((array)$this->assoc_files)['opi'])) { ?>
+                                <li><span><strong><?php echo JText::_('OPI_CODE')?> :</strong> <?php echo ((array)$this->assoc_files)['opi']; ?></span></li>
+                            <?php } ?>
 						</ul>
 
 					</div>
