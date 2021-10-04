@@ -113,7 +113,7 @@
               :manyLanguages="manyLanguages"
           />
 
-          <add-documents-form
+<!--          <add-documents-form
               v-if="menuHighlight == 3"
               :funnelCategorie="formCategories[langue][menuHighlight]"
               :profileId="profileId"
@@ -121,7 +121,7 @@
               :menuHighlight="menuHighlight"
               :langue="actualLanguage"
               :manyLanguages="manyLanguages"
-          ></add-documents-form>
+          ></add-documents-form>-->
 
 <!--          <add-gestionnaires
               v-if="menuHighlightProg == 0 && program.id != 0"
@@ -259,13 +259,11 @@ export default {
         "Informations générales",
         "Documents préalables",
         "Formulaire",
-        "Documents d'informations",
       ],
       [
         "Global informations",
         "Preliminary documents",
         "Form",
-        "Informations documents",
       ]
     ],
 
