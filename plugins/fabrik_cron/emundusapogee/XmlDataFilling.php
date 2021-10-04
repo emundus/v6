@@ -317,15 +317,26 @@ class XmlDataFilling {
                                     $pr_names = $jsonDataBody->$js_key->$pr_name;
 
                                     foreach ($pr_names as $p_key => $p_val) {
-                                        $p_sql = $p_val->sql . $fnum;
+                                        /// check if SQL query exists
+                                        if(!is_null($p_val->sql) && ($p_val->sql) !== "") {
+                                            $p_sql = $p_val->sql . $fnum;
 
-                                        // run SQL query
-                                        $this->db->setQuery($p_sql);
-                                        $result = $this->db->loadResult();
+                                            // run SQL query
+                                            $this->db->setQuery($p_sql);
+                                            $result = $this->db->loadResult();
 
-                                        // stock value into $sql_array
-                                        $sql_array[$p_key] = explode('>>> SPLIT <<<', $result);
+                                            // stock value into $sql_array
+                                            $sql_array[$p_key] = explode('>>> SPLIT <<<', $result);
+                                        }
+                                        else {
+                                            /// clone
+                                            for ($i = 0; $i <= $repeat_times - 1; $i++) {
+                                                $sql_array[$p_key][$i] = $p_val->default;
+                                            }
+                                        }
                                     }
+
+//                                    echo '<pre>'; var_dump($sql_array['convocation']); echo '</pre>';
 
                                     for ($i = 0; $i <= $repeat_times - 1; $i++) {
                                         if ($i == $xmlDocument->getElementsByTagName('item')->item($i)->getAttribute('duplicata')) {
