@@ -4,8 +4,8 @@
  * XmlDataFilling >> Filling up the predefined XML tree with your own data from Data Mapping file
  * */
 
-ini_set('display_errors','Off');                /// turn off Error Displaying
-ini_set('soap.wsdl_cache_enabled', 0);
+ini_set('display_errors','0');                /// turn off Error Displaying
+ini_set('soap.wsdl_cache_enabled', 1);
 error_reporting(E_ALL);
 
 /// import XmlSchema
@@ -79,7 +79,7 @@ class XmlDataFilling {
                             if ($_ch->parentNode->nodeName === $js_key) {
                                 if(!is_null($jsonDataBody->$js_key->$pr_name->default)) {
                                     if (is_null($jsonDataBody->$js_key->$pr_name->sql) or ($jsonDataBody->$js_key->$pr_name->sql === "")) {
-                                        $this->getDefaultValue($xmlDocument, $_ch, $jsonDataBody->$js_key->$pr_name->default);
+                                        $_ch->nodeValue = $jsonDataBody->$js_key->$pr_name->default;
                                     } else {
                                         $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
                                     }
@@ -99,7 +99,7 @@ class XmlDataFilling {
                                 foreach ($_subProps as $_sp) {
                                     if(!is_null($jsonDataBody->$js_key->$pr_name->$_sp->default)) {
                                         if (is_null($jsonDataBody->$js_key->$pr_name->$_sp->sql) or ($jsonDataBody->$js_key->$pr_name->$_sp->sql === "")) {
-                                            $this->getDefaultValue($xmlDocument, $_sp, $jsonDataBody->$js_key->$pr_name->$_sp->default);
+                                            $_sp->nodeValue = $jsonDataBody->$js_key->$pr_name->$_sp->default;
                                         } else {
                                             $this->buildSql($xmlDocument, null, $_sp, $jsonDataBody->$js_key->$pr_name->$_sp->sql . $fnum, false);
                                         }
@@ -115,7 +115,7 @@ class XmlDataFilling {
                                     if ($_ch->parentNode->nodeName === $js_key) {
                                         if(!is_null($jsonDataBody->$js_key->$pr_name->default)) {
                                             if (is_null($jsonDataBody->$js_key->$pr_name->sql) or ($jsonDataBody->$js_key->$pr_name->sql === "")) {
-                                                $this->getDefaultValue($xmlDocument, $_ch, $jsonDataBody->$js_key->$pr_name->default);
+                                                $_ch->nodeValue = $jsonDataBody->$js_key->$pr_name->default;
                                             } else {
                                                 $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
                                             }
@@ -152,7 +152,7 @@ class XmlDataFilling {
                                                         if ($pr_name == $child->tagName) {
                                                             if(!is_null($jsonDataBody->$js_key->$pr_name->default)) {
                                                                 if (is_null($jsonDataBody->$js_key->$pr_name->sql) or ($jsonDataBody->$js_key->$pr_name->sql === "")) {
-                                                                    $this->getDefaultValue($xmlDocument, $_ch, $jsonDataBody->$js_key->$pr_name->default);
+                                                                    $_ch->nodeValue = $jsonDataBody->$js_key->$pr_name->default;
                                                                 } else {
                                                                     $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
                                                                 }
@@ -184,7 +184,7 @@ class XmlDataFilling {
                                                             $tagName = $_scn->tagName;
                                                             if(!is_null($jsonDataBody->$js_key->$pr_name->$tagName->default)) {
                                                                 if (is_null($jsonDataBody->$js_key->$pr_name->$tagName->sql) or ($jsonDataBody->$js_key->$pr_name->$tagName->sql === "")) {
-                                                                    $this->getDefaultValue($xmlDocument, $_scn, $jsonDataBody->$js_key->$pr_name->$tagName->default);
+                                                                    $_scn->nodeValue = $jsonDataBody->$js_key->$pr_name->$tagName->default;
                                                                 } else {
                                                                     $this->buildSql($xmlDocument, $_scn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql . $fnum, true);
                                                                 }
@@ -260,9 +260,9 @@ class XmlDataFilling {
                                                     foreach ($childNode as $_ch) {
                                                         if ($_ch->parentNode->nodeName === $js_key) {
                                                             if ($pr_name == $child->tagName) {
-                                                                if(!is_null($jsonDataBody->$js_key->$pr_name->$tagName->default)) {
-                                                                    if (is_null($jsonDataBody->$js_key->$pr_name->$tagName->sql) or ($jsonDataBody->$js_key->$pr_name->$tagName->sql === "")) {
-                                                                        $this->getDefaultValue($xmlDocument, $pr_name, $jsonDataBody->$js_key->$pr_name->$tagName->default);
+                                                                if(!is_null($jsonDataBody->$js_key->$pr_name->default)) {
+                                                                    if (is_null($jsonDataBody->$js_key->$pr_name->sql) or ($jsonDataBody->$js_key->$pr_name->sql === "")) {
+                                                                        $_ch->nodeValue = $jsonDataBody->$js_key->$pr_name->default;
                                                                     } else {
                                                                         $this->buildSql($xmlDocument, null, $pr_name, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
                                                                     }
@@ -295,7 +295,7 @@ class XmlDataFilling {
                                                                 $tagName = $_scn->tagName;
                                                                 if(!is_null($jsonDataBody->$js_key->$pr_name->$tagName->default)) {
                                                                     if (is_null($jsonDataBody->$js_key->$pr_name->$tagName->sql) or ($jsonDataBody->$js_key->$pr_name->$tagName->sql === "")) {
-                                                                        $this->getDefaultValue($xmlDocument, $_scn, $jsonDataBody->$js_key->$pr_name->$tagName->default);
+                                                                        $_scn->nodeValue = $jsonDataBody->$js_key->$pr_name->$tagName->default;
                                                                     } else {
                                                                         $this->buildSql($xmlDocument, $_scn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql . $fnum, true);
                                                                     }
@@ -349,24 +349,34 @@ class XmlDataFilling {
                                     $_subProps = $jsonDescriptionBody->subData->$pr_name;             /// array
 
                                     foreach ($_subProps as $_sp) {
-                                        if(!is_null($jsonDataBody->$js_key->$pr_name->$_sp->default)) {
-                                            if (is_null($jsonDataBody->$js_key->$pr_name->$_sp->sql) or ($jsonDataBody->$js_key->$pr_name->$_sp->sql === "")) {
-                                                $this->getDefaultValue($xmlDocument, $_sp, $jsonDataBody->$js_key->$pr_name->$_sp->default);
-                                            } else {
-                                                $this->buildSql($xmlDocument, null, $_sp, $jsonDataBody->$js_key->$pr_name->$_sp->sql . $fnum, false);
+                                        $childNode = $xmlDocument->getElementsByTagName($_sp);
+
+                                        foreach ($childNode as $_cn) {
+
+                                            if ($_cn->parentNode->nodeName === $pr_name) {
+                                                $tagName = $_cn->tagName;
+                                                if(!is_null($jsonDataBody->$js_key->$pr_name->$tagName->default)) {
+                                                    if (is_null($jsonDataBody->$js_key->$pr_name->$tagName->sql) or ($jsonDataBody->$js_key->$pr_name->$tagName->sql === "")) {
+                                                        $_cn->nodeValue = $jsonDataBody->$js_key->$pr_name->$tagName->default;
+                                                    } else {
+                                                        $this->buildSql($xmlDocument, $_cn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql . $fnum, true);
+                                                    }
+                                                } else {
+                                                    $this->buildSql($xmlDocument, null, $_sp, $jsonDataBody->$js_key->$pr_name->$_sp->sql . $fnum, false);
+                                                }
                                             }
-                                        } else {
-                                            $this->buildSql($xmlDocument, null, $_sp, $jsonDataBody->$js_key->$pr_name->$_sp->sql . $fnum, false);
                                         }
                                     }
                                 } else {
                                     $childNode = $xmlDocument->getElementsByTagName($pr_name);
 
+                                    /*echo '<pre>'; var_dump($childNode->item(1)->tagName . ' ---> ' . $childNode->item(1)->parentNode->tagName); echo '</pre>';*/
+
                                     foreach($childNode as $_ch) {
                                         if ($_ch->parentNode->nodeName === $js_key) {
                                             if(!is_null($jsonDataBody->$js_key->$pr_name->default)) {
                                                 if (is_null($jsonDataBody->$js_key->$pr_name->sql) or ($jsonDataBody->$js_key->$pr_name->sql === "")) {
-                                                    $this->getDefaultValue($xmlDocument, $_ch, $jsonDataBody->$js_key->$pr_name->default);
+                                                    $_ch->nodeValue = $jsonDataBody->$js_key->$pr_name->default;
                                                 } else {
                                                     $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
                                                 }
@@ -382,6 +392,7 @@ class XmlDataFilling {
                 }
             }
         }
+//        die;
         return $xmlDocument;
     }
 
@@ -400,12 +411,6 @@ class XmlDataFilling {
         }
 
         if($property !== null) { $property->nodeValue = $result; }
-    }
-
-    /// run default
-    public function getDefaultValue($xmlTree, $node, $defaultValue) {
-        $_node = $xmlTree->getElementsByTagName($node->tagName)->item(0);            /// get node
-        $_node->nodeValue = $defaultValue;
     }
 }
 
