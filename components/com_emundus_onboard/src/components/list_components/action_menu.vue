@@ -21,6 +21,9 @@
               <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire' && data.type !== 'campaign'">
                 {{ translations.ActionDelete }}
               </a>
+              <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type === 'campaign' && filesCount == 0">
+                {{ translations.ActionDelete }}
+              </a>
               <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" style="border-left: 0"  v-if="data.type === 'formulaire' && published">
                 {{ translations.Archive }}
               </a>
@@ -57,12 +60,13 @@
     computed: {
       checkItem() {
         return [this.selected];
-      }
+      },
     },
 
     data() {
       return {
         loading: false,
+        filesCount: null,
         translations: {
           ActionPublish: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_PUBLISH"),
           ActionUnpublish: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH"),
@@ -73,8 +77,32 @@
         },
       };
     },
+    mounted() {
+      if(this.data.type === 'campaign'){
+        this.filesNumber();
+      }
+    },
 
     methods: {
+      created(){
+
+      },
+
+      filesNumber() {
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfilesbycampaign",
+          params: {
+            cid: this.selected,
+          },
+          paramsSerializer: params => {
+            return qs.stringify(params);
+          }
+        }).then(response => {
+          this.filesCount = parseInt(response.data.data);
+        });
+      },
+
       deleteSelected(id) {
         switch (this.data.type) {
           case "program":
