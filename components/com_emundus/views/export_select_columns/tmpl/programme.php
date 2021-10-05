@@ -18,6 +18,8 @@ $comments = $session->get('comments');
 
 $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($current_user->id);
 
+$fabrik_elements = array('jos_emundus_users___email', 'jos_emundus_users___firstname', 'jos_emundus_users___lastname');
+
 if (!empty($s_elements)) {
 	foreach ($s_elements as $s) {
 		$t = explode('.', $s);
@@ -39,7 +41,10 @@ if (!empty($s_elements)) {
 
 		<?php foreach ($this->elements as $t) :?>
 
-			<?php if ($tbl_tmp == '') :?>
+			<?php 
+                $fabrik_elements[] = $t->fabrik_element;
+
+                if ($tbl_tmp == '') :?>
                 <?php
                     $label = explode("-", $t->table_label);
                     $label = $label[1];
@@ -144,4 +149,19 @@ if (!empty($s_elements)) {
 		    </div>
      <?php else: ?>
         <?= JText::_('NO_FORM_DEFINED'); ?>
-    <?php endif; ?>
+    <?php endif; 
+    
+    $today  = date("MdYHis");
+    $name   = md5($today.rand(0,10));
+    $name   = $name.'.csv';
+    $file = JPATH_BASE.DS.'tmp'.DS.$name;
+    if (!$csv = fopen($file, 'w+')) {
+        $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$file);
+        echo json_encode((object) $result);
+        exit();
+    }
+    fprintf($csv, chr(0xEF).chr(0xBB).chr(0xBF));
+    $res = fputcsv($csv, $fabrik_elements, ",", '"', "\\");
+    echo '<div class="em-link"><a href="index.php?option=com_emundus&controller=files&task=download&name='.$name.'">'.JText::_('EXPORT').'</a></div>';
+
+    ?>

@@ -1388,7 +1388,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 .view-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid, 
 .view-details .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid 
 .view-checklist .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
-  padding: 2px 30px;
+  padding: 5px 30px;
 }
 
 .view-form.view-registration .fabrikForm fieldset > .row-fluid, .view-form.em-formRegistrationCenter .fabrikForm fieldset > .row-fluid {
@@ -1438,7 +1438,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 }
 
 .view-form .row-fluid > .fabrikElementContainer, .view-details .row-fluid > .fabrikElementContainer, .view-checklist .row-fluid > .fabrikElementContainer{
-  display: flex;
   flex-direction: column;
 }
 
