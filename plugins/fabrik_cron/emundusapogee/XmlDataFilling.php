@@ -4,7 +4,7 @@
  * XmlDataFilling >> Filling up the predefined XML tree with your own data from Data Mapping file
  * */
 
-ini_set('display_errors','0');                /// turn off Error Displaying
+ini_set('display_errors','1');                /// turn off Error Displaying
 ini_set('soap.wsdl_cache_enabled', 1);
 error_reporting(E_ALL);
 
@@ -359,6 +359,18 @@ class XmlDataFilling {
                                 if($inSubData) {
                                     $_subProps = $jsonDescriptionBody->subData->$pr_name;             /// array
 
+//                                    foreach ($_subProps as $_sp) {
+//                                        if(!is_null($jsonDataBody->$js_key->$pr_name->$_sp->default)) {
+//                                            if (is_null($jsonDataBody->$js_key->$pr_name->$_sp->sql) or ($jsonDataBody->$js_key->$pr_name->$_sp->sql === "")) {
+//                                                $_sp->nodeValue = $jsonDataBody->$js_key->$pr_name->$_sp->default;
+//                                            } else {
+//                                                $this->buildSql($xmlDocument, null, $_sp, $jsonDataBody->$js_key->$pr_name->$_sp->sql . $fnum, false);
+//                                            }
+//                                        } else {
+//                                            $this->buildSql($xmlDocument, null, $_sp, $jsonDataBody->$js_key->$pr_name->$_sp->sql . $fnum, false);
+//                                        }
+//                                    }
+
                                     foreach ($_subProps as $_sp) {
                                         $childNode = $xmlDocument->getElementsByTagName($_sp);
 
@@ -404,6 +416,15 @@ class XmlDataFilling {
             }
         }
 //        die;
+
+        /// specific for Apogee Paris 2
+        $this->setCodPay_Address($xmlDocument);
+        $this->setBdiComAde_Address($xmlDocument,$fnum);
+        $this->setDepPayDerDip_LastObtainDipl($xmlDocument,$fnum);
+        $this->setDepPayAnt_LastFrequentEtb($xmlDocument, $fnum);
+        $this->setDepPay_Civility($xmlDocument);
+        $this->setDepPay_LastYear($xmlDocument, $fnum);
+
         return $xmlDocument;
     }
 
@@ -423,6 +444,156 @@ class XmlDataFilling {
 
         if($property !== null) { $property->nodeValue = $result; }
     }
+
+    /* Si le code pays n'est pas renseigné dans l’interface, et que le bureau distributeur et le code commune existent dans la table COM_BDI,
+        l'adresse sera créée dans ADRESSE_OPI avec un code pays (zone obligatoire) initialisé à 100 (France)
+    */
+    public function setCodPay_Address($xmlTree) {
+        $nodes = $xmlTree->getElementsByTagName('codPay');            /// e.g: find(2)
+
+        foreach($nodes as $node) {
+            if($node->nodeValue == "" or $node->nodeValue === null) {
+                $node->nodeValue = '100';
+            }
+        }
+    }
+
+    /* handle adresseAnnuelle.codBdi // adresseFixe.codBdi // adresseAnnuelle.codCom // adresseFixe.codCom
+    *   if codPay !== 100 (france) --> get personal_detail.e_287_8117
+    *   if codPay === 100 (france) --> get personal_detail.etu_code_postal
+    */
+    public function setBdiComAde_Address($xmlTree, $fnum) {
+        ///////////////////////////////// ADRESSE ANNUELLE /////////////////////////////////
+        $_aaRoot = $xmlTree->getElementsByTagName('adresseAnnuelle')->item(0);
+
+        $_aaCodPay = $_aaRoot->getElementsByTagName('codPay')->item(0);
+        $_aaCodBdi = $_aaRoot->getElementsByTagName('codBdi')->item(0);
+        $_aaCodCom = $_aaRoot->getElementsByTagName('codCom')->item(0);
+        $_aaLibAde = $_aaRoot->getElementsByTagName('libAde')->item(0);
+
+        if($_aaCodPay->nodeValue == '100') {        /// #france
+            /* set Bdi */
+            $_getAaBdiSql = 'SELECT #__emundus_personal_detail.etu_code_postal FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = ' . $fnum;
+        } else {                                    /// # not france
+            /* set Bdi */
+            $_getAaBdiSql = 'SELECT #__emundus_personal_detail.e_287_8117 FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = ' . $fnum;
+
+            /* set libAde --> concat(e_287_8117, '', e_287_8118) */
+            $_getAaLibAdeSql = "select trim(concat(#__emundus_personal_detail.e_287_8117, ' ', #__emundus_personal_detail.e_287_8118)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = " . $fnum;
+            $this->db->setQuery($_getAaLibAdeSql);
+            $_aaLibAde->nodeValue =  $this->db->loadResult();
+        }
+
+        $this->db->setQuery($_getAaBdiSql);
+        $_aaCodBdi->nodeValue = $this->db->loadResult();
+
+        ///////////////////////////////// ADRESSE FIXE /////////////////////////////////
+        $_afRoot = $xmlTree->getElementsByTagName('adresseFixe')->item(0);
+
+        $_afCodPay = $_afRoot->getElementsByTagName('codPay')->item(0);
+        $_afCodBdi = $_afRoot->getElementsByTagName('codBdi')->item(0);
+        $_afCodCom = $_aaRoot->getElementsByTagName('codCom')->item(0);
+        $_afLibAde = $_aaRoot->getElementsByTagName('libAde')->item(0);
+
+        if($_afCodPay->nodeValue == '100') {        /// #france
+            /* set Bdi */
+            $_getAfBdiSql = 'SELECT #__emundus_personal_detail.etu_code_postal FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = ' . $fnum;
+        } else {                                    /// # not france
+            /* set Bdi */
+            $_getAfBdiSql = 'SELECT #__emundus_personal_detail.e_287_8117 FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = ' . $fnum;
+
+            /* set libAde --> concat(e_287_8117, '', e_287_8118) */
+            $_getAfLibAdeSql = "select trim(concat(#__emundus_personal_detail.e_287_8117, ' ', #__emundus_personal_detail.e_287_8118)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = " . $fnum;
+            $this->db->setQuery($_getAfLibAdeSql);
+            $_afLibAde->nodeValue =  $this->db->loadResult();
+        }
+
+        $this->db->setQuery($_getAfBdiSql);
+        $_afCodBdi->nodeValue = $this->db->loadResult();
+
+        ///////////////////////////////////////////// Done /////////////////////////////////////////////
+
+        /* Quote "Si l’un des deux champs (code commune ou code bureau distributeur) est vide ou incohérent par rapport à la table COM_BDI d’Apogée,
+            les deux données sont remises à blanc et les autres données de l’adresse sont chargées, à condition que le code pays soit renseigné
+            et valide par rapport à la table PAYS d’Apogée.
+        */
+        if($_aaCodBdi->nodeValue == null or $_aaCodCom->nodeValue == null) {
+            $_aaCodCom->nodeValue == '';
+            $_aaCodBdi->nodeValue == '';
+        }
+
+        if($_afCodBdi->nodeValue == null or $_afCodCom->nodeValue == null) {
+            $_afCodCom->nodeValue == '';
+            $_afCodBdi->nodeValue == '';
+        }
+    }
+
+    public function setDepPayDerDip_LastObtainDipl($xmlTree, $fnum) {
+        /* -- Si FRANCE (code = 100) --> codDepPayDerDip = Departement // codTypDepPayDerDip = "D" */
+        /* -- Si pas FRANCE (code != 100) --> codDepPayDerDip = Pays // codTypDepPayDerDip = "P" */
+
+        /// find "codDepPayDerDip" node
+        $_codDepPayDerDipNode = $xmlTree->getElementsByTagName('codDepPayDerDip')->item(0);
+        $_codTypDepPayDerDipNode = $xmlTree->getElementsByTagName('codTypDepPayDerDip')->item(0);
+
+        if($_codDepPayDerDipNode->nodeValue == '100') {
+            $_codTypDepPayDerDipNode->nodeValue = 'D';
+
+            /// set $_codDepPayDerDipNode->nodeValue by France Department
+            $_getDepartmentSql = 'SELECT #__emundus_1001_00.dep_etb_last_dip FROM #__emundus_1001_00 WHERE #__emundus_1001_00.fnum = ' . $fnum;
+            $this->db->setQuery($_getDepartmentSql);
+            $_codDepPayDerDipNode->nodeValue = $this->db->loadResult();
+        } else {
+            $_codTypDepPayDerDipNode->nodeValue = 'P';
+        }
+    }
+
+    public function setDepPayAnt_LastFrequentEtb($xmlTree, $fnum) {
+        /* -- Si FRANCE (code = 100) --> codDepPayAntIaaOpi = Departement // codTypDepPayAntIaaOpi = "D" */
+        /* -- Si pas FRANCE (code != 100) --> codDepPayAntIaaOpi = Pays // codTypDepPayAntIaaOpi = "P" */
+        $_codDepPayAntIaaOpiNode = $xmlTree->getElementsByTagName('codDepPayAntIaaOpi')->item(0);
+        $_codTypDepPayAntIaaOpiNode = $xmlTree->getElementsByTagName('codTypDepPayAntIaaOpi')->item(0);
+
+        if($_codDepPayAntIaaOpiNode->nodeValue == '100') {
+            /// set $_codDepPayDerDipNode->nodeValue by France Department
+            $_getDepartmentSql = 'SELECT #__emundus_1001_00.dep_etb_dernier FROM #__emundus_1001_00 WHERE #__emundus_1001_00.fnum = ' . $fnum;
+            $this->db->setQuery($_getDepartmentSql);
+            $_codDepPayAntIaaOpiNode->nodeValue = $this->db->loadResult();
+        }
+        else {
+            $_codTypDepPayAntIaaOpiNode->nodeValue = 'P';
+        }
+    }
+
+    public function setDepPay_Civility($xmlTree) {
+        $_codDepPayNaiNode = $xmlTree->getElementsByTagName('codDepPayNai')->item(0);
+        $_codTypDepPayNaiNode = $xmlTree->getElementsByTagName('codTypDepPayNai')->item(0);
+
+        if($_codDepPayNaiNode->nodeValue == '100') {
+            $_codTypDepPayNaiNode->nodeValue = 'D';
+        } else {
+            $_codTypDepPayNaiNode->nodeValue = 'P';
+        }
+    }
+
+    public function setDepPay_LastYear($xmlTree, $fnum) {
+        $_codSisAnnPreOpiNode = $xmlTree->getElementsByTagName('codSisAnnPreOpi')->item(0);
+        $_codTypDepPayAnnPreOpiNode =$xmlTree->getElementsByTagName('codTypDepPayAnnPreOpi')->item(0);
+
+        if($_codSisAnnPreOpiNode->nodeValue == '100') {         # france
+            // get France Dep
+            $_getDepartmentSql = 'SELECT #__emundus_1001_00.e_358_7943 FROM #__emundus_1001_00 WHERE #__emundus_1001_00.fnum = ' . $fnum;
+            $this->db->setQuery($_getDepartmentSql);
+
+            $_codSisAnnPreOpiNode->nodeValue = $this->db->loadResult();
+
+            $_codTypDepPayAnnPreOpiNode->nodeValue = 'D';
+        } else {
+            $_codTypDepPayAnnPreOpiNode->nodeValue = 'P';
+        }
+    }
+
+
 }
 
 
