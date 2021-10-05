@@ -34,13 +34,6 @@ class PlgEmundusHopitaux_paris_create_reference extends JPlugin {
 
         $status_to_check = explode(',',$this->params->get('reference_status_step', ''));
 
-        $query->select('cc.applicant_id,cc.campaign_id,sc.training,sc.year')
-            ->from($db->quoteName('#__emundus_campaign_candidature','cc'))
-            ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
-            ->where($db->quoteName('cc.fnum') . ' = ' . $db->quote($fnum));
-        $db->setQuery($query);
-        $file = $db->loadObject();
-
         $status = array_search($state, $status_to_check);
 
         if ($status === false) {
@@ -48,6 +41,13 @@ class PlgEmundusHopitaux_paris_create_reference extends JPlugin {
         }
 
         try{
+            $query->select('cc.applicant_id,cc.campaign_id,sc.training,sc.year')
+                ->from($db->quoteName('#__emundus_campaign_candidature','cc'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
+                ->where($db->quoteName('cc.fnum') . ' = ' . $db->quote($fnum));
+            $db->setQuery($query);
+            $file = $db->loadObject();
+
             $query->clear()
                 ->select('id')
                 ->from($db->quoteName('data_references_dossiers'))
@@ -86,8 +86,8 @@ class PlgEmundusHopitaux_paris_create_reference extends JPlugin {
                     $references = $db->loadColumn();
 
                     if (!empty($references)) {
-                        $last = explode('/', $references[sizeof($references) - 1]);
-                        $new_reference_number = (int)$last[sizeof($last) - 1] + 1;
+                        $last = explode('/', end($references));
+                        $new_reference_number = (int)end($last) + 1;
                     } else {
                         $new_reference_number = 1;
                     }
