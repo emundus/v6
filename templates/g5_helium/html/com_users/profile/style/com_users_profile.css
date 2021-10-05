@@ -46,13 +46,13 @@ form#member-profile  fieldset .em-heading-form {
 }
 
 form#member-profile .icon-title.profile {
-    background-image: url('/media/com_emundus/images/gear.svg');
+    background-image: url('../../../../../../media/com_emundus/images/gear.svg');
     background-size: contain;
     background-repeat: no-repeat;
 }
 
 form#member-profile fieldset:nth-child(2) .icon-title.profile {
-    background-image: url('/media/com_emundus/images/user.svg');
+    background-image: url('../../../../../../media/com_emundus/images/user.svg');
     background-size: contain;
 }
 

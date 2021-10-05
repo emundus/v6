@@ -21,6 +21,9 @@
               <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire' && data.type !== 'campaign'">
                 {{ translations.ActionDelete }}
               </a>
+              <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type === 'campaign' && filesCount == 0">
+                {{ translations.ActionDelete }}
+              </a>
               <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" style="border-left: 0"  v-if="data.type === 'formulaire' && published">
                 {{ translations.Archive }}
               </a>
@@ -57,12 +60,13 @@
     computed: {
       checkItem() {
         return [this.selected];
-      }
+      },
     },
 
     data() {
       return {
         loading: false,
+        filesCount: null,
         translations: {
           ActionPublish: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_PUBLISH"),
           ActionUnpublish: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH"),
@@ -73,8 +77,32 @@
         },
       };
     },
+    mounted() {
+      if(this.data.type === 'campaign'){
+        this.filesNumber();
+      }
+    },
 
     methods: {
+      created(){
+
+      },
+
+      filesNumber() {
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfilesbycampaign",
+          params: {
+            cid: this.selected,
+          },
+          paramsSerializer: params => {
+            return qs.stringify(params);
+          }
+        }).then(response => {
+          this.filesCount = parseInt(response.data.data);
+        });
+      },
+
       deleteSelected(id) {
         switch (this.data.type) {
           case "program":
@@ -89,13 +117,13 @@
               reverseButtons: true
             }).then(result => {
               if (result.value) {
-                this.loading = true;
+                this.$emit("updateLoading",true);
                 axios({
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=program&task=deleteprogram",
                   data: qs.stringify({ id })
                 }).then(response => {
-                  this.loading = false;
+                  this.$emit("updateLoading",false);
                   list.commit("deleteSelected", id);
                   Swal.fire({
                     title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGDELETED"),
@@ -129,13 +157,13 @@
               reverseButtons: true
             }).then(result => {
               if (result.value) {
-                this.loading = true;
+                this.$emit("updateLoading",true);
                 axios({
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=campaign&task=deletecampaign",
                   data: qs.stringify({ id })
                 }).then(response => {
-                  this.loading = false;
+                  this.$emit("updateLoading",false);
                   list.dispatch("deleteSelected", id).then(() => {
                     list.commit("resetSelectedItemsList");
                   });
@@ -173,13 +201,13 @@
               reverseButtons: true
             }).then(result => {
               if (result.value) {
-                this.loading = true;
+                this.$emit("updateLoading",true);
                 axios({
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=email&task=deleteemail",
                   data: qs.stringify({ id })
                 }).then(response => {
-                  this.loading = false;
+                  this.$emit("updateLoading",false);
                   list.dispatch("deleteSelected", id).then(() => {
                     list.commit("resetSelectedItemsList");
                   });
@@ -216,13 +244,13 @@
               reverseButtons: true
             }).then(result => {
               if (result.value) {
-                this.loading = true;
+                this.$emit("updateLoading",true);
                 axios({
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=form&task=deleteform",
                   data: qs.stringify({ id })
                 }).then(response => {
-                  this.loading = false;
+                  this.$emit("updateLoading",false);
                   list.dispatch("deleteSelected", id).then(() => {
                     list.commit("resetSelectedItemsList");
                   });
@@ -262,14 +290,14 @@
               reverseButtons: true
             }).then(result => {
               if (result.value) {
-                this.loading = true;
+                this.$emit("updateLoading",true);
                 axios({
                   method: "post",
                   url:
                           "index.php?option=com_emundus_onboard&controller=program&task=unpublishprogram",
                   data: qs.stringify({ id })
                 }).then(response => {
-                  this.loading = false;
+                  this.$emit("updateLoading",false);
                   list.commit("unpublish", id);
                   Swal.fire({
                     title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGUNPUBLISHED"),
@@ -296,13 +324,13 @@
               reverseButtons: true
             }).then(result => {
               if (result.value) {
-                this.loading = true;
+                this.$emit("updateLoading",true);
                 axios({
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=campaign&task=unpublishcampaign",
                   data: qs.stringify({id})
                 }).then(response => {
-                  this.loading = false;
+                  this.$emit("updateLoading",false);
                   list.commit("unpublish", id);
                   Swal.fire({
                     title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNUNPUBLISHED"),
@@ -348,13 +376,13 @@
               reverseButtons: true
             }).then(result => {
               if (result.value) {
-                this.loading = true;
+                this.$emit("updateLoading",true);
                 axios({
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=form&task=unpublishform",
                   data: qs.stringify({id})
                 }).then(response => {
-                  this.loading = false;
+                  this.$emit("updateLoading",false);
                   list.commit("unpublish", id);
                   Swal.fire({
                     title: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMUNPUBLISHED"),
@@ -465,7 +493,7 @@
               reverseButtons: true
             }).then(result => {
               if (result.value) {
-                this.loading = true;
+                this.$emit("updateLoading",true);
                 axios({
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=campaign&task=duplicatecampaign",
@@ -488,7 +516,7 @@
               reverseButtons: true
             }).then(result => {
               if (result.value) {
-                this.loading = true;
+                this.$emit("updateLoading",true);
                 axios({
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=form&task=duplicateform",

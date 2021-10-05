@@ -13,7 +13,7 @@ if (!empty($tab)) :?>
                 echo "<div class='section-sub-menu' style='margin-bottom: 10px'>
                     <div class='container-2 w-container' style='max-width: unset'>
                         <div class='d-flex'>
-                            <img src='/images/emundus/menus/dashboard.png' class='tchooz-icon-title' alt='dashboard'>
+                            <img src='" . JURI::base() . "images/emundus/menus/dashboard.png' class='tchooz-icon-title' alt='dashboard'>
                             <h1 class='tchooz-section-titles'>".$title."</h1>
                         </div>
                         <div class='actions-add-block'>

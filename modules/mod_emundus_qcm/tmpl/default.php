@@ -21,6 +21,7 @@ JText::script('MOD_EM_QCM_RESTART');
 JText::script('MOD_EM_QCM_ARE_YOU_READY');
 JText::script('MOD_EM_QCM_COMPLETED');
 JText::script('MOD_EM_QCM_SUCCESSFULL');
+JText::script('MOD_EM_QCM_CONFIRM_ANSWER');
 ?>
 
 <div id="em-qcm-vue"

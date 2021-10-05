@@ -342,9 +342,7 @@ export default {
       this.getModelsDocs();
     },
     createNewDocument() {
-      this.isImageError();
 
-      if(!this.isImageError()) {
         this.errors = {
           name: false,
           nbmax: false,
@@ -425,7 +423,12 @@ export default {
           params.isModeleAndUpdate = true;
         }
 
+        let image_error = false;
+        if(types.includes('jpeg;jpg;png;gif')){
+          image_error = this.isImageError()
+        }
 
+      if(!image_error) {
         let url = 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument';
 
         if (this.form.name[this.langue] === this.model.value && this.doc != null) {
@@ -627,8 +630,7 @@ export default {
       });
     },
     updateRequireMandatory() {
-
-      if (this.req == true) {
+      if (this.req == 1) {
         this.form.mandatory = 0
       } else {
         this.form.mandatory = 1
@@ -747,11 +749,11 @@ export default {
 
         this.form.name = this.model.name;
         this.form.description = this.model.description;
-        this.form.mandatory = this.model.mandatory
+        this.form.mandatory = parseInt(this.model.mandatory);
         this.form.minResolution = {};
         this.form.maxResolution = {};
 
-        this.req = this.model.mandatory;
+        this.req = parseInt(this.model.mandatory);
 
         this.form.selectedTypes.pdf = this.model.allowed_types.includes('pdf')
 
@@ -791,6 +793,7 @@ export default {
             en: ''
           },
           nbmax: 1,
+          mandatory: 0,
           selectedTypes: {
             pdf: false,
             'jpeg;jpg;png;gif': false,

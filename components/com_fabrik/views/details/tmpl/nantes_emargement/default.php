@@ -23,12 +23,13 @@ $now = date('d/m/Y');
         <span class="pagenum">Page </span>
     </div>
     <div id="headerdompdf" class="em-headerdompdf">
-        <img style="width: 75px;" src="https://candidature.sante.univ-nantes.fr/fc/images/custom/logo-nantes.png" height="110" width="110"/>
-        <div class="em-headerdompdf-title">
-            <h1><?= $form->label; ?></h1>
-            <span><?= $this->data["jos_emundus_emargemnt___campaign_id"];?></span>
-            <span>FEUILLE D'EMARGEMENT</span>
-            <span><?= $now ?></span>
+        <img src="https://candidature.sante.univ-nantes.fr/fc/images/custom/logo-nantes.png" />
+        <div class="em-headerdompdf-title right">
+            <h1><?= $this->data["jos_emundus_emargement___campagne_id"];?></h1>
+        </div>
+        <div class="em-headerdompdf-title right">
+            <p>FEUILLE D'EMARGEMENT</p>
+            <span><?= $this->data["jos_emundus_emargement___date_session"];?></span>
         </div>
     </div>
 <?php

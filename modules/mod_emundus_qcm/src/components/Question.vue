@@ -23,6 +23,11 @@
         <a class="btn btn-info btn-xs" @click="nextQuestion">{{ translations.next }}</a>
       </div>
     </div>
+    <div class="awnswer-sended" v-if="!finish">
+      <div class="em-print-button">
+        <a class="btn btn-info btn-xs" @click="nextQuestion">{{ translations.confirmQuestion }}</a>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -38,6 +43,7 @@ export default {
     question: Object,
     updateProposal: Number,
     pending: Number,
+    formid: Number,
     tierstemps: Number,
   },
   components: {
@@ -54,7 +60,8 @@ export default {
       finish: false,
       translations:{
         next: Joomla.JText._("MOD_EM_QCM_NEXT_QUESTION"),
-        answerSended: Joomla.JText._("MOD_EM_QCM_ANSWER_SENDED")
+        answerSended: Joomla.JText._("MOD_EM_QCM_ANSWER_SENDED"),
+        confirmQuestion: Joomla.JText._("MOD_EM_QCM_CONFIRM_ANSWER")
       }
     };
   },
@@ -107,7 +114,12 @@ export default {
 
     nextQuestion(){
       if(!this.finish){
-        this.$emit('saveAnswer');
+        clearInterval(this.interval);
+        this.timer = 0;
+        this.$emit('saveAnswer', this.answer);
+        this.finish = true;
+        this.$emit('resetPending');
+        this.pending = 0;
       }
       this.$emit('nextQuestion');
     },
@@ -122,6 +134,7 @@ export default {
         },
         data: qs.stringify({
           pending: this.timer,
+          formid: this.formid,
         })
       });
     }

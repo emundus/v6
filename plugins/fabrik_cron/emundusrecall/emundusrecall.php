@@ -61,6 +61,10 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
             $status_for_send = $eMConfig->get('status_for_send', 0);
         }
 
+        if(strlen($status_for_send) == 0){
+            return false;
+        }
+        
         $this->log = '';
 
         // Get list of applicants to notify
