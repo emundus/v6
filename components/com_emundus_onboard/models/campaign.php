@@ -566,8 +566,8 @@ class EmundusonboardModelcampaign extends JModelList
             $labels = new stdClass;
 
             $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('onBeforeCampaignChange', $data);
-            $dispatcher->trigger('callEventHandler', ['onBeforeCampaignChange', ['camapaign' => $cid]]);
+            $dispatcher->trigger('onBeforeCampaignUpdate', $data);
+            $dispatcher->trigger('callEventHandler', ['onBeforeCampaignUpdate', ['camapaign' => $cid]]);
 
             foreach ($data as $key => $val) {
                 if ($key == 'label') {
@@ -619,8 +619,8 @@ class EmundusonboardModelcampaign extends JModelList
                 $this->createYear($data);
                 //
 
-                $dispatcher->trigger('onAfterCampaignChange', $data);
-                $dispatcher->trigger('callEventHandler', ['onAfterCampaignChange', ['camapaign' => $cid]]);
+                $dispatcher->trigger('onAfterCampaignUpdate', $data);
+                $dispatcher->trigger('callEventHandler', ['onAfterCampaignUpdate', ['camapaign' => $cid]]);
                 return true;
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_onboard/models/campaign | Error when update the campaign : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
