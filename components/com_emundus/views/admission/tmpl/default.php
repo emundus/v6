@@ -29,7 +29,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 					</div>
                     <div class="buttons" style="float:right; margin-top:0px">
                         <label for="clear-search">
-                            <img src="/media/com_emundus/images/icones/clear-filters.png" style="width: 30px;filter: invert(1);"/>
+                            <img src="<?= JURI::base() ;?>media/com_emundus/images/icones/clear-filters.png" style="width: 30px;filter: invert(1);"/>
                         </label>
 
                         <input type="button" style="display: none" id="clear-search" title="<?php echo JText::_('CLEAR_BTN');?>"/>

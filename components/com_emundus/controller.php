@@ -1658,7 +1658,7 @@ class EmundusController extends JControllerLegacy {
             }
             $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $file, 'F');
 
-            $result = array('status' => true, 'file' => $file, 'msg' => JText::_('FILES_ADDED'));
+            $result = array('status' => true, 'file' => $file, 'msg' => JText::_('FILES_ADDED'), 'path'=>JURI::base());
         } else {
             $result = array('status' => false, 'msg' => JText::_('FILE_NOT_FOUND'));
         }
