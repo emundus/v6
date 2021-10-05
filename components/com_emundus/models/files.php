@@ -1854,9 +1854,7 @@ class EmundusModelFiles extends JModelLegacy
 
             $query = substr_replace($query, ";", -1);
             $db->setQuery($query);
-            $db->execute();
-
-            return true;
+            return $db->execute();
         }
         catch (Exception $e)
         {
@@ -1933,7 +1931,7 @@ class EmundusModelFiles extends JModelLegacy
                 foreach ($fnums as $fnum) {
 
                     $dispatcher->trigger('onBeforeStatusChange', [$fnum, $state]);
-                    $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange']);
+                    $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state]]);
 
                     $query = $db->getQuery(true);
 
@@ -1945,7 +1943,7 @@ class EmundusModelFiles extends JModelLegacy
                     $db->setQuery($query);
                     $res = $db->execute();
                     $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
-                    $dispatcher->trigger('callEventHandler', ['onAfterStatusChange']);
+                    $dispatcher->trigger('callEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state]]);
 
                     if (!empty($profile)) {
 
@@ -1961,7 +1959,7 @@ class EmundusModelFiles extends JModelLegacy
             }
             else {
                 $dispatcher->trigger('onBeforeStatusChange', [$fnums, $state]);
-                $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange']);
+                $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange', ['fnums' => $fnums, 'state' => $state]]);
                 $query = $db->getQuery(true);
 
                 $query
@@ -1972,7 +1970,7 @@ class EmundusModelFiles extends JModelLegacy
                 $db->setQuery($query);
                 $res = $db->execute();
                 $dispatcher->trigger('onAfterStatusChange', [$fnums, $state]);
-                $dispatcher->trigger('callEventHandler', ['onAfterStatusChange']);
+                $dispatcher->trigger('callEventHandler', ['onAfterStatusChange', ['fnums' => $fnums, 'state' => $state]]);
 
                 if (!empty($profile)) {
                     $query = $db->getQuery(true);
@@ -2012,7 +2010,7 @@ class EmundusModelFiles extends JModelLegacy
             EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_LOGS_UPDATE_PUBLISH');
 
             $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
-            $dispatcher->trigger('callEventHandler', ['onBeforePublishChange']);
+            $dispatcher->trigger('callEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
             $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
             $db->setQuery($query);
             try {
@@ -2023,7 +2021,7 @@ class EmundusModelFiles extends JModelLegacy
                 return false;
             }
             $dispatcher->trigger('onAfterPublishChange', [$fnum, $publish]);
-            $dispatcher->trigger('callEventHandler', ['onAfterPublishChange']);
+            $dispatcher->trigger('callEventHandler', ['onAfterPublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
         }
         return $res;
     }
@@ -3533,7 +3531,7 @@ class EmundusModelFiles extends JModelLegacy
 
         $dispatcher = JEventDispatcher::getInstance();
         $dispatcher->trigger('onBeforeDeleteFile', $fnum);
-        $dispatcher->trigger('callEventHandler', ['onBeforeDeleteFile']);
+        $dispatcher->trigger('callEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
 
         $db = JFactory::getDbo();
 
@@ -3575,7 +3573,7 @@ class EmundusModelFiles extends JModelLegacy
             $db->setQuery($query);
             $res = $db->execute();
             $dispatcher->trigger('onAfterDeleteFile', $fnum);
-            $dispatcher->trigger('callEventHandler', ['onAfterDeleteFile']);
+            $dispatcher->trigger('callEventHandler', ['onAfterDeleteFile', ['fnum' => $fnum]]);
             return $res;
         } catch(Exception $e) {
             echo $e->getMessage();
