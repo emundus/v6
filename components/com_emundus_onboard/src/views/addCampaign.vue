@@ -191,7 +191,8 @@
           <div class="heading-form">
             <h2 class="heading">{{ translations.Program }}</h2>
           </div>
-          <div class="form-group container-flexbox-choisir-ou-plus w-clearfix">
+          <p>{{translations.ProgramDesc}}</p>
+          <div class="form-group container-flexbox-choisir-ou-plus w-clearfix mt-1">
             <select
               class="dropdown-toggle w-select" style="margin-bottom: 0"
               id="select_prog"
@@ -212,9 +213,9 @@
               <em class="fas fa-plus"></em>
             </button>
           </div>
-          <div class="form-group controls">
+<!--          <div class="form-group controls">
             <editor :height="'30em'" :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" v-if="form.training" :placeholder="translations.ProgramResume" :id="'program_campaign_'" :key="editorKey"></editor>
-          </div>
+          </div>-->
 
           <transition name="slide-fade">
             <div class="program-addCampaign" v-if="isHiddenProgram">
@@ -234,9 +235,9 @@
                 <p v-if="errors.progLabel" class="error col-md-12 mb-2">
                   <span class="error">{{translations.ProgLabelRequired}}</span>
                 </p>
-                <div class="form-group controls">
+<!--                <div class="form-group controls">
                   <editor :height="'30em'" :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" :placeholder="translations.ProgramResume" :id="'new_program_campaign_'" :key="editorKey"></editor>
-                </div>
+                </div>-->
               </div>
             </div>
           </transition>
@@ -409,6 +410,7 @@ export default {
       StatusLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
       FilesLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED"),
       AddCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
+      ProgramDesc: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC"),
     },
 
     submitted: false
