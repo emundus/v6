@@ -38,18 +38,18 @@
               <div class="d-flex justify-content-between">
                 <div class="d-flex w-100">
                   <em class="fas fa-grip-vertical handle" style="color: #cecece;"></em>
-                  <span class="draggable">
+                  <span class="draggable em-overflow-ellipsis em-max-width-250 em-mr-4">
                     {{ document.title }}
-                    <span class="document-allowed_types">({{ document.ext }})</span>
                   </span>
+                  <span class="document-allowed_types">({{ document.ext }})</span>
+                  <a @click="editName(document)" class="cta-block pointer">
+                    <em class="fas fa-pen em-font-size-16"></em>
+                  </a>
                 </div>
                 <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
                   <em class="fas fa-times"></em>
                 </button>
               </div>
-              <a @click="editName(document)" class="cta-block pointer" style="font-size: 27px;float: right;position: relative;bottom: -20px;">
-                <em class="fas fa-pen"></em>
-              </a>
             </li>
           </transition-group>
         </draggable>
@@ -253,6 +253,5 @@ export default {
     border: 2px solid #ececec;
     margin-bottom: 10px;
     border-radius: 5px;
-    height: 100px;
   }
 </style>
