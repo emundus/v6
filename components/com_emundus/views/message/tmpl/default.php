@@ -355,7 +355,7 @@ if ($allowed_attachments !== true) {
     // Loads the template and updates the WYSIWYG editor
     function getTemplate(select) {
         /// disable "send" button
-        $('#can-val .btn-success').attr('disabled', true);
+        //$('#can-val .btn-success').attr('disabled', true);
 
         // clear CC and BCC
         var $select_cc = $(document.getElementById('cc-mails'));
