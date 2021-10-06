@@ -4,7 +4,7 @@
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
  * @author     EMUNDUS SAS
-*/
+ */
 
 // to abort all AJAX query at once
 $.ajaxQ = (function(){
@@ -351,7 +351,7 @@ function openFiles(fnum, page = 0) {
             } else {
                 document.getElementById('em-assoc-files').hide();
             }
-            
+
         },
         error: function (jqXHR) {
             console.log(jqXHR.responseText);
@@ -386,26 +386,26 @@ function openFiles(fnum, page = 0) {
             } else {
                 $('#em-synthesis').hide();
             }
-            
 
-			$.ajax({
-				type:'get',
-				url:'index.php?option=com_emundus&controller=application&task=getapplicationmenu&fnum='+fnum.fnum,
-				dataType:'json',
-				success: function(result) {
 
-					String.prototype.fmt = function (hash) {
-						var string = this, key;
-						for (key in hash) {
-							string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]);
-							return string;
-						}
-					};
+            $.ajax({
+                type:'get',
+                url:'index.php?option=com_emundus&controller=application&task=getapplicationmenu&fnum='+fnum.fnum,
+                dataType:'json',
+                success: function(result) {
 
-					$('#em-appli-menu .list-group').empty();
-					if (result.status) {
-						var menus = result.menus;
-						var numMenu = 0;
+                    String.prototype.fmt = function (hash) {
+                        var string = this, key;
+                        for (key in hash) {
+                            string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]);
+                            return string;
+                        }
+                    };
+
+                    $('#em-appli-menu .list-group').empty();
+                    if (result.status) {
+                        var menus = result.menus;
+                        var numMenu = 0;
 
                         while (numMenu <= menus.length) {
                             if (menus[numMenu].link.indexOf("layout="+page) != -1) {
@@ -418,29 +418,29 @@ function openFiles(fnum, page = 0) {
                             }
                         }
 
-						var firstMenu = menus[numMenu].link;
-						var menuList = '';
+                        var firstMenu = menus[numMenu].link;
+                        var menuList = '';
 
                         if (menus.length > 0) {
                             for (var m in menus) {
                                 if (isNaN(parseInt(m)) || isNaN(menus[m].id) || typeof(menus[m].title) == 'undefined') {
                                     break;
                                 }
-    
+
                                 url = menus[m].link.fmt({ fnum: fnum.fnum, applicant_id: sid, campaign_id: cid });
                                 url += '&fnum='+fnum.fnum;
                                 url += '&Itemid='+itemId;
-    
+
                                 if(typeof menus[m].notifications != 'undefined'){
                                     menuList += '<a href="'+url+'" class="list-group-item list-item-notifications" title="'+menus[m].title+'" id="'+menus[m].id+'">';
                                 } else {
                                     menuList += '<a href="' + url + '" class="list-group-item" title="' + menus[m].title + '" id="' + menus[m].id + '">';
                                 }
-    
+
                                 if (menus[m].hasSons) {
                                     menuList += '<span class="glyphicon glyphicon-plus" id="'+menus[m].id+'"></span>';
                                 }
-    
+
                                 if(typeof menus[m].notifications != 'undefined'){
                                     menuList +=  '<strong>'+menus[m].title+'</strong><span class="notifications-counter">'+menus[m].notifications+'</span></a>';
                                 } else {
@@ -453,41 +453,41 @@ function openFiles(fnum, page = 0) {
                             $('#em-appli-menu').hide();
                         }
 
-						$.ajax({
-							type:'get',
-							url:firstMenu,
-							dataType:'html',
-							data:({fnum:fnum.fnum}),
-							success: function(result) {
-								$('.em-dimmer').remove();
-								$('#em-files-filters').hide();
-								$(".main-panel .panel.panel-default").hide();
+                        $.ajax({
+                            type:'get',
+                            url:firstMenu,
+                            dataType:'html',
+                            data:({fnum:fnum.fnum}),
+                            success: function(result) {
+                                $('.em-dimmer').remove();
+                                $('#em-files-filters').hide();
+                                $(".main-panel .panel.panel-default").hide();
 
-								$('#em-appli-block').empty();
-								$('#em-appli-block').append(result);
-								$('#accordion .panel.panel-default').show();
-								$('#em-last-open, .em-open-files > div[id="'+fnum.fnum+'"]').show();
-								menuBar1();
+                                $('#em-appli-block').empty();
+                                $('#em-appli-block').append(result);
+                                $('#accordion .panel.panel-default').show();
+                                $('#em-last-open, .em-open-files > div[id="'+fnum.fnum+'"]').show();
+                                menuBar1();
 
-								$('#em-close-multi-file').hide();
-								$('#em-close-multi-file button').hide();
-							},
-							error: function (jqXHR) {
-								console.log(jqXHR.responseText);
-								if (jqXHR.status === 302) {
-									window.location.replace('/user');
-								}
-							}
-						});
+                                $('#em-close-multi-file').hide();
+                                $('#em-close-multi-file button').hide();
+                            },
+                            error: function (jqXHR) {
+                                console.log(jqXHR.responseText);
+                                if (jqXHR.status === 302) {
+                                    window.location.replace('/user');
+                                }
+                            }
+                        });
 
-					} else {
-						$('#em-appli-menu .list-group').append(result.msg);
-					}
-				},
-				error: function (jqXHR) {
-					console.log(jqXHR.responseText);
-				}
-			});
+                    } else {
+                        $('#em-appli-menu .list-group').append(result.msg);
+                    }
+                },
+                error: function (jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            });
         },
         error: function(jqXHR) {
             console.log(jqXHR.responseText);
@@ -660,7 +660,7 @@ function getUserCheckArray() {
             fnum = fnum.replace("|open", "");
 
             if (fnum == "") {
-                 return null;
+                return null;
             } else {
                 let cid = parseInt(fnum.substr(14, 7));
                 let sid = parseInt(fnum.substr(21, 7));
@@ -719,80 +719,80 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                     } else {
                         $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start + '</p></div>');
 
-                        }
-                        if (start != json.start) {
-                            generate_csv(json, eltJson, objJson, options, objclass);
-                        } else {
-                            $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.JText._('COM_EMUNDUS_XLS_GENERATION') + '</p></div>');
-                            $.ajax(
-                                {
-                                    type: 'post',
-                                    url: 'index.php?option=com_emundus&controller=files&task=export_xls_from_csv',
-                                    dataType: 'JSON',
-                                    data: {
-                                        csv: file,
-                                        nbcol: nbcol,
-                                        start: start,
-                                        excelfilename: result.json.excelfilename
-                                    },
-                                    success: function (result) {
-                                        if (result.status) {
-                                            //// right here --> I will
-                                            let source = result.link;
-
-                                            if(letter != 0) {
-                                                $.ajax({
-                                                    type: 'post',
-                                                    url: 'index.php?option=com_emundus&controller=files&task=getletter',
-                                                    dataType: 'JSON',
-                                                    data: {letter: letter},
-                                                    success: function (data) {
-                                                        if (data.status) {
-                                                            let letter = data.letter.file;      /// get the destination of letters
-                                                            // call ajax to migrate all csv to letter
-                                                            $.ajax({
-                                                                type: 'post',
-                                                                url: 'index.php?option=com_emundus&controller=files&task=export_letter',
-                                                                dataType: 'JSON',
-                                                                data: {
-                                                                    source: source,
-                                                                    letter: letter,
-                                                                },
-                                                                success: function(reply) {
-                                                                    let tmp = reply.link.split('/');
-                                                                    let filename = tmp[tmp.length - 1];
-                                                                    $('#loadingimg').empty();
-                                                                    $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
-                                                                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
-                                                                    $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + filename + '"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
-                                                                }, error: function(jqXHR) {
-                                                                    console.log(jqXHR.responseText);
-                                                                }
-                                                            })
-                                                        }
-                                                    }, error: function (jqXHR) {
-                                                        console.log(jqXHR.responseText);
-                                                    }
-                                                });
-                                            }
-
-                                            else {
-                                                $('#loadingimg').empty();
-                                                $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
-                                                $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
-                                                $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + result.link + '"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
-                                            }
-                                        }
-                                    },
-                                    error: function (jqXHR, textStatus, errorThrown) {
-                                        $('#loadingimg').empty();
-                                        $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + Joomla.JText._('COM_EMUNDUS_ERROR_XLS') + '</div>');
-                                        $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
-                                        console.log(jqXHR.responseText);
-                                    }
-                                });
-                        }
                     }
+                    if (start != json.start) {
+                        generate_csv(json, eltJson, objJson, options, objclass);
+                    } else {
+                        $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.JText._('COM_EMUNDUS_XLS_GENERATION') + '</p></div>');
+                        $.ajax(
+                            {
+                                type: 'post',
+                                url: 'index.php?option=com_emundus&controller=files&task=export_xls_from_csv',
+                                dataType: 'JSON',
+                                data: {
+                                    csv: file,
+                                    nbcol: nbcol,
+                                    start: start,
+                                    excelfilename: result.json.excelfilename
+                                },
+                                success: function (result) {
+                                    if (result.status) {
+                                        //// right here --> I will
+                                        let source = result.link;
+
+                                        if(letter != 0) {
+                                            $.ajax({
+                                                type: 'post',
+                                                url: 'index.php?option=com_emundus&controller=files&task=getletter',
+                                                dataType: 'JSON',
+                                                data: {letter: letter},
+                                                success: function (data) {
+                                                    if (data.status) {
+                                                        let letter = data.letter.file;      /// get the destination of letters
+                                                        // call ajax to migrate all csv to letter
+                                                        $.ajax({
+                                                            type: 'post',
+                                                            url: 'index.php?option=com_emundus&controller=files&task=export_letter',
+                                                            dataType: 'JSON',
+                                                            data: {
+                                                                source: source,
+                                                                letter: letter,
+                                                            },
+                                                            success: function(reply) {
+                                                                let tmp = reply.link.split('/');
+                                                                let filename = tmp[tmp.length - 1];
+                                                                $('#loadingimg').empty();
+                                                                $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
+                                                                $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                                                                $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + filename + '"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
+                                                            }, error: function(jqXHR) {
+                                                                console.log(jqXHR.responseText);
+                                                            }
+                                                        })
+                                                    }
+                                                }, error: function (jqXHR) {
+                                                    console.log(jqXHR.responseText);
+                                                }
+                                            });
+                                        }
+
+                                        else {
+                                            $('#loadingimg').empty();
+                                            $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
+                                            $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                                            $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + result.link + '"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
+                                        }
+                                    }
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    $('#loadingimg').empty();
+                                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + Joomla.JText._('COM_EMUNDUS_ERROR_XLS') + '</div>');
+                                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                                    console.log(jqXHR.responseText);
+                                }
+                            });
+                    }
+                }
             },
             error: function (jqXHR) {
                 $('#loadingimg').empty();
@@ -889,7 +889,7 @@ function generate_pdf(json,pdf_elements= null) {
                     $('#loadingimg').empty();
                     $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
                     $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
-                    $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' + '/tmp/' + result.json.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
+                    $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' +result.json.path+ 'tmp/' + result.json.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
                 }, error: function (jqXHR) {
                     $('#loadingimg').empty();
                     $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
@@ -921,7 +921,7 @@ function generate_pdf(json,pdf_elements= null) {
                     $('#loadingimg').empty();
                     $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
                     $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
-                    $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' + '/tmp/' + result.json.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
+                    $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' +result.json.path+ '/tmp/' + result.json.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
                 }, error: function (jqXHR) {
                     $('#loadingimg').empty();
                     $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
@@ -941,11 +941,11 @@ function generate_pdf(json,pdf_elements= null) {
         $('#loadingimg').empty();
         $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
         $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
-        $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="/tmp/' + file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
+        $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' +result.json.path+ '/tmp/' + file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
 
     } else {
         $('#loadingimg').empty();
-        $('#extractstep').replaceWith('<div class="alert alert-info" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_CAPACITY_PDF')+'</div><a class="btn btn-link" title="'+Joomla.JText._('DOWNLOAD_PDF')+'" href="/tmp/'+file+'" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.JText._('DOWNLOAD_PDF')+'</span></a>');
+        $('#extractstep').replaceWith('<div class="alert alert-info" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_CAPACITY_PDF')+'</div><a class="btn btn-link" title="'+Joomla.JText._('DOWNLOAD_PDF')+'" href="' +result.json.path+ '/tmp/'+file+'" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.JText._('DOWNLOAD_PDF')+'</span></a>');
         $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
     }
 }
@@ -1285,11 +1285,11 @@ $(document).ready(function() {
                     fnum.sid = parseInt(fnum.fnum.substr(21, 7));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 
-					page = Array.from(document.querySelector('#em-appli-block .panel[class*="em-container-"]').classList).filter(
-						function x (p) {
-							return p.startsWith('em-container');
-						}
-					)[0].split('-')[2];
+                    page = Array.from(document.querySelector('#em-appli-block .panel[class*="em-container-"]').classList).filter(
+                        function x (p) {
+                            return p.startsWith('em-container');
+                        }
+                    )[0].split('-')[2];
 
                     $.ajax({
                         type: 'get',
@@ -1877,7 +1877,7 @@ $(document).ready(function() {
                                 '<div class="panel panel-default xclsform xclsform-filters">' +
                                 '<div class="panel-body">' +
                                 '<select class="chzn-select" id="filt_save" name="filt_save" >'+
-                                    '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option>' +
+                                '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option>' +
                                 '</select>'+
                                 '<button class="w3-button w3-tiny btn-success" id="savefilter" title="'+Joomla.JText._('SAVE_FILTER')+'">'+Joomla.JText._('SAVE_FILTER')+'</button>'+
                                 '<button class="w3-button w3-tiny" id="delfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'">'+Joomla.JText._('DELETE')+'</button></div></div>'+
@@ -1898,9 +1898,9 @@ $(document).ready(function() {
                             $('#data').append('' +
                                 '<div class="panel panel-default xclsform">' +
 
-                                    '<div class="panel-heading">' +
-                                        '<h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5>' +
-                                    '</div>' +
+                                '<div class="panel-heading">' +
+                                '<h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5>' +
+                                '</div>' +
 
                                 '<div class="panel-body">' +
                                 '<select class="chzn-select" name="em-export-prg" id="em-export-prg">' +
@@ -1971,10 +1971,10 @@ $(document).ready(function() {
 
                             /// first --> get all letters
                             $.ajax({
-                               type: 'post',
-                               url: 'index.php?option=com_emundus&controller=files&task=getAllLetters',
-                               dataType:'json',
-                               success: function(result) {
+                                type: 'post',
+                                url: 'index.php?option=com_emundus&controller=files&task=getAllLetters',
+                                dataType:'json',
+                                success: function(result) {
                                     let letters = result.letters;
                                     letters.forEach(letter => {
                                         if(letter.template_type == '4') {
@@ -1983,9 +1983,9 @@ $(document).ready(function() {
                                             $('#letter').show();
                                         }
                                     });
-                               }, error: function(jqXHR) {
+                                }, error: function(jqXHR) {
                                     console.log(jqXHR.responseText);
-                               }
+                                }
                             });
 
                             $.ajax({
@@ -3631,90 +3631,90 @@ $(document).ready(function() {
                 $('#em-modal-actions .modal-body').append('<div id="data"></div>');
                 $('#data').append(
                     '<div class="panel panel-default pdform pdform-filters">' +
-                        '<div class="panel-body"> ' +
-                            '<select class="chzn-select" id="filt_save_pdf" name="filt_save_pdf" >'+
-                                '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option>' +
-                            '</select>'+
+                    '<div class="panel-body"> ' +
+                    '<select class="chzn-select" id="filt_save_pdf" name="filt_save_pdf" >'+
+                    '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option>' +
+                    '</select>'+
 
-                        '<button class="w3-button w3-tiny btn-success" id="savePDFfilter" title="'+Joomla.JText._('SAVE_FILTER')+'">'+Joomla.JText._('SAVE_FILTER')+'</button>'+
-                        '<button class="w3-button w3-tiny" id="delPDFfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'">'+Joomla.JText._('DELETE')+'</button></div></div>'+
+                    '<button class="w3-button w3-tiny btn-success" id="savePDFfilter" title="'+Joomla.JText._('SAVE_FILTER')+'">'+Joomla.JText._('SAVE_FILTER')+'</button>'+
+                    '<button class="w3-button w3-tiny" id="delPDFfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'">'+Joomla.JText._('DELETE')+'</button></div></div>'+
 
-                        '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
-                            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                            '<strong>'+Joomla.JText._('FILTER_SAVED')+'</strong>'+
-                        '</div>'+
+                    '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
+                    '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                    '<strong>'+Joomla.JText._('FILTER_SAVED')+'</strong>'+
+                    '</div>'+
 
-                        '<div class="alert alert-dismissable alert-success em-alert-filter" id="del-filter">'+
-                            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                            '<strong>'+Joomla.JText._('FILTER_DELETED')+'</strong>'+
-                        '</div>'+
+                    '<div class="alert alert-dismissable alert-success em-alert-filter" id="del-filter">'+
+                    '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                    '<strong>'+Joomla.JText._('FILTER_DELETED')+'</strong>'+
+                    '</div>'+
 
-                        '<div class="alert alert-dismissable alert-danger em-alert-filter" id="err-filter">'+
-                            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                            '<strong>'+Joomla.JText._('SQL_ERROR')+'</strong>'+
-                        '</div>'+
+                    '<div class="alert alert-dismissable alert-danger em-alert-filter" id="err-filter">'+
+                    '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                    '<strong>'+Joomla.JText._('SQL_ERROR')+'</strong>'+
+                    '</div>'+
                     '</div>');
                 $('#data').append(
                     '<div class="panel panel-default pdform">' +
-                        '<div class="panel-heading">' +
-                            '<h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5>' +
-                        '</div>' +
+                    '<div class="panel-heading">' +
+                    '<h5>'+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+'</h5>' +
+                    '</div>' +
 
-                        '<div class="panel-body">' +
-                            '<select class="chzn-select" name="em-export-prg" id="em-export-prg">' +
-                                '<option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option>' +
-                            '</select>' +
-                            '<br/><br/>' +
+                    '<div class="panel-body">' +
+                    '<select class="chzn-select" name="em-export-prg" id="em-export-prg">' +
+                    '<option value="0" >-- '+Joomla.JText._('COM_EMUNDUS_CHOOSE_PRG')+' --</option>' +
+                    '</select>' +
+                    '<br/><br/>' +
 
-                            '<div id="camp" style="display:none;">' +
-                                '<select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select">' +
+                    '<div id="camp" style="display:none;">' +
+                    '<select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select">' +
 
-                                '</select>' +
-                            '</div>' +
-                        '</div>' +
+                    '</select>' +
+                    '</div>' +
+                    '</div>' +
                     '</div>');
 
                 $('#data').append(
-                '<div class="panel panel-default pdform" id="form-exists" style="display:none;">'+
+                    '<div class="panel panel-default pdform" id="form-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
-                        '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms"/>' +
-                        '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('FORMS_PDF').toUpperCase()+'</font></label>'+
+                    '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms"/>' +
+                    '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('FORMS_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
 
-                '<div id="form-element" style="overflow:auto"></div>' +
-                // '<div class="panel-body" id="felts" style="overflow:auto;display:none;"></div>'+
+                    '<div id="form-element" style="overflow:auto"></div>' +
+                    // '<div class="panel-body" id="felts" style="overflow:auto;display:none;"></div>'+
 
-                '</div>'+
+                    '</div>'+
 
-                '<div class="panel panel-default pdform" id="att-exists" style="display:none;">'+
+                    '<div class="panel panel-default pdform" id="att-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
-                        '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment"/>' +
-                        '<label for="em-ex-attachment"><font color="black">'+Joomla.JText._('ATTACHMENT_PDF').toUpperCase()+'</font></label>'+
+                    '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment"/>' +
+                    '<label for="em-ex-attachment"><font color="black">'+Joomla.JText._('ATTACHMENT_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
                     '<div class="panel-body" id="aelts" style="overflow:auto;display:none;"></div>'+
-                '</div>'+
-
-                '<div class="panel panel-default pdform" id="eval-exists" style="display:none;">'+
-                    '<div class="panel-heading">'+
-                        '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
-                        '<label for="em-ex-assessment"><font color="black">'+Joomla.JText._('ASSESSMENT_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
-                '</div>'+
 
-                '<div class="panel panel-default pdform" id="dec-exists" style="display:none;">'+
+                    '<div class="panel panel-default pdform" id="eval-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
-                        '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
-                        '<label for="em-ex-decision"><font color="black">'+Joomla.JText._('DECISION_PDF').toUpperCase()+'</font></label>'+
+                    '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
+                    '<label for="em-ex-assessment"><font color="black">'+Joomla.JText._('ASSESSMENT_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
-                '</div>'+
+                    '</div>'+
 
-                '<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
+                    '<div class="panel panel-default pdform" id="dec-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
-                        '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
-                        '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
+                    '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
+                    '<label for="em-ex-decision"><font color="black">'+Joomla.JText._('DECISION_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
-                '</div>' +
-                '<br/>'
+                    '</div>'+
+
+                    '<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
+                    '<div class="panel-heading">'+
+                    '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
+                    '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
+                    '</div>'+
+                    '</div>' +
+                    '<br/>'
                 );
 
                 $('#data').append('<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
@@ -3866,160 +3866,160 @@ $(document).ready(function() {
                     $('#model-err-pdf').remove();
                     $('.modal-header').before('<div id="loadingimg-campaign"><img src="'+loading+'" alt="loading"/></div>');
 
-                   if(model != 0) {
-                       // show #form-div
-                       $('#form-exists').show();
+                    if(model != 0) {
+                        // show #form-div
+                        $('#form-exists').show();
 
-                       // show #document-div
-                       $('#att-exists').show();
+                        // show #document-div
+                        $('#att-exists').show();
 
-                       // show #eval-div
-                       $('#eval-exists').show();
+                        // show #eval-div
+                        $('#eval-exists').show();
 
-                       // show #document-div
-                       $('#dec-exists').show();
+                        // show #document-div
+                        $('#dec-exists').show();
 
-                       // show #admission-div
-                       $('#adm-exists').show();
+                        // show #admission-div
+                        $('#adm-exists').show();
 
-                       $.ajax({
-                               type: 'post',
-                               url: 'index.php?option=com_emundus&controller=files&task=getExportPdfFilterById',
-                               data: {
-                                   id: model,
-                               },
-                               dataType: 'JSON',
-                               success: function(result) {
-                                   if(result.status) {
-                                       let constraints = result.filter.constraints;
-                                       let json = JSON.parse(constraints);
-                                       let progCode = json.pdffilter.code;
-                                       let campCode = json.pdffilter.camp;
+                        $.ajax({
+                            type: 'post',
+                            url: 'index.php?option=com_emundus&controller=files&task=getExportPdfFilterById',
+                            data: {
+                                id: model,
+                            },
+                            dataType: 'JSON',
+                            success: function(result) {
+                                if(result.status) {
+                                    let constraints = result.filter.constraints;
+                                    let json = JSON.parse(constraints);
+                                    let progCode = json.pdffilter.code;
+                                    let campCode = json.pdffilter.camp;
 
-                                       /// case 1 :: one program
-                                       if($("#em-export-prg option").length == 2) {
-                                           // if only program is preselected --> check the camp
-                                           if($("#em-export-camp option[value='" + campCode + "']").length > 0 === true) {
-                                               let elements = json.pdffilter.elements;
-                                               let checkAllGroups = json.pdffilter.checkAllGroups;
-                                               let checkAllTables = json.pdffilter.checkAllTables;
-                                               let attachments = json.pdffilter.attachments;
+                                    /// case 1 :: one program
+                                    if($("#em-export-prg option").length == 2) {
+                                        // if only program is preselected --> check the camp
+                                        if($("#em-export-camp option[value='" + campCode + "']").length > 0 === true) {
+                                            let elements = json.pdffilter.elements;
+                                            let checkAllGroups = json.pdffilter.checkAllGroups;
+                                            let checkAllTables = json.pdffilter.checkAllTables;
+                                            let attachments = json.pdffilter.attachments;
 
-                                               $('#em-export-camp').val(campCode);
-                                               $('#em-export-camp').trigger("chosen:updated");
-                                               $('#em-export-camp').trigger("change");
+                                            $('#em-export-camp').val(campCode);
+                                            $('#em-export-camp').trigger("chosen:updated");
+                                            $('#em-export-camp').trigger("change");
 
-                                               if (elements[0] !== "") {
-                                                   $.ajax({
-                                                       type: 'post',
-                                                       url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
-                                                       dataType: 'JSON',
-                                                       data: {elts: elements.toString()},
-                                                       async: false,
-                                                       success: function (returnData) {
-                                                           // build profile(s)
-                                                           let profiles = returnData.fabrik_data.profiles;
+                                            if (elements[0] !== "") {
+                                                $.ajax({
+                                                    type: 'post',
+                                                    url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
+                                                    dataType: 'JSON',
+                                                    data: {elts: elements.toString()},
+                                                    async: false,
+                                                    success: function (returnData) {
+                                                        // build profile(s)
+                                                        let profiles = returnData.fabrik_data.profiles;
 
-                                                           profiles.forEach(prf => {
-                                                               checkElement('#felts'+prf.id).then((selector) => {
-                                                                   $('#' + selector.id).show();        // show felts
-                                                                   $('#loadingimg-campaign').remove();
-                                                                   $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
-                                                                   $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
+                                                        profiles.forEach(prf => {
+                                                            checkElement('#felts'+prf.id).then((selector) => {
+                                                                $('#' + selector.id).show();        // show felts
+                                                                $('#loadingimg-campaign').remove();
+                                                                $('#showelements_' + prf.id).attr('class', 'btn-xs btn btn-elements-success');
+                                                                $('#showelements_' + prf.id + '> span').attr('class', 'glyphicon glyphicon-minus');
 
-                                                                   // uncheck all checkbox of each felts
-                                                                   if($('#form-exists input:checked').length > 0) {
-                                                                       $('#form-exists input:checked').prop('checked', false);
-                                                                   }
+                                                                // uncheck all checkbox of each felts
+                                                                if($('#form-exists input:checked').length > 0) {
+                                                                    $('#form-exists input:checked').prop('checked', false);
+                                                                }
 
-                                                                   // render tables
-                                                                   if (checkAllTables !== null || checkAllTables !== undefined || checkAllTables[0] !== "") {
-                                                                       checkAllTables.forEach(tbl => {
-                                                                           $('#emundus_checkall_tbl_' + tbl).attr('checked', true);
-                                                                       })
-                                                                   }
+                                                                // render tables
+                                                                if (checkAllTables !== null || checkAllTables !== undefined || checkAllTables[0] !== "") {
+                                                                    checkAllTables.forEach(tbl => {
+                                                                        $('#emundus_checkall_tbl_' + tbl).attr('checked', true);
+                                                                    })
+                                                                }
 
-                                                                   if (checkAllGroups !== null || checkAllGroups !== undefined || checkAllGroups[0] !== "") {
-                                                                       checkAllGroups.forEach(grp => {
-                                                                           $('#emundus_checkall_grp_' + grp).attr('checked', true);
-                                                                       })
-                                                                   }
+                                                                if (checkAllGroups !== null || checkAllGroups !== undefined || checkAllGroups[0] !== "") {
+                                                                    checkAllGroups.forEach(grp => {
+                                                                        $('#emundus_checkall_grp_' + grp).attr('checked', true);
+                                                                    })
+                                                                }
 
-                                                                   if (elements !== null || elements !== undefined || elements[0] !== "") {
-                                                                       elements.forEach(elt => {
-                                                                           $('#emundus_elm_' + elt).attr('checked', true);
-                                                                       })
-                                                                   }
-                                                               });
-                                                           })
-                                                       }
-                                                   })
-                                               }
+                                                                if (elements !== null || elements !== undefined || elements[0] !== "") {
+                                                                    elements.forEach(elt => {
+                                                                        $('#emundus_elm_' + elt).attr('checked', true);
+                                                                    })
+                                                                }
+                                                            });
+                                                        })
+                                                    }
+                                                })
+                                            }
 
-                                               /// render attachments
-                                               checkElement('#aelts-' + progCode + campCode).then((selector) => {
-                                                   /// show #aelts
-                                                   $('#' + selector.id).show();
+                                            /// render attachments
+                                            checkElement('#aelts-' + progCode + campCode).then((selector) => {
+                                                /// show #aelts
+                                                $('#' + selector.id).show();
 
-                                                   /// set button css (+ vs -)
+                                                /// set button css (+ vs -)
 
-                                                   $('#aelts').find('.btn-info').attr('class', 'btn-xs btn btn-elements-success');
+                                                $('#aelts').find('.btn-info').attr('class', 'btn-xs btn btn-elements-success');
 
-                                                   ///btn-xs btn btn-elements-success
-                                                   $('#aelts').find('.glyphicon-plus').attr('class', 'glyphicon glyphicon-minus');
+                                                ///btn-xs btn btn-elements-success
+                                                $('#aelts').find('.glyphicon-plus').attr('class', 'glyphicon glyphicon-minus');
 
-                                                   /// check to selected elements
-                                                   attachments.forEach((doc) => {
-                                                       $('[id="' + doc + '"]').prop('checked', true);
-                                                   })
-                                               })
+                                                /// check to selected elements
+                                                attachments.forEach((doc) => {
+                                                    $('[id="' + doc + '"]').prop('checked', true);
+                                                })
+                                            })
 
-                                           } else {
-                                               $('#loadingimg-campaign').remove();
-                                               $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
-                                           }
-                                       }
+                                        } else {
+                                            $('#loadingimg-campaign').remove();
+                                            $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
+                                        }
+                                    }
 
-                                       /// case 2 :: many programs
-                                       if($("#em-export-prg option").length > 2) {
-                                           if ($("#em-export-prg option[value='" + progCode + "']").length > 0 === true) {
-                                               setModel(json);      /// if prog is found --> keep going
-                                           } else {
-                                               $('#loadingimg-campaign').remove();
-                                               $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
-                                           }
-                                       }
-                               }
-                           }, error: function(jqXHR) {console.log(jqXHR.responseText);}
-                       });
-                   } else {
-                       // set "unselect" program
-                       $('#loadingimg-campaign').remove();
-                       $('#em-export-prg option:selected').removeAttr("selected");
-                       $('#em-export-prg').trigger('chosen:updated');
+                                    /// case 2 :: many programs
+                                    if($("#em-export-prg option").length > 2) {
+                                        if ($("#em-export-prg option[value='" + progCode + "']").length > 0 === true) {
+                                            setModel(json);      /// if prog is found --> keep going
+                                        } else {
+                                            $('#loadingimg-campaign').remove();
+                                            $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.JText._('COM_EMUNDUS_MODEL_ERR') + '</div>');
+                                        }
+                                    }
+                                }
+                            }, error: function(jqXHR) {console.log(jqXHR.responseText);}
+                        });
+                    } else {
+                        // set "unselect" program
+                        $('#loadingimg-campaign').remove();
+                        $('#em-export-prg option:selected').removeAttr("selected");
+                        $('#em-export-prg').trigger('chosen:updated');
 
-                       // hide #camp --> set "unselect" campaign
-                       $('#camp').hide();
-                       $('#em-export-camp option:selected').removeAttr("selected");
-                       $('#em-export-camp').trigger('chosen:updated');
+                        // hide #camp --> set "unselect" campaign
+                        $('#camp').hide();
+                        $('#em-export-camp option:selected').removeAttr("selected");
+                        $('#em-export-camp').trigger('chosen:updated');
 
-                       // hide #form-div and reset #form-element
-                       $('#form-exists').hide();
-                       $('#form-element').hide();
+                        // hide #form-div and reset #form-element
+                        $('#form-exists').hide();
+                        $('#form-element').hide();
 
-                       // hide #att-div and reset #aelts (documents)
-                       $('#att-exists').hide();
-                       $('#aelts').empty();
+                        // hide #att-div and reset #aelts (documents)
+                        $('#att-exists').hide();
+                        $('#aelts').empty();
 
-                       // hide #eval-div
-                       $('#eval-exists').hide();
+                        // hide #eval-div
+                        $('#eval-exists').hide();
 
-                       // hide #decision-div
-                       $('#dec-exists').hide();
+                        // hide #decision-div
+                        $('#dec-exists').hide();
 
-                       // hide #admission-div
-                       $('#adm-exists').hide();
-                   }
+                        // hide #admission-div
+                        $('#adm-exists').hide();
+                    }
                 });
 
                 $('#em-export-prg').on('change', function() {
@@ -4187,22 +4187,22 @@ $(document).ready(function() {
                                     var camp = $("#em-export-camp").val();
 
                                     if (camp != 0) {
-                                                    $.ajax({
-                                                        type:'post',
-                                                        url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
-                                                        dataType:'json',
-                                                        success: function(result) {
-                                                            if (result.status) {
-                                                                $('#aelts-'+code+camp).parent('div').remove();
-                                                                $('#aelts-'+code+'0').parent('div').remove();
-                                                                $('#aelts').append(result.html);
-                                                                $('#aelts').show();
-                                                            }
-                                                        },
-                                                        error: function(jqXHR) {
-                                                            console.log(jqXHR.responseText);
-                                                        }
-                                                    });
+                                        $.ajax({
+                                            type:'post',
+                                            url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
+                                            dataType:'json',
+                                            success: function(result) {
+                                                if (result.status) {
+                                                    $('#aelts-'+code+camp).parent('div').remove();
+                                                    $('#aelts-'+code+'0').parent('div').remove();
+                                                    $('#aelts').append(result.html);
+                                                    $('#aelts').show();
+                                                }
+                                            },
+                                            error: function(jqXHR) {
+                                                console.log(jqXHR.responseText);
+                                            }
+                                        });
                                     } else {
                                         $('[id^=aelts-'+code+']').parent('div').remove();
                                         $('#aelts').append(atthtml);
@@ -4762,15 +4762,15 @@ $(document).ready(function() {
 
                         var tags = '<br/><div class="form-group" style="color:black !important">'+
                             '<div style="padding-left: 15.5%;"><form style="margin-left:15px; margin-bottom:6px">'+
-                                '<input type="radio" name="em-tags" id="em-tags" value="0" checked>' +Joomla.JText._('ADD_TAGS')+
-                                '&ensp;&ensp;&ensp;<input type="radio" name="em-tags" id="em-tags" value="1">' +Joomla.JText._('DELETE_TAGS')+ '<br>'+
-                                '</form></div></div>'+
+                            '<input type="radio" name="em-tags" id="em-tags" value="0" checked>' +Joomla.JText._('ADD_TAGS')+
+                            '&ensp;&ensp;&ensp;<input type="radio" name="em-tags" id="em-tags" value="1">' +Joomla.JText._('DELETE_TAGS')+ '<br>'+
+                            '</form></div></div>'+
 
-                                '<label class="col-lg-2 control-label">' +Joomla.JText._('TAG_CATEGORIES')+ '</label>' +
-                                '<select class="col-lg-7 modal-chzn-select" name="em-action-tag-category" id="em-action-tag-category"></select>' +
+                            '<label class="col-lg-2 control-label">' +Joomla.JText._('TAG_CATEGORIES')+ '</label>' +
+                            '<select class="col-lg-7 modal-chzn-select" name="em-action-tag-category" id="em-action-tag-category"></select>' +
 
-                                '<label class="col-lg-2 control-label">'+result.tag+'</label>' +
-                                '<select class="col-lg-7 modal-chzn-select" name="em-action-tag" id="em-action-tag" multiple="multiple"></select>' +
+                            '<label class="col-lg-2 control-label">'+result.tag+'</label>' +
+                            '<select class="col-lg-7 modal-chzn-select" name="em-action-tag" id="em-action-tag" multiple="multiple"></select>' +
                             '</div>';
 
                         $('.modal-body').append(tags);
@@ -5006,7 +5006,7 @@ $(document).ready(function() {
                                 $('#loadingimg').empty();
                                 $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
                                 //$('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
-                                $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' + '/tmp/' + data.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
+                                $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' +data.path+ '/tmp/' + data.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
                             }, error: function (jqXHR) {
                                 $('#loadingimg').empty();
                                 $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
@@ -5021,7 +5021,7 @@ $(document).ready(function() {
 
                 break;
 
-                // send email --> test
+            // send email --> test
             default:
                 break;
         }
@@ -6348,7 +6348,7 @@ $(document).ready(function() {
                 $('#can-val').empty();
                 $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
                     '<button style="margin-left:5px;background: #16afe1; border: 2px solid #16afe1; border-radius: 25px !important; color: #fff" type="button" class="btn btn-danger">' +
-                        '<a style="color:#fff" id="em-download-all" href="">'+ Joomla.JText._('DOWNLOAD_DOCUMENT') + '</a>' +
+                    '<a style="color:#fff" id="em-download-all" href="">'+ Joomla.JText._('DOWNLOAD_DOCUMENT') + '</a>' +
                     '</button>');
                 $('#can-val').show();
 
@@ -6378,20 +6378,20 @@ $(document).ready(function() {
                         let recal = result.recapitulatif_count;
                         var recal_table =
                             "<h4 style='color:#16afe1 !important'>" +
-                                Joomla.JText._('AFFECTED_CANDIDATS') + result.affected_users +
+                            Joomla.JText._('AFFECTED_CANDIDATS') + result.affected_users +
                             "</h4>" +
-                                "<table class='table table-striped' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
-                                    "<thead>" +
-                                        "<th>"+Joomla.JText._('GENERATED_DOCUMENTS_LABEL') + "</th>" +
-                                        "<th>"+Joomla.JText._('GENERATED_DOCUMENTS_COUNT') + "</th>" +
-                                    "</thead>" +
-                                    "<tbody>";
+                            "<table class='table table-striped' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
+                            "<thead>" +
+                            "<th>"+Joomla.JText._('GENERATED_DOCUMENTS_LABEL') + "</th>" +
+                            "<th>"+Joomla.JText._('GENERATED_DOCUMENTS_COUNT') + "</th>" +
+                            "</thead>" +
+                            "<tbody>";
 
                         recal.forEach(data => {
                             recal_table +=
                                 "<tr style='background: #c1c7d0'>" +
-                                    "<td>" + data.document + "</td>" +
-                                    "<td>" + data.count + "</td>" +
+                                "<td>" + data.document + "</td>" +
+                                "<td>" + data.count + "</td>" +
                                 "</tr>"
                         })
 
@@ -6405,12 +6405,12 @@ $(document).ready(function() {
                                 var table = "<h3>" +
                                     Joomla.JText._('CANDIDAT_GENERATED')+
                                     "</h3>" +
-                                        "<table class='table table-striped' id='em-generated-docs'>" +
-                                        "<thead>" +
-                                            "<tr>" +
-                                                "<th>"+Joomla.JText._('CANDIDATE_NAME') + "</th>" +
-                                            "</tr>" +
-                                        "</thead>" +
+                                    "<table class='table table-striped' id='em-generated-docs'>" +
+                                    "<thead>" +
+                                    "<tr>" +
+                                    "<th>"+Joomla.JText._('CANDIDATE_NAME') + "</th>" +
+                                    "</tr>" +
+                                    "</thead>" +
                                     "<tbody>";
 
                                 if(mergeMode == 0) {
@@ -6445,15 +6445,15 @@ $(document).ready(function() {
 
                                 var table =
                                     "<h3>" +
-                                        Joomla.JText._('DOCUMENT_GENERATED')+
+                                    Joomla.JText._('DOCUMENT_GENERATED')+
                                     "</h3>" +
-                                        "<table class='table table-striped' id='em-generated-docs'>" +
-                                            "<thead>" +
-                                            "<tr>" +
-                                                "<th>"+Joomla.JText._('DOCUMENT_NAME') + "</th>" +
-                                            "</tr>" +
-                                            "</thead>" +
-                                        "<tbody>";
+                                    "<table class='table table-striped' id='em-generated-docs'>" +
+                                    "<thead>" +
+                                    "<tr>" +
+                                    "<th>"+Joomla.JText._('DOCUMENT_NAME') + "</th>" +
+                                    "</tr>" +
+                                    "</thead>" +
+                                    "<tbody>";
 
                                 if(mergeMode == 0) {
                                     letters.forEach(letter => {

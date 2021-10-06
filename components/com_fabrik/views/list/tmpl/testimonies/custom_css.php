@@ -42,18 +42,21 @@ echo <<<EOT
   padding-top: 80px;
   padding-bottom: 80px;
 }
+
 .fabrik_row.oddRow1 td {
   display: flex;
   flex-direction: row;
-  align-items: end;
+  align-items: flex-start;
 }
+
 .filtertable.table.table-striped {
   margin-top: 50px;
 }
 
-.fabrik_row.oddRow1  .em-filter-label {
-margin-right: 10px !important;
+.fabrik_row.oddRow1  .em-filter-label, .fabrik_row.oddRow0  .em-filter-label {
+  margin-right: 10px !important;
 }
+
 .w-container {
   margin-left: auto;
   margin-right: auto;
@@ -140,7 +143,9 @@ align-items: center;
   display:flex;
   flex-direction:row;
   justify-content:center;
+  margin-bottom: 100px;
 }
+
 ul.pagination-list {
   display: inline-block;
   padding: 0;
@@ -185,5 +190,13 @@ ul.pagination-list li:not(.active) a{
   background-color: white;
   color:#a51e25;
 }
+
+@media screen and (max-width: 479px) {
+      form.form-search .filtertable.table.table-striped tbody {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+} 
+
 /* END - Your CSS styling ends here */
 EOT;
