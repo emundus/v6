@@ -1399,4 +1399,22 @@ class EmundusModelMessages extends JModelList {
             }
         } else { return false; }
     }
+
+    /// get all attachments
+    public function getAllAttachments() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('#__emundus_setup_attachments.*')
+                ->from($db->quoteName('#__emundus_setup_attachments'));
+
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch(Exception $e) {
+            JLog::add('Cannot get all attachments : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return [];      /// return empty array
+        }
+    }
 }

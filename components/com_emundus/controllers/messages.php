@@ -1713,4 +1713,17 @@ class EmundusControllerMessages extends JControllerLegacy {
         }
         exit;
     }
+
+    // get all attachments
+    public function getallattachments() {
+        $_mMessages = $this->getModel('Messages');
+        $_documents = $_mMessages->getAllAttachments();
+
+        if($_documents) {
+            echo json_encode(['status' => true, 'attachments' => $_documents]);
+        } else {
+            echo json_encode(['status' => false, 'attachments' => null]);
+        }
+        exit;
+    }
 }

@@ -88,9 +88,16 @@ $template_type = array(
                 $('#can-val').append('<button id="em-generate" style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOCUMENT')+'</button>');
                 $('#export-div').show();
                 attachment_letters.forEach(letter => {
-                    $('#em-doc-tmpl').append('<option value="' + letter.id + '" selected>' + letter.value + '</option>');           /// set selected by default
+                    $('#em-doc-tmpl').append('<option value="' + letter.id + '">' + letter.value + '</option>');           /// append data
                     $('#em-doc-tmpl').trigger("chosen:updated");
                 })
+
+                //// should select by default the first option
+                $('#em-doc-tmpl option:first').prop('selected', true);
+                $('#em-doc-tmpl').trigger("chosen:updated");
+
+                /// uncomment this line to hide btn "Generer le(s) document(s)" if needed
+                //$('#em-generate').remove();
             } else {
                 $('#em-doc-tmpl').append('<option value="-1" selected disabled>' + Joomla.JText._('NO_LETTER_FOUND') + '</option>');
                 $('#em-doc-tmpl').trigger("chosen:updated");

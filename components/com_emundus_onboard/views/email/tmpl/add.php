@@ -76,6 +76,12 @@ JText::script('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT');
 
 JText::script('COM_EMUNDUS_ONBOARD_CC_BCC_TOOLTIPS');
 
+JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TAGS');
+JText::script('COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS');
+
+JText::script('COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS');
+JText::script('COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS');
+
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0, 2);
 ?>

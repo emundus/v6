@@ -100,6 +100,20 @@
                          :taggable="true" :placeholder="LettersPlaceHolder" :close-on-select="false" :clear-on-select="false"></multiselect>
           </div>
 
+          <!-- Email -- Action tags -->
+          <div class="form-group">
+            <label>{{ Tags }}</label>
+            <multiselect v-model="selectedTags" label="label" track-by="id" :options="action_tags" :multiple="true"
+                         :taggable="true" :placeholder="TagsPlaceHolder" :close-on-select="false" :clear-on-select="false"></multiselect>
+          </div>
+
+          <!-- Email -- Candidat attachments -->
+          <div class="form-group" id="">
+            <label>{{ CandidateAttachments }}</label>
+            <multiselect v-model="selectedCandidateAttachments" label="value" track-by="id" :options="candidate_attachments" :multiple="true"
+                         :taggable="true" :placeholder="CandidateAttachmentsPlaceholder" :close-on-select="false" :clear-on-select="false"></multiselect>
+          </div>
+
         </div>
         <div class="divider"></div>
         <div class="sous-container last-container" v-if="email == ''">
@@ -228,7 +242,7 @@ import Multiselect from 'vue-multiselect';
     data: () => ({
       langue: 0,
 
-    dynamicComponent: false,
+      dynamicComponent: false,
 
       AddEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
       Advanced: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
@@ -281,6 +295,12 @@ import Multiselect from 'vue-multiselect';
 
     /// Receiver Tooltips
     CopiesTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_CC_BCC_TOOLTIPS"),
+    /// Selected Action Tags
+    TagsPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS"),
+
+    /// Candidat Attachments (title, placeholder)
+      CandidateAttachments: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS"),
+      CandidateAttachmentsPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS"),
 
     categories: [],
     programs: [],
@@ -296,6 +316,7 @@ import Multiselect from 'vue-multiselect';
 
       selectedTags: [],
       selectedDocuments: [],
+      selectedCandidateAttachments: [],
 
     form: {
       lbl: "",
@@ -335,6 +356,9 @@ import Multiselect from 'vue-multiselect';
     receivers_cc: [],
     receivers_bcc: [],
     attached_letters: [],
+
+      action_tags: [],
+      candidate_attachments: [],
   }),
 
   methods: {
@@ -572,7 +596,7 @@ import Multiselect from 'vue-multiselect';
         },
       }).then(response => {
         let _tags = response.data.data;
-        this.tags = _tags;
+        this.action_tags = _tags;
       }).catch(error => {
         console.log(error);
       })
@@ -586,19 +610,33 @@ import Multiselect from 'vue-multiselect';
           "Content-Type": "application/x-www-form-urlencoded"
         },
       }).then(response => {
-        console.log(response);
-        let _documents = response.data.documents;
-        this.attached_letters = _documents;
+        this.attached_letters = response.data.documents;
       }).catch(error => {
         console.log(error);
       })
-    }
+    },
+
+    getAllAttachments: function() {
+      axios({
+        method: 'get',
+        url: 'index.php?option=com_emundus&controller=messages&task=getallattachments',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+      }).then(response => {
+        this.candidate_attachments = response.data.attachments;
+      }).catch(error => {
+        console.log(error);
+      })
+    },
   },
 
   created() {
+    this.getAllAttachments();
     this.getAllUsers();
-    // this.getAllTags();
+    this.getAllTags();
     this.getAllDocumentLetter();
+
     axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
         .then(rep => {
           this.categories = rep.data.data;
