@@ -287,8 +287,8 @@ class EmundusonboardModelemail extends JModelList {
             $query->clear()
                 ->select('#__emundus_setup_attachments.*')
                 ->from($db->quoteName('#__emundus_setup_attachments'))
-                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_attachments') . ' ON ' . $db->quoteName('#__emundus_setup_attachments.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_attachments.attachments'))
-                ->where($db->quoteName('#__emundus_setup_emails_repeat_attachments.parent_id') . ' = ' . (int)$id);
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_attachments.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment'))
+                ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . (int)$id);
 
             $db->setQuery($query);
             $letter_Info = $db->loadObjectList();         /// get attachment info
@@ -379,13 +379,13 @@ class EmundusonboardModelemail extends JModelList {
                     }
                 }
 
-                // add attachments to table #jos_emundus_setup_emails_repeat_attachments
+                // add letter attachment to table #jos_emundus_setup_emails_repeat_letter_attachment
                 if(!empty($letters) and !is_null($letters)) {
                     foreach ($letters as $key => $letter) {
                         $query->clear()
-                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_attachments'))
-                            ->set($db->quoteName('#__emundus_setup_emails_repeat_attachments.parent_id') . ' =  ' . (int)$newemail)
-                            ->set($db->quoteName('#__emundus_setup_emails_repeat_attachments.attachments') . ' = ' . (int)$letter);
+                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' =  ' . (int)$newemail)
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' = ' . (int)$letter);
 
                         $db->setQuery($query);
                         $db->execute();
@@ -431,23 +431,23 @@ class EmundusonboardModelemail extends JModelList {
 
                 /// remove and update new documents for an email
                 if(!empty($letters) and !is_null($letters)) {
-                    $query->clear()->delete($db->quoteName('#__emundus_setup_emails_repeat_attachments'))->where($db->quoteName('#__emundus_setup_emails_repeat_attachments.parent_id') . '=' . (int)$id);
+                    $query->clear()->delete($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . '=' . (int)$id);
 
                     $db->setQuery($query);
                     $db->execute();
 
                     foreach($letters as $key => $letter) {
                         $query->clear()
-                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_attachments'))
-                            ->set($db->quoteName('#__emundus_setup_emails_repeat_attachments.parent_id') . ' =  ' . (int)$id)
-                            ->set($db->quoteName('#__emundus_setup_emails_repeat_attachments.attachments') . ' = ' . (int)$letter);
+                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' =  ' . (int)$id)
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' = ' . (int)$letter);
 
                         $db->setQuery($query);
                         $db->execute();
                     }
                 } else {
                     /// if empty --> remove all
-                    $query->clear()->delete($db->quoteName('#__emundus_setup_emails_repeat_attachments'))->where($db->quoteName('#__emundus_setup_emails_repeat_attachments.parent_id') . '=' . (int)$id);
+                    $query->clear()->delete($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . '=' . (int)$id);
 
                     $db->setQuery($query);
                     $db->execute();
