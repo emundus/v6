@@ -60,17 +60,31 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
+        /// limit 10 to quickly test --> don't forget to choose status to send data
         $query->clear()
             ->select('#__emundus_final_grade.fnum')
             ->from($db->quoteName('#__emundus_final_grade'))
             ->where($db->quoteName('#__emundus_final_grade.code_opi') . ' is not null')
-            ->andWhere($db->quoteName('#__emundus_final_grade.code_opi') . " != ''");
+            ->andWhere($db->quoteName('#__emundus_final_grade.code_opi') . " != ''")
+            ->setLimit(900);
 
         $db->setQuery($query);
         $available_fnums = $db->loadColumn();
 
-//        $available_fnums = ['2021030112462400000300000227', '2021030509242000000330000390'];
-        
+
+//        /* TEMP TEST */
+//        $query = "SELECT #__emundus_final_grade.fnum
+//                    FROM #__emundus_final_grade
+//                        LEFT JOIN #__emundus_personal_detail ON #__emundus_personal_detail.fnum = #__emundus_final_grade.fnum
+//                            WHERE #__emundus_final_grade.code_opi IS NOT NULL
+//                              AND #__emundus_personal_detail.country_1 = 100
+//                                AND #__emundus_final_grade.code_opi != '' LIMIT 20";
+//
+//        $db->setQuery($query);
+//        $available_fnums = $db->loadColumn();
+////        echo '<pre>'; var_dump($available_fnums); echo '</pre>'; die;
+
+
         //echo '<pre>'; var_dump($available_fnums); echo '</pre>'; die;
 
         ///get wsdl url
@@ -97,13 +111,11 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
 
         /// filling data
         $_xmlDataObject = new XmlDataFilling($json_request_data);
-//        $_xmlDataRequest = $_xmlDataObject->fillData($_xmlSchemaRequest, $_xmlSchemaObject->getSchemaDescription(), ['2021030112462400000300000227']);
 
         foreach($available_fnums as $fnum) {
             $_xmlDataRequest = $_xmlDataObject->fillData($_xmlSchemaRequest, $_xmlSchemaObject->getSchemaDescription(), $fnum);
 
             $_xmlSchemaObject->exportXMLFile($_xmlDataRequest, EMUNDUS_PATH_ABS . DS . $fnum);
         }
-        die;
     }
 }

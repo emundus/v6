@@ -8,6 +8,8 @@ ini_set('display_errors','1');                /// turn off Error Displaying
 ini_set('soap.wsdl_cache_enabled', 1);
 error_reporting(E_ALL);
 
+set_time_limit(0);                                  /// turn off time limit (the code may run longer)
+
 /// import XmlSchema
 require_once("XmlSchema.php");
 
@@ -358,18 +360,6 @@ class XmlDataFilling {
                             else {
                                 if($inSubData) {
                                     $_subProps = $jsonDescriptionBody->subData->$pr_name;             /// array
-
-//                                    foreach ($_subProps as $_sp) {
-//                                        if(!is_null($jsonDataBody->$js_key->$pr_name->$_sp->default)) {
-//                                            if (is_null($jsonDataBody->$js_key->$pr_name->$_sp->sql) or ($jsonDataBody->$js_key->$pr_name->$_sp->sql === "")) {
-//                                                $_sp->nodeValue = $jsonDataBody->$js_key->$pr_name->$_sp->default;
-//                                            } else {
-//                                                $this->buildSql($xmlDocument, null, $_sp, $jsonDataBody->$js_key->$pr_name->$_sp->sql . $fnum, false);
-//                                            }
-//                                        } else {
-//                                            $this->buildSql($xmlDocument, null, $_sp, $jsonDataBody->$js_key->$pr_name->$_sp->sql . $fnum, false);
-//                                        }
-//                                    }
 
                                     foreach ($_subProps as $_sp) {
                                         $childNode = $xmlDocument->getElementsByTagName($_sp);
