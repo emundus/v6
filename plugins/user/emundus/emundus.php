@@ -49,7 +49,7 @@ class plgUserEmundus extends JPlugin
         $db->setQuery('SHOW TABLES');
         $tables = $db->loadColumn();
         foreach($tables as $table) {
-            if (strpos($table, '_messages')>0)
+            if (strpos($table, 'jos_messages')>0)
                 $db->setQuery('DELETE FROM '.$table.' WHERE user_id_from = '.(int) $user['id'].' OR user_id_to = '.(int) $user['id']);
             if (strpos($table, 'emundus_') === FALSE) continue;
             if (strpos($table, 'emundus_group_assoc')>0) continue;
