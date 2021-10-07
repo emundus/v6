@@ -1028,4 +1028,20 @@ class EmundusonboardModelsettings extends JModelList {
             return false;
         }
     }
+
+    function updateLogo($newcontent){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->update($db->quoteName('#__modules'))
+                ->set($db->quoteName('content') . ' = ' . $db->quote($newcontent))
+                ->where($db->quoteName('id') . ' = 90');
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
 }

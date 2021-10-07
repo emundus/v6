@@ -24,7 +24,7 @@
             <h2 class="heading">{{ Parameter }}</h2>
           </div>-->
           <div class="form-group campaign-label">
-            <label for="campLabel">{{translations.CampName}} <span style="color: #E5283B">*</span></label>
+            <label for="campLabel">{{translations.CampName}} <span class="em-red-500-color">*</span></label>
             <div class="input-can-translate">
                 <input
                   id="campLabel"
@@ -46,7 +46,7 @@
           <div class="d-flex justify-content-between">
             <div class="w-col col-md-5">
               <div class="w-form">
-                <label for="startDate">{{translations.StartDate}} <span style="color: #E5283B">*</span></label>
+                <label for="startDate">{{translations.StartDate}} <span class="em-red-500-color">*</span></label>
                 <datetime
                     id="startDate"
                   :placeholder="translations.StartDate"
@@ -59,7 +59,7 @@
             </div>
             <div class="w-col col-md-5">
               <div class="w-form">
-                <label for="endDate">{{translations.EndDate}} <span style="color: #E5283B">*</span></label>
+                <label for="endDate">{{translations.EndDate}} <span class="em-red-500-color">*</span></label>
                 <datetime
                     id="endDate"
                   :placeholder="translations.EndDate + ' *'"
@@ -73,7 +73,7 @@
             </div>
           </div>
           <div class="form-group campaign-label">
-            <label for="year">{{translations.PickYear}} <span style="color: #E5283B">*</span></label>
+            <label for="year">{{translations.PickYear}} <span class="em-red-500-color">*</span></label>
             <autocomplete
                 :id="'year'"
                 @searched="onSearchYear"
@@ -115,7 +115,7 @@
           <transition name="'slide-down'">
             <div v-if="form.is_limited == 1">
               <div class="form-group campaign-label">
-                <label for="campLabel">{{translations.FilesNumberLimit}} <span style="color: #E5283B">*</span></label>
+                <label for="campLabel">{{translations.FilesNumberLimit}} <span class="em-red-500-color">*</span></label>
                 <input type="number"
                        class="form__input field-general w-input"
                        v-model="form.limit"
@@ -126,7 +126,7 @@
                 <span class="error">{{translations.FilesLimitRequired}}</span>
               </p>
               <div class="form-group campaign-label">
-                <label for="campLabel">{{translations.StatusLimit}} <span style="color: #E5283B">*</span></label>
+                <label for="campLabel">{{translations.StatusLimit}} <span class="em-red-500-color">*</span></label>
                 <div class="users-block" :class="{ 'is-invalid': errors.limit_status}">
                   <div v-for="(statu, index) in status" :key="index" class="user-item">
                     <input type="checkbox" class="form-check-input bigbox" v-model="form.limit_status[statu.step]">
@@ -150,7 +150,7 @@
             <h2 class="heading">{{ translations.Information }}</h2>
           </div>
           <div class="form-group campaign-label">
-            <label for="campResume" style="top: 5em">{{translations.Resume}} <span style="color: #E5283B"></span></label>
+            <label style="top: 5em">{{translations.Resume}} <span class="em-red-500-color">*</span></label>
             <textarea
               type="textarea"
               rows="2"
@@ -191,7 +191,7 @@
           <div class="heading-form">
             <h2 class="heading">{{ translations.Program }}</h2>
           </div>
-          <p>{{translations.ProgramDesc}}</p>
+          <p>{{translations.ProgramDesc}}<span class="em-red-500-color">*</span></p>
           <div class="form-group container-flexbox-choisir-ou-plus w-clearfix mt-1">
             <select
               class="dropdown-toggle w-select" style="margin-bottom: 0"
@@ -221,7 +221,7 @@
             <div class="program-addCampaign" v-if="isHiddenProgram">
               <div class="w-form">
                 <div class="form-group prog-label">
-                  <label for="prog_label" style="top: 5.7em">{{translations.ProgName}} <span style="color: #E5283B">*</span></label>
+                  <label for="prog_label" style="top: 5.7em">{{translations.ProgName}} <span class="em-red-500-color">*</span></label>
                   <input
                     type="text"
                     id="prog_label"

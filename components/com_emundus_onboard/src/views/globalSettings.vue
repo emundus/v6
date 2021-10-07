@@ -106,12 +106,12 @@
                   :manyLanguages="manyLanguages"
           ></editDatas>
 
-          <help-settings
+<!--          <help-settings
               v-if="menuHighlight == 8"
               ref="help"
               :actualLanguage="actualLanguage"
               :manyLanguages="manyLanguages"
-          ></help-settings>
+          ></help-settings>-->
         </transition>
       </div>
     </div>
@@ -186,7 +186,6 @@ export default {
         "Etiquettes",
         "Candidats",
         "Référentiels de données",
-        "Aide"
       ],
       [
         "Styling",
@@ -197,7 +196,6 @@ export default {
         "Tags",
         "Applicants",
         "Data repository",
-        "Help"
       ]
     ],
 
