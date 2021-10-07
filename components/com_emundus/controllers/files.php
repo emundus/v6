@@ -491,13 +491,22 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         unset($fnums);
 
+        JPluginHelper::importPlugin('emundus');
+        $dispatcher = JEventDispatcher::getInstance();
+
+        $dispatcher->trigger('callEventHandler', ['onBeforeTagAdd', ['fnums' => $validFnums, 'tag' => $tag]]);
+
         $tagged = $m_files->getTaggedFile($tag);
         $tagged_fnums = array_map(function($n) {return $n["fnum"];}, $tagged);
 
         $validFnums = array_diff($validFnums, $tagged_fnums);
-        $m_files->tagFile($validFnums, $tag);
+        $res = $m_files->tagFile($validFnums, $tag);
 
-        echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $tagged)));
+        if ($res) {
+            $dispatcher->trigger('callEventHandler', ['onAfterTagAdd', ['fnums' => $validFnums, 'tag' => $tag]]);
+        }
+
+        echo json_encode((object)(array('status' => $res, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $tagged)));
         exit;
     }
 
@@ -516,6 +525,11 @@ class EmundusControllerFiles extends JControllerLegacy
             $fnums = $m_files->getAllFnums();
         }
 
+        JPluginHelper::importPlugin('emundus');
+        $dispatcher = JEventDispatcher::getInstance();
+
+        $dispatcher->trigger('callEventHandler', ['onBeforeTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
+
         foreach ($fnums as $fnum) {
             if ($fnum != 'em-check-all') {
                 foreach ($tags as $tag) {
@@ -530,6 +544,9 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
             }
         }
+
+        $dispatcher->trigger('callEventHandler', ['onAfterTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
+
         unset($fnums);
         unset($tags);
 
@@ -2312,7 +2329,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $tmp_route = JPATH_BASE.DS."tmp".DS;
         $randomString = JUserHelper::genRandomPassword(20);
 
-        $letter_file = end(explode('/', $letter));
+        $array = explode('/', $letter);
+        $letter_file = end($array);
         $letter_file_random = explode('.xlsx', $letter_file)[0] .'_' . $randomString;
 
         $_newLetter = JPATH_BASE.DS."tmp".DS.$letter_file_random.'.xlsx';
@@ -4222,6 +4240,8 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         $dispatcher = JEventDispatcher::getInstance();
 
         $status = $dispatcher->trigger('onExportFiles', array($fnums, $type));
+        $dispatcher->trigger('callEventHandler', ['onExportFiles', ['fnums' => $fnums, 'type' => $type]]);
+
         if (is_array($status) && !in_array(false, $status)) {
             $msg = JText::_('FILES_EXPORTED_TO_EXTERNAL');
             $result = true;
