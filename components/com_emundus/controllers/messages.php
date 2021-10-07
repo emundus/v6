@@ -886,7 +886,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 			// Tags are replaced with their corresponding values using the PHP preg_replace function.
 			$subject = preg_replace($tags['patterns'], $tags['replacements'], $mail_subject);
 			$body = $mail_message;
-			if ($template) {
+			if ($template->id) {
 				$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
 			}
 			$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
