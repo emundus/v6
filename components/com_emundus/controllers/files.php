@@ -3590,7 +3590,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
         $files = $m_files->getAttachmentsById($idFiles);
 
-        $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'_x'.(count($files)-1).'.zip';
+        // $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'_x'.(count($files)-1).'.zip';
+        $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'.zip';
         $path = JPATH_BASE.DS.'tmp'.DS.$nom;
 
         if (extension_loaded('zip')) {
@@ -3642,7 +3643,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function exportonedoc() {
         //require_once JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php';
-require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
             $rendererName = \PhpOffice\PhpWord\Settings::PDF_RENDERER_TCPDF;
@@ -3928,13 +3929,13 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         exit;
     }
 
-    public function getletter() {
+    public function getexcelletter() {
         $h_files = new EmundusHelperFiles;
 
         $jinput = JFactory::getApplication()->input;
         $lid = $jinput->getVar('letter', null);
 
-        $letter = $h_files->getLetterById($lid);
+        $letter = $h_files->getExcelLetterById($lid);
 
         echo json_encode((object)(array('status' => true, 'letter' => $letter)));
         exit;
@@ -4265,6 +4266,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         $fnums = $jinput->post->getRaw('fnums');
         $templates = $jinput->post->getRaw('ids_tmpl');
         $canSee = $jinput->post->getRaw('cansee', 0);
+
         $showMode = $jinput->post->getRaw('showMode', 0);
         $mergeMode = $jinput->post->getRaw('mergeMode', 0);
 
@@ -4277,6 +4279,32 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         exit;
     }
 
+    // get fabrik value by id --> need to integrate to KIT project
+    public function getfabrikvaluebyid() {
+        $jinput = JFactory::getApplication()->input;
+
+        $fabrikIds = $jinput->post->getRaw('elements', null);
+
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'email.php');
+
+        $m_emails = new EmundusonboardModelemail;
+        $m_files = $this->getModel('Files');
+
+        $tag_ids = [];
+
+        foreach($fabrikIds as $key => $tag) {
+            $tag_ids[] = reset($m_files->getVariables($tag));
+        }
+
+        $res = $m_emails->getEmailsFromFabrikIds($tag_ids);
+
+        if($res) {
+            echo json_encode((object)(array('status' => true, 'data' => $res)));
+        } else {
+            echo json_encode((object)(array('status' => false, 'data' => null)));
+        }
+        exit;
+    }
 }
 
 

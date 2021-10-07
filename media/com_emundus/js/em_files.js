@@ -4900,8 +4900,7 @@ $(document).ready(function() {
             // generate DOCX
             case 27:
                 $('#can-val').empty();
-                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
-                    '<button id="em-generate" style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOCUMENT')+'</button>');
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>');
                 $('#can-val').show();
 
                 $('#em-modal-actions .modal-body').empty();
@@ -5824,30 +5823,45 @@ $(document).ready(function() {
                     tags            : $('#tags').val(),
                 };
 
-                $('#cc-bcc div[data-value]').each(function () {
-                    let val = $(this).attr('data-value');
+                // $('#cc-bcc div[data-value]').each(function () {
+                //     let val = $(this).attr('data-value');
+                //
+                //     var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                //
+                //     if (val.split(':')[0] === 'BCC') {
+                //
+                //         // Here we format the string from BCC: Bcc: <email@email.com> to just email@email.com
+                //         val = val.substring(val.lastIndexOf(":") + 1).trim().slice(1,-1);
+                //         if (REGEX_EMAIL.test(val)) {
+                //             data.bcc.push(val);
+                //         }
+                //
+                //     } else if (val.split(':')[0] === 'CC') {
+                //
+                //         // Here we format the string from CC: Cc: <email@email.com> to just email@email.com
+                //         val = val.substring(val.lastIndexOf(":") + 1).trim().slice(1,-1);
+                //         if (REGEX_EMAIL.test(val)) {
+                //             data.cc.push(val);
+                //         }
+                //
+                //     }
+                // });
 
+                // cc emails
+                $('#cc-box div[data-value]').each(function () {
+                    let val = $(this).attr('data-value').split('CC: ')[1];
+                    // let val = $(this).attr('data-value');
                     var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    if (REGEX_EMAIL.test(val)) { data.cc.push(val); }
+                })
 
-                    if (val.split(':')[0] === 'BCC') {
-
-                        // Here we format the string from BCC: Bcc: <email@email.com> to just email@email.com
-                        val = val.substring(val.lastIndexOf(":") + 1).trim().slice(1,-1);
-                        if (REGEX_EMAIL.test(val)) {
-                            data.bcc.push(val);
-                        }
-
-                    } else if (val.split(':')[0] === 'CC') {
-
-                        // Here we format the string from CC: Cc: <email@email.com> to just email@email.com
-                        val = val.substring(val.lastIndexOf(":") + 1).trim().slice(1,-1);
-                        if (REGEX_EMAIL.test(val)) {
-                            data.cc.push(val);
-                        }
-
-                    }
-                });
-
+                // bcc emails
+                $('#bcc-box div[data-value]').each(function () {
+                    let val = $(this).attr('data-value').split('BCC: ')[1];
+                    // let val = $(this).attr('data-value');
+                    var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    if (REGEX_EMAIL.test(val)) { data.bcc.push(val); }
+                })
 
                 // Attachments object used for sorting the different attachment types.
                 var attachments = {
@@ -6329,6 +6343,8 @@ $(document).ready(function() {
                 if ($(this).hasClass('em-doc-dl'))
                     return;
 
+                // $('#can-val').append('<button id="em-generate" style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOCUMENT')+'</button>');
+
                 $('#can-val').empty();
                 $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
                     '<button style="margin-left:5px;background: #16afe1; border: 2px solid #16afe1; border-radius: 25px !important; color: #fff" type="button" class="btn btn-danger">' +
@@ -6338,15 +6354,18 @@ $(document).ready(function() {
 
                 var fnums = $('input:hidden[name="em-doc-fnums"]').val();
                 var idsTmpl = $('#em-doc-tmpl').val();
-                var cansee = $('#em-doc-cansee').val();
+
+                var cansee = 0;
+                if($('#em-doc-cansee').is(':checked')) { cansee = 1; }
 
                 var showMode = $('#em-doc-export-mode').val();          /// show by candidats (0) or show by document type (1)
-                var mergeMode = $('#em-doc-pdf-merge').val();           /// unmerge pdf (0) or merge pdf (1)
+
+                var mergeMode = 0;
+                if($('#em-doc-pdf-merge').is(':checked')) { mergeMode = 1; }
 
                 $('.modal-body').empty();
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
+                $('.modal-body').append('<div>' + '<img src="'+loadingLine+'" alt="loading"/>' + '</div>');
+
                 $.ajax({
                     type:'post',
                     url:'index.php?option=com_emundus&controller=files&task=generateletter',
@@ -6490,6 +6509,19 @@ $(document).ready(function() {
                                         "</td>" +
                                         "</tr>";
                                 })
+
+                                // for(let key in files) {
+                                //     if(files[key]['filename'] !== undefined) {
+                                //         table +=
+                                //             "<tr id='" + files[key]['upload'] + "'>" +
+                                //             "<td>" + files[key]['filename'] +
+                                //             " <a id='" + 'em_download_doc_' + files[key]['upload'] + "' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + files[key]['url'] + files[key]['filename'] + "'>" +
+                                //             "<span class='glyphicon glyphicon-save'></span>" +
+                                //             "</a>" +
+                                //             "</td>" +
+                                //             "</tr>";
+                                //     }
+                                // }
 
                                 table += "</tbody></table>";
                                 $('.modal-body').append(table);
@@ -6851,21 +6883,61 @@ $(document).ready(function() {
     $(document).on('change', '#em-doc-export-mode', function() {
         let showMode = $('#em-doc-export-mode').val();
         $('#export-tooltips').empty();
-        // $('#merge-tooltips').empty();
 
-        if(showMode == 2) {
-            $("label[for='em-combine-pdf']").css('color', 'red');
-            $("label[for='em-combine-pdf']").css('text-decoration', 'line-through');
-            $('#merge-tooltips').empty();
-            $('#em-doc-pdf-merge').prop('disabled', true);
-            $('#em-doc-pdf-merge').empty();
-            $('#em-doc-pdf-merge').append('<option value="-1" selected="">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</option>');
-            $('#em-doc-pdf-merge').css('background-color', '#5352524a');
-            $('#em-doc-pdf-merge').css('color', 'red');
-            //$('#merge-tooltips').append('<div id="forbidden-merge-tooltip" style="font-size: .8rem; color: darkorange">' + Joomla.JText._('COM_EMUNDUS_SELECT_IMPOSSIBLE') + '</div>');
-        }
+        if(showMode == 2) { $('#merge-div').hide(); }
 
         else {
+            $('#merge-div').show();
+            $("label[for='em-combine-pdf']").css('text-decoration', 'none');
+            if(showMode == 0) {
+                $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP') + '</div>');
+                $('#em-doc-pdf-merge').prop('checked', false);
+
+                if($('#em-doc-pdf-merge').is(':checked')) {
+                    setTimeout(function() {$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
+                } else {
+                    $('#merge-tooltips').empty();
+                }
+            } else if(showMode == 1) {
+                $('#export-tooltips').append('<div id="document-export-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_EXPORT_TOOLTIP') + '</div>');
+                $('#em-doc-pdf-merge').prop('checked', false);
+
+                if($('#em-doc-pdf-merge').is(':checked')) {
+                    setTimeout(function() {$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: 1rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
+                } else {
+                    $('#merge-tooltips').empty();
+                }
+            }
+        }
+    })
+
+    $(document).on('change', '#em-doc-pdf-merge', function() {
+        // $('#merge-tooltips').empty();
+
+        if ($('#em-doc-pdf-merge').is(':checked')) {
+            setTimeout(function() {$('#merge-tooltips').empty();}, 100);
+            if ($('#em-doc-export-mode').val() == 0) {
+                setTimeout(function(){$('#merge-tooltips').append('<div id="candidat-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_MERGE_TOOLTIP') + '</div>');}, 100);
+                $('#merge-tooltips').fadeIn();
+            } else if ($('#em-doc-export-mode').val() == 1) {
+                setTimeout(function(){$('#merge-tooltips').append('<div id="document-merge-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_DOCUMENT_MERGE_TOOLTIP') + '</div>');}, 100);
+                $('#merge-tooltips').fadeIn();
+            }
+        } else {
+            setTimeout(function() {$('#merge-tooltips').empty();}, 100);
+        }
+    })
+
+    /*
+    * old code
+    * $(document).on('change', '#em-doc-export-mode', function() {
+        let showMode = $('#em-doc-export-mode').val();
+        $('#export-tooltips').empty();
+
+        if(showMode == 2) { $('#merge-div').hide(); }
+
+        else {
+            $('#merge-div').show();
             $("label[for='em-combine-pdf']").css('text-decoration', 'none');
             if(showMode == 0) {
                 $('#export-tooltips').append('<div id="candidat-export-tooltip" style="font-size: .8rem; color: #16afe1">' + Joomla.JText._('COM_EMUNDUS_CANDIDAT_EXPORT_TOOLTIP') + '</div>');
@@ -6912,6 +6984,8 @@ $(document).ready(function() {
             setTimeout(function() {$('#merge-tooltips').empty();}, 100);
         }
     })
+
+    * */
 
     $(document).on('click', '#showevalelements', function() {
         if ($(this).hasClass("btn-info")) {

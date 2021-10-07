@@ -2974,7 +2974,7 @@ class EmundusHelperFiles
         }
     }
 
-    public function getLetterById($lid) {
+    public function getExcelLetterById($lid) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
