@@ -589,21 +589,14 @@ class EmundusModelEmails extends JModelList {
 
                 if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-
-                        $val = explode(',', $val["val"]);
-
-                        foreach ($val as $k => $v) {
-
-                            // If the value is empty then we do not get the label, this avoids '--- Please Select ---' from appearing.
-                            // is_numeric allows for the variable to be equal to 0, 0.0 or '0' (the empty function considers those to be null).
-                            if (!empty($v) || is_numeric($v)) {
-                                $index = array_search(trim($v), $params->sub_options->sub_values);
-                                $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
-                            } else {
-                                $val[$k] = '';
-                            }
+                        $params = json_decode($elt['params']);
+                        $elm = array();
+                        $index = array_intersect(json_decode($val["val"]), $params->sub_options->sub_values);
+                        foreach ($index as $value) {
+                            $key = array_search($value,$params->sub_options->sub_values);
+                            $elm[] = JText::_($params->sub_options->sub_labels[$key]);
                         }
-                        $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", JText::_($val));
+                        $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $elm);
                     }
                 }
 

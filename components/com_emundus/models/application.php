@@ -1466,10 +1466,11 @@ class EmundusModelApplication extends JModelList
                                                     }
 
                                                     elseif ($elements[$j]->plugin == 'checkbox') {
-                                                        $elm = [];
-                                                        $index = array_intersect($params->sub_options->sub_values,json_decode(@$r_elt));
-                                                        foreach($index as $key => $value) {
-                                                            $elm[] = JText::_($params->sub_options->sub_labels[$key]);
+                                                        $elm = array();
+                                                        $index = array_intersect(json_decode(@$r_elt), $params->sub_options->sub_values);
+                                                        foreach ($index as $value) {
+                                                            $key = array_search($value,$params->sub_options->sub_values);
+                                                            $elm[] =  ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                                                         }
                                                         $elt = "<ul><li>" . implode("</li><li>", @$elm) . "</li></ul>";
                                                     }
@@ -1625,7 +1626,14 @@ class EmundusModelApplication extends JModelList
                                                 }
                                                 $elt = JText::_($ret);
                                             } elseif ($element->plugin == 'checkbox') {
-                                                $elt = implode(", ", json_decode(@$element->content));
+                                                $params = json_decode($element->params);
+                                                $elm = array();
+                                                $index = array_intersect(json_decode(@$element->content), $params->sub_options->sub_values);
+                                                foreach ($index as $value) {
+                                                    $key = array_search($value,$params->sub_options->sub_values);
+                                                    $elm[] =  ' - ' . JText::_($params->sub_options->sub_labels[$key]);
+                                                }
+                                                $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
                                             } elseif (($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') && isset($element->content)) {
                                                 $params = json_decode($element->params);
                                                 $index = array_search($element->content, $params->sub_options->sub_values);
@@ -2117,11 +2125,12 @@ class EmundusModelApplication extends JModelList
                                                     $elt = JText::_($r_elt);
                                                 } elseif ($elements[$j]->plugin == 'checkbox') {
                                                     $elm = array();
-                                                    $index = array_intersect($params->sub_options->sub_values,json_decode(@$r_elt));
-                                                    foreach($index as $key => $value) {
-                                                        $elm[] = ' - ' . JText::_($params->sub_options->sub_labels[$key]);
+                                                    $index = array_intersect(json_decode(@$r_elt), $params->sub_options->sub_values);
+                                                    foreach ($index as $value) {
+                                                        $key = array_search($value,$params->sub_options->sub_values);
+                                                        $elm[] =  ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                                                     }
-                                                    $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
+                                                    $elt = "<ul><li>" . implode("</li><li>", @$elm) . "</li></ul>";
                                                 } elseif ($elements[$j]->plugin == 'dropdown' || @$elements[$j] == 'radiobutton') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $index = array_search($r_elt, $params->sub_options->sub_values);
@@ -2284,8 +2293,9 @@ class EmundusModelApplication extends JModelList
                                                 $params = json_decode($element->params);
                                                 $elm = array();
                                                 $index = array_intersect(json_decode(@$element->content), $params->sub_options->sub_values);
-                                                foreach ($index as $key => $value) {
-                                                    $elm[] = ' - ' . JText::_($params->sub_options->sub_labels[$key]);
+                                                foreach ($index as $value) {
+                                                    $key = array_search($value,$params->sub_options->sub_values);
+                                                    $elm[] =  ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                                                 }
                                                 $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
                                             } elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
