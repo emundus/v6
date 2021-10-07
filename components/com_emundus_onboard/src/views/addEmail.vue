@@ -510,7 +510,7 @@ import Multiselect from 'vue-multiselect';
           })
         }).then(response => {
           // this.redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + this.email);
-          //this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+          this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
         }).catch(error => {
           console.log(error);
         });
@@ -668,8 +668,20 @@ import Multiselect from 'vue-multiselect';
 
                   // get attached letters
                   if(resp.data.data.letter_attachment) {
-                    let _documents = resp.data.data.letter_attachment;
-                    this.selectedLetterAttachments = _documents;
+                    let _ldocuments = resp.data.data.letter_attachment;
+                    this.selectedLetterAttachments = _ldocuments;
+                  }
+
+                  // get attached candidate attachments
+                  if(resp.data.data.candidate_attachment) {
+                    let _cdocuments = resp.data.data.candidate_attachment;
+                    this.selectedCandidateAttachments = _cdocuments;
+                  }
+
+                  // get attached tags
+                  if(resp.data.data.tags) {
+                    let _tags = resp.data.data.tags;
+                    this.selectedTags = _tags;
                   }
 
                   /// get receivers (cc and bcc)
