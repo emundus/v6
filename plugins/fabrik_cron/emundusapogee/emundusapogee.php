@@ -60,33 +60,6 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        /// limit 10 to quickly test --> don't forget to choose status to send data
-        $query->clear()
-            ->select('#__emundus_final_grade.fnum')
-            ->from($db->quoteName('#__emundus_final_grade'))
-            ->where($db->quoteName('#__emundus_final_grade.code_opi') . ' is not null')
-            ->andWhere($db->quoteName('#__emundus_final_grade.code_opi') . " != ''")
-            ->setLimit(900);
-
-        $db->setQuery($query);
-        $available_fnums = $db->loadColumn();
-
-
-//        /* TEMP TEST */
-//        $query = "SELECT #__emundus_final_grade.fnum
-//                    FROM #__emundus_final_grade
-//                        LEFT JOIN #__emundus_personal_detail ON #__emundus_personal_detail.fnum = #__emundus_final_grade.fnum
-//                            WHERE #__emundus_final_grade.code_opi IS NOT NULL
-//                              AND #__emundus_personal_detail.country_1 = 100
-//                                AND #__emundus_final_grade.code_opi != '' LIMIT 20";
-//
-//        $db->setQuery($query);
-//        $available_fnums = $db->loadColumn();
-////        echo '<pre>'; var_dump($available_fnums); echo '</pre>'; die;
-
-
-        //echo '<pre>'; var_dump($available_fnums); echo '</pre>'; die;
-
         ///get wsdl url
         $wsdl_url = $params->get('webservice_url');
 
@@ -98,6 +71,25 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
 
         /// get password
         $login_password = $params->get('webservice_password');
+
+        /// get status
+        $sending_status =$params->get('status_to_send_request');
+
+        /*
+         * Grab all fnums has OPI code and status (step) is in $sending_status
+         * */
+
+        $query->clear()
+            ->select('#__emundus_final_grade.fnum')
+            ->from($db->quoteName('#__emundus_final_grade'))
+            ->leftJoin($db->quoteName('#__emundus_personal_detail') . ' ON ' . $db->quoteName('#__emundus_personal_detail.fnum') . ' = ' . $db->quoteName('#__emundus_final_grade.fnum'))
+            ->leftJoin($db->quoteName('#__emundus_campaign_candidature') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName('#__emundus_final_grade.fnum'))
+            ->where($db->quoteName('#__emundus_final_grade.code_opi') . ' is not null')
+            ->andWhere($db->quoteName('#__emundus_final_grade.code_opi') . " != ''")
+            ->andWhere($db->quoteName('#__emundus_campaign_candidature.status') . ' IN ( ' . $sending_status . ' )');
+
+        $db->setQuery($query);
+        $available_fnums = $db->loadColumn();
 
         /// get request description filename
         $json_request_schema = $params->get('xml_description_json');

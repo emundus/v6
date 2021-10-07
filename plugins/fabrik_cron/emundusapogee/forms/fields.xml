@@ -44,6 +44,13 @@
 				   label="PLG_APOGEE_XML_DATA"
 				   size="30"
 			/>
+
+			<field name="status_to_send_request"
+				   type="text"
+				   description="PLG_APOGEE_REQUEST_SENDING_STATUS_DESC"
+				   label="PLG_APOGEE_REQUEST_SENDING_STATUS"
+				   size="30"
+			/>
 		</fieldset>
 
 	</fields>
