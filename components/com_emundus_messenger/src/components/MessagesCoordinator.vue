@@ -195,8 +195,9 @@ export default {
   created(){
     if(typeof this.fnum != 'undefined'){
       this.fileSelected = this.fnum;
+      this.getMessagesByFnum();
       setInterval(() => {
-        this.getMessagesByFnum(false);
+        this.getMessagesByFnum(false, false);
       },20000);
     }
   },
