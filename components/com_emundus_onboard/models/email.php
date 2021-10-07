@@ -301,7 +301,7 @@ class EmundusonboardModelemail extends JModelList {
     }
 
     /// create email params :: email info, cc (email / fabrik elem), bcc (email / fabrik elem), letters
-    public function createEmail($data, $receiver_cc=null, $receiver_bcc = null, $letters=null) {
+    public function createEmail($data, $receiver_cc=null, $receiver_bcc = null, $letters=null, $documents=null, $tags=null) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -328,7 +328,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->execute();
 
                 // add cc for new email
-                if(!empty($receiver_cc) and !is_null($receiver_cc)) {
+                if(!empty($receiver_cc)) {
                     foreach ($receiver_cc as $key => $receiver) {
                         $is_fabrik_tag = (bool) preg_match_all($fabrik_pattern, $receiver);
                         if($is_fabrik_tag == true) {
@@ -354,7 +354,7 @@ class EmundusonboardModelemail extends JModelList {
                 }
 
                 // add bcc for new email
-                if(!empty($receiver_bcc) and !is_null($receiver_bcc)) {
+                if(!empty($receiver_bcc)) {
                     foreach ($receiver_bcc as $key => $receiver) {
                         $is_fabrik_tag = (bool) preg_match_all($fabrik_pattern, $receiver);
                         if($is_fabrik_tag == true) {
@@ -380,12 +380,38 @@ class EmundusonboardModelemail extends JModelList {
                 }
 
                 // add letter attachment to table #jos_emundus_setup_emails_repeat_letter_attachment
-                if(!empty($letters) and !is_null($letters)) {
+                if(!empty($letters)) {
                     foreach ($letters as $key => $letter) {
                         $query->clear()
                             ->insert($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment'))
                             ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' =  ' . (int)$newemail)
                             ->set($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' = ' . (int)$letter);
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+
+                // add candidate attachment to table #jos_emundus_setup_emails_repeat_candidate_attachment
+                if(!empty($documents)) {
+                    foreach ($documents as $key => $document) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment'))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment.parent_id') . ' =  ' . (int)$newemail)
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment.candidate_attachment') . ' = ' . (int)$document);
+
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+
+                // add tag to table #jos_emundus_setup_emails_repeat_tags
+                if(!empty($tags)) {
+                    foreach ($tags as $key => $tag) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_emails_repeat_tags'))
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' =  ' . (int)$newemail)
+                            ->set($db->quoteName('#__emundus_setup_emails_repeat_tags.tags') . ' = ' . (int)$tag);
 
                         $db->setQuery($query);
                         $db->execute();
@@ -403,8 +429,8 @@ class EmundusonboardModelemail extends JModelList {
         }
     }
 
-    /// create email params :: email info, cc (email / fabrik elem), bcc (email / fabrik elem), letters
-    public function updateEmail($id, $data, $receiver_cc=null, $receiver_bcc=null, $letters=null) {
+    /// update email params :: email info, cc (email / fabrik elem), bcc (email / fabrik elem), letters
+    public function updateEmail($id, $data, $receiver_cc=null, $receiver_bcc=null, $letters=null, $documents=null, $tags=null) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 

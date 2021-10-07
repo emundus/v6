@@ -202,32 +202,52 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
             $receivers_cc = $jinput->getRaw('selectedReceiversCC');
             $receivers_bcc = $jinput->getRaw('selectedReceiversBCC');
-            $letters = $jinput->getRaw('selectedLetters');
+            $letter_attachments = $jinput->getRaw('selectedLetterAttachments');
+
+            $candidate_attachments = $jinput->getRaw('selectedCandidateAttachments');
+            $tags = $jinput->getRaw('selectedTags');
 
             $cc_list = [];
             $bcc_list = [];
             $letter_list = [];
+            $document_list = [];
+            $tag_list = [];
 
             // get receiver cc from cc list
-            if(!empty($receivers_cc) and !is_null($receivers_cc)) {
+            if(!empty($receivers_cc)) {
                 foreach ($receivers_cc as $key => $value) {
                     if(!empty($value['email']) or !is_null($value['email'])) { $cc_list[] = $value['email']; }
                 }
             }
 
             // get receiver bcc from cc list
-            if(!empty($receivers_bcc) and !is_null($receivers_bcc)) {
+            if(!empty($receivers_bcc)) {
                 foreach ($receivers_bcc as $key => $value) {
                     if(!empty($value['email']) or !is_null($value['email'])) { $bcc_list[] = $value['email']; }
                 }
             }
 
-            // get attachments from $letters
-            if(!empty($letters) and !is_null($letters)) {
-                foreach ($letters as $key => $value) { if(!empty($value['id']) or !is_null($value['id'])) { $letter_list[] = $value['id']; } }
+            // get letters from $letter_attachments
+            if(!empty($letter_attachments)) {
+                foreach ($letter_attachments as $key => $value) { if(!empty($value['id']) or !is_null($value['id'])) { $letter_list[] = $value['id']; } }
             }
 
-            $result = $m_email->createEmail($data, $cc_list, $bcc_list, $letter_list);
+            // get candidate attachments from $candidate_attachments
+            if(!empty($candidate_attachments)) {
+                foreach ($candidate_attachments as $key => $value) {
+                    if(!empty($value['id']) or !is_null($value['id'])) { $document_list[] = $value['id']; }
+                }
+            }
+
+            // get tags from $tags
+            if(!empty($tags)) {
+                foreach ($tags as $key => $value) {
+                    if(!empty($value['id']) or !is_null($value['id'])) { $tag_list[] = $value['id']; }
+                }
+            }
+
+            // call to createEmail model
+            $result = $m_email->createEmail($data, $cc_list, $bcc_list, $letter_list, $document_list, $tag_list);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);
@@ -256,34 +276,54 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
             $receivers_cc = $jinput->getRaw('selectedReceiversCC');
             $receivers_bcc = $jinput->getRaw('selectedReceiversBCC');
-            $letters = $jinput->getRaw('selectedLetters');
+            $letter_attachments = $jinput->getRaw('selectedLetterAttachments');
+
+            $candidate_attachments = $jinput->getRaw('selectedCandidateAttachments');
+            $tags = $jinput->getRaw('selectedTags');
 
             $cc_list = [];
             $bcc_list = [];
             $letter_list = [];
 
+            $document_list = [];
+            $tag_list = [];
+
             // get receiver cc from cc list
-            if(!empty($receivers_cc) and !is_null($receivers_cc)) {
+            if(!empty($receivers_cc)) {
                 foreach ($receivers_cc as $key => $value) {
                     if(!empty($value['email']) or !is_null($value['email'])) { $cc_list[] = $value['email']; }
                 }
             }
 
             // get receiver bcc from cc list
-            if(!empty($receivers_bcc) and !is_null($receivers_bcc)) {
+            if(!empty($receivers_bcc)) {
                 foreach ($receivers_bcc as $key => $value) {
                     if(!empty($value['email']) or !is_null($value['email'])) { $bcc_list[] = $value['email']; }
                 }
             }
 
             // get attachments from $letters
-            if(!empty($letters) and !is_null($letters)) {
-                foreach ($letters as $key => $value) {
+            if(!empty($letter_attachments)) {
+                foreach ($letter_attachments as $key => $value) {
                     if(!empty($value['id']) or !is_null($value['id'])) { $letter_list[] = $value['id']; }
                 }
             }
 
-            $result = $m_email->updateEmail($code, $data, $cc_list, $bcc_list, $letter_list);
+            // get candidate attachments from $candidate_attachments
+            if(!empty($candidate_attachments)) {
+                foreach ($candidate_attachments as $key => $value) {
+                    if(!empty($value['id']) or !is_null($value['id'])) { $document_list[] = $value['id']; }
+                }
+            }
+
+            // get tags from $tags
+            if(!empty($tags)) {
+                foreach ($tags as $key => $value) {
+                    if(!empty($value['id']) or !is_null($value['id'])) { $tag_list[] = $value['id']; }
+                }
+            }
+
+            $result = $m_email->updateEmail($code, $data, $cc_list, $bcc_list, $letter_list, $candidate_attachments, $tags);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);

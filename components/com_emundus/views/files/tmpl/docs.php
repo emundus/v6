@@ -49,11 +49,6 @@ $template_type = array(
 
         </br>
 
-<!--        <select name="merge" id="em-doc-pdf-merge" class="form-control">-->
-<!--            <option value="0">--><?//= JText::_('JNO'); ?><!--</option>-->
-<!--            <option value="1">--><?//= JText::_('JYES'); ?><!--</option>-->
-<!--        </select>-->
-
         <label class="em-switch">
             <input type="checkbox" name="type" id="em-doc-pdf-merge">
             <span class="em-slider em-round"></span>

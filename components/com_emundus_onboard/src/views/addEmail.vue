@@ -96,7 +96,7 @@
           <!-- Email -- Associated letters (in form of email adress or fabrik element -->
           <div class="form-group" id="attached_letters">
             <label>{{ Letters }}</label>
-            <multiselect v-model="selectedLetter" label="value" track-by="id" :options="attached_letters" :multiple="true"
+            <multiselect v-model="selectedLetterAttachments" label="value" track-by="id" :options="attached_letters" :multiple="true"
                          :taggable="true" :placeholder="LettersPlaceHolder" :close-on-select="false" :clear-on-select="false"></multiselect>
           </div>
 
@@ -281,81 +281,81 @@ import Multiselect from 'vue-multiselect';
       Tags: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TAGS"),
       DocumentType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
 
-    /// Letters field
-    Letters: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
-    LettersPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT"),
+      /// Letters field
+      Letters: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
+      LettersPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT"),
 
-    /// Receiver CC field
-    ReceiversCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS"),
-    ReceiversCCPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER"),
+      /// Receiver CC field
+      ReceiversCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS"),
+      ReceiversCCPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER"),
 
-    /// Receiver BCC field
-    ReceiversBCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS"),
-    ReceiversBCCPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER"),
+      /// Receiver BCC field
+      ReceiversBCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS"),
+      ReceiversBCCPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER"),
 
-    /// Receiver Tooltips
-    CopiesTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_CC_BCC_TOOLTIPS"),
-    /// Selected Action Tags
-    TagsPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS"),
+      /// Receiver Tooltips
+      CopiesTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_CC_BCC_TOOLTIPS"),
 
-    /// Candidat Attachments (title, placeholder)
+      /// Selected Action Tags
+      TagsPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS"),
+
+      /// Candidat Attachments (title, placeholder)
       CandidateAttachments: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS"),
       CandidateAttachmentsPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS"),
 
-    categories: [],
-    programs: [],
-    status: [],
-    users: [],
-    selectedUsers: [],
-    enableTip: false,
-    searchTerm: '',
-    selectall: false,
+      categories: [],
+      programs: [],
+      status: [],
+      users: [],
+      selectedUsers: [],
+      enableTip: false,
+      searchTerm: '',
+      selectall: false,
 
       tags: [],         /// email --- tags
       documents: [],    /// email -- document types
 
       selectedTags: [],
-      selectedDocuments: [],
       selectedCandidateAttachments: [],
 
-    form: {
-      lbl: "",
-      subject: "",
-      name: "",
-      emailfrom: "",
-      message: "",
-      type: 2,
-      category: "",
-      published: 1
-    },
-    trigger: {
-      model: null,
-      status: null,
-      action_status: null,
-      target: null,
-      program: null
-    },
-    triggered: false,
-    errors: {
-      subject: false,
-      message: false,
+      form: {
+        lbl: "",
+        subject: "",
+        name: "",
+        emailfrom: "",
+        message: "",
+        type: 2,
+        category: "",
+        published: 1
+      },
       trigger: {
-        model: false,
-        status: false,
-        target: false,
-        selectedUsers: false,
-        action_status: false
-      }
-    },
-    submitted: false,
+        model: null,
+        status: null,
+        action_status: null,
+        target: null,
+        program: null
+      },
+      triggered: false,
+      errors: {
+        subject: false,
+        message: false,
+        trigger: {
+          model: false,
+          status: false,
+          target: false,
+          selectedUsers: false,
+          action_status: false
+        }
+      },
+      submitted: false,
 
-    selectedReceiversCC: [],
-    selectedReceiversBCC: [],
-    selectedLetter: [],
+      selectedReceiversCC: [],
+      selectedReceiversBCC: [],
+      selectedLetterAttachments: [],
 
-    receivers_cc: [],
-    receivers_bcc: [],
-    attached_letters: [],
+      receivers_cc: [],
+      receivers_bcc: [],
+      attached_letters: [],
 
       action_tags: [],
       candidate_attachments: [],
@@ -500,10 +500,17 @@ import Multiselect from 'vue-multiselect';
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
-          data: qs.stringify({ body: this.form, code: this.email, selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC, selectedLetters: this.selectedLetter})
+          data: qs.stringify({ body: this.form,
+                                      code: this.email,
+                                      selectedReceiversCC: this.selectedReceiversCC,
+                                      selectedReceiversBCC: this.selectedReceiversBCC,
+                                      selectedLetterAttachments:this.selectedLetterAttachments,
+                                      selectedCandidateAttachments: this.selectedCandidateAttachments,
+                                      selectedTags: this.selectedTags
+          })
         }).then(response => {
           // this.redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + this.email);
-          this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+          //this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
         }).catch(error => {
           console.log(error);
         });
@@ -514,7 +521,13 @@ import Multiselect from 'vue-multiselect';
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
-          data: qs.stringify({ body: this.form, selectedReceiversCC: this.selectedReceiversCC, selectedReceiversBCC: this.selectedReceiversBCC, selectedLetters:this.selectedLetter })
+          data: qs.stringify({ body: this.form,
+                                      selectedReceiversCC: this.selectedReceiversCC,
+                                      selectedReceiversBCC: this.selectedReceiversBCC,
+                                      selectedLetterAttachments:this.selectedLetterAttachments,
+                                      selectedCandidateAttachments: this.selectedCandidateAttachments,
+                                      selectedTags: this.selectedTags
+          })
         }).then(response => {
           this.trigger.model = response.data.data;
           axios({
@@ -656,7 +669,7 @@ import Multiselect from 'vue-multiselect';
                   // get attached letters
                   if(resp.data.data.letter_attachment) {
                     let _documents = resp.data.data.letter_attachment;
-                    this.selectedLetter = _documents;
+                    this.selectedLetterAttachments = _documents;
                   }
 
                   /// get receivers (cc and bcc)
