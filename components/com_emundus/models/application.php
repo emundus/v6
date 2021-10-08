@@ -1386,7 +1386,6 @@ class EmundusModelApplication extends JModelList
                                                             $db = $this->getDbo();
                                                             $query = $db->getQuery(true);
 
-                                                            $parent_id = strlen($element->content_id) > 0 ? $element->content_id : 0;
                                                             $select = "CONCAT(" . $params->join_val_column . ")";
                                                             if (!empty($params->join_val_column_concat)) {
                                                                 $select = $params->join_val_column_concat;
