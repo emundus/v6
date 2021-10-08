@@ -1534,8 +1534,20 @@ class EmundusModelApplication extends JModelList
                                             $element->content = @$res[1];
                                             $element->content_id = @$res[0];
 
+                                            if (count($res) > 1) {
+                                                if ($element->plugin == 'display') {
+                                                    $element->content = empty($element->eval) ? $element->default : $res[1];
+                                                } else {
+                                                    $element->content = $res[1];
+                                                }
+                                                $element->content_id = $res[0];
+                                            } else {
+                                                $element->content = '';
+                                                $element->content_id = -1;
+                                            }
+
                                             // Do not display elements with no value inside them.
-                                            if ($show_empty_fields == 0 && trim($element->content) == '' && trim($element->content_id) == '') {
+                                            if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1)) {
                                                 continue;
                                             }
 
