@@ -59,7 +59,7 @@
               </div>
             </div>
             <div class="messages__bottom-input">
-              <textarea type="text" class="messages__input_text" rows="1" spellcheck="true" :placeholder="translations.writeMessage" v-model="message" @keyup.enter.exact.prevent="sendMessage($event)"/>
+              <textarea type="text" class="messages__input_text" rows="1" spellcheck="true" :placeholder="translations.writeMessage" v-model="message" @keydown.enter.exact.prevent="sendMessage($event)"/>
             </div>
             <div class="messages__bottom-input-actions">
               <div class="messages__actions_bar">
@@ -188,7 +188,7 @@ export default {
       if(typeof e != 'undefined') {
         e.stopImmediatePropagation();
       }
-      if(this.message !== '') {
+      if(this.message.trim() !== '') {
         axios({
           method: "post",
           url:
