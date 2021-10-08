@@ -74,15 +74,8 @@ class EmundusonboardModeldashboard extends JModelList
 
             foreach ($modules as $module) {
                 $params = json_decode($module, true);
-                if (JFactory::getSession()->get('emundusUser')->profile == $params['profile']) {
-                    $widgets[] = $params['widget1'];
-                    $widgets[] = $params['widget2'];
-                    $widgets[] = $params['widget3'];
-                    $widgets[] = $params['widget4'];
-                    $widgets[] = $params['widget5'];
-                    $widgets[] = $params['widget6'];
-                    $widgets[] = $params['widget7'];
-                    $widgets[] = $params['widget8'];
+                if (in_array(JFactory::getSession()->get('emundusUser')->profile, $params['profile'])) {
+                    $widgets = $params['widgets'];
                 }
             }
 
