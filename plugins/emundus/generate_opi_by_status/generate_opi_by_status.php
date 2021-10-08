@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
  * A cron task to email records to a give set of users (incomplete application)
  *
  * @package     Joomla.Plugin
- * @subpackage  Fabrik.cron.emundusrecall
+ * @subpackage  Fabrik.cron.generate_opi_by_status
  * @since       3.0
  */
 
@@ -27,7 +27,6 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
         JLog::addLogger(array('text_file' => 'com_emundus.emundusreferent_status.php'), JLog::ALL, array('com_emundus'));
     }
 
-
     function onAfterStatusChange($fnum,$state) {
         $status_to_generate_opi = explode(',', $this->params->get('opi_status_step', ''));
         $opi_prefix = $this->params->get('opi_prefix', '');
@@ -35,6 +34,12 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
         if (!in_array($state, $status_to_generate_opi)) {
             return false;
         }
+
+        /// first, get fnum info
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        $_mFile = new EmundusModelFiles;
+
+        $fnum_infos = $_mFile->getFnumInfos($fnum);
 
         $db = JFactory::getDbo();
         $getLastOpiQuery = $db->getQuery(true);
@@ -48,37 +53,52 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
                 ->order('code_opi desc limit 1');
 
             $db->setQuery($getLastOpiQuery);
-            $lastOpiCode = $db->loadResult();       // (1) row or (null)
+            $lastOpi = $db->loadResult();       // (1) row or (null)
 
+            // check exist fnum and opi (1 query)
+            $checkFnumQuery = "SELECT * FROM #__emundus_final_grade WHERE #__emundus_final_grade.fnum = " . $fnum;
+            $db->setQuery($checkFnumQuery);
+            $checkFnum = $db->loadObject();
+
+            /// opi start digit (always 0)
             $opi_suffix = 0;
 
-            if ($lastOpiCode == null) {
+            if (is_null($lastOpi)) {
+                /// no opi exists
                 $opi_suffix += 1;
                 $opi_full_code = $opi_prefix . str_pad((int)$opi_suffix, 7, '0', STR_PAD_LEFT);
 
-                /// insert this $opi_full_code to table [jos_emundus_final_grade]
-                $insertQuery = 'UPDATE #__emundus_final_grade SET code_opi = ' . $db->quote($opi_full_code) . ' WHERE #__emundus_final_grade.fnum = ' . $fnum;
-                $db->setQuery($insertQuery);
-                $db->execute();
-            } else {
-                /// check if this fnum has OPI
-                $checkFnumOpi = "SELECT #__emundus_final_grade.code_opi FROM #__emundus_final_grade WHERE #__emundus_final_grade.fnum = " . $fnum;
-                $db->setQuery($checkFnumOpi);
+                if($checkFnum == null) {
+                    // fnum does not exist, create new decision with opi
+                    $_rawData = array('time_data' => date('Y-m-d H:i:s'), 'user' => $fnum_infos['uid'], 'campaign_id' => $fnum_infos['id'], 'fnum' => $fnum, 'final_grade' => 2, 'code_opi' => $opi_full_code);
+                    $query = "INSERT INTO #__emundus_final_grade (time_date,user,campaign_id,fnum,final_grade) VALUE ( " . implode(',', $_rawData) . " )";
 
-                $_res = $db->loadResult();
-
-                if (is_null($_res)) {
-                    /// opi does not exists before
-                    $lastOpiCode = (int)end(explode($opi_prefix, $lastOpiCode));
-                    $opi_full_code = $opi_prefix . str_pad((int)$lastOpiCode += 1, 7, '0', STR_PAD_LEFT);
-
-                    /// insert this $opi_full_code for each record of table [jos_emundus_final_grade]
-                    $insertQuery = 'UPDATE #__emundus_final_grade SET code_opi = ' . $db->quote($opi_full_code) . ' WHERE #__emundus_final_grade.fnum = ' . $fnum;
-                    $db->setQuery($insertQuery);
-                    $db->execute();
+                } else {
+                    /// fnum exist, update it with opi
+                    if (is_null($checkFnum->code_opi)) {
+                        $query = 'UPDATE #__emundus_final_grade SET code_opi = ' . $db->quote($opi_full_code) . ' WHERE #__emundus_final_grade.fnum = ' . $fnum;
+                    }
                 }
-
             }
+            else {
+                /// check if this fnum has OPI
+                $lastOpi = (int)end(explode($opi_prefix, $lastOpi));
+                $opi_full_code = $opi_prefix . str_pad((int)$lastOpi += 1, 7, '0', STR_PAD_LEFT);
+
+                if($checkFnum == null) {
+                    /// fnum does not exist --> create new decision with OPI
+                    $_rawData = array('time_data' => date('Y-m-d H:i:s'), 'user' => $fnum_infos['uid'], 'campaign_id' => $fnum_infos['id'], 'fnum' => $fnum, 'final_grade' => 2, 'code_opi' => $opi_full_code);
+                    $query = "INSERT INTO #__emundus_final_grade (time_date,user,campaign_id,fnum,final_grade,code_opi) VALUE (" . implode(',', $db->quote(array_values($_rawData))) . ")";
+                } else {
+                    /// fnum already exists, but code_opi does not exists (call another SQL query)
+                    if (is_null($checkFnum->code_opi)) {
+                        $query = 'UPDATE #__emundus_final_grade SET code_opi = ' . $db->quote($opi_full_code) . ' WHERE #__emundus_final_grade.fnum = ' . $fnum;
+                    }
+                }
+            }
+
+            $db->setQuery($query);
+            $db->execute();
         } catch (Exception $e) {
             JLog::add('Error generating OPI code : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
