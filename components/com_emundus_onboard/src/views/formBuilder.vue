@@ -128,9 +128,9 @@
         <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-6' : 'col-md-8'">
           <div class="d-flex form-title-block" v-show="!updateFormLabel">
             <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0">{{profileLabel}}</h2>
-<!--            <a @click="enableUpdatingForm" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
+            <a @click="enableUpdatingForm" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
               <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-            </a>-->
+            </a>
           </div>
           <div style="width: max-content;margin-left: 20px" v-show="updateFormLabel">
             <div class="input-can-translate">
