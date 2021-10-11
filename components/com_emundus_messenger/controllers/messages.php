@@ -203,7 +203,6 @@ class EmundusmessengerControllermessages extends JControllerLegacy
     }
 
     public function getdocumentsbycampaign(){
-        $user = JFactory::getUser();
 
         $m_messages = $this->model;
 
