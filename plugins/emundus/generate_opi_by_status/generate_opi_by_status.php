@@ -36,7 +36,7 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
         }
 
         /// first, get fnum info
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
         $_mFile = new EmundusModelFiles;
 
         $fnum_infos = $_mFile->getFnumInfos($fnum);

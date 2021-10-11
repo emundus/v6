@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <form>
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
-		<fieldset name="plg-cron-emundusrecall" label="COM_FABRIK_OPTIONS">
+		<fieldset name="plg-cron-emundusapogee-ws" label="PLG_APOGEE_WEBSERVICE">
 
 			<field name="webservice_url"
 				   type="text"
@@ -30,7 +30,9 @@
 				   label="PLG_APOGEE_LOGIN_PASSWORD"
 				   size="30"
 			/>
+		</fieldset>
 
+		<fieldset name="plg-cron-emundusapogee-json" label="PLG_APOGEE_JSON_LOAD">
 			<field name="xml_description_json"
 				   type="file"
 				   description="PLG_APOGEE_XML_DESCRIPTION_DESC"
@@ -44,7 +46,9 @@
 				   label="PLG_APOGEE_XML_DATA"
 				   size="30"
 			/>
+		</fieldset>
 
+		<fieldset name="plg-cron-emundusapogee-status" label="PLG_APOGEE_REQUEST_SENDING_STATUS">
 			<field name="status_to_send_request"
 				   type="text"
 				   description="PLG_APOGEE_REQUEST_SENDING_STATUS_DESC"

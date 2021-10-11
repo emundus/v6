@@ -51,7 +51,6 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         jimport('joomla.mail.helper');
 
         $params = $this->getParams();
-        $eMConfig = JComponentHelper::getParams('com_emundus');
 
         /*
          * First of all, get all fnums having OPI code (get from jos_emundus_final_grade // where opi_code is not null or empty)
@@ -72,8 +71,14 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         /// get password
         $login_password = $params->get('webservice_password');
 
-        /// get status
-        $sending_status =$params->get('status_to_send_request');
+        /// grouping credentials
+        $credentials = new stdClass();
+        $credentials->auth_type = $auth_type;
+        $credentials->auth_user = $login_username;
+        $credentials->auth_pwd = $login_password;
+
+        /// get status to send data
+        $sending_status = $params->get('status_to_send_request');
 
         /*
          * Grab all fnums has OPI code and status (step) is in $sending_status
@@ -82,11 +87,13 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         $query->clear()
             ->select('#__emundus_final_grade.fnum')
             ->from($db->quoteName('#__emundus_final_grade'))
-            ->leftJoin($db->quoteName('#__emundus_personal_detail') . ' ON ' . $db->quoteName('#__emundus_personal_detail.fnum') . ' = ' . $db->quoteName('#__emundus_final_grade.fnum'))
             ->leftJoin($db->quoteName('#__emundus_campaign_candidature') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName('#__emundus_final_grade.fnum'))
             ->where($db->quoteName('#__emundus_final_grade.code_opi') . ' is not null')
-            ->andWhere($db->quoteName('#__emundus_final_grade.code_opi') . " != ''")
-            ->andWhere($db->quoteName('#__emundus_campaign_candidature.status') . ' IN ( ' . $sending_status . ' )');
+            ->andWhere($db->quoteName('#__emundus_final_grade.code_opi') . " != ''");
+
+        if(!is_null($sending_status)) { $query->andWhere($db->quoteName('#__emundus_campaign_candidature.status') . ' IN ( ' . $sending_status . ' )'); }
+
+        $query->setLimit(50);     // setLimit to easily test
 
         $db->setQuery($query);
         $available_fnums = $db->loadColumn();
@@ -106,8 +113,18 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
 
         foreach($available_fnums as $fnum) {
             $_xmlDataRequest = $_xmlDataObject->fillData($_xmlSchemaRequest, $_xmlSchemaObject->getSchemaDescription(), $fnum);
+            $_xmlString = $_xmlSchemaObject->exportXMLString($_xmlDataRequest);
 
-            $_xmlSchemaObject->exportXMLFile($_xmlDataRequest, EMUNDUS_PATH_ABS . DS . $fnum);
+            /// connect to SOAP server
+            $_soapConnect = new SoapConnect;
+
+            /// set request header
+            $_soapConnect->setSoapHeader($_xmlString,$credentials);
+
+            /// send request in form XML string
+            $_soapConnect->sendRequest($_soapConnect->webServiceConnect($wsdl_url,$_xmlString,$credentials));
+
+            //$_xmlSchemaObject->exportXMLFile($_xmlDataRequest, EMUNDUS_PATH_ABS . DS . $fnum);
         }
     }
 }
