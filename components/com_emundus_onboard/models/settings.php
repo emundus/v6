@@ -212,6 +212,8 @@ class EmundusonboardModelsettings extends JModelList {
         $query = $db->getQuery(true);
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+        $lang = JFactory::getLanguage();
+        $actualLanguage = substr($lang->getTag(), 0 , 2);
 
         $classes = $this->getColorClasses();
         $results = [];
@@ -219,12 +221,6 @@ class EmundusonboardModelsettings extends JModelList {
         try {
             foreach($status as $statu) {
                 $class = array_search($statu['class'], $classes);
-                $query->clear()
-                    ->update('#__emundus_setup_status')
-                    ->set($db->quoteName('class') . ' = ' . $db->quote($class))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($statu['id']));
-                $db->setQuery($query);
-                $results[] = $db->execute();
 
                 $query->clear()
                     ->update('#__falang_content')
@@ -239,6 +235,14 @@ class EmundusonboardModelsettings extends JModelList {
                 $results[] = $db->execute();
 
                 $results[] = $falang->updateFalang($statu['label'], $statu['step'], 'emundus_setup_status', 'value');
+
+                $query->clear()
+                    ->update('#__emundus_setup_status')
+                    ->set($db->quoteName('value') . ' = ' . $db->quote($statu['label'][$actualLanguage]))
+                    ->set($db->quoteName('class') . ' = ' . $db->quote($class))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($statu['id']));
+                $db->setQuery($query);
+                $results[] = $db->execute();
             }
 
             return $results;
