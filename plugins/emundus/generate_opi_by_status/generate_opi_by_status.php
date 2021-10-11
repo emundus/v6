@@ -70,7 +70,7 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
 
                 if($checkFnum == null) {
                     // fnum does not exist, create new decision with opi
-                    $_rawData = array('time_data' => date('Y-m-d H:i:s'), 'user' => $fnum_infos['uid'], 'campaign_id' => $fnum_infos['id'], 'fnum' => $fnum, 'final_grade' => 2, 'code_opi' => $opi_full_code);
+                    $_rawData = array('time_date' => date('Y-m-d H:i:s'), 'student_id' => $fnum_infos['uid'], 'campaign_id' => $fnum_infos['id'], 'fnum' => $fnum, 'final_grade' => 2, 'code_opi' => $opi_full_code);
                     $query = "INSERT INTO #__emundus_final_grade (time_date,user,campaign_id,fnum,final_grade) VALUE ( " . implode(',', $_rawData) . " )";
 
                 } else {
@@ -87,7 +87,7 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
 
                 if($checkFnum == null) {
                     /// fnum does not exist --> create new decision with OPI
-                    $_rawData = array('time_data' => date('Y-m-d H:i:s'), 'user' => $fnum_infos['uid'], 'campaign_id' => $fnum_infos['id'], 'fnum' => $fnum, 'final_grade' => 2, 'code_opi' => $opi_full_code);
+                    $_rawData = array('time_date' => date('Y-m-d H:i:s'), 'student_id' => $fnum_infos['uid'], 'campaign_id' => $fnum_infos['id'], 'fnum' => $fnum, 'final_grade' => 2, 'code_opi' => $opi_full_code);
                     $query = "INSERT INTO #__emundus_final_grade (time_date,user,campaign_id,fnum,final_grade,code_opi) VALUE (" . implode(',', $db->quote(array_values($_rawData))) . ")";
                 } else {
                     /// fnum already exists, but code_opi does not exists (call another SQL query)
