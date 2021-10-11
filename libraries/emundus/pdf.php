@@ -835,26 +835,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             $db->setQuery($query);
             $item = $db->loadObject();
 
-            $htmldata .= '<table width="100%"><tr>';
-            if (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
-                $htmldata .=
-                    '<td width="20%">
-                                    <img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="right" />
-                                </td>';
-            } elseif (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
-                $htmldata .=
-                    '<td width="20%">
-                                    <img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar . '" width="100" align="right" />
-                                </td>';
-            }
-
-            if (isset($item->maiden_name)) {
-                $htmldata .=
-                    '<tr class="maidename">
-                                <td>' . JText::_('MAIDEN_NAME') . ' : ' . $item->maiden_name . '</td>
-                            </tr></table>';
-            }
-
             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
             $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
 
@@ -868,8 +848,19 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
                 $htmldata .= '<table width="100%"><tr>';
 
-                $htmldata .= '<h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3><tr><td class="name">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
-
+                $htmldata .= '<h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3>';
+                if (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+                    $htmldata .=
+                        '<tr><td>
+                                        <img src="'.EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="right" />
+                                    </td></tr>';
+                } elseif (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+                    $htmldata .=
+                        '<tr><td>
+                                        <img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar . '" width="100" align="right" />
+                                    </td></tr>';
+                }
+                $htmldata .= '<tr><td class="name" colspan="2">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
 
                 if (!$anonymize_data && in_array("aemail", $options)) {
                     $htmldata .= '<tr class="birthday">
