@@ -165,6 +165,15 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 				<?php  endforeach;?>
 				</tbody>
 			</table>
+            <table>
+                <?php if ((int)$this->applications_displayed < (int)$this->applications_count): ?>
+                <tbody>
+                    <tr>
+                        <td>Vous avez atteint le nombre maximum de dossiers consultables</td>
+                    </tr>
+                </tbody>
+                <?php endif; ?>
+            </table>
 		</div>
 		<div class="em-container-pagination">
             <div class="em-container-pagination-select">

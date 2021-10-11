@@ -167,6 +167,10 @@ class EmundusViewFiles extends JViewLegacy {
 			    $Itemid = $app->input->getInt('Itemid', $current_menu->id);
 				$menu_params = $menu->getParams($Itemid);
 
+                // Get limitations variables
+                $max_app = (int)JFactory::getConfig()->get('plan_limit_app_forms');
+                //
+
 				$columnSupl = explode(',', $menu_params->get('em_other_columns'));
 
 				$m_user = new EmundusModelUsers();
@@ -339,6 +343,14 @@ class EmundusViewFiles extends JViewLegacy {
 					    $i++;
 					}
 
+                    $applications_count = sizeof($data);
+                    if($max_app != 0){
+                        $data = array_slice($data,0,$max_app+1);
+                        $applications_displayed = sizeof($data);
+                    } else {
+                        $applications_displayed = $applications_count;
+                    }
+
 					if (isset($colsSup['overall'])) {
 						$m_evaluation = new EmundusModelEvaluation;
 						$colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
@@ -393,6 +405,10 @@ class EmundusViewFiles extends JViewLegacy {
 				$this->assignRef('submitForm', $submitForm);
 				$this->assignRef('accessObj', $objAccess);
 				$this->assignRef('colsSup', $colsSup);
+
+                // Display limitations values
+                $this->assignRef('applications_displayed', $applications_displayed);
+                $this->assignRef('applications_count', $applications_count);
 		    break;
 	    }
 
