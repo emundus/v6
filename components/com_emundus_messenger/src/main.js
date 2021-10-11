@@ -16,7 +16,7 @@ if (document.getElementById('em-messages-vue')) {
       return h(Messages, {
         props: {
           fnum: this.$el.attributes.fnum.value,
-          user: this.$el.attributes.user.value,
+          user: Number(this.$el.attributes.user.value),
           modal: this.$el.attributes.modal.value,
         }
       });
@@ -31,7 +31,7 @@ if (document.getElementById('em-messages-coordinator-vue')) {
       return h(MessagesCoordinator, {
         props: {
           fnum: this.$el.attributes.fnum.value,
-          user: this.$el.attributes.user.value,
+          user: Number(this.$el.attributes.user.value),
         }
       });
     }
