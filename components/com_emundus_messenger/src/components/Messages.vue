@@ -6,7 +6,7 @@
           transition="nice-modal-fade"
           :adaptive="true"
           height="auto"
-          width="45%"
+          width="60%"
           :scrollable="true"
           :delay="100"
           :clickToClose="true"
@@ -26,7 +26,6 @@
                 </div>
               </div>
               <div></div>
-              <AttachDocument :user="user" :fnum="file.fnum" :applicant="true" @pushAttachmentMessage="pushAttachmentMessage"/>
             </div>
           </div>
 
@@ -57,6 +56,9 @@
                   </div>
                 </div>
               </div>
+              <transition :name="'slide-up'" type="transition">
+               <AttachDocument :user="user" :fnum="fileSelected" v-if="attachOpen" :applicant="true" @pushAttachmentMessage="pushAttachmentMessage" ref="attachment"/>
+              </transition>
             </div>
             <div class="messages__bottom-input">
               <textarea type="text" class="messages__input_text" rows="1" spellcheck="true" :placeholder="translations.writeMessage" v-model="message" @keydown.enter.exact.prevent="sendMessage($event)"/>
@@ -111,6 +113,7 @@ export default {
       loading: false,
       interval: 0,
       showDate: 0,
+      attachOpen: false,
       translations:{
         messages: Joomla.JText._("COM_EMUNDUS_MESSENGER_TITLE"),
         send: Joomla.JText._("COM_EMUNDUS_MESSENGER_SEND"),
@@ -256,11 +259,16 @@ export default {
     },
 
     attachDocument(){
-      this.$modal.show('attach_documents' + this.fileSelected);
+      this.attachOpen = !this.attachOpen;
+      setTimeout(() => {
+        if(this.attachOpen){
+          this.$refs.attachment.getTypesByCampaign();
+        }
+      },500);
     },
 
     pushAttachmentMessage(message){
-      this.$modal.hide('attach_documents' + this.fileSelected);
+      //this.$modal.hide('attach_documents' + this.fileSelected);
       this.pushToDatesArray(message);
       this.scrollToBottom();
     }

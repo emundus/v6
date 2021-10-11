@@ -1,7 +1,7 @@
 <template>
   <div class="messages__vue_attach_document">
     <span :id="'attach_documents' + fnum">
-      <modal
+      <div
           :name="'attach_documents' + fnum"
           transition="nice-modal-fade"
           :adaptive="true"
@@ -57,7 +57,7 @@
             </select>
           </div>
         </div>
-      </modal>
+      </div>
     </span>
     <div class="loader" v-if="loading"></div>
   </div>
@@ -219,9 +219,11 @@ export default {
         }
         this.$refs.dropzone.processQueue();
       } else {
-        this.message_input = 'Demande de document : ';
-        this.message_input += message;
-        this.askAttachment();
+        if (this.attachment_input) {
+          this.message_input = 'Demande de document : ';
+          this.message_input += message;
+          this.askAttachment();
+        }
       }
     },
   },
