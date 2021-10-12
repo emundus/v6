@@ -18,12 +18,13 @@ JFactory::getSession()->set('application_layout', 'attachment');
 $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this->fnum);
 $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
 
+
+echo json_encode($this->userAttachments);
 ?>
 
-<!--<div class="title" id="em_application_attachments">
-    <i class="dropdown icon"></i> <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
-</div>-->
-<div class="row">
+<div id="em-application-attachment" user=<?php echo $this->_user->id ?> fnum=<?php echo $this->fnum ?>>
+</div>
+<!-- <div class="row">
     <div class="panel panel-default widget em-container-attachment em-container-form">
         <div class="panel-heading em-container-form-heading">
             <h3 class="panel-title">
@@ -241,7 +242,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <script type="text/javascript">
    function getChecked() {
