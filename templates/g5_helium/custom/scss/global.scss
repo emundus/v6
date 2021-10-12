@@ -460,7 +460,8 @@ input[type="text"],
 }
 
 .view-list #g-container-main {
-  width: calc(100% - 75px) !important;
+    padding-left: 5% !important;
+    padding-right: 5% !important;
 }
 
 .view-list #g-container-main .g-container {
