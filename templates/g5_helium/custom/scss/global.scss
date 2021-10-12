@@ -2019,18 +2019,18 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   #member-profile .controls button.btn.btn-primary.validate {
-    background: $dark-blue;
-    border: 2px solid $dark-blue;
+    background: $base-primary-color;
+    border: 1px solid $base-primary-color;
     text-shadow: none;
     text-transform: initial;
-    border-radius: 25px !important;
+    border-radius: 4px !important;
 
     &:hover,
     &:focus,
     &:active {
       background-color: transparent;
-      color: $dark-blue;
-      border: 2px solid $dark-blue;
+      color: $base-primary-color;
+      border: 1px solid $base-primary-color;
     }
   }
 
