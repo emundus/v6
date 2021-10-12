@@ -22,6 +22,8 @@ templates/g5_helium/custom/*
 templates/g5_helium/html/com_eventbooking/*
 templates/emundus_vanilla/*
 /templates/emundus_vanilla/*
+libraries/emundus/custom/*
+!libraries/emundus/custom/.gitkeep
 images/emundus/import/*
 images/emundus/photo/*
 images/stories/*
