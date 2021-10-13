@@ -859,7 +859,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
 
             if ($options[0] !== "0" && !$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
-                $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000')) ? EmundusHelperDate::displayDate($item->date_submitted) : JText::_('NOT_SENT');
+                $date_submitted = (!empty($item->date_submitted) && strpos($item->date_submitted, '0000') === false) ? EmundusHelperDate::displayDate($item->date_submitted) : JText::_('NOT_SENT');
 
                 // Create an date object
                 $date_printed = new Date();
