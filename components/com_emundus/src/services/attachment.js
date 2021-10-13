@@ -4,7 +4,8 @@ export default {
     async getAttachments() {
         try {
             const response = await client.get('index.php?');
-            return response.data;
+            console.log(response);
+            return [];
         } catch (e) {
             console.error(e);
         }
