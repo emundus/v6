@@ -2185,6 +2185,8 @@ class EmundusModelApplication extends JModelList
                             if($check_not_empty_group) {
                                 if (!empty($group_label)) {
                                     $forms .= '<h3 class="group">' . $group_label . '</h3>';
+                                } else {
+                                    $forms .= '<p></p><br/>';
                                 }
                                 $forms .= '<table>';
                                 foreach ($elements as $element) {
@@ -3785,6 +3787,9 @@ class EmundusModelApplication extends JModelList
         $query = $db->getQuery(true);
         $subQuery = $db->getQuery(true);
 
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+
         $elements = array_map(function($obj) {return 't.'.$obj->name;}, $elements);
 
         $subQuery
@@ -3801,7 +3806,8 @@ class EmundusModelApplication extends JModelList
         try {
             $db->setQuery($query);
             $db->execute();
-            if ($db->getNumRows() == 1) {
+
+            if ($db->getNumRows() >= 1) {
                 $res = $db->loadAssoc();
 
                 $elements = array_map(function($arr) {
@@ -3817,6 +3823,10 @@ class EmundusModelApplication extends JModelList
 
                 $elements = array_filter($elements, function($el) {return $el === false;});
                 return !empty($elements);
+            } else {
+                if($show_empty_fields == 0){
+                    return false;
+                }
             }
 
             return true;
@@ -3838,7 +3848,9 @@ class EmundusModelApplication extends JModelList
     public function checkEmptyGroups($elements, $parent_table, $fnum) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
-        $subQuery = $db->getQuery(true);
+
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
 
         $elements = array_map(function($obj) {return $obj->name;}, $elements);
 
@@ -3866,6 +3878,10 @@ class EmundusModelApplication extends JModelList
 
                 $elements = array_filter($elements, function($el) {return $el === false;});
                 return !empty($elements);
+            } else {
+                if($show_empty_fields == 0){
+                    return false;
+                }
             }
 
             return true;
