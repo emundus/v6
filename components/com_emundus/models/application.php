@@ -2130,7 +2130,7 @@ class EmundusModelApplication extends JModelList
                                                         $key = array_search($value,$params->sub_options->sub_values);
                                                         $elm[] =  ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                                                     }
-                                                    $elt = "<ul><li>" . implode("</li><li>", @$elm) . "</li></ul>";
+                                                    $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
                                                 } elseif ($elements[$j]->plugin == 'dropdown' || @$elements[$j] == 'radiobutton') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $index = array_search($r_elt, $params->sub_options->sub_values);
