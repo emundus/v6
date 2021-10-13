@@ -32,7 +32,7 @@ export default {
     },
 
     mounted() {
-        this.getAttachments();
+        // this.getAttachments();
     },
     methods: {
         async getAttachments() {
