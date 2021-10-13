@@ -623,4 +623,31 @@ class EmundusControllerApplication extends JControllerLegacy
             exit();
         }
     }
+
+    public function getuserattachments()
+    {
+        $m_application = $this->getModel('Application');
+
+        $jinput = JFactory::getApplication()->input;
+
+        $user_id = $jinput->getInt('user_id', null);
+
+        $attachments = $m_application->getUserAttachments($user_id);
+
+        echo json_encode($attachments);
+        exit;
+    }
+
+    public function getattachmentsbyfnum()
+    {
+        $m_application = $this->getModel('Application');
+
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getInt('fnum', null);
+        $attachments = $m_application->getUserAttachmentsByFnum($fnum);
+
+        echo json_encode($attachments);
+        exit;
+    }
+
 }

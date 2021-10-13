@@ -2,20 +2,19 @@ const path = require('path');
 
 module.exports = {
   lintOnSave: false,
-  outputDir: path.resolve(__dirname, '../../media/com_emundus'),
-  assetsDir: '../com_emundus',
-
+  outputDir: path.resolve(__dirname, '../../media/com_emundus_vue'),
+  assetsDir: '../com_emundus_vue',
   css: {
     requireModuleExtension: false,
     extract: {
-      filename: '[name].css',
-      chunkFilename: '[name].css',
+      filename: '[name]_emundus.css',
+      chunkFilename: '[name]_emundus.css',
     },
   },
   configureWebpack: {
     output: {
-      filename: '[name].js',
-      chunkFilename: '[name].js',
+      filename: '[name]_emundus.js',
+      chunkFilename: '[name]_emundus.js',
     },
   },
 };
