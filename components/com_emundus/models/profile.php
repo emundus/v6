@@ -842,7 +842,7 @@ class EmundusModelProfile extends JModelList {
         $query = 'SELECT ecc.*, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id
                     FROM #__emundus_campaign_candidature as ecc
                     LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
-                    WHERE ecc.published=1 AND ecc.applicant_id='.$aid;
+                    WHERE ecc.published IN (1,-2) AND ecc.applicant_id='.$aid;
         $query .= (!empty($submitted))?' AND ecc.submitted='.$submitted:'';
         $query .= (!empty($start_date))?' AND esc.start_date<='.$db->Quote($start_date):'';
         $query .= (!empty($end_date))?' AND esc.end_date>='.$db->Quote($end_date):'';

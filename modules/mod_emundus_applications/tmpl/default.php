@@ -25,8 +25,8 @@ echo $description;
         $state = $states[$application->fnum]['published'];
         $confirm_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
         $first_page_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
-        if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
-            <?php 
+        if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' || $state == -2 ) : ?>
+            <?php
             if ($file_tags != '') {
 
                 $post = array(
@@ -161,7 +161,7 @@ echo $description;
             <?php endif; ?>
 
             <div class="col-md-12">
-                <?php if (!empty($forms) && $forms[$application->fnum] == 0 && $state == '1') :?>
+                <?php if (!empty($forms) && $forms[$application->fnum] == 0 && in_array($state,['1','-2'])) :?>
                     <div class="ui segments">
                         <div class="ui yellow segment">
                             <p><i class="info circle icon"></i> <?= JText::_('MOD_EMUNDUS_FLOW_EMPTY_FILE_ACTION'); ?></p>

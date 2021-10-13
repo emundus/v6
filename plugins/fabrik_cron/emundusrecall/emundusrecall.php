@@ -75,7 +75,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 					LEFT JOIN #__users as u ON u.id=ecc.applicant_id
 					LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
 					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
-					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DATEDIFF( esc.end_date , now()) IN ('.$reminder_deadline.')';
+					WHERE ecc.published IN (1,-2) AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DATEDIFF( esc.end_date , now()) IN ('.$reminder_deadline.')';
         }
         else{
             $query = 'SELECT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, esc.start_date, esc.end_date, esc.label, DAY(now()) as dayOfMonth
@@ -83,7 +83,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 					LEFT JOIN #__users as u ON u.id=ecc.applicant_id
 					LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
 					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
-					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DAY(now()) IN ('.$reminder_deadline.') AND esc.end_date > NOW()';
+					WHERE ecc.published IN (1,-2) AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DAY(now()) IN ('.$reminder_deadline.') AND esc.end_date > NOW()';
         }
 
         if (!empty($reminder_programme_code)) {

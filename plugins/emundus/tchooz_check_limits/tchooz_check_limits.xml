@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="system" method="upgrade" type="plugin" version="1">
+    <name>eMundus | Tchooz - Check limits by plans</name>
+    <author>Brice Hubinet</author>
+    <creationDate>Octobre 2021</creationDate>
+    <copyright>(C) 2010-2021 EMUNDUS SOFTWARE. All rights reserved.</copyright>
+    <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+    <authorEmail>brice.hubinet@emundus.fr</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <version>1.0.0</version>
+    <description>Tchooz limits, make some actions when limits are reached</description>
+    <files>
+        <filename plugin="tchooz_check_limits">tchooz_check_limits.php</filename>
+    </files>
+    <config>
+        <fields name="params">
+        </fields>
+    </config>
+</extension>

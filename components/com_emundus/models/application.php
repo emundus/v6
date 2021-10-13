@@ -91,7 +91,7 @@ class EmundusModelApplication extends JModelList
             LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
             LEFT JOIN #__emundus_final_grade efg ON efg.campaign_id=esc.id AND efg.student_id=eu.user_id
             LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
-            WHERE eu.user_id="' . $id . '" and ecc.published = 1';
+            WHERE eu.user_id="' . $id . '" and ecc.published IN (1,-2)';
 
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
@@ -102,7 +102,7 @@ class EmundusModelApplication extends JModelList
             LEFT JOIN #__emundus_setup_campaigns esc ON ecc.campaign_id=esc.id
             LEFT JOIN #__emundus_final_grade efg ON efg.campaign_id=esc.id AND efg.student_id=eu.user_id
             LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
-            WHERE eu.user_id="' . $id . '" and ecc.published = 1 and esc.id = ' . $cid;
+            WHERE eu.user_id="' . $id . '" and ecc.published IN (1,-2) and esc.id = ' . $cid;
 
             $this->_db->setQuery($query);
             return $this->_db->loadObject();
