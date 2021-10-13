@@ -4,7 +4,8 @@
   "private": true,
   "workspaces": [
     "com_emundus_onboard",
-    "com_emundus_messenger"
+    "com_emundus_messenger",
+    "com_emundus"
   ],
   "scripts": {
     "serve": "vue-cli-service serve",

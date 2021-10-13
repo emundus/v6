@@ -409,6 +409,8 @@ JText::script('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER');
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
 JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
+JHTML::script('media/com_emundus_vue/app_emundus.js');
+JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
 JHTML::script('media/com_emundus_messenger/app_messenger.js');
 JHTML::script('media/com_emundus_messenger/chunk-vendors_messenger.js');
 JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
