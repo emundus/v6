@@ -2068,24 +2068,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
-  #member-profile .controls a.btn[title="Annuler"] {
-    background: transparent;
-    border: 2px solid grey;
-    color: grey;
-    text-shadow: none;
-    text-transform: initial;
-    border-radius: 25px;
-
-    &:hover,
-    &:focus,
-    &:active {
-      background-color: grey;
-      color: #fff;
-      border: 2px solid grey;
-    }
-  }
-
-
   .btn-group.pull-right #em-close-file.btn.btn-danger.btn-xxl {
     background: transparent;
     border: none;
