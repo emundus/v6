@@ -1531,11 +1531,16 @@ class EmundusModelApplication extends JModelList
                                             $this->_db->setQuery($query);
                                             $res = $this->_db->loadRow();
 
-                                            $element->content = @$res[1];
-                                            $element->content_id = @$res[0];
+                                            if (count($res) > 1) {
+                                                $element->content = $res[1];
+                                                $element->content_id = $res[0];
+                                            } else {
+                                                $element->content = '';
+                                                $element->content_id = -1;
+                                            }
 
                                             // Do not display elements with no value inside them.
-                                            if ($show_empty_fields == 0 && trim($element->content) == '' && trim($element->content_id) == '') {
+                                            if ($show_empty_fields == 0 && trim($element->content) == '') {
                                                 continue;
                                             }
 
