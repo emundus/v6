@@ -1,34 +1,41 @@
 <template>
     <div id="em-attachments">
-        <h1>Documents - ..% envoyés</h1>
-        <div id="searchbar">
-          <label for="searchbar">Rechercher : </label>
-          <input name="searchbar" type="text" ref="searchbar" placeholder="Key words" @input="searchInFiles">
+        <h2>{{user}}</h2>
+        <div id="filters">
+          <input id="searchbar" type="text" ref="searchbar" placeholder="Rechercher" @input="searchInFiles">
+          <div class="actions">
+            <span @click="deleteAttachments">DELETE</span>
+          </div>
         </div>
         <table v-if="attachments.length">
             <thead>
                 <tr>
-                    <th>Document</th>
-                    <th>Description</th>
-                    <th>Statut</th>
-                    <th>Date d'envoi</th>
-                    <th>Modifié par</th>
-                    <th>Date de dernière modifcation</th>
-                    <th>Actions</th>
+                    <th>
+                      <input type="checkbox" @change="updateAllCheckedAttachments">
+                    </th>
+                    <th @click="orderBy('filename')">Nom</th>
+                    <th @click="orderBy('timestamp')">Date d'envoi</th>
+                    <th @click="orderBy('description')">Description</th>
+                    <th @click="orderBy('is_validated')">Statut</th>
+                    <th @click="orderBy('modified_by')">Modifié par</th>
+                    <th @click="orderBy('modified')">Date de modification</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="attachment in displayedAttachments" :key="attachment.aid">
-                    <td class="td-document">{{ attachment.filename }}</td>
+                <tr 
+                  v-for="attachment in displayedAttachments" 
+                  :key="attachment.aid"
+                  :class="{'checked': checkedAttachments.includes(attachment.aid)}"  
+                >
+                    <td>
+                      <input class="attachment-check" type="checkbox" @change="updateCheckedAttachments(attachment.aid)" :checked="checkedAttachments.includes(attachment.aid)">
+                    </td>
+                    <td class="td-document" @click="openModal(attachment)">{{ attachment.filename }}</td>
+                    <td>{{ formattedTimeDate(attachment.timedate) }}</td>
                     <td>{{ attachment.description }}</td>
                     <td>{{ formattedValidState(attachment.is_validated)}}</td>
-                    <td>{{ formattedTimeDate(attachment.timedate) }}</td>
                     <td></td>
                     <td>{{ formattedTimeDate(attachment.timedate) }}</td>
-                    <td>
-                        <span @click="openModal(attachment)">Edit</span>
-                        <span @click="deleteAttachment(attachment.aid)">Delete</span>
-                    </td>
                 </tr>
             </tbody>
         </table>
@@ -40,7 +47,7 @@
           width="50%"
           styles="display:flex;flex-direction:row;justify-content:center;align-items:center;"
         >
-          <AttachmentPreview :attachment="selectedAttachment"></AttachmentPreview>
+          <AttachmentPreview :attachment="selectedAttachment" :user="user"></AttachmentPreview>
           <AttachmentEdit @closeModal="$modal.hide('edit')" @saveChanges="updateAttachment()" :attachment="selectedAttachment" :user="user" :fnum="fnum"></AttachmentEdit>
         </modal>
     </div>
@@ -72,13 +79,18 @@ export default {
     return {
       loading: true,
       attachments: [],
+      checkedAttachments: [],
       selectedAttachment: null,
+      lastSort: ""
     };
   },
   mounted() {
+    this.getUserInformations();
     this.getAttachments();
   },
   methods: {
+    getUserInformations() {
+    },
     async getAttachments() {
       this.attachments = await attachmentService.getAttachmentsByFnum(this.fnum);
     },   
@@ -87,10 +99,12 @@ export default {
       this.$modal.hide('edit');
       this.selectedAttachment = null;
     },
-    async deleteAttachment(id) {
-      this.attachments = this.attachments.filter(attachment => attachment.aid !== aid);
+    async deleteAttachments() {
+      // remove all checked attachments from attachments array
+      this.attachments = this.attachments.filter(attachment => !this.checkedAttachments.includes(attachment.aid));
 
-      const response = await attachmentService.deleteAttachment(this.fnum, aid);
+      // delete all checkedAttachments
+      const response = await attachmentService.deleteAttachments(this.fnum, this.checkedAttachments);
       if (response.status == true) {
         // Display tooltip deleted succesfully  
       }
@@ -102,9 +116,44 @@ export default {
         if (attachment.description.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase()) || attachment.filename.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase())) {
           this.attachments[index].show = true;
         } else {
+          // remove attachments from checkedAttachment list
+          this.checkedAttachments = this.checkedAttachments.filter(aid => aid !== attachment.aid);
           this.attachments[index].show = false;
         }
       });
+    },
+    orderBy(key) {
+      // if last sort is the same as the current sort, reverse the order
+      if (this.lastSort == key) {
+        this.attachments.reverse();
+      } else {
+        // sort by key
+        this.attachments.sort((a, b) => {
+          if (a[key] < b[key]) {
+            return -1;
+          }
+          if (a[key] > b[key]) {
+            return 1;
+          }
+          return 0;
+        });
+      }
+      this.lastSort = key;
+    },
+    updateAllCheckedAttachments(e) {
+      if (e.target.checked) {
+        // check all input that has class attachment-check and add them to the checkedAttachments array
+        this.checkedAttachments = this.displayedAttachments.map(attachment => attachment.aid);
+      } else {
+        this.checkedAttachments = [];
+      }
+    },
+    updateCheckedAttachments(aid) {
+      if (this.checkedAttachments.contains(aid)) {
+        this.checkedAttachments.splice(this.checkedAttachments.indexOf(aid), 1);
+      } else {
+        this.checkedAttachments.push(aid);
+      }
     },
     openModal(attachment) {
       this.$modal.show('edit');
@@ -113,19 +162,19 @@ export default {
     formattedValidState(state) {
       switch(state) {
         case "1":
-          return 'Validé';
+          return 'Valide';
           break;
         case "-2":
-          return 'Invalide';
+          return 'Non valide';
           break;
         case "0":
         default:
-          return 'Indéfini';
+          return 'En attente';
           break;
       }
     },
     formattedTimeDate(timedate) {
-      return moment(timedate).format('DD/MM/YYYY HH:mm');
+      return moment(timedate).format('DD/MM/YYYY');
     }
   },
   computed: {
@@ -140,19 +189,18 @@ export default {
 
 <style lang="scss" scoped>
 #em-attachments {
-  width: 90%;
-  margin: auto;
+  margin: 20px;
 
-  #searchbar {
+  #filters {
     margin-bottom: 20px;
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
     align-items: center;
+    justify-content: space-between;
 
     input {
-      width: 350px;
-      margin-left: 5px;
+      align-self: flex-start;
+      width: 221px;
     }
   }
 
@@ -163,17 +211,21 @@ export default {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      cursor: pointer;
+    }
+
+    tbody {
+      tr {
+        &:hover:not(.checked) {
+          background-color: #F2F2F3;
+        }
+
+        &.checked {
+          background-color: #F0F6FD;  
+        }
+      }
     }
   }
-  
-  .actions {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    span {
-      margin: 0 5px;
-    }
-  } 
 }
 
 </style>
