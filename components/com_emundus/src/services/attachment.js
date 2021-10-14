@@ -23,12 +23,17 @@ export default {
         }
       });
 
+      // add show attribute to true to all attchments in response data
+      response.data.forEach(attachment => {
+        attachment.show = true;
+      });
+
       return response.data;
     } catch (e) {
       throw e;
     }
   },
-  
+
   async deleteAttachment(attachment_id) {
     try {
       const response = await client().get('index.php?option=com_emundus&controller=application&task=deleteattachment', {
