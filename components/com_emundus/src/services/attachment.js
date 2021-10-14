@@ -27,5 +27,19 @@ export default {
     } catch (e) {
       throw e;
     }
+  },
+  
+  async deleteAttachment(attachment_id) {
+    try {
+      const response = await client().get('index.php?option=com_emundus&controller=application&task=deleteattachment', {
+        params: {
+          attachment_id: attachment_id,
+        }
+      });
+
+      return response.data;
+    } catch (e) {
+      throw e;
+    }
   }
 };

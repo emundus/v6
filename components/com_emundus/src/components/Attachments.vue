@@ -9,8 +9,8 @@
               <a @click="openModal">{{attachment.filename}}</a>
               <span>{{attachment.description}}</span>
               <div class="actions">
-                <span>Edit</span>
-                <span>Delete</span>
+                <span @click="openModal" >Edit</span>
+                <span @click="deleteAttachment(attachment.attachment_id)">Delete</span>
               </div>
             </li>
         </ul>
@@ -25,28 +25,26 @@ export default {
   name: 'Attachments',
   props: {
     user: {
-      type: Number,
+      type: String,
       required: true,
     },
     fnum: {
-      type: Number,
+      type: String,
       required: true,
     }
   },
   data() {
     return {
       loading: true,
-      attachments: [{"show":true, "aid":"2","id":"12","lbl":"_cv","value":"CV","description":"<p>Curriculum vitae<\/p>","allowed_types":"pdf;jpg;jpeg","nbmax":"1","ordering":"1","published":"1","ocr_keywords":null,"category":"1","video_max_length":"60","min_width":null,"max_width":null,"min_height":null,"max_height":null,"attachment_id":"12","filename":"programcoordinator_cv-a5deabe10886194e39029abb25a46844.pdf","timedate":"2021-07-01 11:15:24","can_be_deleted":"0","can_be_viewed":"0","is_validated":"-2","campaign_label":"Campagne de candidature de base ","year":"2019-2021","training":"prog"},{"show":true,"aid":"3","id":"12","lbl":"_cv","value":"CV","description":"CV un peu bizarre, \u00e7a ressemble \u00e0 un dossier axa ","allowed_types":"pdf;jpg;jpeg","nbmax":"1","ordering":"1","published":"1","ocr_keywords":null,"category":"1","video_max_length":"60","min_width":null,"max_width":null,"min_height":null,"max_height":null,"attachment_id":"12","filename":"95-1-cv-2069897862.pdf","timedate":"2021-10-12 15:22:32","can_be_deleted":"1","can_be_viewed":"0","is_validated":null,"campaign_label":"Campagne de candidature de base ","year":"2019-2021","training":"prog"}],
+      attachments: [],
     };
   },
   mounted() {
-
-    console.log(this.attachments);
-    // this.getAttachments();
+    this.getAttachments();
   },
   methods: {
     async getAttachments() {
-      this.attachments = await attachmentService.getAttachments(this.user);
+      this.attachments = await attachmentService.getAttachmentsByFnum(this.fnum);
     },
     searchInFiles() {
       this.attachments.forEach((attachment, index) => {
@@ -61,6 +59,13 @@ export default {
     openModal() {
 
     },
+    async deteteAttachment(attachment_id) {
+      // remove attachment from attachments data
+      this.attachments = this.attachments.filter(attachment => attachment.attachment_id !== attachment_id);
+
+      const response = await attachmentService.deleteAttachment(attachment_id);
+      console.log(response);
+    }
   },
   computed: {
     displayedAttachments() {

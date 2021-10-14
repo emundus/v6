@@ -643,8 +643,9 @@ class EmundusControllerApplication extends JControllerLegacy
         $m_application = $this->getModel('Application');
 
         $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getInt('fnum', null);
-        $attachments = $m_application->getUserAttachmentsByFnum($fnum);
+        $fnum = $jinput->getVar('fnum', null);
+
+        $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
 
         echo json_encode($attachments);
         exit;
