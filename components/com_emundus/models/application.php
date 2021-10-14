@@ -3937,4 +3937,35 @@ class EmundusModelApplication extends JModelList
 
         return $html;
     }
+
+    public function updateAttachment($fnum, $user, $attachment) {
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
+
+        // TODO: check if user is allowed to update attachment
+
+            // update attachments fields in database
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $query
+                ->update($db->quoteName('#__emundus_uploads'))
+                ->set($db->quoteName('description') . ' = ' . $db->quote($attachment['description']))
+                ->set($db->quoteName('is_validated') . ' = ' . $db->quote($attachment['is_validated']))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($attachment['id']));
+
+            // TODO: set modified and modified by
+            // ->set($db->quoteName('modified') . ' = ' . $db->quote( strtotime(date('Y-m-d', time()) . ' 00:00:00') ))
+            // ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
+
+            //execute query
+            try {
+                $db->setQuery($query);
+                $db->execute();
+                return true;
+            } catch (Exception $e) {
+                // log error
+                return false;
+            }
+
+    }
 }
