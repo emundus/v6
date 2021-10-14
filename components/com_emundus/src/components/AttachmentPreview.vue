@@ -1,14 +1,18 @@
 <template>
     <div id="attachment-preview">
-        <h2>Preview</h2>
+        <div v-html="preview"></div>
     </div>
 </template>
 
 <script>
-import attachment from '../services/attachment';
+import attachmentService from '../services/attachment';
 
 export default {
     props: {
+        user: {
+            type: String,
+            required: true
+        },
         attachment: {
             type: Object,
             required: true
@@ -16,17 +20,16 @@ export default {
     },
     data() {
         return {
-            attachmentType: ""
+            preview: '',
         }
     },
     mounted() {
-        this.attachmentType = this.attachment.attachment_type;
-        // this.loadAttachment();
+        this.getPreview();
     },
     methods: {
-        loadAttachment() {
-            attachment.loadAttachment(this.attachment.aid, this.attachmentType).then(response => {
-                this.$refs.attachmentPreview.innerHTML = response.data;
+        getPreview() {
+            attachmentService.getPreview(this.user, this.attachment).then(response => {
+                this.preview = response.data.preview;
             });
         }
     }

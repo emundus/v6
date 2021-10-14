@@ -669,4 +669,19 @@ class EmundusControllerApplication extends JControllerLegacy
         echo json_encode(array('status' => $update));
         exit;
     }
+
+    public function getpreview()
+    {
+        $m_application = $this->getModel('Application');
+
+        $jinput = JFactory::getApplication()->input;
+        $user = $jinput->getVar('user', null);
+        $attachment = $jinput->getVar('attachment', null);
+        $attachment = json_decode($attachment, true);
+
+        $preview = $m_application->getPreview($user, $attachment);
+
+        echo json_encode($preview);
+        exit;
+    }
 }
