@@ -47,5 +47,21 @@ export default {
     } catch (e) {
       throw e;
     }
+  },
+  
+  async updateAttachment(fnum, user, attachment) {
+    try {
+      const response = await client().get('index.php?option=com_emundus&controller=application&task=updateattachment', {
+        params: {
+          fnum: fnum,
+          user: user,
+          attachment: JSON.stringify(attachment),
+        }
+      });
+
+      return response;
+    } catch (e) {
+      throw e;
+    }
   }
 };

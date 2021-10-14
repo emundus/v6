@@ -5,19 +5,19 @@
           <input type="text" ref="searchbar" placeholder="Key words" @input="searchInFiles">
         </div>
         <ul v-if="attachments.length">
-            <li v-for="(attachment, key) in displayedAttachments" :key="key">
+            <li v-for="attachment in displayedAttachments" :key="attachment.aid">
               <a @click="openModal">{{attachment.filename}}</a>
               <span>{{attachment.description}}</span>
               <div class="actions">
                 <span @click="openModal(attachment)">Edit</span>
-                <span @click="deleteAttachment(attachment.id)">Delete</span>
+                <span @click="deleteAttachment(attachment.aid)">Delete</span>
               </div>
             </li>
         </ul>
         <p v-else>Aucun dossier rattaché à cet utilisateur</p>
         <modal name="edit">
           <AttachmentPreview :attachment="selectedAttachment"></AttachmentPreview>
-          <AttachmentEdit @closeModal="$modal.hide('edit')" @saveChanges="updateAttachment()" :attachment="selectedAttachment"></AttachmentEdit>
+          <AttachmentEdit @closeModal="$modal.hide('edit')" @saveChanges="updateAttachment()" :attachment="selectedAttachment" :user="user" :fnum="fnum"></AttachmentEdit>
         </modal>
     </div>
 </template>
@@ -77,9 +77,9 @@ export default {
     },
     async deleteAttachment(id) {
       // remove attachment from attachments data
-      this.attachments = this.attachments.filter(attachment => attachment.id !== id);
+      this.attachments = this.attachments.filter(attachment => attachment.aid !== aid);
 
-      const response = await attachmentService.deleteAttachment(this.fnum, id);
+      const response = await attachmentService.deleteAttachment(this.fnum, aid);
       if (response.status == true) {
         // Display tooltip deleted succesfully  
       }

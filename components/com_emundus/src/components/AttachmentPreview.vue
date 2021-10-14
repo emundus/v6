@@ -24,7 +24,7 @@ export default {
     },
     methods: {
         loadAttachment() {
-            attachment.loadAttachment(this.attachment.id, this.attachmentType).then(response => {
+            attachment.loadAttachment(this.attachment.aid, this.attachmentType).then(response => {
                 this.$refs.attachmentPreview.innerHTML = response.data;
             });
         }

@@ -624,6 +624,9 @@ class EmundusControllerApplication extends JControllerLegacy
         }
     }
 
+    /////////////////////////////////////////////////////////////
+    // used by VueJS com_emundus Attachments component
+
     public function getuserattachments()
     {
         $m_application = $this->getModel('Application');
@@ -648,6 +651,22 @@ class EmundusControllerApplication extends JControllerLegacy
         $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
 
         echo json_encode($attachments);
+        exit;
+    }
+
+    public function updateattachment()
+    {
+        $m_application = $this->getModel('Application');
+
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getVar('fnum', null);
+        $user = $jinput->getVar('user', null);
+        $attachment = $jinput->getString('attachment', null);
+        $attachment = json_decode($attachment, true);
+
+        $update = $m_application->updateAttachment($fnum, $user, $attachment);
+
+        echo json_encode(array('status' => $update));
         exit;
     }
 }
