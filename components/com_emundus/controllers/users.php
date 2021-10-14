@@ -865,4 +865,21 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		}
 	}
+
+	public function getuser() 
+	{
+		echo json_encode($this->_user);
+		exit;
+	}
+
+	public function getuserbyid() 
+	{
+		$id = JFactory::getApplication()->input->getInt('id', null);
+		$m_users = new EmundusModelUsers();
+		$user = $m_users->getUserById($id);
+
+		echo json_encode((object)array('status' => true, 'user' => $user));
+		exit;
+	}
+	
 }
