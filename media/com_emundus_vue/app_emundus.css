@@ -45,6 +45,7 @@
           flex-direction: column;
 }
 #em-attachments[data-v-69a49ca0] {
+  font-size: 14px;
   margin: 20px;
 }
 #em-attachments #filters[data-v-69a49ca0] {
@@ -68,17 +69,38 @@
       align-self: flex-start;
   width: 221px;
 }
-#em-attachments table .td-document[data-v-69a49ca0] {
-  width: 250px;
-  max-width: 250px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  cursor: pointer;
+#em-attachments table[data-v-69a49ca0] {
+  border: 0;
+}
+#em-attachments table tr th[data-v-69a49ca0]:first-of-type {
+  width: 39px;
+}
+#em-attachments table tr th:first-of-type input[data-v-69a49ca0] {
+  margin-right: 0px;
+}
+#em-attachments table tr[data-v-69a49ca0], #em-attachments table th[data-v-69a49ca0] {
+  height: 49px;
+  background: transparent;
+  background-color: transparent;
+}
+#em-attachments table thead tr th[data-v-69a49ca0] {
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+}
+#em-attachments table tbody tr[data-v-69a49ca0] {
+  border-bottom: 1px solid #e0e0e0;
 }
 #em-attachments table tbody tr[data-v-69a49ca0]:hover:not(.checked) {
   background-color: #F2F2F3;
 }
 #em-attachments table tbody tr.checked[data-v-69a49ca0] {
   background-color: #F0F6FD;
+}
+#em-attachments table tbody .td-document[data-v-69a49ca0] {
+  width: 250px;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
 }

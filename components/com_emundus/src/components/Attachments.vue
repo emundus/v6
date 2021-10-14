@@ -1,6 +1,9 @@
 <template>
     <div id="em-attachments">
-        <h2>{{user}}</h2>
+        <div class="userInformations">
+          <p>{{ userInformations.firstname }} {{ userInformations.lastname }} </p>
+          <p>{{ userInformations.email }}</p>
+        </div>
         <div id="filters">
           <input id="searchbar" type="text" ref="searchbar" placeholder="Rechercher" @input="searchInFiles">
           <div class="actions">
@@ -14,7 +17,7 @@
                       <input type="checkbox" @change="updateAllCheckedAttachments">
                     </th>
                     <th @click="orderBy('filename')">Nom</th>
-                    <th @click="orderBy('timestamp')">Date d'envoi</th>
+                    <th @click="orderBy('timedate')">Date d'envoi</th>
                     <th @click="orderBy('description')">Description</th>
                     <th @click="orderBy('is_validated')">Statut</th>
                     <th @click="orderBy('modified_by')">Modifié par</th>
@@ -57,6 +60,7 @@
 import AttachmentPreview from './AttachmentPreview.vue'
 import AttachmentEdit from './AttachmentEdit.vue'
 import attachmentService from '../services/attachment.js';
+import userService from '../services/user.js';
 import moment from 'moment';
 
 export default {
@@ -79,9 +83,10 @@ export default {
     return {
       loading: true,
       attachments: [],
+      userInformations: {},
       checkedAttachments: [],
       selectedAttachment: null,
-      lastSort: ""
+      lastSort: "",
     };
   },
   mounted() {
@@ -89,7 +94,9 @@ export default {
     this.getAttachments();
   },
   methods: {
-    getUserInformations() {
+    // Getters and setters
+    async getUserInformations() {
+      this.userInformations = await userService.getUserInformations(this.user);
     },
     async getAttachments() {
       this.attachments = await attachmentService.getAttachmentsByFnum(this.fnum);
@@ -109,6 +116,8 @@ export default {
         // Display tooltip deleted succesfully  
       }
     },
+
+    // Front methods
     searchInFiles() {
       this.attachments.forEach((attachment, index) => {
         // if attachment description contains the search term, show it
@@ -155,10 +164,14 @@ export default {
         this.checkedAttachments.push(aid);
       }
     },
+
+    // Modal methods
     openModal(attachment) {
       this.$modal.show('edit');
       this.selectedAttachment = attachment;
     },
+
+    // Format Methods
     formattedValidState(state) {
       switch(state) {
         case "1":
@@ -189,6 +202,7 @@ export default {
 
 <style lang="scss" scoped>
 #em-attachments {
+  font-size: 14px;
   margin: 20px;
 
   #filters {
@@ -205,17 +219,35 @@ export default {
   }
 
   table {
-    .td-document {
-      width: 250px;
-      max-width: 250px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      cursor: pointer;
+    border: 0;
+
+    tr {
+      th:first-of-type {
+        width: 39px;
+        input {
+          margin-right: 0px;
+        }
+      }
+    }
+
+    tr, th {
+      height: 49px;
+      background: transparent;
+      background-color: transparent;
+    }
+
+    thead {
+      tr {
+        th {
+          border-top: 1px solid #e0e0e0;
+          border-bottom: 1px solid #e0e0e0;
+        }
+      }
     }
 
     tbody {
       tr {
+        border-bottom: 1px solid #e0e0e0;
         &:hover:not(.checked) {
           background-color: #F2F2F3;
         }
@@ -223,6 +255,15 @@ export default {
         &.checked {
           background-color: #F0F6FD;  
         }
+      }
+
+      .td-document {
+        width: 250px;
+        max-width: 250px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
       }
     }
   }
