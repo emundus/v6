@@ -33,6 +33,7 @@ templates/LaScala/*
 /images/emundus/letters/*
 /image/logo.png
 /images/custom/logo.png
+/images/custom/logo_custom.png
 #_bdd/*
 components/com_emundus.*
 components/com_emundus/*.bak

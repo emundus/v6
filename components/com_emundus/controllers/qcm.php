@@ -73,8 +73,9 @@ class EmundusControllerQcm extends JControllerLegacy {
 
         $jinput = JFactory::getApplication()->input;
         $pending = $jinput->getInt('pending');
+        $formid = $jinput->getInt('formid');
 
-        $results = $m_qcm->updatePending($pending,$current_user);
+        $results = $m_qcm->updatePending($pending,$current_user, $formid);
 
         echo json_encode((object)$results);
         exit;

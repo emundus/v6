@@ -76,7 +76,7 @@
 
         data() {
             return {
-                imageLink: 'images/custom/logo.png',
+                imageLink: 'images/custom/logo_custom.png',
                 iconLink: 'images/custom/favicon.png',
                 primary: '',
                 secondary: '',
