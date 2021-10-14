@@ -96,7 +96,13 @@ export default {
   methods: {
     // Getters and setters
     async getUserInformations() {
-      this.userInformations = await userService.getUserInformations(this.user);
+      // check if it is in $store
+      if (Object.keys(this.$store.state.user.users).includes(this.user)) {
+        this.userInformations = this.$store.state.user.users[this.user];
+      } else {
+        this.userInformations = await userService.getUserInformations(this.user);
+        this.$store.dispatch('user/setUser', this.userInformations);
+      }
     },
     async getAttachments() {
       this.attachments = await attachmentService.getAttachmentsByFnum(this.fnum);

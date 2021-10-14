@@ -29,7 +29,7 @@ export default {
     methods: {
         getPreview() {
             attachmentService.getPreview(this.user, this.attachment).then(response => {
-                this.preview = response.data.preview;
+                this.preview = response.data;
             });
         }
     }
