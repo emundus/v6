@@ -5896,8 +5896,6 @@ $(document).ready(function() {
 
                 data.attachments = attachments;
 
-                console.log(data);
-
                 $.ajax({
                     type: 'POST',
                     url: 'index.php?option=com_emundus&controller=messages&task=previewemail',
