@@ -1,4 +1,71 @@
-.actions[data-v-69a49ca0] {
+#attachment-preview[data-v-20d71aa5] {
+  height: 100%;
+  width: 50%;
+}
+#attachment-edit[data-v-fb825d06] {
+  margin: 0 10px;
+  padding: 10px;
+  height: 100%;
+  width: 50%;
+  float: right;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+}
+#attachment-edit .actions[data-v-fb825d06] {
+  -ms-flex-item-align: end;
+      align-self: flex-end;
+}
+#attachment-edit .actions button[data-v-fb825d06] {
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  padding: 8px 12px;
+}
+#attachment-edit .actions button[data-v-fb825d06]:last-of-type {
+  margin-left: 10px;
+}
+#em-attachments[data-v-69a49ca0] {
+  width: 90%;
+  margin: auto;
+}
+#em-attachments #searchbar[data-v-69a49ca0] {
+  margin-bottom: 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+#em-attachments #searchbar input[data-v-69a49ca0] {
+  width: 350px;
+  margin-left: 5px;
+}
+#em-attachments table .td-document[data-v-69a49ca0] {
+  width: 250px;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#em-attachments .actions[data-v-69a49ca0] {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -9,6 +76,6 @@
       -ms-flex-align: center;
           align-items: center;
 }
-.actions span[data-v-69a49ca0] {
+#em-attachments .actions span[data-v-69a49ca0] {
   margin: 0 5px;
 }
