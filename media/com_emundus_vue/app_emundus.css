@@ -34,6 +34,16 @@
 #attachment-edit .actions button[data-v-fb825d06]:last-of-type {
   margin-left: 10px;
 }
+#attachment-edit .input-group[data-v-fb825d06] {
+  margin-top: 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
 #em-attachments[data-v-69a49ca0] {
   width: 90%;
   margin: auto;

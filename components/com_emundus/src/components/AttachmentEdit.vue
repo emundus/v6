@@ -2,15 +2,19 @@
     <div id="attachment-edit">
         <div class="editableData"> 
             <h2>{{ attachment.filename }}</h2>
-            <label for="description">DESCRIPTION</label>
-            <input name="description" type="text" v-model="description"/>
+            <div class="input-group">
+                <label for="description">DESCRIPTION</label>
+                <input name="description" type="text" v-model="description"/>
+            </div>
 
+            <div class="input-group">
             <label for="status">FILE_STATUS</label>
-            <select name="status" v-model="is_validated">
-                <option value="">Indéfini</option>
-                <option value=1>Valide</option>
-                <option value=-2>Non Valide</option>
-            </select>
+                <select name="status" v-model="is_validated">
+                    <option value=0>Indéfini</option>
+                    <option value=1>Validé</option>
+                    <option value=-2>Invalide</option>
+                </select>
+            </div>
         </div>
         <div class="actions">
             <button @click="$emit('closeModal')" class="btn close-btn">CLOSE</button>
@@ -83,6 +87,13 @@ export default {
                 margin-left: 10px;
             }
         }
+    }
+
+    .input-group {
+        margin-top: 10px;
+
+        display: flex;
+        flex-direction: column;
     }
 }
 </style>
