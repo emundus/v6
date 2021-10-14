@@ -420,6 +420,7 @@ JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
 JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
 JHtml::styleSheet('media/com_emundus_messenger/app_messenger.css');
+JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
 JHtml::styleSheet('media/com_emundus/css/reset.css');
 JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
 JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
