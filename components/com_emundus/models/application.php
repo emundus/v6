@@ -342,7 +342,7 @@ class EmundusModelApplication extends JModelList
         EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_LOGS_ADD_COMMENT');
 
         $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum, status_from, status_to)
-                VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).','.$row['status_from'].','.$row['status_to'].')';
+                VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).','.$this->_db->Quote($row['status_from']).','.$this->_db->Quote($row['status_to']).')';
         $this->_db->setQuery($query);
 
         try {
@@ -1530,8 +1530,13 @@ class EmundusModelApplication extends JModelList
                                             $this->_db->setQuery($query);
                                             $res = $this->_db->loadRow();
 
-                                            $element->content = @$res[1];
-                                            $element->content_id = @$res[0];
+                                            if (count($res) > 1) {
+                                                $element->content = $res[1];
+                                                $element->content_id = $res[0];
+                                            } else {
+                                                $element->content = '';
+                                                $element->content_id = -1;
+                                            }
 
                                             if (count($res) > 1) {
                                                 if ($element->plugin == 'display') {
@@ -2141,7 +2146,7 @@ class EmundusModelApplication extends JModelList
                                                         $key = array_search($value,$params->sub_options->sub_values);
                                                         $elm[] =  ' - ' . JText::_($params->sub_options->sub_labels[$key]);
                                                     }
-                                                    $elt = "<ul><li>" . implode("</li><li>", @$elm) . "</li></ul>";
+                                                    $elt = "<li>" . implode("</li><li>", @$elm) . "</li>";
                                                 } elseif ($elements[$j]->plugin == 'dropdown' || @$elements[$j] == 'radiobutton') {
                                                     $params = json_decode($elements[$j]->params);
                                                     $index = array_search($r_elt, $params->sub_options->sub_values);
@@ -2196,6 +2201,8 @@ class EmundusModelApplication extends JModelList
                             if($check_not_empty_group) {
                                 if (!empty($group_label)) {
                                     $forms .= '<h3 class="group">' . $group_label . '</h3>';
+                                } else {
+                                    $forms .= '<p></p><br/>';
                                 }
                                 $forms .= '<table>';
                                 foreach ($elements as $element) {
@@ -3796,6 +3803,9 @@ class EmundusModelApplication extends JModelList
         $query = $db->getQuery(true);
         $subQuery = $db->getQuery(true);
 
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+
         $elements = array_map(function($obj) {return 't.'.$obj->name;}, $elements);
 
         $subQuery
@@ -3812,7 +3822,8 @@ class EmundusModelApplication extends JModelList
         try {
             $db->setQuery($query);
             $db->execute();
-            if ($db->getNumRows() == 1) {
+
+            if ($db->getNumRows() >= 1) {
                 $res = $db->loadAssoc();
 
                 $elements = array_map(function($arr) {
@@ -3828,6 +3839,10 @@ class EmundusModelApplication extends JModelList
 
                 $elements = array_filter($elements, function($el) {return $el === false;});
                 return !empty($elements);
+            } else {
+                if($show_empty_fields == 0){
+                    return false;
+                }
             }
 
             return true;
@@ -3849,7 +3864,9 @@ class EmundusModelApplication extends JModelList
     public function checkEmptyGroups($elements, $parent_table, $fnum) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
-        $subQuery = $db->getQuery(true);
+
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
 
         $elements = array_map(function($obj) {return $obj->name;}, $elements);
 
@@ -3877,6 +3894,10 @@ class EmundusModelApplication extends JModelList
 
                 $elements = array_filter($elements, function($el) {return $el === false;});
                 return !empty($elements);
+            } else {
+                if($show_empty_fields == 0){
+                    return false;
+                }
             }
 
             return true;

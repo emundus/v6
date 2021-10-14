@@ -448,8 +448,9 @@ class EmundusHelperFiles
 
     public function getSchoolyears() {
         $db = JFactory::getDBO();
-        $query = 'SELECT DISTINCT(year) as schoolyear
-            FROM #__emundus_setup_campaigns
+        $query = 'SELECT DISTINCT(schoolyear)
+            FROM #__emundus_setup_teaching_unity
+            WHERE published = 1
             ORDER BY schoolyear DESC';
         $db->setQuery( $query );
         return $db->loadObjectList();

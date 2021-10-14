@@ -212,6 +212,8 @@ class EmundusonboardModelsettings extends JModelList {
         $query = $db->getQuery(true);
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+        $lang = JFactory::getLanguage();
+        $actualLanguage = substr($lang->getTag(), 0 , 2);
 
         $classes = $this->getColorClasses();
         $results = [];
@@ -219,12 +221,6 @@ class EmundusonboardModelsettings extends JModelList {
         try {
             foreach($status as $statu) {
                 $class = array_search($statu['class'], $classes);
-                $query->clear()
-                    ->update('#__emundus_setup_status')
-                    ->set($db->quoteName('class') . ' = ' . $db->quote($class))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($statu['id']));
-                $db->setQuery($query);
-                $results[] = $db->execute();
 
                 $query->clear()
                     ->update('#__falang_content')
@@ -239,6 +235,14 @@ class EmundusonboardModelsettings extends JModelList {
                 $results[] = $db->execute();
 
                 $results[] = $falang->updateFalang($statu['label'], $statu['step'], 'emundus_setup_status', 'value');
+
+                $query->clear()
+                    ->update('#__emundus_setup_status')
+                    ->set($db->quoteName('value') . ' = ' . $db->quote($statu['label'][$actualLanguage]))
+                    ->set($db->quoteName('class') . ' = ' . $db->quote($class))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($statu['id']));
+                $db->setQuery($query);
+                $results[] = $db->execute();
             }
 
             return $results;
@@ -1024,6 +1028,22 @@ class EmundusonboardModelsettings extends JModelList {
                 return $db->execute();
             }
         }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function updateLogo($newcontent){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->update($db->quoteName('#__modules'))
+                ->set($db->quoteName('content') . ' = ' . $db->quote($newcontent))
+                ->where($db->quoteName('id') . ' = 90');
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
             JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
