@@ -220,48 +220,48 @@
               </p>
             </div>
 
-            <div class="form-group">
-              <label>{{translations.Target}}<span style="color: #E5283B">*</span></label>
-              <select v-model="trigger.target" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.target}">
-                <option value="5">{{Administrators}}</option>
-                <option value="6">{{Evaluators}}</option>
-                <option value="1000">{{Candidates}}</option>
-                <option value="0">{{DefinedUsers}}</option>
-              </select>
-              <p v-if="errors.trigger.target" class="error">
-                <span class="error">{{translations.TargetRequired}}</span>
-              </p>
-            </div>
-            <div class="form-group" v-if="trigger.target == 0" style="align-items: baseline">
-              <label>{{translations.ChooseUsers}}<span style="color: #E5283B">*</span> :</label>
-              <div class="wrap">
-                <div class="search">
-                  <input type="text" class="searchTerm" :placeholder="Search" v-model="searchTerm" @keyup="searchUserByTerm">
-                  <button type="button" class="searchButton" @click="searchUserByTerm">
-                    <em class="fas fa-search"></em>
-                  </button>
-                </div>
-              </div>
-              <div class="select-all">
-                <input type="checkbox" class="form-check-input bigbox" @click="selectAllUsers" v-model="selectall">
-                <label>
-                  {{translations.SelectAll}}
-                </label>
-              </div>
-              <div class="users-block" :class="{ 'is-invalid': errors.trigger.selectedUsers}">
-                <div v-for="(user, index) in users" :key="index" class="user-item">
-                  <input type="checkbox" class="form-check-input bigbox" v-model="selectedUsers[user.id]">
-                  <div class="ml-10px">
-                    <p>{{user.name}}</p>
-                    <p>{{user.email}}</p>
-                  </div>
-                </div>
-              </div>
-              <p v-if="errors.trigger.selectedUsers" class="error">
-                <span class="error">{{translations.UsersRequired}}</span>
-              </p>
-            </div>
-          </div>
+<!--            <div class="form-group">-->
+<!--              <label>{{translations.Target}}<span style="color: #E5283B">*</span></label>-->
+<!--              <select v-model="trigger.target" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.target}">-->
+<!--                <option value="5">{{Administrators}}</option>-->
+<!--                <option value="6">{{Evaluators}}</option>-->
+<!--                <option value="1000">{{Candidates}}</option>-->
+<!--                <option value="0">{{DefinedUsers}}</option>-->
+<!--              </select>-->
+<!--              <p v-if="errors.trigger.target" class="error">-->
+<!--                <span class="error">{{translations.TargetRequired}}</span>-->
+<!--              </p>-->
+<!--            </div>-->
+<!--            <div class="form-group" v-if="trigger.target == 0" style="align-items: baseline">-->
+<!--              <label>{{translations.ChooseUsers}}<span style="color: #E5283B">*</span> :</label>-->
+<!--              <div class="wrap">-->
+<!--                <div class="search">-->
+<!--                  <input type="text" class="searchTerm" :placeholder="Search" v-model="searchTerm" @keyup="searchUserByTerm">-->
+<!--                  <button type="button" class="searchButton" @click="searchUserByTerm">-->
+<!--                    <em class="fas fa-search"></em>-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="select-all">-->
+<!--                <input type="checkbox" class="form-check-input bigbox" @click="selectAllUsers" v-model="selectall">-->
+<!--                <label>-->
+<!--                  {{translations.SelectAll}}-->
+<!--                </label>-->
+<!--              </div>-->
+<!--              <div class="users-block" :class="{ 'is-invalid': errors.trigger.selectedUsers}">-->
+<!--                <div v-for="(user, index) in users" :key="index" class="user-item">-->
+<!--                  <input type="checkbox" class="form-check-input bigbox" v-model="selectedUsers[user.id]">-->
+<!--                  <div class="ml-10px">-->
+<!--                    <p>{{user.name}}</p>-->
+<!--                    <p>{{user.email}}</p>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <p v-if="errors.trigger.selectedUsers" class="error">-->
+<!--                <span class="error">{{translations.UsersRequired}}</span>-->
+<!--              </p>-->
+<!--            </div>-->
+<!--          </div>-->
         </div>
 
         <div class="section-sauvegarder-et-continuer">

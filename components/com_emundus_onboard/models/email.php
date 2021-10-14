@@ -326,7 +326,7 @@ class EmundusonboardModelemail extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $data['category'] = null;
+//        $data['category'] = null;
 
         // set regular expression for fabrik elem
         $fabrik_pattern = '/\${(.+[0-9])\}/';
