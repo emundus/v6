@@ -34,12 +34,12 @@ export default {
     }
   },
 
-  async deleteAttachment(fnum, attachment_id) {
+  async deleteAttachments(fnum, attachment_ids) {
     try {
       const response = await client().get('index.php?option=com_emundus&controller=application&task=deleteattachement', {
         params: {
           fnum: fnum,
-          ids: JSON.stringify([attachment_id]),
+          ids: JSON.stringify(attachment_ids),
         }
       });
 
@@ -60,6 +60,21 @@ export default {
       });
 
       return response;
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  async getPreview(user, attachment) {
+    try {
+      const response = await client().get('index.php?option=com_emundus&controller=application&task=getpreview', {
+        params: {
+          user: user,
+          attachment: JSON.stringify(attachment),
+        }
+      });
+
+      return response.data;
     } catch (e) {
       throw e;
     }
