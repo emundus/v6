@@ -5849,17 +5849,27 @@ $(document).ready(function() {
 
                 // cc emails
                 $('#cc-box div[data-value]').each(function () {
-                    let val = $(this).attr('data-value').split('CC: ')[1];
-                    // let val = $(this).attr('data-value');
-                    var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    // let val = $(this).attr('data-value').split('CC: ')[1];
+                    let val = $(this).attr('data-value');
+                    let REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+                    if(val.split(':')[0] === 'CC') {
+                        val = $(this).attr('data-value').split('CC: ')[1];
+                    }
+
                     if (REGEX_EMAIL.test(val)) { data.cc.push(val); }
                 })
 
                 // bcc emails
                 $('#bcc-box div[data-value]').each(function () {
-                    let val = $(this).attr('data-value').split('BCC: ')[1];
-                    // let val = $(this).attr('data-value');
+                    // let val = $(this).attr('data-value').split('BCC: ')[1];
+                    let val = $(this).attr('data-value');
                     var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+                    if(val.split(':')[0] === 'BCC') {
+                        val = $(this).attr('data-value').split('BCC: ')[1];
+                    }
+
                     if (REGEX_EMAIL.test(val)) { data.bcc.push(val); }
                 })
 
@@ -5885,6 +5895,8 @@ $(document).ready(function() {
                 });
 
                 data.attachments = attachments;
+
+                console.log(data);
 
                 $.ajax({
                     type: 'POST',
