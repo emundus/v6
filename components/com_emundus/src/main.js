@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import Attachments from './components/Attachments.vue';
+import VModal from 'vue-js-modal';
 
 Vue.config.productionTip = false;
+Vue.use(VModal);
 
 if (document.getElementById("em-application-attachment")) {
   new Vue({
