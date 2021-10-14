@@ -1,5 +1,6 @@
 <template>
     <div id="attachment-preview">
+        <h2>Preview</h2>
     </div>
 </template>
 
@@ -31,3 +32,10 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+#attachment-preview {
+    height: 100%;
+    width: 50%;
+}
+</style>

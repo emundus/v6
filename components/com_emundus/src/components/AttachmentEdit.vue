@@ -1,7 +1,7 @@
 <template>
     <div id="attachment-edit">
-        <h2>{{ attachment.filename }}</h2>
         <div class="editableData"> 
+            <h2>{{ attachment.filename }}</h2>
             <label for="description">DESCRIPTION</label>
             <input name="description" type="text" v-model="description"/>
 
@@ -58,3 +58,31 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+#attachment-edit {
+    margin : 0 10px;
+    padding: 10px;
+    height: 100%;
+    width: 50%;
+    float: right;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    .actions {
+        align-self: flex-end;
+
+        button {
+            transition: all .3s;
+            padding: 8px 12px;
+        
+            &:last-of-type {
+                margin-left: 10px;
+            }
+        }
+    }
+}
+</style>
