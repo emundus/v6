@@ -5,24 +5,34 @@
           <input type="text" ref="searchbar" placeholder="Key words" @input="searchInFiles">
         </div>
         <ul v-if="attachments.length">
-            <li v-for="attachment in displayedAttachments" :key="attachment.attachment_id">
+            <li v-for="(attachment, key) in displayedAttachments" :key="key">
               <a @click="openModal">{{attachment.filename}}</a>
               <span>{{attachment.description}}</span>
               <div class="actions">
-                <span @click="openModal" >Edit</span>
-                <span @click="deleteAttachment(attachment.attachment_id)">Delete</span>
+                <span @click="openModal(attachment)">Edit</span>
+                <span @click="deleteAttachment(attachment.id)">Delete</span>
               </div>
             </li>
         </ul>
         <p v-else>Aucun dossier rattaché à cet utilisateur</p>
+        <modal name="edit">
+          <AttachmentPreview :attachment="selectedAttachment"></AttachmentPreview>
+          <AttachmentEdit @closeModal="$modal.hide('edit')" @saveChanges="updateAttachment()" :attachment="selectedAttachment"></AttachmentEdit>
+        </modal>
     </div>
 </template>
 
 <script>
+import AttachmentPreview from './AttachmentPreview.vue'
+import AttachmentEdit from './AttachmentEdit.vue'
 import attachmentService from '../services/attachment.js';
 
 export default {
   name: 'Attachments',
+  components: {
+    AttachmentPreview,
+    AttachmentEdit
+  },
   props: {
     user: {
       type: String,
@@ -37,6 +47,7 @@ export default {
     return {
       loading: true,
       attachments: [],
+      selectedAttachment: null,
     };
   },
   mounted() {
@@ -56,15 +67,22 @@ export default {
         }
       });
     },
-    openModal() {
-
+    openModal(attachment) {
+      this.$modal.show('edit');
+      this.selectedAttachment = attachment;
     },
-    async deteteAttachment(attachment_id) {
+    updateAttachment() {
+      this.getAttachments();
+      this.$modal.hide('edit');
+    },
+    async deleteAttachment(id) {
       // remove attachment from attachments data
-      this.attachments = this.attachments.filter(attachment => attachment.attachment_id !== attachment_id);
+      this.attachments = this.attachments.filter(attachment => attachment.id !== id);
 
-      const response = await attachmentService.deleteAttachment(attachment_id);
-      console.log(response);
+      const response = await attachmentService.deleteAttachment(this.fnum, id);
+      if (response.status == true) {
+        // Display tooltip deleted succesfully  
+      }
     }
   },
   computed: {
@@ -78,5 +96,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  span {
+    margin: 0 5px;
+  }
+}
 
 </style>

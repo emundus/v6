@@ -131,7 +131,7 @@ class EmundusControllerApplication extends JControllerLegacy
             }
         }
         else {
-                echo JText::_('ACCESS_DENIED').' : '.$attachment['value'].' : '.$upload['filename'];
+            echo JText::_('ACCESS_DENIED').' : '.$attachment['value'].' : '.$upload['filename'];
         }
 
     }
@@ -650,5 +650,4 @@ class EmundusControllerApplication extends JControllerLegacy
         echo json_encode($attachments);
         exit;
     }
-
 }
