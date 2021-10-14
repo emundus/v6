@@ -34,15 +34,16 @@ export default {
     }
   },
 
-  async deleteAttachment(attachment_id) {
+  async deleteAttachment(fnum, attachment_id) {
     try {
-      const response = await client().get('index.php?option=com_emundus&controller=application&task=deleteattachment', {
+      const response = await client().get('index.php?option=com_emundus&controller=application&task=deleteattachement', {
         params: {
-          attachment_id: attachment_id,
+          fnum: fnum,
+          ids: JSON.stringify([attachment_id]),
         }
       });
 
-      return response.data;
+      return response;
     } catch (e) {
       throw e;
     }
