@@ -1,24 +1,27 @@
 <template>
     <div id="em-attachments">
-        <div class="prev-next-files" v-if="fnums.length > 1">
-            <div class="prev-file" v-if="fnumPosition > 0" @click="prevFile">
+        <div class="head">
+          <div class="prev-next-files" v-if="fnums.length > 1">
+            <div class="prev-file" :class="{'active': fnumPosition > 0}" @click="prevFile">
                 <i class="fa fa-chevron-left"></i>
             </div>
-            <div class="next-file" v-if="fnumPosition < fnums.length - 1" @click="nextFile">
+            <div class="next-file" :class="{'active': fnumPosition < fnums.length - 1}" @click="nextFile">
                 <i class="fa fa-chevron-right"></i>
             </div>
-        </div>
-        <div class="displayed-user">
-          <p>{{ displayedUser.firstname }} {{ displayedUser.lastname }} </p>
-          <p>{{ displayedUser.email }}</p>
-        </div>
-        <div id="filters">
-          <input id="searchbar" type="text" ref="searchbar" placeholder="Rechercher" @input="searchInFiles">
-          <div class="actions">
-            <span @click="deleteAttachments">DELETE</span>
+          </div>
+          <div class="displayed-user">
+            <p>{{ displayedUser.firstname }} {{ displayedUser.lastname }} </p>
+            <p>{{ displayedUser.email }}</p>
           </div>
         </div>
-        <table v-if="attachments.length">
+        <div class="wrapper">
+          <div id="filters">
+            <input id="searchbar" type="text" ref="searchbar" placeholder="Rechercher" @input="searchInFiles">
+            <div class="actions">
+              <span @click="deleteAttachments">DELETE</span>
+            </div>
+          </div>
+          <table v-if="attachments.length">
             <thead>
                 <tr>
                     <th>
@@ -49,8 +52,9 @@
                     <td>{{ formattedTimeDate(attachment.modified) }}</td>
                 </tr>
             </tbody>
-        </table>
-        <p v-else>Aucun dossier rattaché à cet utilisateur</p>
+          </table>
+          <p v-else>Aucun dossier rattaché à cet utilisateur</p>
+        </div>
         <modal 
           id="edit-modal" 
           name="edit"
@@ -244,6 +248,32 @@ export default {
 #em-attachments {
   font-size: 14px;
   margin: 20px;
+
+  .head {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    margin-bottom: 16px;
+  }
+
+  .prev-next-files {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    
+    div {
+      pointer-events: none;
+      margin: 0 10px;
+
+      &.active {
+        pointer-events: auto;
+        cursor: pointer;
+      }
+    }
+  }
 
   #filters {
     margin-bottom: 20px;
