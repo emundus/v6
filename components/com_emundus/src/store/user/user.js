@@ -1,6 +1,7 @@
 const state = {
     users: {},
     currentUser: 0,
+    displayedUser: 0,
 };
 
 const getters = {
@@ -14,6 +15,9 @@ const actions = {
     setCurrentUser({ commit }, user) {
         commit('setCurrentUser', user);
     },
+    setDisplayedUser({ commit }, user) {
+        commit('setDisplayedUser', user);
+    },
 };
 
 const mutations = {
@@ -24,6 +28,9 @@ const mutations = {
     },
     setCurrentUser(state, user) {
         state.currentUser = user;
+    },
+    setDisplayedUser(state, user) {
+        state.displayedUser = user;
     },
 };
 
