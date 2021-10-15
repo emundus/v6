@@ -78,6 +78,6 @@ $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
-<list id="em-list-vue" type="email" coordinatorAccess="<?= $coordinator_access ?>"></list>
+<list id="em-list-vue" type="emails" coordinatorAccess="<?= $coordinator_access ?>"></list>
 
 <script src="media/com_emundus_onboard/app_onboard.js"></script>

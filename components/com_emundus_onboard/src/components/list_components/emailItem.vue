@@ -31,12 +31,17 @@
             <div>
               <hr class="divider-card">
               <div class="stats-block">
-                <a @click="redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id)"
+                <a class="bouton-ajouter pointer add-button-div"
+                :title="Modify">
+                  <em class="fas fa-pen"></em>
+                  <router-link :to="{ name: 'edit-email', params:{email: data.id} }">{{Modify}}</router-link>
+                </a>
+<!--                <a @click="redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id)"
                    class="bouton-ajouter pointer add-button-div"
                    :title="Modify">
                   <em class="fas fa-pen"></em>
                   <span>{{Modify}}</span>
-                </a>
+                </a>-->
                 <div class="d-flex">
                   <button class="cta-block" style="height: unset" type="button" :title="Visualize" @click="$modal.show('modalEmailPreview_' + data.id)">
                     <em class="fas fa-eye"></em>

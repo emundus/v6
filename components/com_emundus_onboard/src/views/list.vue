@@ -239,7 +239,8 @@ export default {
 
   name: "list",
   props: {
-    type: String
+    type: String,
+    datas: Object
   },
   data: () => ({
     selecedItems: [],
@@ -299,6 +300,7 @@ export default {
   },
 
   created() {
+    console.log(this.$route.params)
     axios({
       method: "get",
       url: "index.php?option=com_emundus_onboard&controller=form&task=getActualLanguage",

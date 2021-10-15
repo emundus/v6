@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import VueRouter from 'vue-router';
 import Vuelidate from 'vuelidate';
 import List from './views/list.vue';
 import GrilleEvalItem from './components/list_components/evalgridItem';
@@ -16,6 +17,8 @@ import { VTooltip, VPopover, VClosePopover } from 'v-tooltip';
 import * as VueSpinnersCss from 'vue-spinners-css';
 import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 import { TableComponent, TableColumn } from 'vue-table-component';
+import Notifications from 'vue-notification';
+import velocity from 'velocity-animate';
 
 Vue.directive('tooltip', VTooltip);
 Vue.directive('close-popover', VClosePopover);
@@ -23,27 +26,28 @@ Vue.component('v-popover', VPopover);
 Vue.component('table-component', TableComponent);
 Vue.component('table-column', TableColumn);
 
-import Notifications from 'vue-notification';
-import velocity from 'velocity-animate';
-
 Vue.use(Notifications, { velocity });
 Vue.use(Vuelidate);
 Vue.use(VueJsModal);
 Vue.use(VueSpinnersCss);
 Vue.use(VTooltip);
+Vue.use(VueRouter);
+
+import router from './router'
+import App from "./App";
 
 Vue.config.productionTip = false;
 Vue.config.devtools = true;
 
 if (document.getElementById('em-list-vue')) {
   new Vue({
+    router,
     el: 'list',
     render(h) {
-      return h(List, {
+      return h(App, {
         props: {
-          type: this.$el.attributes.type.value,
-          coordinatorAccess: this.$el.attributes.coordinatorAccess.value,
-          actualLanguage: this.$el.attributes,
+          component: this.$el.attributes.type.value,
+          datas: this.$el.attributes,
         }
       });
     }
