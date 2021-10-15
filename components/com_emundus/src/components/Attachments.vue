@@ -60,11 +60,27 @@
           name="edit"
           height="50%"
           width="50%"
-          styles="display:flex;flex-direction:row;justify-content:center;align-items:center;"
+          styles="display:flex;flex-direction:column;justify-content:center;align-items:center;"
         >
-
-          <AttachmentPreview></AttachmentPreview>
-          <AttachmentEdit @closeModal="$modal.hide('edit')" @saveChanges="updateAttachment()" :fnum="displayedFnum"></AttachmentEdit>
+          <div class="modal-head">
+            <span class="close" @click="closeModal">&times;</span>
+            <span>{{ selectedAttachment.filename }}</span>
+            <div class="pagination">
+              <div class="prev-attachment" :class="{'active': selectedAttachmentPosition > 0}" @click="selectedAttachment = displayedAttachments[selectedAttachmentPosition - 1]">
+                  <i class="fa fa-chevron-left"></i>
+              </div>
+              <span>{{ selectedAttachmentPosition + 1 }} / {{ displayedAttachments.length }}</span>
+              <div class="next-attachment" :class="{'active': selectedAttachmentPosition < displayedAttachments.length - 1}" @click="selectedAttachment = displayedAttachments[selectedAttachmentPosition + 1]">
+                  <i class="fa fa-chevron-right"></i>
+              </div>
+            </div>
+            <span>DOWNLOAD</span>
+            <span @click="deleteAttachment(this.selectedAttachment.aid)">DELETE</span>
+          </div>
+          <div class="modal-body">
+            <AttachmentPreview></AttachmentPreview>
+            <AttachmentEdit @closeModal="closeModal" @saveChanges="updateAttachment()" :fnum="displayedFnum"></AttachmentEdit>
+          </div>
         </modal>
     </div>
 </template>
@@ -102,7 +118,7 @@ export default {
       displayedUser: {},
       displayedFnum: this.fnum,
       checkedAttachments: [],
-      selectedAttachment: null,
+      selectedAttachment: {},
       lastSort: "",
     };
   },
@@ -134,7 +150,11 @@ export default {
     updateAttachment() {
       this.getAttachments();
       this.$modal.hide('edit');
-      this.selectedAttachment = null;
+      this.selectedAttachment = {};
+    },
+    async deleteAttachement(aid) {
+      this.$modal.hide('edit');
+      await attachmentService.deleteAttachments(this.displayedFnum, [aid]);
     },
     async deleteAttachments() {
       // remove all checked attachments from attachments array
@@ -213,6 +233,11 @@ export default {
       this.selectedAttachment = attachment;
       this.$store.dispatch('attachment/setSelectedAttachment', attachment);
     },
+    closeModal() {
+      this.$modal.hide('edit');
+      this.selectedAttachment = null;
+      this.$store.dispatch('attachment/setSelectedAttachment', {});
+    },
 
     // Format Methods
     formattedValidState(state) {
@@ -241,6 +266,9 @@ export default {
     },
     fnumPosition() {
       return this.fnums.indexOf(this.displayedFnum);
+    },
+    selectedAttachmentPosition() {
+      return this.displayedAttachments.indexOf(this.selectedAttachment);
     }
   }
 };
@@ -338,6 +366,28 @@ export default {
         cursor: pointer;
       }
     }
+  }
+
+  .modal-head {
+    height: 100px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .pagination {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .modal-body {
+    height: 100%;
+    width: 100%;
+    max-height: 100%;
+    display: flex;
   }
 }
 
