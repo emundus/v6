@@ -8,18 +8,14 @@
 import attachmentService from '../services/attachment';
 
 export default {
-    props: {
-        attachment: {
-            type: Object,
-            required: true
-        },
-    },
     data() {
         return {
+            attachment: {},
             preview: '',
         }
     },
     mounted() {
+        this.attachment = this.$store.state.attachment.selectedAttachment;
         this.getPreview();
     },
     methods: {
