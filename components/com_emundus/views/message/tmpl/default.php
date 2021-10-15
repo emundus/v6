@@ -337,6 +337,8 @@ if ($allowed_attachments !== true) {
         var selectize_bcc = $select_bcc[0].selectize;
         selectize_bcc.clear();
 
+        $('.cc-bcc-mails .plugin-remove_button').empty();
+
         // clear CC and BCC placeholder
         $("label[for='cc-emails']").empty();
         $("label[for='bcc-emails']").empty();
