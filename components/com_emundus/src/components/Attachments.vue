@@ -37,8 +37,8 @@
                     <td>{{ formattedTimeDate(attachment.timedate) }}</td>
                     <td>{{ attachment.description }}</td>
                     <td>{{ formattedValidState(attachment.is_validated)}}</td>
-                    <td></td>
-                    <td>{{ formattedTimeDate(attachment.timedate) }}</td>
+                    <td>{{ attachment.modified_by }}</td>
+                    <td>{{ formattedTimeDate(attachment.modified) }}</td>
                 </tr>
             </tbody>
         </table>
@@ -106,6 +106,7 @@ export default {
     },
     async getAttachments() {
       this.attachments = await attachmentService.getAttachmentsByFnum(this.fnum);
+      console.log(this.attachments);
     },   
     updateAttachment() {
       this.getAttachments();

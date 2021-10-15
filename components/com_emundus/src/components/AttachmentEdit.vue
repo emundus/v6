@@ -25,6 +25,7 @@
 
 <script>
 import attachment from '../services/attachment';
+import moment from 'moment';
 
 export default {
     name: 'AttachmentEdit',
