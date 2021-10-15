@@ -58,8 +58,8 @@
           width="50%"
           styles="display:flex;flex-direction:row;justify-content:center;align-items:center;"
         >
-          <AttachmentPreview :attachment="selectedAttachment" :user="user"></AttachmentPreview>
-          <AttachmentEdit @closeModal="$modal.hide('edit')" @saveChanges="updateAttachment()" :attachment="selectedAttachment" :user="user" :fnum="fnum"></AttachmentEdit>
+          <AttachmentPreview :attachment="selectedAttachment"></AttachmentPreview>
+          <AttachmentEdit @closeModal="$modal.hide('edit')" @saveChanges="updateAttachment()" :attachment="selectedAttachment" :fnum="displayedFnum"></AttachmentEdit>
         </modal>
     </div>
 </template>
@@ -94,7 +94,6 @@ export default {
       attachments: [],
       fnums: [],
       users: {},
-      currentUser: {},
       displayedUser: {},
       displayedFnum: this.fnum,
       checkedAttachments: [],
@@ -114,10 +113,8 @@ export default {
     },
     async getUsers() {
       this.users = await userService.getUsers();
-      this.currentUser = this.users[this.user];
-
       this.$store.dispatch('user/setUsers', this.users);
-      this.$store.dispatch('user/setCurrentUser', this.currentUser);
+      this.$store.dispatch('user/setCurrentUser', this.user);
 
       this.setDisplayedUser();
     },
@@ -147,6 +144,11 @@ export default {
     // Select another fnum
     prevFile() {
       this.displayedFnum = this.fnums[this.fnumPosition - 1];
+      this.setDisplayedUser();
+      this.getAttachments();
+    },
+    nextFile() {
+      this.displayedFnum = this.fnums[this.fnumPosition + 1];
       this.setDisplayedUser();
       this.getAttachments();
     },

@@ -9,10 +9,6 @@ import attachmentService from '../services/attachment';
 
 export default {
     props: {
-        user: {
-            type: String,
-            required: true
-        },
         attachment: {
             type: Object,
             required: true
@@ -28,7 +24,7 @@ export default {
     },
     methods: {
         getPreview() {
-            attachmentService.getPreview(this.user, this.attachment).then(response => {
+            attachmentService.getPreview(this.$store.state.user.currentUser, this.attachment).then(response => {
                 this.preview = response.data;
             });
         }
