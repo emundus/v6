@@ -28,7 +28,8 @@ function get_mime_type($filename, $mimePath = '../etc') {
 }
 
 function is_image_ext($filename) {
-	return array_key_exists(strtolower(array_pop(...explode('.', $filename))), ['png', 'jpe', 'jpeg', 'jpg', 'gif', 'bmp', 'ico', 'tiff', 'tif', 'svg', 'svgz']);
+    $array = explode('.', $filename);
+    return in_array(strtolower(end($array)), ['png', 'jpe', 'jpeg', 'jpg', 'gif', 'bmp', 'ico', 'tiff', 'tif', 'svg', 'svgz']);
 }
 
 
