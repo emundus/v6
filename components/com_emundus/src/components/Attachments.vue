@@ -1,8 +1,16 @@
 <template>
     <div id="em-attachments">
-        <div class="userInformations">
-          <p>{{ userInformations.firstname }} {{ userInformations.lastname }} </p>
-          <p>{{ userInformations.email }}</p>
+        <div class="prev-next-files" v-if="fnums.length > 1">
+            <div class="prev-file" v-if="fnumPosition > 0" @click="prevFile">
+                <i class="fa fa-chevron-left"></i>
+            </div>
+            <div class="next-file" v-if="fnumPosition < fnums.length - 1" @click="nextFile">
+                <i class="fa fa-chevron-right"></i>
+            </div>
+        </div>
+        <div class="displayed-user">
+          <p>{{ displayedUser.firstname }} {{ displayedUser.lastname }} </p>
+          <p>{{ displayedUser.email }}</p>
         </div>
         <div id="filters">
           <input id="searchbar" type="text" ref="searchbar" placeholder="Rechercher" @input="searchInFiles">
@@ -61,6 +69,7 @@ import AttachmentPreview from './AttachmentPreview.vue'
 import AttachmentEdit from './AttachmentEdit.vue'
 import attachmentService from '../services/attachment.js';
 import userService from '../services/user.js';
+import fileService from '../services/file.js';
 import moment from 'moment';
 
 export default {
@@ -83,30 +92,41 @@ export default {
     return {
       loading: true,
       attachments: [],
-      userInformations: {},
+      fnums: [],
+      users: {},
+      currentUser: {},
+      displayedUser: {},
+      displayedFnum: this.fnum,
       checkedAttachments: [],
       selectedAttachment: null,
       lastSort: "",
     };
   },
   mounted() {
-    this.getUserInformations();
+    this.getFnums();
+    this.getUsers();
     this.getAttachments();
   },
   methods: {
     // Getters and setters
-    async getUserInformations() {
-      // check if it is in $store
-      if (Object.keys(this.$store.state.user.users).includes(this.user)) {
-        this.userInformations = this.$store.state.user.users[this.user];
-      } else {
-        this.userInformations = await userService.getUserInformations(this.user);
-        this.$store.dispatch('user/setUser', this.userInformations);
-      }
+    async getFnums() {
+      this.fnums = await fileService.getFnums(this.user);
+    },
+    async getUsers() {
+      this.users = await userService.getUsers();
+      this.currentUser = this.users[this.user];
+
+      this.$store.dispatch('user/setUsers', this.users);
+      this.$store.dispatch('user/setCurrentUser', this.currentUser);
+
+      this.setDisplayedUser();
+    },
+    async setDisplayedUser() {
+      const response = await fileService.getFnumInfos(this.displayedFnum);
+      this.displayedUser = this.users.find(user => user.id == response.fnumInfos.applicant_id);
     },
     async getAttachments() {
-      this.attachments = await attachmentService.getAttachmentsByFnum(this.fnum);
-      console.log(this.attachments);
+      this.attachments = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
     },   
     updateAttachment() {
       this.getAttachments();
@@ -118,10 +138,17 @@ export default {
       this.attachments = this.attachments.filter(attachment => !this.checkedAttachments.includes(attachment.aid));
 
       // delete all checkedAttachments
-      const response = await attachmentService.deleteAttachments(this.fnum, this.checkedAttachments);
+      const response = await attachmentService.deleteAttachments(this.displayedFnum, this.checkedAttachments);
       if (response.status == true) {
         // Display tooltip deleted succesfully  
       }
+    },
+
+    // Select another fnum
+    prevFile() {
+      this.displayedFnum = this.fnums[this.fnumPosition - 1];
+      this.setDisplayedUser();
+      this.getAttachments();
     },
 
     // Front methods
@@ -202,6 +229,9 @@ export default {
       return this.attachments.filter(attachment => {
         return attachment.show == true || attachment.show == undefined;
       });
+    },
+    fnumPosition() {
+      return this.fnums.indexOf(this.displayedFnum) + 1;
     }
   }
 };

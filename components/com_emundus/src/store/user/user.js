@@ -1,5 +1,6 @@
 const state = {
-    users: {}
+    users: {},
+    currentUser: {},
 };
 
 const getters = {
@@ -7,15 +8,23 @@ const getters = {
 };
 
 const actions = {
-    setUser({ commit }, user) {
-        commit('setUser', user);
-    }
+    setUsers({ commit }, users) {
+        commit('setUser', users);
+    },
+    setCurrentUser({ commit }, user) {
+        commit('setCurrentUser', user);
+    },
 };
 
 const mutations = {
-    setUser(state, user) {
-        state.users[user.id] = user;
-    }
+    setUser(state, users) {
+        users.forEach(user => {
+            state.users[user.id] = user;
+        });
+    },
+    setCurrentUser(state, user) {
+        state.currentUser = user;
+    },
 };
 
 export default{
