@@ -23,10 +23,8 @@ export default {
         this.getPreview();
     },
     methods: {
-        getPreview() {
-            attachmentService.getPreview(this.$store.state.user.currentUser, this.attachment).then(response => {
-                this.preview = response.data;
-            });
+        async getPreview() {
+            this.preview = await attachmentService.getPreview(this.$store.state.user.displayedUser, this.attachment);
         }
     }
 }

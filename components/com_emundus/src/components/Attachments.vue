@@ -121,6 +121,7 @@ export default {
     async setDisplayedUser() {
       const response = await fileService.getFnumInfos(this.displayedFnum);
       this.displayedUser = this.users.find(user => user.id == response.fnumInfos.applicant_id);
+      this.$store.dispatch('user/setDisplayedUser', this.displayedUser.id);
     },
     async getAttachments() {
       this.attachments = await attachmentService.getAttachmentsByFnum(this.displayedFnum);

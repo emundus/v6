@@ -670,7 +670,7 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
-    public function getpreview()
+    public function getattachmentpreview()
     {
         $m_application = $this->getModel('Application');
 
@@ -679,7 +679,7 @@ class EmundusControllerApplication extends JControllerLegacy
         $attachment = $jinput->getVar('attachment', null);
         $attachment = json_decode($attachment, true);
 
-        $preview = $m_application->getPreview($user, $attachment);
+        $preview = $m_application->getAttachmentPreview($user, $attachment);
 
         echo json_encode($preview);
         exit;
