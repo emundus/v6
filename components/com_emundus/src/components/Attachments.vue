@@ -62,8 +62,9 @@
           width="50%"
           styles="display:flex;flex-direction:row;justify-content:center;align-items:center;"
         >
-          <AttachmentPreview :attachment="selectedAttachment"></AttachmentPreview>
-          <AttachmentEdit @closeModal="$modal.hide('edit')" @saveChanges="updateAttachment()" :attachment="selectedAttachment" :fnum="displayedFnum"></AttachmentEdit>
+
+          <AttachmentPreview></AttachmentPreview>
+          <AttachmentEdit @closeModal="$modal.hide('edit')" @saveChanges="updateAttachment()" :fnum="displayedFnum"></AttachmentEdit>
         </modal>
     </div>
 </template>
@@ -210,6 +211,7 @@ export default {
     openModal(attachment) {
       this.$modal.show('edit');
       this.selectedAttachment = attachment;
+      this.$store.dispatch('attachment/setSelectedAttachment', attachment);
     },
 
     // Format Methods

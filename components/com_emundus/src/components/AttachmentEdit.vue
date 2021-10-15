@@ -4,12 +4,12 @@
             <h2>{{ attachment.filename }}</h2>
             <div class="input-group">
                 <label for="description">DESCRIPTION</label>
-                <input name="description" type="text" v-model="description"/>
+                <input name="description" type="text" v-model="attachment.description"/>
             </div>
 
             <div class="input-group">
             <label for="status">FILE_STATUS</label>
-                <select name="status" v-model="is_validated">
+                <select name="status" v-model="attachment.is_validated">
                     <option value=0>Indéfini</option>
                     <option value=1>Validé</option>
                     <option value=-2>Invalide</option>
@@ -33,24 +33,22 @@ export default {
         fnum: {
             type: String,
             required: true
-        },
-        attachment: {
-            type: Object,
-            required: true
         }
     },
     data() {
         return {
-            description: this.attachment.description,
-            is_validated: this.attachment.is_validated
+            attachment: {},
         }
+    },
+    mounted() {
+        this.attachment = this.$store.state.attachment.selectedAttachment;
     },
     methods: {
         async saveChanges() {
             const attachment_data = {
                 id: this.attachment.aid,
-                description: this.description,
-                is_validated: this.is_validated
+                description: this.attachment.description,
+                is_validated: this.attachment.is_validated
             };
 
             const response = await attachment.updateAttachment(this.fnum, this.$store.state.user.currentUser, attachment_data);
