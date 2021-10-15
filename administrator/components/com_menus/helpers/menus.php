@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_menus
  *
- * @copyright   (C) 2009 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -339,8 +339,6 @@ class MenusHelper
 	 * @return  array
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  This method will return a node object to iterate over in 4.0. 
 	 */
 	public static function getMenuItems($menutype, $enabledOnly = false, $exclude = array())
 	{

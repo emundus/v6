@@ -1,5 +1,5 @@
 /**
- * @copyright  (C) 2016 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -167,9 +167,7 @@ Joomla = window.Joomla || {};
 		}
 
 		/**
-		 * Method for setup the 'showon' feature, for the fields in given container.  Add it to Joomla object
-		 * so it can be called when adding a container to the DOM.
-		 *
+		 * Method for setup the 'showon' feature, for the fields in given container
 		 * @param {HTMLElement} container
 		 */
 		function setUpShowon(container) {
@@ -180,16 +178,9 @@ Joomla = window.Joomla || {};
 			// Setup each 'showon' field
 			for (var is = 0, ls = $showonFields.length; is < ls; is++) {
 				// Use anonymous function to capture arguments
-				(function($target) {
-					// Set up only once
-					if ($target[0].hasAttribute('data-showon-initialised')) {
-						return;
-					}
-
-					$target[0].setAttribute('data-showon-initialised', '');
-
-					var jsondata = $target.data('showon') || [],
-						field, $fields = $();
+				(function() {
+					var $target = $($showonFields[is]), jsondata = $target.data('showon') || [],
+						field, $fields                           = $();
 
 					// Collect an all referenced elements
 					for (var ij = 0, lj = jsondata.length; ij < lj; ij++) {
@@ -204,15 +195,7 @@ Joomla = window.Joomla || {};
 					$fields.on('change keyup', function() {
 						linkedoptions($target, true);
 					});
-
-				})($($showonFields[is]));
-			}
-		}
-
-		// Provide a public API
-		if (!Joomla.Showon) {
-			Joomla.Showon = {
-				initialise: setUpShowon
+				})();
 			}
 		}
 
@@ -220,36 +203,27 @@ Joomla = window.Joomla || {};
 		 * Initialize 'showon' feature
 		 */
 		$(document).ready(function() {
-			Joomla.Showon.initialise(document);
+			setUpShowon();
 
-			// Setup showon feature in the modified container
-			$(document).on('subform-row-add joomla:updated', function(event, row) {
+			// Setup showon feature in the subform field
+			$(document).on('subform-row-add', function(event, row) {
+				var $row      = $(row),
+					$elements = $row.find('[data-showon]'),
+					baseName  = $row.data('baseName'),
+					group     = $row.data('group'),
+					search    = new RegExp('\\[' + baseName + '\\]\\[' + baseName + 'X\\]', 'g'),
+					replace   = '[' + baseName + '][' + group + ']',
+					$elm, showon;
 
-				// Check for target
-				var target = row;
-				if (event.type === 'joomla:updated') {
-					target = event.target;
+				// Fix showon field names in a current group
+				for (var i = 0, l = $elements.length; i < l; i++) {
+					$elm   = $($elements[i]);
+					showon = $elm.attr('data-showon').replace(search, replace);
+
+					$elm.attr('data-showon', showon);
 				}
 
-				if ($(target).hasClass('subform-repeatable-group')) {
-					var $row = $(target),
-						$elements = $row.find('[data-showon]'),
-						baseName = $row.data('baseName'),
-						group = $row.data('group'),
-						search = new RegExp('\\[' + baseName + '\\]\\[' + baseName + 'X\\]', 'g'),
-						replace = '[' + baseName + '][' + group + ']',
-						$elm, showon;
-
-					// Fix showon field names in a current group
-					for (var i = 0, l = $elements.length; i < l; i++) {
-						$elm = $($elements[i]);
-						showon = $elm.attr('data-showon').replace(search, replace);
-
-						$elm.attr('data-showon', showon);
-					}
-				}
-
-				Joomla.Showon.initialise(target);
+				setUpShowon(row);
 			});
 		});
 

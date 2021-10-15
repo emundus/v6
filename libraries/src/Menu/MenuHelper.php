@@ -2,7 +2,7 @@
 /**
  * Joomla! Content Management System
  *
- * @copyright  (C) 2017 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 namespace Joomla\CMS\Menu;
@@ -14,8 +14,7 @@ use Joomla\Registry\Registry;
 /**
  * Menu Helper utility
  *
- * @since       3.8.0
- * @deprecated  4.0
+ * @since  3.8.0
  */
 class MenuHelper
 {
@@ -32,8 +31,6 @@ class MenuHelper
 	 * Private constructor
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0
 	 */
 	private function __construct()
 	{
@@ -51,8 +48,6 @@ class MenuHelper
 	 * @return  void
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\Component\Menus\Administrator\Helper\MenusHelper
 	 */
 	public static function addPreset($name, $title, $path, $replace = true)
 	{
@@ -84,8 +79,6 @@ class MenuHelper
 	 * @return  \stdClass[]
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\Component\Menus\Administrator\Helper\MenusHelper
 	 */
 	public static function getPresets()
 	{
@@ -129,8 +122,6 @@ class MenuHelper
 	 * @return  \stdClass[]
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\Component\Menus\Administrator\Helper\MenusHelper
 	 */
 	public static function loadPreset($name, $fallback = true)
 	{
@@ -160,8 +151,6 @@ class MenuHelper
 	 * @return  void
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\Component\Menus\Administrator\Helper\MenusHelper
 	 */
 	public static function resolveAlias(&$item)
 	{
@@ -212,8 +201,6 @@ class MenuHelper
 	 * @return  \stdClass[]
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0
 	 */
 	public static function createLevels($menuItems)
 	{
@@ -268,8 +255,6 @@ class MenuHelper
 	 * @return  void
 	 *
 	 * @since  3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\Component\Menus\Administrator\Helper\MenusHelper
 	 */
 	protected static function loadXml($elements, &$items, $replace = array())
 	{
@@ -365,8 +350,6 @@ class MenuHelper
 	 * @return  \stdClass
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\Component\Menus\Administrator\Helper\MenusHelper
 	 */
 	protected static function parseXmlNode($node, $replace = array())
 	{
