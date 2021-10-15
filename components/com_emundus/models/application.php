@@ -4017,13 +4017,16 @@ class EmundusModelApplication extends JModelList
     public function getAttachmentPreview($user, $attachment) 
     {
         $preview = "";
+        $extension = strtolower(pathinfo($attachment['filename'], PATHINFO_EXTENSION));
 
-        // check attachment filetype
-        // if attachment filename is a pdf, generate a preview
-        if (strrpos($attachment['filename'], ".pdf") !== false) {
-            $preview = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment->filename . '" width="100%" height="500px"></iframe>';
+        // create preview based on filetype
+        if ($extension == "pdf") {
+            $preview = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" height="100%"></iframe>';
+        } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
+            $preview = '<img src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" />';
+        } else {
+            $preview = '<a href="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" target="_blank">' . $attachment['filename'] . '</a>';
         }
-
 
         return $preview;
     }
