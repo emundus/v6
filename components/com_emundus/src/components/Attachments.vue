@@ -234,7 +234,7 @@ export default {
       });
     },
     fnumPosition() {
-      return this.fnums.indexOf(this.displayedFnum) + 1;
+      return this.fnums.indexOf(this.displayedFnum);
     }
   }
 };
