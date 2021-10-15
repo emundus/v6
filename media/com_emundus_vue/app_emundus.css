@@ -2,6 +2,19 @@
   height: 100%;
   width: 50%;
 }
+#attachment-preview div[data-v-20d71aa5] {
+  height: 100%;
+  margin: auto;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
 #attachment-edit[data-v-fb825d06] {
   margin: 0 10px;
   padding: 10px;
