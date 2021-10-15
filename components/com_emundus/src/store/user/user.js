@@ -1,6 +1,6 @@
 const state = {
     users: {},
-    currentUser: {},
+    currentUser: 0,
 };
 
 const getters = {

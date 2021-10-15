@@ -30,10 +30,6 @@ import moment from 'moment';
 export default {
     name: 'AttachmentEdit',
     props: {
-        user: {
-            type: String,
-            required: true
-        },
         fnum: {
             type: String,
             required: true
@@ -57,7 +53,7 @@ export default {
                 is_validated: this.is_validated
             };
 
-            const response = await attachment.updateAttachment(this.fnum, this.user, attachment_data);
+            const response = await attachment.updateAttachment(this.fnum, this.$store.state.user.currentUser, attachment_data);
             this.$emit('saveChanges', attachment_data);
         }
     }
