@@ -1,7 +1,7 @@
 import client from './axiosClient';
 
 export default {
-  async getAttachments(user) {
+  async getAttachmentsByUser(user) {
     try {
       const response = await client().get('index.php?option=com_emundus&controller=application&task=getuserattachments', {
         params: {
