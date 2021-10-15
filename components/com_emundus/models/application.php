@@ -4024,8 +4024,18 @@ class EmundusModelApplication extends JModelList
             $preview = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" height="100%"></iframe>';
         } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
             $preview = '<img src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" />';
+        } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf', 'txt'])) {
+            $preview = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" height="100%"></iframe>';
+        } else if (in_array($extension, ['xls', 'xlsx', 'ods'])) {
+            $preview = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" height="100%"></iframe>';
+        } else if (in_array($extension, ['ppt', 'pptx', 'odp'])) {
+            $preview = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" height="100%"></iframe>';
+        } else if (in_array($extension, ['mp3', 'wav', 'ogg'])) {
+            $preview = '<audio controls><source src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" type="audio/' . $extension . '"></audio>';
+        } else if (in_array($extension, ['mp4', 'webm', 'ogg'])) {
+            $preview = '<video controls><source src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" type="video/' . $extension . '"></video>';
         } else {
-            $preview = '<a href="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" target="_blank">' . $attachment['filename'] . '</a>';
+            $preview = '<p>' . JText::_('FILE_TYPE_NOT_SUPPORTED') . '</p>';
         }
 
         return $preview;
