@@ -2,7 +2,7 @@
 /**
  * Joomla! Content Management System
  *
- * @copyright  (C) 2017 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -16,8 +16,7 @@ use Joomla\CMS\Crypt\Key;
 /**
  * Crypt cipher for encryption, decryption and key generation via the php-encryption library.
  *
- * @since       3.5
- * @deprecated  5.0   Without replacement use SodiumCipher
+ * @since  3.5
  */
 class CryptoCipher implements CipherInterface
 {

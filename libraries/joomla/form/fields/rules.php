@@ -3,7 +3,7 @@
  * @package     Joomla.Platform
  * @subpackage  Form
  *
- * @copyright   (C) 2009 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -430,11 +430,11 @@ class JFormFieldRules extends JFormField
 
 		if ($section === 'component' || !$section)
 		{
-			$html[] = JText::alt('JLIB_RULES_SETTING_NOTES', $component);
+			$html[] = JText::_('JLIB_RULES_SETTING_NOTES');
 		}
 		else
 		{
-			$html[] = JText::alt('JLIB_RULES_SETTING_NOTES_ITEM', $component . '_' . $section);
+			$html[] = JText::_('JLIB_RULES_SETTING_NOTES_ITEM');
 		}
 
 		$html[] = '</div>';
