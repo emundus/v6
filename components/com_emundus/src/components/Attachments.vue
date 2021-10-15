@@ -66,11 +66,11 @@
             <span class="close" @click="closeModal">&times;</span>
             <span>{{ selectedAttachment.filename }}</span>
             <div class="pagination">
-              <div class="prev-attachment" :class="{'active': selectedAttachmentPosition > 0}" @click="selectedAttachment = displayedAttachments[selectedAttachmentPosition - 1]">
+              <div class="prev-attachment" :class="{'active': selectedAttachmentPosition > 0}" @click="prevAttachment">
                   <i class="fa fa-chevron-left"></i>
               </div>
               <span>{{ selectedAttachmentPosition + 1 }} / {{ displayedAttachments.length }}</span>
-              <div class="next-attachment" :class="{'active': selectedAttachmentPosition < displayedAttachments.length - 1}" @click="selectedAttachment = displayedAttachments[selectedAttachmentPosition + 1]">
+              <div class="next-attachment" :class="{'active': selectedAttachmentPosition < displayedAttachments.length - 1}" @click="nextAttachment">
                   <i class="fa fa-chevron-right"></i>
               </div>
             </div>
@@ -167,7 +167,7 @@ export default {
       }
     },
 
-    // Select another fnum
+    // navigation functions
     prevFile() {
       this.displayedFnum = this.fnums[this.fnumPosition - 1];
       this.setDisplayedUser();
@@ -177,6 +177,14 @@ export default {
       this.displayedFnum = this.fnums[this.fnumPosition + 1];
       this.setDisplayedUser();
       this.getAttachments();
+    },
+    prevAttachment() {
+      this.selectedAttachment = this.displayedAttachments[this.selectedAttachmentPosition - 1];
+      this.$store.dispatch('attachment/setSelectedAttachment', this.selectedAttachment);
+    },
+    nextAttachment() {
+      this.selectedAttachment = this.displayedAttachments[this.selectedAttachmentPosition + 1];
+      this.$store.dispatch('attachment/setSelectedAttachment', this.selectedAttachment);
     },
 
     // Front methods

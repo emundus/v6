@@ -10,7 +10,7 @@ import attachmentService from '../services/attachment';
 export default {
     data() {
         return {
-            attachment: {},
+            attachment: this.$store.state.attachment.selectedAttachment,
             preview: '',
         }
     },
@@ -21,6 +21,15 @@ export default {
     methods: {
         async getPreview() {
             this.preview = await attachmentService.getPreview(this.$store.state.user.displayedUser, this.attachment);
+        }
+    },
+    watch: {
+        '$store.state.attachment.selectedAttachment': function() {
+            // check if selected attchment is not an empty object
+            if (Object.keys(this.$store.state.attachment.selectedAttachment).length !== 0) {
+                this.attachment = this.$store.state.attachment.selectedAttachment;
+                this.getPreview();
+            }
         }
     }
 }

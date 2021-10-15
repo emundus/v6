@@ -17,7 +17,6 @@
             </div>
         </div>
         <div class="actions">
-            <button @click="$emit('closeModal')" class="btn close-btn">CLOSE</button>
             <button @click="saveChanges" class="btn save-btn">SAVE</button>
         </div>
     </div>
@@ -53,6 +52,14 @@ export default {
 
             const response = await attachment.updateAttachment(this.fnum, this.$store.state.user.currentUser, attachment_data);
             this.$emit('saveChanges', attachment_data);
+        }
+    },
+    watch: {
+        '$store.state.attachment.selectedAttachment': function() {
+            // check if selected attchment is not an empty object
+            if (Object.keys(this.$store.state.attachment.selectedAttachment).length !== 0) {
+                this.attachment = this.$store.state.attachment.selectedAttachment;
+            }
         }
     }
 }
