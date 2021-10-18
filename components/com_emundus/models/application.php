@@ -4036,24 +4036,37 @@ class EmundusModelApplication extends JModelList
                 $preview['content'] = '<img src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" height="99%" />';
             } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {   
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+
+                switch($extension) {
+                    case 'odt':
+                        $class = 'ODText';
+                        break;
+                    case 'rtf':
+                        $class = 'RTF';
+                        break;
+                    case 'doc':
+                    case 'docx':
+                    default: 
+                        $class = 'Word2007';
+                }
              
-                $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename']);
+                $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'], $class);
                 $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
                 $preview['content'] = $htmlWriter->getContent();
                 $preview['overflowY'] = true;
-            } else if (in_array($extension, ['xls', 'xlsx', 'ods'])) {
+            } else if (in_array($extension, ['xls', 'xlsx', 'ods', 'csv'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
              
-                // TODO: handle multi pages in file
-
                 $phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_BASE . DS . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename']);
                 $htmlWriter = new \PhpOffice\PhpSpreadsheet\Writer\HTML($phpSpreadsheet);
+                $htmlWriter->setGenerateSheetNavigationBlock(true);
+                $htmlWriter->setSheetIndex(null);
                 $preview['content'] = $htmlWriter->generateHtmlAll();
                 $preview['overflowY'] = true;
                 $preview['overflowX'] = true;
             } else if (in_array($extension, ['ppt', 'pptx', 'odp'])) {
-                // TODO: use PHPOffice to convert powerpoint to html5
-                $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="99%" height="99%"></iframe>';
+                // ? PHPPresentation is not giving html support... need to create it manually ? 
+
             } else if (in_array($extension, ['mp3', 'wav', 'ogg'])) {
                 $preview['content'] = '<audio controls><source src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" type="audio/' . $extension . '"></audio>';
             } else if (in_array($extension, ['mp4', 'webm', 'ogg'])) {
