@@ -3986,9 +3986,9 @@ class EmundusModelApplication extends JModelList
         if ($file_exists) {
             // create preview based on filetype
             if (in_array($extension, ['pdf', 'txt'])) {
-                $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" height="100%"></iframe>';
+                $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="99%" height="99%"></iframe>';
             } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                $preview['content'] = '<img src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" />';
+                $preview['content'] = '<img src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" height="99%" />';
             } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {   
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
              
@@ -3999,10 +3999,10 @@ class EmundusModelApplication extends JModelList
             } else if (in_array($extension, ['xls', 'xlsx', 'ods'])) {
                 // TODO: use PHPOffice to convert excel to html5
 
-                // $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" height="100%"></iframe>';
+                // $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="99%" height="99%"></iframe>';
             } else if (in_array($extension, ['ppt', 'pptx', 'odp'])) {
                 // TODO: use PHPOffice to convert powerpoint to html5
-                $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" height="100%"></iframe>';
+                $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="99%" height="99%"></iframe>';
             } else if (in_array($extension, ['mp3', 'wav', 'ogg'])) {
                 $preview['content'] = '<audio controls><source src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" type="audio/' . $extension . '"></audio>';
             } else if (in_array($extension, ['mp4', 'webm', 'ogg'])) {
