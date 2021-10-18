@@ -79,7 +79,7 @@
           </div>
           <div class="modal-body">
             <AttachmentPreview></AttachmentPreview>
-            <AttachmentEdit @closeModal="closeModal" @saveChanges="updateAttachment()" :fnum="displayedFnum"></AttachmentEdit>
+            <AttachmentEdit @closeModal="closeModal" @saveChanges="updateAttachment" :fnum="displayedFnum"></AttachmentEdit>
           </div>
         </modal>
     </div>

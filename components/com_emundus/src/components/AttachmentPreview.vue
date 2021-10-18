@@ -21,7 +21,15 @@ export default {
     },
     methods: {
         async getPreview() {
-            const data = await attachmentService.getPreview(this.$store.state.user.displayedUser, this.attachment);
+            let data;
+            if (!this.$store.state.attachment.previews[this.attachment.aid]) {
+                data = await attachmentService.getPreview(this.$store.state.user.displayedUser, this.attachment);
+
+                // store preview data
+                this.$store.commit('attachment/setPreview', {preview: data, id: this.attachment.aid});
+            } else {
+                data = this.$store.state.attachment.previews[this.attachment.aid];
+            }
 
             if (data.status) {
                 this.preview = data.content;
