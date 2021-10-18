@@ -4,10 +4,16 @@
   overflow: hidden;
 }
 #attachment-preview.overflow-x[data-v-20d71aa5] {
-  overflow-x: scroll;
+  overflow-x: auto;
 }
 #attachment-preview.overflow-y[data-v-20d71aa5] {
-  overflow-y: scroll;
+  overflow-y: auto;
+}
+#attachment-preview.sheet :host > div[data-v-20d71aa5] {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin: auto;
 }
 #attachment-edit[data-v-fb825d06] {
   margin: 0 10px;
