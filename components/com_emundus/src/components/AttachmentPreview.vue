@@ -45,7 +45,7 @@ export default {
                 this.preview = '';
             }
 
-            this.$refs['a-preview'].shadowRoot.innerHTML = this.preview;
+            this.$refs['a-preview'].shadowRoot.innerHTML = this.preview != null ? this.preview : '';
         }
     },
     watch: {
