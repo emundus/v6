@@ -3975,10 +3975,11 @@ class EmundusModelApplication extends JModelList
     public function getAttachmentPreview($user, $attachment) 
     {
         $preview = [
-            "status" => true,
-            "content" => "",
-            "overflowX" => false,
-            "overflowY" => false
+            'status' => true,
+            'content' => '',
+            'overflowX' => false,
+            'overflowY' => false,
+            'parser' => 'html5'
         ];
         $extension = strtolower(pathinfo($attachment['filename'], PATHINFO_EXTENSION));
         
@@ -3989,7 +3990,7 @@ class EmundusModelApplication extends JModelList
             if (in_array($extension, ['pdf', 'txt'])) {
                 $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="99%" height="99%"></iframe>';
             } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                $preview['content'] = '<img src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" height="99%" />';
+                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
             } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {   
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
@@ -4010,6 +4011,7 @@ class EmundusModelApplication extends JModelList
                 $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
                 $preview['content'] = $htmlWriter->getContent();
                 $preview['overflowY'] = true;
+                $preview['parser'] = 'word';
             } else if (in_array($extension, ['xls', 'xlsx', 'ods', 'csv'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
              
@@ -4020,13 +4022,14 @@ class EmundusModelApplication extends JModelList
                 $preview['content'] = $htmlWriter->generateHtmlAll();
                 $preview['overflowY'] = true;
                 $preview['overflowX'] = true;
+                $preview['parser'] = 'sheet';
             } else if (in_array($extension, ['ppt', 'pptx', 'odp'])) {
                 // ? PHPPresentation is not giving html support... need to create it manually ? 
 
             } else if (in_array($extension, ['mp3', 'wav', 'ogg'])) {
-                $preview['content'] = '<audio controls><source src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" type="audio/' . $extension . '"></audio>';
+                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><audio controls><source src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" type="audio/' . $extension . '"></audio></div>';
             } else if (in_array($extension, ['mp4', 'webm', 'ogg'])) {
-                $preview['content'] = '<video controls><source src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" type="video/' . $extension . '"></video>';
+                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><video controls  style="max-width: 100%;"><source src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" type="video/' . $extension . '"></video></div>';
             } else {
                 $preview['status'] = false;
                 $preview['content'] = '<p>' . JText::_('FILE_TYPE_NOT_SUPPORTED') . '</p>';
