@@ -3,9 +3,11 @@
   width: 50%;
   overflow: hidden;
 }
-#attachment-preview.overflow[data-v-20d71aa5] {
+#attachment-preview.overflow-x[data-v-20d71aa5] {
+  overflow-x: scroll;
+}
+#attachment-preview.overflow-y[data-v-20d71aa5] {
   overflow-y: scroll;
-  overflow-x: hidden;
 }
 #attachment-edit[data-v-fb825d06] {
   margin: 0 10px;
