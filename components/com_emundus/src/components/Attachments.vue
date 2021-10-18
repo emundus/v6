@@ -145,7 +145,18 @@ export default {
       this.$store.dispatch('user/setDisplayedUser', this.displayedUser.id);
     },
     async getAttachments() {
-      this.attachments = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
+      if (!this.$store.state.attachment.attachments[this.displayedFnum]) {
+        this.loading = true;
+        this.attachments = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
+
+        this.$store.dispatch('attachment/setAttachmentsOfFnum', {
+          fnum: [this.displayedFnum],
+          attachments: this.attachments
+        });
+        this.loading = false;
+      } else {
+        this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
+      }
     },   
     updateAttachment() {
       this.getAttachments();
@@ -243,7 +254,7 @@ export default {
     },
     closeModal() {
       this.$modal.hide('edit');
-      this.selectedAttachment = null;
+      this.selectedAttachment = {};
       this.$store.dispatch('attachment/setSelectedAttachment', {});
     },
 

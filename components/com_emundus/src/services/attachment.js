@@ -59,7 +59,7 @@ export default {
         }
       });
 
-      return response;
+      return response.data;
     } catch (e) {
       throw e;
     }
