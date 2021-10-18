@@ -51,6 +51,13 @@ export default {
             };
 
             const response = await attachment.updateAttachment(this.fnum, this.$store.state.user.currentUser, attachment_data);
+
+            if (response.status) {
+                this.$store.commit('attachment/updateAttachmentOfFnum', {
+                    fnum: this.fnum,
+                    attachment: this.attachment
+                });
+            }
             this.$emit('saveChanges', attachment_data);
         }
     },
