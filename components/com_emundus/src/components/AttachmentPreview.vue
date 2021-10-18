@@ -1,5 +1,5 @@
 <template>
-    <div ref="a-preview" id="attachment-preview" :class="{'overflow': useShadow}">
+    <div ref="a-preview" id="attachment-preview" :class="{'overflow-x': overflowX, 'overflow-y': overflowY}">
     </div>
 </template>
 
@@ -11,7 +11,8 @@ export default {
         return {
             attachment: this.$store.state.attachment.selectedAttachment,
             preview: '',
-            useShadow: false
+            overflowX: false,
+            overflowY: false,
         }
     },
     mounted() {
@@ -24,14 +25,18 @@ export default {
 
             if (data.status) {
                 this.preview = data.content;
-                this.useShadow = data.useShadow;
+                this.overflowX = data.overflowX; 
+                this.overflowY = data.overflowY;
+
                 if (this.$refs['a-preview'].shadowRoot === null)  {
                     this.$refs['a-preview'].attachShadow({mode: 'open'});
                 }
             } else {
-                this.useShadow = false; 
+                this.overflowX = false; 
+                this.overflowY = false;
                 this.preview = '';
             }
+
             this.$refs['a-preview'].shadowRoot.innerHTML = this.preview;
         }
     },
@@ -53,9 +58,12 @@ export default {
     width: 50%;
     overflow: hidden;
 
-    &.overflow {
+    &.overflow-x {
+        overflow-x: scroll;
+    }
+
+    &.overflow-y {
         overflow-y: scroll;
-        overflow-x: hidden; 
     }
 }
 </style>

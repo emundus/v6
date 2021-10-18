@@ -4021,7 +4021,8 @@ class EmundusModelApplication extends JModelList
         $preview = [
             "status" => true,
             "content" => "",
-            "useShadow" => false
+            "overflowX" => false,
+            "overflowY" => false
         ];
         $extension = strtolower(pathinfo($attachment['filename'], PATHINFO_EXTENSION));
         
@@ -4039,14 +4040,17 @@ class EmundusModelApplication extends JModelList
                 $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename']);
                 $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
                 $preview['content'] = $htmlWriter->getContent();
-                $preview['useShadow'] = true;
+                $preview['overflowY'] = true;
             } else if (in_array($extension, ['xls', 'xlsx', 'ods'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
              
+                // TODO: handle multi pages in file
+
                 $phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_BASE . DS . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename']);
                 $htmlWriter = new \PhpOffice\PhpSpreadsheet\Writer\HTML($phpSpreadsheet);
                 $preview['content'] = $htmlWriter->generateHtmlAll();
-                $preview['useShadow'] = true;
+                $preview['overflowY'] = true;
+                $preview['overflowX'] = true;
             } else if (in_array($extension, ['ppt', 'pptx', 'odp'])) {
                 // TODO: use PHPOffice to convert powerpoint to html5
                 $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="99%" height="99%"></iframe>';
