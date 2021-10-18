@@ -1,6 +1,7 @@
 const state = {
     attachments: {},
     selectedAttachment: {},
+    previews: {},
 };
 
 const getters = {
@@ -14,6 +15,9 @@ const actions = {
     setSelectedAttachment({ commit }, attachment) {
         commit('setSelectedAttachment', attachment);
     },
+    setPreview({ commit }, previewData) {
+        commit('setPreview', previewData);
+    },
 };
 
 const mutations = {
@@ -22,6 +26,9 @@ const mutations = {
     },
     setSelectedAttachment(state, attachment) {
         state.selectedAttachment = attachment;
+    },
+    setPreview(state, previewData) {
+        state.previews[previewData.id] = previewData.preview;
     },
 };
 
