@@ -18,9 +18,7 @@ jimport('joomla.application.component.model');
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_onboard/models');        // call com_emundus_onboard model
 
-
-use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\Writer\HTML;
+use Joomla\CMS\Filesystem\File;
 
 class EmundusModelApplication extends JModelList
 {
@@ -3976,33 +3974,46 @@ class EmundusModelApplication extends JModelList
     // generate an attachment preview in html
     public function getAttachmentPreview($user, $attachment) 
     {
-        $preview = "";
+        $preview = [
+            "status" => true,
+            "content" => "",
+            "useShadow" => false
+        ];
         $extension = strtolower(pathinfo($attachment['filename'], PATHINFO_EXTENSION));
+        
+        $file_exists = File::exists(EMUNDUS_PATH_REL . $user . "/" . $attachment['filename']);
 
-        // create preview based on filetype
-        if (in_array($extension, ['pdf', 'txt'])) {
-            $preview = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" height="100%"></iframe>';
-        } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
-            $preview = '<img src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" />';
-        } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {
-            // $phpWord = \PhpOffice\PhpWord\IOFactory::load(EMUNDUS_PATH_ABS . $user . "/" . $attachment['filename']);
-            // $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
-            // $preview = $htmlWriter->getContent();
+        if ($file_exists) {
+            // create preview based on filetype
+            if (in_array($extension, ['pdf', 'txt'])) {
+                $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" height="100%"></iframe>';
+            } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                $preview['content'] = '<img src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" />';
+            } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {   
+                require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+             
+                $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename']);
+                $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
+                $preview['content'] = $htmlWriter->getContent();
+                $preview['useShadow'] = true;
+            } else if (in_array($extension, ['xls', 'xlsx', 'ods'])) {
+                // TODO: use PHPOffice to convert excel to html5
 
-            return "<p>can't open file</p>";
-        } else if (in_array($extension, ['xls', 'xlsx', 'ods'])) {
-            // TODO: use PHPOffice to convert excel to html5
-
-            // $preview = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" height="100%"></iframe>';
-        } else if (in_array($extension, ['ppt', 'pptx', 'odp'])) {
-            // TODO: use PHPOffice to convert powerpoint to html5
-            $preview = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" height="100%"></iframe>';
-        } else if (in_array($extension, ['mp3', 'wav', 'ogg'])) {
-            $preview = '<audio controls><source src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" type="audio/' . $extension . '"></audio>';
-        } else if (in_array($extension, ['mp4', 'webm', 'ogg'])) {
-            $preview = '<video controls><source src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" type="video/' . $extension . '"></video>';
+                // $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" height="100%"></iframe>';
+            } else if (in_array($extension, ['ppt', 'pptx', 'odp'])) {
+                // TODO: use PHPOffice to convert powerpoint to html5
+                $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="100%" height="100%"></iframe>';
+            } else if (in_array($extension, ['mp3', 'wav', 'ogg'])) {
+                $preview['content'] = '<audio controls><source src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" type="audio/' . $extension . '"></audio>';
+            } else if (in_array($extension, ['mp4', 'webm', 'ogg'])) {
+                $preview['content'] = '<video controls><source src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" type="video/' . $extension . '"></video>';
+            } else {
+                $preview['status'] = false;
+                $preview['content'] = '<p>' . JText::_('FILE_TYPE_NOT_SUPPORTED') . '</p>';
+            } 
         } else {
-            $preview = '<p>' . JText::_('FILE_TYPE_NOT_SUPPORTED') . '</p>';
+            $preview['status'] = false;
+            $preview['content'] = '<p>' . JText::_('FILE_NOT_FOUND') . '</p>';
         }
 
         return $preview;

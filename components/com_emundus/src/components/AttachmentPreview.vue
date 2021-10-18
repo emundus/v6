@@ -1,6 +1,5 @@
 <template>
-    <div id="attachment-preview">
-        <div v-html="preview"></div>
+    <div ref="a-preview" id="attachment-preview">
     </div>
 </template>
 
@@ -12,6 +11,7 @@ export default {
         return {
             attachment: this.$store.state.attachment.selectedAttachment,
             preview: '',
+            useShadow: false
         }
     },
     mounted() {
@@ -20,7 +20,18 @@ export default {
     },
     methods: {
         async getPreview() {
-            this.preview = await attachmentService.getPreview(this.$store.state.user.displayedUser, this.attachment);
+            const data = await attachmentService.getPreview(this.$store.state.user.displayedUser, this.attachment);
+
+            if (data.status) {
+                this.preview = data.content;
+
+                if (this.$refs['a-preview'].shadowRoot === null)  {
+                    this.$refs['a-preview'].attachShadow({mode: 'open'});
+                }
+            } else {
+                this.preview = '';
+            }
+            this.$refs['a-preview'].shadowRoot.innerHTML = this.preview;
         }
     },
     watch: {
