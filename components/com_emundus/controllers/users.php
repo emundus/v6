@@ -887,7 +887,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$m_users = new EmundusModelUsers();
 		$user = $m_users->getUserById($id);
 
-		echo json_encode((object)array('status' => true, 'user' => $user));
+		echo json_encode(array('status' => true, 'user' => $user));
 		exit;
 	}
 	
