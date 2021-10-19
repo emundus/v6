@@ -2,10 +2,10 @@
     <div id="em-attachments">
         <div class="head">
           <div class="prev-next-files" v-if="fnums.length > 1">
-            <div class="prev-file" :class="{'active': fnumPosition > 0}" @click="prevFile">
+            <div class="prev" :class="{'active': fnumPosition > 0}" @click="prevFile">
                 <i class="fa fa-chevron-left"></i>
             </div>
-            <div class="next-file" :class="{'active': fnumPosition < fnums.length - 1}" @click="nextFile">
+            <div class="next" :class="{'active': fnumPosition < fnums.length - 1}" @click="nextFile">
                 <i class="fa fa-chevron-right"></i>
             </div>
           </div>
@@ -14,7 +14,7 @@
             <p>{{ displayedUser.email }}</p>
           </div>
         </div>
-        <div class="wrapper">
+        <div class="wrapper" :class="{'loading': loading}">
           <div id="filters">
             <input id="searchbar" type="text" ref="searchbar" placeholder="Rechercher" @input="searchInFiles">
             <div class="actions">
@@ -39,8 +39,7 @@
                 <tr 
                   v-for="attachment in displayedAttachments" 
                   :key="attachment.aid"
-                  :class="{'checked': checkedAttachments.includes(attachment.aid)}"  
-                >
+                  :class="{'checked': checkedAttachments.includes(attachment.aid)}">
                     <td>
                       <input class="attachment-check" type="checkbox" @change="updateCheckedAttachments(attachment.aid)" :checked="checkedAttachments.includes(attachment.aid)">
                     </td>
@@ -48,7 +47,7 @@
                     <td>{{ formattedTimeDate(attachment.timedate) }}</td>
                     <td>{{ attachment.description }}</td>
                     <td>{{ formattedValidState(attachment.is_validated)}}</td>
-                    <td>{{ attachment.modified_by }}</td>
+                    <td>{{ userName(attachment.modified_by) }}</td>
                     <td>{{ formattedTimeDate(attachment.modified) }}</td>
                 </tr>
             </tbody>
@@ -60,28 +59,32 @@
           name="edit"
           height="50%"
           width="50%"
-          styles="display:flex;flex-direction:column;justify-content:center;align-items:center;"
-        >
+          styles="display:flex;flex-direction:column;justify-content:center;align-items:center;">
           <div class="modal-head">
-            <span class="close" @click="closeModal">&times;</span>
-            <span>{{ selectedAttachment.filename }}</span>
-            <div class="pagination">
-              <div class="prev-attachment" :class="{'active': selectedAttachmentPosition > 0}" @click="prevAttachment">
-                  <i class="fa fa-chevron-left"></i>
-              </div>
-              <span>{{ selectedAttachmentPosition + 1 }} / {{ displayedAttachments.length }}</span>
-              <div class="next-attachment" :class="{'active': selectedAttachmentPosition < displayedAttachments.length - 1}" @click="nextAttachment">
-                  <i class="fa fa-chevron-right"></i>
-              </div>
+            <div class="flex-start">
+              <span class="close" @click="closeModal">&times;</span>
+              <span>{{ selectedAttachment.filename }}</span>
             </div>
-            <span>DOWNLOAD</span>
-            <span @click="deleteAttachment(this.selectedAttachment.aid)">DELETE</span>
+            <div class="flex-end">
+              <div class="pagination">
+                <div class="prev" :class="{'active': selectedAttachmentPosition > 0}" @click="prevAttachment">
+                  <i class="fa fa-chevron-left"></i>
+                </div>
+                <span>{{ selectedAttachmentPosition + 1 }} / {{ displayedAttachments.length }}</span>
+                <div class="next" :class="{'active': selectedAttachmentPosition < displayedAttachments.length - 1}" @click="nextAttachment">
+                  <i class="fa fa-chevron-right"></i>
+                </div>
+              </div>
+              <a :href="attachmentPath" class="download" download>DOWNLOAD</a>
+              <span @click="deleteAttachment(selectedAttachment.aid)">DELETE</span>
+            </div>
           </div>
           <div class="modal-body">
             <AttachmentPreview></AttachmentPreview>
             <AttachmentEdit @closeModal="closeModal" @saveChanges="updateAttachment" :fnum="displayedFnum"></AttachmentEdit>
           </div>
         </modal>
+    	  <div class="attach-loader" v-if="loading"></div>
     </div>
 </template>
 
@@ -153,10 +156,11 @@ export default {
           fnum: [this.displayedFnum],
           attachments: this.attachments
         });
-        this.loading = false;
       } else {
         this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
       }
+
+      this.loading = false;
     },   
     updateAttachment() {
       this.getAttachments();
@@ -275,6 +279,26 @@ export default {
     },
     formattedTimeDate(timedate) {
       return moment(timedate).format('DD/MM/YYYY');
+    },
+    userName(userId) {
+      let completeName = '';
+
+      if (userId && userId.length > 0) {
+        const user = this.$store.state.user.users[userId];
+        if (user) {
+          completeName = user.firstname + ' ' + user.lastname;
+        } else {
+          userService.getUserById(userId).then(data => {
+            if (data.status) {
+              completeName = data.user[0].firstname + ' ' + data.user[0].lastname;
+              data.user[0].id = userId;
+              this.$store.dispatch('user/setUsers', data.user);
+            }
+          });
+        }
+      }
+
+      return completeName;
     }
   },
   computed: {
@@ -288,6 +312,9 @@ export default {
     },
     selectedAttachmentPosition() {
       return this.displayedAttachments.indexOf(this.selectedAttachment);
+    },
+    attachmentPath() {
+      return this.$store.state.attachment.attachmentPath + this.displayedUser.id + '/' + this.selectedAttachment.filename;
     }
   }
 };
@@ -334,6 +361,15 @@ export default {
     input {
       align-self: flex-start;
       width: 221px;
+    }
+  }
+
+  .wrapper {
+    width: 100%;
+
+    &.loading {
+      min-height: calc(100vh - 400px);
+      visibility: hidden;
     }
   }
 
@@ -388,17 +424,48 @@ export default {
   }
 
   .modal-head {
-    height: 100px;
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 16px;
 
-    .pagination {
+    .flex-start {
       display: flex;
       flex-direction: row;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
+
+      .close {
+        margin-right: 8px;
+      }
+    }
+
+    .flex-end {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+    
+      .download {
+        margin-right: 8px;
+      }
+
+      .pagination {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0 8px 0 0;
+
+        .prev {
+          margin-right: 4px;
+        }
+
+        .next {
+          margin-left: 4px;
+        }
+      }
     }
   }
 
@@ -408,6 +475,22 @@ export default {
     max-height: 100%;
     display: flex;
   }
+}
+
+.attach-loader {
+    border: 5px solid #f3f3f4; /* Light grey */
+    border-top: 5px solid #7886ae; /* Blue */
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    animation: spin 2s linear infinite;
+    position: absolute !important;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 9999px #cecece85;
+    background: #cecece85;
 }
 
 </style>

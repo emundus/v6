@@ -1,4 +1,5 @@
 const state = {
+    attachmentPath: "images/emundus/files/",
     attachments: {},
     selectedAttachment: {},
     previews: {},

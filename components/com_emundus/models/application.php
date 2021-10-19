@@ -4084,6 +4084,8 @@ class EmundusModelApplication extends JModelList
             } else if (in_array($extension, ['ppt', 'pptx', 'odp'])) {
                 // ? PHPPresentation is not giving html support... need to create it manually ? 
                 $preview['content'] = $this->convertPowerPointToHTML($filePath);
+                $preview['overflowY'] = true;
+                $preview['parser'] = 'word';
             } else if (in_array($extension, ['mp3', 'wav', 'ogg'])) {
                 $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><audio controls><source src="' . $filePath . '" type="audio/' . $extension . '"></audio></div>';
             } else if (in_array($extension, ['mp4', 'webm', 'ogg'])) {
@@ -4129,7 +4131,7 @@ class EmundusModelApplication extends JModelList
             $zip->close();
             
             // create html content from slides and style
-            $content = '<div class="wrapper" style="height: 100%;display: flex;flex-direction:column;justify-content: flex-start;align-items: center;overflow: auto;">';
+            $content = '<div class="wrapper" style="height: 100%;display: flex;flex-direction:column;justify-content: flex-start;align-items: center;">';
             foreach ($slides as $key => $slide) {
                 $content .= '<div class="slide" style="width: 100%;height: 100%;">';
 
