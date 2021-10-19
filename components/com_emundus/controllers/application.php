@@ -676,10 +676,9 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $jinput = JFactory::getApplication()->input;
         $user = $jinput->getVar('user', null);
-        $attachment = $jinput->getVar('attachment', null);
-        $attachment = json_decode($attachment, true);
+        $filename = $jinput->getVar('filename', null);
 
-        $preview = $m_application->getAttachmentPreview($user, $attachment);
+        $preview = $m_application->getAttachmentPreview($user, $filename);
 
         echo json_encode($preview);
         exit;

@@ -65,12 +65,12 @@ export default {
     }
   },
 
-  async getPreview(user, attachment) {
+  async getPreview(user, filename) {
     try {
       const response = await client().get('index.php?option=com_emundus&controller=application&task=getattachmentpreview', {
         params: {
           user: user,
-          attachment: JSON.stringify(attachment),
+          filename: filename,
         }
       });
 
