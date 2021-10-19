@@ -4085,14 +4085,33 @@ class EmundusModelApplication extends JModelList
             $zip->close();
             
             // create html content from slides and style
-            $content = '<div class="wrapper" style="height: 100%;display: flex;flex-direction:column;justify-content: center;align-items: center;">';
+            $content = '<div class="wrapper" style="height: 100%;display: flex;flex-direction:column;justify-content: flex-start;align-items: center;overflow: auto;">';
             foreach ($slides as $key => $slide) {
                 $content .= '<div class="slide" style="width: 100%;height: 100%;">';
 
                 $dom = new DOMDocument();
                 $dom->loadXML($slide);
 
-                $content .= $dom->saveXML();
+                $xpath = new DOMXPath($dom);
+
+                $query = '//a:p';
+                $entries = $xpath->query($query);
+
+                foreach($entries as $e_key => $entry) {
+                    $content .= "<p>";
+                    
+                    // use . for relative query
+                    $query = './/a:t';
+                    $text_entries = $xpath->query($query, $entry);
+
+                    foreach($text_entries as $text) {
+                        $content .= $text->nodeValue;
+                    }
+                
+                    $content .= "</p>";
+                }
+
+                // $content .= $dom->saveXML();
 
                 $content .= '</div>';
             }
