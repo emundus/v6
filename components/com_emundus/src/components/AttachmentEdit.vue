@@ -74,16 +74,25 @@ export default {
 
 <style lang="scss" scoped>
 #attachment-edit {
-    margin : 0 10px;
-    padding: 10px;
+    margin: 0 0 0 10px;
     height: 100%;
-    width: 50%;
+    width: 40%;
     float: right;
 
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
+
+    .editableData {
+        width: 100%;
+        overflow: hidden;
+
+        h2 {
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+    }
 
     .actions {
         align-self: flex-end;
