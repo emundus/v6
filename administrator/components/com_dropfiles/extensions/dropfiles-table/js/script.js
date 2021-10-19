@@ -32,21 +32,6 @@ jQuery(document).ready(function ($) {
     //load media tables
     $('.dropfiles-content-table.dropfiles-content .mediaTable').mediaTable();
 
-    var source = $("#dropfiles-template-table").html();
-    var type_source   = $("#dropfiles-current-category").html();
-    var tpltable_sourcecategories = '';
-    if ($("#dropfiles-template-table-categories").length) {
-        tpltable_sourcecategories = $("#dropfiles-template-table-categories").html();
-    }
-    if (tpltable_sourcecategories === '') {
-        $('.dropfiles-content-table .dropfiles-categories').addClass('blank');
-    }
-    if (typeof source != 'undefined' && source != null) {
-        source = source.replace(dropfilesRootUrl, "");
-        var reg = new RegExp("/{{", 'g');
-        source = source.replace(reg, "{{");
-    }
-
     Handlebars.registerHelper('bytesToSize', function (bytes) {
         return bytesToSize(bytes);
     });
@@ -138,6 +123,7 @@ jQuery(document).ready(function ($) {
     function initClick() {
         $('.dropfiles-content-table.dropfiles-content-multi .catlink').click(function (e) {
             e.preventDefault();
+            console.log('clicked');
             table_load($(this).parents('.dropfiles-content-table.dropfiles-content-multi').data('category'), $(this).data('idcat'), null);
         });
     }
@@ -154,20 +140,30 @@ jQuery(document).ready(function ($) {
         if (re.test(stringpage)) {
             page = stringpage.replace('p', '');
         }
-        var hash_category_id = hasha[0];
-        if (!parseInt(hash_category_id)) {
-            return;
+        var hash_category_id = hasha[1];
+        var hash_sourcecat = hasha[0];
+
+        if (parseInt(hash_category_id) > 0 || hash_category_id === 'all_0') {
+            if (hash_category_id == 'all_0') {
+                hash_category_id = 0;
+            }
+
+            setTimeout(function () {
+                table_load(hash_sourcecat, hash_category_id, page);
+            }, 100);
+
         }
-        setTimeout(function () {
-            table_load($('.dropfiles-content-table').data('category'), hash_category_id, page);
-        }, 100)
     }
 
     initManageFile($('.dropfiles-content-table.dropfiles-content-multi .catlink').parents('.dropfiles-content-default.dropfiles-content-multi').data('category'));
 
     function table_load(sourcecat, category, page) {
+        console.log('table_load');
         var pathname = window.location.pathname;
         var container = $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "]");
+        if (container.length == 0) {
+            return;
+        }
         $(document).trigger('dropfiles:category-loading');
         $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "]").find('#current_category').val(category);
         $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] table tbody").empty();
@@ -179,18 +175,24 @@ jQuery(document).ready(function ($) {
             url: dropfilesBaseUrl + "index.php?option=com_dropfiles&view=frontcategories&format=json&id=" + category + "&top=" + sourcecat,
             dataType: "json"
         }).done(function (categories) {
-
+            console.log(sourcecat,category);
             if (page != null) {
-                window.history.pushState('', document.title, pathname + '#' + category + '-' + categories.category.alias + '-p' + page);
+                window.history.pushState('', document.title, pathname + '#' + sourcecat + '-' + category + '-' + categories.category.alias + '-p' + page);
             } else {
-                window.history.pushState('', document.title, pathname + '#' + category + '-' + categories.category.alias);
+                console.log('pushState');
+                window.history.pushState('', document.title, pathname + '#' + sourcecat + '-' + category + '-' + categories.category.alias);
             }
 
             $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "]").find('#current_category_slug').val(categories.category.alias);
-            var template = Handlebars.compile(tpltable_sourcecategories);
-            var html = template(categories);
-            dropfiles_remove_loading($(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-categories"));
-            $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-categories").prepend(html);
+
+            var tpltable_sourcecategories = container.parents().find("#dropfiles-template-table-categories-"+sourcecat ).html();
+            if (tpltable_sourcecategories) {
+                var template = Handlebars.compile(tpltable_sourcecategories);
+                var html = template(categories);
+
+                dropfiles_remove_loading($(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-categories"));
+                $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-categories").prepend(html);
+            }
 
             if (table_tree.length) {
                 var currentTree = container.find('.dropfiles-foldertree-table');
@@ -214,9 +216,14 @@ jQuery(document).ready(function ($) {
                 dataType: "json"
             }).done(function (content) {
                 $.extend(content, categories);
-                var template = Handlebars.compile(source);
+
+                var tpltable_source = container.parents().find("#dropfiles-template-table-" + sourcecat).html();
+                tpltable_source = fixJoomlaSef(tpltable_source);
+                var template = Handlebars.compile(tpltable_source);
                 var html = template(content);
-                var type_template = Handlebars.compile(type_source);
+
+                var tpltable_typesource = container.parents().find("#dropfiles-current-category-" + sourcecat).html();
+                var type_template = Handlebars.compile(tpltable_typesource);
                 var type_html = type_template(content);
                 if ($(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] #current-category-type").length) {
                     $(".dropfiles-content-table.dropfiles-content-multi[data-category=" + sourcecat + "] #current-category-type").remove();
@@ -349,5 +356,15 @@ jQuery(document).ready(function ($) {
         } else {
             $(".mediaTableWrapper.mediaTableWrapperWithMenu").removeClass('mediaTableWrapper-chil');
         }
+    }
+
+    // Remove the root url in case it's added by Joomla Sef plugin
+    function fixJoomlaSef(template) {
+        if (typeof template != 'undefined' && template != null) {
+            var reg = new RegExp(dropfilesRootUrl + "{{", 'g');
+            template = template.replace(reg, "{{");
+        }
+
+        return template;
     }
 });
