@@ -1,8 +1,12 @@
 <template>
-  <router-view/>
+  <transition name="slide-right">
+    <router-view/>
+  </transition>
 </template>
 
 <script>
+import {global} from "./store/global";
+
 export default {
   name: "App",
   props: {
@@ -12,9 +16,9 @@ export default {
   components: {},
 
   created() {
+    global.commit("initDatas", this.$props.datas);
     this.$router.push({
-      name: this.$props.component,
-      params: { datas: this.$props.datas }
+      name: this.$props.component
     }).catch(()=>{});
   }
 }

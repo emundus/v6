@@ -33,7 +33,7 @@ Vue.use(VueSpinnersCss);
 Vue.use(VTooltip);
 Vue.use(VueRouter);
 
-import router from './router'
+import router from './router/router'
 import App from "./App";
 
 Vue.config.productionTip = false;

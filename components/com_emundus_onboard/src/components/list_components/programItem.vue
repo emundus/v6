@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { list } from "../../store";
+import { list } from "../../store/store";
 import axios from "axios";
 
 const qs = require("qs");

@@ -612,6 +612,7 @@ input[type="reset"] {
 
 .section-principale {
   height: auto;
+  margin-top: 50px;
 }
 .paragraphe-sous-titre {
   width: 70%;
@@ -959,6 +960,11 @@ input[type="reset"] {
     cursor: pointer;
     background-color: transparent;
     color: $dark-green;
+  }
+}
+.bouton-ajouter span{
+  &:hover{
+    color: $dark-blue;
   }
 }
 .card-button{
@@ -2703,6 +2709,9 @@ input:focus + .em-slider {
   width: 380px;
 }
 
+.em-color-white{
+  color: white;
+}
 .em-green-color{
   color: $em-green;
 }

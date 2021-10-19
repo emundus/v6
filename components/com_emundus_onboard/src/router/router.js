@@ -1,21 +1,37 @@
 import Vue from 'vue';
 import Router from 'vue-router'
-import AddEmail from './views/addEmail.vue';
-import List from './views/list.vue';
+import AddEmail from '../views/addEmail.vue';
+import List from '../views/list.vue';
 
 Vue.use(Router);
 
 const routes = [
   {
     path: '/',
-    name: 'emails',
+    name: 'email',
     component: List,
     props: (route) => ({
       datas: route.params
     })
   },
   {
-    path: '/edit-email/:email',
+    path: '/',
+    name: 'campaign',
+    component: List,
+    props: (route) => ({
+      datas: route.params
+    })
+  },
+  {
+    path: '/',
+    name: 'form',
+    component: List,
+    props: (route) => ({
+      datas: route.params
+    })
+  },
+  {
+    path: '/',
     name: 'edit-email',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route

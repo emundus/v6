@@ -48,7 +48,7 @@
   import axios from "axios";
   import Swal from "sweetalert2";
   import "sweetalert2/src/sweetalert2.scss";
-  import { list } from "../../store";
+  import { list } from "../../store/store";
   import "@fortawesome/fontawesome-free/css/all.css";
   import "@fortawesome/fontawesome-free/js/all.js";
 

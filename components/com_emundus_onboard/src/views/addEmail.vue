@@ -722,6 +722,7 @@ import Multiselect from 'vue-multiselect';
   },
 
   created() {
+    this.$props.email = this.$route.params.email;
     this.getAllAttachments();
     //this.getAllUsers();
     this.getAllTags();

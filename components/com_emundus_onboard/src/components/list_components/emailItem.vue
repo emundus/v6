@@ -34,7 +34,7 @@
                 <a class="bouton-ajouter pointer add-button-div"
                 :title="Modify">
                   <em class="fas fa-pen"></em>
-                  <router-link :to="{ name: 'edit-email', params:{email: data.id} }">{{Modify}}</router-link>
+                  <router-link :to="{ name: 'edit-email', params:{email: data.id} }"><span class="em-color-white">{{Modify}}</span></router-link>
                 </a>
 <!--                <a @click="redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id)"
                    class="bouton-ajouter pointer add-button-div"
@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import { list } from "../../store";
+import { list } from "../../store/store";
 import axios from "axios";
 import ModalEmailPreview from "@/views/advancedModals/ModalEmailPreview";
 import actions from "./action_menu";

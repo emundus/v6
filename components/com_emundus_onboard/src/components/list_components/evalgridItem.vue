@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { list } from "../../store";
+import { list } from "../../store/store";
 import axios from "axios";
 
 const qs = require("qs");
@@ -107,10 +107,6 @@ export default {
   },
 
   created() {
-
-
-
-
     list.getters.formsAccess[0].forEach(element => {
       if(element === this.data.id){
         this.updateAccess = true;

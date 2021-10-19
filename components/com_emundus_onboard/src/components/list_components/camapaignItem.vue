@@ -86,7 +86,7 @@
 
 <script>
 import moment from "moment";
-import { list } from "../../store";
+import { list } from "../../store/store";
 import axios from "axios";
 import actions from "./action_menu";
 

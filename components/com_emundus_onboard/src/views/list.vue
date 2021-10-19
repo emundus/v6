@@ -26,7 +26,7 @@
 
         <template slot="popover">
           <filters
-              v-if="type != 'files'"
+              v-if="type !== 'files'"
               :data="actions"
               :selected="selecedItems"
               :updateTotal="updateTotal"
@@ -208,7 +208,8 @@ import files from "../components/list_components/files";
 import filters from "../components/list_components/filters_menu";
 import listHeader from "../components/list_components/list_header";
 import tasks from "./tasks"
-import { list } from "../store";
+import { list } from "../store/store";
+import { global } from "../store/global";
 import Swal from "sweetalert2";
 
 import "../assets/css/normalize.css";
@@ -300,37 +301,34 @@ export default {
   },
 
   created() {
-    console.log(this.$route.params)
+    this.$props.datas = global.getters.datas;
+    this.$props.type = this.$props.datas.type.value;
     axios({
       method: "get",
       url: "index.php?option=com_emundus_onboard&controller=form&task=getActualLanguage",
-
-
     }).then(response => {
-
       this.actualLanguage=response.data.msg;
     });
     this.actions.type = this.type;
     this.typeForAdd = this.type;
-    if (this.typeForAdd == "form") {
+    if (this.typeForAdd === "form") {
       this.type = "formulaire";
     }
-    if (this.typeForAdd != "files") {
-      this.actions.add_url =  'index.php?option=com_emundus_onboard&view=' + this.typeForAdd + '&layout=add'
-    }
+    this.actions.add_url =  'index.php?option=com_emundus_onboard&view=' + this.typeForAdd + '&layout=add'
     this.validateFilters();
   },
-  watch:{
+
+  watch: {
     type:function (val){
-
       this.actions.type = val;
-      this.typeForAdd = val=='formulaire'? 'form': val;
+      this.typeForAdd = val === 'formulaire' ? 'form' : val;
 
-      if (this.typeForAdd == "form") {
+      if (this.typeForAdd === "form") {
         this.type = "formulaire";
       }
-      if (this.typeForAdd != "files") {
-        let view= this.typeForAdd =='grilleEval' ?'form':this.typeForAdd
+
+      if (this.typeForAdd !== "files") {
+        let view= this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd
         this.actions.add_url =  'index.php?option=com_emundus_onboard&view=' + view  + '&layout=add'
       }
       this.validateFilters();
@@ -402,8 +400,8 @@ export default {
     },
 
     allFilters(filtersCount, filters) {
-      let controller=this.typeForAdd=='grilleEval'?'form':this.typeForAdd
-      if (this.type != "files") {
+      let controller = this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd
+      if (this.type !== "files") {
         axios.get("index.php?option=com_emundus_onboard&controller=" +
               controller +
               "&task=get" +
@@ -411,8 +409,6 @@ export default {
               "count" +
               filtersCount
           ).then(response => {
-
-
             axios.get(
                 "index.php?option=com_emundus_onboard&controller=" +
                   controller +
@@ -423,7 +419,7 @@ export default {
                 this.total = response.data.data;
                 list.commit("listUpdate", rep.data.data);
                 this.countPages = Math.ceil(this.total / this.limit);
-                if(this.type == 'email'){
+                if(this.type === 'email'){
                   axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
                     .then(catrep => {
                       this.email_categories = catrep.data.data;
@@ -453,7 +449,6 @@ export default {
       list.commit("resetSelectedItemsList");
     },
     selectItem(id) {
-
       list.commit("selectItem", id);
     }
   }
@@ -461,10 +456,6 @@ export default {
 </script>
 
 <style scoped>
-  h2 {
-    color: #de6339 !important;
-  }
-
   .loading-form{
     top: unset;
   }
