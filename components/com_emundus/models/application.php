@@ -4065,6 +4065,13 @@ class EmundusModelApplication extends JModelList
                         $class = 'Word2007';
                 }
              
+                // ? Check if render as pdf would be a better solution 
+                // $rendererName = \PhpOffice\PhpWord\Settings::PDF_RENDERER_TCPDF;
+                // \PhpOffice\PhpWord\Settings::setPdfRenderer($rendererName, JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf');
+                // $pdf = new \PhpOffice\PhpWord\Writer\PDF($phpWord);
+                // $pdf->save($fileName . '.pdf');
+                // $preview['content'] = '<iframe src="' . JPATH_BASE . DS . $fileName . '.pdf" width="99%" height="99%"></iframe>';
+
                 $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . $filePath, $class);
                 $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
                 $preview['content'] = $htmlWriter->getContent();
