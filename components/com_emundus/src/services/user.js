@@ -19,5 +19,18 @@ export default {
         } catch (e) {
             throw new Error(e);
         }
+    },
+    async getUserById(id) {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=users&task=getuserbyid', {
+                params: {
+                    id: id
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            throw new Error(e);
+        }
     }
 }
