@@ -3984,6 +3984,15 @@ class EmundusModelApplication extends JModelList
         return $html;
     }
 
+    /**
+     * Update attachment file, description, is_validated values
+     * 
+     * @param fnum file number
+     * @param user the user updating the file
+     * @param attachment values to update
+     * 
+     * @return (boolean) true or false 
+     */
     public function updateAttachment($fnum, $user, $attachment) {
         require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
 
@@ -4001,8 +4010,6 @@ class EmundusModelApplication extends JModelList
             ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
             ->where($db->quoteName('id') . ' = ' . $db->quote($attachment['id']));
 
-        // TODO: set modified and modified by
-
         //execute query
         try {
             $db->setQuery($query);
@@ -4012,11 +4019,16 @@ class EmundusModelApplication extends JModelList
             // log error
             return false;
         }
-
     }
 
-    // generate an attachment preview in html
-    public function getAttachmentPreview($user, $filename) 
+    /**
+     * Generate preview based on file types
+     * @param user id of the applicant
+     * @param filename
+     * 
+     * @return preview html tags
+     */
+    public function getAttachmentPreview($user, $fileName) 
     {
         $preview = [
             'status' => true,
@@ -4025,16 +4037,18 @@ class EmundusModelApplication extends JModelList
             'overflowY' => false,
             'parser' => 'html5'
         ];
-        $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
         
-        $file_exists = File::exists(EMUNDUS_PATH_REL . $user . "/" . $filename);
+        $filePath = EMUNDUS_PATH_REL . $user . "/" . $fileName;
+        $fileExists = File::exists($filePath);
 
-        if ($file_exists) {
+        if ($fileExists) {
+
             // create preview based on filetype
             if (in_array($extension, ['pdf', 'txt'])) {
-                $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $filename . '" width="99%" height="99%"></iframe>';
+                $preview['content'] = '<iframe src="' . $filePath . '" width="99%" height="99%"></iframe>';
             } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="' . EMUNDUS_PATH_REL . $user . "/" . $filename . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
+                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="' . $filePath . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
             } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {   
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
@@ -4051,7 +4065,7 @@ class EmundusModelApplication extends JModelList
                         $class = 'Word2007';
                 }
              
-                $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . EMUNDUS_PATH_REL . $user . "/" . $filename, $class);
+                $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . $filePath, $class);
                 $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
                 $preview['content'] = $htmlWriter->getContent();
                 $preview['overflowY'] = true;
@@ -4059,7 +4073,7 @@ class EmundusModelApplication extends JModelList
             } else if (in_array($extension, ['xls', 'xlsx', 'ods', 'csv'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
              
-                $phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_BASE . DS . EMUNDUS_PATH_REL . $user . "/" . $filename);
+                $phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_BASE . DS . $filePath);
                 $htmlWriter = new \PhpOffice\PhpSpreadsheet\Writer\HTML($phpSpreadsheet);
                 $htmlWriter->setGenerateSheetNavigationBlock(true);
                 $htmlWriter->setSheetIndex(null);
@@ -4069,11 +4083,11 @@ class EmundusModelApplication extends JModelList
                 $preview['parser'] = 'sheet';
             } else if (in_array($extension, ['ppt', 'pptx', 'odp'])) {
                 // ? PHPPresentation is not giving html support... need to create it manually ? 
-
+                $preview['content'] = $this->convertPowerPointToHTML($filePath);
             } else if (in_array($extension, ['mp3', 'wav', 'ogg'])) {
-                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><audio controls><source src="' . EMUNDUS_PATH_REL . $user . "/" . $filename . '" type="audio/' . $extension . '"></audio></div>';
+                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><audio controls><source src="' . $filePath . '" type="audio/' . $extension . '"></audio></div>';
             } else if (in_array($extension, ['mp4', 'webm', 'ogg'])) {
-                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><video controls  style="max-width: 100%;"><source src="' . EMUNDUS_PATH_REL . $user . "/" . $filename . '" type="video/' . $extension . '"></video></div>';
+                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><video controls  style="max-width: 100%;"><source src="' . $filePath . '" type="video/' . $extension . '"></video></div>';
             } else {
                 $preview['status'] = false;
                 $preview['content'] = '<p>' . JText::_('FILE_TYPE_NOT_SUPPORTED') . '</p>';
@@ -4084,5 +4098,50 @@ class EmundusModelApplication extends JModelList
         }
 
         return $preview;
+    }
+
+    private function convertPowerPointToHTML($filePath) 
+    {
+        $content = '';
+
+        // create a ziparchive
+        $zip = new ZipArchive;
+        
+        if ($zip->open($filePath)) {
+            // get xml content of all slides
+            $slides = [];
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $filename = $zip->getNameIndex($i);
+                if (strpos($filename, 'ppt/slides/slide') !== false) {
+                    $slides[] = $zip->getFromIndex($i);
+                }
+            }
+
+            // get style properties of all slides
+            $slideStyles = [];
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $filename = $zip->getNameIndex($i);
+                if (strpos($filename, 'ppt/slideMasters/slideMaster') !== false) {
+                    $slideStyles[] = $zip->getFromIndex($i);
+                }
+            }
+
+            $zip->close();
+            
+            // create html content from slides and style
+            $content = '<div class="wrapper" style="height: 100%;display: flex;flex-direction:column;justify-content: center;align-items: center;">';
+            foreach ($slides as $key => $slide) {
+                $content .= '<div class="slide" style="width: 100%;height: 100%;">';
+
+                $dom = new DOMDocument();
+                $dom->loadXML($slide);
+
+                $content .= $dom->saveXML();
+
+                $content .= '</div>';
+            }
+        }
+
+        return $content;
     }
 }
