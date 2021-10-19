@@ -3972,7 +3972,7 @@ class EmundusModelApplication extends JModelList
     }
 
     // generate an attachment preview in html
-    public function getAttachmentPreview($user, $attachment) 
+    public function getAttachmentPreview($user, $filename) 
     {
         $preview = [
             'status' => true,
@@ -3981,16 +3981,16 @@ class EmundusModelApplication extends JModelList
             'overflowY' => false,
             'parser' => 'html5'
         ];
-        $extension = strtolower(pathinfo($attachment['filename'], PATHINFO_EXTENSION));
+        $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         
-        $file_exists = File::exists(EMUNDUS_PATH_REL . $user . "/" . $attachment['filename']);
+        $file_exists = File::exists(EMUNDUS_PATH_REL . $user . "/" . $filename);
 
         if ($file_exists) {
             // create preview based on filetype
             if (in_array($extension, ['pdf', 'txt'])) {
-                $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" width="99%" height="99%"></iframe>';
+                $preview['content'] = '<iframe src="' . EMUNDUS_PATH_REL . $user . "/" . $filename . '" width="99%" height="99%"></iframe>';
             } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
+                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="' . EMUNDUS_PATH_REL . $user . "/" . $filename . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
             } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {   
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
@@ -4007,7 +4007,7 @@ class EmundusModelApplication extends JModelList
                         $class = 'Word2007';
                 }
              
-                $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'], $class);
+                $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . EMUNDUS_PATH_REL . $user . "/" . $filename, $class);
                 $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
                 $preview['content'] = $htmlWriter->getContent();
                 $preview['overflowY'] = true;
@@ -4015,7 +4015,7 @@ class EmundusModelApplication extends JModelList
             } else if (in_array($extension, ['xls', 'xlsx', 'ods', 'csv'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
              
-                $phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_BASE . DS . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename']);
+                $phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_BASE . DS . EMUNDUS_PATH_REL . $user . "/" . $filename);
                 $htmlWriter = new \PhpOffice\PhpSpreadsheet\Writer\HTML($phpSpreadsheet);
                 $htmlWriter->setGenerateSheetNavigationBlock(true);
                 $htmlWriter->setSheetIndex(null);
@@ -4027,9 +4027,9 @@ class EmundusModelApplication extends JModelList
                 // ? PHPPresentation is not giving html support... need to create it manually ? 
 
             } else if (in_array($extension, ['mp3', 'wav', 'ogg'])) {
-                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><audio controls><source src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" type="audio/' . $extension . '"></audio></div>';
+                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><audio controls><source src="' . EMUNDUS_PATH_REL . $user . "/" . $filename . '" type="audio/' . $extension . '"></audio></div>';
             } else if (in_array($extension, ['mp4', 'webm', 'ogg'])) {
-                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><video controls  style="max-width: 100%;"><source src="' . EMUNDUS_PATH_REL . $user . "/" . $attachment['filename'] . '" type="video/' . $extension . '"></video></div>';
+                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><video controls  style="max-width: 100%;"><source src="' . EMUNDUS_PATH_REL . $user . "/" . $filename . '" type="video/' . $extension . '"></video></div>';
             } else {
                 $preview['status'] = false;
                 $preview['content'] = '<p>' . JText::_('FILE_TYPE_NOT_SUPPORTED') . '</p>';
