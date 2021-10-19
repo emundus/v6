@@ -104,7 +104,7 @@ export default {
 <style lang="scss" scoped>
 #attachment-preview {
     height: 100%;
-    width: 50%;
+    width: 60%;
     overflow: hidden;
 
     &.overflow-x {
