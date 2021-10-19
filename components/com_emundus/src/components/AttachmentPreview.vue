@@ -56,13 +56,6 @@ export default {
         addSheetStyles() {
             // get div elements of first level
             const pages = this.$refs['a-preview'].shadowRoot.querySelectorAll('div');
-            const navigation = this.$refs['a-preview'].shadowRoot.querySelector('.navigation');
-
-            navigation.style.display = 'flex';
-            navigation.style.flexDirection = 'row';
-            navigation.style.justifyContent = 'flex-start';
-            navigation.style.alignItems = 'center';
-
             pages.forEach((div, key) => {
                 div.style.width = "fit-content";
                 div.style.margin = "20px auto";
@@ -73,20 +66,28 @@ export default {
                 }
             });
 
-            navigation.querySelectorAll('li').forEach((li, li_key) => {
-                li.style.margin = "0 10px";
-                li.style.listStyleType = "none";
+            const navigation = this.$refs['a-preview'].shadowRoot.querySelector('.navigation');
+            if (navigation) {
+                navigation.style.display = 'flex';
+                navigation.style.flexDirection = 'row';
+                navigation.style.justifyContent = 'flex-start';
+                navigation.style.alignItems = 'center';
 
-                li.addEventListener('click', () => {
-                    pages.forEach((div, div_key) => {
-                        if (div_key == li_key) {
-                            div.style.display = "block";
-                        } else {
-                            div.style.display = "none";
-                        }
+                navigation.querySelectorAll('li').forEach((li, li_key) => {
+                    li.style.listStyleType = "none";
+                    li.style.margin = "0 10px";
+
+                    li.addEventListener('click', () => {
+                        pages.forEach((div, div_key) => {
+                            if (div_key == li_key) {
+                                div.style.display = "block";
+                            } else {
+                                div.style.display = "none";
+                            }
+                        });
                     });
                 });
-            });
+            }
         }
     },
     watch: {
