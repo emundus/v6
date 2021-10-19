@@ -76,6 +76,7 @@ export default {
       toolbar: 'undo redo | forecolor bold italic underline strikethrough | fontsizeselect formatselect | image link preview | alignleft aligncenter alignright alignjustify hr | bullist numlist | outdent indent | insertfile media anchor| charmap emoticons backcolor | searchreplace print',
       fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
       content_css: baseUrl + 'skins/ui/oxide/content.min.css',
+      convert_urls: false,
       height: this.height,
       branding: false,
       elementpath: false,

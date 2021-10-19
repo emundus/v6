@@ -34,7 +34,7 @@
           </select>
         </div>
         <div class="form-group" :class="{ 'mb-0': translate.label}">
-          <label>{{Name}}* :</label>
+          <label>{{Name}}<span class="em-red-500-color">*</span> :</label>
           <div class="input-can-translate">
             <input v-model="label.fr" type="text" maxlength="40" class="form__input field-general w-input" id="menu_label" style="margin: 0" :class="{ 'is-invalid': errors}"/>
             <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" @click="translate.label = !translate.label"></button>

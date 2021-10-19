@@ -10,8 +10,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors.js');
-$document->addStyleSheet('media/com_emundus_onboard/app.css');
+$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
+$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 
@@ -53,6 +53,7 @@ JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS');
 JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
+JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC');
 
 ## TUTORIAL ##
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
@@ -78,4 +79,4 @@ $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 
 <div id="em-addCampaign-vue" campaign="<?= $this->id ;?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>" coordinatorAccess="<?= $coordinator_access ?>"></div>
 
-<script src="media/com_emundus_onboard/app.js"></script>
+<script src="media/com_emundus_onboard/app_onboard.js"></script>

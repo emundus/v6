@@ -34,6 +34,7 @@ class SecuritycheckprosViewlogs extends JViewLegacy
         JToolBarHelper::custom('delete_all', 'delete', 'delete', 'COM_SECURITYCHECKPRO_DELETE_ALL', false);
         JToolBarHelper::custom('add_to_blacklist', 'plus', 'plus', 'COM_SECURITYCHECKPRO_ADD_TO_BLACKLIST');
         JToolBarHelper::custom('add_to_whitelist', 'plus', 'plus', 'COM_SECURITYCHECKPRO_ADD_TO_WHITELIST');
+		JToolBarHelper::custom('add_exception', 'plus', 'plus', 'COM_SECURITYCHECKPRO_ADD_EXCEPTION');
 
         // Obtenemos los datos del modelo
             

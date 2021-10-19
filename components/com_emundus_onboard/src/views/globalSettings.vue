@@ -106,12 +106,12 @@
                   :manyLanguages="manyLanguages"
           ></editDatas>
 
-          <help-settings
+<!--          <help-settings
               v-if="menuHighlight == 8"
               ref="help"
               :actualLanguage="actualLanguage"
               :manyLanguages="manyLanguages"
-          ></help-settings>
+          ></help-settings>-->
         </transition>
       </div>
     </div>
@@ -186,7 +186,6 @@ export default {
         "Etiquettes",
         "Candidats",
         "Référentiels de données",
-        "Aide"
       ],
       [
         "Styling",
@@ -197,7 +196,6 @@ export default {
         "Tags",
         "Applicants",
         "Data repository",
-        "Help"
       ]
     ],
 
@@ -350,10 +348,10 @@ export default {
   color: #12DB42;
 }
 .bouton-sauvergarder-et-continuer,.loading-form-save{
-  position: fixed;
+  position: absolute;
   z-index: 10;
   width: auto;
-  margin-top: -14px;
+  margin-top: -33px;
   margin-right: 20px;
 }
 

@@ -156,7 +156,7 @@ if (!empty($this->custom_title)) :?>
 
             // Disable upload UI if
             if (!$block_upload) {
-                
+
                 if ($attachment->nb < $attachment->nbmax || $this->user->profile <= 4) {
                     $div .= '
                 <tr>
@@ -165,10 +165,10 @@ if (!empty($this->custom_title)) :?>
                 if ($attachment->allowed_types == 'video' && $addpipe_activation == 1) {
                     $document->addStyleSheet("//cdn.addpipe.com/2.0/pipe.css" );
                     $document->addScript("//cdn.addpipe.com/2.0/pipe.js" );
-                    
+
                     $div .= '<div id="recorder-'.$attachment->id.'-'.$attachment->nb.'"></div>';
                     $div .= '<pre id="log"></pre>';
-                    
+
                     $div .= '<script type="text/javascript">
     
                     var pipeParams = {
@@ -401,11 +401,10 @@ if (!empty($this->custom_title)) :?>
           });
 
           this.on("success", function(file, responseText) {
-
             // Handle the responseText here. For example, add the text to the preview element:
             var response = JSON.parse(responseText);
             var id = response["id"];
-
+            
             if (!response["status"]) {
                 // Remove the file preview.
                 this.removeFile(file);
@@ -463,6 +462,16 @@ if (!empty($this->custom_title)) :?>
                 // Add the button to the file preview element.
                 file.previewElement.appendChild(removeButton);
             }
+          });
+          this.on("error", function(file, responseText) {
+              this.removeFile(file);
+              Swal.fire({
+                    position: "top",
+                    type: "warning",
+                    text: responseText,
+                    confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
+                    showCancelButton: false
+                });
           });
         }
     }

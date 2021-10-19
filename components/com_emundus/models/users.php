@@ -201,7 +201,7 @@ class EmundusModelUsers extends JModelList {
             $query .= 'LEFT JOIN #__emundus_final_grade AS efg ON u.id = efg.student_id ';
         }
 
-        $query .= ' where 1=1 AND u.id != 1 ';
+        $query .= ' where 1=1 AND u.id NOT IN (1,62) ';
 
         if (isset($programme) && !empty($programme) && $programme[0] != '%') {
             $query .= ' AND ( esc.training IN ("'.implode('","', $programme).'")
@@ -796,25 +796,42 @@ class EmundusModelUsers extends JModelList {
         $news = $params['news'];
         $univ_id = $params['univ_id'];
 
+        if(!empty($params['id_ehesp'])){
+            $id_ehesp = $params['id_ehesp'];
+        }
+
         $dispatcher->trigger('onBeforeSaveEmundusUser', [$user_id, $params]);
-        if (empty($univ_id)) {
+        $dispatcher->trigger('callEventHandler', ['onBeforeSaveEmundusUser', ['user_id' => $user_id, 'params' => $params]]);
+
+        if(!empty($id_ehesp)){
+            $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id,id_ehesp) VALUES ('',".$user_id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','','".$univ_id."','".$id_ehesp."')";
+            $db->setQuery($query);
+            $db->execute();
+        }
+        elseif (empty($univ_id)) {
             $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','',0)";
             $db->setQuery($query);
             $db->execute();
-        } else {
+        }
+        else {
             $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','','".$univ_id."')";
             $db->setQuery($query);
             $db->execute();
         }
 	    $dispatcher->trigger('onAfterSaveEmundusUser', [$user_id, $params]);
+        $dispatcher->trigger('callEventHandler', ['onAfterSaveEmundusUser', ['user_id' => $user_id, 'params' => $params]]);
 
         if (!empty($groups)) {
             foreach ($groups as $group) {
 	            $dispatcher->trigger('onBeforeAddUserToGroup', [$user_id, $group]);
+                $dispatcher->trigger('callEventHandler', ['onBeforeAddUserToGroup', ['user_id' => $user_id, 'group' => $group]]);
+
                 $query = "INSERT INTO `#__emundus_groups` VALUES ('',".$user_id.",".$group.")";
                 $db->setQuery($query);
                 $db->execute();
+
 	            $dispatcher->trigger('onAfterAddUserToGroup', [$user_id, $group]);
+                $dispatcher->trigger('callEventHandler', ['onAfterAddUserToGroup', ['user_id' => $user_id, 'group' => $group]]);
             }
         }
 
@@ -822,29 +839,43 @@ class EmundusModelUsers extends JModelList {
             $connected = JFactory::getUser()->id;
             foreach ($campaigns as $campaign) {
 	            $dispatcher->trigger('onBeforeCampaignCandidature', [$user_id, $connected, $campaign]);
+                $dispatcher->trigger('callEventHandler', ['onBeforeCampaignCandidature', ['user_id' => $user_id, 'connected' => $connected, 'campaign' => $campaign]]);
+
                 $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`)
                                     VALUES ('.$user_id.', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'), LPAD(`applicant_id`, 7, \'0\')))';
                 $db->setQuery($query);
                 $db->execute();
+
 	            $dispatcher->trigger('onAfterCampaignCandidature', [$user_id, $connected, $campaign]);
+                $dispatcher->trigger('callEventHandler', ['onAfterCampaignCandidature', ['user_id' => $user_id, 'connected' => $connected, 'campaign' => $campaign]]);
+
             }
         }
 
 	    $dispatcher->trigger('onBeforeAddUserProfile', [$user_id, $profile]);
+        $dispatcher->trigger('callEventHandler', ['onBeforeAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
+
         $query="INSERT INTO `#__emundus_users_profiles`
                         VALUES ('','".$now."',".$user_id.",".$profile.",'','')";
         $db->setQuery($query);
         $db->execute() or die($db->getErrorMsg());
+
 	    $dispatcher->trigger('onAfterAddUserProfile', [$user_id, $profile]);
+        $dispatcher->trigger('callEventHandler', ['onAfterAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
+
 
         if (!empty($oprofiles)) {
             foreach ($oprofiles as $profile) {
 	            $dispatcher->trigger('onBeforeAddUserProfile', [$user_id, $profile]);
+                $dispatcher->trigger('callEventHandler', ['onBeforeAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
+
                 $query = "INSERT INTO `#__emundus_users_profiles`
                                 VALUES ('','".$now."',".$user_id.",".$profile.",'','')";
                 $db->setQuery($query);
                 $db->execute();
+
 	            $dispatcher->trigger('onAfterAddUserProfile', [$user_id, $profile]);
+                $dispatcher->trigger('callEventHandler', ['onAfterAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
 
                 $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.(int)$profile;
                 $db->setQuery($query);
@@ -918,7 +949,9 @@ class EmundusModelUsers extends JModelList {
         JPluginHelper::importPlugin('user', 'emundus');
         $dispatcher = JEventDispatcher::getInstance();
         $options = array('action' => 'core.login.site', 'remember' => false);
-        $results = $dispatcher->trigger( 'onUserLogin', $instance );
+
+        $dispatcher->trigger( 'onUserLogin', $instance );
+        $dispatcher->trigger('callEventHandler', ['onUserLogin', ['instance' => $instance]]);
 
         return $instance;
 
@@ -1394,20 +1427,29 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
-    // get programme associated to user groups
-    public function getUserGroupsProgramme($uid, $index = 'id') {
-        try {
-            $query = "SELECT esg.id, esg.label, esgc.course
-                      FROM #__emundus_groups as g
-                      LEFT JOIN #__emundus_setup_groups AS esg ON g.group_id = esg.id
-                      LEFT JOIN #__emundus_setup_groups_repeat_course AS esgc ON esgc.parent_id=esg.id
-                      WHERE g.user_id = " .$uid;
-            $db = $this->getDbo();
-            $db->setQuery($query);
+    /**
+     * getUserGroupsProgramme
+     *
+     * @param  mixed $uid
+     * @return array
+     */
+    public function getUserGroupsProgramme(int $uid) : array {
 
-            return $db->loadAssocList($index);
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select($db->quoteName('esgc.course'))
+            ->from($db->quoteName('#__emundus_groups', 'g'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups','esg').' ON '.$db->quoteName('g.group_id').' = '.$db->quoteName('esg.id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','esgc').' ON '.$db->quoteName('esgc.parent_id').' = '.$db->quoteName('esg.id'))
+            ->where($db->quoteName('g.user_id') . ' = ' . $uid);
+            
+        $db->setQuery($query);
+        try {
+            return $db->loadColumn();
         } catch(Exception $e) {
-            return false;
+            return [];
         }
     }
 

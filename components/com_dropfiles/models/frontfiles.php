@@ -187,7 +187,7 @@ class DropfilesModelFrontfiles extends JModelList
                 $query->where($categoryEquals);
             }
         } elseif (is_array($categoryId) && (count($categoryId) > 0)) {
-            JArrayHelper::toInteger($categoryId);
+            Joomla\Utilities\ArrayHelper::toInteger($categoryId);
             $categoryId = implode(',', $categoryId);
             if (!empty($categoryId)) {
                 $type = $this->getState('filter.category_id.include', true) ? 'IN' : 'NOT IN';
@@ -259,5 +259,173 @@ class DropfilesModelFrontfiles extends JModelList
     public function getStart()
     {
         return 0;
+    }
+
+    /**
+     * Get file referent to category
+     *
+     * @param integer|string $id_category   Category id
+     * @param array          $list_id_files List files id
+     * @param string         $ordering      Ordering
+     * @param string         $ordering_dir  Order direction
+     *
+     * @return array
+     */
+    public function getFilesRef($id_category, $list_id_files, $ordering, $ordering_dir)
+    {
+        $modelCate = JModelLegacy::getInstance('Category', 'dropfilesModel');
+        $results = ($this->getListOfCate($id_category)) ? $this->getListOfCate($id_category) : array();
+        $files = array();
+        foreach ($results as $result) {
+            if (!in_array($result->id, $list_id_files)) {
+                continue;
+            }
+            $files[] = $result;
+        }
+
+        return  $files;
+    }
+
+    /**
+     * Get file referent to category
+     *
+     * @param integer|string $id_category Category id
+     *
+     * @return object
+     */
+    public function getListOfCate($id_category)
+    {
+        // Create a new query object.
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        // Select the required fields from the table.
+        $query->select(
+            $this->getState(
+                'list.select',
+                'a.id, a.title, a.file, ' . // a.alias, a.title_alias, a.introtext, ' .
+                'a.ext, ' .
+                'a.size, ' .
+                'a.hits, ' .
+                'a.description, ' .
+                'a.version, ' .
+                'a.canview, ' .
+                'a.catid, a.created_time,a.modified_time,a.custom_icon'
+            )
+        );
+
+        $query->from('#__dropfiles_files AS a');
+
+        // Join over the categories.
+        $query->select('c.title AS category_title, c.path AS category_route,
+                        c.access AS category_access, c.alias AS category_alias');
+        $query->join('LEFT', '#__categories AS c ON c.id = a.catid');
+
+        // Join over the categories to get parent category titles
+        $query->select('parent.title as parent_title, parent.id as parent_id,
+                        parent.path as parent_route, parent.alias as parent_alias');
+        $query->join('LEFT', '#__categories as parent ON parent.id = c.parent_id');
+
+        // Join to check for category published state in parent categories up the tree
+//      $query->select('c.published, CASE WHEN badcats.id is null THEN c.published ELSE 0 END AS parents_published');
+        $query->select('c.published, c.published AS parents_published');
+        $subquery = 'SELECT cat.id as id FROM #__categories AS cat JOIN #__categories AS parent ';
+        $subquery .= 'ON cat.lft BETWEEN parent.lft AND parent.rgt ';
+        $subquery .= 'WHERE parent.extension = ' . $db->quote('com_dropfiles');
+
+        $query->join('LEFT OUTER', '(' . $subquery . ') AS badcats ON badcats.id = c.id');
+
+        // Filter by access level.
+        $access = $this->getState('filter.access');
+        if ($access) {
+            $user = JFactory::getUser();
+            $groups = implode(',', $user->getAuthorisedViewLevels());
+//          $query->where('a.access IN ('.$groups.')');
+            $query->where('c.access IN (' . $groups . ')');
+        }
+
+        // Filter by a single or group of categories
+        $categoryId = $id_category;
+
+        if (is_numeric($categoryId)) {
+            $type = $this->getState('filter.category_id.include', true) ? '= ' : '<> ';
+
+            // Add subcategory check
+            $includeSubcategories = $this->getState('filter.subcategories', false);
+            $categoryEquals = 'a.catid ' . $type . (int)$categoryId;
+
+            if ($includeSubcategories) {
+                $levels = (int)$this->getState('filter.max_category_levels', '1');
+                // Create a subquery for the subcategory list
+                $subQuery = $db->getQuery(true);
+                $subQuery->select('sub.id');
+                $subQuery->from('#__categories as sub');
+                $subQuery->join('INNER', '#__categories as this ON sub.lft > this.lft AND sub.rgt < this.rgt');
+                $subQuery->where('this.id = ' . (int)$categoryId);
+                if ($levels >= 0) {
+                    $subQuery->where('sub.level <= this.level + ' . $levels);
+                }
+
+                // Add the subquery to the main query
+                $query->where('(' . $categoryEquals . ' OR a.catid IN (' . $subQuery->__toString() . '))');
+            } else {
+                $query->where($categoryEquals);
+            }
+        } elseif (is_array($categoryId) && (count($categoryId) > 0)) {
+            Joomla\Utilities\ArrayHelper::toInteger($categoryId);
+            $categoryId = implode(',', $categoryId);
+            if (!empty($categoryId)) {
+                $type = $this->getState('filter.category_id.include', true) ? 'IN' : 'NOT IN';
+                $query->where('a.catid ' . $type . ' (' . $categoryId . ')');
+            }
+        }
+        // Filter by publish dates.
+        $nullDate = $db->quote($db->getNullDate());
+        $date = JFactory::getDate();
+
+        $nowDate = $db->quote($date->toSql());
+
+        $query->where('(a.publish = ' . $nullDate . ' OR a.publish <= ' . $nowDate . ')');
+        $query->where('(a.publish_down = ' . $nullDate . ' OR a.publish_down >= ' . $nowDate . ')');
+        $query->where('a.state = 1');
+        // Filter by language
+        if ($this->getState('filter.language')) {
+            $query->where('a.language in (' . $db->quote(JFactory::getLanguage()->getTag())
+                . ',' . $db->quote('*') . ')');
+        }
+
+        // Add the list ordering clause.
+        $allowOrdering = array(
+            'ordering',
+            'ext',
+            'title',
+            'description',
+            'size',
+            'created_time',
+            'modified_time',
+            'version',
+            'hits'
+        );
+
+        $ordering = $this->getState('list.ordering', 'a.ordering');
+        $orderingDirection = $this->getState('list.direction', 'ASC');
+
+        if (empty($ordering) || !in_array($ordering, $allowOrdering)) {
+            $ordering = 'ordering';
+        }
+
+        $query->order($ordering . ' ' . $orderingDirection);
+
+        $query->group('a.id, a.title, a.catid, a.state, badcats.id, c.title, c.path, c.access, c.alias, ' .
+            'parent.title, parent.id, parent.path, parent.alias, c.published, c.lft, parent.lft, c.id');
+
+        if (!$db->setQuery($query)) {
+            return false;
+        }
+        if (!$db->execute()) {
+            return false;
+        }
+
+        return $db->loadObjectList();
     }
 }

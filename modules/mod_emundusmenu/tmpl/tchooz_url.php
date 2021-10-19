@@ -18,9 +18,10 @@ if ($item->menu_image) {
 		$linktype = '<img src="'.$item->menu_image.'" alt="'.$item->title.'" />';
 } else {
     if($item->deeper) {
+        $item->title[0]==='P'? $linktype = '<img src="'.JURI::base().'images/emundus/menus/parameters.png" alt="'.$item->title.'" height="50" width="50" /><span class="image-title" style="display: none;opacity: 0">'.$item->title.'</span>':
+
         $linktype = '<span class="simple-letter">' . $item->title[0] . '</span><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';
     } else {
-        //$linktype = 'test';
         $linktype = '<span>' . $item->title . '</span>';
     }
 }

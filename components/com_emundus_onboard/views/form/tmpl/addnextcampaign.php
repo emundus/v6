@@ -10,8 +10,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors.js');
-$document->addStyleSheet('media/com_emundus_onboard/app.css');
+$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
+$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
 JText::script('COM_EMUNDUS_ONBOARD_FROM');
 JText::script('COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED');
@@ -75,6 +75,7 @@ JText::script('COM_EMUNDUS_ONBOARD_EDIT_DOCUMENT');
 JText::script('COM_EMUNDUS_ONBOARD_REMOVE_DOCUMENT');
 JText::script('COM_EMUNDUS_ONBOARD_ADD_DOCUMENT');
 JText::script('COM_EMUNDUS_ONBOARD_DELETE_DOCUMENT');
+JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC');
 
 JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER');
 JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME');
@@ -201,6 +202,8 @@ JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
 ## END ##
 
+JText::script('DATE_FORMAT_JS_LC2');
+
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0 , 2);
 $languages = JLanguageHelper::getLanguages();
@@ -213,4 +216,4 @@ if(count($languages) > 1){
 
 <div id="em-addFormNextCampaign-vue" campaignId="<?= $this->cid ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>" index="<?= $this->index ?>"></div>
 
-<script src="media/com_emundus_onboard/app.js"></script>
+<script src="media/com_emundus_onboard/app_onboard.js"></script>

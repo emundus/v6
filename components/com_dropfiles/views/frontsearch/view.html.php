@@ -46,7 +46,7 @@ class DropfilesViewFrontsearch extends JViewLegacy
 
         $active = $app->getMenu()->getActive();
         if ($active && $active->component === 'com_dropfiles' && $active->query['view'] === 'frontsearch') {
-            $layoutParams = $active->params;
+            $layoutParams = $active->getParams();
             $this->Itemid = $active->id;
             $aTags = $layoutParams->get('atags', array());
             if (!(count($aTags) === 0 || (count($aTags) === 1 && $aTags[0] === ''))) {

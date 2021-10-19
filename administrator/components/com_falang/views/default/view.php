@@ -44,7 +44,8 @@ class FalangViewDefault extends JViewLegacy {
 	{
 		$document = JFactory::getDocument();
 		$document->addStyleSheet(JURI::base().'components/com_falang/assets/css/falang.css');
-		
+		$document->addStyleSheet(JURI::base().'components/com_falang/assets/css/toastr.css');
+
 		// Get data from the model
 		$this->state		= $this->get('State');
 		// Are there messages to display ?

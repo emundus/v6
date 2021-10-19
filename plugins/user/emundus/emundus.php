@@ -49,8 +49,8 @@ class plgUserEmundus extends JPlugin
         $db->setQuery('SHOW TABLES');
         $tables = $db->loadColumn();
         foreach($tables as $table) {
-            if (strpos($table, '_messages')>0)
-                $db->setQuery('DELETE FROM '.$table.' WHERE user_id_from = '.(int) $user['id'].' OR user_id_to = '.(int) $user['id']);
+            if (strpos($table, '_messages')>0 && !strpos($table, '_eb_'))
+                $query = 'DELETE FROM '.$table.' WHERE user_id_from = '.(int) $user['id'].' OR user_id_to = '.(int) $user['id'];
             if (strpos($table, 'emundus_') === FALSE) continue;
             if (strpos($table, 'emundus_group_assoc')>0) continue;
             if (strpos($table, 'emundus_groups_eval')>0) continue;
@@ -59,12 +59,18 @@ class plgUserEmundus extends JPlugin
             if (strpos($table, '_repeat')>0) continue;
             if (strpos($table, 'setup_')>0 || strpos($table, '_country')>0 || strpos($table, '_users')>0 || strpos($table, '_acl')>0) continue;
             if (strpos($table, '_files_request')>0 || strpos($table, '_evaluations')>0 || strpos($table, '_final_grade')>0)
-                $db->setQuery('DELETE FROM '.$table.' WHERE student_id = '.(int) $user['id']);
+                $query = 'DELETE FROM '.$table.' WHERE student_id = '.(int) $user['id'];
             elseif (strpos($table, '_uploads')>0 || strpos($table, '_groups')>0 || strpos($table, '_emundus_users')>0 || strpos($table, '_emundus_emailalert')>0)
-                $db->setQuery('DELETE FROM '.$table.' WHERE user_id = '.(int) $user['id']);
+                $query = 'DELETE FROM '.$table.' WHERE user_id = '.(int) $user['id'];
             elseif (strpos($table, '_emundus_comments')>0 || strpos($table, '_emundus_campaign_candidature')>0)
-                $db->setQuery('DELETE FROM '.$table.' WHERE applicant_id = '.(int) $user['id']);
-            $db->execute();
+                $query = 'DELETE FROM '.$table.' WHERE applicant_id = '.(int) $user['id'];
+            else continue;
+            try {
+                $db->setQuery($query);
+                $db->execute();
+            } catch (Exception $exception) {
+                continue;
+            }
         }
         $dir = EMUNDUS_PATH_ABS.$user['id'].DS;
         if (!$dh = @opendir($dir))
@@ -205,6 +211,7 @@ class plgUserEmundus extends JPlugin
                 else{
                     $name= $username[1];
                 }
+
                 $details['name'] = $name;
                 $details['emundus_profile']['lastname'] = $name;
                 $details['firstname'] = $username[0];
@@ -285,14 +292,18 @@ class plgUserEmundus extends JPlugin
 
             } elseif (!empty($lastname) && !empty($firstname)) {
                 // Update name and firstname from #__users
-                $db->setQuery('UPDATE #__users SET name='.$db->quote(ucfirst($firstname)).' '.$db->quote(strtoupper($lastname)).' WHERE id='.$user['id']);
+                $db->setQuery('UPDATE #__users SET name='.$db->quote(ucfirst($firstname) . ' ').' '.$db->quote(strtoupper($lastname)).' WHERE id='.$user['id']);
                 $db->execute();
 
                 $db->setQuery('UPDATE #__emundus_users SET lastname='.$db->quote(strtoupper($lastname)).', firstname='.$db->quote(ucfirst($firstname)).' WHERE user_id='.$user['id']);
                 $db->execute();
 
                 $db->setQuery('UPDATE #__emundus_personal_detail SET last_name='.$db->quote(strtoupper($lastname)).', first_name='.$db->quote(ucfirst($firstname)).' WHERE user='.$user['id']);
-                $db->execute();
+                try {
+                    $db->execute();
+                } catch (Exception $e) {
+                    // catch any database errors.
+                }
 
                 $this->onUserLogin($user);
 

@@ -1,6 +1,6 @@
 <template>
   <div id="list">
-    <actions
+    <list-header
       v-if="type != 'files'"
       :data="actions"
       :selected="selecedItems"
@@ -11,21 +11,64 @@
       :chercheGo="chercheGo"
       :validateFilters="validateFilters"
       :nbresults="nbresults"
-      :isEmpty="isEmpty"
-      :coordinatorAccess="coordinatorAccess"
-    ></actions>
+    ></list-header>
 
-    <ul class="form-section email-sections" v-if="type == 'email' && !loading && total != 0">
-      <li>{{Categories}} : </li>
+    <div class="filters-menu">
+      <div class="search">
+        <input class="searchTerm"
+               :placeholder="translations.Rechercher"
+               v-model="recherche"
+               @keyup="cherche(recherche) || debounce"
+               @keyup.enter="chercheGo(recherche)"/>
+      </div>
+      <v-popover :popoverArrowClass="'custom-popover-arrow'">
+        <button class="tooltip-target b3 card-button"></button>
+
+        <template slot="popover">
+          <filters
+              v-if="type != 'files'"
+              :data="actions"
+              :selected="selecedItems"
+              :updateTotal="updateTotal"
+              :filter="filter"
+              :sort="sort"
+              :cherche="cherche"
+              :chercheGo="chercheGo"
+              :validateFilters="validateFilters"
+              :nbresults="nbresults"
+          ></filters>
+        </template>
+      </v-popover>
+    </div>
+
+    <ul class="form-section email-sections" v-if="type == 'email' && !loading && total != 0 && email_categories.length > 0">
+      <li>{{translations.Categories}} : </li>
       <li>
-        <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">{{All}}</a>
+        <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">{{translations.All}}</a>
       </li>
       <li v-for="(cat, index) in email_categories" v-if="cat != ''">
         <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
       </li>
-      <li>
+      <!--<li>
         <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">{{System}}</a>
+      </li>-->
+    </ul>
+    <ul class="form-section email-sections" v-if="(type == 'formulaire'|| type == 'grilleEval')  && !loading ">
+      <!--<li>Types : </li>-->
+
+      <li>
+        <a :class="typeForAdd === 'form'||type === 'formulaire' ? 'form-section__current' : ''" @click="typeForAdd = 'form' ; type='formulaire'">Candidature</a>
       </li>
+      <li>
+        <a :class="typeForAdd === 'grilleEval' ? 'form-section__current' : ''" @click="typeForAdd = 'grilleEval' ; type='grilleEval'">Grilles d'évaluation</a>
+      </li>
+      <!--<li v-for="(cat, index) in email_categories" v-if="cat != ''">
+        <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
+      </li>-->
+
+      <!--<li>
+        <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">{{System}}</a>
+      </li>-->
     </ul>
 
 <!--    <transition :name="'slide-down'" type="transition">
@@ -64,7 +107,7 @@
     </transition>
 
     <div v-show="total > 0 || type == 'files'">
-      <transition :name="'slide-down'" type="transition">
+<!--      <transition :name="'slide-down'" type="transition">
         <div v-show="total > 0" class="buttonSelectDeselect">
           <button @click="!isEmpty ? selectAllItem() : deselectItem()"
             class="btn-selectAll"
@@ -76,26 +119,25 @@
           </div>
           <div v-show="isEmpty" id="buttonLabelDeselect">{{ Deselect }}</div>
         </div>
-      </transition>
+      </transition>-->
 
-      <transition-group :name="'slide-down'" type="transition" style="display: inline-block;margin-bottom: 5%;width: 100%">
-        <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
-          <component v-bind:is="type" :data="data" :selectItem="selectItem" />
+      <transition-group :name="'slide-down'" type="transition" style="display: inline-block;margin: 16px 0;width: 100%">
+        <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" :actualLanguage="actualLanguage"/>
         </div>
-        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
-          <component v-bind:is="type" :data="data" :selectItem="selectItem" :models="list" />
+
+        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" :models="list" />
         </div>
-        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
-          <component v-bind:is="type" :data="data" :selectItem="selectItem" />
+
+        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" />
         </div>
-        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
-          <component v-bind:is="type" :data="data" :selectItem="selectItem" />
+
+        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" />
         </div>
       </transition-group>
-
-      <div v-if="type == 'files'">
-        <component v-bind:is="type" />
-      </div>
 
       <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">
         <ul class="pagination" v-if="total > 0" style="position: absolute;bottom: 0;width: 100%;">
@@ -160,9 +202,11 @@ import axios from "axios";
 import program from "../components/list_components/programItem";
 import campaign from "../components/list_components/camapaignItem";
 import email from "../components/list_components/emailItem";
+import grilleEval from  "../components/list_components/evalgridItem"
 import formulaire from "../components/list_components/formItem";
 import files from "../components/list_components/files";
-import actions from "../components/list_components/action_menu";
+import filters from "../components/list_components/filters_menu";
+import listHeader from "../components/list_components/list_header";
 import tasks from "./tasks"
 import { list } from "../store";
 import Swal from "sweetalert2";
@@ -187,15 +231,15 @@ export default {
     email,
     formulaire,
     files,
-    actions,
-    tasks
+    filters,
+    listHeader,
+    tasks,
+    grilleEval
   },
 
   name: "list",
   props: {
-    type: String,
-    actualLanguage: String,
-    coordinatorAccess: Number
+    type: String
   },
   data: () => ({
     selecedItems: [],
@@ -204,18 +248,24 @@ export default {
       add_url: ""
     },
     loading: false,
+    actualLanguage:'',
+    recherche: "",
+    timer: null,
 
-    Select: Joomla.JText._("COM_EMUNDUS_ONBOARD_SELECT"),
-    Deselect: Joomla.JText._("COM_EMUNDUS_ONBOARD_DESELECT"),
-    Total: Joomla.JText._("COM_EMUNDUS_ONBOARD_TOTAL"),
-    noCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOCAMPAIGN"),
-    noProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOPROGRAM"),
-    noEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOEMAIL"),
-    noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
-    noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
-    All: Joomla.JText._("COM_EMUNDUS_ONBOARD_ALL"),
-    System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
-    Categories: Joomla.JText._("COM_EMUNDUS_ONBOARD_CATEGORIES"),
+    translations:{
+      Select: Joomla.JText._("COM_EMUNDUS_ONBOARD_SELECT"),
+      Deselect: Joomla.JText._("COM_EMUNDUS_ONBOARD_DESELECT"),
+      Total: Joomla.JText._("COM_EMUNDUS_ONBOARD_TOTAL"),
+      noCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOCAMPAIGN"),
+      noProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOPROGRAM"),
+      noEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOEMAIL"),
+      noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
+      noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
+      All: Joomla.JText._("COM_EMUNDUS_ONBOARD_ALL"),
+      System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
+      Categories: Joomla.JText._("COM_EMUNDUS_ONBOARD_CATEGORIES"),
+      Rechercher: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH"),
+    },
     total: 0,
     filtersCount: "",
     filters: "",
@@ -249,6 +299,15 @@ export default {
   },
 
   created() {
+    axios({
+      method: "get",
+      url: "index.php?option=com_emundus_onboard&controller=form&task=getActualLanguage",
+
+
+    }).then(response => {
+
+      this.actualLanguage=response.data.msg;
+    });
     this.actions.type = this.type;
     this.typeForAdd = this.type;
     if (this.typeForAdd == "form") {
@@ -259,8 +318,29 @@ export default {
     }
     this.validateFilters();
   },
+  watch:{
+    type:function (val){
+
+      this.actions.type = val;
+      this.typeForAdd = val=='formulaire'? 'form': val;
+
+      if (this.typeForAdd == "form") {
+        this.type = "formulaire";
+      }
+      if (this.typeForAdd != "files") {
+        let view= this.typeForAdd =='grilleEval' ?'form':this.typeForAdd
+        this.actions.add_url =  'index.php?option=com_emundus_onboard&view=' + view  + '&layout=add'
+      }
+      this.validateFilters();
+    }
+
+  },
 
   methods: {
+    updateLoading(value) {
+      this.loading = value;
+    },
+
     validateFilters() {
       this.loading = true;
       this.filtersCount = this.filtersCountFilter + this.filtersCountSearch;
@@ -288,10 +368,16 @@ export default {
     },
 
     cherche(recherche) {
-      this.filtersCountSearch = "&rechercheCount=" + recherche;
-      this.filtersSearch = "&recherche=" + recherche;
-      this.search = recherche;
-      this.validateFilters();
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+      this.timer = setTimeout(() => {
+        this.filtersCountSearch = "&rechercheCount=" + recherche;
+        this.filtersSearch = "&recherche=" + recherche;
+        this.search = recherche;
+        this.validateFilters();
+      }, 800);
     },
 
     chercheGo(recherche) {
@@ -314,26 +400,26 @@ export default {
     },
 
     allFilters(filtersCount, filters) {
+      let controller=this.typeForAdd=='grilleEval'?'form':this.typeForAdd
       if (this.type != "files") {
         axios.get("index.php?option=com_emundus_onboard&controller=" +
-              this.typeForAdd +
+              controller +
               "&task=get" +
               this.typeForAdd +
               "count" +
               filtersCount
           ).then(response => {
+
+
             axios.get(
                 "index.php?option=com_emundus_onboard&controller=" +
-                  this.typeForAdd +
+                  controller +
                   "&task=getall" +
                   this.typeForAdd +
                   filters
               ).then(rep => {
                 this.total = response.data.data;
                 list.commit("listUpdate", rep.data.data);
-                if(typeof rep.data.forms_updating != 'undefined') {
-                  list.commit("formsAccessUpdate", rep.data.forms_updating);
-                }
                 this.countPages = Math.ceil(this.total / this.limit);
                 if(this.type == 'email'){
                   axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
@@ -365,6 +451,7 @@ export default {
       list.commit("resetSelectedItemsList");
     },
     selectItem(id) {
+
       list.commit("selectItem", id);
     }
   }

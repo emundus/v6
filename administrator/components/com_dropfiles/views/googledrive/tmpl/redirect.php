@@ -15,6 +15,9 @@
 // No direct access.
 defined('_JEXEC') || die;
 ?>
+
+<?php echo JText::_('COM_DROPFILES_CONFIG_CLOUD_CLOSE_AND_RELOAD'); ?>
+
 <script>
     window.opener.location.href = window.opener.location.href;
     self.close();

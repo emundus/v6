@@ -6,14 +6,11 @@
           <div class="column-inner-block w-col w-col-8 pl-30px">
             <div class="list-item-header">
               <div class="block-label">
-                <a class="item-select w-inline-block"
+<!--                <a class="item-select w-inline-block"
                    v-on:click="selectItem(data.id)"
                    :class="{ active: isActive }">
-                </a>
+                </a>-->
                 <h2 class="nom-campagne-block">{{ data.label }}</h2>
-              </div>
-              <div :class="isPublished ? 'publishedTag' : isFinish ? 'passeeTag' : 'unpublishedTag'">
-                {{ isPublished ? publishedTag : isFinish ? passeeTag : unpublishedTag }}
               </div>
             </div>
             <div class="date-menu">
@@ -28,16 +25,37 @@
               }}
             </div>
             <p class="description-block" v-html="data.short_description"></p>
-            <div class="stats-block">
-              <div class="nb-dossier" style="margin-left: 35px">
+            <div class="d-flex">
+              <div :class="isPublished ? 'publishedTag' : isFinish ? 'passeeTag' : 'unpublishedTag'">
+                {{ isPublished ? publishedTag : isFinish ? passeeTag : unpublishedTag }}
+              </div>
+              <div class="nb-dossier">
                 <div>{{ data.nb_files }} <span v-if="data.nb_files > 1">{{ Files }}</span><span v-else>{{ File }}</span></div>
               </div>
-              <a
-                  @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + data.id + '&index=0')"
-                  class="cta-block pointer"
-                  :title="AdvancedSettings">
+            </div>
+            <div>
+              <hr class="divider-card">
+            <div class="stats-block">
+              <a @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + data.id + '&index=0')"
+                 class="bouton-ajouter pointer add-button-div"
+                 :title="AdvancedSettings">
                 <em class="fas fa-pen"></em>
+                <span>{{Modify}}</span>
               </a>
+              <v-popover :popoverArrowClass="'custom-popover-arraow'">
+                <button class="tooltip-target b3 card-button"></button>
+
+                <template slot="popover">
+                  <actions
+                      :data="actions"
+                      :selected="this.data.id"
+                      :published="isPublished"
+                      @validateFilters="validateFilters()"
+                      @updateLoading="updateLoading"
+                  ></actions>
+                </template>
+              </v-popover>
+            </div>
             </div>
           </div>
           <!--<div class="column-inner-block-2 w-clearfix w-col w-col-4">
@@ -70,14 +88,17 @@
 import moment from "moment";
 import { list } from "../../store";
 import axios from "axios";
+import actions from "./action_menu";
 
 const qs = require("qs");
 
 export default {
   name: "camapaignItem",
+  components: {actions},
   props: {
     data: Object,
-    selectItem: Function
+    selectItem: Function,
+    actions: Object,
   },
   data() {
     return {
@@ -98,6 +119,14 @@ export default {
   },
 
   methods: {
+    updateLoading(value){
+      this.$emit('updateLoading',value);
+    },
+
+    validateFilters(){
+      this.$emit('validateFilters');
+    },
+
     moment(date) {
       return moment(date);
     },

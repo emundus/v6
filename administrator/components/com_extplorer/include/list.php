@@ -48,13 +48,13 @@ function make_list(&$_list1, &$_list2) {
 	}
 
 	if (is_array($list1)) {
-		while (list($key, $val) = each($list1)) {
+		foreach($list1 as $key => $val) {
 			$list[$key] = $val;
 		}
 	}
 
 	if (is_array($list2)) {
-		while (list($key, $val) = each($list2)) {
+		foreach($list2 as $key => $val) {
 			$list[$key] = $val;
 		}
 	}
@@ -375,7 +375,7 @@ function send_dircontents($dir, $sendWhat = 'files') {	// print table of files
 }
 class ext_List extends ext_Action {
 
-	function execAction($dir, $item='') {			// list directory contents
+	static function execAction($dir, $item='') {			// list directory contents
 		global $dir_up, $mosConfig_live_site, $_VERSION;
 
 		$allow = ($GLOBALS["permissions"]&01) == 01;

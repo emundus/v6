@@ -28,10 +28,14 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 						<h3 class="panel-title"><?php echo JText::_('FILTERS')?></h3> &ensp;&ensp;
 					</div>
 					<div class="buttons" style="float:right; margin-top:0px">
-                        <input value="&#xf0e2" type="button" class="btn btn-sm btn-danger" id="clear-search" style="font-family: 'FontAwesome';" title="<?php echo JText::_('CLEAR_BTN');?>"/>
+                        <label for="clear-search">
+                            <img src="<?= JURI::base() ;?>media/com_emundus/images/icones/clear-filters.png" style="width: 30px;filter: invert(1);"/>
+                        </label>
+
+                        <input type="button" style="display: none" id="clear-search" title="<?php echo JText::_('CLEAR_BTN');?>"/>
 					</div>
 				</div>
-				
+
 				<div class="panel-body em-containerFilter-body">
 					<?php echo @$this->filters; ?>
 				</div>
@@ -117,7 +121,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
        // search();
         reloadActions();
 	})
-	
+
 </script>
 
 

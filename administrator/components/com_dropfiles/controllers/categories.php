@@ -15,18 +15,12 @@
 
 // no direct access
 defined('_JEXEC') || die;
-
-$path_admin_categories = JPATH_ROOT . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components';
-$path_admin_categories .= DIRECTORY_SEPARATOR . 'com_categories' . DIRECTORY_SEPARATOR . 'controllers';
-$path_admin_categories .= DIRECTORY_SEPARATOR . 'categories.php';
-
-require_once($path_admin_categories);
 jimport('joomla.filesystem.folder');
 
 /**
  * Class DropfilesControllerCategories
  */
-class DropfilesControllerCategories extends CategoriesControllerCategories
+class DropfilesControllerCategories extends JControllerAdmin
 {
     /**
      * Proxy for getModel
@@ -115,6 +109,13 @@ class DropfilesControllerCategories extends CategoriesControllerCategories
                     } else {
                         $model->deleteCatOneDriveFiles($category->cloud_id);
                     }
+                } elseif ($category->type === 'onedrivebusiness') {
+                    $onedriveBusiness = new DropfilesOneDriveBusiness();
+                    if (!$onedriveBusiness->delete($category->cloud_id)) {
+                        $errors[] = 'error while deleting directory, please delete google drive folder manually'; //todo: translate
+                    } else {
+                        $model->deleteCatOneDriveBusinessFiles($category->cloud_id);
+                    }
                 } else {
                     $path = DropfilesBase::getFilesPath($cid[0]);
                     if (is_dir($path)) {
@@ -151,6 +152,14 @@ class DropfilesControllerCategories extends CategoriesControllerCategories
                             } else {
                                 $model->deleteCatOneDriveFiles($category->cloud_id);
                             }
+                        }
+                        if ($category->type === 'onedrivebusiness') {
+                            $onedriveBusiness = new DropfilesOneDriveBusiness();
+                            if (!$onedriveBusiness->delete($category->cloud_id)) {
+                                $errors[] = 'error while deleting directory, please delete google drive folder manually'; //todo: translate
+                            } else {
+                                $model->deleteCatOneDriveBusinessFiles($category->cloud_id);
+                            }
                         } else {
                             $path = DropfilesBase::getFilesPath($item->id);
                             if (is_dir($path)) {
@@ -166,6 +175,9 @@ class DropfilesControllerCategories extends CategoriesControllerCategories
             } else {
                 $errors[] = $model->getError();
             }
+            // Update files count
+            $categoriesModel = $this->getModel('Categories', 'DropfilesModel');
+            $categoriesModel->updateFilesCount();
             if (count($errors)) {
                 $this->exitStatus(implode('<br/>', $errors));
             }
@@ -180,6 +192,8 @@ class DropfilesControllerCategories extends CategoriesControllerCategories
      */
     public function order()
     {
+        JModelLegacy::addIncludePath(JPATH_ROOT . '/administrator/components/com_dropfiles/models/', 'DropfilesModel');
+        $modelOneDriveBusinessCategory = JModelLegacy::getInstance('OnedriveBusinessCategory', 'dropfilesModel');
         $app = JFactory::getApplication();
         $position = $app->input->get('position', 'after');
         $pk = $app->input->getInt('pk', null);
@@ -198,7 +212,7 @@ class DropfilesControllerCategories extends CategoriesControllerCategories
             }
         }
 
-        if ((int) $ref === 0) {
+        if ((int)$ref === 0) {
             $ref = 1;
         }
         if ($position !== 'after') {
@@ -215,7 +229,7 @@ class DropfilesControllerCategories extends CategoriesControllerCategories
                 if ($params->get('google_credentials', '')) {
                     $itemInfo = $thisModel->getOneCatByLocalId($pk);
                     $parentInfo = $thisModel->getOneCatByLocalId($itemInfo->parent_id);
-                    if ($parentInfo->cloud_id !== null) {
+                    if (isset($parentInfo->cloud_id) && $parentInfo->cloud_id !== null) {
                         $dropfilesGoogle->moveFile($itemInfo->cloud_id, $parentInfo->cloud_id);
                     } else {
                         $dropfilesGoogle->moveFile($itemInfo->cloud_id, $params->get('google_base_folder'));
@@ -261,6 +275,8 @@ class DropfilesControllerCategories extends CategoriesControllerCategories
                         $onedrive->moveFile($itemInfo->cloud_id, $parent_cloud_id);
                     }
                 }
+            } elseif ($dragType === 'onedrivebusiness') {
+                $modelOneDriveBusinessCategory->changeOrder($pk);
             }
             $this->exitStatus(true, $pk . ' ' . $position . ' ' . $ref);
         }

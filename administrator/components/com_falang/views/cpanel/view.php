@@ -55,7 +55,6 @@ class CPanelViewCpanel extends FalangViewDefault
 		$updateCaching = $params->get('update_caching',false);
         //if caching enalbed we don't force the update
         $updateInfo = LiveUpdate::getUpdateInformation(!$updateCaching);
-
         // Get current version available
         $this->currentVersion = $updateInfo->extInfo->version;
 

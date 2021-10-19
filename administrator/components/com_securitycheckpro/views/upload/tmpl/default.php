@@ -16,7 +16,9 @@ $document->addScript(JURI::root().'media/system/js/core.js');
 
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+// Inline javascript to avoid deferring in Joomla 4
+echo '<script src="' . JURI::root(). '/media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>';
+//$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
 // Chosen scripts
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/chosen/chosen.jquery.js');

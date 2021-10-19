@@ -427,7 +427,7 @@ class EmundusModelEmails extends JModelList {
         return $constants;
     }
 
-    public function setTags($user_id, $post=null, $fnum=null, $passwd='')
+    public function setTags($user_id, $post=null, $fnum=null, $passwd='', $content='')
     {
         $db = JFactory::getDBO();
         //$user = JFactory::getUser($user_id);
@@ -441,6 +441,12 @@ class EmundusModelEmails extends JModelList {
         $patterns = $constants['patterns'];
         $replacements = $constants['replacements'];
         foreach ($tags as $tag) {
+            if (!empty($content)){
+                $tag_pattern = '[' . $tag['tag'] . ']';
+                if(!strpos($content, $tag_pattern)){
+                    continue;
+                }
+            }
             $patterns[] = '/\['.$tag['tag'].'\]/';
             $value = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);
 
@@ -465,8 +471,13 @@ class EmundusModelEmails extends JModelList {
                     if ($tag['tag'] == 'PHOTO') {
                         if (empty($result))
                             $result = 'media/com_emundus/images/icones/personal.png';
-                        else
-                            $result = EMUNDUS_PATH_REL.$user_id.'/tn_'.$result;
+                        else {
+                            if(file_exists(EMUNDUS_PATH_REL.$user_id.'/tn_'.$result)) {
+                                $result = EMUNDUS_PATH_REL.$user_id.'/tn_'.$result;
+                            } else {
+                                $result = EMUNDUS_PATH_REL.$user_id.'/'.$result;
+                            }
+                        }
                     }
                     $replacements[] = $result;
 
@@ -488,6 +499,7 @@ class EmundusModelEmails extends JModelList {
 
         return $tags;
     }
+
 
     public function setTagsWord($user_id, $post=null, $fnum=null, $passwd='')
     {
@@ -568,9 +580,11 @@ class EmundusModelEmails extends JModelList {
                 if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
                     $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, @$groupParams->repeat_group_button == 1);
 
-                    if (empty($fabrikValues[$elt['id']]['val'])) {
+
+                    if (empty($fabrikValues[$elt['id']])) {
                         $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
                     }
+
 
                 } else {
                     if ($isDate) {
@@ -582,21 +596,14 @@ class EmundusModelEmails extends JModelList {
 
                 if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-
-                        $val = explode(',', $val["val"]);
-
-                        foreach ($val as $k => $v) {
-
-                            // If the value is empty then we do not get the label, this avoids '--- Please Select ---' from appearing.
-                            // is_numeric allows for the variable to be equal to 0, 0.0 or '0' (the empty function considers those to be null).
-                            if (!empty($v) || is_numeric($v)) {
-                                $index = array_search(trim($v), $params->sub_options->sub_values);
-                                $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
-                            } else {
-                                $val[$k] = '';
-                            }
+                        $params = json_decode($elt['params']);
+                        $elm = array();
+                        $index = array_intersect(json_decode($val["val"]), $params->sub_options->sub_values);
+                        foreach ($index as $value) {
+                            $key = array_search($value,$params->sub_options->sub_values);
+                            $elm[] = JText::_($params->sub_options->sub_labels[$key]);
                         }
-                        $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", JText::_($val));
+                        $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $elm);
                     }
                 }
 
@@ -613,6 +620,11 @@ class EmundusModelEmails extends JModelList {
                 if ($elt['plugin'] == 'cascadingdropdown') {
                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                         $fabrikValues[$elt['id']][$fnum]['val'] = $this->getCddLabel($elt, $val['val']);
+                    }
+                }
+                if ($elt['plugin'] == 'textarea') {
+                    foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+                        $fabrikValues[$elt['id']][$fnum]['val'] = preg_replace('"','\"',$val['val']);
                     }
                 }
             }
@@ -1208,7 +1220,7 @@ class EmundusModelEmails extends JModelList {
      */
     public function get_messages_to_from_user($user_id) {
 
-        $query = 'SELECT * FROM #__messages WHERE user_id_to ='.$user_id.' OR user_id_from ='.$user_id.' ORDER BY date_time desc';
+        $query = 'SELECT * FROM #__messages WHERE (user_id_to ='.$user_id.' OR user_id_from ='.$user_id.') AND folder_id <> 2 ORDER BY date_time desc';
 
         try {
 
@@ -1222,5 +1234,116 @@ class EmundusModelEmails extends JModelList {
 
     }
 
+    /**
+     * @param int $email
+     * @param array $groups
+     * @param array $attachments
+     * @return bool
+     */
+    public function sendEmailToGroup(int $email, array $groups, array $attachments = []) : bool {
+
+        if (empty($email) || empty($groups)) {
+            JLog::add('No user or group found in sendEmailToGroup function: ', JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+        $m_messages = new EmundusModelMessages();
+        $template = $m_messages->getEmail($email);
+
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'groups.php');
+        $m_groups = new EmundusModelGroups();
+        $users = $m_groups->getUsersByGroups($groups);
+
+        foreach ($users as $user) {
+            try {
+                $this->sendEmailFromPlatform($user["user_id"], $template, $attachments);
+            } catch (Exception $e) {
+                JLog::add('Error sending an email via the platform: ', JLog::ERROR, 'com_emundus');
+                return false;
+            }
+        }
+        JLog::add(sizeof($users) .' emails sent to the following groups: ' . implode(", ". $groups), JLog::ERROR, 'com_emundus');
+        return true;
+    }
+
+    /**
+     * @param int $user
+     * @param object $template
+     * @param array $attachments
+     * @return void
+     */
+    public function sendEmailFromPlatform(int $user, object $template, array $attachments) : void {
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        $current_user = JFactory::getUser();
+        $user = JFactory::getUser($user);
+        $toAttach = [];
+
+        // Tags are replaced with their corresponding values using the PHP preg_replace function.
+        $tags = $this->setTags($user->id);
+
+        $subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
+        $body =  $template->message;
+        if ($template) {
+            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+        }
+        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+
+        $config = JFactory::getConfig();
+        // Get default mail sender info
+        $mail_from_sys = $config->get('mailfrom');
+        $mail_from_sys_name = $config->get('fromname');
+        // Set sender
+        $sender = [
+            $mail_from_sys,
+            $mail_from_sys_name
+        ];
+
+        // Configure email sender
+        $mailer = JFactory::getMailer();
+        $mailer->setSender($sender);
+        $mailer->addReplyTo($mail_from_sys, $mail_from_sys_name);
+        $mailer->addRecipient($user->email);
+        $mailer->setSubject($subject);
+        $mailer->isHTML(true);
+        $mailer->Encoding = 'base64';
+        $mailer->setBody($body);
+
+        $files = '';
+        // Files uploaded from the frontend.
+        if (!empty($attachments)) {
+            // Here we also build the HTML being logged to show which files were attached to the email.
+            $files = '<ul>';
+            foreach ($attachments as $upload) {
+                if (file_exists(JPATH_BASE.DS.$upload)) {
+                    $toAttach[] = JPATH_BASE.DS.$upload;
+                    $files .= '<li>'.basename($upload).'</li>';
+                }
+            }
+            $files .= '</ul>';
+        }
+
+        $mailer->addAttachment($toAttach);
+
+        // Send and log the email.
+        $send = $mailer->Send();
+        if ($send !== true) {
+            $failed[] = $user->email;
+            echo 'Error sending email: ' . $send->__toString();
+            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+        } else {
+            $sent[] = $user->email;
+            $log = [
+                'user_id_from' => $current_user->id,
+                'user_id_to' => $user->id,
+                'subject' => $subject,
+                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user->email . '</i><br>' . $body . $files,
+                'type' => !empty($template)?$template->type:''
+            ];
+            $this->logEmail($log);
+            // Log the email in the eMundus logging system.
+            EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+        }
+    }
 }
 ?>

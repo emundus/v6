@@ -172,4 +172,16 @@ class DropfilesComponentHelper extends JComponentHelper
 
         return $results;
     }
+
+    /**
+     * Get trunk size depend on server upload limit (in byte)
+     *
+     * @return integer
+     */
+    public static function getTrunkSize()
+    {
+        $serverUploadLimit = JFilesystemHelper::fileUploadMaxSize(false) - 50 * 1024 ;
+
+        return min($serverUploadLimit, 10 * 1024 * 1024) ;
+    }
 }

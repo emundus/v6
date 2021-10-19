@@ -160,7 +160,6 @@ class EmundusViewUsers extends JViewLegacy {
 	}
 
     function display($tpl = null) {
-	    JHTML::script( 'media/com_emundus/js/em_user.js');
 	    JHtml::stylesheet( 'media/com_emundus/css/emundus_files.css');
 
 	    if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
@@ -196,7 +195,8 @@ class EmundusViewUsers extends JViewLegacy {
 				$this->_loadGroupRights($gid);
 				break;
 			default :
-				@EmundusHelperFiles::clear();
+                JHTML::script( 'media/com_emundus/js/em_user.js');
+                @EmundusHelperFiles::clear();
 			    $m_users = new EmundusModelUsers();
 			    $actions = $m_users->getActions("19,20,21,22,23,24,25,26");
 

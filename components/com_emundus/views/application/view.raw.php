@@ -72,31 +72,33 @@ class EmundusViewApplication extends JViewLegacy {
         if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
             switch ($layout) {
                 case "synthesis":
-                    $program = $m_application->getProgramSynthesis($fnumInfos['campaign_id']);
-                    $campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], $fnumInfos['campaign_id']);
-                    $m_email = new EmundusModelEmails();
-                    $tag = array(
-                        'FNUM' => $fnum,
-                        'CAMPAIGN_NAME' => $fnum,
-                        'APPLICATION_STATUS' => $fnum,
-                        'APPLICATION_TAGS' => $fnum,
-                        'APPLICATION_PROGRESS' => $fnum
-                    );
-
-                    $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum);
                     $synthesis = new stdClass();
-                    $synthesis->program = $program;
-                    $synthesis->camp = $campaignInfo;
-                    $synthesis->fnum = $fnum;
-                    $synthesis->block = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
-                    // replace {fabrik_element_ids} in body
-
-                    $element_ids = $m_email->getFabrikElementIDs($synthesis->block);
-                    if (count(@$element_ids[0]) > 0) {
-                        $element_values = $m_email->getFabrikElementValues($fnum, $element_ids[1]);
-                        $synthesis->block = $m_email->setElementValues($synthesis->block, $element_values);
+                    $program = $m_application->getProgramSynthesis($fnumInfos['campaign_id']);
+                    if (!empty($program->synthesis)) {
+                        $campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], $fnumInfos['campaign_id']);
+                        $m_email = new EmundusModelEmails();
+                        $tag = array(
+                            'FNUM' => $fnum,
+                            'CAMPAIGN_NAME' => $fnum,
+                            'APPLICATION_STATUS' => $fnum,
+                            'APPLICATION_TAGS' => $fnum,
+                            'APPLICATION_PROGRESS' => $fnum
+                        );
+    
+                        $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum);
+                        
+                        $synthesis->program = $program;
+                        $synthesis->camp = $campaignInfo;
+                        $synthesis->fnum = $fnum;
+                        $synthesis->block = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
+                        // replace {fabrik_element_ids} in body
+    
+                        $element_ids = $m_email->getFabrikElementIDs($synthesis->block);
+                        if (count(@$element_ids[0]) > 0) {
+                            $element_values = $m_email->getFabrikElementValues($fnum, $element_ids[1]);
+                            $synthesis->block = $m_email->setElementValues($synthesis->block, $element_values);
+                        }
                     }
-
                     $this->assignRef('synthesis', $synthesis);
                     break;
 
@@ -109,10 +111,12 @@ class EmundusViewApplication extends JViewLegacy {
                         $campaignInfo = $m_application->getCampaignByFnum($fnum);
                     }
 
-                    $this->synthesis = new stdClass();
-                    $this->synthesis->camps = $campaignInfo;
-                    $this->synthesis->fnumInfos = $fnumInfos;
-                    $this->synthesis->fnum = $fnum;
+                    $assoc_files = new stdClass();
+                    $assoc_files->camps = $campaignInfo;
+                    $assoc_files->fnumInfos = $fnumInfos;
+                    $assoc_files->fnum = $fnum;
+                    $this->assignRef('assoc_files', $assoc_files);
+
                     break;
 
                 case 'attachment':
@@ -339,8 +343,13 @@ class EmundusViewApplication extends JViewLegacy {
                         $m_files = new EmundusModelFiles();
                         $tags = $m_files->getTagsByFnum(array($fnum));
                         $alltags = $m_files->getAllTags();
+                        $groupedTags = [];
+                        foreach ($alltags as $tag) {
+                            $groupedTags[$tag["category"]][] = ["id" => $tag["id"],"label" => $tag["label"]];
+                        }
+
                         $this->assignRef('tags', $tags);
-                        $this->assignRef('alltags', $alltags);
+                        $this->assignRef('groupedTags', $groupedTags);
                         $this->assignRef('fnum', $fnum);
 
                     } else {
@@ -352,8 +361,17 @@ class EmundusViewApplication extends JViewLegacy {
                 case 'form':
                     if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
 
+                        $step = $jinput->getString('step', 0);
+
                         EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_LOGS_FORM_BACKOFFICE');
-                        $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+
+                        if($step != 0){
+                            $pid = $m_profiles->getProfileByStep($fnum,$step);
+                        }
+
+                        if(empty($pid)){
+                            $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+                        }
 
                         $formsProgress = $m_application->getFormsProgress($fnum);
                         $this->assignRef('formsProgress', $formsProgress);

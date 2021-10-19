@@ -477,10 +477,6 @@ class SecuritycheckprosControllerFileManager extends SecuritycheckproController
     /* Acciones al pulsar el botón para exportar la información */
     function export_logs_integrity()
     {
-        
-        /**
-    * @var string fileintegrity's name 
-*/
         $fileintegrity_name = '';
     
         // Establecemos la ruta donde se almacenaran los escaneos

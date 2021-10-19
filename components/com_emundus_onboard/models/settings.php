@@ -52,6 +52,7 @@ class EmundusonboardModelsettings extends JModelList {
     function getStatus() {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
         $query->select('*')
             ->from ($db->quoteName('#__emundus_setup_status'))
@@ -62,39 +63,8 @@ class EmundusonboardModelsettings extends JModelList {
             $status = $db->loadObjectList();
             foreach ($status as $statu){
                 $statu->label = new stdClass;
-                $statu->label->en = '';
-                $statu->label->fr = '';
 
-                $query->clear()
-                    ->select('value')
-                    ->from($db->quoteName('#__falang_content'))
-                    ->where(array(
-                        $db->quoteName('reference_id') . ' = ' . $db->quote($statu->step),
-                        $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
-                        $db->quoteName('reference_field') . ' = ' . $db->quote('value'),
-                        $db->quoteName('language_id') . ' = 1'
-                    ));
-                $db->setQuery($query);
-                $en_value = $db->loadResult();
-
-                $query->clear()
-                    ->select('value')
-                    ->from($db->quoteName('#__falang_content'))
-                    ->where(array(
-                        $db->quoteName('reference_id') . ' = ' . $db->quote($statu->step),
-                        $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
-                        $db->quoteName('reference_field') . ' = ' . $db->quote('value'),
-                        $db->quoteName('language_id') . ' = 2'
-                    ));
-                $db->setQuery($query);
-                $fr_value = $db->loadResult();
-
-                if ($en_value != null) {
-                    $statu->label->en = $en_value;
-                }
-                if ($fr_value != null) {
-                    $statu->label->fr = $fr_value;
-                }
+                $statu->label = $falang->getFalang($statu->step,'emundus_setup_status','value',$statu->value);
 
                 $statu->edit = 1;
                 $query->clear()
@@ -217,20 +187,6 @@ class EmundusonboardModelsettings extends JModelList {
             $newstatusid = $db->insertid();
 
             $query->clear()
-                ->insert('#__falang_content')
-                ->set(array(
-                    $db->quoteName('value') . ' = ' . $db->quote('default'),
-                    $db->quoteName('reference_id') . ' = ' . $db->quote($newstep),
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('class'),
-                    $db->quoteName('language_id') . ' = 2'
-                ));
-            $db->setQuery($query);
-            $results[] = $db->execute();
-
-            $results[] = $falang->insertFalang('Nouveau statut', 'New status', $newstep, 'emundus_setup_status', 'value');
-
-            $query->clear()
                 ->select('*')
                 ->from ($db->quoteName('#__emundus_setup_status'))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($newstatusid));
@@ -241,6 +197,8 @@ class EmundusonboardModelsettings extends JModelList {
             $status->label = new stdClass;
             $status->label->fr = 'Nouveau statut';
             $status->label->en = 'New status';
+
+            $falang->insertFalang($status->label, $newstep, 'emundus_setup_status', 'value');
 
             return $status;
         } catch(Exception $e) {
@@ -254,6 +212,8 @@ class EmundusonboardModelsettings extends JModelList {
         $query = $db->getQuery(true);
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+        $lang = JFactory::getLanguage();
+        $actualLanguage = substr($lang->getTag(), 0 , 2);
 
         $classes = $this->getColorClasses();
         $results = [];
@@ -261,12 +221,6 @@ class EmundusonboardModelsettings extends JModelList {
         try {
             foreach($status as $statu) {
                 $class = array_search($statu['class'], $classes);
-                $query->clear()
-                    ->update('#__emundus_setup_status')
-                    ->set($db->quoteName('class') . ' = ' . $db->quote($class))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($statu['id']));
-                $db->setQuery($query);
-                $results[] = $db->execute();
 
                 $query->clear()
                     ->update('#__falang_content')
@@ -280,7 +234,15 @@ class EmundusonboardModelsettings extends JModelList {
                 $db->setQuery($query);
                 $results[] = $db->execute();
 
-                $results[] = $falang->updateFalang($statu['label']['fr'], $statu['label']['en'], $statu['step'], 'emundus_setup_status', 'value');
+                $results[] = $falang->updateFalang($statu['label'], $statu['step'], 'emundus_setup_status', 'value');
+
+                $query->clear()
+                    ->update('#__emundus_setup_status')
+                    ->set($db->quoteName('value') . ' = ' . $db->quote($statu['label'][$actualLanguage]))
+                    ->set($db->quoteName('class') . ' = ' . $db->quote($class))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($statu['id']));
+                $db->setQuery($query);
+                $results[] = $db->execute();
             }
 
             return $results;
@@ -962,6 +924,9 @@ class EmundusonboardModelsettings extends JModelList {
             $orderings = $db->loadColumn();
             $order = $orderings[sizeof($orderings) - 1] + 1;
 
+            $dateTime = new Date('now', 'UTC');
+            $now = $dateTime->toSQL();
+
             $query->clear()
                 ->insert($db->quoteName('#__dropfiles_files'));
             $query->set($db->quoteName('catid') . ' = ' . $db->quote($campaign_cat))
@@ -974,9 +939,9 @@ class EmundusonboardModelsettings extends JModelList {
                 ->set($db->quoteName('size') . ' = ' . $db->quote($filesize))
                 ->set($db->quoteName('hits') . ' = ' . $db->quote(0))
                 ->set($db->quoteName('version') . ' = ' . $db->quote(''))
-                ->set($db->quoteName('created_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('modified_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('publish') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('created_time') . ' = ' . $db->quote($now))
+                ->set($db->quoteName('modified_time') . ' = ' . $db->quote($now))
+                ->set($db->quoteName('publish') . ' = ' . $db->quote($now))
                 ->set($db->quoteName('author') . ' = ' . $db->quote(JFactory::getUser()->id))
                 ->set($db->quoteName('language') . ' = ' . $db->quote(''));
             $db->setQuery($query);
@@ -1063,6 +1028,22 @@ class EmundusonboardModelsettings extends JModelList {
                 return $db->execute();
             }
         }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function updateLogo($newcontent){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->update($db->quoteName('#__modules'))
+                ->set($db->quoteName('content') . ' = ' . $db->quote($newcontent))
+                ->where($db->quoteName('id') . ' = 90');
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
             JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }

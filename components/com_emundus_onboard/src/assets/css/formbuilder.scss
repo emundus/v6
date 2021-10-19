@@ -1,5 +1,43 @@
 @import "variables";
 
+
+// FORM
+.form-title-block{
+  position: absolute;
+  top: -90px;
+  z-index: 11;
+}
+
+// YES NO
+.fabrikgrid_0.btn-default{
+  background-color: #bd362f;
+  padding: 8px 12px;
+  height: 38px;
+  span{
+    color: #fff;
+    font-size: 14px;
+  }
+}
+
+.fabrikgrid_1.btn-default{
+  padding: 8px 12px;
+  height: 35px;
+  background-image: linear-gradient(rgb(255, 255, 255), rgb(230, 230, 230));
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  span{
+    color: #848181;
+    font-size: 14px;
+  }
+}
+
+fieldset.radio.btn-group{
+  display: flex;
+  align-items: center;
+}
+//
+
 .fabrikgrid_radio {
   display: flex !important;
   align-items: center !important;
@@ -124,9 +162,8 @@ fieldset {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
-.introP {
-  padding-left: 1.5em;
-  padding-bottom: 2em;
+.introP, .groupintro {
+  padding: 1em;
 }
 .dpflex {
   display: flex;
@@ -187,8 +224,18 @@ fieldset {
   margin-top: 3em;
 }
 
+.groups-block{
+  background: #f8f8f8;
+}
+
+.group-item-block{
+  margin-bottom: 30px;
+  background: white;
+}
+
 .form-viewer-builder .form-page {
   margin-top: 0;
+  background: #fff;
 }
 
 .elements-block {

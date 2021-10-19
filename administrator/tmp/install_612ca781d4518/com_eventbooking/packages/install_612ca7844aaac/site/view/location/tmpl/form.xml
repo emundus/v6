@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Submit Location">
+		<message>
+			Display form which allow users to submit an location
+		</message>
+	</layout>
+	<state>
+		<name>Submit Location</name>
+		<description>Display form which allow users to submit an location</description>
+	</state>
+</metadata>
+

@@ -487,7 +487,7 @@ body.view-reset label#jform_username-lbl::after,
 
 .em-print-button, .em-send-button {
     display: block;
-    width: 100%;
+    width: 100% !important;
     padding: 0;
 }
 

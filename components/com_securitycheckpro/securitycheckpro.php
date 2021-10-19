@@ -10,13 +10,22 @@ defined('_JEXEC') or die('Restricted access');
 // Load library
 require_once JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' .
 DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'library' . DIRECTORY_SEPARATOR . 'loader.php';
-
-$controller = 'json';
 require_once JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'controllers' . DIRECTORY_SEPARATOR . 'json.php';
 
-// Creamos el controlador
-$classname = 'SecuritycheckprosController' . $controller;
-$controller = new $classname;
+$jinput = JFactory::getApplication()->input;
+$view = $jinput->get('view','','word');
+$controller = $view;
 
-// Realizamos la tarea requerida
-$controller->execute('json');
+if ( $controller == "json") {
+	try{
+		// Creamos el controlador
+		$classname = 'SecuritycheckprosController' . $controller;
+		$controller = new $classname;
+
+		// Realizamos la tarea requerida
+		$controller->execute($view);
+	} catch (Exception $e)
+	{		
+					
+	}
+}

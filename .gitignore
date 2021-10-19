@@ -16,12 +16,24 @@ administrator/cache/*
 /templates/rt_afterburner2/css-compiled/*
 /templates/rt_afterburner2/css/rt_afterburner2-custom.css
 templates/rt_afterburner2/css/rt_afterburner2-custom.css
-templates/g5_helium/templatesDetails.xml
-/templates/g5_helium/templatesDetails.xml
+templates/g5_helium/templateDetails.xml
+templates/g5_helium/custom/*
+!templates/g5_helium/custom/scss/global.scss
+templates/g5_helium/html/com_eventbooking/*
+templates/emundus_vanilla/*
+/templates/emundus_vanilla/*
+images/emundus/import/*
+images/emundus/photo/*
+images/stories/*
+templates/emundus_serp/*
+/templates/emundus_serp/*
+templates/LaScala/*
+/templates/LaScala/*
 /images/emundus/files/*
 /images/emundus/letters/*
 /image/logo.png
 /images/custom/logo.png
+/images/custom/logo_custom.png
 #_bdd/*
 components/com_emundus.*
 components/com_emundus/*.bak
@@ -41,6 +53,7 @@ emundus_bdd*
 /administrator/templates/isis/images/logo.png
 administrator/templates/isis/images/joomla.png
 administrator/templates/isis/images/logo.png
+plugins/fabrik_form/php/emundus-csv_import_ehesp.php
 
 ### macOS ###
 *.DS_Store
@@ -64,3 +77,5 @@ administrator/templates/isis/images/logo.png
 /modules/mod_emundus_dashboard_vue/node_modules/
 
 
+/components/node_modules/
+/components/com_emundus_messenger/node_modules/

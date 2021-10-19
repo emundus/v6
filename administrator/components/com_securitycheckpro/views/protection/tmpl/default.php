@@ -36,7 +36,9 @@ $document->addScript(JURI::root().'media/system/js/core.js');
 
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
+// Inline javascript to avoid deferring in Joomla 4
+echo '<script src="' . JURI::root(). '/media/com_securitycheckpro/new/vendor/popper/popper.min.js"></script>';
+//$document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
 
 
 // Add style declaration
@@ -266,17 +268,17 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/protection
                         <blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_EXPLAIN') ?></footer></blockquote>
 						
 						<div class="control-group">
-                            <label for="feature_policy" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_POLICY_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_POLICY_TEXT'); ?></label>
+                            <label for="permissions_policy" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_PERMISSIONS_POLICY_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_PERMISSIONS_POLICY_TEXT'); ?></label>
                             <div class="controls controls-row">
-                                <input type="text" class="form-control width_560" id="feature_policy" name="feature_policy" aria-describedby="feture_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['feature_policy']); ?>">            
-                                <?php if ($this->config_applied['feature_policy'] ) {?>
+                                <input type="text" class="form-control width_560" id="permissions_policy" name="permissions_policy" aria-describedby="feture_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['permissions_policy']); ?>">            
+                                <?php if ($this->config_applied['permissions_policy'] ) {?>
                                     <span class="help-inline">
                                         <span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
                                     </span>
                                 <?php } ?>
                             </div>
                         </div>
-                        <blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_POLICY_EXPLAIN') ?></footer></blockquote>
+                        <blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_PERMISSIONS_POLICY_EXPLAIN') ?></footer></blockquote>
                     <!-- headers_protection tab end -->
                     </div>
                         

@@ -392,3 +392,35 @@ button .quicktranslate.unpublished{
 		margin-left: 90px;
 	}
 }
+
+/* Edit translation v2*/
+.falang-controls .left, .falang-headers .left {float: left;width: 55%;}
+.falang-controls .right, .falang-headers .right {float: left;width: 45%}
+.falang-controls .right .controls{margin-left: 100px;}
+.falang-controls .right .control-label{width: auto}
+
+
+.falang-sidebyside .outer-panel.source-panel {float: left;width: 45%}
+.falang-sidebyside .outer-panel.action-panel {float: left;width: 10%;text-align: center;min-width: 10%}
+.falang-sidebyside .outer-panel.target-panel{float: left;width: 45%}
+.falang-sidebyside .outer-panel.target-panel.full-width{width: 100%}
+.falang-sidebyside .clr{clear: both}
+.falang-params{clear: both}
+.falang-controls .form-horizontal .falang_publish_btn .controls > .btn {width: auto;}
+.falang-sidebyside .controls input.form-control{width: 90%}
+.falang-sidebyside .controls textarea.form-control{width: 90%}
+.falang-sidebyside .form-horizontal .control-label{width: auto;padding-right: 10px}
+.falang-sidebyside .form-horizontal .control-label label{display: inline-block}
+.falang-sidebyside .form-inline-header .controls{padding-right: 0}
+.falang-sidebyside .form-horizontal .controls.controls-htmltext{margin-left: 0;}
+.falang-sidebyside .form-horizontal .controls{margin-left:60px;display: block}
+.falang-sidebyside .form-inline-header .control-group{width: 100%}
+.form-falang h2{text-align: center;background-color: #d9edf7;color: #31708f;padding: 10px 0;font-size: 18px}
+.form-falang input[readonly], .form-falang textarea[readonly] {background-color: #e9ecef; color: #495057;border: 1px solid #ced4da;}
+
+.page-title span.icon-translation, .com_falang .icon-falang{
+	background: url(../images/logo-24.png) 0 50% no-repeat;
+	width: 24px;
+	height: 24px;
+	vertical-align: middle;
+}

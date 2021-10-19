@@ -11,8 +11,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors.js');
-$document->addStyleSheet('media/com_emundus_onboard/app.css');
+$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
+$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
 ## MENU ##
 JText::script('COM_EMUNDUS_ONBOARD_SIDEMENUHELP');
@@ -36,6 +36,12 @@ JText::script('COM_EMUNDUS_ONBOARD_FIELD_NAME');
 JText::script('COM_EMUNDUS_ONBOARD_FIELD_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_FIELD_INTRO');
 JText::script('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME');
+JText::script('COM_EMUNDUS_ONBOARD_DELETE_TEMPLATE_DOC');
+JText::script('COM_EMUNDUS_ONBOARD_MODEL_DELETED');
+JText::script('COM_EMUNDUS_ONBOARD_MODEL_DELETED_TEXT');
+JText::script('COM_EMUNDUS_ONBOARD_CANNOT_DELETE');
+JText::script('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_TEXT');
+JText::script('COM_EMUNDUS_ONBOARD_ADDDOC_DESCRIPTION');
 ## END ##
 
 ## CAMPAIGNS ##
@@ -63,6 +69,7 @@ JText::script('COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_TEMPLATE_DOC');
+JText::script('COM_EMUNDUS_ONBOARD_ADDDOC_DESCRIPTION');
 ## END ##
 
 ## GLOBAL ##
@@ -123,6 +130,10 @@ JText::script('COM_EMUNDUS_ONBOARD_TYPE_RADIOBUTTON');
 JText::script('COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA');
 JText::script('COM_EMUNDUS_ONBOARD_TYPE_DISPLAY');
 JText::script('COM_EMUNDUS_ONBOARD_TYPE_FILE');
+JText::script('COM_EMUNDUS_ONBOARD_TYPE_YESNO');
+JText::script('COM_EMUNDUS_ONBOARD_TYPE_LASTNAME');
+JText::script('COM_EMUNDUS_ONBOARD_TYPE_FIRSTNAME');
+JText::script('COM_EMUNDUS_ONBOARD_TYPE_EMAIL');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_MAXLENGTH');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER_HELP');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_MENUDELETED');
@@ -172,6 +183,13 @@ JText::script('COM_EMUNDUS_ONBOARD_BUILDER_NO_DEFAULT_VALUE');
 JText::script('COM_EMUNDUS_ONBOARD_ELEMENT_OPTIONS');
 JText::script('COM_EMUNDUS_ONBOARD_SAVING_AT');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_EXIT_FORMBUILDER');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_SUBMITTION_PAGE');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_EDIT_NAME');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_EDIT_INTRO');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE_MESSAGE');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_ORDER_BY');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_HIDDEN_GROUP');
 ## END ##
 
 ## TUTORIAL ##
@@ -196,6 +214,25 @@ JText::script('COM_EMUNDUS_ONBOARD_BUILDER_FUTURE_YEARS');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_YEAR_RANGE');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_TIP_YEARS_FUTURE');
 
+# IMAGE RESOLUTION
+JText::script('COM_EMUNDUS_ONBOARD_IMAGE_WIDTH');
+JText::script('COM_EMUNDUS_ONBOARD_IMAGE_HEIGHT');
+
+JText::script('COM_EMUNDUS_ONBOARD_IMAGE_RESOLUTION_TOOLTIPS');
+//JText::script('COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_TOOLTIPS');
+
+JText::script('COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER');
+JText::script('COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER');
+
+JText::script('COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION');
+JText::script('COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NEGATIVE');
+
+JText::script('COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_TOO_SMALL');
+
+JText::script('COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NOT_NUMBER');
+
+JText::script('COM_EMUNDUS_ONBOARD_IMAGE_DIMENSION_TITLE');
+
 $vue = 'em-formBuilder-vue';
 if($this->eval != 0){
     $vue = 'em-evaluationBuilder-vue';
@@ -214,4 +251,4 @@ if(count($languages) > 1){
 
 <div id="<?= $vue; ?>" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" cid="<?= $this->cid; ?>" eval="<?= $this->eval; ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>"></div>
 
-<script src="media/com_emundus_onboard/app.js"></script>
+<script src="media/com_emundus_onboard/app_onboard.js"></script>

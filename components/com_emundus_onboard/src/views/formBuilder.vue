@@ -26,6 +26,7 @@
               :profileId="prid"
               :actualLanguage="actualLanguage"
               :manyLanguages="manyLanguages"
+              :languages="languages"
               @AddMenu="pushMenu"
               @modalClosed="optionsModal = false"
       />
@@ -41,6 +42,7 @@
               :files="files"
               :actualLanguage="actualLanguage"
               :manyLanguages="manyLanguages"
+              :languages="languages"
               @show="show"
               @UpdateUx="UpdateUXT"
               @UpdateName="UpdateName"
@@ -63,33 +65,33 @@
         <transition name="move-right">
           <div class="actions-menu menu-block">
 <!--            <button class="g-menu-item g-standard burger-button"><img src="/images/emundus/menus/menu.png" @click="enableActionsMenu" style="width: 30px" alt="Menu"></button>-->
-            <a class="d-flex back-button-action pointer" style="padding: 0 15px" :title="Back">
-              {{ BuildYourForm }}
+            <a class="d-flex back-button-action pointer" style="padding: 0 15px" :title="translations.Back">
+              {{ translations.BuildYourForm }}
             </a>
             <hr style="width: 80%;margin: 10px auto;">
             <div>
               <div class="action-links">
-                  <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="addMenu">
+                  <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="translations.addMenu">
                     <em class="add-page-icon"></em>
-                    <label class="action-label col-md-offset-1 col-sm-offset-1">{{addMenu}}</label>
+                    <label class="action-label col-md-offset-1 col-sm-offset-1">{{translations.addMenu}}</label>
                   </a>
-                  <a class="d-flex action-link" @click="createGroup()" :title="addGroup">
+                  <a class="d-flex action-link" @click="createGroup()" :title="translations.addGroup">
                     <em class="add-group-icon"></em>
-                    <label class="action-label col-md-offset-1 col-sm-offset-1">{{addGroup}}</label>
+                    <label class="action-label col-md-offset-1 col-sm-offset-1">{{translations.addGroup}}</label>
                   </a>
-                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements" :title="addItem">
+                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements" :title="translations.addItem">
                     <em class="add-element-icon"></em>
-                    <label class="action-label col-md-offset-1 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
+                    <label class="action-label col-md-offset-1 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{translations.addItem}}</label>
                   </a>
 <!--                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="testForm" :title="testingForm">
                     <em class="far fa-play-circle" style="font-size: 22px"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{testingForm}}</label>
+                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{translations.testingForm}}</label>
                   </a>-->
                 <transition :name="'slide-right'" type="transition">
                   <div class="plugins-list" v-if="addingElement">
                     <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingElement = !addingElement" :title="Back">
                       <em class="fas fa-arrow-left mr-1"></em>
-                      {{ Back }}
+                      {{ translations.Back }}
                     </a>
                     <hr style="width: 80%;margin: 10px auto;">
                     <draggable
@@ -123,9 +125,9 @@
         </transition>
       </div>
       <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
-        <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-offset-2 col-md-6' : 'col-md-8'">
-          <div class="d-flex" v-show="!updateFormLabel">
-            <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="profileLabel">{{profileLabel}}</h2>
+        <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-6' : 'col-md-8'">
+          <div class="d-flex form-title-block" v-show="!updateFormLabel">
+            <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0">{{profileLabel}}</h2>
             <a @click="enableUpdatingForm" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
               <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
             </a>
@@ -134,7 +136,7 @@
             <div class="input-can-translate">
               <input v-model="profileLabel" class="form__input field-general w-input" style="width: 400px;" @keyup.enter="updateLabelForm()" :id="'update_label_form_' + prid"/>
               <div class="d-flex actions-update-label ml-10px">
-                <a @click="updateLabelForm()" :title="Validate">
+                <a @click="updateLabelForm()" :title="translations.Validate">
                   <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
                 </a>
               </div>
@@ -164,7 +166,7 @@
           </div>
         </div>
         <div v-if="menuHighlight === 1" class="form-builder">
-          <div class="form-viewer-builder" :class="[addingElement || actions_menu ? 'col-sm-offset-5 col-md-offset-4 col-lg-offset-1 col-sm-7 col-md-7' : 'col-md-8',optionsModal ? 'col-sm-5 col-md-6' : 'col-md-8']">
+          <div class="form-viewer-builder" :class="[addingElement || actions_menu ? 'col-sm-offset-5 col-md-offset-4 col-lg-offset-1 col-sm-7 col-md-6' : 'col-md-8',optionsModal ? 'col-sm-5 col-md-6' : 'col-md-8']">
             <Builder
                     :object="submittionPages[indexHighlight]"
                     v-if="submittionPages[indexHighlight]"
@@ -185,13 +187,13 @@
             />
           </div>
         </div>
-        <ul class="col-md-3 sticky-form-pages" :class="[addingElement || actions_menu? 'ml-10px col-sm-offset-5 col-sm-7' : '',optionsModal ? 'col-sm-5' : '']" style="margin-top: 0" v-if="formObjectArray">
+        <ul class="col-md-3 sticky-form-pages" :class="[addingElement || actions_menu && formList.length >0? 'ml-10px col-sm-offset-5 col-sm-7' : '',optionsModal ? 'col-sm-5' : '',formList.length ===0 ? 'col-sm-offset-5 col-sm-7':'']" style="margin-top: 0" v-if="formObjectArray">
           <div class="d-flex justify-content-between mb-1">
-            <h3 class="mb-0" style="padding: 0;">{{ FormPage }}</h3>
-            <label class="saving-at">{{ Savingat }} {{lastUpdate}}<em class="fas fa-sync ml-10px"></em></label>
+            <h3 class="mb-0" style="padding: 0;">{{ translations.FormPage }}</h3>
+            <label class="saving-at">{{ translations.Savingat }} {{lastUpdate}}<em class="fas fa-sync ml-10px"></em></label>
           </div>
           <div class="form-pages">
-            <h4 class="ml-10px form-title" style="margin-bottom: 0;padding: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="Form">{{ Form }}</h4>
+            <h4 class="ml-10px form-title" style="margin-bottom: 0;padding: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="translations.Form">{{ translations.Form }}</h4>
             <draggable
                 handle=".handle"
                 v-model="formList"
@@ -210,10 +212,10 @@
                 </a>
               </li>
             </draggable>
-            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 30px" :title="addMenuAction">{{addMenuAction}}</button>
+            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 30px" :title="translations.addMenuAction">{{translations.addMenuAction}}</button>
           </div>
           <div class="form-pages">
-            <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><em class="far fa-folder-open mr-1" :alt="Documents"></em>{{ Documents }}</h4>
+            <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><em class="far fa-folder-open mr-1" :alt="translations.Documents"></em>{{ translations.Documents }}</h4>
             <draggable
                 handle=".handle"
                 v-model="documentsList"
@@ -231,29 +233,29 @@
                 <a class="cta-block pointer" @click="removeDocument(index,doc.id)" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
                   <i class="fas fa-times" style="width: 15px;height: 15px;"></i>
                 </a>
-                <a @click="currentDoc = doc.docid;$modal.show('modalAddDocuments');optionsModal = true" :title="Edit" class="cta-block pointer" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
+                <a @click="currentDoc = doc.docid;$modal.show('modalAddDocuments');optionsModal = true" :title="translations.Edit" class="cta-block pointer" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
                   <em class="fas fa-pen" style="width: 15px;height: 14px;" data-toggle="tooltip" data-placement="top"></em>
                 </a>
               </li>
             </draggable>
-            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalAddDocuments');optionsModal = true" style="margin-left: 30px" :title="AddNewDocument">{{AddNewDocument}}</button>
+            <button class="bouton-sauvergarder-et-continuer" @click="currentDoc = null;$modal.show('modalAddDocuments');optionsModal = true" style="margin-left: 30px" :title="translations.AddNewDocument">{{translations.AddNewDocument}}</button>
 
           </div>
           <div class="form-pages" style="padding-top: 20px" v-if="submittionPages">
-            <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><img src="/images/emundus/menus/confirmation.png" class="mr-1" :alt="SubmitPage">{{SubmitPage}}</h4>
+            <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><img src="/images/emundus/menus/confirmation.png" class="mr-1" :alt="translations.SubmitPage">{{translations.SubmitPage}}</h4>
             <li v-for="(value, index) in submittionPages" :key="index" class="MenuForm">
               <a @click="menuHighlight = 1;indexHighlight = index"
                  class="MenuFormItem"
                  style="margin-left: 5px"
-                 :title="value.object.show_title.value"
+                 :title="value.object.show_title.value != '' ? value.object.show_title.value : translations.SubmittionPage"
                  :class="indexHighlight == index && menuHighlight === 1 ? 'MenuFormItem_current' : ''">
-                {{value.object.show_title.value}}
+                {{value.object.show_title.value ? value.object.show_title.value : translations.SubmittionPage}}
               </a>
             </li>
           </div>
           <div class="d-flex">
-            <button class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green mt-1" @click="sendForm" style="margin-left: 10px" :title="Validate">{{Validate}}</button>
-            <button class="bouton-sauvergarder-et-continuer mt-1" @click="exitForm" style="margin-left: 10px" :title="Validate">{{ExitFormbuilder}}</button>
+            <button class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green mt-1" @click="sendForm" style="margin-left: 10px" :title="Validate">{{translations.Validate}}</button>
+            <button class="bouton-sauvergarder-et-continuer mt-1" @click="exitForm" style="margin-left: 10px" :title="translations.Validate">{{translations.ExitFormbuilder}}</button>
           </div>
         </ul>
       </div>
@@ -285,6 +287,7 @@
   import Tasks from "@/views/tasks";
   import ModalTestingForm from "@/components/formClean/ModalTestingForm";
   import ModalAddDocuments from "./advancedModals/ModalAddDocuments";
+  import Swal from "sweetalert2";
 
   const qs = require("qs");
 
@@ -292,10 +295,10 @@
     name: "FormBuilder",
     props: {
       prid: String,
-      index: Number,
-      cid: Number,
+      index: String,
+      cid: String,
       actualLanguage: String,
-      manyLanguages: Number
+      manyLanguages: String
     },
     components: {
       ModalAddDocuments,
@@ -338,7 +341,7 @@
         // Forms variables
         formObjectArray: [],
         submittionPages: [],
-        formList: "",
+        formList: [],
         profileLabel: "",
         id: 0,
         grab: 0,
@@ -360,6 +363,7 @@
         //
 
         link: '',
+        languages: [],
 
         // Draggabbles variables
         dragging: false,
@@ -372,6 +376,30 @@
             value: 'field',
             icon: 'fas fa-font',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FIELD")
+          },
+          nom: {
+            id: 8,
+            value: 'nom',
+            icon: 'fas fa-font',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_LASTNAME")
+          },
+          prenom: {
+            id: 9,
+            value: 'prenom',
+            icon: 'fas fa-font',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FIRSTNAME")
+          },
+          email:{
+            id:10,
+            value: 'email',
+            icon: 'fas fa-at',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_EMAIL")
+          },
+          yesno:{
+            id:12,
+            value: 'yesno',
+            icon: 'fas fa-toggle-on',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_YESNO")
           },
           textarea: {
             id: 5,
@@ -434,34 +462,49 @@
             jpeg:true
           },
         },
-        addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
-        addMenuAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU_ACTION"),
-        addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
-        addItem: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
-        Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS"),
-        sendFormButton: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEND_FORM"),
-        Edit: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-        FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
-        SubmitPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMIT_PAGE"),
-        testingForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_TESTING_FORM"),
-        Form: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
-        Documents: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENTS"),
-        AddNewDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT"),
-        Back: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-        Savingat: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVING_AT"),
-        Validate: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-        update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
-        updating: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
-        updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
-        updateFailed: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
-        ExitFormbuilder: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EXIT_FORMBUILDER"),
-        BuildYourForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_BUILD_YOUR_FORM"),
+        translations:{
+          addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
+          addMenuAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU_ACTION"),
+          addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
+          addItem: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
+          Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS"),
+          sendFormButton: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEND_FORM"),
+          Edit: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
+          FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
+          SubmitPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMIT_PAGE"),
+          testingForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_TESTING_FORM"),
+          Form: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
+          Documents: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENTS"),
+          AddNewDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT"),
+          Back: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+          Savingat: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVING_AT"),
+          Validate: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+          update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
+          updating: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
+          updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
+          updateFailed: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
+          ExitFormbuilder: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EXIT_FORMBUILDER"),
+          BuildYourForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_BUILD_YOUR_FORM"),
+          SubmittionPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_SUBMITTION_PAGE"),
+        },
       };
     },
 
     methods: {
       slpitProfileIdfromLabel(label){
         return (label.split(/-(.+)/))[1];
+      },
+      showModal () {
+
+        Swal.fire({
+          //title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENU"),
+          text: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_NOFORMPAGEWARNING"),
+          type: "warning",
+          //showCancelButton: true
+        })
+      },
+      hide () {
+        this.$modal.hide('my-first-modal');
       },
 
       createElement(gid,plugin,order) {
@@ -515,8 +558,24 @@
                   return qs.stringify(params);
                 }
               }).then(response => {
-                    console.log("none emundus file upload");
-                    console.log(response);
+
+
+                if (plugin=="email") {
+                  response.data.params.password = 3;
+                } else {
+                  response.data.params.password=0;
+                }
+                axios({
+                  method: "post",
+                  url:
+                      "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateparams",
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                  },
+                  data: qs.stringify({
+                    element: response.data,
+                  })
+                })
 
                 this.menuHighlightCustumisation(response,gid,order);
 
@@ -861,21 +920,26 @@
       },
 
       async getDataObjectSingle(index) {
-        let ellink = this.formList[index].link.replace("fabrik","emundus_onboard");
-        await axios.get(ellink + "&format=vue_jsonclean")
-            .then(response => {
-              this.formObjectArray[index].object = response.data;
-              /*this.formObjectArray.push({
+
+        if(this.formList.length>0) {
+          let ellink = this.formList[index].link.replace("fabrik", "emundus_onboard");
+          await axios.get(ellink + "&format=vue_jsonclean")
+              .then(response => {
+                this.formObjectArray[index].object = response.data;
+                /*this.formObjectArray.push({
                 object: response.data,
                 rgt: this.formList[index].rgt,
                 link: this.formList[index].link
               });*/
-            }).then(r => {
-              this.formObjectArray.sort((a, b) => a.rgt - b.rgt);
-            }).catch(e => {
-              console.log(e);
-            });
-        this.loading = false;
+              }).then(r => {
+                this.formObjectArray.sort((a, b) => a.rgt - b.rgt);
+              }).catch(e => {
+                console.log(e);
+              });
+
+
+        //this.loading = false;
+
         /*if(this.getCookie('page_' + this.prid) !== '') {
           this.indexHighlight = this.getCookie('page_' + this.prid);
         } else {
@@ -883,6 +947,10 @@
         }*/
         this.elementDisabled = _.isEmpty(this.formObjectArray[index].object.Groups);
         this.rgt = this.formObjectArray[index].rgt;
+        }
+
+          this.loading = false;
+
         this.indexHighlight = index;
       },
 
@@ -959,16 +1027,23 @@
           this.formList = response.data.data;
           setTimeout(() => {
             //this.getDataObject();
-            this.formList.forEach((element) => {
-              this.formObjectArray.push({
-                object: {},
-                rgt: element.rgt,
-                link: element.link
+            if (this.formList.length > 0){
+              this.formList.forEach((element) => {
+                this.formObjectArray.push({
+                  object: {},
+                  rgt: element.rgt,
+                  link: element.link
+                });
               });
-            });
+            } else{
+              this.showModal();
+            }
+
+            this.loading=false;
             this.getDataObjectSingle(0);
             this.getProfileLabel(this.prid);
-          },100);
+
+          }, 100);
         }).catch(e => {
           console.log(e);
         });
@@ -1045,6 +1120,7 @@
       },
 
       sendForm() {
+        if(this.formList.length>0){
         if(this.cid != 0){
           axios({
             method: "get",
@@ -1080,6 +1156,9 @@
           });
           //history.go(-1);
         }
+      } else {
+        this.showModal();
+      }
       },
 
       testForm() {
@@ -1254,6 +1333,17 @@
             });
           }, 300);
         }
+      },
+      //
+
+      // Get languages
+      getLanguages(){
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=settings&task=getactivelanguages",
+        }).then(response => {
+            this.languages = response.data.data;
+        });
       }
       //
     },
@@ -1265,6 +1355,7 @@
       this.getDocuments();
       this.getSubmittionPage();
       this.getFilesByForm();
+      this.getLanguages();
     },
 
     computed: {

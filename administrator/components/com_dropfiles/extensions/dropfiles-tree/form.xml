@@ -4,17 +4,6 @@
         <fieldset name="params" mainpart="true" addrulepath="/administrator/components/com_dropfiles/models/rules"
                   addfieldpath="/administrator/components/com_dropfiles/models/fields">
             <field
-                name="tree_showbgtitle"
-                type="list"
-                label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_BG_TITLE_LABEL"
-                description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_BG_TITLE_DESC"
-                default="1"
-                class="inline">
-                <option value="1">JYES</option>
-                <option value="0">JNO</option>
-            </field>
-
-            <field
                 name="tree_showdescription"
                 type="list"
                 label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_DESCRIPTION_LABEL"

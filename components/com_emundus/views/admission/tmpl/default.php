@@ -27,9 +27,13 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 					<div style="float:left; position:absolute">
 						<h3 class="panel-title"><?php echo JText::_('FILTERS')?></h3> &ensp;&ensp;
 					</div>
-					<div class="buttons" style="float:right; margin-top:0px">
-                        <input value="&#xf0e2" type="button" class="btn btn-sm btn-danger" id="clear-search" style="font-family: 'FontAwesome';" title="<?php echo JText::_('CLEAR_BTN');?>"/>
-					</div>
+                    <div class="buttons" style="float:right; margin-top:0px">
+                        <label for="clear-search">
+                            <img src="<?= JURI::base() ;?>media/com_emundus/images/icones/clear-filters.png" style="width: 30px;filter: invert(1);"/>
+                        </label>
+
+                        <input type="button" style="display: none" id="clear-search" title="<?php echo JText::_('CLEAR_BTN');?>"/>
+                    </div>
 				</div>
 				<div class="panel-body em-containerFilter-body">
 					<?php echo @$this->filters ?>
@@ -109,7 +113,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 	                  '<?php echo JText::_('COMMENT_SENT')?>'];
 	var loading = '<?php echo JURI::base().'media/com_emundus/images/icones/loader.gif'?>';
 	var loadingLine = '<?php echo JURI::base().'media/com_emundus/images/icones/loader-line.gif'?>';
-	
+
 	function checkurl() {
         var url = $(location).attr('href');
         url = url.split("#");
@@ -150,7 +154,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
         }
 
 	}
-	
+
 	$(document).ready(function()
 	{
 		$('.chzn-select').chosen({width:'75%'});
@@ -158,10 +162,10 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 			checkurl();
 			refreshFilter();
 			reloadActions();
-		
+
         //search();
         //reloadData('evaluation');
-	
+
 
         $('#rt-mainbody-surround').children().addClass('mainemundus');
         $('#rt-main').children().addClass('mainemundus');

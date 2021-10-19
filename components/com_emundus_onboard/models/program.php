@@ -159,6 +159,7 @@ class EmundusonboardModelprogram extends JModelList {
 
     public function addProgram($data) {
 
+        $user = JFactory::getUser();
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -206,7 +207,7 @@ class EmundusonboardModelprogram extends JModelList {
                 // Affect coordinator to the group of the program
                 $query->clear()
                     ->insert($db->quoteName('#__emundus_groups'))
-                    ->set($db->quoteName('user_id') . ' = ' . $db->quote(95))
+                    ->set($db->quoteName('user_id') . ' = ' . $db->quote($user->id))
                     ->set($db->quoteName('group_id') . ' = ' . $group_id);
                 $db->setQuery($query);
                 $db->execute();
@@ -1019,7 +1020,9 @@ class EmundusonboardModelprogram extends JModelList {
                 ->from($db->quoteName('#__fabrik_formgroup'))
                 ->where($db->quoteName('group_id') . ' = ' . $db->quote($fabrik_groups[0]));
             $db->setQuery($query);
-            return $db->loadResult();
+
+          return  $db->loadResult();
+
         } catch (Exception $e){
             JLog::add('component/com_emundus_onboard/models/program | Error at getting evaluation grid of the program ' . $pid . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
@@ -1212,8 +1215,8 @@ class EmundusonboardModelprogram extends JModelList {
                 $query->update($db->quoteName('#__fabrik_groups'));
 
                 $labels_to_duplicate = array(
-                    'fr' => $formbuilder->getTranslation($group_model->label, $Content_Folder['fr']),
-                    'en' => $formbuilder->getTranslation($group_model->label, $Content_Folder['en'])
+                    'fr' => $formbuilder->getTranslation($group_model->label, 'fr-FR'),
+                    'en' => $formbuilder->getTranslation($group_model->label, 'en-GB')
                 );
                 if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
                     $labels_to_duplicate = array(
@@ -1269,8 +1272,8 @@ class EmundusonboardModelprogram extends JModelList {
                             $sub_labels = [];
                             foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
                                 $labels_to_duplicate = array(
-                                    'fr' => $formbuilder->getTranslation($sub_label, $Content_Folder['fr']),
-                                    'en' => $formbuilder->getTranslation($sub_label, $Content_Folder['en'])
+                                    'fr' => $formbuilder->getTranslation($sub_label, 'fr-FR'),
+                                    'en' => $formbuilder->getTranslation($sub_label, 'en-GB')
                                 );
                                 if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
                                     $labels_to_duplicate = array(
@@ -1287,8 +1290,8 @@ class EmundusonboardModelprogram extends JModelList {
                         $query->update($db->quoteName('#__fabrik_elements'));
 
                         $labels_to_duplicate = array(
-                            'fr' => $formbuilder->getTranslation($element->element->label, $Content_Folder['fr']),
-                            'en' => $formbuilder->getTranslation($element->element->label, $Content_Folder['en'])
+                            'fr' => $formbuilder->getTranslation($element->element->label, 'fr-FR'),
+                            'en' => $formbuilder->getTranslation($element->element->label, 'en-GB')
                         );
                         if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
                             $labels_to_duplicate = array(

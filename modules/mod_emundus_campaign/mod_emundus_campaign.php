@@ -124,6 +124,7 @@ $faq_articles                = $helper->getFaq();
 
 $now = $helper->now;
 
+
 jimport('joomla.html.pagination');
 $session = JFactory::getSession();
 

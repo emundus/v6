@@ -55,6 +55,30 @@ class EmundusonboardControllerform extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+    public function getgrilleEvalcount() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $m_forms = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $filterCount = $jinput->getString('filterCount');
+            $rechercheCount = $jinput->getString('rechercheCount');
+
+            $forms = $m_forms->getFormCount($filterCount, $rechercheCount);
+
+            if ($forms > 0) {
+                $tab = array('status' => 1, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_FORM'), 'data' => $forms);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 
 
     public function getallform() {
@@ -75,10 +99,38 @@ class EmundusonboardControllerform extends JControllerLegacy {
 	        $recherche = $jinput->getString('recherche');
 
             $forms = $m_forms->getAllForms($filter, $sort, $recherche, $lim, $page);
-            $formscanbeupdated = $m_forms->getFormsUpdated();
 
             if (count($forms) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms, 'forms_updating' => $formscanbeupdated);
+                $tab = array('status' => 1, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_FORM'), 'data' => $forms);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getallgrilleEval() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $m_forms = $this->model;
+            $jinput = JFactory::getApplication()->input;
+
+            $page = $jinput->getInt('page');
+            $lim = $jinput->getInt('lim');
+            $filter = $jinput->getString('filter');
+            $sort = $jinput->getString('sort');
+            $recherche = $jinput->getString('recherche');
+
+            $forms = $m_forms->getAllGrilleEval($filter, $sort, $recherche, $lim, $page);
+
+            if (count($forms) > 0) {
+                $tab = array('status' => 1, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms);
             } else {
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_FORM'), 'data' => $forms);
             }
@@ -643,6 +695,23 @@ class EmundusonboardControllerform extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+    public function getassociatedprogram() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $form_id = $jinput->getInt('fid');
+
+            $m_form = $this->model;
+            $campaigns = $m_form->getAssociatedProgram($form_id);
+            $tab = array('status' => 1, 'msg' => 'worked', 'data' => $campaigns);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 
 
     public function affectcampaignstoform() {
@@ -689,6 +758,39 @@ class EmundusonboardControllerform extends JControllerLegacy {
             $response = array('status' => 0, 'msg' => JText::_("ACCESS_REFUSED"), 'access' => false);
         }
         echo json_encode((object)$response);
+        exit;
+    }
+
+    public function getActualLanguage(){
+
+        $lang = JFactory::getLanguage();
+
+        if ($lang) {
+            $response = array('status' => 1, 'msg' => substr($lang->getTag(), 0, 2));
+        }
+        else {
+            $response = array('status' => 0, 'msg' =>  JText::_("ACCESS_REFUSED"));
+        }
+
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function deletemodeldocument(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_form = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $did = $jinput->getInt('did');
+
+            $result = $m_form->deleteModelDocument($did);
+            $changeresponse = array('allowed' => $result, 'msg' => 'worked');
+        }
+        echo json_encode((object)$changeresponse);
         exit;
     }
 }

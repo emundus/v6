@@ -161,6 +161,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 		JPluginHelper::importPlugin('emundus');
 		$dispatcher = JEventDispatcher::getInstance();
 		$dispatcher->trigger('onBeforeSubmitFile', [$student->id, $student->fnum]);
+        $dispatcher->trigger('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
 		$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $db->Quote($now) . ', status='.$this->getParam('emundusconfirmpost_status', '1').' WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
 		$db->setQuery($query);
@@ -181,6 +182,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 		$dispatcher->trigger('onAfterSubmitFile', [$student->id, $student->fnum]);
+        $dispatcher->trigger('callEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
 		$student->candidature_posted = 1;
 
