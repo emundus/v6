@@ -88,7 +88,6 @@
       -ms-flex-direction: column;
           flex-direction: column;
 }
-
 #em-application-attachment[data-v-30bae934] {
   font-size: 14px;
   margin: 20px;
@@ -110,6 +109,14 @@
           align-items: center;
   margin-bottom: 16px;
 }
+#em-application-attachment .head .displayed-user .name[data-v-30bae934] {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 23px;
+}
+#em-application-attachment .head .displayed-user .email[data-v-30bae934] {
+  font-size: 12px;
+}
 #em-application-attachment .prev-next-files[data-v-30bae934] {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -125,11 +132,34 @@
       -ms-flex-align: center;
           align-items: center;
 }
-#em-application-attachment .prev-next-files div[data-v-30bae934] {
+#em-application-attachment .prev-next-files > div[data-v-30bae934] {
   pointer-events: none;
-  margin: 0 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  margin: 0 8px;
+  height: 40px;
+  width: 40px;
+  border: 1px solid #E3E5E8;
 }
-#em-application-attachment .prev-next-files div.active[data-v-30bae934] {
+#em-application-attachment .prev-next-files > div.prev[data-v-30bae934] {
+  margin-right: 0;
+  border-radius: 4px 0px 0px 4px;
+}
+#em-application-attachment .prev-next-files > div.next[data-v-30bae934] {
+  border-radius: 0px 4px 4px 0px;
+}
+#em-application-attachment .prev-next-files > div.active[data-v-30bae934] {
   pointer-events: auto;
   cursor: pointer;
 }

@@ -3,22 +3,24 @@
         <div class="head">
           <div class="prev-next-files" v-if="fnums.length > 1">
             <div class="prev" :class="{'active': fnumPosition > 0}" @click="prevFile">
-                <i class="fa fa-chevron-left"></i>
+              <icon-arrow-left class="svg"></icon-arrow-left>
             </div>
             <div class="next" :class="{'active': fnumPosition < fnums.length - 1}" @click="nextFile">
-                <i class="fa fa-chevron-right"></i>
+              <icon-arrow-right class="svg"></icon-arrow-right>
             </div>
           </div>
           <div class="displayed-user">
-            <p>{{ displayedUser.firstname }} {{ displayedUser.lastname }} </p>
-            <p>{{ displayedUser.email }}</p>
+            <p class="name">{{ displayedUser.firstname }} {{ displayedUser.lastname }} </p>
+            <p class="email">{{ displayedUser.email }}</p>
           </div>
         </div>
         <div class="wrapper" :class="{'loading': loading}">
           <div id="filters">
             <input id="searchbar" type="text" ref="searchbar" placeholder="Rechercher" @input="searchInFiles">
             <div class="actions">
-              <span @click="deleteAttachments">DELETE</span>
+              <span @click="deleteAttachments">
+                <icon-trash></icon-trash>
+              </span>
             </div>
           </div>
           <table v-if="attachments.length">
@@ -100,13 +102,20 @@ import attachmentService from '../services/attachment.js';
 import userService from '../services/user.js';
 import fileService from '../services/file.js';
 import moment from 'moment';
-import "../assets/css/attachment.scss";
+
+// Icons
+import IconTrash from '../assets/icons/trash.vue';
+import IconArrowLeft from '../assets/icons/arrow-left.vue';
+import IconArrowRight from '../assets/icons/arrow-right.vue';
 
 export default {
   name: 'Attachments',
   components: {
     AttachmentPreview,
-    AttachmentEdit
+    AttachmentEdit,
+    IconTrash,
+    IconArrowLeft,
+    IconArrowRight
   },
   props: {
     user: {
@@ -340,6 +349,18 @@ export default {
     align-items: center;
 
     margin-bottom: 16px;
+
+    .displayed-user {
+      .name {
+        font-size: 18px;
+        font-weight: 800;
+        line-height: 23px;
+      }
+
+      .email {
+        font-size: 12px;
+      }
+    }
   }
 
   .prev-next-files {
@@ -348,9 +369,25 @@ export default {
     justify-content: space-between;
     align-items: center;
     
-    div {
+    >div {
       pointer-events: none;
-      margin: 0 10px;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      margin: 0 8px;
+      height: 40px;
+      width: 40px;
+      border: 1px solid #E3E5E8;
+
+      &.prev {
+        margin-right: 0;
+        border-radius: 4px 0px 0px 4px;
+      }
+
+      &.next {
+        border-radius: 0px 4px 4px 0px;
+      }
 
       &.active {
         pointer-events: auto;
