@@ -54,6 +54,7 @@
           </table>
           <p v-else>Aucun dossier rattaché à cet utilisateur</p>
         </div>
+        <!-- TODO: create component for Modal -->
         <modal 
           id="edit-modal" 
           name="edit"
@@ -76,7 +77,6 @@
                 </div>
               </div>
               <a :href="attachmentPath" class="download" download>DOWNLOAD</a>
-              <span @click="deleteAttachment(selectedAttachment.aid)">DELETE</span>
             </div>
           </div>
           <div class="modal-body">
@@ -84,17 +84,18 @@
             <AttachmentEdit @closeModal="closeModal" @saveChanges="updateAttachment" :fnum="displayedFnum"></AttachmentEdit>
           </div>
         </modal>
-    	  <div class="attach-loader" v-if="loading"></div>
+    	  <div class="vue-em-loader" v-if="loading"></div>
     </div>
 </template>
 
 <script>
-import AttachmentPreview from './AttachmentPreview.vue'
-import AttachmentEdit from './AttachmentEdit.vue'
+import AttachmentPreview from '../components/AttachmentPreview.vue'
+import AttachmentEdit from '../components/AttachmentEdit.vue'
 import attachmentService from '../services/attachment.js';
 import userService from '../services/user.js';
 import fileService from '../services/file.js';
 import moment from 'moment';
+import "../assets/css/attachment.scss";
 
 export default {
   name: 'Attachments',
@@ -167,10 +168,11 @@ export default {
       this.$modal.hide('edit');
       this.selectedAttachment = {};
     },
-    async deleteAttachement(aid) {
-      this.$modal.hide('edit');
-      await attachmentService.deleteAttachments(this.displayedFnum, [aid]);
-    },
+    // No more used currently
+    // async deleteAttachement(aid) {
+    //   this.$modal.hide('edit');
+    //   await attachmentService.deleteAttachments(this.displayedFnum, [aid]);
+    // },
     async deleteAttachments() {
       // remove all checked attachments from attachments array
       this.attachments = this.attachments.filter(attachment => !this.checkedAttachments.includes(attachment.aid));
@@ -321,11 +323,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#em-attachments {
+#em-application-attachment {
   font-size: 14px;
   margin: 20px;
 
   .head {
+    height: 40px;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
@@ -476,21 +479,4 @@ export default {
     display: flex;
   }
 }
-
-.attach-loader {
-    border: 5px solid #f3f3f4; /* Light grey */
-    border-top: 5px solid #7886ae; /* Blue */
-    border-radius: 50%;
-    width: 70px;
-    height: 70px;
-    animation: spin 2s linear infinite;
-    position: absolute !important;
-    text-align: center;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 0 9999px #cecece85;
-    background: #cecece85;
-}
-
 </style>
