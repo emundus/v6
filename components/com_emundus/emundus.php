@@ -406,6 +406,16 @@ JText::script('ERROR_IMAGE_TOO_SMALL');
 JText::script('COM_EMUNDUS_EMAILS_CC_PLACEHOLDER');
 JText::script('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER');
 
+// VUE ATTACHMENT
+JText::script('SEARCH');
+JText::script('NAME');
+JText::script('DESCRIPTION');
+JText::script('SEND_DATE');
+JText::script('MODIFICATION_DATE');
+JText::script('MODIFIED_BY');
+JText::script('STATUS');
+JText::script('WAITING');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
 JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
@@ -429,6 +439,8 @@ JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
 JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
 JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
 JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
+
+
 
 $app = JFactory::getApplication();
 

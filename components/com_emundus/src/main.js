@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import store from "./store";
 import router from "./router";
+import i18n from "./i18n";
 import VModal from 'vue-js-modal';
 import App from './App.vue';
 
@@ -30,6 +31,7 @@ if (mountApp) {
     el: elementId,
     store,
     router,
+    i18n,
     render(h) {
       return h(
         App,

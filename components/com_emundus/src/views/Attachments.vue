@@ -16,7 +16,7 @@
         </div>
         <div class="wrapper" :class="{'loading': loading}">
           <div id="filters">
-            <input id="searchbar" type="text" ref="searchbar" placeholder="Rechercher" @input="searchInFiles">
+            <input id="searchbar" type="text" ref="searchbar" :placeholder="$t('search')" @input="searchInFiles">
             <div class="actions">
               <span @click="deleteAttachments">
                 <icon-trash></icon-trash>
@@ -29,12 +29,12 @@
                     <th>
                       <input type="checkbox" @change="updateAllCheckedAttachments">
                     </th>
-                    <th @click="orderBy('filename')">Nom</th>
-                    <th @click="orderBy('timedate')">Date d'envoi</th>
-                    <th @click="orderBy('description')">Description</th>
-                    <th @click="orderBy('is_validated')">Statut</th>
-                    <th @click="orderBy('modified_by')">Modifié par</th>
-                    <th @click="orderBy('modified')">Date de modification</th>
+                    <th @click="orderBy('filename')">{{ $t('attachments.name') }}</th>
+                    <th @click="orderBy('timedate')">{{ $t('attachments.send_date') }}</th>
+                    <th @click="orderBy('description')">{{ $t('attachments.desc') }}</th>
+                    <th @click="orderBy('is_validated')">{{ $t('attachments.status') }}</th>
+                    <th @click="orderBy('modified_by')">{{ $t('attachments.modified_by') }}</th>
+                    <th @click="orderBy('modified')">{{ $t('attachments.modification_date') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,7 +52,7 @@
                       'success': attachment.is_validated == 1, 
                       'error': attachment.is_validated == -2
                       }">
-                      <span>{{ formattedValidState(attachment.is_validated)}}</span>
+                      <span>{{ $t(`attachments.validation_states.${attachment.is_validated}`) }}</span>
                     </td>
                     <td>{{ userName(attachment.modified_by) }}</td>
                     <td>{{ formattedTimeDate(attachment.modified) }}</td>
