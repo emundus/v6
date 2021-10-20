@@ -3,24 +3,25 @@
     <div class="row rowmodal">
       <div class="form-group">
         <label>{{translations.helptext}} :</label>
-        <input type="text" class="form__input field-general w-input" v-model="element.params.rollover" />
+        <input type="text" class="form__input field-general w-input" v-model="element.params.rollover"/>
       </div>
       <div class="d-flex mb-1">
         <label class="require col-md-3">{{translations.suboptions}} :</label>
       </div>
-      <div class="col-md-12 form-group flex">
+      <!--<div class="col-md-12 form-group flex">
         <div class="toggle">
-        <input type="checkbox"
-               true-value="true"
-               false-value="false"
-               id="no_default_value"
-               class="check"
-               v-model="no_default_value" />
+         <input type="checkbox"
+                 true-value="true"
+                 false-value="false"
+                 id="no_default_value"
+                 class="check"
+                 v-model="no_default_value"/>
           <strong class="b switch"></strong>
           <strong class="b track"></strong>
         </div>
         <label for="no_default_value" class="ml-10px mb-0">{{ translations.No_Default_Value }}</label>
-      </div>
+      </div>-->
+
       <div class="col-md-10 form-group flex">
         <div class="toggle">
           <input type="checkbox"
@@ -34,33 +35,49 @@
           <strong class="b switch"></strong>
           <strong class="b track"></strong>
         </div>
-        <label for="databasejoin_check" class="ml-10px mb-0">{{ translations.DataTables  }}</label>
+        <label for="databasejoin_check" class="ml-10px mb-0">{{ translations.DataTables }}</label>
       </div>
       <div class="col-md-10">
         <draggable
-                v-model="arraySubValues"
-                v-if="databasejoin != 1"
-                @end="needtoemit()"
-                handle=".handle">
-        <div v-for="(sub_values, i) in arraySubValues" :key="i" class="d-flex mb-1" v-if="display_first_option != i">
+            v-model="arraySubValues"
+            v-if="databasejoin != 1"
+            @end="needtoemit()"
+            handle=".handle">
+          <div v-for="(sub_values, i) in arraySubValues" :key="i" class="d-flex mb-1" >
           <span class="icon-handle">
             <em class="fas fa-grip-vertical handle"></em>
           </span>
-          <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input mb-0" style="height: 35px" :id="'suboption_' + i" @keyup.enter="add"/>
-          <button @click.prevent="leave(i)" type="button" class="remove-option">-</button>
-        </div>
+            <input type="text" v-model="arraySubValues[i]" @change="needtoemit()"
+                   class="form__input field-general w-input mb-0" style="height: 35px" :id="'suboption_' + i"
+                   @keyup.enter="add" />
+            <button @click.prevent="leave(i)" type="button" class="remove-option">-</button>
+          </div>
         </draggable>
-        <button @click.prevent="add" type="button" v-if="databasejoin != 1" class="bouton-sauvergarder-et-continuer-3 button-add-option" style="margin-bottom: 2em">{{translations.AddOption}}</button>
-        <select v-if="databasejoin == 1" class="dropdown-toggle" v-model="databasejoin_data" style="margin: 20px 0 30px 0;">
+        <button @click.prevent="add" type="button" v-if="databasejoin != 1"
+                class="bouton-sauvergarder-et-continuer-3 button-add-option" style="margin-bottom: 2em">
+          {{translations.AddOption}}
+        </button>
+        <select v-if="databasejoin == 1" class="dropdown-toggle" v-model="databasejoin_data"
+                style="margin: 20px 0 30px 0;">
           <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
         </select>
-<!--        <div v-if="databasejoin_data">
-          <label>{{translations.OrderBy}}</label>
-          <select class="dropdown-toggle" v-model="databasejoin_data_order" style="margin: 20px 0 30px 0;">
-            <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
+        <!--        <div v-if="databasejoin_data">
+                  <label>{{translations.OrderBy}}</label>
+                  <select class="dropdown-toggle" v-model="databasejoin_data_order" style="margin: 20px 0 30px 0;">
+                    <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
+                  </select>
+                </div>-->
+        <div class="form-group mb-2" v-if="databasejoin != 1">
+          <label>Sélectionner par defaut :</label>
+          <select id="select_type" class="dropdown-toggle" v-model="choiceOfDefaultValue" @change="onChangeChoiceOfDefaultValue($event)">
+            <option  :value=-1></option>
+            <option v-for="(default_value, index) in arraySubValues" :key="index" :value="index" >
+              {{default_value}}
+            </option>
           </select>
-        </div>-->
+        </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -70,6 +87,7 @@ import _ from "lodash";
 import axios from "axios";
 import Swal from "sweetalert2";
 import draggable from "vuedraggable";
+
 const qs = require("qs");
 
 export default {
@@ -77,7 +95,7 @@ export default {
   components: {
     draggable
   },
-  props: { element: Object, databases: Array },
+  props: {element: Object, databases: Array},
   data() {
     return {
       arraySubValues: [],
@@ -86,6 +104,7 @@ export default {
       display_first_option: null,
       databasejoin_data: 0,
       databasejoin_data_order: 'id',
+      choiceOfDefaultValue: -1,
       translations: {
         helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
         suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
@@ -97,7 +116,7 @@ export default {
     };
   },
   methods: {
-    add: _.debounce(function() {
+    add: _.debounce(function () {
       let size = Object.keys(this.arraySubValues).length;
       this.$set(this.arraySubValues, size, "");
       this.needtoemit();
@@ -105,34 +124,44 @@ export default {
       setTimeout(() => {
         document.getElementById(id).focus();
       }, 100);
-    },150),
-    leave: function(index) {
+    }, 150),
+    leave: function (index) {
       this.$delete(this.arraySubValues, index);
+
       this.needtoemit();
     },
-    initialised: function() {
-      if(this.element.plugin === 'databasejoin'){
+    initialised: function () {
+
+      if (this.element.params.default_value == "true") {
+
+        this.choiceOfDefaultValue = -1;
+      } else {
+        this.choiceOfDefaultValue = 0;
+      }
+      if (this.element.plugin === 'databasejoin') {
         this.databasejoin = 1;
-        this.databases.forEach((db,index) => {
-          if(db.database_name == this.element.params.join_db_name){
+        this.databases.forEach((db, index) => {
+          if (db.database_name == this.element.params.join_db_name) {
             this.databasejoin_data = index;
           }
         })
-      } else  {
+      } else {
         this.element.params.default_value = false;
         this.no_default_value = false;
-        if(typeof this.element.params.sub_options !== 'undefined') {
-          if(typeof this.element.params.sub_options.sub_initial_selection !== 'undefined') {
-            this.element.params.sub_options.sub_values.forEach((value,i) => {
-              if(value == this.element.params.sub_options.sub_initial_selection[0]){
+        if (typeof this.element.params.sub_options !== 'undefined') {
+          if (typeof this.element.params.sub_options.sub_initial_selection !== 'undefined') {
+            this.element.params.sub_options.sub_values.forEach((value, i) => {
+              if (value == this.element.params.sub_options.sub_initial_selection[0]) {
                 this.display_first_option = i;
               }
             })
-            if(this.display_first_option != null) {
+            if (this.display_first_option != null) {
               this.element.params.default_value = true;
               this.no_default_value = true;
+
             }
           }
+
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXTA",
@@ -144,8 +173,18 @@ export default {
             })
           }).then(response => {
             Object.values(response.data).forEach(rep => {
+
               this.arraySubValues.push(rep);
             });
+
+            if (this.arraySubValues.indexOf('---') >= 0 ) {
+              this.arraySubValues.splice(this.arraySubValues.indexOf('---'), 1);
+            }
+            if (this.arraySubValues.indexOf('-- Veuillez sélectionner --') >= 0) {
+              this.arraySubValues.splice(this.arraySubValues.indexOf('-- Veuillez sélectionner --'), 1);
+            }
+
+
             this.needtoemit();
           }).catch(e => {
             console.log(e);
@@ -155,20 +194,22 @@ export default {
             'sub_values': [],
             'sub_labels': [],
           }
+
           this.arraySubValues = this.element.params.sub_options.sub_labels;
+
         }
       }
     },
-    needtoemit: _.debounce(function() {
+    needtoemit: _.debounce(function () {
       this.$emit("subOptions", this.arraySubValues);
     }),
 
-    checkOnboarding(){
+    checkOnboarding() {
       axios({
         method: "get",
         url: "index.php?option=com_emundus_onboard&controller=settings&task=checkfirstdatabasejoin",
       }).then(response => {
-        if(response.data.status) {
+        if (response.data.status) {
           Swal.fire({
             title: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN"),
             text: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN_TEXT"),
@@ -194,20 +235,60 @@ export default {
           });
         }
       });
-    }
+    },
+    onChangeChoiceOfDefaultValue(event) {
+      if (event.target.value != -1) {
+        if (this.no_default_value) {
+          this.setDefaultSubOption(event.target.value);
+          if (this.arraySubValues.indexOf('---') >= 0) {
+            this.arraySubValues.splice(this.arraySubValues.indexOf('---'), 1);
+          }
+          if(this.arraySubValues.indexOf('-- Veuillez sélectionner --') >= 0) {
+            this.arraySubValues.splice(this.arraySubValues.indexOf('-- Veuillez sélectionner --'), 1);
+          }
+        } else {
+          this.setDefaultSubOption(event.target.value);
+        }
+        this.choiceOfDefaultValue = 0;
+
+        this.no_default_value = false;
+      } else {
+        if (this.element.params.default_value == 'true') {
+          this.no_default_value = false;
+        } else {
+          this.no_default_value = true;
+          this.arraySubValues.unshift('---');
+        }
+      }
+    },
+    // this function is used to set the choice of the default option
+    // option of dropdown move the option from his index to the first index of the subOption Arrays
+    setDefaultSubOption(oldIndex) {
+      const newIndex = 0;
+      if (newIndex >= this.arraySubValues.length) {
+        let k = newIndex - this.arraySubValues.length + 1;
+        // eslint-disable-next-line no-plusplus
+        while (k--) {
+          this.arraySubValues.push(undefined);
+        }
+      }
+      this.arraySubValues.splice(newIndex, 0, this.arraySubValues.splice(oldIndex, 1)[0]);
+
+      this.needtoemit();
+    },
   },
-  created: function() {
+  created: function () {
     this.initialised();
   },
   watch: {
-    databasejoin: function(value){
-      if(value == 1) {
+    databasejoin: function (value) {
+      if (value == 1) {
         this.checkOnboarding();
         this.element.plugin = 'databasejoin';
         this.element.params.join_db_name = this.databases[this.databasejoin_data].database_name;
         this.element.params.database_join_display_type = 'dropdown';
         this.element.params.join_key_column = this.databases[this.databasejoin_data].join_column_id;
-        if(this.databases[this.databasejoin_data].translation == '1') {
+        if (this.databases[this.databasejoin_data].translation == '1') {
           this.element.params.join_val_column = this.databases[this.databasejoin_data].join_column_val + '_fr';
           this.element.params.join_val_column_concat = '{thistable}.' + this.databases[this.databasejoin_data].join_column_val + '_{shortlang}';
         } else {
@@ -221,7 +302,7 @@ export default {
         delete this.element.params.join_key_column;
         delete this.element.params.join_val_column;
         delete this.element.params.join_val_column_concat;
-        if(typeof this.element.params.sub_options === 'undefined') {
+        if (typeof this.element.params.sub_options === 'undefined') {
           this.element.params.sub_options = {
             'sub_values': [],
             'sub_labels': [],
@@ -230,11 +311,11 @@ export default {
         }
       }
     },
-    databasejoin_data: function(value){
+    databasejoin_data: function (value) {
       this.element.params.join_db_name = this.databases[value].database_name;
       this.element.params.join_key_column = this.databases[value].join_column_id;
       this.element.params.database_join_display_type = 'dropdown';
-      if(this.databases[value].translation == '1') {
+      if (this.databases[value].translation == '1') {
         this.element.params.join_val_column = this.databases[value].join_column_val + '_fr';
         this.element.params.join_val_column_concat = '{thistable}.' + this.databases[value].join_column_val + '_{shortlang}';
       } else {
@@ -243,7 +324,8 @@ export default {
       }
     },
 
-    no_default_value: function(value){
+    no_default_value: function (value) {
+
       this.element.params.default_value = value;
     }
   }
@@ -256,14 +338,17 @@ export default {
   margin-bottom: 1em;
   height: 30px;
 }
+
 .rowmodal {
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
-#dropdownF{
+
+#dropdownF {
   padding: 10px 0;
 }
-.icon-handle{
+
+.icon-handle {
   color: #cecece;
   cursor: grab;
   margin-right: 10px;
