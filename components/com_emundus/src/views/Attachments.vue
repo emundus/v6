@@ -279,20 +279,6 @@ export default {
     },
 
     // Format Methods
-    formattedValidState(state) {
-      switch(state) {
-        case "1":
-          return 'Valide';
-          break;
-        case "-2":
-          return 'Non valide';
-          break;
-        case "0":
-        default:
-          return 'En attente';
-          break;
-      }
-    },
     formattedTimeDate(timedate) {
       return moment(timedate).format('DD/MM/YYYY');
     },
