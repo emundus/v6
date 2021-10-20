@@ -79,3 +79,6 @@ plugins/fabrik_form/php/emundus-csv_import_ehesp.php
 
 /components/node_modules/
 /components/com_emundus_messenger/node_modules/
+
+.htaccess
+configuration.php
