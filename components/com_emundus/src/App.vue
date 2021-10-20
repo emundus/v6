@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import './assets/css/main.scss';
 
 export default {
     props: {
@@ -26,3 +25,7 @@ export default {
     }
 }
 </script>
+
+<style lang="scss">
+@import url('./assets/css/main.scss');
+</style>
