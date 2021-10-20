@@ -13,7 +13,7 @@ export default {
             preview: '',
             overflowX: false,
             overflowY: false,
-            parser: ''
+            style: ''
         }
     },
     mounted() {
@@ -36,7 +36,7 @@ export default {
                 this.preview = data.content;
                 this.overflowX = data.overflowX; 
                 this.overflowY = data.overflowY;
-                this.parser = data.parser;
+                this.style = data.style;
 
                 if (this.$refs['a-preview'].shadowRoot === null)  {
                     this.$refs['a-preview'].attachShadow({mode: 'open'});
@@ -49,8 +49,10 @@ export default {
 
             this.$refs['a-preview'].shadowRoot.innerHTML = this.preview != null ? this.preview : '';
 
-            if (this.parser == 'sheet') {
+            if (this.style == 'sheet') {
                 this.addSheetStyles();
+            } else if (this.style == 'presentation') {
+                this.addPresentationStyles();
             }
         },
         addSheetStyles() {
@@ -88,6 +90,16 @@ export default {
                     });
                 });
             }
+        },
+        addPresentationStyles() {
+            const slides = this.$refs['a-preview'].shadowRoot.querySelectorAll('.slide');
+            slides.forEach((slide, key) => {
+                slide.style.padding = "16px";
+                slide.style.margin = "20px";
+                slide.style.width = "calc(100% - 72px)";
+                slide.style.boxShadow = "0px 0px 10px rgba(0, 0, 0, 0.1)";
+                slide.style.borderRadius = "8px";
+            });
         }
     },
     watch: {
