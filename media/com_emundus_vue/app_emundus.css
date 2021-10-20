@@ -188,6 +188,20 @@
 #em-application-attachment table tbody tr.checked[data-v-30bae934] {
   background-color: #F0F6FD;
 }
+#em-application-attachment table tbody .valid-state span[data-v-30bae934] {
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: var(--warning-color);
+  background-color: var(--warning-bg-color);
+}
+#em-application-attachment table tbody .valid-state.success span[data-v-30bae934] {
+  color: var(--success-color);
+  background-color: var(--success-bg-color);
+}
+#em-application-attachment table tbody .valid-state.error span[data-v-30bae934] {
+  color: var(--error-color);
+  background-color: var(--error-bg-color);
+}
 #em-application-attachment table tbody .td-document[data-v-30bae934] {
   width: 250px;
   max-width: 250px;
