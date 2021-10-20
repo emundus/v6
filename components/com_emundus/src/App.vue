@@ -21,7 +21,7 @@ export default {
     mounted() {
         this.$router.push({
             name: this.componentName,
-            query: this.data
+            params: this.data
         })
     }
 }

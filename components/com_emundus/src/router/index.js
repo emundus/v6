@@ -7,7 +7,7 @@ Vue.use(Router);
 
 function addPropsFromRoute(route) {
     return {
-        ...route.query,
+        ...route.params,
     };
 }
 
