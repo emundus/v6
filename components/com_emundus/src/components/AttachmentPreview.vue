@@ -1,5 +1,5 @@
 <template>
-    <div ref="a-preview" id="attachment-preview" :class="{'overflow-x': overflowX, 'overflow-y': overflowY, 'sheet': parser == 'sheet'}">
+    <div ref="a-preview" id="attachment-preview" :class="{'overflow-x': overflowX, 'overflow-y': overflowY}">
     </div>
 </template>
 
@@ -126,13 +126,6 @@ export default {
 
     &.overflow-y {
         overflow-y: auto;
-    }
-
-    &.sheet {
-        :host > div {
-            width: fit-content;
-            margin: auto;
-        }
     }
 }
 </style>

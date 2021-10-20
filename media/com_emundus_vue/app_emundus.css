@@ -39,12 +39,6 @@
 #attachment-preview.overflow-y[data-v-20d71aa5] {
   overflow-y: auto;
 }
-#attachment-preview.sheet :host > div[data-v-20d71aa5] {
-  width: -webkit-fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
-  margin: auto;
-}
 #attachment-edit[data-v-fb825d06] {
   margin: 0 0 0 10px;
   height: 100%;
