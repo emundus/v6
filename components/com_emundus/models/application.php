@@ -3991,7 +3991,7 @@ class EmundusModelApplication extends JModelList
             'content' => '',
             'overflowX' => false,
             'overflowY' => false,
-            'parser' => 'html5'
+            'style' => ''
         ];
         $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
         
@@ -4032,7 +4032,7 @@ class EmundusModelApplication extends JModelList
                 $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
                 $preview['content'] = $htmlWriter->getContent();
                 $preview['overflowY'] = true;
-                $preview['parser'] = 'word';
+                $preview['style'] = 'word';
             } else if (in_array($extension, ['xls', 'xlsx', 'ods', 'csv'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
              
@@ -4043,12 +4043,12 @@ class EmundusModelApplication extends JModelList
                 $preview['content'] = $htmlWriter->generateHtmlAll();
                 $preview['overflowY'] = true;
                 $preview['overflowX'] = true;
-                $preview['parser'] = 'sheet';
+                $preview['style'] = 'sheet';
             } else if (in_array($extension, ['ppt', 'pptx', 'odp'])) {
                 // ? PHPPresentation is not giving html support... need to create it manually ? 
                 $preview['content'] = $this->convertPowerPointToHTML($filePath);
                 $preview['overflowY'] = true;
-                $preview['parser'] = 'word';
+                $preview['style'] = 'presentation';
             } else if (in_array($extension, ['mp3', 'wav', 'ogg'])) {
                 $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><audio controls><source src="' . $filePath . '" type="audio/' . $extension . '"></audio></div>';
             } else if (in_array($extension, ['mp4', 'webm', 'ogg'])) {
@@ -4094,7 +4094,7 @@ class EmundusModelApplication extends JModelList
             $zip->close();
             
             // create html content from slides and style
-            $content = '<div class="wrapper" style="height: 100%;display: flex;flex-direction:column;justify-content: flex-start;align-items: center;">';
+            $content = '<div class="wrapper" style="display: flex;flex-direction:column;justify-content: flex-start;align-items: center;">';
             foreach ($slides as $key => $slide) {
                 $content .= '<div class="slide" style="width: 100%;height: 100%;">';
 
