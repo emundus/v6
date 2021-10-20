@@ -534,6 +534,15 @@ export default {
         .next {
           margin-left: 4px;
         }
+
+        .prev, .next {
+          pointer-events: none;
+          
+          &.active {
+            pointer-events: auto;
+            cursor: pointer;
+          }
+        }
       }
     }
   }

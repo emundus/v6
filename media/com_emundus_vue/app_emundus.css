@@ -311,6 +311,13 @@
 #em-application-attachment .modal-head .flex-end .pagination .next[data-v-30bae934] {
   margin-left: 4px;
 }
+#em-application-attachment .modal-head .flex-end .pagination .prev[data-v-30bae934], #em-application-attachment .modal-head .flex-end .pagination .next[data-v-30bae934] {
+  pointer-events: none;
+}
+#em-application-attachment .modal-head .flex-end .pagination .prev.active[data-v-30bae934], #em-application-attachment .modal-head .flex-end .pagination .next.active[data-v-30bae934] {
+  pointer-events: auto;
+  cursor: pointer;
+}
 #em-application-attachment .modal-body[data-v-30bae934] {
   height: 100%;
   width: 100%;
