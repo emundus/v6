@@ -46,7 +46,12 @@
                     <td class="td-document" @click="openModal(attachment)">{{ attachment.filename }}</td>
                     <td>{{ formattedTimeDate(attachment.timedate) }}</td>
                     <td>{{ attachment.description }}</td>
-                    <td>{{ formattedValidState(attachment.is_validated)}}</td>
+                    <td class="valid-state" :class="{
+                      'success': attachment.is_validated == 1, 
+                      'error': attachment.is_validated == -2
+                      }">
+                      <span>{{ formattedValidState(attachment.is_validated)}}</span>
+                    </td>
                     <td>{{ userName(attachment.modified_by) }}</td>
                     <td>{{ formattedTimeDate(attachment.modified) }}</td>
                 </tr>
@@ -412,6 +417,30 @@ export default {
 
         &.checked {
           background-color: #F0F6FD;  
+        }
+      }
+
+      .valid-state {
+        span {
+          padding: 4px 8px;
+          border-radius: 4px;
+
+          color: var(--warning-color);
+          background-color:  var(--warning-bg-color);
+        }
+
+        &.success {
+          span {
+            color: var(--success-color);
+            background-color: var(--success-bg-color); 
+          }
+        }
+
+        &.error {
+          span {
+            color: var(--error-color);
+            background-color:  var(--error-bg-color); 
+          }
         }
       }
 
