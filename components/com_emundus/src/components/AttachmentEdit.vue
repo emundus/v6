@@ -1,7 +1,7 @@
 <template>
     <div id="attachment-edit">
         <div class="editableData"> 
-            <h2>{{ attachment.filename }}</h2>
+            <h2>{{ attachment.value }}</h2>
             <div class="input-group">
                 <label for="description">DESCRIPTION</label>
                 <input name="description" type="text" v-model="attachment.description"/>
@@ -24,7 +24,6 @@
 
 <script>
 import attachment from '../services/attachment';
-import moment from 'moment';
 
 export default {
     name: 'AttachmentEdit',
