@@ -97,7 +97,7 @@ class JConfig {
     public $session_redis_server_db = '0';
     public $shared_session = '0';
     public $end_time = '1619016076';
-    public $prospect = '1';
+    public $prospect = '0';
     public $plan_limit_app_forms = '0';
     public $plan_limit_storage_space = '0';
     public $plan_limit_forms = '0';
