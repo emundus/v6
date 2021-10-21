@@ -16,38 +16,35 @@ let data = {};
 let componentName = "";
 
 if (document.getElementById("em-application-attachment")) {
-  const element = document.getElementById("em-application-attachment");
-  Array.prototype.slice.call(element.attributes).forEach(function (attr) {
-    data[attr.name] = attr.value;
-  });
+    const element = document.getElementById("em-application-attachment");
+    Array.prototype.slice.call(element.attributes).forEach(function(attr) {
+        data[attr.name] = attr.value;
+    });
 
-  componentName = "attachments";
-  elementId = "#em-application-attachment";
-  mountApp = true;
+    componentName = "attachments";
+    elementId = "#em-application-attachment";
+    mountApp = true;
 }
 
 if (mountApp) {
-  const vm = new Vue({
-    el: elementId,
-    store,
-    router,
-    i18n,
-    render(h) {
-      return h(
-        App,
-        {
-          props: {
-            componentName: componentName,
-            data: data
-          },
-        }
-      );
-    },
-  });
+    const vm = new Vue({
+        el: elementId,
+        store,
+        router,
+        i18n,
+        render(h) {
+            return h(
+                App, {
+                    props: {
+                        componentName: componentName,
+                        data: data
+                    },
+                }
+            );
+        },
+    });
 
-  console.log('addEventListener');
-  window.addEventListener('destroy-com-emundus-vue', () => {
-    console.log('destroy-com-emundus-vue');
-    vm.$destroy();
-  })
+    window.addEventListener('destroy-com-emundus-vue', () => {
+        vm.$destroy();
+    })
 }
