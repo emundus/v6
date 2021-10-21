@@ -115,7 +115,7 @@ export default {
 
         label {
             font-size: 10px;
-            font-weight: 400;
+            font-weight: 400 !important;
             color: var(--grey-color);
         }
     }
