@@ -9,8 +9,9 @@
         <div v-for="(statu, index) in status" class="status-item" :id="'step_' + statu.step">
             <div class="status-field">
                 <div style="width: 100%">
-                    <input type="text" v-model="statu.label[actualLanguage]">
-                    <translation :label="statu.label" :actualLanguage="actualLanguage" v-if="statu.translate"></translation>
+                    <input type="text" v-model="statu.label[actualLanguage]" @keyup="verifyIfStatusNotExist">
+
+                    <translation :label="statu.label" :actualLanguage="actualLanguage" v-if="statu.translate" ></translation>
                     <!--<transition :name="'slide-down'" type="transition">
                         <div class="translate-block" v-if="statu.translate">
                             <label class="translate-label">
@@ -26,6 +27,7 @@
                 <button class="translate-icon" v-if="manyLanguages !== '0'" v-bind:class="{'translate-icon-selected': statu.translate}" type="button" @click="statu.translate = !statu.translate; $forceUpdate()"></button>
                 <input type="hidden" :class="'label-' + statu.class">
             </div>
+
             <v-swatches
                     v-model="statu.class"
                     :swatches="swatches"
@@ -37,6 +39,7 @@
             ></v-swatches>
           <button type="button" :title="Delete" v-if="statu.edit == 1 && statu.step != 0 && statu.step != 1" @click="removeStatus(statu,index)" class="remove-tag"><i class="fas fa-times"></i></button>
         </div>
+      <p v-if="existInActualLanguage" class="text-error">Impossible d'ajouter deux statuts identiques</p>
     </div>
 </template>
 
@@ -65,6 +68,7 @@
             return {
                 status: [],
                 show: false,
+                existInActualLanguage: false,
                 swatches: [
                     '#DCC6E0', '#947CB0', '#663399', '#6BB9F0', '#19B5FE', '#013243', '#7BEFB2', '#3FC380', '#1E824C', '#FFFD7E',
                     '#FFFD54', '#F7CA18', '#FABE58', '#E87E04', '#D35400', '#EC644B', '#CF000F', '#E5283B', '#E08283', '#D2527F',
@@ -81,6 +85,7 @@
                 axios.get("index.php?option=com_emundus_onboard&controller=settings&task=getstatus")
                     .then(response => {
                         this.status = response.data.data;
+
                         setTimeout(() => {
                           this.status.forEach(element => {
                             this.getHexColors(element);
@@ -134,11 +139,21 @@
 
             rgbToHex(r, g, b) {
                 return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+            },
+          verifyIfStatusNotExist(event){
+            if((this.status.filter(statu=>statu.label[this.actualLanguage] == event.target.value)).length >1){
+                  this.existInActualLanguage=true;
+
+            } else{
+              this.existInActualLanguage=false;
             }
+
+          }
         },
 
         created() {
             this.getStatus();
+
         }
     };
 </script>

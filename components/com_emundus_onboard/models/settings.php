@@ -231,6 +231,7 @@ class EmundusonboardModelsettings extends JModelList {
                         $db->quoteName('reference_field') . ' = ' . $db->quote('class'),
                         $db->quoteName('language_id') . ' = 2'
                     ));
+
                 $db->setQuery($query);
                 $results[] = $db->execute();
 
@@ -242,7 +243,9 @@ class EmundusonboardModelsettings extends JModelList {
                     ->set($db->quoteName('class') . ' = ' . $db->quote($class))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($statu['id']));
                 $db->setQuery($query);
+
                 $results[] = $db->execute();
+
             }
 
             return $results;
