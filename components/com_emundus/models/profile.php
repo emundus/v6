@@ -149,7 +149,7 @@ class EmundusModelProfile extends JModelList {
 
 				// Here we build the other query based on the root query defined at the start.
 				$query->clear()
-					->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published')
+					->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published, c.start_date as start_date, c.end_date as end_date')
 					->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
 					->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
 					->leftJoin($this->_db->quoteName('jos_emundus_setup_campaigns', 'c').' ON '.$this->_db->quoteName('c.id').' = '.$this->_db->quoteName('cc.campaign_id'))
@@ -402,16 +402,21 @@ class EmundusModelProfile extends JModelList {
             $res = $this->_db->loadAssoc();
 
             if(empty($res['profile'])){
-                $query->clear()
-                    ->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id')
-                    ->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
-                    ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
-                    ->leftJoin($this->_db->quoteName('jos_emundus_setup_status', 'ss').' ON '.$this->_db->quoteName('ss.step').' = '.$this->_db->quoteName('cc.status'))
-                    ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ss.profile'))
-                    ->where($this->_db->quoteName('cc.fnum').' LIKE '.$fnum);
+                $res = $this->getStatusByWorkflow($fnum);
+                
+                if(empty($res['profile'])) {
+                    $query->clear()
+                        ->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id, esc.admission_start_date as start_date, esc.admission_end_date as end_date')
+                        ->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
+                        ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('cc.applicant_id'))
+                        ->leftJoin($this->_db->quoteName('jos_emundus_setup_status', 'ss') . ' ON ' . $this->_db->quoteName('ss.step') . ' = ' . $this->_db->quoteName('cc.status'))
+                        ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp') . ' ON ' . $this->_db->quoteName('esp.id') . ' = ' . $this->_db->quoteName('ss.profile'))
+                        ->leftJoin($this->_db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
+                        ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $fnum);
 
-                $this->_db->setQuery( $query );
-                $res = $this->_db->loadAssoc();
+                    $this->_db->setQuery($query);
+                    $res = $this->_db->loadAssoc();
+                }
             }
             return $res;
         } catch(Exception $e) {
@@ -1043,6 +1048,149 @@ class EmundusModelProfile extends JModelList {
         } catch (Exception $e) {
             JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
+        }
+    }
+
+    public function getStatusByWorkflow($fnum) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+            ->select('eu.firstname, eu.lastname, ewi.profile AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id, ews.id as step')
+            ->from($db->quoteName('#__emundus_workflow_item', 'ewi'))
+            ->leftJoin($db->quoteName('#__emundus_workflow_step', 'ews') .  ' ON ' . $db->quoteName('ewi.step') . ' = ' . $db->quoteName('ews.id'))
+            ->leftJoin($db->quoteName('#__emundus_campaign_workflow', 'ecw') . ' ON ' . $db->quoteName('ews.workflow') . ' = ' . $db->quoteName('ecw.id'))
+            ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $db->quoteName('ecw.campaign') . ' = ' . $db->quoteName('cc.campaign_id'))
+            ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ewi.profile'))
+            ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
+            ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum));
+
+        $db->setQuery($query);
+        return $db->loadAssoc();
+    }
+
+    /* get last page (id) of selected form */
+    public function getLastPage($menutype) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($menutype)) {
+            try {
+                $query->clear()
+                    ->select('m.*')
+                    ->from($db->quoteName('#__menu', 'm'))
+                    ->where($db->quoteName('m.menutype') . '=' . '"' . $menutype . '"');
+                $db->setQuery($query);
+                $rawData = $db->loadObjectList();
+
+                $orderList = array('left' => array(), 'right' => array());
+
+                /// find the max lft and rgt from $_rawData
+                foreach ($rawData as $key => $value) {
+                    $orderList['left'][$value->id] = $value->lft;
+                    $orderList['right'][$value->id] = $value->rgt;
+                }
+
+                $isLastPage = (array_search(max(array_values($orderList['left'])), $orderList['left']) == array_search(max(array_values($orderList['right'])), $orderList['right'])) ? true : false;
+
+                if ($isLastPage) {
+                    $lastPage = array_search(max(array_values($orderList['left'])), $orderList['left']);
+
+                    foreach ($rawData as $_key => $_value) {
+                        if ($_value->id == $lastPage) {
+                            return $_value;
+                        }
+                    }
+                } else {
+                    return false;
+                }
+            }
+            catch(Exception $e) {
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    /* get step by fnum */
+    public function getStepByFnum($fnum) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $session = JFactory::getSession();;
+        $aid = $session->get('emundusUser');
+
+        /* get fnum status from session */
+        $fnum_status = ($aid->fnums)[$fnum]->status;
+
+        /* get fnum campaign from session */
+        $fnum_campaign = ($aid->fnums)[$fnum]->campaign_id;
+
+        /* get workflow id by campaign */
+        $query->clear()
+            ->select('ecw.*')
+            ->from($db->quoteName('#__emundus_campaign_workflow', 'ecw'))
+            ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecw.campaign') . ' = ' . $db->quoteName('ecc.campaign_id'))
+            ->where($db->quoteName('ecc.fnum') . ' = ' . $db->quote($fnum));
+
+        $db->setQuery($query);
+        $workflow = $db->loadObject();
+
+        /* find all steps by $workflow */
+        $query->clear()
+            ->select('ewsr.parent_id as step, group_concat(ewsr.input_status) as input_status, ewsr.output_status, ews.start_date, ews.end_date')
+            ->from($db->quoteName('#__emundus_workflow_step', 'ews'))
+            ->leftJoin($db->quoteName('#__emundus_campaign_workflow', 'ecw') . ' ON ' . $db->quoteName('ecw.id') . ' = ' . $db->quoteName('ews.workflow'))
+            ->leftJoin($db->quoteName('#__emundus_workflow_step_repeat', 'ewsr') . ' ON ' . $db->quoteName('ews.id') . ' = ' . $db->quoteName('ewsr.parent_id'))
+            ->where($db->quoteName('ews.workflow') . ' = ' . $db->quote($workflow->id))
+            ->group($db->quoteName('parent_id'));
+
+        $db->setQuery($query);
+        $steps = $db->loadObjectList();
+
+        /* find fnum_status in each $steps above */
+        $res = new stdClass();
+
+        foreach ($steps as $step) {
+            $input_status = explode(',', $step->input_status);
+            $output_status = explode(',', $step->output_status);
+
+            if (in_array($fnum_status, $input_status)) {
+                /* editable mode */
+                $res->step = $step->step;
+                $res->editable_status = $input_status;
+                $res->output_status = $output_status;
+                $res->start_date = $step->start_date;
+                $res->end_date = $step->end_date;
+                $res->msg = '*** Edition ***';
+            }
+            else {
+                $res->msg = '*** Read-only ***';
+                /* read-only mode */
+                if (in_array($fnum_status, $output_status)) {
+                    $res->step = $step->step;
+                    $res->editable_status = [];
+                    $res->output_status = [];
+                    $res->start_date = $step->start_date;
+                    $res->end_date = $step->end_date;
+                }
+                else {
+                    $res->_step = null;
+                    $res->_editable_status = [];
+                    $res->_output_status = [];
+
+                    if(!is_null($this->getProfileByStatus($fnum)['profile'])) {
+                        $res->start_date = $this->getProfileByStatus($fnum)['start_date'];
+                        $res->end_date = $this->getProfileByStatus($fnum)['end_date'];
+                    } else {
+                        $res->start_date = $this->getFullProfileByFnum($fnum)['start_date'];
+                        $res->end_date = $this->getFullProfileByFnum($fnum)['end_date'];
+                    }
+                }
+            }
+            return $res;
         }
     }
 }

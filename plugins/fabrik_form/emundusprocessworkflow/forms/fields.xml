@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+
+        <fieldset name="plg-form-emundusprocessworkflow" label="PLG_FABRIK_FORM_EMUNDUSPROCESSWORKFLOW_FIELDS">
+            <field name="emundusprocessworkflow_output_status" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUSPROCESSWORKFLOW_OUTPUT_STATUS_DESC" label="PLG_FABRIK_FORM_EMUNDUSPROCESSWORKFLOW_OUTPUT_STATUS_LABEL" />
+            <field name="emundusprocessworkflow_redirect_jump_page" default="index.php" type="textarea" cols="60" description="PLG_FABRIK_FORM_EMUNDUSPROCESSWORKFLOW_REDIRECT_JUMPPAGE_DESC" label="PLG_FABRIK_FORM_EMUNDUSPROCESSWORKFLOW_REDIRECT_JUMPPAGE_LABEL" repeat="true" rows="2"/>
+            <field name="emundusprocessworkflow_thanks_message" default="APPLICATION_SENT" type="fabrikeditor" mode="html" description="PLG_FABRIK_FORM_EMUNDUSPROCESSWORKFLOW_THANKS_MESSAGE_DESC" label="PLG_FABRIK_FORM_EMUNDUSPROCESSWORKFLOW_THANKS_MESSAGE_LABEL" repeat="true" />
+
+            <field name="emundusprocessworkflow_field_status" type="field" default="-1" description="PLG_FABRIK_FORM_EMUNDUSPROCESSWORKFLOW_STATUS_FIELD_DESC" label="PLG_FABRIK_FORM_EMUNDUSPROCESSWORKFLOW_STATUS_FIELD_LABEL" />
+
+            <field name="emundusprocessworkflow_copy_form" type="list" default="0" description="PLG_FABRIK_FORM_EMUNDUSPROCESSWORKFLOW_COPY_FORM_DESC" label="PLG_FABRIK_FORM_EMUNDUSPROCESSWORKFLOW_COPY_FORM_LABEL">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+
+            <field name="emundusprocessworkflow_notify_complete_file" type="list" default="0" description="PLG_FABRIK_FORM_EMUNDUSPROCESSWORKFLOW_NOTIFY_DESC" label="PLG_FABRIK_FORM_EMUNDUSPROCESSWORKFLOW_NOTIFY_LABEL">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+
+        </fieldset>
+    </fields>
+</form>
