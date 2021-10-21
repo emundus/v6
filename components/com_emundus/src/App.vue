@@ -21,7 +21,7 @@ export default {
         this.$router.push({
             name: this.componentName,
             params: this.data
-        })
+        });
     }
 }
 </script>

@@ -25,5 +25,5 @@ export default new Router({
         props: route => addPropsFromRoute(route),
       },
     ],
-  });
+});
   

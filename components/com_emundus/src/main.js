@@ -27,7 +27,7 @@ if (document.getElementById("em-application-attachment")) {
 }
 
 if (mountApp) {
-  new Vue({
+  const vm = new Vue({
     el: elementId,
     store,
     router,
@@ -42,6 +42,9 @@ if (mountApp) {
           },
         }
       );
-    }
+    },
+  });
+  window.addEventListener('destroy-com-emundus-vue', () => {
+    vm.$destroy();
   })
 }
