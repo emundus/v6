@@ -2092,7 +2092,7 @@ this.set(words.join(&quot; &quot;));
                     $sub_initial_selection = [];
 
 
-                    if($element['plugin']=="checkbox"){
+                    if($element['plugin']=="checkbox" || $element['plugin'] === 'radiobutton'){
                         foreach ($element['params']['sub_options']['sub_initial_selection'] as $index => $sub_value) {
                             $sub_initial_selection[] = $element['params']['sub_options']['sub_initial_selection'][$index];
                         }

@@ -103,8 +103,7 @@ export default {
       this.needtoemit();
     },
     initialised: function () {
-      if (this.element.params.sub_options.sub_initial_selection[0] == "") {
-
+      if (this.element.params.sub_options.sub_initial_selection.length == 0 && this.element.params.sub_options.sub_initial_selection[0] == "") {
         this.choiceOfDefaultValue = -1;
       } else {
         this.choiceOfDefaultValue = 0;
