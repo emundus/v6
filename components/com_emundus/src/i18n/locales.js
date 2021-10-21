@@ -3,6 +3,7 @@ export default {
     "download": Joomla.JText._("LINK_TO_DOWNLOAD"),
     "export": Joomla.JText._("EXPORT"),
     "save": Joomla.JText._("SAVE"),
+    "filter": Joomla.JText._("FILTER_ACTION"),
     "attachments": {
         "name": Joomla.JText._("NAME"),
         "desc": Joomla.JText._("DESCRIPTION"),

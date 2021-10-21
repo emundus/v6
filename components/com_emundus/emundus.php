@@ -417,6 +417,7 @@ JText::script('STATUS');
 JText::script('SAVE');
 JText::script('EXPORT');
 JText::script('WAITING');
+JText::script('FILTER_ACTION');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
