@@ -2091,6 +2091,13 @@ this.set(words.join(&quot; &quot;));
                     $sub_labels = [];
                     $sub_initial_selection = [];
 
+
+                    if($element['plugin']=="checkbox"){
+                        foreach ($element['params']['sub_options']['sub_initial_selection'] as $index => $sub_value) {
+                            $sub_initial_selection[] = $element['params']['sub_options']['sub_initial_selection'][$index];
+                        }
+                    }
+
                     if($element['params']['default_value'] == 'true') {
                         if (!array_search('PLEASE_SELECT', $old_params['sub_options']['sub_labels'])) {
                             $sub_labels[] = 'PLEASE_SELECT';

@@ -58,7 +58,7 @@
                      @subOptions="subOptions"></checkboxF>
           <dropdownF v-if="plugin =='dropdown'" :element="element" :databases="databases"
                      @subOptions="subOptions"></dropdownF>
-          <radiobtnF v-if="plugin == 'radiobutton'" :element="element" @subOptions="subOptions"></radiobtnF>
+          <radiobtnF v-if="plugin == 'radiobutton'" :element="element" ></radiobtnF>
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
           <displayF v-if="plugin =='display'" :element="element"></displayF>
           <fileF v-if="plugin =='emundus_fileupload'" :element="element" :prid="profileId"></fileF>
@@ -196,7 +196,6 @@ export default {
     },
     UpdateParams() {
       this.changes = true;
-
       if (typeof this.element.params.sub_options !== 'undefined') {
         if (this.sublabel.indexOf('---') >= 0) {
           this.sublabel.splice(this.sublabel.indexOf('---'), 1);
