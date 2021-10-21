@@ -53,6 +53,8 @@ export default {
                 this.addSheetStyles();
             } else if (this.style == 'presentation') {
                 this.addPresentationStyles();
+            } else if (this.style == 'word') {
+                this.addWordStyles();
             }
         },
         addSheetStyles() {
@@ -99,7 +101,20 @@ export default {
                 slide.style.width = "calc(100% - 72px)";
                 slide.style.boxShadow = "0px 0px 10px rgba(0, 0, 0, 0.1)";
                 slide.style.borderRadius = "8px";
+                slide.style.backgroundColor = "white";
             });
+        },
+        addWordStyles() {
+            const wrapper = this.$refs['a-preview'].shadowRoot.querySelector('.wrapper');
+
+            if (wrapper) {
+                wrapper.style.border = "var(--border-color)";
+                wrapper.style.boxShadow = "var(--box-shadow)";
+                wrapper.style.backgroundColor = "white";
+                wrapper.style.padding = "20px";
+                wrapper.style.margin = "16px";
+                wrapper.style.overflow = "hidden";
+            }
         }
     },
     watch: {

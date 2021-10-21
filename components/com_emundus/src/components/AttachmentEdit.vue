@@ -1,39 +1,41 @@
 <template>
     <div id="attachment-edit">
-        <div class="editable-data"> 
-            <h2>{{ attachment.value }}</h2>
+        <div class="wrapper">
+            <div class="editable-data"> 
+                <h2>{{ attachment.value }}</h2>
 
-            <div class="input-group">
-                <label for="description">{{ $t('attachments.desc') }} </label>
-                <textarea name="description" type="text" v-model="attachment.description">
-                </textarea>
-            </div>
+                <div class="input-group">
+                    <label for="description">{{ $t('attachments.desc') }} </label>
+                    <textarea name="description" type="text" v-model="attachment.description">
+                    </textarea>
+                </div>
 
-            <div class="input-group">
-            <label for="status">{{ $t('attachments.status') }}</label>
-                <select name="status" v-model="attachment.is_validated">
-                    <option value=0>Indéfini</option>
-                    <option value=1>Validé</option>
-                    <option value=-2>Invalide</option>
-                </select>
+                <div class="input-group">
+                <label for="status">{{ $t('attachments.status') }}</label>
+                    <select name="status" v-model="attachment.is_validated">
+                        <option value=0>Indéfini</option>
+                        <option value=1>Validé</option>
+                        <option value=-2>Invalide</option>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="non-editable-data">
-            <div>
-                <span>{{ $t('attachments.send_date') }}</span>
-                <span>{{ attachment.timedate }}</span>
-            </div>
-            <div>
-                <span>{{ $t('attachments.modified_by') }}</span>
-                <span>{{ attachment.modified_by }}</span>
-            </div>
-            <div>
-                <span>{{ $t('attachments.modification_date') }}</span>
-                <span>{{ attachment.modified }}</span>
-            </div>
-            <div>
-                <span>{{ $t('attachments.file_size') }}</span>
-                <span> ... kb </span>
+            <div class="non-editable-data">
+                <div>
+                    <span>{{ $t('attachments.send_date') }}</span>
+                    <span>{{ attachment.timedate }}</span>
+                </div>
+                <div>
+                    <span>{{ $t('attachments.modified_by') }}</span>
+                    <span>{{ attachment.modified_by }}</span>
+                </div>
+                <div>
+                    <span>{{ $t('attachments.modification_date') }}</span>
+                    <span>{{ attachment.modified }}</span>
+                </div>
+                <div v-if="attachment.file_size">
+                    <span>{{ $t('attachments.file_size') }}</span>
+                    <span> ... kb </span>
+                </div>
             </div>
         </div>
         <div class="actions">
@@ -99,6 +101,11 @@ export default {
     float: right;
     border-left: 1px solid var(--border-color);
 
+    .wrapper {
+        width: 100%;
+        height: 100%;
+    }
+
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -117,6 +124,19 @@ export default {
             font-size: 10px;
             font-weight: 400 !important;
             color: var(--grey-color);
+        }
+
+        textarea {
+            border-radius: 0;
+            border-color: transparent;
+            background-color: var(--grey-bg-color);
+        }
+
+        select {
+            width: 100%;
+            height: fit-content;
+            padding: 16px 8px;
+            border-radius: 0;
         }
     }
 

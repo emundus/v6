@@ -22,6 +22,22 @@
           <div id="filters">
             <input id="searchbar" type="text" ref="searchbar" :placeholder="$t('search')" @input="searchInFiles">
             <div class="actions">
+              <div class="btn-icon-text">
+                <span class="material-icons">
+                  filter_alt_outlined
+                </span>
+                <span>
+                  {{ $t('filter') }}
+                </span>
+              </div>
+              <div class="btn-icon-text">
+                <span class="material-icons">
+                  file_upload
+                </span>
+                <span>
+                  {{ $t('export') }}
+                </span>
+              </div>
               <span class="material-icons" @click="deleteAttachments">
                 delete_outlined
               </span>
@@ -69,8 +85,10 @@
         <modal 
           id="edit-modal" 
           name="edit"
-          height="50%"
-          width="50%"
+          height="70%"
+          width="70%"
+          minWidth="690"
+          minHeight="550"
           styles="display:flex;flex-direction:column;justify-content:center;align-items:center;">
           <div class="modal-head">
             <div class="flex-start">
@@ -95,7 +113,7 @@
               </div>
               <a :href="attachmentPath" class="download" download>
                 <span class="material-icons">
-                  download
+                  file_download
                 </span>
 
                 <span>{{ $t('download') }}</span>
@@ -400,6 +418,17 @@ export default {
     align-items: center;
     justify-content: space-between;
 
+    .actions {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+
+      >div {
+        margin-left: 8px;
+      }
+    }
+
     input {
       align-self: flex-start;
       width: 221px;
@@ -504,7 +533,7 @@ export default {
       align-items: center;
 
       span:first-child {
-        margin: 0 8px 0 30px;
+        margin: 0 8px 0 20px;
         cursor: pointer;
       }
     }
