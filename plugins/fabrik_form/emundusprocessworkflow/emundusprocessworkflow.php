@@ -180,13 +180,13 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                 if ($fnum == @$user->fnum) {
                     //try to access edit view
                     if ($view == 'form') {
-                        if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || ($is_dead_line_passed && $can_edit_after_deadline && $isLimitObtained !== true) || $can_edit) {
+                        if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || ($can_edit_form && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || ($is_dead_line_passed && $can_edit_after_deadline && $isLimitObtained !== true) || $can_edit) {
                             $reload_url = false;
                         }
                     }
                     //try to access detail view or other
                     else {
-                        if(!$can_edit && $is_app_sent){
+                        if(!$can_edit && $can_edit_form){
                             $mainframe->enqueueMessage(JText::_('APPLICATION_READ_ONLY'), 'error');
                         } elseif ($is_dead_line_passed){
                             $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
@@ -236,7 +236,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
                     } else {
 
-                        if ($is_app_sent) {
+                        if ($can_edit_form) {
                             if ($can_edit_until_deadline != 0 || $can_edit_after_deadline != 0) {
                                 if ($reload_url) {
                                     $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
