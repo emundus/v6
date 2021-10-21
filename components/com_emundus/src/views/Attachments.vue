@@ -74,17 +74,19 @@
           styles="display:flex;flex-direction:column;justify-content:center;align-items:center;">
           <div class="modal-head">
             <div class="flex-start">
-              <span class="close" @click="closeModal">&times;</span>
+              <span class="material-icons" @click="closeModal">
+                navigate_before
+              </span>
               <span>{{ selectedAttachment.filename }}</span>
             </div>
             <div class="flex-end">
-              <div class="pagination">
+              <div class="prev-next-attachments">
                 <div class="prev" :class="{'active': selectedAttachmentPosition > 0}" @click="prevAttachment">
                   <span class="material-icons">
                     navigate_before
                   </span>
                 </div>
-                <span>{{ selectedAttachmentPosition + 1 }} / {{ displayedAttachments.length }}</span>
+                <span class="lvl">{{ selectedAttachmentPosition + 1 }} / {{ displayedAttachments.length }}</span>
                 <div class="next" :class="{'active': selectedAttachmentPosition < displayedAttachments.length - 1}" @click="nextAttachment">
                   <span class="material-icons">
                     navigate_next
@@ -501,8 +503,9 @@ export default {
       justify-content: flex-start;
       align-items: center;
 
-      .close {
-        margin-right: 8px;
+      span:first-child {
+        margin: 0 8px 0 30px;
+        cursor: pointer;
       }
     }
 
@@ -513,39 +516,62 @@ export default {
       align-items: center;
     
       .download {
-        margin-right: 8px;
+        height: 32px;
+        margin-right: 24px;
+        padding: 6px 16px 7px 14px;
         display: flex;
         justify-content: center;
         border: 1px solid var(--border-color);
-        padding: 8px 16px 8px 14px;
         border-radius: 4px;
         cursor: pointer;
         color: #080C12;
 
+        .material-icons {
+          font-size: 18px;
+        }
+
         span:last-child {
-          margin-top: 1px;
+          margin-top: -1px;
           margin-left: 4px;
         }
       }
 
-      .pagination {
+      .prev-next-attachments {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
         margin: 0 8px 0 0;
+        
+        .lvl {
+          padding: 6px 8px 7px 8px;
+          background-color: var(--grey-bg-color);
+        }
 
         .prev {
           margin-right: 4px;
+          border-radius: 4px 0px 0px 4px;
         }
 
         .next {
           margin-left: 4px;
+          border-radius: 0px 4px 4px 0px;
         }
 
         .prev, .next {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
           pointer-events: none;
+          height: 32px;
+          width: 32px;
+          background-color: var(--grey-bg-color);
           
+          span {
+            color: initial;
+          }
+
           &.active {
             pointer-events: auto;
             cursor: pointer;
