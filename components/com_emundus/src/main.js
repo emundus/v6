@@ -44,7 +44,10 @@ if (mountApp) {
       );
     },
   });
+
+  console.log('addEventListener');
   window.addEventListener('destroy-com-emundus-vue', () => {
+    console.log('destroy-com-emundus-vue');
     vm.$destroy();
   })
 }

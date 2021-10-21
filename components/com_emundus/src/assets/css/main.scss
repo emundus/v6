@@ -1,17 +1,18 @@
 :root {
     --primary-color: #16AFE1;
     --secondary-color: #12DB42;
+    --grey-color: #5E646E;
+    --grey-bg-color: #F2F2F3;
 
     --success-bg-color: #DFF5E9;
     --success-color: #106949;
-
     --warning-bg-color: #FFFBDB;
     --warning-color: #805100;
-
     --error-bg-color: #FFEEEE;
     --error-color: #C31924;
 
     --box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    --border-color: #E3E5E8;
 }
 
 .vue-em-loader {
@@ -29,4 +30,8 @@
     box-shadow: 0 0 0 9999px #cecece85;
     background: #cecece85;
 }
-  
+
+body ::-webkit-scrollbar-track {
+    background-color: transparent !important;
+    background: transparent;
+}

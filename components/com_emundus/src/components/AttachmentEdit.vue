@@ -1,14 +1,16 @@
 <template>
     <div id="attachment-edit">
-        <div class="editableData"> 
+        <div class="editable-data"> 
             <h2>{{ attachment.value }}</h2>
+
             <div class="input-group">
-                <label for="description">DESCRIPTION</label>
-                <input name="description" type="text" v-model="attachment.description"/>
+                <label for="description">{{ $t('attachments.desc') }} </label>
+                <textarea name="description" type="text" v-model="attachment.description">
+                </textarea>
             </div>
 
             <div class="input-group">
-            <label for="status">FILE_STATUS</label>
+            <label for="status">{{ $t('attachments.status') }}</label>
                 <select name="status" v-model="attachment.is_validated">
                     <option value=0>Indéfini</option>
                     <option value=1>Validé</option>
@@ -16,8 +18,26 @@
                 </select>
             </div>
         </div>
+        <div class="non-editable-data">
+            <div>
+                <span>{{ $t('attachments.send_date') }}</span>
+                <span>{{ attachment.timedate }}</span>
+            </div>
+            <div>
+                <span>{{ $t('attachments.modified_by') }}</span>
+                <span>{{ attachment.modified_by }}</span>
+            </div>
+            <div>
+                <span>{{ $t('attachments.modification_date') }}</span>
+                <span>{{ attachment.modified }}</span>
+            </div>
+            <div>
+                <span>{{ $t('attachments.file_size') }}</span>
+                <span> ... kb </span>
+            </div>
+        </div>
         <div class="actions">
-            <button @click="saveChanges" class="btn save-btn">SAVE</button>
+            <button @click="saveChanges" class="btn save-btn">{{ $t('save') }}</button>
         </div>
     </div>
 </template>
@@ -73,23 +93,51 @@ export default {
 
 <style lang="scss" scoped>
 #attachment-edit {
-    margin: 0 0 0 10px;
+    padding: 16px 16px 16px 10px;
     height: 100%;
     width: 40%;
     float: right;
+    border-left: 1px solid var(--border-color);
 
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
 
-    .editableData {
+    .editable-data {
         width: 100%;
         overflow: hidden;
 
         h2 {
             text-overflow: ellipsis;
             overflow: hidden;
+        }
+
+        label {
+            font-size: 10px;
+            font-weight: 400;
+            color: var(--grey-color);
+        }
+    }
+
+    .non-editable-data {
+        width: 100%;
+        div {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding: 8px 0;
+
+            span:first-of-type{
+                color: var(--grey-color);
+            }
+
+            &:last-child {
+                border-bottom: none;
+            }
         }
     }
 

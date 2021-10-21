@@ -4002,7 +4002,7 @@ class EmundusModelApplication extends JModelList
 
             // create preview based on filetype
             if (in_array($extension, ['pdf', 'txt'])) {
-                $preview['content'] = '<iframe src="' . $filePath . '" width="99%" height="99%"></iframe>';
+                $preview['content'] = '<iframe src="' . $filePath . '" width="100%" height="100%" border="none"></iframe>';
             } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
                 $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="' . $filePath . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
             } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {   

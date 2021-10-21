@@ -1,5 +1,8 @@
 export default {
     "search": Joomla.JText._("SEARCH"),
+    "download": Joomla.JText._("LINK_TO_DOWNLOAD"),
+    "export": Joomla.JText._("EXPORT"),
+    "save": Joomla.JText._("SAVE"),
     "attachments": {
         "name": Joomla.JText._("NAME"),
         "desc": Joomla.JText._("DESCRIPTION"),

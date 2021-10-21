@@ -414,6 +414,8 @@ JText::script('SEND_DATE');
 JText::script('MODIFICATION_DATE');
 JText::script('MODIFIED_BY');
 JText::script('STATUS');
+JText::script('SAVE');
+JText::script('EXPORT');
 JText::script('WAITING');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
@@ -439,6 +441,7 @@ JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
 JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
 JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
 JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
+JHTML::styleSheet('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 
 
