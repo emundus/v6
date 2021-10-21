@@ -3,10 +3,14 @@
         <div class="head">
           <div class="prev-next-files" v-if="fnums.length > 1">
             <div class="prev" :class="{'active': fnumPosition > 0}" @click="prevFile">
-              <icon-arrow-left class="svg"></icon-arrow-left>
+              <span class="material-icons">
+                navigate_before
+              </span>
             </div>
             <div class="next" :class="{'active': fnumPosition < fnums.length - 1}" @click="nextFile">
-              <icon-arrow-right class="svg"></icon-arrow-right>
+              <span class="material-icons">
+                navigate_next
+              </span>
             </div>
           </div>
           <div class="displayed-user">
@@ -18,8 +22,8 @@
           <div id="filters">
             <input id="searchbar" type="text" ref="searchbar" :placeholder="$t('search')" @input="searchInFiles">
             <div class="actions">
-              <span @click="deleteAttachments">
-                <icon-trash></icon-trash>
+              <span class="material-icons" @click="deleteAttachments">
+                delete_outlined
               </span>
             </div>
           </div>
@@ -76,14 +80,24 @@
             <div class="flex-end">
               <div class="pagination">
                 <div class="prev" :class="{'active': selectedAttachmentPosition > 0}" @click="prevAttachment">
-                  <i class="fa fa-chevron-left"></i>
+                  <span class="material-icons">
+                    navigate_before
+                  </span>
                 </div>
                 <span>{{ selectedAttachmentPosition + 1 }} / {{ displayedAttachments.length }}</span>
                 <div class="next" :class="{'active': selectedAttachmentPosition < displayedAttachments.length - 1}" @click="nextAttachment">
-                  <i class="fa fa-chevron-right"></i>
+                  <span class="material-icons">
+                    navigate_next
+                  </span>
                 </div>
               </div>
-              <a :href="attachmentPath" class="download" download>DOWNLOAD</a>
+              <a :href="attachmentPath" class="download" download>
+                <span class="material-icons">
+                  download
+                </span>
+
+                <span>{{ $t('download') }}</span>
+              </a>
             </div>
           </div>
           <div class="modal-body">
@@ -103,19 +117,11 @@ import userService from '../services/user.js';
 import fileService from '../services/file.js';
 import moment from 'moment';
 
-// Icons
-import IconTrash from '../assets/icons/trash.vue';
-import IconArrowLeft from '../assets/icons/arrow-left.vue';
-import IconArrowRight from '../assets/icons/arrow-right.vue';
-
 export default {
   name: 'Attachments',
   components: {
     AttachmentPreview,
-    AttachmentEdit,
-    IconTrash,
-    IconArrowLeft,
-    IconArrowRight
+    AttachmentEdit
   },
   props: {
     user: {
@@ -144,6 +150,9 @@ export default {
     this.getFnums();
     this.getUsers();
     this.getAttachments();
+  },
+  destroyed() {
+    this.$router.push({ name: 'app' });
   },
   methods: {
     // Getters and setters
@@ -484,6 +493,7 @@ export default {
     justify-content: space-between;
     align-items: center;
     padding: 16px;
+    border-bottom: 1px solid var(--border-color);
 
     .flex-start {
       display: flex;
@@ -504,6 +514,18 @@ export default {
     
       .download {
         margin-right: 8px;
+        display: flex;
+        justify-content: center;
+        border: 1px solid var(--border-color);
+        padding: 8px 16px 8px 14px;
+        border-radius: 4px;
+        cursor: pointer;
+        color: #080C12;
+
+        span:last-child {
+          margin-top: 1px;
+          margin-left: 4px;
+        }
       }
 
       .pagination {
@@ -538,6 +560,7 @@ export default {
     width: 100%;
     max-height: 100%;
     display: flex;
+    padding: 0;
   }
 }
 </style>

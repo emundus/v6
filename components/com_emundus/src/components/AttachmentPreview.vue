@@ -119,6 +119,7 @@ export default {
     height: 100%;
     width: 60%;
     overflow: hidden;
+    background-color: var(--grey-bg-color);
 
     &.overflow-x {
         overflow-x: auto;
