@@ -1495,6 +1495,11 @@ $(document).ready(function() {
         var id = $(this).attr('id');
         var url = $(this).attr('href');
 
+        // TODO: temporary solution while we wait for a totally vue menu
+        if (url.indexOf('layout=attachment') < 0) {
+            window.dispatchEvent(new Event('destroy-com-emundus-vue'));
+        }
+
         $.ajax({
             type: "get",
             url: url,
