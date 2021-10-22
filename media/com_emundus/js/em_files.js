@@ -5855,17 +5855,27 @@ $(document).ready(function() {
 
                 // cc emails
                 $('#cc-box div[data-value]').each(function () {
-                    let val = $(this).attr('data-value').split('CC: ')[1];
-                    // let val = $(this).attr('data-value');
-                    var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    // let val = $(this).attr('data-value').split('CC: ')[1];
+                    let val = $(this).attr('data-value');
+                    let REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+                    if(val.split(':')[0] === 'CC') {
+                        val = $(this).attr('data-value').split('CC: ')[1];
+                    }
+
                     if (REGEX_EMAIL.test(val)) { data.cc.push(val); }
                 })
 
                 // bcc emails
                 $('#bcc-box div[data-value]').each(function () {
-                    let val = $(this).attr('data-value').split('BCC: ')[1];
-                    // let val = $(this).attr('data-value');
+                    // let val = $(this).attr('data-value').split('BCC: ')[1];
+                    let val = $(this).attr('data-value');
                     var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+                    if(val.split(':')[0] === 'BCC') {
+                        val = $(this).attr('data-value').split('BCC: ')[1];
+                    }
+
                     if (REGEX_EMAIL.test(val)) { data.bcc.push(val); }
                 })
 
@@ -5934,13 +5944,36 @@ $(document).ready(function() {
                                                         sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
                                                     });
 
-                                                    Swal.fire({
-                                                        type: 'success',
-                                                        title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
-                                                        html: sent_to + '</ul>'
-                                                    });
+                                                    /* add tags to fnums */
+                                                    $.ajax({
+                                                        type: 'post',
+                                                        url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnums',
+                                                        dataType: 'json',
+                                                        data: { data: data },
+                                                        success: function(tags) {
+                                                            console.log(tags);
+                                                            $('#em-modal-sending-emails').css('display', 'none');
+
+                                                            $('#em-modal-actions').modal('hide');
+                                                            addDimmer();
+
+                                                            reloadData();
+                                                            reloadActions($('#view').val(), undefined, false);
+                                                            $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                                            $('body').removeClass('modal-open');
+
+                                                            Swal.fire({
+                                                                type: 'success',
+                                                                title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
+                                                                html: sent_to + '</ul>'
+                                                            });
+                                                        }, error: function(jqXHR) {
+                                                            console.log(jqXHR.responseText);
+                                                        }
+                                                    })
 
                                                 } else {
+                                                    $('#em-modal-sending-emails').css('display', 'none');
                                                     Swal.fire({
                                                         type: 'error',
                                                         title: Joomla.JText._('NO_EMAILS_SENT')
@@ -5969,11 +6002,31 @@ $(document).ready(function() {
 
                                                 var sent_to = '<p>' + Joomla.JText._('EMAIL_SENDING') + '</p>';
 
-                                                Swal.fire({
-                                                    type: 'success',
-                                                    title: Joomla.JText._('EMAILS_SENT'),
-                                                    html: sent_to
-                                                });
+                                                $.ajax({
+                                                    type: 'post',
+                                                    url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnums',
+                                                    dataType: 'json',
+
+                                                    data: { data: data },
+                                                    success: function(tags) {
+                                                        $('#em-modal-sending-emails').css('display', 'none');
+                                                        $('#em-modal-actions').modal('hide');
+                                                        addDimmer();
+
+                                                        reloadData();
+                                                        reloadActions($('#view').val(), undefined, false);
+                                                        $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                                        $('body').removeClass('modal-open');
+
+                                                        Swal.fire({
+                                                            type: 'success',
+                                                            title: Joomla.JText._('EMAILS_SENT'),
+                                                            html: sent_to
+                                                        });
+                                                    }, error: function(jqXHR) {
+                                                        console.log(jqXHR.responseText);
+                                                    }
+                                                })
                                             } else {
                                                 $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
                                             }

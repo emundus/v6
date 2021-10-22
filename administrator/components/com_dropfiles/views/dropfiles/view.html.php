@@ -94,13 +94,13 @@ class DropfilesViewDropfiles extends JViewLegacy
             $toolbar->appendButton(
                 'Link',
                 'config-options',
-                JText::_('COM_DROPFILES_VIEW_CONFIGURATION'),
+                '<span class="toolbar-title">' . JText::_('COM_DROPFILES_VIEW_CONFIGURATION') . '</span>',
                 'index.php?option=com_dropfiles&amp;task=configuration.display'
             );
             $toolbar->appendButton(
                 'Link',
                 'chart-options',
-                JText::_('COM_DROPFILES_DOWNLOAD_STATISTICS'),
+                '<span class="toolbar-title">' . JText::_('COM_DROPFILES_DOWNLOAD_STATISTICS') . '</span>',
                 'index.php?option=com_dropfiles&amp;view=statistics'
             );
         }

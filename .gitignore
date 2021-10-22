@@ -22,6 +22,8 @@ templates/g5_helium/custom/*
 templates/g5_helium/html/com_eventbooking/*
 templates/emundus_vanilla/*
 /templates/emundus_vanilla/*
+libraries/emundus/custom/*
+!libraries/emundus/custom/.gitkeep
 images/emundus/import/*
 images/emundus/photo/*
 images/stories/*
@@ -33,6 +35,7 @@ templates/LaScala/*
 /images/emundus/letters/*
 /image/logo.png
 /images/custom/logo.png
+/images/custom/logo_custom.png
 #_bdd/*
 components/com_emundus.*
 components/com_emundus/*.bak
@@ -78,3 +81,10 @@ plugins/fabrik_form/php/emundus-csv_import_ehesp.php
 
 /components/node_modules/
 /components/com_emundus_messenger/node_modules/
+
+
+## event booking ##
+images/com_eventbooking/
+media/com_eventbooking/assets/css/custom.css
+media/com_eventbooking/assets/css/true
+media/com_eventbooking/images/thumbs/*

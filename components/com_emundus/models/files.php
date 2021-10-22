@@ -339,9 +339,13 @@ class EmundusModelFiles extends JModelLegacy
         $can_be_ordering[] = 'jos_emundus_campaign_candidature.id';
         $can_be_ordering[] = 'jos_emundus_campaign_candidature.fnum';
         $can_be_ordering[] = 'jos_emundus_campaign_candidature.status';
+        $can_be_ordering[] = 'jos_emundus_campaign_candidature.form_progress';
+        $can_be_ordering[] = 'jos_emundus_campaign_candidature.attachment_progress';
         $can_be_ordering[] = 'fnum';
         $can_be_ordering[] = 'status';
         $can_be_ordering[] = 'name';
+        $can_be_ordering[] = 'form_progress';
+        $can_be_ordering[] = 'attachment_progress';
         $can_be_ordering[] = 'eta.id_tag';
 
 

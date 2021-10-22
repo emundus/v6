@@ -279,7 +279,7 @@ export default {
         Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
         DocTemplate: Joomla.JText._("COM_EMUNDUS_ONBOARD_TEMPLATE_DOC"),
         Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_LASTNAME"),
-        Description: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
+        Description: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDDOC_DESCRIPTION"),
         MaxPerUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAXPERUSER"),
         FileType: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED"),
         NameRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL"),

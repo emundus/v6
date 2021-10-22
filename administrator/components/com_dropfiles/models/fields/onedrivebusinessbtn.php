@@ -86,7 +86,7 @@ class JFormFieldOneDriveBusinessbtn extends JFormField
             <?php } else { ?>
                 <?php echo JText::_('COM_DROPFILES_ONEDRIVE_BUSINESS_CONNECT_PART3'); ?>
             <a id="dropfies_onedrive_business_disconnect" class="ju-button btn-onedrivebusiness" href="index.php?option=com_dropfiles&task=onedrivebusiness.logout">
-                <img src="<?php echo JURI::root(); ?>/components/com_dropfiles/assets/images/onedrive.png" alt="" width="20px"/>
+                <img src="<?php echo JURI::root(); ?>/components/com_dropfiles/assets/images/onedrive-business-disconnect.svg" alt="" width="20px"/>
                 <?php echo JText::_('COM_DROPFILES_ONEDRIVE_BUSINESS_CONNECT_PART3_DISCONNECT'); ?>
             </a>
             <?php } ?>

@@ -28,6 +28,7 @@ $m_checklist = new EmundusModelChecklist;
 $files = JRequest::get('FILES');
 $key_id = $jinput->get->get('keyid');
 $user_id = $jinput->get('jos_emundus_uploads___user_id');
+$fnum = $jinput->get('jos_emundus_uploads___fnum');
 $sid = $jinput->get->get('sid');
 $attachment_id = $jinput->get('jos_emundus_uploads___attachment_id');
 
@@ -58,7 +59,7 @@ try {
 		exit();
 	}
 
-	$student = &JUser::getInstance($user_id);
+	$student = JUser::getInstance($user_id);
 	if (!isset($student)) {
 		JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_STUDENT_NOT_SET"), JLog::ERROR, 'com_emundus');
 		header('Location: '.$baseurl.'index.php');
@@ -89,7 +90,7 @@ try {
 
 	//$nom = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($student->name,ENT_NOQUOTES,'UTF-8'))));
 	$fnumInfos = $m_files->getFnumInfos($fnum);
-	$nom = $m_checklist->setAttachmentName($upload->filename, $attachment_params->lbl, $fnumInfos);
+	$nom = $m_checklist->setAttachmentName($upload->filename, $attachement_params->lbl, $fnumInfos);
 
 	if (!isset($attachement_params->displayed) || $attachement_params->displayed === '0') {
 		$nom .= "_locked";

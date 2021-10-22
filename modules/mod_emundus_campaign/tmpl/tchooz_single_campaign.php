@@ -47,17 +47,17 @@ switch ($order) {
 <div class="single-campaign-tabs">
     <?php if (in_array('campaign', $modules_tabs)) : ?>
         <button class="btn btn-primary current-tab" onclick="displayTab('campaign')" id="campaign_tab">
-            <span>Détails</span>
+            <span><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS') ?></span>
         </button>
     <?php endif; ?>
     <?php if (in_array('faq', $modules_tabs)) : ?>
         <button class="btn btn-primary" onclick="displayTab('faq')" id="faq_tab">
-            <span>FAQ</span>
+            <span><?php echo JText::_('MOD_EM_CAMPAIGN_FAQ') ?></span>
         </button>
     <?php endif; ?>
     <?php if (in_array('documents', $modules_tabs)) : ?>
         <button class="btn btn-primary" onclick="displayTab('documents')" id="documents_tab">
-            <span>Documents</span>
+            <span><?php echo JText::_('MOD_EM_CAMPAIGN_DOCUMENTS') ?></span>
         </button>
     <?php endif; ?>
 </div>

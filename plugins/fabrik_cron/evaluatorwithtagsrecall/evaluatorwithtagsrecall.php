@@ -59,7 +59,8 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
         $acl_aro_groups = explode(',',trim($params->get('acl_aro_groups', '')));
         $emundus_profiles = explode(',',trim($params->get('reminder_profile', '')));
         $tags = explode(',',trim($params->get('reminder_tags', null)));
-        $date_interval =  $params->get('remider_interval', 10);
+        $date_interval =  $params->get('remider_interval');
+        $elements_to_replace =  $params->get('remider_elements');
         $now = new DateTime();
 
         // Check if profile is applicant
@@ -78,8 +79,14 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
                         $difference = $now->diff($createDate);
                         $days = $difference->days;
 
-                        if((($days % $date_interval == 0) && $difference->days > 0)){
-                            $applicants[] = $key;
+                        if($date_interval != 0) {
+                            if ((($days % $date_interval == 0) && $difference->days > 0)) {
+                                $applicants[] = $key;
+                            }
+                        } else {
+                            if($days == 0){
+                                $applicants[] = $key;
+                            }
                         }
 
                         if (!empty($applicants)) {
@@ -91,15 +98,15 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
                             $m_files = new EmundusModelFiles();
                             $c_messages = new EmundusControllerMessages();
 
-                            foreach ($applicants as $fnum) {
+                            foreach ($applicants as $applicant) {
                                 // We send a email for each campaign for each user
-                                $fnumInfos = $m_files->getFnumInfos($fnum);
+                                $fnumInfos = $m_files->getFnumInfos($applicant);
 
                                 $post = array(
                                     'NAME' => $fnumInfos['name'],
                                 );
 
-                                $c_messages->sendEmail($fnum, $reminder_mail_id, $post);
+                                $c_messages->sendEmail($applicant, $reminder_mail_id, $post);
                                 $cpt++;
                             }
                             JLog::add("\n process " . sizeof($applicants) . " emails sent", JLog::INFO, 'com_emundus_eval_recall');
@@ -152,6 +159,14 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
                     }
                 }
 
+                foreach ($evaluators as $key => $evaluator){
+                    foreach ($evaluator as $val => $fnum){
+                        if(!array_key_exists('date',$fnum)){
+                            unset($evaluators[$key][$val]);
+                        }
+                    }
+                }
+
                 // Now check if the tagged date is a modulo of our param $date_interval
                 // We are filtering out the files that aren't a modulo of the $date_interval
                 foreach ($evaluators as $emailUser => $fnums) {
@@ -161,7 +176,14 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
                         $difference = $now->diff($createDate);
                         $days = $difference->days;
 
-                        return (($days % $date_interval == 0) && $difference->days > 0);
+
+                        if($date_interval != 0) {
+                            return (($days % $date_interval == 0) && $difference->days > 0);
+                        } else {
+                            if($days == 0){
+                                return 1;
+                            }
+                        }
                     });
                 }
 
@@ -169,8 +191,10 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
                     $cpt = 0;
                     include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
                     include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
+                    include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
 
                     $m_profile = new EmundusModelProfile();
+                    $m_emails = new EmundusModelEmails();
                     $c_messages = new EmundusControllerMessages();
 
 
@@ -204,10 +228,18 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
 
                         $fnumList = '<ul>';
                         foreach ($fnums as $fnum) {
-                            $fnumList .= '
-                        <li>
-                            <a href="' . JURI::root() . $userLink . '#' . $fnum['fnum'] . '|open">' . $fnum['fnum'] . '</a>
-                        </li>';
+                            if(!empty($elements_to_replace)) {
+                                $elements = $m_emails->setTagsFabrik($elements_to_replace, (array)$fnum);
+                                $fnumList .= '
+                                <li>
+                                    <a href="'.JURI::base().'/dossiers#' . $fnum['fnum'] . '">' . $fnum['fnum'] . '</a>
+                                </li>';
+                            } else {
+                                $fnumList .= '
+                                <li>
+                                    <a href="'.JURI::base().'/dossiers#' . $fnum['fnum'] . '">' . $fnum['fnum'] . '</a>
+                                </li>';
+                            }
                         }
                         $fnumList .= '</ul>';
 
@@ -324,7 +356,7 @@ class PlgFabrik_Cronevaluatorwithtagsrecall extends PlgFabrik_Cron {
         $query
             ->select($db->quoteName('fnum'))
             ->from($db->quoteName('#__emundus_users_assoc'))
-            ->where($db->quoteName('action_id') . ' = 5 AND ' . $db->quoteName('c') . ' = 1 AND ' . $db->quoteName('user_id') . ' = ' . $user);
+            ->where($db->quoteName('user_id') . ' = ' . $user);
 
         try {
             $db->setQuery($query);

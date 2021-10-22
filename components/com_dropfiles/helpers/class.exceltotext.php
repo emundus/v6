@@ -663,7 +663,7 @@ class Spreadsheet_Excel_Reader
         return null;
     }
 
-    function fontProperty($row, $col, $sheet = 0, $prop)
+    function fontProperty($row, $col, $sheet = 0, $prop = 'color')
     {
         $font = $this->fontRecord($row, $col, $sheet);
         if ($font != null) {

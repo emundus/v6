@@ -292,11 +292,15 @@ class EmundusonboardControllersettings extends JControllerLegacy {
 
             if(isset($image)) {
                 $target_dir = "images/custom/";
-                unlink($target_dir . 'logo.png');
+                unlink($target_dir . 'logo_custom.png');
 
-                $target_file = $target_dir . basename('logo.png');
+                $target_file = $target_dir . basename('logo_custom.png');
+
+                $logo_module = JModuleHelper::getModuleById('90');
 
                 if (move_uploaded_file($image["tmp_name"], $target_file)) {
+                    $new_content = str_replace('logo.png','logo_custom.png',$logo_module->content);
+                    $this->model->updateLogo($new_content);
                     $tab = array('status' => 1, 'msg' => JText::_('LOGO_UPDATED'));
                 } else {
                     $tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'));

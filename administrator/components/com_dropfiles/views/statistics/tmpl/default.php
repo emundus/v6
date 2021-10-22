@@ -25,7 +25,7 @@ $doc->addScript(JUri::base() . 'components/com_dropfiles/assets/js/statistics.js
 $doc->addScript(JUri::base() . 'components/com_dropfiles/assets/js/chart.min.js');
 $app = JFactory::getApplication();
 //JHtml::_('behavior.multiselect');
-if (version_compare(JVERSION, '3.10.0', 'ge')) {
+if (DropfilesBase::isJoomla40()) {
     $doc->addScript(JURI::root() . 'components/com_dropfiles/assets/js/chosen.jquery.min.js');
     $doc->addStyleSheet(JURI::root() . 'components/com_dropfiles/assets/css/chosen.css');
     $doc->addScript(JURI::root() . 'components/com_dropfiles/assets/js/jquery.minicolors.min.js');
