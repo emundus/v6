@@ -37,7 +37,7 @@ export default {
 
   async deleteAttachments(fnum, attachment_ids) {
     try {
-      const response = await client().get('index.php?option=com_emundus&controller=application&task=deleteattachement', {
+      const response = await client().post('index.php?option=com_emundus&controller=application&task=deleteattachement', {
         params: {
           fnum: fnum,
           ids: JSON.stringify(attachment_ids),
@@ -50,15 +50,14 @@ export default {
     }
   },
   
-  async updateAttachment(fnum, user, attachment) {
+  async updateAttachment(formData) {
     try {
-      const response = await client().get('index.php?option=com_emundus&controller=application&task=updateattachment', {
-        params: {
-          fnum: fnum,
-          user: user,
-          attachment: JSON.stringify(attachment),
+      const response = await client().post('index.php?option=com_emundus&controller=application&task=updateattachment', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         }
-      });
+      );
 
       return response.data;
     } catch (e) {

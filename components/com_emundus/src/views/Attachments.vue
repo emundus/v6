@@ -22,15 +22,15 @@
           <div id="filters">
             <input id="searchbar" type="text" ref="searchbar" :placeholder="$t('search')" @input="searchInFiles">
             <div class="actions">
-              <div class="btn-icon-text">
+              <!-- <div class="btn-icon-text">
                 <span class="material-icons">
                   filter_alt_outlined
                 </span>
                 <span>
                   {{ $t('filter') }}
                 </span>
-              </div>
-              <div class="btn-icon-text">
+              </div> -->
+              <div class="btn-icon-text" @click="exportAttachments">
                 <span class="material-icons">
                   file_upload
                 </span>
@@ -51,7 +51,7 @@
                     </th>
                     <th @click="orderBy('filename')">{{ $t('attachments.name') }}</th>
                     <th @click="orderBy('timedate')">{{ $t('attachments.send_date') }}</th>
-                    <th @click="orderBy('description')">{{ $t('attachments.desc') }}</th>
+                    <th class="desc" @click="orderBy('description')">{{ $t('attachments.desc') }}</th>
                     <th @click="orderBy('is_validated')">{{ $t('attachments.status') }}</th>
                     <th @click="orderBy('modified_by')">{{ $t('attachments.modified_by') }}</th>
                     <th @click="orderBy('modified')">{{ $t('attachments.modification_date') }}</th>
@@ -67,7 +67,7 @@
                     </td>
                     <td class="td-document" @click="openModal(attachment)">{{ attachment.filename }}</td>
                     <td>{{ formattedTimeDate(attachment.timedate) }}</td>
-                    <td>{{ attachment.description }}</td>
+                    <td class="desc">{{ attachment.description }}</td>
                     <td class="valid-state" :class="{
                       'success': attachment.is_validated == 1, 
                       'error': attachment.is_validated == -2
@@ -216,6 +216,9 @@ export default {
     //   this.$modal.hide('edit');
     //   await attachmentService.deleteAttachments(this.displayedFnum, [aid]);
     // },
+    async exportAttachments() {
+      console.log('export');
+    },
     async deleteAttachments() {
       // remove all checked attachments from attachments array
       this.attachments = this.attachments.filter(attachment => !this.checkedAttachments.includes(attachment.aid));
@@ -460,6 +463,13 @@ export default {
       height: 49px;
       background: transparent;
       background-color: transparent;
+    }
+
+    th.desc, td.desc {
+      max-width: 250px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     thead {

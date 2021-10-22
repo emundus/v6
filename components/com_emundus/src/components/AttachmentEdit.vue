@@ -11,12 +11,16 @@
                 </div>
 
                 <div class="input-group">
-                <label for="status">{{ $t('attachments.status') }}</label>
+                    <label for="status">{{ $t('attachments.status') }}</label>
                     <select name="status" v-model="attachment.is_validated">
-                        <option value=0>Indéfini</option>
-                        <option value=1>Validé</option>
-                        <option value=-2>Invalide</option>
+                        <option value=0> {{ $t('attachments.validation_states.0') }} </option>
+                        <option value=1> {{ $t('attachments.validation_states.1') }} </option>
+                        <option value=-2> {{ $t('attachments.validation_states["-2"]') }} </option>
                     </select>
+                </div>
+                <div class="input-group">
+                    <label for="replace"> {{ $t('replace') }}</label>
+                    <input type="file" name="replace" @change="updateFile" :accept="allowedType">
                 </div>
             </div>
             <div class="non-editable-data">
@@ -45,7 +49,7 @@
 </template>
 
 <script>
-import attachment from '../services/attachment';
+import attachmentService from '../services/attachment';
 
 export default {
     name: 'AttachmentEdit',
@@ -58,6 +62,7 @@ export default {
     data() {
         return {
             attachment: {},
+            file: null
         }
     },
     mounted() {
@@ -65,21 +70,49 @@ export default {
     },
     methods: {
         async saveChanges() {
-            const attachment_data = {
-                id: this.attachment.aid,
-                description: this.attachment.description,
-                is_validated: this.attachment.is_validated
-            };
+            let formData = new FormData();
+            formData.append('fnum', this.fnum);
+            formData.append('user', this.$store.state.user.currentUser);
+            formData.append('id', this.attachment.aid);
+            formData.append('description', this.attachment.description);
+            formData.append('is_validated', this.attachment.is_validated);
 
-            const response = await attachment.updateAttachment(this.fnum, this.$store.state.user.currentUser, attachment_data);
+            if (this.file) {
+                formData.append('file', this.file);
+            }
 
-            if (response.status) {
+            const response = await attachmentService.updateAttachment(formData);
+
+            if (response.status.update) {
                 this.$store.commit('attachment/updateAttachmentOfFnum', {
                     fnum: this.fnum,
                     attachment: this.attachment
                 });
             }
-            this.$emit('saveChanges', attachment_data);
+
+            if (response.status.file_update) {
+                // need to update file preview
+                const data = await attachmentService.getPreview(this.$store.state.user.displayedUser, this.attachment.filename);
+
+                // store preview data
+                this.$store.commit('attachment/setPreview', {preview: data, id: this.attachment.aid});
+            }
+
+            this.$emit('saveChanges');
+        },
+        updateFile(event) {
+            this.file = event.target.files[0];
+        }
+    },
+    computed: {
+        allowedType() {
+            let allowed_type = ''; 
+
+            if (this.attachment.filename) {
+                allowed_type = '.' + this.attachment.filename.split('.').pop();
+            }
+
+            return allowed_type;
         }
     },
     watch: {

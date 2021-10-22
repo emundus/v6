@@ -658,13 +658,18 @@ class EmundusControllerApplication extends JControllerLegacy
     {
         $m_application = $this->getModel('Application');
 
+        // get post data
         $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->getVar('fnum', null);
-        $user = $jinput->getVar('user', null);
-        $attachment = $jinput->getString('attachment', null);
-        $attachment = json_decode($attachment, true);
+        $data = $jinput->post->getArray();
 
-        $update = $m_application->updateAttachment($fnum, $user, $attachment);
+        if ($jinput->files->get('file')) {
+            $data['file'] = $jinput->files->get('file');
+        }
+
+        $update = false;
+        if ($data['fnum'] && $data['user']) {
+            $update = $m_application->updateAttachment($data);
+        }
 
         echo json_encode(array('status' => $update));
         exit;
