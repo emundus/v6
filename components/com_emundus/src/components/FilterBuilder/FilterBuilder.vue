@@ -1,5 +1,6 @@
 <template>
     <div id="filter-builder">
+        <h2>FILTER BUILDER</h2>
         <div class="filters">
             <div class="filter" v-for="(filter, index) in filters" :key="index">
                 
