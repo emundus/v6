@@ -17,6 +17,8 @@ JFactory::getSession()->set('application_layout', 'attachment');
 
 $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this->fnum);
 $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
+
+// echo JHtml::_('content.prepare', '{loadposition filter-builder}');
 ?>
 
 <div id="em-application-attachment"

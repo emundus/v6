@@ -1,14 +1,14 @@
 <template>
     <div id="filter-builder">
         <div class="filters">
-            <div class="filter" :v-for="filter in filters">
+            <div class="filter" v-for="(filter, index) in filters" :key="index">
                 
             </div>
         </div>
         <div class="actions">
             <button class="btn btn-primary" @click="addFilter">
                 <i class="fa fa-plus"></i>
-                {{ __('Add filter') }}
+                Ajouter un filtre
             </button>
         </div>
     </div>
@@ -28,7 +28,13 @@ export default {
     },
     methods: {
         getFilters() {
-            return this.$store.state.filters;
+            return [
+                {
+                    type: 'text',
+                    label: 'Nom',
+                    value: '',
+                },
+            ];
         },
         addFilter() {
             this.filters.push({
