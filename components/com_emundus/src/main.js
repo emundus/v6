@@ -1,9 +1,11 @@
 import Vue from 'vue';
 import store from "./store";
+import filterBuilderStore from './store/filterBuilder';
 import router from "./router";
 import i18n from "./i18n";
 import VModal from 'vue-js-modal';
 import App from './App.vue';
+import FilterBuilder from './components/FilterBuilder/FilterBuilder.vue';
 
 Vue.config.productionTip = false;
 
@@ -47,4 +49,17 @@ if (mountApp) {
     window.addEventListener('destroy-com-emundus-vue', () => {
         vm.$destroy();
     })
+}
+
+if (document.getElementById("em-vue-filter-builder")) {
+    const filterbuilderApp = new Vue({
+        el: '#em-vue-filter-builder',
+        filterBuilderStore,
+        i18n,
+        render(h) {
+            return h(
+                FilterBuilder
+            );
+        }
+    });
 }
