@@ -270,7 +270,7 @@
               <button
                   type="button"
                   class="bouton-sauvergarder-et-continuer w-retour"
-                  onclick="history.go(-1)">
+                  @click="$router.go(-1)">
                 {{ translations.retour }}
               </button>
               <button type="submit" class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green">
@@ -656,7 +656,7 @@ import Multiselect from 'vue-multiselect';
     /**
      * ** Methods for notify
      */
-    tip(){
+    tip: function () {
       this.show(
           "foo-velocity",
           Joomla.JText._("COM_EMUNDUS_ONBOARD_VARIABLESTIP") + ' <strong style="font-size: 16px">/</strong>',
@@ -685,8 +685,7 @@ import Multiselect from 'vue-multiselect';
           "Content-Type": "application/x-www-form-urlencoded"
         },
       }).then(response => {
-        let _tags = response.data.data;
-        this.action_tags = _tags;
+        this.action_tags = response.data.data;
       }).catch(error => {
         console.log(error);
       })
@@ -723,6 +722,7 @@ import Multiselect from 'vue-multiselect';
 
   created() {
     this.$props.email = this.$route.params.email;
+    this.$parent.loading = true;
     this.getAllAttachments();
     //this.getAllUsers();
     this.getAllTags();
@@ -746,20 +746,17 @@ import Multiselect from 'vue-multiselect';
 
                   // get attached letters
                   if(resp.data.data.letter_attachment) {
-                    let _ldocuments = resp.data.data.letter_attachment;
-                    this.selectedLetterAttachments = _ldocuments;
+                    this.selectedLetterAttachments = resp.data.data.letter_attachment;
                   }
 
                   // get attached candidate attachments
                   if(resp.data.data.candidate_attachment) {
-                    let _cdocuments = resp.data.data.candidate_attachment;
-                    this.selectedCandidateAttachments = _cdocuments;
+                    this.selectedCandidateAttachments = resp.data.data.candidate_attachment;;
                   }
 
                   // get attached tags
                   if(resp.data.data.tags) {
-                    let _tags = resp.data.data.tags;
-                    this.selectedTags = _tags;
+                    this.selectedTags = resp.data.data.tags;
                   }
 
                   /// get receivers (cc and bcc)
@@ -773,10 +770,10 @@ import Multiselect from 'vue-multiselect';
                       receiver_cc[index] = {};
                       receiver_bcc[index] = {};
 
-                      if (receivers[index].type == 'receiver_cc_email' || receivers[index].type == 'receiver_cc_fabrik') {
+                      if (receivers[index].type === 'receiver_cc_email' || receivers[index].type === 'receiver_cc_fabrik') {
                         receiver_cc[index]['id'] = receivers[index].id;
                         receiver_cc[index]['email'] = receivers[index].receivers;
-                      } else if (receivers[index].type == 'receiver_bcc_email' || receivers[index].type == 'receiver_bcc_fabrik') {
+                      } else if (receivers[index].type === 'receiver_bcc_email' || receivers[index].type === 'receiver_bcc_fabrik') {
                         receiver_bcc[index]['id'] = receivers[index].id;
                         receiver_bcc[index]['email'] = receivers[index].receivers;
                       }
@@ -789,12 +786,14 @@ import Multiselect from 'vue-multiselect';
                     this.selectedReceiversCC = cc_filtered;
                     this.selectedReceiversBCC = bcc_filtered;
                   }
+                  this.$parent.loading = false;
                 }).catch(e => {
               console.log(e);
             });
 
           } else {
             this.dynamicComponent = true;
+            this.$parent.loading = false;
           }
         }).catch(e => {
       console.log(e);
@@ -808,7 +807,7 @@ import Multiselect from 'vue-multiselect';
   },
 
   mounted() {
-    if (this.actualLanguage == "en") {
+    if (this.actualLanguage === "en") {
       this.langue = 1;
     }
   }

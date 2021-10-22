@@ -1,8 +1,6 @@
 import Vue from 'vue';
+import Vuex from 'vuex';
 import VueRouter from 'vue-router';
-import Vuelidate from 'vuelidate';
-import List from './views/list.vue';
-import GrilleEvalItem from './components/list_components/evalgridItem';
 import AddProgram from './views/addProgram.vue';
 import AddProgramAdvancedSettings from './views/addProgramAdvancedSettings.vue';
 import AddCampaign from './views/addCampaign.vue';
@@ -27,13 +25,13 @@ Vue.component('table-component', TableComponent);
 Vue.component('table-column', TableColumn);
 
 Vue.use(Notifications, { velocity });
-Vue.use(Vuelidate);
 Vue.use(VueJsModal);
 Vue.use(VueSpinnersCss);
-Vue.use(VTooltip);
 Vue.use(VueRouter);
+Vue.use(Vuex);
 
-import router from './router/router'
+import router from './router/router';
+import {global} from './store/global';
 import App from "./App";
 
 Vue.config.productionTip = false;
@@ -42,6 +40,7 @@ Vue.config.devtools = true;
 if (document.getElementById('em-list-vue')) {
   new Vue({
     router,
+    global,
     el: 'list',
     render(h) {
       return h(App, {

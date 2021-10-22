@@ -10,11 +10,6 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "devDependencies": {},
-  "eslintConfig": {
-    "extends": [],
-    "rules": {},
-    "parserOptions": {}
-  },
   "postcss": {
     "plugins": {
       "autoprefixer": {}
