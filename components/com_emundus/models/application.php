@@ -3947,12 +3947,25 @@ class EmundusModelApplication extends JModelList
      * @param user the user updating the file
      * @param attachment values to update
      * 
-     * @return (boolean) true or false 
+     * @return (array) containing status of update and file content update  
      */
-    public function updateAttachment($fnum, $user, $attachment) {
+    public function updateAttachment($data) {
+        $return = [
+            "update" => false
+        ];
+        
         require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
 
-        // TODO: check if user is allowed to update attachment
+
+
+        if (isset($data['file'])) {
+            // replace content of current attachment
+            $content = file_get_contents($data['file']['tmp_name']);
+            $attachment = $this->getUploadByID($data['id']);
+            $updated = file_put_contents(EMUNDUS_PATH_REL . $attachment['user_id'] . "/" . $attachment['filename'], $content);
+            
+            $return['file_update'] = $updated ? true : false;
+        }
 
         // update attachments fields in database
         $db = $this->getDbo();
@@ -3960,21 +3973,23 @@ class EmundusModelApplication extends JModelList
 
         $query
             ->update($db->quoteName('#__emundus_uploads'))
-            ->set($db->quoteName('description') . ' = ' . $db->quote($attachment['description']))
-            ->set($db->quoteName('is_validated') . ' = ' . $db->quote($attachment['is_validated']))
+            ->set($db->quoteName('description') . ' = ' . $db->quote($data['description']))
+            ->set($db->quoteName('is_validated') . ' = ' . $db->quote($data['is_validated']))
             ->set($db->quoteName('modified') . ' = ' . $db->quote(date("Y-m-d H:i:s")))
-            ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($attachment['id']));
+            ->set($db->quoteName('modified_by') . ' = ' . $db->quote($data['user']))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($data['id']));
 
         //execute query
         try {
             $db->setQuery($query);
             $db->execute();
-            return true;
+            $return['update'] = true;
         } catch (Exception $e) {
             // log error
-            return false;
+            $return['update'] = false;
         }
+
+        return $return;
     }
 
     /**

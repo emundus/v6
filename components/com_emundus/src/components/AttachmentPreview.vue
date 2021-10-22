@@ -37,14 +37,14 @@ export default {
                 this.overflowX = data.overflowX; 
                 this.overflowY = data.overflowY;
                 this.style = data.style;
-
-                if (this.$refs['a-preview'].shadowRoot === null)  {
-                    this.$refs['a-preview'].attachShadow({mode: 'open'});
-                }
             } else {
                 this.overflowX = false; 
                 this.overflowY = false;
                 this.preview = '';
+            }
+
+            if (this.$refs['a-preview'].shadowRoot === null)  {
+                this.$refs['a-preview'].attachShadow({mode: 'open'});
             }
 
             this.$refs['a-preview'].shadowRoot.innerHTML = this.preview != null ? this.preview : '';
