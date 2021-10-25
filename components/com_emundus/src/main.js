@@ -48,7 +48,7 @@ if (mountApp) {
 
     window.addEventListener('destroy-com-emundus-vue', () => {
         vm.$destroy();
-    })
+    });
 }
 
 if (document.getElementById("em-vue-filter-builder")) {

@@ -312,7 +312,7 @@ export default {
 
     // Format Methods
     formattedTimeDate(timedate) {
-      return moment(timedate).format('DD/MM/YYYY');
+      return moment(timedate).format('L');
     },
     userName(userId) {
       let completeName = '';
