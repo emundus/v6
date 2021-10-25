@@ -22,23 +22,15 @@
           <div id="filters">
             <input id="searchbar" type="text" ref="searchbar" :placeholder="$t('search')" @input="searchInFiles">
             <div class="actions">
-              <!-- <div class="btn-icon-text">
-                <span class="material-icons">
-                  filter_alt_outlined
-                </span>
-                <span>
-                  {{ $t('filter') }}
-                </span>
-              </div> -->
-              <!-- <div class="btn-icon-text" @click="exportAttachments">
+              <div v-if="canExport" class="btn-icon-text" @click="exportAttachments">
                 <span class="material-icons">
                   file_upload
                 </span>
                 <span>
                   {{ $t('export') }}
                 </span>
-              </div> -->
-              <span class="material-icons" @click="deleteAttachments">
+              </div>
+              <span v-if="canDelete" class="material-icons" @click="deleteAttachments">
                 delete_outlined
               </span>
             </div>
@@ -166,12 +158,15 @@ export default {
       checkedAttachments: [],
       selectedAttachment: {},
       lastSort: "",
+      canExport: false,
+      canDelete: false,
     };
   },
   mounted() {
     this.getFnums();
     this.getUsers();
     this.getAttachments();
+    this.setAccessRights();
   },
   destroyed() {
     this.$router.push({ name: 'app' });
@@ -213,22 +208,69 @@ export default {
       this.$modal.hide('edit');
       this.selectedAttachment = {};
     },
-    // No more used currently
-    // async deleteAttachement(aid) {
-    //   this.$modal.hide('edit');
-    //   await attachmentService.deleteAttachments(this.displayedFnum, [aid]);
-    // },
+    async setAccessRights() {
+      if (!this.$store.state.user.rights[this.displayedFnum]) {
+        const response = await userService.getAccessRights(this.$store.state.user.currentUser, this.displayedFnum);
+
+        if (response.status == true) {
+          this.$store.dispatch('user/setAccessRights', {
+            fnum: this.displayedFnum,
+            rights: response.rights
+          });
+        }
+      } 
+
+      this.canExport = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canExport : false;
+      this.canDelete = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canDelete : false;
+    },
     async exportAttachments() {
-      console.log('export');
+        // if (Array.isArray(checked) && checked.length){
+
+        // var url = "index.php?option=com_emundus&controller=application&task=exportpdf";
+
+        // $.ajax({
+        //     type:'post',
+        //     url: url,
+        //     dataType:'json',
+        //     data: {
+        //         'fnum': '<?php echo $this->fnum; ?>',
+        //         'student_id': '<?php echo $this->student_id; ?>',
+        //         'ids': checked
+        //     },
+        //     success: function(result) {
+        //         if (result.status) {
+        //             var link = window.open('', '_blank');
+        //             link.location.href = result.link;
+        //         } else {
+        //             Swal.fire({
+        //                 title: result.msg,
+        //                 type: 'error'
+        //             })
+        //         }
+        //     },
+        //     error: function (jqXHR) {
+        //         console.log(jqXHR.responseText);
+        //     }
+        // });
+
+        // } else {
+        //     Swal.fire({
+        //         title: Joomla.JText._('INFORMATION'),
+        //         text: Joomla.JText._('SELECT_AT_LEAST_ONE_FILE'),
+        //         type: 'warning'
+        //     })
+        // }
     },
     async deleteAttachments() {
-      // remove all checked attachments from attachments array
-      this.attachments = this.attachments.filter(attachment => !this.checkedAttachments.includes(attachment.aid));
+      if (this.canDelete) {
+        // remove all checked attachments from attachments array
+        this.attachments = this.attachments.filter(attachment => !this.checkedAttachments.includes(attachment.aid));
 
-      // delete all checkedAttachments
-      const response = await attachmentService.deleteAttachments(this.displayedFnum, this.checkedAttachments);
-      if (response.status == true) {
-        // Display tooltip deleted succesfully  
+        // delete all checkedAttachments
+        const response = await attachmentService.deleteAttachments(this.displayedFnum, this.checkedAttachments);
+        if (response.status == true) {
+          // Display tooltip deleted succesfully  
+        }
       }
     },
 
@@ -237,11 +279,13 @@ export default {
       this.displayedFnum = this.fnums[this.fnumPosition - 1];
       this.setDisplayedUser();
       this.getAttachments();
+      this.setAccessRights();
     },
     nextFile() {
       this.displayedFnum = this.fnums[this.fnumPosition + 1];
       this.setDisplayedUser();
       this.getAttachments();
+      this.setAccessRights();
     },
     prevAttachment() {
       this.selectedAttachment = this.displayedAttachments[this.selectedAttachmentPosition - 1];
