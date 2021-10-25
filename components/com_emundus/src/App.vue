@@ -1,10 +1,14 @@
 <template>
     <div class="com_emundus_vue">
-        <router-view></router-view>
+        <Attachements
+            :fnum="data.fnum"
+            :user="data.user"
+        ></Attachements>
     </div>
 </template>
 
 <script>
+import Attachements from './views/Attachments.vue';
 import moment from 'moment';
 
 export default {
@@ -18,6 +22,9 @@ export default {
             default: {}
         }
     },
+    components: {
+        Attachements
+    },
     mounted() {
         if (this.data.lang) {
             this.$store.dispatch('global/setLang', this.data.lang.split('-')[0]);
@@ -26,11 +33,6 @@ export default {
         }
         
         moment.locale(this.$store.state.global.lang);
-
-        this.$router.push({
-            name: this.componentName,
-            params: this.data
-        });
     }
 }
 </script>

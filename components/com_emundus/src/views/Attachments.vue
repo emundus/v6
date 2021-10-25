@@ -168,9 +168,6 @@ export default {
     this.getAttachments();
     this.setAccessRights();
   },
-  destroyed() {
-    this.$router.push({ name: 'app' });
-  },
   methods: {
     // Getters and setters
     async getFnums() {
@@ -347,7 +344,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#em-application-attachment {
+#em-attachments {
   font-size: 14px;
   margin: 20px;
 
@@ -420,7 +417,7 @@ export default {
       justify-content: flex-end;
 
       >div {
-        margin-left: 8px;
+        margin-right: 8px;
       }
     }
 
