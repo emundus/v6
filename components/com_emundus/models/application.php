@@ -4194,4 +4194,161 @@ class EmundusModelApplication extends JModelList
 
         return $content;
     }
+
+    /**
+     * Generate filters options from fabrik list
+     * @param type (string) list only for now
+     * @param id (int) id of the element
+     * */
+    public function getFilters($type, $id) 
+    {
+        $return = [];
+
+        // get form id from list
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select(array('el.id', 'el.name', 'el.label', 'el.plugin', 'el.default', 'el.params'))
+        ->from($db->quoteName('#__fabrik_lists', 'list'))
+        ->join('LEFT', $db->quoteName('#__fabrik_formgroup', 'fg') . ' ON ' . $db->quoteName('list.form_id') . ' = ' . $db->quoteName('fg.form_id'))
+        ->join('LEFT', $db->quoteName('#__fabrik_elements', 'el') . ' ON ' . $db->quoteName('el.group_id') . ' = ' . $db->quoteName('fg.group_id'))
+        ->where($db->quoteName('list.id') .'='. $db->quote($id) . ' AND ' . $db->quoteName('el.published') . ' = 1');
+        
+        $db->setQuery($query);
+
+        $results = $db->loadAssocList();
+
+        foreach($results as $result) {
+            if ($result['plugin'] == "internalid") {
+                continue;
+            }
+
+            $return[] = [
+                'id' => $result['id'],
+                'name' => $result['name'],
+                'label' => $result['label'],
+                'actions' => $this->getActionsByElementPlugin($result['plugin'], $result['params']),
+                'values' => $this->getValuesByElement($result)
+            ];
+        }
+
+        return $return;
+    }
+
+    private function getActionsByElementPlugin($plugin, $params) 
+    {
+        $actions = [];
+        switch ($plugin) {
+            case 'field': 
+                $params = json_decode($params, true);
+
+                if (isset($params['database_join_display_type'])) {
+                    $actions = [
+                        'is' => 'est égal à',
+                        'isnt' => 'n\'est pas égal à',
+                    ];
+                } else {
+                    $actions = [
+                        'is' => 'est égal à',
+                        'isnt' => 'n\'est pas égal à',
+                        'contains' => 'inclus'
+                    ];
+                }
+                break;
+
+            case 'textarea':
+                $actions = [
+                    'is' => 'est égal à',
+                    'isnt' => 'n\'est pas égal à',
+                    'contains' => 'inclus'
+                ];
+                break;
+            case 'databasejoin':
+            case 'dropdown':
+            case 'user':
+            case 'date': 
+            case 'jdate': 
+            case 'radiobutton':
+                $actions = [
+                    'is' => 'est égal à',
+                    'isnt' => 'n\'est pas égal à',
+                ];
+                break;
+            default:
+                $actions = [];
+                break;
+        };
+
+        return $actions;
+    }
+
+    private function getValuesByElement($element) 
+    {
+        $values = [];
+
+        switch($element['plugin']) {
+            case 'databasejoin': 
+                $params = json_decode($element['params'], true);
+
+                $table  = $params['join_db_name'];
+                $key = $params['join_key_column'];
+                $value = $params['join_val_column'];
+    
+                $db = $this->getDbo();
+                $query = $db->getQuery(true);
+    
+                $query->select(array("el.$key", "el.$value"))
+                ->from($db->quoteName($table, 'el'));
+    
+                $db->setQuery($query);
+    
+                $results = $db->loadAssocList();
+    
+                foreach($results as $result) {
+                    $values[$result[$key]] = $result[$value];
+                }
+                break;
+            case 'user':
+                $db = $this->getDbo();
+                $query = $db->getQuery(true);
+    
+                $query->select(array('el.id', 'el.name'))
+                ->from($db->quoteName('#__users', 'el'));
+    
+                $db->setQuery($query);
+    
+                $results = $db->loadAssocList();
+    
+                foreach($results as $result) {
+                    $values[$result['id']] = $result['name'];
+                }
+                break;
+            case 'date':
+            case 'jdate':
+                $values = [
+                    'today' => 'aujourd\'hui',
+                    'yesterday' => 'hier',
+                    'lastweek' => 'la semaine dernière',
+                    'lastmonth' => 'le mois dernier',
+                    'lastyear' => 'l\'année dernière'
+                ];
+                break;
+            case 'dropdown':
+            case 'radiobutton':
+                $params = json_decode($element['params'], true);
+
+                // create array from two arrays
+                $values = array_combine($params['sub_options']['sub_values'], $params['sub_options']['sub_labels']);
+            break;
+            case 'field':
+                // if (isset($params['database_join_display_type']) && $params['database_join_display_type'] == 'dropdown') {
+                // }
+                break;
+            default:
+                $values = [];
+            break;
+        }
+
+        return $values;
+    }
 }

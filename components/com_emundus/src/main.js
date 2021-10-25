@@ -43,16 +43,12 @@ if (mountApp) {
             );
         },
     });
-
-    // window.addEventListener('destroy-com-emundus-vue', () => {
-    //     vm.$destroy();
-    // });
 }
 
 if (document.getElementById("em-vue-filter-builder")) {
     const filterbuilderApp = new Vue({
         el: '#em-vue-filter-builder',
-        filterBuilderStore,
+        store: filterBuilderStore,
         i18n,
         render(h) {
             return h(

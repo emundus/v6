@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import filterService from '../../services/filter';
 import FilterRow from './FilterRow.vue';
 
 export default {
@@ -23,21 +24,31 @@ export default {
     components: {
         FilterRow
     },
+    props: {
+        type: {
+            type: String,
+            default: "list"
+        },
+        id: {
+            type: String,
+            default: "70"
+        },
+    },
     data() {
         return {
             filters: [],
         };
     },
     mounted() {
-        this.filters = this.getFilters();
+        this.getFilters();
     },
     methods: {
-        getFilters() {
-            return [{
-                'name': "",
-                'operator': "",
-                'value': ""
-            }];
+        async getFilters() {
+            const response = await filterService.getFilters(this.type, this.id);
+            
+            if (response.status == true) {
+                this.$store.dispatch('setFilters', response.filters);
+            }
         },
         addFilter() {
             this.filters.push({
