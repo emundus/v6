@@ -2876,6 +2876,7 @@ input:focus + .em-slider {
 .em-h-32{
   height: 32px;
 }
+/** **/
 
 
 /*
@@ -2915,6 +2916,7 @@ input:focus + .em-slider {
 .em-box-shadow{
   box-shadow: inset 0px -1px 0px #E3E5E8;
 }
+/** **/
 
 /**
   TITLES
@@ -2992,6 +2994,7 @@ input:focus + .em-slider {
 .em-font-size-48{
   font-size: 48px;
 }
+/** **/
 
 /**
 Vue Transitions
@@ -3003,6 +3006,7 @@ Vue Transitions
   transform: translateX(-10px);
   opacity: 0;
 }
+/** **/
 
 /**
   Focus for lables
@@ -3028,6 +3032,7 @@ Vue Transitions
   text-overflow: ellipsis;
   overflow-x: hidden;
 }
+/** **/
 
 /**
   MEDIA QUERIES
@@ -3113,6 +3118,7 @@ Vue Transitions
     margin-top: 8px;
   }
 }
+/** **/
 
 /* MULTISELECT */
 .multiselect__tag-icon::after{

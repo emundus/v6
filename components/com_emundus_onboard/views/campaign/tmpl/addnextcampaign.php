@@ -212,8 +212,18 @@ if(count($languages) > 1){
 } else {
     $many_languages = '0';
 }
+
+$user = JFactory::getUser();
+$coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
-<div id="em-addFormNextCampaign-vue" campaignId="<?= $this->cid ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>" index="<?= $this->index ?>"></div>
+<div id="em-component-vue"
+     component="addformnextcampaign"
+     campaignId="<?= JFactory::getApplication()->input->get('cid') ?>"
+     actualLanguage="<?= $actualLanguage ?>"
+     manyLanguages="<?= $many_languages ?>"
+     coordinatorAccess="<?= $coordinator_access ?>"
+     index="<?= JFactory::getApplication()->input->get('index') ?>"
+></div>
 
 <script src="media/com_emundus_onboard/app_onboard.js"></script>

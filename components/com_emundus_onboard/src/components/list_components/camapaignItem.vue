@@ -6,10 +6,6 @@
           <div class="column-inner-block w-col w-col-8 pl-30px">
             <div class="list-item-header">
               <div class="block-label">
-<!--                <a class="item-select w-inline-block"
-                   v-on:click="selectItem(data.id)"
-                   :class="{ active: isActive }">
-                </a>-->
                 <h2 class="nom-campagne-block">{{ data.label }}</h2>
               </div>
             </div>
@@ -36,7 +32,7 @@
             <div>
               <hr class="divider-card">
             <div class="stats-block">
-              <a @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + data.id + '&index=0')"
+              <a @click="redirectJRoute('index.php?option=com_emundus_onboard&view=campaign&layout=addnextcampaign&cid=' + data.id + '&index=0')"
                  class="bouton-ajouter pointer add-button-div"
                  :title="AdvancedSettings">
                 <em class="fas fa-pen"></em>
@@ -58,26 +54,6 @@
             </div>
             </div>
           </div>
-          <!--<div class="column-inner-block-2 w-clearfix w-col w-col-4">
-            <div class="stats-block mb-1">
-              <label class="mb-0">{{Program}} : </label>
-              <a class="button-programme pointer"
-                 :title="AdvancedSettings"
-                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=program&layout=advancedsettings&pid=' + data.program_id)">
-                {{ data.program_label }}
-              </a>
-            </div>
-
-            <div class="container-gerer-modifier-visualiser">
-
-              <a
-                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=' + data.id)"
-                 class="cta-block ml-10px pointer"
-                 :title="Modify">
-                <em class="fas fa-edit"></em>
-              </a>
-            </div>
-          </div>-->
         </div>
       </div>
     </div>

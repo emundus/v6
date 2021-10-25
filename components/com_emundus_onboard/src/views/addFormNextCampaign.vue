@@ -24,7 +24,11 @@
             <hr>
             <div class="d-flex">
               <p>
-                <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>  {{translations.From}} <strong>{{form.start_date}}</strong>   {{translations.To}} <strong>{{form.end_date}}</strong>
+                <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>
+                {{translations.From}}
+                <strong>{{form.start_date}}</strong>
+                {{translations.To}}
+                <strong>{{form.end_date}}</strong>
               </p>
             </div>
 
@@ -70,12 +74,12 @@
         <div v-if="menuHighlightProg != -1" class="warning-message-program mb-1">
           <p style="color: #e5283b;"><em class="fas fa-exclamation-triangle mr-1 red"></em>{{translations.ProgramWarning}}</p>
           <ul v-if="campaignsByProgram.length > 0">
-            <li v-for="(campaign, index) in campaignsByProgram">{{campaign.label}}</li>
+            <li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{campaign.label}}</li>
           </ul>
         </div>
         <transition name="slide-right">
           <add-campaign
-              v-if="menuHighlight == 0"
+              v-if="menuHighlight == 0 && campaignId !== ''"
               :campaign="campaignId"
               :coordinatorAccess="true"
               :actualLanguage="actualLanguage"
@@ -93,16 +97,6 @@
               :visibility="null"
           ></addFormulaire>
 
-<!--          <addDocuments
-              v-if="menuHighlight == 4"
-              :funnelCategorie="formCategories[langue][menuHighlight]"
-              :profileId="profileId"
-              :campaignId="campaignId"
-              :menuHighlight="menuHighlight"
-              :langue="actualLanguage"
-              :manyLanguages="manyLanguages"
-          ></addDocuments>-->
-
           <add-documents-dropfiles
               v-if="menuHighlight == 1"
               :funnelCategorie="formCategories[langue][menuHighlight]"
@@ -112,23 +106,6 @@
               :langue="actualLanguage"
               :manyLanguages="manyLanguages"
           />
-
-<!--          <add-documents-form
-              v-if="menuHighlight == 3"
-              :funnelCategorie="formCategories[langue][menuHighlight]"
-              :profileId="profileId"
-              :campaignId="campaignId"
-              :menuHighlight="menuHighlight"
-              :langue="actualLanguage"
-              :manyLanguages="manyLanguages"
-          ></add-documents-form>-->
-
-<!--          <add-gestionnaires
-              v-if="menuHighlightProg == 0 && program.id != 0"
-              :funnelCategorie="formPrograms[langue][menuHighlight]"
-              :group="prog_group"
-              :coordinatorAccess="true"
-          ></add-gestionnaires>-->
 
           <add-evaluation-grid
               v-if="menuHighlightProg == 0 && program.id != 0"
@@ -141,11 +118,6 @@
               :funnelCategorie="formPrograms[langue][menuHighlight]"
               :prog="program.id"
           ></add-email>
-
-          <!--          <addEvalEval
-                            v-if="menuHighlight == 6"
-                            :funnelCategorie="formCategories[langue][menuHighlight]"
-                    ></addEvalEval>-->
         </transition>
       </div>
     </div>
@@ -173,6 +145,7 @@ import AddDocumentsDropfiles from "@/views/funnelFormulaire/addDocumentsDropfile
 import AddDocumentsForm from "@/views/funnelFormulaire/addDocumentsForm";
 import addCampaign from "@/views/addCampaign";
 import AddEvaluationGrid from "@/views/funnelFormulaire/addEvaluationGrid";
+import {global} from "../store/global";
 
 const qs = require("qs");
 
@@ -465,8 +438,14 @@ export default {
   },
 
   created() {
+    // Get datas that we need with store
+    this.$props.campaignId = global.getters.datas.campaignId.value;
+    this.$props.actualLanguage = global.getters.actualLanguage;
+    this.$props.manyLanguages = global.getters.manyLanguages;
+    //
+
     this.loading = true;
-    if (this.actualLanguage == "en") {
+    if (this.actualLanguage === "en") {
       this.langue = 1;
     }
   },

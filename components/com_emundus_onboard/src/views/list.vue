@@ -1,7 +1,7 @@
 <template>
   <div id="list">
     <list-header
-      v-if="type != 'files'"
+      v-if="type !== 'files'"
       :data="actions"
       :selected="selecedItems"
       :updateTotal="updateTotal"
@@ -46,34 +46,18 @@
       <li>
         <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">{{translations.All}}</a>
       </li>
-      <li v-for="(cat, index) in email_categories" v-if="cat != ''">
+      <li v-for="(cat, index) in email_categories" :key="'cat_' + index" v-if="cat !== ''">
         <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
       </li>
-      <!--<li>
-        <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">{{System}}</a>
-      </li>-->
     </ul>
-    <ul class="form-section email-sections" v-if="(type == 'formulaire'|| type == 'grilleEval')  && !loading ">
-      <!--<li>Types : </li>-->
-
+    <ul class="form-section email-sections" v-if="(type === 'formulaire'|| type === 'grilleEval')  && !loading ">
       <li>
-        <a :class="typeForAdd === 'form'||type === 'formulaire' ? 'form-section__current' : ''" @click="typeForAdd = 'form' ; type='formulaire'">Candidature</a>
+        <a :class="typeForAdd === 'form'||type === 'formulaire' ? 'form-section__current' : ''" @click="typeForAdd = 'form' ; type = 'formulaire'">Candidature</a>
       </li>
       <li>
-        <a :class="typeForAdd === 'grilleEval' ? 'form-section__current' : ''" @click="typeForAdd = 'grilleEval' ; type='grilleEval'">Grilles d'évaluation</a>
+        <a :class="typeForAdd === 'grilleEval' ? 'form-section__current' : ''" @click="typeForAdd = 'grilleEval' ; type = 'grilleEval'">Grilles d'évaluation</a>
       </li>
-      <!--<li v-for="(cat, index) in email_categories" v-if="cat != ''">
-        <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
-      </li>-->
-
-      <!--<li>
-        <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">{{System}}</a>
-      </li>-->
     </ul>
-
-<!--    <transition :name="'slide-down'" type="transition">
-      <h2 v-show="total > 0">{{ Total }} : {{ total }}</h2>
-    </transition>-->
 
     <transition :name="'slide-down'" type="transition">
     <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">
@@ -107,34 +91,20 @@
     </transition>
 
     <div v-show="total > 0 || type == 'files'">
-<!--      <transition :name="'slide-down'" type="transition">
-        <div v-show="total > 0" class="buttonSelectDeselect">
-          <button @click="!isEmpty ? selectAllItem() : deselectItem()"
-            class="btn-selectAll"
-            :title="Select"
-            :class="[isEmpty ? 'active' : '']">
-          </button>
-          <div v-show="!isEmpty" id="buttonLabelSelect">
-            {{ Select }} ({{ pages < countPages ? limit : total - limit * countPages + limit }})
-          </div>
-          <div v-show="isEmpty" id="buttonLabelDeselect">{{ Deselect }}</div>
-        </div>
-      </transition>-->
-
       <transition-group :name="'slide-down'" type="transition" style="display: inline-block;margin: 16px 0;width: 100%">
-        <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+        <div v-if="type !== 'files' && type !== 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
           <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" :actualLanguage="actualLanguage"/>
         </div>
 
-        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+        <div v-if="type === 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
           <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" :models="list" />
         </div>
 
-        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+        <div v-if="type === 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
           <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" />
         </div>
 
-        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+        <div v-if="type === 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
           <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" />
         </div>
       </transition-group>
@@ -179,13 +149,13 @@
 
     <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">
       {{
-        this.type == "campaign"
+        this.type === "campaign"
           ? noCampaign
-          : this.type == "program"
+          : this.type === "program"
           ? noProgram
-          : this.type == "email"
+          : this.type === "email"
           ? noEmail
-          : this.type == "formulaire"
+          : this.type === "formulaire"
           ? noForm
           : noFiles
       }}
@@ -193,7 +163,6 @@
     <div class="loading-form" v-if="loading">
       <RingLoader :color="'#12DB42'" />
     </div>
-<!--    <tasks></tasks>-->
   </div>
 </template>
 
@@ -210,18 +179,6 @@ import listHeader from "../components/list_components/list_header";
 import tasks from "./tasks"
 import { list } from "../store/store";
 import { global } from "../store/global";
-import Swal from "sweetalert2";
-
-import "../assets/css/normalize.css";
-import "../assets/css/emundus-webflow.scss";
-import "../assets/css/bootstrap.css";
-import "../assets/css/codemirror.css";
-import "../assets/css/codemirror.min.css";
-import "../assets/css/views_emails.css";
-import "../assets/css/date-time.css";
-
-import "@fortawesome/fontawesome-free/css/all.css";
-import "@fortawesome/fontawesome-free/js/all.js";
 
 const qs = require("qs");
 
@@ -301,8 +258,11 @@ export default {
   },
 
   created() {
+    // Get my props
     this.$props.datas = global.getters.datas;
     this.$props.type = this.$props.datas.type.value;
+    //
+
     axios({
       method: "get",
       url: "index.php?option=com_emundus_onboard&controller=form&task=getActualLanguage",
@@ -342,7 +302,7 @@ export default {
     },
 
     validateFilters() {
-      this.loading = true;
+      this.updateLoading(true);
       this.filtersCount = this.filtersCountFilter + this.filtersCountSearch;
       this.filters =
         this.filtersFilter +
@@ -425,14 +385,14 @@ export default {
                       this.email_categories = catrep.data.data;
                   });
                 }
-                this.loading = false;
+                this.updateLoading(false);
               }).catch(e => {
                 console.log(e);
-                this.loading = false;
+                this.updateLoading(false);
               });
           }).catch(e => {
             console.log(e);
-            this.loading = false;
+            this.updateLoading(false);
           });
       }
     },

@@ -288,6 +288,7 @@
   import ModalTestingForm from "@/components/formClean/ModalTestingForm";
   import ModalAddDocuments from "./advancedModals/ModalAddDocuments";
   import Swal from "sweetalert2";
+  import {global} from "../store/global";
 
   const qs = require("qs");
 
@@ -1348,6 +1349,13 @@
       //
     },
     created() {
+      // Get datas that we need with store
+      this.$props.actualLanguage = global.getters.actualLanguage;
+      this.$props.manyLanguages = global.getters.manyLanguages;
+      this.$props.index = global.getters.datas.index.value;
+      this.$props.prid = global.getters.datas.prid.value;
+      this.$props.cid = global.getters.datas.cid.value;
+      //
       //jQuery("#g-navigation .g-main-nav .tchooz-vertical-toplevel > li").css("transform", "translateX(-100px)");
       //jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)");
       //this.indexHighlight = 0;

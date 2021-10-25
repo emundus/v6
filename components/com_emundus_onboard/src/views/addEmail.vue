@@ -270,7 +270,7 @@
               <button
                   type="button"
                   class="bouton-sauvergarder-et-continuer w-retour"
-                  @click="$router.go(-1)">
+                  onclick="history.back()">
                 {{ translations.retour }}
               </button>
               <button type="submit" class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green">
@@ -288,16 +288,15 @@
 import Autocomplete from "../components/autocomplete";
 import axios from "axios";
 import Editor from "../components/editor";
-import Tasks from "@/views/tasks";
 import Multiselect from 'vue-multiselect';
+import {global} from "../store/global";
 
-  const qs = require("qs");
+const qs = require("qs");
 
   export default {
     name: "addEmail",
 
   components: {
-    Tasks,
     Editor,
     Autocomplete,
     Multiselect
@@ -721,27 +720,23 @@ import Multiselect from 'vue-multiselect';
   },
 
   created() {
-    this.$props.email = this.$route.params.email;
     this.$parent.loading = true;
+
     this.getAllAttachments();
     //this.getAllUsers();
     this.getAllTags();
     this.getAllDocumentLetter();
 
+    this.$props.actualLanguage = global.getters.actualLanguage;
+
     axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
         .then(rep => {
           this.categories = rep.data.data;
-          if (this.email !== "") {
+          this.$props.email = global.getters.datas.email.value;
+          if (typeof this.$props.email !== 'undefined' && this.$props.email !== '') {
             axios.get(`index.php?option=com_emundus_onboard&controller=email&task=getemailbyid&id=${this.email}`)
                 .then(resp => {
-                  this.form.lbl = resp.data.data.email.lbl;
-                  this.form.subject = resp.data.data.email.subject;
-                  this.form.name = resp.data.data.email.name;
-                  this.form.emailfrom = resp.data.data.email.emailfrom;
-                  this.form.message = resp.data.data.email.message;
-                  this.form.type = resp.data.data.email.type;
-                  this.form.category = resp.data.data.email.category;
-                  this.form.published = resp.data.data.email.published;
+                  this.form = resp.data.data.email;
                   this.dynamicComponent = true;
 
                   // get attached letters
@@ -751,7 +746,7 @@ import Multiselect from 'vue-multiselect';
 
                   // get attached candidate attachments
                   if(resp.data.data.candidate_attachment) {
-                    this.selectedCandidateAttachments = resp.data.data.candidate_attachment;;
+                    this.selectedCandidateAttachments = resp.data.data.candidate_attachment;
                   }
 
                   // get attached tags
@@ -813,8 +808,6 @@ import Multiselect from 'vue-multiselect';
   }
 };
 </script>
-
-<!--<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>-->
 
 <style>
 

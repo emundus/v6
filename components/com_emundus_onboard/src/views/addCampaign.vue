@@ -227,7 +227,7 @@
               <button
                   type="button"
                   class="bouton-sauvergarder-et-continuer w-retour"
-                  onclick="history.go(-1)">
+                  onclick="history.back()">
                 {{ translations.Retour }}
               </button>
               <div class="d-flex">
@@ -256,7 +256,7 @@ import { DateTime as LuxonDateTime, Settings } from "luxon";
 import Editor from "../components/editor";
 import Autocomplete from "../components/autocomplete";
 import Translation from "../components/translation"
-import Tasks from "@/views/tasks";
+import { global } from "../store/global";
 
 const qs = require("qs");
 
@@ -264,7 +264,6 @@ export default {
   name: "addCampaign",
 
   components: {
-    Tasks,
     Datetime,
     Editor,
     Autocomplete,
@@ -395,6 +394,15 @@ export default {
   }),
 
   created() {
+    if(this.$props.campaign == "") {
+      // Get datas that we need with store
+      this.$props.campaign = global.getters.datas.campaign.value;
+    }
+    this.$props.actualLanguage = global.getters.actualLanguage;
+    this.$props.manyLanguages = global.getters.manyLanguages;
+    this.$props.coordinatorAccess = global.getters.coordinatorAccess;
+    //
+
     // Configure datetime
     Settings.defaultLocale = this.actualLanguage;
     //
@@ -403,7 +411,7 @@ export default {
     this.form.start_date = LuxonDateTime.local(now.getFullYear(),now.getMonth() + 1,now.getDate(),0,0,0).toISO();
     this.getLanguages();
     //Check if we add or edit a campaign
-    if (this.campaign !== "") {
+    if (typeof this.$props.campaign !== 'undefined' && this.$props.campaign !== "") {
       axios.get(
           `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaign}`
       ).then(response => {
@@ -492,7 +500,7 @@ export default {
       if(this.programForm.label !== ''){
         this.programForm.code = this.programForm.label.toUpperCase().replace(/[^a-zA-Z0-9]/g,'_').substring(0,10) + '_00';
         if(Object.keys(this.programs).length !== 0) {
-          this.programs.forEach((element, index) => {
+          this.programs.forEach((element) => {
             if (this.programForm.code == element.code) {
               let newCode = parseInt(element.code.split('_')[1]) + 1;
               if (newCode > 10) {

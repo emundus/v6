@@ -11,15 +11,9 @@
           <div class="column-inner-block w-col w-col-8 pl-30px">
             <div class="list-item-header">
               <div class="block-label">
-<!--                <a v-if="data.type == 2"
-                   class="item-select w-inline-block"
-                   v-on:click="selectItem(data.id)"
-                   :class="{ active: isActive }"
-                ></a>-->
                 <h2 class="nom-campagne-block">{{ data.subject }}</h2>
               </div>
             </div>
-<!--            <p class="description-block"><span v-html="data.message"></span></p>-->
             <div class="d-flex">
               <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
                 {{ isPublished ? publishedTag : unpublishedTag }}
@@ -31,17 +25,12 @@
             <div>
               <hr class="divider-card">
               <div class="stats-block">
-                <a class="bouton-ajouter pointer add-button-div"
-                :title="Modify">
-                  <em class="fas fa-pen"></em>
-                  <router-link :to="{ name: 'edit-email', params:{email: data.id} }"><span class="em-color-white">{{Modify}}</span></router-link>
-                </a>
-<!--                <a @click="redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id)"
+                <a @click="redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id)"
                    class="bouton-ajouter pointer add-button-div"
                    :title="Modify">
                   <em class="fas fa-pen"></em>
                   <span>{{Modify}}</span>
-                </a>-->
+                </a>
                 <div class="d-flex">
                   <button class="cta-block" style="height: unset" type="button" :title="Visualize" @click="$modal.show('modalEmailPreview_' + data.id)">
                     <em class="fas fa-eye"></em>
@@ -142,7 +131,7 @@ export default {
   },
 
   mounted() {
-    if (this.actualLanguage == "en") {
+    if (this.actualLanguage === "en") {
       this.langue = 1;
     }
     this.email_to_preview = this.data.id;

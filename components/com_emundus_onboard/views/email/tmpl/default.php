@@ -143,10 +143,25 @@ JText::script('COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS');
 JText::script('COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS');
 
+$lang = JFactory::getLanguage();
+$actualLanguage = substr($lang->getTag(), 0 , 2);
+$languages = JLanguageHelper::getLanguages();
+if(count($languages) > 1){
+    $many_languages = '1';
+} else {
+    $many_languages = '0';
+}
+
 $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
-<list id="em-list-vue" type="email" coordinatorAccess="<?= $coordinator_access ?>"></list>
+<list id="em-component-vue"
+      component="list"
+      type="email"
+      coordinatorAccess="<?= $coordinator_access ?>"
+      actualLanguage="<?= $actualLanguage ?>"
+      manyLanguages="<?= $many_languages ?>">
+</list>
 
 <script src="media/com_emundus_onboard/app_onboard.js"></script>

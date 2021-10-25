@@ -1,7 +1,7 @@
 <template>
   <div>
     <transition name="slide-right">
-      <router-view/>
+      <component v-bind:is="$props.component"/>
     </transition>
       <div class="loading-form" v-if="this.loading">
         <RingLoader :color="'#12DB42'" />
@@ -12,22 +12,52 @@
 <script>
 import {global} from "./store/global";
 
+import "./assets/css/normalize.css";
+import "./assets/css/emundus-webflow.scss";
+import "./assets/css/bootstrap.css";
+import "./assets/css/codemirror.css";
+import "./assets/css/codemirror.min.css";
+import "./assets/css/views_emails.css";
+import "./assets/css/date-time.css";
+
+import "@fortawesome/fontawesome-free/css/all.css";
+import "@fortawesome/fontawesome-free/js/all.js";
+
+//Register my components
+import list from "./views/list";
+import addcampaign from "./views/addCampaign"
+import addemail from "./views/addEmail"
+import addformnextcampaign from "./views/addFormNextCampaign"
+import formbuilder from "./views/formBuilder"
+import settings from "./views/globalSettings"
+//
+
 export default {
   name: "App",
   props: {
     component: String,
-    datas: Object
+    datas: Object,
+    actualLanguage: String,
+    manyLanguages: String,
+    coordinatorAccess: String,
   },
-  components: {},
+  components: {
+    list,
+    addcampaign,
+    addformnextcampaign,
+    addemail,
+    formbuilder,
+    settings,
+  },
   data: () => ({
     loading: false,
   }),
 
   created() {
     global.commit("initDatas", this.$props.datas);
-    this.$router.push({
-      name: this.$props.component
-    }).catch(()=>{});
+    global.commit("initCurrentLanguage", this.$props.actualLanguage);
+    global.commit("initManyLanguages", this.$props.manyLanguages);
+    global.commit("initCoordinatorAccess", this.$props.coordinatorAccess);
   },
 
   watch: {
