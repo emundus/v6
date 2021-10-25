@@ -11,6 +11,8 @@
     --error-color: #C31924;
     --box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     --border-color: #E3E5E8;
+    --text-color: #5E646E;
+    --text-light-color: #F2F2F3;
 }
 
 .btn-icon-text {
@@ -23,6 +25,26 @@
     border: 1px solid var(--border-color);
     border-radius: 4px;
     transition: all 0.3s ease-in-out;
+}
+
+.btn-primary-vue {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    color: var(--text-light-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    transition: all 0.3s ease-in-out;
+    width: fit-content;
+}
+
+.btn-primary-vue:hover {
+    color: var(--primary-color);
+    background-color: var(--text-light-color);
 }
 
 .vue-em-loader {

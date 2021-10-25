@@ -3,13 +3,15 @@
         <h2>Filtres</h2>
         <div class="filters">
             <div class="rows">
-                <FilterRow class="filter" v-for="(filter, index) in filters" :key="index"></FilterRow>
+                <FilterRow class="filter" v-for="(filter, index) in filters" :key="index" @removeFilter="removeFilter(index)"></FilterRow>
             </div>
             <div class="actions">
-                <button class="btn btn-primary" @click="addFilter">
-                    <i class="fa fa-plus"></i>
+                <div class="btn-primary-vue" @click="addFilter">
+                    <span class="material-icons">
+                        add
+                    </span>
                     Ajouter un filtre
-                </button>
+                </div>
             </div>
         </div>
     </div>
@@ -57,6 +59,15 @@ export default {
                 'value': ""
             });
         },
+        removeFilter(index) {
+            this.filters.splice(index, 1);
+        },
     },
 }
 </script>
+
+<style lang="scss" scoped>
+#filter-builder {
+    width: fit-content;
+}
+</style>
