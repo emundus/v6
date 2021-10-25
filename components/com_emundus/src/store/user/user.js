@@ -2,6 +2,7 @@ const state = {
     users: {},
     currentUser: 0,
     displayedUser: 0,
+    rights: {},
 };
 
 const getters = {
@@ -18,6 +19,9 @@ const actions = {
     setDisplayedUser({ commit }, user) {
         commit('setDisplayedUser', user);
     },
+    setAccessRights({ commit }, data) {
+        commit('setAccessRights', data);
+    }
 };
 
 const mutations = {
@@ -32,6 +36,9 @@ const mutations = {
     setDisplayedUser(state, user) {
         state.displayedUser = user;
     },
+    setAccessRights(state, data) {
+        state.rights[data.fnum] = data.rights;
+    }
 };
 
 export default{

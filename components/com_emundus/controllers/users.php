@@ -890,5 +890,22 @@ class EmundusControllerUsers extends JControllerLegacy {
 		echo json_encode(array('status' => true, 'user' => $user));
 		exit;
 	}
+
+	public function getaccessrights() 
+	{
+		$rights = [
+			'canDelete' => false,
+			'canExport' => false
+		];
+
+		$id = JFactory::getApplication()->input->getInt('id', null);
+		$fnum = JFactory::getApplication()->input->getString('fnum', null);
+
+		$rights['canDelete'] = EmundusHelperAccess::asAccessAction(4, 'd', $id, $fnum);
+		$rights['canExport'] = EmundusHelperAccess::asAccessAction(8, 'c', $id, $fnum);
+
+		echo json_encode(array('status' => true, 'rights' => $rights));
+		exit;
+	}
 	
 }

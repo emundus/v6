@@ -32,5 +32,19 @@ export default {
         } catch (e) {
             throw new Error(e);
         }
+    },
+    async getAccessRights(id, fnum) {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=users&task=getaccessrights',  {
+                params: {
+                    id: id,
+                    fnum: fnum
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
