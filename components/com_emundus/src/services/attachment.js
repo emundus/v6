@@ -78,5 +78,12 @@ export default {
     } catch (e) {
       throw e;
     }
+  },
+  exportAttachments(student, fnum, attachment_ids) {
+    return client().post('index.php?option=com_emundus&controller=application&task=exportpdf', {
+      'student_id': student,
+      'fnum': fnum,
+      'ids': attachment_ids,
+    });
   }
 };

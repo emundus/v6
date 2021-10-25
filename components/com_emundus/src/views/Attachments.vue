@@ -224,42 +224,11 @@ export default {
       this.canDelete = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canDelete : false;
     },
     async exportAttachments() {
-        // if (Array.isArray(checked) && checked.length){
-
-        // var url = "index.php?option=com_emundus&controller=application&task=exportpdf";
-
-        // $.ajax({
-        //     type:'post',
-        //     url: url,
-        //     dataType:'json',
-        //     data: {
-        //         'fnum': '<?php echo $this->fnum; ?>',
-        //         'student_id': '<?php echo $this->student_id; ?>',
-        //         'ids': checked
-        //     },
-        //     success: function(result) {
-        //         if (result.status) {
-        //             var link = window.open('', '_blank');
-        //             link.location.href = result.link;
-        //         } else {
-        //             Swal.fire({
-        //                 title: result.msg,
-        //                 type: 'error'
-        //             })
-        //         }
-        //     },
-        //     error: function (jqXHR) {
-        //         console.log(jqXHR.responseText);
-        //     }
-        // });
-
-        // } else {
-        //     Swal.fire({
-        //         title: Joomla.JText._('INFORMATION'),
-        //         text: Joomla.JText._('SELECT_AT_LEAST_ONE_FILE'),
-        //         type: 'warning'
-        //     })
-        // }
+      if (this.canExport) {
+        attachmentService.exportAttachments(this.displayedUser.id, this.displayedFnum, this.checkedAttachments).then((response) => {
+          console.log(response);
+        })
+      }
     },
     async deleteAttachments() {
       if (this.canDelete) {
