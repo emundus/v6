@@ -66,7 +66,7 @@
                       <input class="attachment-check" type="checkbox" @change="updateCheckedAttachments(attachment.aid)" :checked="checkedAttachments.includes(attachment.aid)">
                     </td>
                     <td class="td-document" @click="openModal(attachment)">{{ attachment.filename }}</td>
-                    <td>{{ formattedTimeDate(attachment.timedate) }}</td>
+                    <td>{{ formattedDate(attachment.timedate) }}</td>
                     <td class="desc">{{ attachment.description }}</td>
                     <td class="valid-state" :class="{
                       'success': attachment.is_validated == 1, 
@@ -74,8 +74,8 @@
                       }">
                       <span>{{ $t(`attachments.validation_states.${attachment.is_validated}`) }}</span>
                     </td>
-                    <td>{{ userName(attachment.modified_by) }}</td>
-                    <td>{{ formattedTimeDate(attachment.modified) }}</td>
+                    <td>{{ getUserNameById(attachment.modified_by) }}</td>
+                    <td>{{ formattedDate(attachment.modified) }}</td>
                 </tr>
             </tbody>
           </table>
@@ -135,7 +135,8 @@ import AttachmentEdit from '../components/AttachmentEdit.vue'
 import attachmentService from '../services/attachment.js';
 import userService from '../services/user.js';
 import fileService from '../services/file.js';
-import moment from 'moment';
+import mixin from '../mixins/mixin.js';
+
 
 export default {
   name: 'Attachments',
@@ -153,6 +154,7 @@ export default {
       required: true,
     }
   },
+  mixins: [mixin],
   data() {
     return {
       loading: true,
@@ -308,31 +310,6 @@ export default {
       this.$modal.hide('edit');
       this.selectedAttachment = {};
       this.$store.dispatch('attachment/setSelectedAttachment', {});
-    },
-
-    // Format Methods
-    formattedTimeDate(timedate) {
-      return moment(timedate).format('L');
-    },
-    userName(userId) {
-      let completeName = '';
-
-      if (userId && userId.length > 0) {
-        const user = this.$store.state.user.users[userId];
-        if (user) {
-          completeName = user.firstname + ' ' + user.lastname;
-        } else {
-          userService.getUserById(userId).then(data => {
-            if (data.status) {
-              completeName = data.user[0].firstname + ' ' + data.user[0].lastname;
-              data.user[0].id = userId;
-              this.$store.dispatch('user/setUsers', data.user);
-            }
-          });
-        }
-      }
-
-      return completeName;
     }
   },
   computed: {
