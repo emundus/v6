@@ -624,7 +624,7 @@ class EmundusModelEmails extends JModelList {
                 }
                 if ($elt['plugin'] == 'textarea') {
                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-                        $fabrikValues[$elt['id']][$fnum]['val'] = preg_replace('"','\"',$val['val']);
+                        $fabrikValues[$elt['id']][$fnum]['val'] = htmlentities($val['val'],ENT_QUOTES);
                     }
                 }
             }
