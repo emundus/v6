@@ -79,8 +79,8 @@
           name="edit"
           height="70%"
           width="70%"
-          minWidth="690"
-          minHeight="550"
+          :minWidth="690"
+          :minHeight="550"
           styles="display:flex;flex-direction:column;justify-content:center;align-items:center;">
           <div class="modal-head">
             <div class="flex-start">
@@ -327,7 +327,7 @@ export default {
   computed: {
     displayedAttachments() {
       return this.attachments.filter(attachment => {
-        return attachment.show == true || attachment.show == undefined;
+        return (attachment.show == true || attachment.show == undefined) && attachment.can_be_viewed;
       });
     },
     fnumPosition() {

@@ -1,0 +1,18 @@
+import client from './axiosClient';
+
+export default {
+    async getFilters(type, id) {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=application&task=getfilters', {
+                params: {
+                    type,
+                    id
+                },
+            });
+
+            return response.data;
+        } catch (e) {
+            throw e;
+        }
+    }
+}
