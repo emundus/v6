@@ -138,6 +138,7 @@ export default {
             // check if selected attchment is not an empty object
             if (Object.keys(this.$store.state.attachment.selectedAttachment).length !== 0) {
                 this.attachment = this.$store.state.attachment.selectedAttachment;
+                this.openMsg = false;
                 this.getPreview();
             }
         }
