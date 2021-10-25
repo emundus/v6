@@ -66,7 +66,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                         $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
                     }
                 } catch (Exception $e) {
-                    JLog::add('component/com_emundus_onboard/view/vue_jsonclean | Cannot find '.$language->sef.'language override file : ', JLog::ERROR, 'com_emundus');
+                    JLog::add('component/com_emundus_onboard/view/vue_jsonclean | Cannot find ' . $language->sef . 'language override file : ', JLog::ERROR, 'com_emundus');
                     continue;
                 }
             }
@@ -99,7 +99,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 $show_title->value = $form->getLabel();
                 $show_title->label = new stdClass;
                 foreach ($languages as $language) {
-                    $show_title->label->{$language->sef} = $formbuilder->getTranslation($form->form->label,$language->lang_code);
+                    $show_title->label->{$language->sef} = $formbuilder->getTranslation($form->form->label, $language->lang_code);
                 }
                 $returnObject->show_title = $show_title;
             else :
@@ -117,7 +117,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 $returnObject->intro_value = $form->getIntro();
                 $returnObject->intro = new stdClass;
                 foreach ($languages as $language) {
-                    $returnObject->intro->{$language->sef} = $formbuilder->getTranslation($form->form->intro,$language->lang_code);
+                    $returnObject->intro->{$language->sef} = $formbuilder->getTranslation($form->form->intro, $language->lang_code);
                 }
                 $returnObject->intro_raw = strip_tags($form->form->intro);
             endif;
@@ -143,19 +143,29 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 $query = $db->getQuery(true);
 
                 $query
-                    ->select('fg.label,ffg.ordering')
-                    ->from($db->quoteName('#__fabrik_formgroup','ffg'))
-                    ->leftJoin($db->quoteName('#__fabrik_groups','fg').' ON '.$db->quoteName('fg.id').' = '.$db->quoteName('ffg.group_id'))
+                    ->select('fg.label,ffg.ordering,fg.params')
+                    ->from($db->quoteName('#__fabrik_formgroup', 'ffg'))
+                    ->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('ffg.group_id'))
                     ->where($db->quoteName('ffg.group_id') . ' = ' . $db->quote($GroupProperties->id));
 
                 $db->setQuery($query);
                 $group_infos = $db->loadObject();
+
+
                 ${"group_" . $GroupProperties->id}->ordering = (int)$group_infos->ordering;
                 ${"group_" . $GroupProperties->id}->group_showLegend = $GroupProperties->title;
                 ${"group_" . $GroupProperties->id}->group_tag = $group_infos->label != '' ? $group_infos->label : strtoupper($formbuilder->replaceAccents($GroupProperties->name));
+
+                ${"group_" . $GroupProperties->id}->group_intro_tag = json_decode($group_infos->params)->intro != '' ? json_decode($group_infos->params)->intro : strtoupper($formbuilder->replaceAccents(explode("_",$GroupProperties->name)[0].'_INTRO_'.explode("_",$GroupProperties->name)[1].'_'.explode("_",$GroupProperties->name)[2]));
+
+
                 ${"group_" . $GroupProperties->id}->label = new stdClass;
                 foreach ($languages as $language) {
-                    ${"group_" . $GroupProperties->id}->label->{$language->sef} = $formbuilder->getTranslation($group_infos->label,$language->lang_code);
+                    ${"group_" . $GroupProperties->id}->label->{$language->sef} = $formbuilder->getTranslation($group_infos->label, $language->lang_code);
+                }
+                ${"group_" . $GroupProperties->id}->intros = new stdClass;
+                foreach ($languages as $language) {
+                    ${"group_" . $GroupProperties->id}->intros->{$language->sef} = $formbuilder->getTranslation(json_decode($group_infos->params)->intro, $language->lang_code);
                 }
 
                 if ($GroupProperties->class) :
@@ -178,7 +188,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
 
                 $elements = new stdClass();
 
-                if(sizeof($groupElement) > 0) {
+                if (sizeof($groupElement) > 0) {
                     $display_group = false;
                 } else {
                     $display_group = true;
@@ -188,15 +198,15 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                     $this->element = $element;
                     $d_element = $this->element;
                     $o_element = $d_element->element;
-                    if(in_array($o_element->name,['id','user','time_date','fnum','date_time'])){
+                    if (in_array($o_element->name, ['id', 'user', 'time_date', 'fnum', 'date_time'])) {
                         ${"group_" . $GroupProperties->id}->cannot_delete = true;
-                        if(!$display_group) {
+                        if (!$display_group) {
                             continue;
                         }
                     } else {
                         $display_group = true;
                     }
-                    if($o_element->plugin != 'emundusreferent' && !(int)$o_element->hidden) {
+                    if ($o_element->plugin != 'emundusreferent' && !(int)$o_element->hidden) {
                         //if($o_element->plugin != 'calc') {
                         $el_parmas = json_decode($o_element->params);
                         $content_element = $element->preRender('0', '1', 'bootstrap');
@@ -227,7 +237,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                         ${"element" . $o_element->id}->label_tag = $o_element->label;
                         ${"element" . $o_element->id}->label = new stdClass;
                         foreach ($languages as $language) {
-                            ${"element" . $o_element->id}->label->{$language->sef} = $formbuilder->getTranslation(${"element" . $o_element->id}->label_tag,$language->lang_code);
+                            ${"element" . $o_element->id}->label->{$language->sef} = $formbuilder->getTranslation(${"element" . $o_element->id}->label_tag, $language->lang_code);
                         }
                         ${"element" . $o_element->id}->labelToFind = $element->label;
                         ${"element" . $o_element->id}->publish = $element->isPublished();
@@ -297,7 +307,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                     ${"group_" . $GroupProperties->id}->hidden_group = 1;
                 }
 
-                if($display_group) {
+                if ($display_group) {
                     $Groups->{"group_" . $GroupProperties->id} = ${"group_" . $GroupProperties->id};
                 }
             endforeach;
@@ -313,8 +323,8 @@ class EmundusonboardViewForm extends FabrikViewFormBase
              * *Contient toute les informations
              */
             echo json_encode($returnObject);
-        } catch(Exception $e){
-            JLog::add('component/com_emundus_onboard/views/view.vue_jsonclean | Cannot getting the form datas : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/views/view.vue_jsonclean | Cannot getting the form datas : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return 0;
         }
     }

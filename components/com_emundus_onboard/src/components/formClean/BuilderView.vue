@@ -85,9 +85,9 @@
                                 <a v-on:click="displayHideGroup(group)" class="action-submenu">
                                   {{translations.DisplayHide}}
                                 </a>
-<!--                                <a v-on:click="enableUpdatingIntroGroup(group)" class="action-submenu">
+                                <a v-on:click="enableUpdatingIntroGroup(group)" class="action-submenu">
                                   {{translations.EditIntro}}
-                                </a>-->
+                                </a>
                                 <a @click="deleteAGroup(group,index_group)" class="action-submenu" v-if="files == 0 && !group.cannot_delete" :title="translations.Delete">
                                   {{translations.Delete}}
                                 </a>
@@ -123,12 +123,26 @@
                 </div>
                 <translation :label="group.label" :actualLanguage="actualLanguage" v-if="translate.label_group"></translation>
               </div>
-              <div v-if="group.group_intro" class="groupintro" v-html="group.group_intro"></div>
+              <!--<div v-if="group.group_intro" class="groupintro" v-html="group.group_intro"></div>-->
+              <div v-if="group.group_intro " class="groupintro" v-html="group.group_intro"></div>
 
               <template v-if="typeof group.elts !== 'undefined'">
                 <div v-if="group.elts.length == 0" class="no-elements-tip">{{ translations.NoElementsTips }}</div>
               </template>
-
+              <modalEditGroup
+                  :ID="group.group_id"
+                  :gid="group.group_id"
+                  :intros="group.intros"
+                  :intro_tag="group.group_intro_tag"
+                  :group="group"
+                  @reloadGroup="reloadGroup($event,group)"
+                  :manyLanguages="manyLanguages"
+                  :actualLanguage="actualLanguage"
+                  @modalClosed="$emit('modalClosed')"
+                  @show="show"
+                  :key="keyElements['group' + group.group_id]"
+                  :profileId="prid"
+              />
               <div class="elements-block" v-show="openGroup[group.group_id]">
                 <draggable
                         handle=".handle"
@@ -138,6 +152,7 @@
                         group="items"
                         class="draggable-span">
                   <transition-group :name="'slide-down'" type="transition">
+
                   <div v-for="(element,index) in group.elts"
                        v-bind:key="element.id"
                        v-show="element.hidden === false"
@@ -159,6 +174,7 @@
                             :key="keyElements['element' + element.id]"
                             :profileId="prid"
                     />
+
                     <modalDuplicateElement
                             :ID="element.id"
                             :currentGroup="group.group_id"
@@ -246,6 +262,7 @@ import axios from "axios";
 import datePicker from "vue-bootstrap-datetimepicker";
 import draggable from "vuedraggable";
 import modalEditElement from "./Modal";
+import modalEditGroup from "./ModalEditGroup"
 import modalDuplicateElement from "./ModalDuplicateElement";
 import Translation from "@/components/translation";
 
@@ -277,6 +294,7 @@ export default {
     datePicker,
     draggable,
     modalEditElement,
+    modalEditGroup,
     modalDuplicateElement,
     Translation
   },
@@ -785,6 +803,7 @@ export default {
     // Group Update
     updateLabelGroup(group) {
       let labels = group.label;
+
       axios({
         method: "post",
         url:
@@ -1230,6 +1249,15 @@ export default {
         }, 100);
       }
     },
+    reloadGroup(event,group) {
+      this.orderedGroups.forEach(g=>{
+        if(g.group_id==group.group_id){
+            g.group_intro=group.group_intro;
+            g.intros=group.intros;
+        }
+      });
+
+    },
     enableTranslationPage(pid) {
       this.translate.label_page = !this.translate.label_page;
       if(this.translate.label_page) {
@@ -1265,6 +1293,9 @@ export default {
     },
     enableUpdatingIntroGroup(group) {
 
+      this.repeat = true;
+      this.$emit('modalOpen');
+      this.$modal.show('modalEditGroup' + group.group_id);
     },
     enableTranslationGroup(gid) {
       this.translate.label_group = !this.translate.label_group;
@@ -1302,6 +1333,7 @@ export default {
       });*/
       this.draggable = true;
     },
+
     //
 
     // Draggable trigger

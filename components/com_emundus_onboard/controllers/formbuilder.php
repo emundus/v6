@@ -148,12 +148,13 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $page = $jinput->getInt('page');
         $labelTofind = $jinput->getString('labelTofind');
         $newLabel = $jinput->getRaw('NewSubLabel');
+        $intro=$jinput->getString('intro');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
 	        $result = 0;
 	        $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $results = $m_form->formsTrad($labelTofind, $newLabel, $element, $group, $page);
+            $results = $m_form->formsTrad($labelTofind, $newLabel, $element, $group, $page,$intro);
             $changeresponse = array('status' => 1, 'msg' => 'Traductions effectués avec succès', 'data' => $results);
         }
 
@@ -198,6 +199,25 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
          echo json_encode((object)$changeresponse);
          exit;
      }
+    public function updategroupintrowithouttranslation() {
+        $user = JFactory::getUser();
+        $m_form = $this->model;
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $gid = $jinput->getInt('gid');
+            $group_intro = $jinput->getRaw('group_intro');
+
+
+            $changeresponse = $m_form->updateGroupIntroWithoutTranslation($gid,$group_intro);
+        }
+
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
 
      public function updatepagelabelwithouttranslation() {
          $user = JFactory::getUser();
@@ -419,6 +439,23 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $changeresponse = $m_form->deleteGroup($gid);
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
+    public function retrieveGroup() {
+        $user = JFactory::getUser();
+        $m_form = $this->model;
+
+        $jinput = JFactory::getApplication()->input;
+        $gid = $jinput->getInt('gid');
+        //echo "hello ".$gid;
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $changeresponse = $m_form->retrieveOneGroup($gid);
         }
         echo json_encode((object)$changeresponse);
         exit;

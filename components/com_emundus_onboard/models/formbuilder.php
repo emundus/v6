@@ -186,7 +186,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $locallang
      * @param $NewSubLabel
      */
-    function formsTrad($labelTofind, $NewSubLabel, $element = null, $group = null, $page = null) {
+    function formsTrad($labelTofind, $NewSubLabel, $element = null, $group = null, $page = null, $intro=null) {
         try {
             $db = $this->getDbo();
             $query = $db->getQuery(true);
@@ -198,13 +198,28 @@ class EmundusonboardModelformbuilder extends JModelList {
                     ->where($db->quoteName('id') . ' = ' . $db->quote($element));
                 $db->setQuery($query);
                 $db->execute();
-            } elseif ($group != null && $new_key != false){
+            } elseif ($group != null && $new_key != false && $intro ==null){
                 $query->update($db->quoteName('#__fabrik_groups'))
                     ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($group));
                 $db->setQuery($query);
                 $db->execute();
-            } elseif ($page != null && $new_key != false){
+            } elseif ($group != null && $new_key != false && $intro !=null){
+
+                $query->select('params')
+                    ->from($db->quoteName('#__fabrik_groups'))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($group));
+                $db->setQuery($query);
+                $group_params = json_decode(($db->loadObject())->params);
+                $group_params->intro=$new_key;
+                $query->clear();
+                $query->update($db->quoteName('#__fabrik_groups'))
+                    ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($group_params)))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($group));
+                $db->setQuery($query);
+                $db->execute();
+            }
+            elseif ($page != null && $new_key != false){
                 $query->update($db->quoteName('#__fabrik_forms'))
                     ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($page));
@@ -901,6 +916,22 @@ class EmundusonboardModelformbuilder extends JModelList {
             return false;
         }
     }
+    function updateGroupIntroWithoutTranslation($gid,$params) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+        try {
+            $query->update($db->quoteName('#__fabrik_groups'))
+
+                ->set($db->quoteName('params') . ' = ' . $db->quote($params))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+
+            return $db->execute();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/formbuilder | Error groups intro  ' . $gid . ' without translation : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 
     function updatePageWithoutTranslation($pid,$label) {
         $db = $this->getDbo();
@@ -1528,8 +1559,11 @@ class EmundusonboardModelformbuilder extends JModelList {
             $groupid = $db->insertid();
 
             $tag = 'GROUP_' . $fid . '_' . $groupid;
+            $intro_tag='GROUP_INTRO_'. $fid. '_'.$groupid;
+
 
             $this->translate($tag,$label);
+            $this->translate($intro_tag,'');
 
             $query->clear()
                 ->update($db->quoteName('#__fabrik_groups'))
@@ -1580,15 +1614,23 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             $label_fr = $this->getTranslation($tag, 'fr-FR');
             $label_en = $this->getTranslation($tag, 'en-GB');
+            $intro_fr= $this->getTranslation($intro_tag, 'fr-FR');
+            $intro_en=  $this->getTranslation($intro_tag, 'en-GB');
+
 
             return array(
                 'elements' => array(),
                 'group_id' => $groupid,
                 'group_tag' => $tag,
+                'group_intro_tag'=>$intro_tag,
                 'group_showLegend' => $this->getJTEXT("GROUP_" . $fid . "_" . $groupid),
                 'label' => array(
                     'fr' => $label_fr,
                     'en' => $label_en,
+                ),
+                'intro'=> array(
+                    'fr'=> $intro_fr,
+                    'en'=> $intro_en
                 ),
                 'ordering' => $order,
                 'formid' => $fid
@@ -3327,6 +3369,40 @@ this.set(words.join(&quot; &quot;));
             return true;
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot enable repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function retrieveOneGroup($gid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('*')
+                ->from($db->quoteName('#__fabrik_groups'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $group = $db->loadObject();
+
+            // Disable group repeat
+           /* $query->clear()
+                ->select('fl.db_table_name as dbtable')
+                ->from($db->quoteName('#__fabrik_formgroup','fg'))
+                ->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('fg.form_id'))
+                ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $group_params = json_decode($group->params);
+            $group_params->repeat_group_button = 0;
+
+            $query->clear()
+                ->update($db->quoteName('#__fabrik_groups'))
+                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($group_params)))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);*/
+           // return $db->execute();
+            return $group;
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot disable repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
