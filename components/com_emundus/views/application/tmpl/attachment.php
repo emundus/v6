@@ -15,10 +15,10 @@ defined('_JEXEC') or die('Restricted access');
 $offset = JFactory::getConfig()->get('offset');
 JFactory::getSession()->set('application_layout', 'attachment');
 
-$can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this->fnum);
-$can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
+// $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this->fnum);
+// $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
 
-// echo JHtml::_('content.prepare', '{loadposition filter-builder}');
+$lang = JFactory::getLanguage();
 ?>
 
 <div id="em-vue-filter-builder"></div>
@@ -26,6 +26,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
 <div id="em-application-attachment"
     user=<?php echo $this->_user->id ?>
     fnum=<?php echo $this->fnum ?>
+    lang=<?php echo $lang->getTag() ?>
 >
 </div>
 
