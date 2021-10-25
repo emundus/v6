@@ -226,7 +226,9 @@ export default {
     async exportAttachments() {
       if (this.canExport) {
         attachmentService.exportAttachments(this.displayedUser.id, this.displayedFnum, this.checkedAttachments).then((response) => {
-          console.log(response);
+          if (response.data.status == true) {
+            window.open(response.data.link, '_blank');
+          }
         })
       }
     },

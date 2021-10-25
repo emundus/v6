@@ -80,10 +80,17 @@ export default {
     }
   },
   exportAttachments(student, fnum, attachment_ids) {
-    return client().post('index.php?option=com_emundus&controller=application&task=exportpdf', {
-      'student_id': student,
-      'fnum': fnum,
-      'ids': attachment_ids,
+    const formData = new FormData();
+    formData.append('student_id', student);
+    formData.append('fnum', fnum);
+    attachment_ids.forEach(id => {
+      formData.append('ids[]', id);
+    });
+
+    return client().post('index.php?option=com_emundus&controller=application&task=exportpdf', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
     });
   }
 };
