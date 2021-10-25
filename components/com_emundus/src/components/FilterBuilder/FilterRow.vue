@@ -1,19 +1,23 @@
 <template>
     <div class="filter-row">
-        <label for="filter-name">Filtres</label>
+        <!-- <label for="filter-name">Filtres</label> -->
         <select name="filter-name" @change="changeFilter">
             <option v-for="name in names" :key="name.id" :value="name.id">{{name.label}}</option>
         </select>
         
-        <label for="filter-action">Actions</label>
+        <!-- <label for="filter-action">Actions</label> -->
         <select name="filter-action">
             <option v-for="(action, key) in actions" :key="key" :value="key">{{action}}</option>
         </select>
 
-        <label for="filter-value">Valeurs</label>
+        <!-- <label for="filter-value">Valeurs</label> -->
         <select name="filter-value">
             <option v-for="(value, key) in values" :key="key" :value="key">{{value}}</option>
         </select>
+
+        <span class="material-icons delete" @click="$emit('removeFilter')">
+            clear
+        </span>
     </div>
 </template>
 
@@ -55,3 +59,17 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+.filter-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+
+    .delete {
+        cursor: pointer;
+    }
+}
+</style>
