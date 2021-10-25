@@ -1,6 +1,10 @@
 <template>
-    <div ref="a-preview" id="attachment-preview" :class="{'overflow-x': overflowX, 'overflow-y': overflowY}">
+<div id="em-attachment-preview">
+    <div ref="a-preview" id="attachment-preview" :class="{'overflow-x': overflowX, 'overflow-y': overflowY}"></div>
+    <div id="msg" :class="{'active': msg && openMsg}"> 
+        <p>{{ msg }}</p>
     </div>
+</div>
 </template>
 
 <script>
@@ -13,7 +17,9 @@ export default {
             preview: '',
             overflowX: false,
             overflowY: false,
-            style: ''
+            style: '', 
+            msg: '',
+            openMsg: false
         }
     },
     mounted() {
@@ -37,10 +43,20 @@ export default {
                 this.overflowX = data.overflowX; 
                 this.overflowY = data.overflowY;
                 this.style = data.style;
+
+                if (data.msg) {
+                    this.msg = data.msg;
+                    this.openMsg = true;
+
+                    setTimeout(() => {
+                        this.openMsg = false;
+                    }, 3000);
+                }
             } else {
                 this.overflowX = false; 
                 this.overflowY = false;
-                this.preview = '';
+                this.preview = data.content;
+                this.msg = '';
             }
 
             if (this.$refs['a-preview'].shadowRoot === null)  {
@@ -130,18 +146,43 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#attachment-preview {
-    height: 100%;
+#em-attachment-preview {
     width: 60%;
+    height: 100%;
     overflow: hidden;
-    background-color: var(--grey-bg-color);
+    position: relative;
 
-    &.overflow-x {
-        overflow-x: auto;
+    #attachment-preview {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        background-color: var(--grey-bg-color);
+
+        &.overflow-x {
+            overflow-x: auto;
+        }
+
+        &.overflow-y {
+            overflow-y: auto;
+        }
     }
 
-    &.overflow-y {
-        overflow-y: auto;
+    #msg {
+        position: absolute;
+        top: 20px;
+        left: 8px;
+        padding: 16px;
+        width: calc(100% - 26px);
+        background-color: var(--warning-bg-color);
+        color: var(--warning-color);
+        opacity: 0;
+        z-index: -1;
+        transition: all .3s;
+
+        &.active {
+            opacity: 1;
+            z-index: 2;
+        }
     }
 }
 </style>
