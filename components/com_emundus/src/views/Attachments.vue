@@ -30,14 +30,14 @@
                   {{ $t('filter') }}
                 </span>
               </div> -->
-              <div class="btn-icon-text" @click="exportAttachments">
+              <!-- <div class="btn-icon-text" @click="exportAttachments">
                 <span class="material-icons">
                   file_upload
                 </span>
                 <span>
                   {{ $t('export') }}
                 </span>
-              </div>
+              </div> -->
               <span class="material-icons" @click="deleteAttachments">
                 delete_outlined
               </span>
