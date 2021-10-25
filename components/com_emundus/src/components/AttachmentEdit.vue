@@ -26,15 +26,15 @@
             <div class="non-editable-data">
                 <div>
                     <span>{{ $t('attachments.send_date') }}</span>
-                    <span>{{ attachment.timedate }}</span>
+                    <span>{{ formattedDate(attachment.timedate) }}</span>
                 </div>
                 <div>
                     <span>{{ $t('attachments.modified_by') }}</span>
-                    <span>{{ attachment.modified_by }}</span>
+                    <span>{{ getUserNameById(attachment.modified_by) }}</span>
                 </div>
                 <div>
                     <span>{{ $t('attachments.modification_date') }}</span>
-                    <span>{{ attachment.modified }}</span>
+                    <span>{{ formattedDate(attachment.modified) }}</span>
                 </div>
                 <div v-if="attachment.file_size">
                     <span>{{ $t('attachments.file_size') }}</span>
@@ -50,6 +50,7 @@
 
 <script>
 import attachmentService from '../services/attachment';
+import mixin from '../mixins/mixin.js';
 
 export default {
     name: 'AttachmentEdit',
@@ -59,6 +60,7 @@ export default {
             required: true
         }
     },
+    mixins: [mixin],
     data() {
         return {
             attachment: {},

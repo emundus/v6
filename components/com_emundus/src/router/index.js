@@ -17,21 +17,19 @@ export default new Router({
         path: '/',
         name: 'app',
         component: App,
-        children: [
-          {
-            path: '/attachments',
-            name: 'attachments',
-            component: Attachments,
-            props: route => addPropsFromRoute(route),
-          },
-          {
-            path: '/attachments/:fnum',
-            name: 'attachments',
-            component: Attachments,
-            props: route => addPropsFromRoute(route),
-          },
-        ]
-      }
+      },
+      {
+        path: '/attachments',
+        name: 'attachments',
+        component: Attachments,
+        props: route => addPropsFromRoute(route),
+      },
+      // {
+      //   path: '/attachments/:fnum',
+      //   name: 'attachments',
+      //   component: Attachments,
+      //   props: route => addPropsFromRoute(route),
+      // },
     ],
 });
   
