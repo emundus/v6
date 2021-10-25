@@ -1,7 +1,7 @@
 <?php
 defined('_JEXEC') || die;
 //JHTML::_('behavior.calendar');
-if (version_compare(JVERSION, '3.10.0', 'ge')) {
+if (DropfilesBase::isJoomla40()) {
     $doc = JFactory::getDocument();
     $doc->addScript(JURI::root() . 'components/com_dropfiles/assets/js/chosen.jquery.min.js');
     $doc->addStyleSheet(JURI::root() . 'components/com_dropfiles/assets/css/chosen.css');

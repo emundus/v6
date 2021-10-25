@@ -2729,11 +2729,10 @@ table.restable tbody tr.file td.type {
         background-color: transparent;
         background: transparent;
         border: none;
-        height: 20px;
-        line-height: 20px;
-        vertical-align: sub;
-        //vertical-align: text-bottom;
-        margin: 0 2px 0 0;
+        line-height: 24px;
+        display: inline-block;
+        vertical-align: middle;
+        margin: auto 0;
         &.icon-save,
         &.icon-apply,
         &.icon-cancel {
@@ -2743,6 +2742,14 @@ table.restable tbody tr.file td.type {
           width: 20px !important;
           height: 20px !important;
           vertical-align: middle;
+        }
+        &:not(.toolbar-title) {
+          margin: 0 1px 1px 0;
+          height: 20px;
+          width: 26px;
+        }
+        &.icon-chart-options {
+          margin-bottom: 3px;
         }
       }
       &:hover {

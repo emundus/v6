@@ -56,6 +56,18 @@ h6 {
   font-weight: 700;
 }
 
+.view-list, .g-back-office-emundus-tableau {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #000;
+  }
+}
+
+
 h1 {
   font-size: 2em;
   position: relative;
@@ -460,7 +472,8 @@ input[type="text"],
 }
 
 .view-list #g-container-main {
-  width: calc(100% - 75px) !important;
+    padding-left: 5% !important;
+    padding-right: 5% !important;
 }
 
 .view-list #g-container-main .g-container {
@@ -584,6 +597,18 @@ input[type="text"],
 
 /* FOOTER */
 
+.em-container-footer-cand .em-col-3-footer a:hover {
+  color: $base-secondary-color !important;
+  text-decoration: none !important;
+  font-weight: 500 ;
+}
+
+.em-container-footer-gest .em-block-footer a:hover {
+  color: $dark-blue !important;
+  text-decoration: none !important;
+  font-weight: 500 ;
+}
+
 .footer-rgpd {
   align-items: center;
   display: flex;
@@ -632,13 +657,13 @@ input[type="text"],
 
 footer#g-footer {
   background-color: #fff;
-  border-top: unset;
+  border-top: 1px solid #E3E5E8;
   bottom: 0;
   width: 100vw;
   position: relative;
   z-index: 1;
-  padding-left: 75px;
-  padding-right: 75px;
+  padding-left: 20px;
+  padding-right: 20px;
   margin-top: 75px !important;
   transition: all 0.3s ease-in-out;
 }
@@ -2019,20 +2044,31 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   #member-profile .controls button.btn.btn-primary.validate {
-    background: $dark-blue;
-    border: 2px solid $dark-blue;
+    background: $base-primary-color;
+    border: 1px solid $base-primary-color;
     text-shadow: none;
     text-transform: initial;
-    border-radius: 25px !important;
+    border-radius: 4px !important;
 
     &:hover,
     &:focus,
     &:active {
       background-color: transparent;
-      color: $dark-blue;
-      border: 2px solid $dark-blue;
+      color: $base-primary-color;
+      border: 1px solid $base-primary-color;
     }
   }
+
+#header-c #userDropdownMenu a.edit-button-user {
+  background: $base-primary-color;
+  border: 1px solid $base-primary-color;
+  &:hover,
+  &:focus,
+  &:active {
+    color: $base-primary-color !important;
+    border: 1px solid $base-primary-color;
+  }
+}
 
   .view-profile {
     #g-navigation .header-c .open > .dropdown-menu .chzn-single {
@@ -2043,24 +2079,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       }
     }
   }
-
-  #member-profile .controls a.btn[title="Annuler"] {
-    background: transparent;
-    border: 2px solid grey;
-    color: grey;
-    text-shadow: none;
-    text-transform: initial;
-    border-radius: 25px;
-
-    &:hover,
-    &:focus,
-    &:active {
-      background-color: grey;
-      color: #fff;
-      border: 2px solid grey;
-    }
-  }
-
 
   .btn-group.pull-right #em-close-file.btn.btn-danger.btn-xxl {
     background: transparent;
@@ -2321,10 +2339,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .alert {
     a {
-      font-size: 16px !important;
+      font-size: 20px !important;
 
       &:hover {
-        font-size: 16px;
+        font-size: 20px;
       }
     }
   }

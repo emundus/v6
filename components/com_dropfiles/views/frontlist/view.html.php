@@ -40,9 +40,12 @@ class DropfilesViewFrontlist extends JViewLegacy
         }
 
         // Get active menu
+        $this->menuItemParams = null;
         $currentMenuItem = $app->getMenu()->getActive();
-        // Get params for active menu
-        $this->menuItemParams = $currentMenuItem->getParams();
+        if ($currentMenuItem) {
+            // Get params for active menu
+            $this->menuItemParams = $currentMenuItem->getParams();
+        }
 
         $modelFiles = JModelLegacy::getInstance('Frontfiles', 'dropfilesModel');
         $modelConfig = JModelLegacy::getInstance('Frontconfig', 'dropfilesModel');
@@ -239,7 +242,7 @@ class DropfilesViewFrontlist extends JViewLegacy
             ));
 
             if (!empty($result[0])) {
-                if (version_compare(JVERSION, '3.10.0', 'ge')) {
+                if (DropfilesBase::isJoomla40()) {
                     JHtml::_('behavior.core');
                 } else {
                     JHtml::_('behavior.framework', true);
