@@ -4271,13 +4271,13 @@ class EmundusModelApplication extends JModelList
 
                 if (isset($params['database_join_display_type'])) {
                     $actions = [
-                        'is' => 'est égal à',
-                        'isnt' => 'n\'est pas égal à',
+                        '=' => 'est égal à',
+                        '!=' => 'n\'est pas égal à',
                     ];
                 } else {
                     $actions = [
-                        'is' => 'est égal à',
-                        'isnt' => 'n\'est pas égal à',
+                        '=' => 'est égal à',
+                        '!=' => 'n\'est pas égal à',
                         'contains' => 'inclus'
                     ];
                 }
@@ -4285,8 +4285,8 @@ class EmundusModelApplication extends JModelList
 
             case 'textarea':
                 $actions = [
-                    'is' => 'est égal à',
-                    'isnt' => 'n\'est pas égal à',
+                    '=' => 'est égal à',
+                    '!=' => 'n\'est pas égal à',
                     'contains' => 'inclus'
                 ];
                 break;
@@ -4297,8 +4297,8 @@ class EmundusModelApplication extends JModelList
             case 'jdate': 
             case 'radiobutton':
                 $actions = [
-                    'is' => 'est égal à',
-                    'isnt' => 'n\'est pas égal à',
+                    '=' => 'est égal à',
+                    '!=' => 'n\'est pas égal à',
                 ];
                 break;
             default:
@@ -4400,5 +4400,109 @@ class EmundusModelApplication extends JModelList
         }
 
         return $values;
+    }
+
+    /**
+     * Mount SQL query based on filters values
+     * @param int $listId
+     * @param array $data
+     * @return string
+     */
+    public function mountQuery($listId, $data) 
+    {
+        $return = "";
+
+        // get table from fabrik list id
+        $table = $this->getTableFromFabrikList($listId);
+
+        $select = "SELECT *";
+        $from = "FROM $table";
+        $joins = "";
+        $where = "";
+
+        foreach($data['groups'] as $key => $group) {
+            if ($key == 0) {
+                // parent group
+                foreach($group['filters'] as $filter) {
+                    
+                }
+            } else {
+                // sub groups
+
+                $nbFilters = count($group['filters']);
+                $tmp = "";
+                foreach ($group['filters'] as $fkey => $filter) {
+                    if ($fkey == 0) {
+                        $tmp .= " (";
+                    }
+                    
+                    // filter id
+                    // Handle element type
+                    $element = $this->getFabrikElementById($filter['element_id']); 
+
+                    // filter action filter value
+                    $tmp .= $filter['id'] . " ";
+
+                    if ($filter['action'] == 'contains') {
+                        $tmp .= "LIKE '%{$filter['value']}%'";
+                    } elseif ($filter['action'] == '!=') {
+                        $tmp .= "!= '{$filter['value']}'";
+                    } else {
+                        $tmp .= "= '{$filter['value']}'";
+                    }
+
+                    // check if fkey is not last filter
+                    if ($fkey < $nbFilters - 1) {
+                        $tmp .= " " . $group['relation'] . " ";
+                    } else {
+                        $tmp .= ")";
+                    }
+                }
+            }
+        }
+
+        return $select . $from . $joins . $where;
+    }
+
+    /**
+     * Get table from fabrik list id
+     * @param int $listId
+     * @return string
+     */
+    private function getTableFromFabrikList($listId) 
+    {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select(array('el.db_table_name'))
+        ->from($db->quoteName('#__fabrik_lists', 'el'))
+        ->where("el.id = $listId");
+
+        $db->setQuery($query);
+
+        return $db->loadResult();
+    }
+
+    /**
+     * Get element from fabrik list id
+     * @param int $elementId
+     * @return array
+     */
+    public function getFabrikElementById($id)
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if (!empty($eid)) {
+            $query->clear()
+                ->select('jfe.id, jfe.name, jfe.label, jfe.group_id')
+                ->from($db->quoteName('#__fabrik_elements', 'jfe'))
+                ->where($db->quoteName('jfe.id') . '=' . (int)$eid);
+
+            $db->setQuery($query);
+            return $db->loadObject();
+        } else {
+            return false;
+        }
     }
 }

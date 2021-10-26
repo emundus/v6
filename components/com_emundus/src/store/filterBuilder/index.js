@@ -22,14 +22,14 @@ export default new Vuex.Store({
         updateQueryFilters(state, data) {
             if (!state.queryFilters.groups[data.group]) {
                 state.queryFilters.groups[data.group] = {
+                    relation: 'AND',
                     filters: {}
                 };
             }
 
-            if(!state.queryFilters.groups[data.group].filters) {
+            if (!state.queryFilters.groups[data.group].filters) {
                 state.queryFilters.groups[data.group].filters = {};
             }
-
 
             state.queryFilters.groups[data.group].filters[data.id] = data.filter;
         },
@@ -38,6 +38,13 @@ export default new Vuex.Store({
         },
         removeQueryFilter(state, data) {
             delete state.queryFilters.groups[data.group].filters[data.id];
+        },
+        updateAndOr(state, data) {
+            if (data.id) {
+                state.queryFilters.groups[data.group].relation = data.relation;
+            } else {
+                state.queryFilters.relation = data.and_or;
+            }
         }
     },
     actions: {
@@ -52,6 +59,9 @@ export default new Vuex.Store({
         },
         removeQueryFilter({ commit }, data) {
             commit('removeQueryFilter', data)
+        },
+        updateAndOr({ commit }, data) {
+            commit('updateAndOr', data)
         }
     },
     modules: {

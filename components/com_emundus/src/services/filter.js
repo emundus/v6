@@ -14,5 +14,19 @@ export default {
         } catch (e) {
             throw e;
         }
+    },
+    async mountQuery(id, filters) {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=application&task=mountquery', {
+                params: {
+                    id: id,
+                    filters: filters
+                },
+            });
+
+            return response.data;
+        } catch (e) {
+            throw e;
+        }
     }
 }
