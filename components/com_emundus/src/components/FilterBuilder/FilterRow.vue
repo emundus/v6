@@ -27,6 +27,12 @@ import translateMixin from '../../mixins/translate';
 
 export default {
     mixins: [translateMixin],
+    props: {
+        group: {
+            type: Number,
+            default: 0
+        }
+    },
     data() {
         return {
             selectedFilter: null,
