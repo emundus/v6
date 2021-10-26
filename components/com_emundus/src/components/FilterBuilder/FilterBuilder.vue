@@ -12,19 +12,20 @@
         <div class="elements">
           <div
             class="element"
-            v-for="(element, index) in orderedElements"
-            :key="index"
+            v-for="element in orderedElements"
+            :key="element.type == 'filter' ? element.id : element.group"
           >
             <FilterRow
               v-if="element.type == 'filter'"
               class="filter-row"
-              @removeFilter="removeElement(index)"
+              @removeFilter="removeFilter($event)"
               :group="0"
+              :id="element.id"
             ></FilterRow>
             <FilterGroup
               v-if="element.type == 'group'"
               :id="element.group"
-              @removeGroup="removeElement(index)"
+              @removeGroup="removeGroup($event)"
             ></FilterGroup>
           </div>
         </div>
@@ -38,6 +39,14 @@
           <span class="material-icons"> add </span>
           Ajouter un filtre
         </div>
+      </div>
+    </div>
+    <div class="actions">
+      <div class="btn-primary-vue" @click="addFilter">
+        Annuler
+      </div>
+      <div class="btn-primary-vue" @click="applyFilters">
+        Appliquer les filtres
       </div>
     </div>
   </div>
@@ -80,10 +89,14 @@ export default {
         this.$store.dispatch("setFilters", response.filters);
       }
     },
+    applyFilters() {
+      // build query and send result ? or just send the filters ?
+    },
     addFilter() {
       this.orderedElements.push({
         type: "filter",
         group: 0,
+        id: Math.floor(Math.random() * Date.now()),
       });
     },
     addGroup() {
@@ -92,16 +105,38 @@ export default {
         group: Math.floor(Math.random() * Date.now()),
       });
     },
-    removeElement(index) {
+
+    /**
+     * Tips for v-for => avoid using index as key
+     * When you remove an item of your array, you shift every index from the removal point up by one, which means only one index disappears from the array: the last one.
+     */
+    removeFilter(id) {
+      // find filter position 
+      const index = this.orderedElements.findIndex((element) => {
+        return element.id == id;
+      });
+      // remove filter
       this.orderedElements.splice(index, 1);
     },
-  },
+    removeGroup(id) {
+      // find filter position 
+      const index = this.orderedElements.findIndex((element) => {
+        return element.group == id;
+      });
+      // remove filter
+      this.orderedElements.splice(index, 1);
+    },
+  }
 };
 </script>
 
 <style lang="scss" scoped>
 #filter-builder {
   width: fit-content;
+  background-color: white;
+  padding: 16px;
+  border-radius: 4px;
+  margin: 20px;
 
   .filter-row {
     margin-left: 40px;

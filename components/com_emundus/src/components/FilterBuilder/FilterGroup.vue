@@ -11,10 +11,11 @@
         </div>
         <FilterRow
           :group="id"
+          :id="filter"
           class="filter"
-          v-for="(filter, index) in filters"
-          :key="index"
-          @removeFilter="removeFilter(index)"
+          v-for="filter in filters"
+          :key="filter"
+          @removeFilter="removeFilter(filter)"
         ></FilterRow>
       </div>
       <div class="actions">
@@ -24,7 +25,7 @@
         </div>
       </div>
     </div>
-    <span class="material-icons delete" @click="$emit('removeGroup')">
+    <span class="material-icons delete" @click="removeGroup">
       clear
     </span>
   </div>
@@ -39,7 +40,7 @@ export default {
     id: {
       type: Number,
       required: true,
-    },
+    }
   },
   components: {
     FilterRow,
@@ -49,12 +50,20 @@ export default {
       filters: [],
     };
   },
+  mounted() {
+    this.filters = this.$store.state.queryFilters.groups[this.id] ? Object.entries(this.$store.state.queryFilters.groups[this.id].filters).map(filter => Number(filter[0])) : [];
+  },
   methods: {
     addFilter() {
-      this.filters.push(1);
+      this.filters.push(Math.floor(Math.random() * Date.now()));
     },
-    removeFilter(index) {
-      this.filters.splice(index, 1);
+    removeFilter(filterId) {
+      this.filters = this.filters.filter(filter => filter !== filterId);
+    },
+    removeGroup() {
+      this.$store.dispatch("removeGroup", this.id);
+
+      this.$emit("removeGroup", this.id);
     },
   },
 };

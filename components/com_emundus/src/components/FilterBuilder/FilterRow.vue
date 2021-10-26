@@ -1,28 +1,42 @@
 <template>
   <div class="filter-row">
     <!-- <label for="filter-name">Filtres</label> -->
-    <select name="filter-name" @change="changeFilter">
+    <select name="filter-name" @change="updateFilter" v-model="selectedFilter">
       <option v-for="name in names" :key="name.id" :value="name.id">
         {{ translate(name.label) }}
       </option>
     </select>
 
     <!-- <label for="filter-action">Actions</label> -->
-    <select name="filter-action">
+    <select
+      name="filter-action"
+      @change="updateFilter"
+      v-model="selectedAction"
+    >
       <option v-for="(action, key) in actions" :key="key" :value="key">
         {{ action }}
       </option>
     </select>
 
     <!-- <label for="filter-value">Valeurs</label> -->
-    <select v-if="type == 'select'" name="filter-value">
+    <select
+      v-if="type == 'select'"
+      name="filter-value"
+      @change="updateFilter"
+      v-model="selectedValue"
+    >
       <option v-for="(value, key) in values" :key="key" :value="key">
         {{ value }}
       </option>
     </select>
-    <input v-else-if="type == 'text'" type="text" name="filter-value" />
+    <input
+      v-else-if="type == 'text'"
+      type="text"
+      name="filter-value"
+      v-model="selectedValue"
+    />
 
-    <span class="material-icons delete" @click="$emit('removeFilter')">
+    <span class="material-icons delete" @click="removeFilter">
       clear
     </span>
   </div>
@@ -34,6 +48,10 @@ import translateMixin from "../../mixins/translate";
 export default {
   mixins: [translateMixin],
   props: {
+    id: {
+      type: Number,
+      required: true,
+    },
     group: {
       type: Number,
       default: 0,
@@ -42,6 +60,8 @@ export default {
   data() {
     return {
       selectedFilter: null,
+      selectedAction: null,
+      selectedValue: null,
       names: [],
     };
   },
@@ -50,17 +70,44 @@ export default {
       if (index == 0) {
         this.selectedFilter = filter.id;
       }
-
       return {
         id: filter.id,
         label: filter.label,
       };
     });
+
+    if (
+      this.$store.state.queryFilters.groups[this.group] &&
+      this.$store.state.queryFilters.groups[this.group].filters &&
+      this.$store.state.queryFilters.groups[this.group].filters[this.id]
+    ) {
+      this.selectedFilter = this.$store.state.queryFilters.groups[this.group].filters[this.id].id;
+      this.selectedAction = this.$store.state.queryFilters.groups[this.group].filters[this.id].action;
+      this.selectedValue = this.$store.state.queryFilters.groups[this.group].filters[this.id].value;
+    } else {
+      this.updateFilter();
+    }
   },
   methods: {
-    changeFilter(event) {
+    updateFilter() {
       // update the actions and the values based on name selected
-      this.selectedFilter = event.target.value;
+      this.$store.dispatch("updateQueryFilters", {
+        group: this.group,
+        id: this.id,
+        filter: {
+          id: this.selectedFilter,
+          action: this.selectedAction,
+          value: this.selectedValue,
+        },
+      });
+    },
+    removeFilter() {
+      this.$store.dispatch("removeQueryFilter", {
+        group: this.group,
+        id: this.id,
+      });
+
+      this.$emit("removeFilter", this.id);
     },
   },
   computed: {
@@ -92,7 +139,16 @@ export default {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin: 8px 0;
+  padding: 8px 16px;
+  background-color: var(--grey-bg-color);
+  border-radius: 4px;
+
+  select,
+  input {
+    height: 32px;
+    margin: 0 16px 0 0;
+  }
 
   .delete {
     cursor: pointer;
