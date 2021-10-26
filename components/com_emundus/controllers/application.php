@@ -702,4 +702,18 @@ class EmundusControllerApplication extends JControllerLegacy
         echo json_encode(array('status' => true, 'filters' => $filters));
         exit;
     }
+
+    public function mountquery() 
+    {
+        $jinput = JFactory::getApplication()->input;
+        $filters = $jinput->getVar('filters', null);
+        $listId = $jinput->getVar('id', null);
+        $filters = json_decode($filters, true);
+        
+        $m_application = $this->getModel('Application');
+        $res = $m_application->mountQuery($listId, $filters);
+
+        echo json_encode($res);
+        exit;
+    }
 }

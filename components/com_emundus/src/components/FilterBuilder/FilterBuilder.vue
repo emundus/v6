@@ -89,8 +89,13 @@ export default {
         this.$store.dispatch("setFilters", response.filters);
       }
     },
-    applyFilters() {
+    async applyFilters() {
       // build query and send result ? or just send the filters ?
+      const response = await filterService.mountQuery(this.id, this.$store.state.queryFilters);
+
+      if (response.status == true) {
+        this.$emit("applyFilters", response.query);
+      }
     },
     addFilter() {
       this.orderedElements.push({

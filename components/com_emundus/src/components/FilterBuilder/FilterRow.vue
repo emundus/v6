@@ -1,7 +1,7 @@
 <template>
   <div class="filter-row">
     <!-- <label for="filter-name">Filtres</label> -->
-    <select name="filter-name" @change="updateFilter" v-model="selectedFilter">
+    <select name="filter-name" v-model="selectedFilter">
       <option v-for="name in names" :key="name.id" :value="name.id">
         {{ translate(name.label) }}
       </option>
@@ -10,7 +10,6 @@
     <!-- <label for="filter-action">Actions</label> -->
     <select
       name="filter-action"
-      @change="updateFilter"
       v-model="selectedAction"
     >
       <option v-for="(action, key) in actions" :key="key" :value="key">
@@ -22,7 +21,6 @@
     <select
       v-if="type == 'select'"
       name="filter-value"
-      @change="updateFilter"
       v-model="selectedValue"
     >
       <option v-for="(value, key) in values" :key="key" :value="key">
@@ -30,7 +28,7 @@
       </option>
     </select>
     <input
-      v-else-if="type == 'text'"
+      v-else
       type="text"
       name="filter-value"
       v-model="selectedValue"
@@ -128,6 +126,17 @@ export default {
         (filter) => filter.id == this.selectedFilter
       );
       return filter ? filter.type : null;
+    },
+  },
+  watch: {
+    selectedFilter() {
+      this.updateFilter();
+    },
+    selectedAction() {
+      this.updateFilter();
+    },
+    selectedValue() {
+      this.updateFilter();
     },
   },
 };
