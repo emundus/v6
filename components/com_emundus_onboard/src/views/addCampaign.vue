@@ -770,11 +770,15 @@ export default {
      * ** Methods for notify
      */
     tip(){
-      this.show(
-          "foo-velocity",
-          Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATETIP") + '<em class="translate-icon"></em>',
-          Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
-      );
+
+      if(this.manyLanguages !=0) {
+
+        this.show(
+            "foo-velocity",
+            Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATETIP") + '<em class="translate-icon"></em>',
+            Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
+        );
+      }
     },
 
     show(group, text = "", title = "Information") {
