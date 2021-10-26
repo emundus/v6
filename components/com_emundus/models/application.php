@@ -3179,6 +3179,7 @@ class EmundusModelApplication extends JModelList
         }
 
         $query
+            ->clear()
             ->select(['ho.*', $db->quoteName('eh.user', 'user_cms_id')])
             ->from($db->quoteName('#__emundus_hikashop', 'eh'))
             ->leftJoin($db->quoteName('#__hikashop_order','ho').' ON '.$db->quoteName('ho.order_id').' = '.$db->quoteName('eh.order_id'))
