@@ -545,7 +545,15 @@ body ::-webkit-scrollbar-track {
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
-  margin-bottom: 10px;
+  margin: 8px 0;
+  padding: 8px 16px;
+  background-color: var(--grey-bg-color);
+  border-radius: 4px;
+}
+.filter-row select[data-v-78642c16],
+.filter-row input[data-v-78642c16] {
+  height: 32px;
+  margin: 0 16px 0 0;
 }
 .filter-row .delete[data-v-78642c16] {
   cursor: pointer;
@@ -581,6 +589,10 @@ body ::-webkit-scrollbar-track {
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
+  background-color: white;
+  padding: 16px;
+  border-radius: 4px;
+  margin: 20px;
 }
 #filter-builder .filter-row[data-v-8da6b152] {
   margin-left: 40px;
