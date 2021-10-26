@@ -86,7 +86,7 @@ export default {
             const response = await attachmentService.updateAttachment(formData);
 
             if (response.status.update) {
-                this.$store.commit('attachment/updateAttachmentOfFnum', {
+                this.$store.dispatch('attachment/updateAttachmentOfFnum', {
                     fnum: this.fnum,
                     attachment: this.attachment
                 });
@@ -97,7 +97,7 @@ export default {
                 const data = await attachmentService.getPreview(this.$store.state.user.displayedUser, this.attachment.filename);
 
                 // store preview data
-                this.$store.commit('attachment/setPreview', {preview: data, id: this.attachment.aid});
+                this.$store.dispatch('attachment/setPreview', {preview: data, id: this.attachment.aid});
             }
 
             this.$emit('saveChanges');
