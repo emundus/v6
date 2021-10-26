@@ -713,7 +713,7 @@ class DropfilesControllerFiles extends JControllerForm
                     $model   = $this->getModel();
                     $user    = JFactory::getUser();
                     $id_file = $model->addFile(array(
-                        'title'       => JFile::stripExt($file),
+                        'title'       => JFile::stripExt(basename($file)),
                         'id_category' => $id_category,
                         'file'        => $newname,
                         'ext'         => strtolower(JFile::getExt($file)),
