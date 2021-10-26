@@ -4195,8 +4195,13 @@ class EmundusModelApplication extends JModelList
 
         $results = $db->loadAssocList();
 
+        $unhandledElements = [
+            "internalid",
+            "fileupload"
+        ];
+
         foreach($results as $result) {
-            if ($result['plugin'] == "internalid") {
+            if (in_array($result['plugin'], $unhandledElements)) {
                 continue;
             }
 
@@ -4204,9 +4209,31 @@ class EmundusModelApplication extends JModelList
                 'id' => $result['id'],
                 'name' => $result['name'],
                 'label' => $result['label'],
+                'type' => $this->getFilterType($result),
                 'actions' => $this->getActionsByElementPlugin($result['plugin'], $result['params']),
                 'values' => $this->getValuesByElement($result)
             ];
+        }
+
+        return $return;
+    }
+
+    private function getFilterType($element) 
+    {
+        $return = '';
+
+        switch ($element['plugin']) {
+            case 'field':
+                $params = json_decode($element['params'], true);
+                if (!isset($params['database_join_display_type']) && empty($element['default'])) {
+                    $return = 'text';                
+                } else {
+                    $return = 'select';                
+                }
+            break;   
+            default:
+                $return = 'select';
+                break;      
         }
 
         return $return;
@@ -4320,6 +4347,29 @@ class EmundusModelApplication extends JModelList
             case 'field':
                 // if (isset($params['database_join_display_type']) && $params['database_join_display_type'] == 'dropdown') {
                 // }
+                $params = json_decode($elements['params'], true);
+
+                if (!empty($element['default']) && preg_match("/\{jos\_(.+)\_\_\_(.*)\}$/", $element['default'], $matches)) {
+                    $db = $this->getDbo();
+                    $query = $db->getQuery(true);
+
+                    $table = '#__' . $matches[1];
+                    $key = $matches[2];
+        
+                    $query->select("DISTINCT $key")
+                    ->from($db->quoteName($table));
+        
+                    $db->setQuery($query);
+        
+                    $results = $db->loadAssocList();
+
+                    foreach($results as $result) {
+                        $values[$result[$key]] = $result[$key];
+                    }
+                } elseif ($params['textformat'] == 'text') {
+                    $values = 'text-input';
+                }
+
                 break;
             default:
                 $values = [];
