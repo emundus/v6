@@ -2,7 +2,7 @@
     <div class="filter-row">
         <!-- <label for="filter-name">Filtres</label> -->
         <select name="filter-name" @change="changeFilter">
-            <option v-for="name in names" :key="name.id" :value="name.id">{{name.label}}</option>
+            <option v-for="name in names" :key="name.id" :value="name.id">{{ translate(name.label) }}</option>
         </select>
         
         <!-- <label for="filter-action">Actions</label> -->
@@ -23,7 +23,10 @@
 </template>
 
 <script>
+import translateMixin from '../../mixins/translate';
+
 export default {
+    mixins: [translateMixin],
     data() {
         return {
             selectedFilter: null,
