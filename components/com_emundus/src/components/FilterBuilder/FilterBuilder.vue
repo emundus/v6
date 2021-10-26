@@ -47,7 +47,6 @@ export default {
     methods: {
         async getFilters() {
             const response = await filterService.getFilters(this.type, this.id);
-            console.log(response.filters);
             
             if (response.status == true) {
                 this.$store.dispatch('setFilters', response.filters);

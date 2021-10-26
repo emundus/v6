@@ -16,6 +16,6 @@ export default {
             "-2": Joomla.JText._("INVALID"),
             "0": Joomla.JText._("WAITING"),
             "1": Joomla.JText._("VALID"),
-        }
+        },        
     }
 }

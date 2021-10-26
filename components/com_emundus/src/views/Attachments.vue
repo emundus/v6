@@ -282,7 +282,6 @@ export default {
     orderBy(key) {
       // if last sort is the same as the current sort, reverse the order
 
-      console.log(this.attachments);
       if (this.lastSort == key) {
         this.attachments.reverse();
       } else {
