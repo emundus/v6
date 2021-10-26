@@ -30,7 +30,7 @@
           <p>{{trigger.subject}}</p>
           <p>
             <span style="font-weight: bold">{{Target}} : </span>
-            <span v-if="trigger.profile == null" v-for="(user, index) in trigger.users">
+            <span v-if="trigger.profile == null" v-for="(user, index) in trigger.users" :key="'user_' + index">
               {{user.firstname}} {{user.lastname}}
               <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
             </span>
@@ -64,7 +64,7 @@
           <p>{{trigger.subject}}</p>
           <p>
             <span style="font-weight: bold">{{Target}} : </span>
-            <span v-if="trigger.profile == null && trigger.users.length > 0" v-for="(user, index) in trigger.users">
+            <span v-if="trigger.profile == null && trigger.users.length > 0" v-for="(user, index) in trigger.users" :key="'user_manual_' + index">
               {{user.firstname}} {{user.lastname}}
               <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
             </span>
@@ -88,7 +88,9 @@
 <script>
 import ModalAddTrigger from "../advancedModals/ModalAddTrigger";
 import axios from "axios";
+
 const qs = require("qs");
+
 export default {
   name: "addEmail",
   components: {ModalAddTrigger},
@@ -143,7 +145,7 @@ export default {
         data: qs.stringify({
           tid: trigger,
         })
-      }).then((rep) => {
+      }).then(() => {
         this.getTriggers();
       });
     },

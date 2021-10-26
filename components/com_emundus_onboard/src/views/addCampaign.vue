@@ -541,7 +541,7 @@ export default {
         },
         data: qs.stringify({body: form_data})
       }).then(response => {
-        this.campaign = response.data.data;
+        this.$props.campaign = response.data.data;
         this.quitFunnelOrContinue(this.quit);
       }).catch(error => {
         console.log(error);
@@ -568,7 +568,7 @@ export default {
           },
           data: qs.stringify({body: this.form})
         }).then(response => {
-          this.campaign = response.data.data;
+          this.$props.campaign = response.data.data;
           this.quitFunnelOrContinue(this.quit);
         }).catch(error => {
           console.log(error);
@@ -799,7 +799,7 @@ export default {
   },
 
   watch: {
-    'form.start_date': function (val, oldVal) {
+    'form.start_date': function (val) {
       this.minDate = LuxonDateTime.fromISO(val).plus({ days: 1 });
       if(this.form.end_date == "") {
         this.form.end_date = LuxonDateTime.fromISO(val).plus({days: 1});

@@ -10,8 +10,6 @@
             :delay="100"
             :adaptive="true"
             :clickToClose="false"
-            @closed="beforeClose"
-            @before-open="beforeOpen"
     >
       <div class="fixed-header-modal">
           <div class="topright">
@@ -66,9 +64,10 @@
 
 <script>
   import axios from "axios";
-  import Swal from "sweetalert2";
   import _ from "lodash";
+
   const qs = require("qs");
+
   import Translation from "@/components/translation";
 
   export default {
@@ -100,11 +99,6 @@
       };
     },
     methods: {
-      beforeClose(event) {
-      },
-      beforeOpen(event) {
-      },
-
       // Triggers to add and delete values
       add: _.debounce(function() {
         let size = Object.keys(this.form.db_values).length;

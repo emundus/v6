@@ -1,8 +1,3 @@
-<!--
-  $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
-  $str = "0001427";
-  echo ltrim($str, "0");
--->
 <template>
   <div>
     <ModalWarningFormBuilder
@@ -130,19 +125,11 @@
 <script>
 import moment from "moment";
 import axios from "axios";
-import { Datetime } from "vue-datetime";
 
 import addFormulaire from "../views/funnelFormulaire/addFormulaire";
-import addDocuments from "../views/funnelFormulaire/addDocuments";
-import addGestionnaires from "../views/funnelFormulaire/addGestionnaires";
 import addEmail from "../views/funnelFormulaire/addEmail";
-import addEvaluation from "../views/funnelFormulaire/addEvaluation";
-import addEvalVisi from "../views/funnelFormulaire/addEvalVisi";
-import addEvalEval from "../views/funnelFormulaire/addEvalEval";
 import ModalWarningFormBuilder from "./advancedModals/ModalWarningFormBuilder";
-import Tasks from "@/views/tasks";
 import AddDocumentsDropfiles from "@/views/funnelFormulaire/addDocumentsDropfiles";
-import AddDocumentsForm from "@/views/funnelFormulaire/addDocumentsForm";
 import addCampaign from "@/views/addCampaign";
 import AddEvaluationGrid from "@/views/funnelFormulaire/addEvaluationGrid";
 import {global} from "../store/global";
@@ -154,19 +141,11 @@ export default {
 
   components: {
     AddEvaluationGrid,
-    AddDocumentsForm,
-    Tasks,
     AddDocumentsDropfiles,
     addCampaign,
     ModalWarningFormBuilder,
-    Datetime,
     addFormulaire,
-    addDocuments,
-    addGestionnaires,
     addEmail,
-    addEvaluation,
-    addEvalVisi,
-    addEvalEval
   },
 
   props: {

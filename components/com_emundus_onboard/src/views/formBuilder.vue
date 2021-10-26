@@ -83,10 +83,6 @@
                     <em class="add-element-icon"></em>
                     <label class="action-label col-md-offset-1 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{translations.addItem}}</label>
                   </a>
-<!--                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="testForm" :title="testingForm">
-                    <em class="far fa-play-circle" style="font-size: 22px"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{translations.testingForm}}</label>
-                  </a>-->
                 <transition :name="'slide-right'" type="transition">
                   <div class="plugins-list" v-if="addingElement">
                     <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingElement = !addingElement" :title="Back">
@@ -104,7 +100,7 @@
                             chosen-class="plugin-chosen"
                             ghost-class="plugin-ghost"
                             style="padding-bottom: 2em;margin-top: 10%">
-                        <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
+                        <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(plugin,index) in plugins" :key="'plugin_' + index" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
                           <em :class="plugin.icon"></em>
                           <span class="ml-10px">{{plugin.name}}</span>
                         </div>
@@ -113,14 +109,6 @@
                 </transition>
               </div>
             </div>
-            <!--<a class="send-form-button" @click="sendForm">
-              <label style="cursor: pointer" class="mb-0">{{sendFormButton}}</label>
-              <em class="fas fa-paper-plane" style="font-size: 20px"></em>
-            </a>
-            <a class="send-form-button test-form-button" style="margin-top: 1em" @click="testForm">
-              <label style="cursor: pointer">{{testingForm}}</label>
-              <em class="fas fa-vial" style="font-size: 20px"></em>
-            </a>-->
           </div>
         </transition>
       </div>
@@ -263,7 +251,6 @@
     <div class="loading-form" v-if="loading">
       <Ring-Loader :color="'#12DB42'" />
     </div>
-<!--    <tasks></tasks>-->
   </div>
 </template>
 
@@ -303,9 +290,7 @@
     },
     components: {
       ModalAddDocuments,
-      Tasks,
       ModalTestingForm,
-      List,
       ModalAffectCampaign,
       Builder,
       ModalSide,
@@ -496,12 +481,9 @@
         return (label.split(/-(.+)/))[1];
       },
       showModal () {
-
         Swal.fire({
-          //title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENU"),
           text: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_NOFORMPAGEWARNING"),
           type: "warning",
-          //showCancelButton: true
         })
       },
       hide () {
@@ -745,7 +727,7 @@
             label: this.profileLabel,
             prid: this.prid,
           })
-        }).then((result) => {
+        }).then(() => {
             this.show("foo-velocity", "success", this.updateSuccess, this.update);
             this.updateFormLabel = false;
         }).catch(e => {
@@ -903,18 +885,13 @@
                   rgt: element.rgt,
                   link: element.link
                 });
-              }).then(r => {
+              }).then(() => {
                 this.formObjectArray.sort((a, b) => a.rgt - b.rgt);
               }).catch(e => {
                 console.log(e);
               });
         });
         this.loading = false;
-        /*if(this.getCookie('page_' + this.prid) !== '') {
-          this.indexHighlight = this.getCookie('page_' + this.prid);
-        } else {
-          this.indexHighlight = 0;
-        }*/
         this.indexHighlight = 0;
         this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
         this.rgt = this.formObjectArray[this.indexHighlight].rgt;
@@ -927,27 +904,14 @@
           await axios.get(ellink + "&format=vue_jsonclean")
               .then(response => {
                 this.formObjectArray[index].object = response.data;
-                /*this.formObjectArray.push({
-                object: response.data,
-                rgt: this.formList[index].rgt,
-                link: this.formList[index].link
-              });*/
-              }).then(r => {
+              }).then(() => {
                 this.formObjectArray.sort((a, b) => a.rgt - b.rgt);
               }).catch(e => {
                 console.log(e);
               });
 
-
-        //this.loading = false;
-
-        /*if(this.getCookie('page_' + this.prid) !== '') {
-          this.indexHighlight = this.getCookie('page_' + this.prid);
-        } else {
-          this.indexHighlight = 0;
-        }*/
-        this.elementDisabled = _.isEmpty(this.formObjectArray[index].object.Groups);
-        this.rgt = this.formObjectArray[index].rgt;
+          this.elementDisabled = _.isEmpty(this.formObjectArray[index].object.Groups);
+          this.rgt = this.formObjectArray[index].rgt;
         }
 
           this.loading = false;
@@ -1155,7 +1119,6 @@
           }).catch(e => {
             console.log(e);
           });
-          //history.go(-1);
         }
       } else {
         this.showModal();
@@ -1205,7 +1168,7 @@
                 paramsSerializer: params => {
                   return qs.stringify(params);
                 }
-              }).then(response => {
+              }).then(() => {
                 this.$modal.show('modalAffectCampaign');
               });
             }
@@ -1213,7 +1176,7 @@
       },
 
       // Triggers
-      changeGroup(index,rgt){
+      changeGroup(index){
         this.loading = true;
         if(_.isEmpty(this.formObjectArray[index].object)) {
           this.getDataObjectSingle(index).then(() => {
@@ -1235,15 +1198,11 @@
         }
         document.cookie = 'page_' + this.prid + '='+index+'; expires=Session; path=/'
       },
-      SomethingChange: function(e) {
+      SomethingChange: function() {
         this.dragging = true;
-        let rgts = [];
         this.formList.forEach((menu, index) => {
           menu.rgt = this.formObjectArray[index].rgt;
         });
-        /*this.formObjectArray.forEach((item, index) => {
-          item.rgt = rgts[index];
-        });*/
         this.reorderItems();
       },
       showElements() {
@@ -1356,9 +1315,7 @@
       this.$props.prid = global.getters.datas.prid.value;
       this.$props.cid = global.getters.datas.cid.value;
       //
-      //jQuery("#g-navigation .g-main-nav .tchooz-vertical-toplevel > li").css("transform", "translateX(-100px)");
-      //jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)");
-      //this.indexHighlight = 0;
+
       this.getForms();
       this.getDocuments();
       this.getSubmittionPage();

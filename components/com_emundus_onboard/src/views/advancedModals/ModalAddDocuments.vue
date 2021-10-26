@@ -48,7 +48,7 @@
           <label for="modelName">{{ translations.DocTemplate }} :</label>
           <select v-model="doc" class="dropdown-toggle" id="modelName" :disabled="Object.keys(models).length <= 0">
             <option :value="null"></option>
-            <option v-for="(modelT, index) in models" :value="modelT.id">{{ modelT.name[langue] }}  ({{ modelT.allowed_types }})</option>
+            <option v-for="(modelT, index) in models" :key="'option_' + index" :value="modelT.id">{{ modelT.name[langue] }}  ({{ modelT.allowed_types }})</option>
           </select>
         </div>
         <div class="form-group">
@@ -301,7 +301,7 @@ export default {
     };
   },
   methods: {
-    beforeClose(event) {
+    beforeClose() {
       this.show = false;
       this.doc = null;
       this.currentDoc = null;
@@ -338,7 +338,7 @@ export default {
 
       this.$emit("modalClosed");
     },
-    beforeOpen(event) {
+    beforeOpen() {
       this.getModelsDocs();
     },
     createNewDocument() {
@@ -358,7 +358,7 @@ export default {
           this.errors.nbmax = true;
           return 0;
         }
-        if (Object.values(this.form.selectedTypes).every((val, i) => val === false)) {
+        if (Object.values(this.form.selectedTypes).every((val) => val === false)) {
           this.errors.selectedTypes = true;
           return 0;
         }
@@ -452,12 +452,10 @@ export default {
             "Content-Type": "application/x-www-form-urlencoded"
           },
           data: qs.stringify(params)
-        }).then((rep) => {
-
+        }).then(() => {
           this.req = false;
           this.$emit("UpdateDocuments");
           this.$modal.hide('modalAddDocuments')
-
         });
       } else {
         return false;

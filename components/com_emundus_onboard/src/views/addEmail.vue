@@ -194,7 +194,7 @@
             <label>{{translations.Program}}</label>
             <select v-model="trigger.program" class="dropdown-toggle w-select" @change="addTrigger">
               <option :value="null"></option>
-              <option v-for="(program,index) in programs" :value="program.id">{{program.label}}</option>
+              <option v-for="(program,index) in programs" :key="'option_' + index" :value="program.id">{{program.label}}</option>
             </select>
           </div>
 
@@ -584,8 +584,7 @@ const qs = require("qs");
                                       selectedCandidateAttachments: this.selectedCandidateAttachments,
                                       selectedTags: this.selectedTags
           })
-        }).then(response => {
-          // this.redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + this.email);
+        }).then(() => {
           this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
         }).catch(error => {
           console.log(error);
@@ -616,8 +615,7 @@ const qs = require("qs");
               trigger: this.trigger,
               users: this.selectedUsers
             })
-          }).then((rep) => {
-            // this.redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + this.email);
+          }).then(() => {
             this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
           });
         }).catch(error => {

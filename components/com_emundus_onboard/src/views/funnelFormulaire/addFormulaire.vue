@@ -2,7 +2,7 @@
   <div class="container-evaluation formulairedepresentation">
     <p class="heading">{{ChooseForm}}</p>
     <div class="heading-block" style="margin-left: unset">
-      <select class="dropdown-toggle" id="select_profile" v-model="profileId" @change="updateProfileCampaign">
+      <select class="dropdown-toggle" id="select_profile" v-model="$props.profileId" @change="updateProfileCampaign">
         <option v-for="(profile, index) in profiles" :key="index" :value="profile.id">
           {{profile.form_label}}
         </option>
@@ -13,11 +13,6 @@
           {{ AddForm }}
         </div>
       </a>
-<!--      <a @click="formbuilder" class="bouton-ajouter pointer">
-        <div class="add-button-div" v-if="profileId != null">
-          <em class="fas fa-edit"></em>
-        </div>
-      </a>-->
     </div>
     <FormCarrousel :formList="this.formList" :documentsList="this.documentsList" :visibility="this.visibility" :key="formListReload" v-if="this.formList" @getEmitIndex="getEmitIndex" @formbuilder="formbuilder" />
   </div>
@@ -26,6 +21,7 @@
 <script>
 import FormCarrousel from "../../components/Form/FormCarrousel";
 import axios from "axios";
+
 const qs = require("qs");
 
 import "@fortawesome/fontawesome-free/css/all.css";
@@ -129,7 +125,7 @@ export default {
         data: qs.stringify({body: this.form})
       }).then(response => {
         this.loading = false;
-        this.profileId = response.data.data;
+        this.$props.profileId = response.data.data;
         this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=' + this.campaignId);
       }).catch(error => {
         console.log(error);
@@ -147,7 +143,7 @@ export default {
           profile: this.profileId,
           campaign: this.campaignId
         })
-      }).then(response => {
+      }).then(() => {
         this.getForms(this.profileId);
         this.getDocuments(this.profileId);
         this.$emit("profileId", this.profileId);
@@ -174,11 +170,6 @@ export default {
     this.getForms(this.profileId);
     this.getDocuments(this.profileId);
   },
-  /*watch: {
-    profileId: function() {
-      this.getForms(this.profileId);
-    }
-  }*/
 };
 </script>
 

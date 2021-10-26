@@ -176,7 +176,6 @@ import formulaire from "../components/list_components/formItem";
 import files from "../components/list_components/files";
 import filters from "../components/list_components/filters_menu";
 import listHeader from "../components/list_components/list_header";
-import tasks from "./tasks"
 import { list } from "../store/store";
 import { global } from "../store/global";
 
@@ -191,7 +190,6 @@ export default {
     files,
     filters,
     listHeader,
-    tasks,
     grilleEval
   },
 
@@ -244,7 +242,6 @@ export default {
 
     menuEmail: 0,
     email_categories: [],
-    tasks: '',
   }),
 
   computed: {

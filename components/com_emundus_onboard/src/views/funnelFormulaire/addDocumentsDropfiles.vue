@@ -211,7 +211,7 @@ export default {
       this.documents.push(JSON.parse(response.xhr.response));
       this.$refs.dropzone.removeFile(response);
     },
-    catchError: function(file, message, xhr){
+    catchError: function(file, message){
       Swal.fire({
         title: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR"),
         text: message,
@@ -222,9 +222,6 @@ export default {
       });
       this.$refs.dropzone.removeFile(file);
     },
-    /*uploadNewLogo() {
-      this.$refs.dropzone.processQueue();
-    }*/
   },
 
   computed: {

@@ -162,7 +162,6 @@ export default {
 
   props: {
     funnelCategorie: String,
-    obligatoireDoc: Number,
     profileId: Number,
     campaignId: Number,
     langue: String,
@@ -176,7 +175,6 @@ export default {
       drag: false,
       loading: false,
 
-      obligatoireDoc: 0,
       currentDoc: null,
 
       documents: [],
