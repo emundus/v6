@@ -11,9 +11,10 @@
         </select>
 
         <!-- <label for="filter-value">Valeurs</label> -->
-        <select name="filter-value">
+        <select v-if="type == 'select'" name="filter-value">
             <option v-for="(value, key) in values" :key="key" :value="key">{{value}}</option>
         </select>
+        <input v-else-if="type == 'text'" type="text" name="filter-value" />
 
         <span class="material-icons delete" @click="$emit('removeFilter')">
             clear
@@ -55,6 +56,10 @@ export default {
         values() {
             const filter = this.$store.state.filters.find(filter => filter.id == this.selectedFilter);
             return filter ? filter.values : [];
+        },
+        type() {
+            const filter = this.$store.state.filters.find(filter => filter.id == this.selectedFilter);
+            return filter ? filter.type : null;
         }
     }
 }
