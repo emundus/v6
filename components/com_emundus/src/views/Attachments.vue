@@ -3,7 +3,7 @@
         <div class="head">
           <div class="prev-next-files" v-if="fnums.length > 1">
             <div class="prev" :class="{'active': fnumPosition > 0}" @click="prevFile">
-              <!-- 
+              <!--
                 For new header
                 <span class="material-icons">
                 navigate_before
@@ -48,11 +48,11 @@
                       <input type="checkbox" @change="updateAllCheckedAttachments">
                     </th>
                     <th @click="orderBy('filename')">{{ translate('NAME') }}</th>
-                    <th @click="orderBy('timedate')">{{ translate('SEND_DATE') }}</th>
-                    <th class="desc" @click="orderBy('description')">{{ translate('DESCRIPTION') }}</th>
-                    <th class="status" @click="orderBy('is_validated')">{{ translate('STATUS') }}</th>
+                    <th class='date' @click="orderBy('timedate')">{{ translate('SEND_DATE') }}</th>
+                    <th class='desc' @click="orderBy('description')">{{ translate('DESCRIPTION') }}</th>
+                    <th class='status' @click="orderBy('is_validated')">{{ translate('STATUS') }}</th>
                     <th @click="orderBy('modified_by')">{{ translate('MODIFIED_BY') }}</th>
-                    <th @click="orderBy('modified')">{{ translate('MODIFICATION_DATE') }}</th>
+                    <th class='date' @click="orderBy('modified')">{{ translate('MODIFICATION_DATE') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -64,7 +64,7 @@
                       <input class="attachment-check" type="checkbox" @change="updateCheckedAttachments(attachment.aid)" :checked="checkedAttachments.includes(attachment.aid)">
                     </td>
                     <td class="td-document" @click="openModal(attachment)">{{ attachment.value }}</td>
-                    <td>{{ formattedDate(attachment.timedate) }}</td>
+                    <td class='date'>{{ formattedDate(attachment.timedate) }}</td>
                     <td class="desc">{{ attachment.description }}</td>
                     <td class="status valid-state" :class="{
                       'success': attachment.is_validated == 1, 
@@ -75,11 +75,11 @@
                       <span v-else>{{ translate('WAITING') }}</span>
                     </td>
                     <td>{{ getUserNameById(attachment.modified_by) }}</td>
-                    <td>{{ formattedDate(attachment.modified) }}</td>
+                    <td class='date'>{{ formattedDate(attachment.modified) }}</td>
                 </tr>
             </tbody>
           </table>
-          <p v-else>Aucun dossier rattaché à cet utilisateur</p>
+          <p v-else>{{ translate('NO_ATTACHMENTS_FOUND') }}</p>
         </div>
         <!-- TODO: create component for Modal -->
         <modal 
@@ -352,7 +352,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang='scss' scoped>
 #em-attachments {
   font-size: 14px;
 
@@ -553,6 +553,10 @@ export default {
 
     td, th {
       width: fit-content;
+    }
+
+    th.date, td.date {
+      max-width: 80px;
     }
 
     th.desc, td.desc {

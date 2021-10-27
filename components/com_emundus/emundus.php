@@ -419,8 +419,10 @@ JText::script('EXPORT');
 JText::script('WAITING');
 JText::script('FILTER_ACTION');
 JText::script('DOCUMENT_TYPE');
-JText::script('MINI_DESCRIPTION'); 
-JText::script('CAMPAIGN_ID'); 
+JText::script('MINI_DESCRIPTION');
+JText::script('CAMPAIGN_ID');
+JText::script('REPLACE');
+JText::script('NO_ATTACHMENTS_FOUND');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
