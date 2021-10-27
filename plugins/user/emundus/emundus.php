@@ -399,82 +399,82 @@ class plgUserEmundus extends JPlugin
 	        // Init first_login parameter
             $user = JFactory::getUser();
             $table = JTable::getInstance('user', 'JTable');
-            /*$table->load($user->id);
 
-            $params = $user->getParameters();
-            if (!$params->get('first_login_date')) {
-                $date = \JFactory::getDate();
-                $user->setParam('first_login_date', $date->toSql());
+            // Send an email if the platform is for a prospect
+            try {
+                $config = JFactory::getConfig();
+                $prospect = $config->get('prospect');
 
-                // Get the raw User Parameters
-                $params = $user->getParameters();
+                if($prospect == 1) {
+                    $table->load($user->id);
 
-                // Set the user table instance to include the new token.
-                $table->params = $params->toString();
+                    $params = $user->getParameters();
+                    if (!$params->get('first_login_date')) {
+                        $date = \JFactory::getDate();
+                        $user->setParam('first_login_date', $date->toSql());
 
-                if (!$table->store()) {
-                    JLog::add('component/com_emundus_onboard/models/settings | Error when create a param in the user ' . $user->id . ' : ' . $table->getError(), JLog::ERROR, 'com_emundus');
-                }
+                        // Get the raw User Parameters
+                        $params = $user->getParameters();
 
-                /*if($user->id == 95) {
-                    // Send an email to Commercial
-                    $db = JFactory::getDBO();
+                        // Set the user table instance to include the new token.
+                        $table->params = $params->toString();
 
-                    $query = 'SELECT se.id, se.subject, se.emailfrom, se.name, se.message, et.Template
-				FROM #__emundus_setup_emails AS se
-				LEFT JOIN #__emundus_email_templates AS et ON se.email_tmpl = et.id
-				WHERE se.lbl LIKE "first_coord_login"';
-                    $db->setQuery($query);
-                    $obj = $db->loadObjectList();
+                        if (!$table->store()) {
+                            JLog::add('component/com_emundus_onboard/models/settings | Error when create a param in the user ' . $user->id . ' : ' . $table->getError(), JLog::ERROR, 'com_emundus');
+                        }
 
-                    $site_url = str_replace('http://', "", JURI::base());
+                        if ($user->id == 95) {
+                            // Send an email to Commercial
+                            $db = JFactory::getDBO();
 
-                    $subject = $obj[0]->subject;
-                    $body = $obj[0]->message;
+                            $query = 'SELECT Template
+                                FROM #__emundus_email_templates
+                                WHERE id = 1';
+                            $db->setQuery($query);
+                            $tmpl = $db->loadResult();
 
-                    if ($obj[0]->Template) {
-                        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/", "/\[SITE_NAME\]/"], [$subject, $body, JFactory::getConfig()->get('sitename')], $obj[0]->Template);
-                    }
+                            $site_url = str_replace('http://', "", JURI::base());
 
-                    $body = preg_replace(["/\[USER_EMAIL\]/", "/\[SITE_URL\]/"], [$user->email, $site_url], $body);
+                            $subject = 'Première connexion du gestionnaire';
+                            $body = 'Le gestionnaire [USER_EMAIL] s\'est connecté sur la plateforme [SITE_URL] à ' . $date->format('d/m/Y H:i');
 
-                    $commercial_emails = 'brice.hubinet@emundus.fr,brice.hubinet@emundus.io';
+                            if($tmpl) {
+                                $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/", "/\[SITE_NAME\]/"], [$subject, $body, JFactory::getConfig()->get('sitename')], $tmpl);
+                            }
 
-                    $emails = explode(',', $commercial_emails);
+                            $body = preg_replace(["/\[USER_EMAIL\]/", "/\[SITE_URL\]/"], [$user->email, $site_url], $body);
 
-                    // setup mail
-                    $email_from_sys = JFactory::getConfig()->get('mailfrom');
+                            $commercial_emails = 'brice.hubinet@emundus.io,yousra.nmiss@emundus.fr,nicolas.thomas@emundus.fr';
 
-                    $from = $obj[0]->emailfrom;
-                    $fromname = $obj[0]->name;
+                            $emails = explode(',', $commercial_emails);
 
-                    $sender = array(
-                        $email_from_sys,
-                        $fromname
-                    );
+                            // setup mail
+                            $email_from_sys = JFactory::getConfig()->get('mailfrom');
 
-                    foreach ($emails as $email) {
-                        $to = array($email);
+                            $sender = array(
+                                $email_from_sys,
+                            );
 
-                        $mailer = JFactory::getMailer();
-                        $mailer->setSender($sender);
-                        $mailer->addReplyTo($from, $fromname);
-                        $mailer->addRecipient($to);
-                        $mailer->setSubject($subject);
-                        $mailer->isHTML(true);
-                        $mailer->Encoding = 'base64';
-                        $mailer->setBody($body);
+                            foreach ($emails as $email) {
+                                $to = array($email);
 
-                        $send = $mailer->Send();
-                        if ($send !== true) {
+                                $mailer = JFactory::getMailer();
+                                $mailer->setSender($sender);
+                                $mailer->addRecipient($to);
+                                $mailer->setSubject($subject);
+                                $mailer->isHTML(true);
+                                $mailer->Encoding = 'base64';
+                                $mailer->setBody($body);
 
-                            JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT') . ' : ' . $email, 'error');
-                            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-
+                                $send = $mailer->Send();
+                                if ($send !== true) {
+                                    JLog::add(JText::_('MESSAGE_NOT_SENT') . ' : ' . $email, 'error', JLog::ERROR, 'com_emundus');
+                                }
+                            }
                         }
                     }
                 }
-            }*/
+            } catch(Exception $e){}
 
             // Store token in User's Parameters
 
