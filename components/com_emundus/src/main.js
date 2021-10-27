@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import VModal from 'vue-js-modal';
 import store from "./store";
-import i18n from "./i18n";
 import App from './App.vue';
+import translate from './mixins/translate.js';
 // import filterBuilderStore from './store/filterBuilder';
 // import FilterBuilder from './components/FilterBuilder/FilterBuilder.vue';
 
@@ -26,11 +26,11 @@ if (mountApp) {
     Vue.config.productionTip = false;
     Vue.use(store);
     Vue.use(VModal);
+    Vue.mixin(translate);
 
     new Vue({
         el: elementId,
         store,
-        i18n,
         render(h) {
             return h(
                 App, {
@@ -48,7 +48,6 @@ if (mountApp) {
 //     const filterbuilderApp = new Vue({
 //         el: '#em-vue-filter-builder',
 //         store: filterBuilderStore,
-//         i18n,
 //         render(h) {
 //             return h(
 //                 FilterBuilder

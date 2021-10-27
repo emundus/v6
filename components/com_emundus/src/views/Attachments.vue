@@ -20,14 +20,14 @@
         </div>
         <div class="wrapper" :class="{'loading': loading}">
           <div id="filters">
-            <input id="searchbar" type="text" ref="searchbar" :placeholder="$t('search')" @input="searchInFiles">
+            <input id="searchbar" type="text" ref="searchbar" :placeholder="translate('SEARCH')" @input="searchInFiles">
             <div class="actions">
               <div v-if="canExport" class="btn-icon-text" @click="exportAttachments">
                 <span class="material-icons">
                   file_upload
                 </span>
                 <span>
-                  {{ $t('export') }}
+                  {{ translate('EXPORT') }}
                 </span>
               </div>
               <span v-if="canDelete" class="material-icons" @click="deleteAttachments">
@@ -41,12 +41,12 @@
                     <th>
                       <input type="checkbox" @change="updateAllCheckedAttachments">
                     </th>
-                    <th @click="orderBy('filename')">{{ $t('attachments.name') }}</th>
-                    <th @click="orderBy('timedate')">{{ $t('attachments.send_date') }}</th>
-                    <th class="desc" @click="orderBy('description')">{{ $t('attachments.desc') }}</th>
-                    <th @click="orderBy('is_validated')">{{ $t('attachments.status') }}</th>
-                    <th @click="orderBy('modified_by')">{{ $t('attachments.modified_by') }}</th>
-                    <th @click="orderBy('modified')">{{ $t('attachments.modification_date') }}</th>
+                    <th @click="orderBy('filename')">{{ translate('NAME') }}</th>
+                    <th @click="orderBy('timedate')">{{ translate('SEND_DATE') }}</th>
+                    <th class="desc" @click="orderBy('description')">{{ translate('DESCRIPTION') }}</th>
+                    <th @click="orderBy('is_validated')">{{ translate('STATUS') }}</th>
+                    <th @click="orderBy('modified_by')">{{ translate('MODIFIED_BY') }}</th>
+                    <th @click="orderBy('modified')">{{ translate('MODIFICATION_DATE') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -64,7 +64,9 @@
                       'success': attachment.is_validated == 1, 
                       'error': attachment.is_validated == -2
                       }">
-                      <span>{{ $t(`attachments.validation_states.${attachment.is_validated}`) }}</span>
+                      <span v-if="attachment.is_validated == 1">{{ translate('VALID') }}</span>
+                      <span v-else-if="attachment.is_validated == -2">{{ translate('INVALID') }}</span>
+                      <span v-else>{{ translate('WAITING') }}</span>
                     </td>
                     <td>{{ getUserNameById(attachment.modified_by) }}</td>
                     <td>{{ formattedDate(attachment.modified) }}</td>
@@ -108,7 +110,7 @@
                   file_download
                 </span>
 
-                <span>{{ $t('download') }}</span>
+                <span>{{ translate('LINK_TO_DOWNLOAD') }}</span>
               </a>
             </div>
           </div>
@@ -128,7 +130,6 @@ import attachmentService from '../services/attachment.js';
 import userService from '../services/user.js';
 import fileService from '../services/file.js';
 import mixin from '../mixins/mixin.js';
-
 
 export default {
   name: 'Attachments',
@@ -348,7 +349,6 @@ export default {
 <style lang="scss" scoped>
 #em-attachments {
   font-size: 14px;
-  margin: 20px;
 
   .head {
     height: 40px;
@@ -370,37 +370,37 @@ export default {
         font-size: 12px;
       }
     }
-  }
 
-  .prev-next-files {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    
-    >div {
-      pointer-events: none;
+    .prev-next-files {
       display: flex;
       flex-direction: row;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      margin: 0 8px;
-      height: 40px;
-      width: 40px;
-      border: 1px solid #E3E5E8;
 
-      &.prev {
-        margin-right: 0;
-        border-radius: 4px 0px 0px 4px;
-      }
+      >div {
+        pointer-events: none;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin: 0 8px;
+        height: 40px;
+        width: 40px;
+        border: 1px solid #E3E5E8;
 
-      &.next {
-        border-radius: 0px 4px 4px 0px;
-      }
+        &.prev {
+          margin-right: 0;
+          border-radius: 4px 0px 0px 4px;
+        }
 
-      &.active {
-        pointer-events: auto;
-        cursor: pointer;
+        &.next {
+          border-radius: 0px 4px 4px 0px;
+        }
+
+        &.active {
+          pointer-events: auto;
+          cursor: pointer;
+        }
       }
     }
   }
@@ -430,7 +430,8 @@ export default {
   }
 
   .wrapper {
-    width: 100%;
+    margin: 20px;
+    width: calc(100% - 40px);
 
     &.loading {
       min-height: calc(100vh - 400px);
