@@ -1,16 +1,13 @@
 <?php
 /**
- * Joomla! Content Management System
+ * @package     Joomla.Platform
+ * @subpackage  Base
  *
- * @copyright  (C) 2008 Open Source Matters, Inc. <https://www.joomla.org>
- * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
-namespace Joomla\CMS\Adapter;
-
 defined('JPATH_PLATFORM') or die;
-
-use Joomla\CMS\Object\CMSObject;
 
 /**
  * Adapter Instance Class
@@ -18,12 +15,12 @@ use Joomla\CMS\Object\CMSObject;
  * @since       1.6
  * @deprecated  5.0 Will be removed without replacement
  */
-class AdapterInstance extends CMSObject
+class JAdapterInstance extends JObject
 {
 	/**
 	 * Parent
 	 *
-	 * @var    Adapter
+	 * @var    JAdapter
 	 * @since  1.6
 	 */
 	protected $parent = null;
@@ -31,7 +28,7 @@ class AdapterInstance extends CMSObject
 	/**
 	 * Database
 	 *
-	 * @var    \JDatabaseDriver
+	 * @var    JDatabaseDriver
 	 * @since  1.6
 	 */
 	protected $db = null;
@@ -39,13 +36,13 @@ class AdapterInstance extends CMSObject
 	/**
 	 * Constructor
 	 *
-	 * @param   Adapter           $parent   Parent object
-	 * @param   \JDatabaseDriver  $db       Database object
-	 * @param   array             $options  Configuration Options
+	 * @param   JAdapter         $parent   Parent object
+	 * @param   JDatabaseDriver  $db       Database object
+	 * @param   array            $options  Configuration Options
 	 *
 	 * @since   1.6
 	 */
-	public function __construct(Adapter $parent, \JDatabaseDriver $db, array $options = array())
+	public function __construct(JAdapter $parent, JDatabaseDriver $db, array $options = array())
 	{
 		// Set the properties from the options array that is passed in
 		$this->setProperties($options);
@@ -54,13 +51,13 @@ class AdapterInstance extends CMSObject
 		$this->parent = $parent;
 
 		// Pull in the global dbo in case something happened to it.
-		$this->db = $db ?: \JFactory::getDbo();
+		$this->db = $db ?: JFactory::getDbo();
 	}
 
 	/**
 	 * Retrieves the parent object
 	 *
-	 * @return  Adapter
+	 * @return  JAdapter
 	 *
 	 * @since   1.6
 	 */
