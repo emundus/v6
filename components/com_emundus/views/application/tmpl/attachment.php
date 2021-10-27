@@ -9,19 +9,15 @@
  */
 
 // No direct access
-
 defined('_JEXEC') or die('Restricted access');
 
 $offset = JFactory::getConfig()->get('offset');
 JFactory::getSession()->set('application_layout', 'attachment');
 
-// $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this->fnum);
-// $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
-
 $lang = JFactory::getLanguage();
 ?>
 
-<div id="em-vue-filter-builder"></div>
+<!-- <div id="em-vue-filter-builder"></div> -->
 
 <div id="em-application-attachment"
     user=<?php echo $this->_user->id ?>
@@ -31,4 +27,3 @@ $lang = JFactory::getLanguage();
 </div>
 
 <script src="media/com_emundus_vue/app_emundus.js"></script>
-<script src="media/com_emundus_vue/chunk-vendors_emundus.js"></script>

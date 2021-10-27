@@ -1,15 +1,10 @@
 import Vue from 'vue';
-import store from "./store";
-import filterBuilderStore from './store/filterBuilder';
-import i18n from "./i18n";
 import VModal from 'vue-js-modal';
+import store from "./store";
+import i18n from "./i18n";
 import App from './App.vue';
-import FilterBuilder from './components/FilterBuilder/FilterBuilder.vue';
-
-Vue.config.productionTip = false;
-
-Vue.use(store);
-Vue.use(VModal);
+// import filterBuilderStore from './store/filterBuilder';
+// import FilterBuilder from './components/FilterBuilder/FilterBuilder.vue';
 
 let mountApp = false;
 let elementId = "";
@@ -28,7 +23,11 @@ if (document.getElementById("em-application-attachment")) {
 }
 
 if (mountApp) {
-    const vm = new Vue({
+    Vue.config.productionTip = false;
+    Vue.use(store);
+    Vue.use(VModal);
+
+    new Vue({
         el: elementId,
         store,
         i18n,
@@ -45,15 +44,15 @@ if (mountApp) {
     });
 }
 
-if (document.getElementById("em-vue-filter-builder")) {
-    const filterbuilderApp = new Vue({
-        el: '#em-vue-filter-builder',
-        store: filterBuilderStore,
-        i18n,
-        render(h) {
-            return h(
-                FilterBuilder
-            );
-        }
-    });
-}
+// if (document.getElementById("em-vue-filter-builder")) {
+//     const filterbuilderApp = new Vue({
+//         el: '#em-vue-filter-builder',
+//         store: filterBuilderStore,
+//         i18n,
+//         render(h) {
+//             return h(
+//                 FilterBuilder
+//             );
+//         }
+//     });
+// }
