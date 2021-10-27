@@ -5,45 +5,45 @@
                 <h2>{{ attachment.value }}</h2>
 
                 <div class="input-group">
-                    <label for="description">{{ $t('attachments.desc') }} </label>
+                    <label for="description">{{ translate('DESCRIPTION') }} </label>
                     <textarea name="description" type="text" v-model="attachment.description">
                     </textarea>
                 </div>
 
                 <div class="input-group">
-                    <label for="status">{{ $t('attachments.status') }}</label>
+                    <label for="status">{{ translate('STATUS') }}</label>
                     <select name="status" v-model="attachment.is_validated">
-                        <option value=0> {{ $t('attachments.validation_states.0') }} </option>
-                        <option value=1> {{ $t('attachments.validation_states.1') }} </option>
-                        <option value=-2> {{ $t('attachments.validation_states["-2"]') }} </option>
+                        <option value=0> {{ translate('WAITING') }} </option>
+                        <option value=1> {{ translate('VALID') }} </option>
+                        <option value=-2> {{ translate('INVALID') }} </option>
                     </select>
                 </div>
                 <div class="input-group">
-                    <label for="replace"> {{ $t('replace') }}</label>
+                    <label for="replace"> {{ translate('replace') }}</label>
                     <input type="file" name="replace" @change="updateFile" :accept="allowedType">
                 </div>
             </div>
             <div class="non-editable-data">
                 <div>
-                    <span>{{ $t('attachments.send_date') }}</span>
+                    <span>{{ translate('SEND_DATE') }}</span>
                     <span>{{ formattedDate(attachment.timedate) }}</span>
                 </div>
                 <div>
-                    <span>{{ $t('attachments.modified_by') }}</span>
+                    <span>{{ translate('MODIFIED_BY') }}</span>
                     <span>{{ getUserNameById(attachment.modified_by) }}</span>
                 </div>
                 <div>
-                    <span>{{ $t('attachments.modification_date') }}</span>
+                    <span>{{ translate('MODIFICATION_DATE') }}</span>
                     <span>{{ formattedDate(attachment.modified) }}</span>
                 </div>
                 <div v-if="attachment.file_size">
-                    <span>{{ $t('attachments.file_size') }}</span>
+                    <span>{{ translate('FILE_SIZE') }}</span>
                     <span> ... kb </span>
                 </div>
             </div>
         </div>
         <div class="actions">
-            <button @click="saveChanges" class="btn save-btn">{{ $t('save') }}</button>
+            <button @click="saveChanges" class="btn save-btn">{{ translate('SAVE') }}</button>
         </div>
     </div>
 </template>

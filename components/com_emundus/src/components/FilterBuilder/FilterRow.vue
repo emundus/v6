@@ -41,10 +41,8 @@
 </template>
 
 <script>
-import translateMixin from "../../mixins/translate";
 
 export default {
-  mixins: [translateMixin],
   props: {
     id: {
       type: Number,
