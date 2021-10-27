@@ -513,4 +513,79 @@ class EmundusControllerWebhook extends JControllerLegacy {
             JLog::add('Your ip address is blocked', JLog::ERROR, 'com_emundus.webhook');
         }
     }
+
+    public function export_banner(){
+        $eMConfig 	= JComponentHelper::getParams('com_emundus');
+
+        $secret 	= JFactory::getConfig()->get('secret');
+        $token 		= JFactory::getApplication()->input->get('token', '', 'ALNUM');
+
+        $banner_limit = $eMConfig->get('banner_limit');
+
+        $db = JFactory::getDbo();
+        $res = new stdClass();
+
+        header('Content-type: application/json');
+        if ($token != $secret) {
+            JLog::add('Bad token sent.', JLog::ERROR, 'com_emundus.webhook');
+            echo json_encode(array('code'=>400, 'message'=> 'Bad Request'));
+            exit;
+        }
+
+        try {
+            $query = "SELECT    e_360_7747 as nom, e_360_7749 as prenom, e_360_7746 as civilite, e_360_7751 as dateNaissance,e_360_7755 as villeNaissance, label_fr as paysNaissance, 
+                                e_360_7752 as nationalite, ju.email as email,trim(e_362_7764) as telephone, e_362_7757 as adrPersoL1,e_362_7758 as adrPersoL2,e_362_7760 as adrPersoCodePost,
+                                e_362_7761 as adrPersoVille, e_362_7763 as adrPersoCodePays, jecc.fnum as noClientemundus, 'summer.school@sciencepo.fr' as emailAssistante, filename as photo,
+                                
+                                case
+                                    WHEN jecc.programme = 'Universitaire' then 'STP'
+                                    WHEN jecc.programme = 'winter-school' then 'WSTP'
+                                    WHEN jecc.programme = 'precoll' then 'STP_PRE_U'
+                                end as 'programme',
+                                
+                                case
+                                    WHEN jecc.programme = 'Universitaire' then '202120'
+                                    WHEN jecc.programme = 'winter-school' then '202110'
+                                    WHEN jecc.programme = 'precoll' then '202120'
+                                end as 'semestre',
+                                
+                                case
+                                    when e.e_394_8112 = 'JYES' then 'Oui'
+                                    when e.e_394_8112 = 'JNO' then 'Non'
+                                end as 'usagePhoto'
+                    from jos_emundus_1001_00
+                    left join jos_emundus_campaign_candidature jecc on jos_emundus_1001_00.fnum = jecc.fnum
+                    left join data_country dc on jos_emundus_1001_00.e_360_7754 = dc.id
+                    left join jos_users ju on ju.id = jecc.user_id
+                    left join jos_emundus_1001_01 j on jos_emundus_1001_00.fnum = j.fnum
+                    left join jos_emundus_1025_00 e on jos_emundus_1001_00.fnum = e.fnum
+                    left join jos_emundus_uploads jeu on jos_emundus_1001_00.fnum = jeu.fnum
+                    where jecc.status = 4 
+                      and jeu.attachment_id = 10 
+                      and (jecc.id_banner is null or jecc.id_banner = '')
+            ";
+
+            $db->setQuery($query,0,$banner_limit);
+
+            $raw = $db->loadObjectList();
+
+            $res->status = 'OK';
+            $res->count = sizeof($raw);
+            $res->message = '';
+
+            /* encode 64 bit images */
+            foreach($raw as $data) {
+                $data->photo = base64_encode(file_get_contents($data->photo));
+            }
+
+            $res->results = $raw;
+            echo json_encode((array)$res);
+            exit;
+        } catch(Exception $e) {
+            $res->status = 'NOK';
+            $res->message = $e->getMessage();
+        }
+
+    }
+
 }
