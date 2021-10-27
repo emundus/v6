@@ -4121,11 +4121,11 @@ class EmundusModelApplication extends JModelList
                 $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><video controls  style="max-width: 100%;"><source src="' . $filePath . '" type="video/' . $extension . '"></video></div>';
             } else {
                 $preview['status'] = false;
-                $preview['content'] = '<p style="margin-top: calc(50% - 19px);text-align:center;">' . JText::_('FILE_TYPE_NOT_SUPPORTED') . '</p>';
+                $preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('FILE_TYPE_NOT_SUPPORTED') . '</p></div>';
             } 
         } else {
             $preview['status'] = false;
-            $preview['content'] = '<p style="margin-top: calc(50% - 19px);text-align:center;">' . JText::_('FILE_NOT_FOUND') . '</p>';
+            $preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('FILE_NOT_FOUND') . '</p></div>';
         }
 
         return $preview;
