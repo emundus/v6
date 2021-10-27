@@ -1488,17 +1488,11 @@ $(document).ready(function() {
     //
     // Menu Form actions
     //
-    const destroyappEvent = new Event('destroy-com-emundus-vue');
     $(document).on('click', '#em-appli-menu .list-group-item', function(e) {
         $.ajaxQ.abortAll();
         e.preventDefault();
         var id = $(this).attr('id');
         var url = $(this).attr('href');
-
-        // TODO: temporary solution while we wait for a totally vue menu
-        if (url.indexOf('layout=attachment') == -1) {
-            window.dispatchEvent(destroyappEvent);
-        } 
 
         $.ajax({
             type: "get",
