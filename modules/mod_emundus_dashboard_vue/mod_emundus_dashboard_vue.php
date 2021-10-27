@@ -12,9 +12,10 @@ $document->addScript('media/mod_emundus_dashboard_vue/chunk-vendors.js');
 $document->addStyleSheet('media/mod_emundus_dashboard_vue/app.css');
 
 
-$profile = $params->get('profile');
+$profiles = $params->get('profile');
+$programme_filter = $params->get('filter_programmes');
 
-if(JFactory::getSession()->get('emundusUser')->profile == $profile) {
+if(in_array(JFactory::getSession()->get('emundusUser')->profile,$profiles)) {
 
     $widgets[] = $params->get('widget1');
     $widgets[] = $params->get('widget2');
