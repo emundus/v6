@@ -137,7 +137,8 @@ switch ($order) {
             <div class="col-md-12">
                 <span><?php echo $currentCampaign->notes ?></span>
             </div>
-        <?php else :?>
+        <?php endif; ?>
+        <?php if ($showcampaign) :?>
             <div class="col-md-12">
                 <span><?php echo $currentCampaign->description ?></span>
             </div>
@@ -150,7 +151,19 @@ switch ($order) {
             <hr>
         <?php endforeach; ?>
     </div>
-    <div id="documents"></div>
+    <div id="documents">
+        <div class="em-campaign-dropfiles">
+        <ul>
+            <?php foreach($files as $file) { ?>
+                <a href="files/<?php echo $file->catid."/".$file->title_category."/".$file->id."/".$file->title_file.".".$file->ext; ?>" target="_blank" rel="noopener noreferrer" >
+                    <li class="em-campaign-dropfiles__btn">
+                        <?php echo $file->title_file.".".$file->ext; ?><span><i class="fas fa-arrow-circle-down"></i></span>
+                    </li>
+                </a>
+            <?php } ?>
+        </ul>
+        </div>
+    </div>
 
 </div>
 
