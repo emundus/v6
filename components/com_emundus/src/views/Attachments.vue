@@ -63,7 +63,7 @@
                     <td>
                       <input class="attachment-check" type="checkbox" @change="updateCheckedAttachments(attachment.aid)" :checked="checkedAttachments.includes(attachment.aid)">
                     </td>
-                    <td class="td-document" @click="openModal(attachment)">{{ attachment.filename }}</td>
+                    <td class="td-document" @click="openModal(attachment)">{{ attachment.value }}</td>
                     <td>{{ formattedDate(attachment.timedate) }}</td>
                     <td class="desc">{{ attachment.description }}</td>
                     <td class="status valid-state" :class="{
@@ -277,7 +277,7 @@ export default {
       this.attachments.forEach((attachment, index) => {
         // if attachment description contains the search term, show it
         // lowercase the search term to avoid case sensitivity
-        if (attachment.description.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase()) || attachment.filename.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase())) {
+        if (attachment.description.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase()) || attachment.value.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase())) {
           this.attachments[index].show = true;
         } else {
           // remove attachments from checkedAttachment list
@@ -525,7 +525,7 @@ export default {
     .material-icons.delete {
       transition: all .3s;
       width: 30px;
-      
+
       &:hover {
         cursor: pointer;
         color: var(--error-color);
