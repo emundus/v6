@@ -1635,7 +1635,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $language = JModelLegacy::getInstance('Override', 'LanguagesModel');
 
         // Default parameters
-        $dbtype = 'VARCHAR(255)';
+        $dbtype = 'TEXT';
         $dbnull = 'NULL';
         $default = '';
         //
@@ -2035,7 +2035,7 @@ this.set(words.join(&quot; &quot;));
                     $dbtype = 'TEXT';
                     break;
                 default:
-                    $dbtype = 'VARCHAR(255)';
+                    $dbtype = 'TEXT';
             }
 
             if($db_element->plugin == 'display' && $element['plugin'] != 'display'){
@@ -2154,7 +2154,7 @@ this.set(words.join(&quot; &quot;));
                 $key = array_search("isemail", $element['params']['validations']['plugin']);
 
                 if ($element['params']['password'] != 6) {
-                    $dbtype = 'VARCHAR(' . $element['params']['maxlength'] . ')';
+                    $dbtype = 'TEXT';
                 } else {
                     $dbtype = 'INT(' . $element['params']['maxlength'] . ')';
                 }
@@ -2252,7 +2252,7 @@ this.set(words.join(&quot; &quot;));
         try {
             foreach ($elements as $element) {
                 if($element->element->id == $eid) {
-                    $dbtype = 'VARCHAR(255)';
+                    $dbtype = 'TEXT';
 
                     $newelement = $element->copyRow($element->element->id, 'Copy of %s', intval($group),'e_' . $form_id . '_tmp');
                     $newelementid = $newelement->id;
@@ -3304,7 +3304,7 @@ this.set(words.join(&quot; &quot;));
                 } elseif ($element->element->plugin === 'textarea') {
                     $dbtype = 'TEXT';
                 } else {
-                    $dbtype = 'VARCHAR(255)';
+                    $dbtype = 'TEXT';
                 }
 
                 $query = "ALTER TABLE " . $newtablename . " ADD e_" . $form_id . "_" . $element->element->id . " " . $dbtype . " NULL";

@@ -1386,7 +1386,6 @@ class EmundusModelApplication extends JModelList
                                                             $db = $this->getDbo();
                                                             $query = $db->getQuery(true);
 
-                                                            $parent_id = strlen($element->content_id) > 0 ? $element->content_id : 0;
                                                             $select = "CONCAT(" . $params->join_val_column . ")";
                                                             if (!empty($params->join_val_column_concat)) {
                                                                 $select = $params->join_val_column_concat;
@@ -1539,8 +1538,20 @@ class EmundusModelApplication extends JModelList
                                                 $element->content_id = -1;
                                             }
 
+                                            if (count($res) > 1) {
+                                                if ($element->plugin == 'display') {
+                                                    $element->content = empty($element->eval) ? $element->default : $res[1];
+                                                } else {
+                                                    $element->content = $res[1];
+                                                }
+                                                $element->content_id = $res[0];
+                                            } else {
+                                                $element->content = '';
+                                                $element->content_id = -1;
+                                            }
+
                                             // Do not display elements with no value inside them.
-                                            if ($show_empty_fields == 0 && trim($element->content) == '') {
+                                            if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1)) {
                                                 continue;
                                             }
 
@@ -3168,6 +3179,7 @@ class EmundusModelApplication extends JModelList
         }
 
         $query
+            ->clear()
             ->select(['ho.*', $db->quoteName('eh.user', 'user_cms_id')])
             ->from($db->quoteName('#__emundus_hikashop', 'eh'))
             ->leftJoin($db->quoteName('#__hikashop_order','ho').' ON '.$db->quoteName('ho.order_id').' = '.$db->quoteName('eh.order_id'))
