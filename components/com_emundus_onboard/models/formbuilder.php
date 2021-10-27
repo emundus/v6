@@ -2154,7 +2154,7 @@ this.set(words.join(&quot; &quot;));
                 $key = array_search("isemail", $element['params']['validations']['plugin']);
 
                 if ($element['params']['password'] != 6) {
-                    $dbtype = 'VARCHAR(' . $element['params']['maxlength'] . ')';
+                    $dbtype = 'TEXT';
                 } else {
                     $dbtype = 'INT(' . $element['params']['maxlength'] . ')';
                 }
