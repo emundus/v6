@@ -25,7 +25,7 @@
         <button @click.prevent="add" type="button" class="bouton-sauvergarder-et-continuer-3 button-add-option" style="margin-bottom: 2em">{{AddOption}}</button>
       </div>
       <div class="form-group mb-2" >
-        <label>Sélectionner par defaut :</label>
+        <label>{{ SelectDefault }}</label>
         <select id="select_type" class="dropdown-toggle" v-model="choiceOfDefaultValue"
                 @change="onChangeChoiceOfDefaultValue($event)">
           <option :value=-1></option>
@@ -58,6 +58,7 @@ export default {
       helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
       suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
       AddOption: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS"),
+      SelectDefault: Joomla.JText._("COM_EMUNDUS_ONBOARD_DEFAULT_SELECT"),
     };
   },
   methods: {

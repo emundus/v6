@@ -48,7 +48,7 @@
         </select>
       </div>
       <div class="form-group mb-2" v-if="databasejoin != 1">
-        <label>Sélectionner par defaut :</label>
+        <label>{{ SelectDefault }}</label>
         <select id="select_type" class="dropdown-toggle" v-model="choiceOfDefaultValue"
                 @change="onChangeChoiceOfDefaultValue($event)">
           <option :value=-1></option>
@@ -86,6 +86,7 @@ export default {
       suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
       AddOption: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS"),
       DataTables: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN"),
+      SelectDefault: Joomla.JText._("COM_EMUNDUS_ONBOARD_DEFAULT_SELECT"),
     };
   },
   methods: {

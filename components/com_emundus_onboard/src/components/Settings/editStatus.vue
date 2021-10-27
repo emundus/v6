@@ -39,7 +39,7 @@
             ></v-swatches>
           <button type="button" :title="Delete" v-if="statu.edit == 1 && statu.step != 0 && statu.step != 1" @click="removeStatus(statu,index)" class="remove-tag"><i class="fas fa-times"></i></button>
         </div>
-      <p v-if="existInActualLanguage" class="text-error">Impossible d'ajouter deux statuts identiques</p>
+      <p v-if="existInActualLanguage" class="text-error">{{ CannotDuplicateStatus }}</p>
     </div>
 </template>
 
@@ -77,6 +77,7 @@
                 TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
                 addStatus: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_STATUS"),
                 Delete: Joomla.JText._("COM_EMUNDUS_ONBOARD_DELETE_STATUS"),
+                CannotDuplicateStatus: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANNOT_DUPLICATE_STATUS"),
             };
         },
 
