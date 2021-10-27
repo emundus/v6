@@ -1,24 +1,23 @@
 <template>
     <div id="attachment-edit">
         <div class="wrapper">
+            <h2>{{ attachment.value }}</h2>
             <div class="editable-data"> 
-                <h2>{{ attachment.value }}</h2>
-
                 <div class="input-group">
                     <label for="description">{{ translate('DESCRIPTION') }} </label>
-                    <textarea name="description" type="text" v-model="attachment.description">
+                    <textarea name="description" type="text" v-model="attachment.description" :disabled="!canUpdate">
                     </textarea>
                 </div>
 
                 <div class="input-group">
                     <label for="status">{{ translate('STATUS') }}</label>
-                    <select name="status" v-model="attachment.is_validated">
+                    <select name="status" v-model="attachment.is_validated" :disabled="!canUpdate">
                         <option value=0> {{ translate('WAITING') }} </option>
                         <option value=1> {{ translate('VALID') }} </option>
                         <option value=-2> {{ translate('INVALID') }} </option>
                     </select>
                 </div>
-                <div class="input-group">
+                <div class="input-group" v-if="canUpdate">
                     <label for="replace"> {{ translate('replace') }}</label>
                     <input type="file" name="replace" @change="updateFile" :accept="allowedType">
                 </div>
@@ -43,8 +42,10 @@
             </div>
         </div>
         <div class="actions">
-            <button @click="saveChanges" class="btn-primary-vue">{{ translate('SAVE') }}</button>
+            <button v-if="canUpdate" @click="saveChanges" class="btn-primary-vue">{{ translate('SAVE') }}</button>
         </div>
+
+        <div v-if="error" class="error">{{ errorMessage }}</div>
     </div>
 </template>
 
@@ -64,10 +65,14 @@ export default {
     data() {
         return {
             attachment: {},
-            file: null
+            file: null,
+            canUpdate: false,
+            error: false,
+            errorMessage: ''
         }
     },
     mounted() {
+        this.canUpdate = this.$store.state.user.rights[this.fnum] ? this.$store.state.user.rights[this.fnum].canUpdate : false;
         this.attachment = this.$store.state.attachment.selectedAttachment;
     },
     methods: {
@@ -92,20 +97,31 @@ export default {
                     fnum: this.fnum,
                     attachment: this.attachment
                 });
+                
+                if (response.status.file_update) {
+                    // need to update file preview
+                    const data = await attachmentService.getPreview(this.$store.state.user.displayedUser, this.attachment.filename);
+
+                    // store preview data
+                    this.$store.dispatch('attachment/setPreview', {preview: data, id: this.attachment.aid});
+                }
+
+                this.$emit('saveChanges');
+            } else {
+                this.showError(response.msg);
             }
-
-            if (response.status.file_update) {
-                // need to update file preview
-                const data = await attachmentService.getPreview(this.$store.state.user.displayedUser, this.attachment.filename);
-
-                // store preview data
-                this.$store.dispatch('attachment/setPreview', {preview: data, id: this.attachment.aid});
-            }
-
-            this.$emit('saveChanges');
         },
         updateFile(event) {
             this.file = event.target.files[0];
+        },
+        showError(error) {
+            this.error = true;
+            this.errorMessage = error;
+
+            setTimeout(() => {
+                this.error = false;
+                this.errorMessage = '';
+            }, 3000);
         }
     },
     computed: {
@@ -137,6 +153,19 @@ export default {
     width: 40%;
     float: right;
     border-left: 1px solid var(--border-color);
+    position: relative;
+
+    .error {
+        position: absolute;
+        margin: 10px 10px;
+        top: 0;
+        left: 0;
+        width: calc(100% - 20px);
+        background-color: var(--error-bg-color);
+        color: var(--error-color);
+        font-size: 1.2em;
+        padding: 16px;
+    }
 
     .wrapper {
         width: 100%;
@@ -167,6 +196,10 @@ export default {
             border-radius: 0;
             border-color: transparent;
             background-color: var(--grey-bg-color);
+
+            &:hover, &:focus {
+                box-shadow: none;
+            }
         }
 
         select {

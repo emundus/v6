@@ -895,13 +895,15 @@ class EmundusControllerUsers extends JControllerLegacy {
 	{
 		$rights = [
 			'canDelete' => false,
-			'canExport' => false
+			'canExport' => false,
+			'canUpdate' => false,
 		];
 
 		$id = JFactory::getApplication()->input->getInt('id', null);
 		$fnum = JFactory::getApplication()->input->getString('fnum', null);
 
 		$rights['canDelete'] = EmundusHelperAccess::asAccessAction(4, 'd', $id, $fnum);
+		$rights['canUpdate'] = EmundusHelperAccess::asAccessAction(4, 'u', $id, $fnum);
 		$rights['canExport'] = EmundusHelperAccess::asAccessAction(8, 'c', $id, $fnum);
 
 		echo json_encode(array('status' => true, 'rights' => $rights));
