@@ -2,18 +2,13 @@
 /**
  * Joomla! Content Management System
  *
- * @copyright  (C) 2012 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 namespace Joomla\CMS\Exception;
 
 defined('JPATH_PLATFORM') or die;
-
-use Joomla\CMS\Document\Document;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Log\Log;
 
 /**
  * Displays the custom error page when an uncaught exception occurs.
@@ -22,25 +17,6 @@ use Joomla\CMS\Log\Log;
  */
 class ExceptionHandler
 {
-	/**
-	 * Handles exceptions: logs errors and renders error page.
-	 *
-	 * @param   \Exception|\Throwable  $error  An Exception or Throwable (PHP 7+) object for which to render the error page.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.10.0
-	 */
-	public static function handleException($error)
-	{
-		if (static::isException($error))
-		{
-			static::logException($error);
-		}
-
-		static::render($error);
-	}
-
 	/**
 	 * Render the error page based on an exception.
 	 *
@@ -52,12 +28,38 @@ class ExceptionHandler
 	 */
 	public static function render($error)
 	{
-		// Render template error page for exceptions only, because template will expect exception object
-		if (static::isException($error))
+		$expectedClass = PHP_MAJOR_VERSION >= 7 ? '\Throwable' : '\Exception';
+		$isException   = $error instanceof $expectedClass;
+
+		// In PHP 5, the $error object should be an instance of \Exception; PHP 7 should be a Throwable implementation
+		if ($isException)
 		{
 			try
 			{
-				$app = Factory::getApplication();
+				// Try to log the error, but don't let the logging cause a fatal error
+				try
+				{
+					\JLog::add(
+						sprintf(
+							'Uncaught %1$s of type %2$s thrown. Stack trace: %3$s',
+							$expectedClass,
+							get_class($error),
+							$error->getTraceAsString()
+						),
+						\JLog::CRITICAL,
+						'error'
+					);
+				}
+				catch (\Throwable $e)
+				{
+					// Logging failed, don't make a stink about it though
+				}
+				catch (\Exception $e)
+				{
+					// Logging failed, don't make a stink about it though
+				}
+
+				$app = \JFactory::getApplication();
 
 				// If site is offline and it's a 404 error, just go to index (to see offline message, instead of 404)
 				if ($error->getCode() == '404' && $app->get('offline') == 1)
@@ -73,14 +75,14 @@ class ExceptionHandler
 					'direction' => 'ltr',
 				);
 
-				// If there is a \JLanguage instance in Factory then let's pull the language and direction from its metadata
-				if (Factory::$language)
+				// If there is a \JLanguage instance in \JFactory then let's pull the language and direction from its metadata
+				if (\JFactory::$language)
 				{
-					$attributes['language']  = Factory::getLanguage()->getTag();
-					$attributes['direction'] = Factory::getLanguage()->isRtl() ? 'rtl' : 'ltr';
+					$attributes['language']  = \JFactory::getLanguage()->getTag();
+					$attributes['direction'] = \JFactory::getLanguage()->isRtl() ? 'rtl' : 'ltr';
 				}
 
-				$document = Document::getInstance('error', $attributes);
+				$document = \JDocument::getInstance('error', $attributes);
 
 				if (!$document)
 				{
@@ -94,16 +96,12 @@ class ExceptionHandler
 				// Push the error object into the document
 				$document->setError($error);
 
-				// Clear buffered output at all levels
-				while (ob_get_level())
+				if (ob_get_contents())
 				{
 					ob_end_clean();
 				}
 
-				// This is needed to ensure the test suite can still get the output buffer
-				ob_start();
-
-				$document->setTitle(Text::_('ERROR') . ': ' . $error->getCode());
+				$document->setTitle(\JText::_('ERROR') . ': ' . $error->getCode());
 
 				$data = $document->render(
 					false,
@@ -150,7 +148,7 @@ class ExceptionHandler
 
 		$message = 'Error';
 
-		if (static::isException($error))
+		if ($isException)
 		{
 			// Make sure we do not display sensitive data in production environments
 			if (ini_get('display_errors'))
@@ -169,56 +167,5 @@ class ExceptionHandler
 		echo $message;
 
 		jexit(1);
-	}
-
-	/**
-	 * Checks if given error belong to PHP exception class (\Throwable for PHP 7+, \Exception for PHP 5-).
-	 *
-	 * @param   mixed  $error  Any error value.
-	 *
-	 * @return  bool
-	 *
-	 * @since   3.10.0
-	 */
-	protected static function isException($error)
-	{
-		$expectedClass = PHP_MAJOR_VERSION >= 7 ? '\Throwable' : '\Exception';
-
-		return $error instanceof $expectedClass;
-	}
-
-	/**
-	 * Logs exception, catching all possible errors during logging.
-	 *
-	 * @param   \Exception|\Throwable  $error  An Exception or Throwable (PHP 7+) object to get error message from.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.10.0
-	 */
-	protected static function logException($error)
-	{
-		// Try to log the error, but don't let the logging cause a fatal error
-		try
-		{
-			Log::add(
-				sprintf(
-					'Uncaught %1$s of type %2$s thrown. Stack trace: %3$s',
-					PHP_MAJOR_VERSION >= 7 ? 'Throwable' : 'Exception',
-					get_class($error),
-					$error->getTraceAsString()
-				),
-				Log::CRITICAL,
-				'error'
-			);
-		}
-		catch (\Throwable $e)
-		{
-			// Logging failed, don't make a stink about it though
-		}
-		catch (\Exception $e)
-		{
-			// Logging failed, don't make a stink about it though
-		}
 	}
 }

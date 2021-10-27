@@ -2,7 +2,7 @@
 /**
  * Joomla! Content Management System
  *
- * @copyright  (C) 2017 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -18,7 +18,7 @@ use Joomla\CMS\Language\Multilanguage;
  *
  * @since  1.6
  */
-class Categories implements CategoryInterface
+class Categories
 {
 	/**
 	 * Array to hold the object instances
@@ -221,7 +221,7 @@ class Categories implements CategoryInterface
 	 */
 	protected function _load($id)
 	{
-		/** @var \JDatabaseDriver */
+		/** @var JDatabaseDriver */
 		$db   = Factory::getDbo();
 		$app  = Factory::getApplication();
 		$user = Factory::getUser();

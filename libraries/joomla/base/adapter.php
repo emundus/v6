@@ -1,16 +1,13 @@
 <?php
 /**
- * Joomla! Content Management System
+ * @package     Joomla.Platform
+ * @subpackage  Base
  *
- * @copyright  (C) 2008 Open Source Matters, Inc. <https://www.joomla.org>
- * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
-namespace Joomla\CMS\Adapter;
-
 defined('JPATH_PLATFORM') or die;
-
-use Joomla\CMS\Object\CMSObject;
 
 /**
  * Adapter Class
@@ -20,12 +17,12 @@ use Joomla\CMS\Object\CMSObject;
  * @since       1.6
  * @deprecated  5.0 Will be removed without replacement
  */
-class Adapter extends CMSObject
+class JAdapter extends JObject
 {
 	/**
 	 * Associative array of adapters
 	 *
-	 * @var    static[]
+	 * @var    JAdapterInstance[]
 	 * @since  1.6
 	 */
 	protected $_adapters = array();
@@ -57,7 +54,7 @@ class Adapter extends CMSObject
 	/**
 	 * Database Connector Object
 	 *
-	 * @var    \JDatabaseDriver
+	 * @var    JDatabaseDriver
 	 * @since  1.6
 	 */
 	protected $_db;
@@ -77,13 +74,13 @@ class Adapter extends CMSObject
 		$this->_classprefix = $classprefix ? $classprefix : 'J';
 		$this->_adapterfolder = $adapterfolder ? $adapterfolder : 'adapters';
 
-		$this->_db = \JFactory::getDbo();
+		$this->_db = JFactory::getDbo();
 	}
 
 	/**
 	 * Get the database connector object
 	 *
-	 * @return  \JDatabaseDriver  Database connector object
+	 * @return  JDatabaseDriver  Database connector object
 	 *
 	 * @since   1.6
 	 */
@@ -98,7 +95,7 @@ class Adapter extends CMSObject
 	 * @param   string  $name     Name of adapter to return
 	 * @param   array   $options  Adapter options
 	 *
-	 * @return  static|boolean  Adapter of type 'name' or false
+	 * @return  JAdapterInstance|boolean  Adapter of type 'name' or false
 	 *
 	 * @since   1.6
 	 */
@@ -165,7 +162,7 @@ class Adapter extends CMSObject
 		// Try to load the adapter object
 		$class = $this->_classprefix . ucfirst($name);
 
-		\JLoader::register($class, $fullpath);
+		JLoader::register($class, $fullpath);
 
 		if (!class_exists($class))
 		{
@@ -188,9 +185,9 @@ class Adapter extends CMSObject
 	 */
 	public function loadAllAdapters($options = array())
 	{
-		$files = new \DirectoryIterator($this->_basepath . '/' . $this->_adapterfolder);
+		$files = new DirectoryIterator($this->_basepath . '/' . $this->_adapterfolder);
 
-		/* @type  $file  \DirectoryIterator */
+		/* @type  $file  DirectoryIterator */
 		foreach ($files as $file)
 		{
 			$fileName = $file->getFilename();
