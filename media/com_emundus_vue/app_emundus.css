@@ -309,11 +309,21 @@
   background: transparent;
   background-color: transparent;
 }
+#em-attachments table td[data-v-30bae934], #em-attachments table th[data-v-30bae934] {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+}
 #em-attachments table th.desc[data-v-30bae934], #em-attachments table td.desc[data-v-30bae934] {
   max-width: 250px;
+  width: initial;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+#em-attachments table th.status[data-v-30bae934], #em-attachments table td.status[data-v-30bae934] {
+  min-width: 100px;
+  white-space: nowrap;
 }
 #em-attachments table thead tr th[data-v-30bae934] {
   border-top: 1px solid #e0e0e0;
