@@ -1915,7 +1915,7 @@ this.set(words.join(&quot; &quot;));
      * @param $user
      * @return array|string
      */
-    function updateOrder($elements, $group_id, $user) {
+    function updateOrder($elements, $group_id, $user, $moved_el) {
         if (empty($user)) {
             $user = JFactory::getUser()->id;
         }
@@ -1923,28 +1923,121 @@ this.set(words.join(&quot; &quot;));
         $date = new Date();
         $results= [];
 
-        for ($i = 0; $i < count($elements); $i++) {
+        if($moved_el[$group_id]==$group_id) {
+            // deplacement au sein du même groupe
+            for ($i = 0; $i < count($elements); $i++) {
+
+                $db = $this->getDbo();
+                $query = $db->getQuery(true);
+                $fields = array(
+                    $db->quoteName('ordering') . ' = ' . $db->quote(htmlspecialchars($elements[$i]['order'])),
+                    $db->quoteName('modified_by') . ' = ' . $db->quote($user),
+                    $db->quoteName('modified') . ' = ' . $db->quote($date),
+                    $db->quoteName('group_id') . ' = ' . $db->quote($group_id),
+                );
+
+                $query->update($db->quoteName('#__fabrik_elements'))
+                    ->set($fields)
+                    ->where($db->quoteName('id') . ' = ' . $db->quote(htmlspecialchars($elements[$i]['id'])));
+                try {
+                    $db->setQuery($query);
+                    $results[] = $db->execute();
+                } catch (Exception $e) {
+                    JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot reorder elements : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+                    return false;
+                }
+            }
+        } else{
+
+            //groupe cible different du groupe de provenance
+            // on vérifie si le groupe cible est un groupe repeat
 
             $db = $this->getDbo();
             $query = $db->getQuery(true);
-            $fields = array(
-                $db->quoteName('ordering'). ' = '.  $db->quote(htmlspecialchars($elements[$i]['order'])),
-                $db->quoteName('modified_by'). ' = '. $db->quote($user),
-                $db->quoteName('modified'). ' = '. $db->quote($date),
-                $db->quoteName('group_id'). ' = '. $db->quote($group_id),
-            );
 
-            $query->update($db->quoteName('#__fabrik_elements'))
-                ->set($fields)
-                ->where($db->quoteName('id'). ' = '. $db->quote(htmlspecialchars($elements[$i]['id'])));
-            try {
+            $query->select('params')
+                ->from($db->quoteName('#__fabrik_groups'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($group_id));
+            $db->setQuery($query);
+
+            $group_cible_params=json_decode(($db->loadObject())->params);
+
+
+            if($group_cible_params->repeat_group_button==1){
+
+
+                //le groupe cible est un groupe répétable
+                //alors on crée la colone correspondante à l'element dans la table repetable;
+                $query->clear();
+                $query->select('table_join')
+                    ->from($db->quoteName('#__fabrik_joins'))
+                    ->where($db->quoteName('group_id') . ' = ' . $db->quote($group_id))
+                    ->and($db->quoteName('table_join_key'). '=' .$db->quote('parent_id'));
                 $db->setQuery($query);
-                $results[] = $db->execute();
+                $table_join_name=$db->loadObject();
+
+                // on recupere la form_id
+                $query->clear()
+                    ->select('fl.form_id as formid')
+                    ->from($db->quoteName('#__fabrik_formgroup', 'fg'))
+                    ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
+                    ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($group_id));
+                $db->setQuery($query);
+                $object = $db->loadObject();
+                $form_id = $object->formid;
+
+                if ($moved_el['plugin'] === 'birthday') {
+                    $dbtype = 'DATE';
+                } elseif ($moved_el['plugin'] === 'textarea') {
+                    $dbtype = 'TEXT';
+                } else {
+                    $dbtype = 'TEXT';
+                }
+
+                // on crée maintenant la colonne donc;
+
+                $query = "ALTER TABLE " . $table_join_name->table_join . " ADD e_" . $form_id . "_" . $moved_el['id'] . " " . $dbtype . " NULL";
+
+                $db->setQuery($query);
+                try {
+                    $db->execute();
+                } catch (Exception $e) {
+
+                    JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot not create new colum in the repeat table case: moving element form group to an target group witch is repeat group because column already exist ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                    return false;
+                }
+
+
+
+
+
             }
-            catch(Exception $e) {
-                JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot reorder elements : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-                return false;
+
+
+            // Maintenant j'update enfin les ordres
+            for ($i = 0; $i < count($elements); $i++) {
+
+                $db = $this->getDbo();
+                $query = $db->getQuery(true);
+                $fields = array(
+                    $db->quoteName('ordering') . ' = ' . $db->quote(htmlspecialchars($elements[$i]['order'])),
+                    $db->quoteName('modified_by') . ' = ' . $db->quote($user),
+                    $db->quoteName('modified') . ' = ' . $db->quote($date),
+                    $db->quoteName('group_id') . ' = ' . $db->quote($group_id),
+                );
+
+                $query->update($db->quoteName('#__fabrik_elements'))
+                    ->set($fields)
+                    ->where($db->quoteName('id') . ' = ' . $db->quote(htmlspecialchars($elements[$i]['id'])));
+                try {
+                    $db->setQuery($query);
+                    $results[] = $db->execute();
+                } catch (Exception $e) {
+                    JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot reorder elements : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+                    return false;
+                }
             }
+
         }
 
         return $results;
@@ -3330,21 +3423,38 @@ this.set(words.join(&quot; &quot;));
                 // This means that the parent_id already exists in the table.
             }
 
-            // Insert leftjoin in fabrik
+
+            //verify if left join dosn't already exist;
             $query = $db->getQuery(true);
-            $query->insert($db->quoteName('#__fabrik_joins'));
-            $query->set($db->quoteName('list_id') . ' = ' . $db->quote($list_id))
-                ->set($db->quoteName('element_id') . ' = ' . $db->quote(0))
-                ->set($db->quoteName('join_from_table') . ' = ' . $db->quote($db_table))
-                ->set($db->quoteName('table_join') . ' = ' . $db->quote($newtablename))
-                ->set($db->quoteName('table_key') . ' = ' . $db->quote('id'))
-                ->set($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'))
-                ->set($db->quoteName('join_type') . ' = ' . $db->quote('left'))
-                ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
-                ->set($db->quoteName('params') . ' = ' . $db->quote($joins_params));
+            $query->select('id')
+                ->from($db->quoteName('#__fabrik_joins'))
+                ->where($db->quoteName('table_join') . ' = ' . $db->quote($newtablename))
+                ->and($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
             $db->setQuery($query);
-            $db->execute();
-            //
+            $left_join_exist=$db->loadObject();
+
+            if($left_join_exist ==NULL){
+                $query->clear();
+                $query->insert($db->quoteName('#__fabrik_joins'));
+                $query->set($db->quoteName('list_id') . ' = ' . $db->quote($list_id))
+                    ->set($db->quoteName('element_id') . ' = ' . $db->quote(0))
+                    ->set($db->quoteName('join_from_table') . ' = ' . $db->quote($db_table))
+                    ->set($db->quoteName('table_join') . ' = ' . $db->quote($newtablename))
+                    ->set($db->quoteName('table_key') . ' = ' . $db->quote('id'))
+                    ->set($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'))
+                    ->set($db->quoteName('join_type') . ' = ' . $db->quote('left'))
+                    ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                    ->set($db->quoteName('params') . ' = ' . $db->quote($joins_params));
+                $db->setQuery($query);
+                $db->execute();
+                //
+            }
+
+
+
+            // Insert leftjoin in fabrik
+
+
 
             // Insert element present in the group
             foreach ($elements as $element) {
@@ -3581,3 +3691,4 @@ this.set(words.join(&quot; &quot;));
     }
 
 }
+
