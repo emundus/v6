@@ -743,7 +743,8 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                                         if(letter != 0) {
                                             $.ajax({
                                                 type: 'post',
-                                                url: 'index.php?option=com_emundus&controller=files&task=getletter',
+                                                // url: 'index.php?option=com_emundus&controller=files&task=getletter',
+                                                url: 'index.php?option=com_emundus&controller=files&task=getexcelletter',
                                                 dataType: 'JSON',
                                                 data: {letter: letter},
                                                 success: function (data) {

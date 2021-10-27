@@ -146,6 +146,9 @@ class DropfilesControllerCategory extends JControllerForm
     {
         $app = JFactory::getApplication();
         $datas = $app->input->get('jform', null, 'default', 'array');
+        if (!$datas) {
+            $this->exitStatus(true);
+        }
         $canDo = DropfilesHelper::getActions();
         $modelCate = JModelLegacy::getInstance('Category', 'dropfilesModel');
         $model = $this->getModel();
