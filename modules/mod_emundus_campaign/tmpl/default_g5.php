@@ -294,9 +294,9 @@ $site_offset = $config->get('offset');
 
             foreach ($futurCampaign as $result) {
                 if ($order == "start_date") {
-                    $month = utf8_encode(strftime("%B %Y", strtotime($result->start_date)));
+                    $month = ($result->start_date !== '0000-00-00 00:00:00') ? JFactory::getDate(new JDate($result->start_date, $site_offset))->format("F Y") : "";
                 } else {
-                    $month = utf8_encode(strftime("%B %Y", strtotime($result->end_date)));
+                    $month = ($result->end_date !== '0000-00-00 00:00:00') ? JFactory::getDate(new JDate($result->end_date, $site_offset))->format("F Y") : "";
                 }
                 if ($oldmonth != $month) {
                     if (!empty($oldmonth)) { ?>
@@ -417,9 +417,9 @@ $site_offset = $config->get('offset');
 
             foreach ($pastCampaign as $result) {
                 if ($order == "start_date") {
-                    $month = utf8_encode(strftime("%B %Y", strtotime($result->start_date)));
+                    $month = ($result->start_date !== '0000-00-00 00:00:00') ? JFactory::getDate(new JDate($result->start_date, $site_offset))->format("F Y") : "";
                 } else {
-                    $month = utf8_encode(strftime("%B %Y", strtotime($result->end_date)));
+                    $month = ($result->end_date !== '0000-00-00 00:00:00') ? JFactory::getDate(new JDate($result->end_date, $site_offset))->format("F Y") : "";
                 }
                 if ($oldmonth != $month) {
                     if (!empty($oldmonth)) { ?>
