@@ -126,7 +126,6 @@ $allCampaign        = $helper->getProgram($condition, $mod_em_campaign_get_teach
 $faq_articles                = $helper->getFaq();
 
 $dropfiles_helper = new modEmundusCampaignDropfilesHelper;
-
 $files = $dropfiles_helper->getFiles();
 
 $now = $helper->now;
