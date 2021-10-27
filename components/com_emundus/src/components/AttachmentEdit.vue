@@ -28,11 +28,11 @@
                     <span>{{ translate('SEND_DATE') }}</span>
                     <span>{{ formattedDate(attachment.timedate) }}</span>
                 </div>
-                <div>
+                <div v-if="attachment.modified_by">
                     <span>{{ translate('MODIFIED_BY') }}</span>
                     <span>{{ getUserNameById(attachment.modified_by) }}</span>
                 </div>
-                <div>
+                <div v-if="attachment.modified">
                     <span>{{ translate('MODIFICATION_DATE') }}</span>
                     <span>{{ formattedDate(attachment.modified) }}</span>
                 </div>
@@ -86,6 +86,8 @@ export default {
             const response = await attachmentService.updateAttachment(formData);
 
             if (response.status.update) {
+                this.attachment.modified_by = this.$store.state.user.currentUser;
+
                 this.$store.dispatch('attachment/updateAttachmentOfFnum', {
                     fnum: this.fnum,
                     attachment: this.attachment
