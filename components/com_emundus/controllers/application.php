@@ -656,22 +656,30 @@ class EmundusControllerApplication extends JControllerLegacy
 
     public function updateattachment()
     {
-        $m_application = $this->getModel('Application');
+        $update = false;
+        $msg = '';
 
         // get post data
         $jinput = JFactory::getApplication()->input;
         $data = $jinput->post->getArray();
 
-        if ($jinput->files->get('file')) {
-            $data['file'] = $jinput->files->get('file');
+        if (EmundusHelperAccess::asAccessAction(4, 'u', JFactory::getUser()->id, $data['fnum'])) {
+            $m_application = $this->getModel('Application');
+    
+            if ($jinput->files->get('file')) {
+                $data['file'] = $jinput->files->get('file');
+            }
+    
+            if ($data['fnum'] && $data['user']) {
+                $update = $m_application->updateAttachment($data);
+            } else {
+                $msg = JText::_('INVALID_PARAMETERS');
+            }
+        } else {
+           $msg = JText::_('ACCESS_DENIED');
         }
 
-        $update = false;
-        if ($data['fnum'] && $data['user']) {
-            $update = $m_application->updateAttachment($data);
-        }
-
-        echo json_encode(array('status' => $update));
+        echo json_encode(array('status' => $update, 'msg' => $msg));
         exit;
     }
 
