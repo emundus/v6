@@ -36,7 +36,7 @@
                   {{ translate('EXPORT') }}
                 </span>
               </div>
-              <span v-if="canDelete" class="material-icons" @click="deleteAttachments">
+              <span v-if="canDelete" class="material-icons delete" @click="deleteAttachments">
                 delete_outlined
               </span>
             </div>
@@ -111,7 +111,7 @@
                   </span>
                 </div>
               </div>
-              <a :href="attachmentPath" class="download" download>
+              <a :href="attachmentPath" class="download btn-icon-text" download>
                 <span class="material-icons">
                   file_download
                 </span>
@@ -521,6 +521,16 @@ export default {
       min-height: calc(100vh - 400px);
       visibility: hidden;
     }
+
+    .material-icons.delete {
+      transition: all .3s;
+      width: 30px;
+      
+      &:hover {
+        cursor: pointer;
+        color: var(--error-color);
+      }
+    }
   }
 
   table {
@@ -643,13 +653,7 @@ export default {
       .download {
         height: 32px;
         margin-right: 24px;
-        padding: 6px 16px 7px 14px;
-        display: flex;
-        justify-content: center;
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        cursor: pointer;
-        color: #080C12;
+        color: black;
 
         .material-icons {
           font-size: 18px;

@@ -27,6 +27,10 @@
     transition: all 0.3s ease-in-out;
 }
 
+.btn-icon-text:hover {
+    background: var(--grey-bg-color);
+}
+
 .btn-primary-vue {
     display: flex;
     flex-direction: row;

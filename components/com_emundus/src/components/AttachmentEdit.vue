@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="actions">
-            <button @click="saveChanges" class="btn save-btn">{{ translate('SAVE') }}</button>
+            <button @click="saveChanges" class="btn-primary-vue">{{ translate('SAVE') }}</button>
         </div>
     </div>
 </template>

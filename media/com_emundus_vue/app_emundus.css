@@ -295,6 +295,15 @@
   min-height: calc(100vh - 400px);
   visibility: hidden;
 }
+#em-attachments .wrapper .material-icons.delete[data-v-30bae934] {
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  width: 30px;
+}
+#em-attachments .wrapper .material-icons.delete[data-v-30bae934]:hover {
+  cursor: pointer;
+  color: var(--error-color);
+}
 #em-attachments table[data-v-30bae934] {
   border: 0;
 }
@@ -411,17 +420,7 @@
 #em-attachments .modal-head .flex-end .download[data-v-30bae934] {
   height: 32px;
   margin-right: 24px;
-  padding: 6px 16px 7px 14px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  cursor: pointer;
-  color: #080C12;
+  color: black;
 }
 #em-attachments .modal-head .flex-end .download .material-icons[data-v-30bae934] {
   font-size: 18px;
@@ -529,6 +528,9 @@
     border-radius: 4px;
     -webkit-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
+}
+.btn-icon-text:hover {
+    background: var(--grey-bg-color);
 }
 .btn-primary-vue {
     display: -webkit-box;
