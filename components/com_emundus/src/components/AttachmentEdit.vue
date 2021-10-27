@@ -1,7 +1,7 @@
 <template>
     <div id="attachment-edit">
         <div class="wrapper">
-            <h2>{{ attachment.value }}</h2>
+            <h2 class="title">{{ attachment.value }}</h2>
             <div class="editable-data"> 
                 <div class="input-group">
                     <label for="description">{{ translate('DESCRIPTION') }} </label>
@@ -170,6 +170,10 @@ export default {
     .wrapper {
         width: 100%;
         height: 100%;
+
+        .title {
+            margin-bottom: 16px;
+        }
     }
 
     display: flex;
@@ -212,6 +216,7 @@ export default {
 
     .non-editable-data {
         width: 100%;
+        margin-top: 16px;
         div {
             width: 100%;
             display: flex;
