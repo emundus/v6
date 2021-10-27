@@ -134,6 +134,8 @@ $now = $helper->now;
 jimport('joomla.html.pagination');
 $session = JFactory::getSession();
 
+$user = JFactory::getUser();
+
 $paginationCurrent  = new JPagination($helper->getTotalCurrent(), $session->get('limitstartCurrent'), $session->get('limit'));
 $paginationPast     = new JPagination($helper->getTotalPast(), $session->get('limitstartPast'), $session->get('limit'));
 $paginationFutur    = new JPagination($helper->getTotalFutur(), $session->get('limitstartFutur'), $session->get('limit'));
