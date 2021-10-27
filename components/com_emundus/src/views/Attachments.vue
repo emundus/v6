@@ -3,14 +3,20 @@
         <div class="head">
           <div class="prev-next-files" v-if="fnums.length > 1">
             <div class="prev" :class="{'active': fnumPosition > 0}" @click="prevFile">
-              <span class="material-icons">
+              <!-- 
+                For new header
+                <span class="material-icons">
                 navigate_before
-              </span>
+              </span> -->
+              <i class="small arrow left icon"></i>
             </div>
             <div class="next" :class="{'active': fnumPosition < fnums.length - 1}" @click="nextFile">
-              <span class="material-icons">
+              <!--
+                For new header
+                <span class="material-icons">
                 navigate_next
-              </span>
+              </span> -->
+              <i class="small arrow right icon"></i>
             </div>
           </div>
           <div class="displayed-user">
@@ -351,15 +357,86 @@ export default {
   font-size: 14px;
 
   .head {
-    height: 40px;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
+    /**
+    * New Header Style, keep for later
+    */
+    // height: 40px;
+    // display: flex;
+    // flex-direction: row;
+    // justify-content: flex-start;
+    // align-items: center;
 
-    margin-bottom: 16px;
+    // margin-bottom: 16px;
+
+    // .displayed-user {
+    //   .name {
+    //     font-size: 18px;
+    //     font-weight: 800;
+    //     line-height: 23px;
+    //   }
+
+    //   .email {
+    //     font-size: 12px;
+    //   }
+    // }
+
+    // .prev-next-files {
+    //   display: flex;
+    //   flex-direction: row;
+    //   justify-content: space-between;
+    //   align-items: center;
+
+    //   >div {
+    //     pointer-events: none;
+    //     display: flex;
+    //     flex-direction: row;
+    //     justify-content: center;
+    //     align-items: center;
+    //     margin: 0 8px;
+    //     height: 40px;
+    //     width: 40px;
+    //     border: 1px solid #E3E5E8;
+
+    //     &.prev {
+    //       margin-right: 0;
+    //       border-radius: 4px 0px 0px 4px;
+    //     }
+
+    //     &.next {
+    //       border-radius: 0px 4px 4px 0px;
+    //     }
+
+    //     &.active {
+    //       pointer-events: auto;
+    //       cursor: pointer;
+    //     }
+    //   }
+    // }
+
+    /** 
+    * Old Header Style
+    * todo: remove this later
+    */
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1px; 
+    padding: 10px;
+    min-height: 50px;
+    background-color: var(--primary-color);
 
     .displayed-user {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: baseline;
+
+      p {
+        color: var(--text-light-color);
+      }
+
       .name {
         font-size: 18px;
         font-weight: 800;
@@ -367,6 +444,7 @@ export default {
       }
 
       .email {
+        margin-left: 8px !important;
         font-size: 12px;
       }
     }
@@ -376,6 +454,7 @@ export default {
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
+      margin-right: 12px;
 
       >div {
         pointer-events: none;
@@ -383,23 +462,28 @@ export default {
         flex-direction: row;
         justify-content: center;
         align-items: center;
-        margin: 0 8px;
-        height: 40px;
-        width: 40px;
-        border: 1px solid #E3E5E8;
+        color: transparent;
+        transition: all .3s;
 
-        &.prev {
-          margin-right: 0;
-          border-radius: 4px 0px 0px 4px;
-        }
-
-        &.next {
-          border-radius: 0px 4px 4px 0px;
+        i {
+          height: 30px;
+          width: 30px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin: 0;
         }
 
         &.active {
+          color: var(--text-light-color);
           pointer-events: auto;
           cursor: pointer;
+        }
+
+        &:hover {
+          border-radius: 4px;
+          background-color: var(--text-light-color);
+          color: var(--primary-color);
         }
       }
     }
