@@ -50,7 +50,7 @@
                     <th @click="orderBy('filename')">{{ translate('NAME') }}</th>
                     <th @click="orderBy('timedate')">{{ translate('SEND_DATE') }}</th>
                     <th class="desc" @click="orderBy('description')">{{ translate('DESCRIPTION') }}</th>
-                    <th @click="orderBy('is_validated')">{{ translate('STATUS') }}</th>
+                    <th class="status" @click="orderBy('is_validated')">{{ translate('STATUS') }}</th>
                     <th @click="orderBy('modified_by')">{{ translate('MODIFIED_BY') }}</th>
                     <th @click="orderBy('modified')">{{ translate('MODIFICATION_DATE') }}</th>
                 </tr>
@@ -66,7 +66,7 @@
                     <td class="td-document" @click="openModal(attachment)">{{ attachment.filename }}</td>
                     <td>{{ formattedDate(attachment.timedate) }}</td>
                     <td class="desc">{{ attachment.description }}</td>
-                    <td class="valid-state" :class="{
+                    <td class="status valid-state" :class="{
                       'success': attachment.is_validated == 1, 
                       'error': attachment.is_validated == -2
                       }">
@@ -541,11 +541,21 @@ export default {
       background-color: transparent;
     }
 
+    td, th {
+      width: fit-content;
+    }
+
     th.desc, td.desc {
       max-width: 250px;
+      width: initial;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    th.status, td.status {
+      min-width: 100px;
+      white-space: nowrap;
     }
 
     thead {
