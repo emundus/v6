@@ -526,11 +526,6 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $res = new stdClass();
 
         header('Content-type: application/json');
-        if ($token != $secret) {
-            JLog::add('Bad token sent.', JLog::ERROR, 'com_emundus.webhook');
-            echo json_encode(array('code'=>400, 'message'=> 'Bad Request'));
-            exit;
-        }
 
         try {
             $query = "SELECT    e_360_7747 as nom, e_360_7749 as prenom, e_360_7746 as civilite, e_360_7751 as dateNaissance,e_360_7755 as villeNaissance, label_fr as paysNaissance, 
@@ -584,8 +579,49 @@ class EmundusControllerWebhook extends JControllerLegacy {
         } catch(Exception $e) {
             $res->status = 'NOK';
             $res->message = $e->getMessage();
+            JLog::add('Cannot get files', JLog::ERROR, 'com_emundus.webhook');
         }
-
     }
 
+    /**
+     * @throws Exception
+     */
+    public function process_banner() {
+//        $request = file_get_contents('php://input');        /// POST method
+
+        $eMConfig 	= JComponentHelper::getParams('com_emundus');
+
+        $cand_num 		= JFactory::getApplication()->input->get('noClientemundus');
+        $cand_idBanner  = JFactory::getApplication()->input->get('IDBanner');
+
+        header('Content-type: application/json');
+
+        if (!$cand_num || !$cand_idBanner || empty($cand_num) || empty($cand_idBanner)) {
+            JLog::add('Bad token sent.', JLog::ERROR, 'com_emundus.webhook');
+            echo json_encode(array('status' => 400, 'message' => JText::_('BAD_REQUEST_OR_MISSING_PARAMS')));
+        } else {
+            $this->update_banner($cand_idBanner, $cand_num);
+        }
+        exit;
+    }
+
+    /* using GET methos */
+    public function update_banner($id, $fnum) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->update($db->quoteName('#__emundus_campaign_candidature'))
+                ->set($db->quoteName('#__emundus_campaign_candidature.id_banner') . ' = ' . $db->quote($id))
+                ->where($db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quote($fnum));
+
+            $db->setQuery($query);
+            $db->execute();
+            echo json_encode(array('status' => 200, 'message' => JText::_('RECORD_UPDATED_SUCCESSFULLY')));
+            exit;
+        } catch(Exception $e) {
+            JLog::add('Cannot update id banner', JLog::ERROR, 'com_emundus.webhook');
+        }
+    }
 }
