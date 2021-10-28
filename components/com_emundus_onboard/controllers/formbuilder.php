@@ -37,6 +37,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
      * @throws Exception
      */
     public function updateOrder() {
+
         $user = JFactory::getUser();
         $m_form = $this->model;
 
