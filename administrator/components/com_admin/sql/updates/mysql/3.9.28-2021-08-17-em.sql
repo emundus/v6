@@ -4,4 +4,4 @@ VALUES ('_messenger_attachments', 'Documents de la messagerie', null, 'pdf;doc;d
 INSERT INTO jos_emundus_setup_emails (lbl, subject, emailfrom, message, name, type, published, email_tmpl, letter_attachment, candidate_attachment, category, cci, tags)
 VALUES ('messenger_reminder_group', 'Messages en attente', '', '<p>Vous avez des messages non lus sur <a href="[SITE_URL]">[SITE_URL]</a>. Veuillez vous connecter afin d''en prendre connaissance : [FNUMS]</p>
 <p>Merci d''avance,</p>
-<p>Cordialement,</p>', '', 2, 1, 1, null, null, '', null, null);
+<p>Cordialement,</p>', '', 2, 1, 1, null, null, null, null, null);
