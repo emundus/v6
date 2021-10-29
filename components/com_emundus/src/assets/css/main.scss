@@ -15,6 +15,11 @@
     --text-light-color: #F2F2F3;
 }
 
+.material-icons {
+    font-size: 18px !important;
+    color: var(--grey-color);
+}
+
 .btn-icon-text {
     display: flex;
     flex-direction: row;

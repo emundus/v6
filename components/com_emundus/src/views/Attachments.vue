@@ -26,10 +26,13 @@
         </div>
         <div class="wrapper" :class="{'loading': loading}">
           <div id="filters">
-            <input id="searchbar" type="text" ref="searchbar" :placeholder="translate('SEARCH')" @input="searchInFiles">
+            <div class="searchbar-wrapper">
+              <input id="searchbar" type="text" ref="searchbar" :placeholder="translate('SEARCH')" @input="searchInFiles">
+              <span class="material-icons">search</span>
+            </div>
             <div class="actions">
               <div v-if="canExport" class="btn-icon-text" @click="exportAttachments">
-                <span class="material-icons">
+                <span class="material-icons export">
                   file_upload
                 </span>
                 <span>
@@ -48,7 +51,7 @@
             <thead>
                 <tr>
                     <th>
-                      <input type="checkbox" @change="updateAllCheckedAttachments">
+                      <input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments">
                     </th>
                     <th @click="orderBy('filename')">{{ translate('NAME') }}</th>
                     <th class='date' @click="orderBy('timedate')">{{ translate('SEND_DATE') }}</th>
@@ -203,10 +206,10 @@ export default {
       if (!this.$store.state.attachment.attachments[this.displayedFnum]) {
         this.refreshAttachments();
       } else {
+        this.loading = true;
         this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
+        this.loading = false;
       }
-
-      this.loading = false;
     },
     async refreshAttachments() {
         this.loading = true;
@@ -530,11 +533,30 @@ export default {
     align-items: center;
     justify-content: space-between;
 
+    .searchbar-wrapper {
+      position: relative;
+      .material-icons {
+        position: absolute;
+        top: 11px;
+        left: 18px;
+      }
+
+      #searchbar {
+        padding-left: 40px;
+        height: 40px;
+        border: 1px solid var(--border-color);
+      }
+    }
+
     .actions {
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: flex-end;
+
+      .export {
+        margin-right: 8px;
+      }
 
       >div {
         margin-right: 8px;
@@ -570,6 +592,7 @@ export default {
     .material-icons.delete {
       transition: all .3s;
       width: 30px;
+      color: var(--grey-color);
 
       &:hover {
         cursor: pointer;
@@ -601,7 +624,8 @@ export default {
     }
 
     th.date, td.date {
-      max-width: 80px;
+      max-width: 120px;
+      width: 120px;
     }
 
     th.desc, td.desc {
@@ -670,6 +694,12 @@ export default {
         white-space: nowrap;
         cursor: pointer;
       }
+    }
+
+    .attachment-check {
+      width: 15px;
+      height: 15px;
+      border-radius: 0px;
     }
   }
 
