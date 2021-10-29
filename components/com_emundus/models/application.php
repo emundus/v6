@@ -4531,6 +4531,7 @@ class EmundusModelApplication extends JModelList
             case "jdate":
             break;
             case "radiobutton":
+                $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
             break;
             case "textarea":
                 $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
