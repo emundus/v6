@@ -16,6 +16,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 require_once "SoapConnect.php";
 require_once "XmlSchema.php";
 require_once "XmlDataFilling.php";
+require_once "ApogeeCustom.php";
 
 /**
  * A cron task to email records to a give set of users (incomplete application)
@@ -93,7 +94,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
 
         if(!is_null($sending_status)) { $query->andWhere($db->quoteName('#__emundus_campaign_candidature.status') . ' IN ( ' . $sending_status . ' )'); }
 
-        $query->setLimit(50);     // setLimit to easily test
+        $query->setLimit(10);     // setLimit to easily test
 
         $db->setQuery($query);
         $available_fnums = $db->loadColumn();
@@ -108,23 +109,37 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         $_xmlSchemaObject = new XmlSchema($json_request_schema);
         $_xmlSchemaRequest = $_xmlSchemaObject->buildSoapRequest($json_request_schema);       /// return : XML Tree
 
-        /// filling data
+        /// invoke Apogee Custom
+        $_xmlCustomSchema_schema = new ApogeeCustom($_xmlSchemaRequest);
+        $_xmlCustomSchema_schema->buildCustomSchema();
+
+        $_xmlSchemaObject->exportXMLFile($_xmlCustomSchema_schema->xmlTree, EMUNDUS_PATH_ABS . DS . 'text-xml');
+
+        /// inject data mapping file
         $_xmlDataObject = new XmlDataFilling($json_request_data);
 
         foreach($available_fnums as $fnum) {
+            /// filling data for each fnum
             $_xmlDataRequest = $_xmlDataObject->fillData($_xmlSchemaRequest, $_xmlSchemaObject->getSchemaDescription(), $fnum);
-            $_xmlString = $_xmlSchemaObject->exportXMLString($_xmlDataRequest);
 
-            /// connect to SOAP server
-            $_soapConnect = new SoapConnect;
+            /// invoke Apogee Custom
+            $_xmlCustomSchema_data = new ApogeeCustom($_xmlDataRequest,$fnum);
+            $_xmlCustomSchema_data->buildCustomData();
 
-            /// set request header
-            $_soapConnect->setSoapHeader($_xmlString,$credentials);
+            $_xmlSchemaObject->exportXMLFile($_xmlCustomSchema_data->xmlTree, EMUNDUS_PATH_ABS . DS . $fnum);
 
-            /// send request in form XML string
-            $_soapConnect->sendRequest($_soapConnect->webServiceConnect($wsdl_url,$_xmlString,$credentials));
+//            $_xmlString = $_xmlSchemaObject->exportXMLString($_xmlDataRequest);
+//            /* connect to SOAP server */
+//            $_soapConnect = new SoapConnect;
+//
+//            /* set request header */
+//            $_soapConnect->setSoapHeader($_xmlString,$credentials);
+//
+//            /* send request in form XML string */
+//            $_soapConnect->sendRequest($_soapConnect->webServiceConnect($wsdl_url,$_xmlString,$credentials));
 
-            //$_xmlSchemaObject->exportXMLFile($_xmlDataRequest, EMUNDUS_PATH_ABS . DS . $fnum);
+//            $this->setCustomValues($_xmlDataRequest);
+//            $_xmlSchemaObject->exportXMLFile($_xmlDataRequest, EMUNDUS_PATH_ABS . DS . $fnum);
         }
     }
 }

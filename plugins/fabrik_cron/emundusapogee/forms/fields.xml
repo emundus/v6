@@ -34,14 +34,14 @@
 
 		<fieldset name="plg-cron-emundusapogee-json" label="PLG_APOGEE_JSON_LOAD">
 			<field name="xml_description_json"
-				   type="file"
+				   type="text"
 				   description="PLG_APOGEE_XML_DESCRIPTION_DESC"
 				   label="PLG_APOGEE_XML_DESCRIPTION"
 				   size="30"
 			/>
 
 			<field name="xml_data_json"
-				   type="file"
+				   type="text"
 				   description="PLG_APOGEE_XML_DATA_DESC"
 				   label="PLG_APOGEE_XML_DATA"
 				   size="30"

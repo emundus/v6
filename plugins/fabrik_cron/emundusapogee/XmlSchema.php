@@ -68,7 +68,7 @@ class XmlSchema implements AbstractXmlInterface {
     }
 
     public function getSchemaDescription() {
-        return json_decode(file_get_contents(dirname(EMUNDUS_PATH_ABS) . DS . $this->description));
+        return json_decode(file_get_contents($this->description));
     }
 
     // build SOAP Request Schema
