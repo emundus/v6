@@ -682,3 +682,84 @@ body ::-webkit-scrollbar-track {
     background: transparent;
 }
 
+.filter-row[data-v-78642c16] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  margin: 8px 0;
+  padding: 8px 16px;
+  background-color: var(--grey-bg-color);
+  border-radius: 4px;
+}
+.filter-row select[data-v-78642c16],
+.filter-row input[data-v-78642c16] {
+  height: 32px;
+  margin: 0 16px 0 0;
+}
+.filter-row .delete[data-v-78642c16] {
+  cursor: pointer;
+}
+.group[data-v-cb84158a] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  margin: 20px 0 20px 40px;
+}
+.group .wrapper[data-v-cb84158a] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+}
+#filter-builder[data-v-8da6b152] {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  background-color: white;
+  padding: 16px;
+  border-radius: 4px;
+  margin: 20px;
+}
+#filter-builder .filter-row[data-v-8da6b152] {
+  margin-left: 40px;
+}
+#filter-builder .actions[data-v-8da6b152] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+  margin-top: 20px;
+}
+#filter-builder .actions .btn-primary-vue[data-v-8da6b152] {
+  margin-left: 10px;
+}

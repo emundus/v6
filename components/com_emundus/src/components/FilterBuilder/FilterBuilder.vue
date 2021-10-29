@@ -4,9 +4,9 @@
     <div class="filters">
       <div class="rows">
         <div class="relation">
-          <select name="and_or">
-            <option value="and">ET</option>
-            <option value="or">OU</option>
+          <select name="and_or" v-model="andOr">
+            <option value="AND">ET</option>
+            <option value="OR">OU</option>
           </select>
         </div>
         <div class="elements">
@@ -75,6 +75,7 @@ export default {
   },
   data() {
     return {
+      andOr: "AND",
       orderedElements: [],
     };
   },
@@ -130,6 +131,14 @@ export default {
       });
       // remove filter
       this.orderedElements.splice(index, 1);
+    },
+  },
+  watch: {
+    andOr() {
+      this.$store.commit("updateAndOr", {
+        group: 0,
+        and_or: this.andOr,
+      });
     },
   }
 };

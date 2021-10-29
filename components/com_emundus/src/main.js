@@ -3,8 +3,8 @@ import VModal from 'vue-js-modal';
 import store from "./store";
 import App from './App.vue';
 import translate from './mixins/translate.js';
-// import filterBuilderStore from './store/filterBuilder';
-// import FilterBuilder from './components/FilterBuilder/FilterBuilder.vue';
+import filterBuilderStore from './store/filterBuilder';
+import FilterBuilder from './components/FilterBuilder/FilterBuilder.vue';
 
 let mountApp = false;
 let elementId = "";
@@ -44,14 +44,14 @@ if (mountApp) {
     });
 }
 
-// if (document.getElementById("em-vue-filter-builder")) {
-//     const filterbuilderApp = new Vue({
-//         el: '#em-vue-filter-builder',
-//         store: filterBuilderStore,
-//         render(h) {
-//             return h(
-//                 FilterBuilder
-//             );
-//         }
-//     });
-// }
+if (document.getElementById("em-vue-filter-builder")) {
+    const filterbuilderApp = new Vue({
+        el: '#em-vue-filter-builder',
+        store: filterBuilderStore,
+        render(h) {
+            return h(
+                FilterBuilder
+            );
+        }
+    });
+}

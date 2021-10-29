@@ -4,9 +4,9 @@
       <div class="rows">
         <div class="relation">
           <label>Condition</label>
-          <select name="and_or" v-model="and_or" @change="updateAndOr">
-            <option value="and">ET</option>
-            <option value="or">OU</option>
+          <select name="and_or" v-model="andOr">
+            <option value="AND">ET</option>
+            <option value="OR">OU</option>
           </select>
         </div>
         <FilterRow
@@ -47,7 +47,7 @@ export default {
   },
   data() {
     return {
-      and_or: "and",
+      andOr: "AND",
       filters: [],
     };
   },
@@ -55,12 +55,6 @@ export default {
     this.filters = this.$store.state.queryFilters.groups[this.id] ? Object.entries(this.$store.state.queryFilters.groups[this.id].filters).map(filter => Number(filter[0])) : [];
   },
   methods: {
-    updateAndOr() {
-      this.$store.commit("updateAndOr", {
-        group: this.id,
-        and_or: this.and_or,
-      });
-    },
     addFilter() {
       this.filters.push(Math.floor(Math.random() * Date.now()));
     },
@@ -73,6 +67,14 @@ export default {
       this.$emit("removeGroup", this.id);
     },
   },
+  watch: {
+    andOr() {
+      this.$store.commit("updateAndOr", {
+        group: this.id,
+        and_or: this.andOr,
+      });
+    }
+  }
 };
 </script>
 
