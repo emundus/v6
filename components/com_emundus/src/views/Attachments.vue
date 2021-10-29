@@ -123,10 +123,12 @@
               </a>
             </div>
           </div>
-          <div class="modal-body">
-            <AttachmentPreview></AttachmentPreview>
-            <AttachmentEdit @closeModal="closeModal" @saveChanges="updateAttachment" :fnum="displayedFnum"></AttachmentEdit>
-          </div>
+          <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
+            <div class="modal-body" v-if="!modalLoading">
+              <AttachmentPreview></AttachmentPreview>
+              <AttachmentEdit @closeModal="closeModal" @saveChanges="updateAttachment" :fnum="displayedFnum"></AttachmentEdit>
+            </div>
+          </transition>
         </modal>
     	  <div class="vue-em-loader" v-if="loading"></div>
     </div>
@@ -170,6 +172,8 @@ export default {
       lastSort: "",
       canExport: false,
       canDelete: false,
+      modalLoading: false,
+      slideTransition: "slide-fade"
     };
   },
   mounted() {
@@ -273,12 +277,24 @@ export default {
       this.setAccessRights();
     },
     prevAttachment() {
+      this.slideTransition = "slide-fade-reverse";
+      this.modalLoading = true;
       this.selectedAttachment = this.displayedAttachments[this.selectedAttachmentPosition - 1];
       this.$store.dispatch('attachment/setSelectedAttachment', this.selectedAttachment);
+
+      setTimeout(() => {
+        this.modalLoading = false;
+      }, 500);
     },
     nextAttachment() {
+      this.slideTransition = "slide-fade";
+      this.modalLoading = true;
       this.selectedAttachment = this.displayedAttachments[this.selectedAttachmentPosition + 1];
       this.$store.dispatch('attachment/setSelectedAttachment', this.selectedAttachment);
+
+      setTimeout(() => {
+        this.modalLoading = false;
+      }, 500);
     },
 
     // Front methods
@@ -340,7 +356,16 @@ export default {
       this.$modal.hide('edit');
       this.selectedAttachment = {};
       this.$store.dispatch('attachment/setSelectedAttachment', {});
-    }
+    },
+
+    // Transition hooks
+    beforeLeaveSlide(el) {
+      if (this.slideTransition == "slide-fade") {
+        el.style.transform = "translateX(-100%)";
+      }
+
+      el.setAttribute('class', 'modal-body ' + this.slideTransition + '-leave-active ' + this.slideTransition + '-leave-to');
+    },
   },
   computed: {
     displayedAttachments() {
@@ -732,6 +757,34 @@ export default {
         }
       }
     }
+  }
+
+  .slide-fade-enter-active {
+    transition: all .5s ease;
+  }
+  .slide-fade-leave-active {
+    transition: all .5s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+  .slide-fade-enter {
+    transform: translateX(100%);
+  }
+  .slide-fade-leave-to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  .slide-fade-reverse-enter-active {
+    transition: all .5s ease;
+  }
+  .slide-fade-reverse-leave-active {
+    transition: all .5s cubic-bezier(1.0, 0.8, 0.5, 1.0);
+  }
+  .slide-fade-reverse-enter {
+    transform: translateX(-100%);
+  }
+  .slide-fade-reverse-leave-to {
+    transform: translateX(100%);
+    opacity: 0;
   }
 
   .modal-body {
