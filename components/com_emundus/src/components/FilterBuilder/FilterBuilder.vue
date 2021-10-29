@@ -135,7 +135,7 @@ export default {
   },
   watch: {
     andOr() {
-      this.$store.commit("updateAndOr", {
+      this.$store.dispatch("updateAndOr", {
         group: 0,
         and_or: this.andOr,
       });

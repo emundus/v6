@@ -40,8 +40,8 @@ export default new Vuex.Store({
             delete state.queryFilters.groups[data.group].filters[data.id];
         },
         updateAndOr(state, data) {
-            if (data.id) {
-                state.queryFilters.groups[data.group].relation = data.relation;
+            if (data.id !== '0') {
+                state.queryFilters.groups[data.group].relation = data.and_or;
             } else {
                 state.queryFilters.relation = data.and_or;
             }

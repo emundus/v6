@@ -69,7 +69,7 @@ export default {
   },
   watch: {
     andOr() {
-      this.$store.commit("updateAndOr", {
+      this.$store.dispatch("updateAndOr", {
         group: this.id,
         and_or: this.andOr,
       });

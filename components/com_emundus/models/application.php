@@ -4429,6 +4429,20 @@ class EmundusModelApplication extends JModelList
                     $element['list'] = $listId;
                     $this->mountQueryForElement($table, $element, $filter, $joins, $where);
                 }
+            } else {
+                // child group
+                $subWhere = [];
+
+                foreach($group['filters'] as $fkey => $filter) {
+                    $element = $this->getFabrikElementById($filter['id']); 
+                    
+                    $element['list'] = $listId;
+                    $this->mountQueryForElement($table, $element, $filter, $joins, $subWhere);
+                }
+
+                if (!empty($subWhere)) {
+                    $where[] = "(" . implode(" " . $group['relation'] . " ", $subWhere) . ")";
+                }
             }
         }
 
@@ -4477,6 +4491,14 @@ class EmundusModelApplication extends JModelList
         }
     }
 
+    /**
+     * @param table (string) la table sur laquelle on travaille
+     * @param element (array) l'élément à partir duquel on veut ajouter des conditions à la requete sql
+     * @param filter (array) la valeur du formulaire
+     * @param joins (array) les jointures déjà existantes
+     * @param where (array) les conditions déjà existantes
+     * @return void
+     */
     private function mountQueryForElement($table, $element, $filter, &$joins, &$where)
     {
         $db = JFactory::getDbo();
