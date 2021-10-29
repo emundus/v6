@@ -36,6 +36,9 @@
                   {{ translate('EXPORT') }}
                 </span>
               </div>
+              <span class="material-icons refresh" @click="refreshAttachments">
+                autorenew
+              </span>
               <span v-if="canDelete" class="material-icons delete" @click="deleteAttachments">
                 delete_outlined
               </span>
@@ -81,7 +84,7 @@
           </table>
           <p v-else>{{ translate('NO_ATTACHMENTS_FOUND') }}</p>
         </div>
-        <!-- TODO: create component for Modal -->
+        
         <modal 
           id="edit-modal" 
           name="edit"
@@ -194,19 +197,25 @@ export default {
     },
     async getAttachments() {
       if (!this.$store.state.attachment.attachments[this.displayedFnum]) {
+        this.refreshAttachments();
+      } else {
+        this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
+      }
+
+      this.loading = false;
+    },
+    async refreshAttachments() {
         this.loading = true;
+        this.lastSort = "";
         this.attachments = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
 
         this.$store.dispatch('attachment/setAttachmentsOfFnum', {
           fnum: [this.displayedFnum],
           attachments: this.attachments
         });
-      } else {
-        this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
-      }
 
-      this.loading = false;
-    },   
+        this.loading = false;
+    }, 
     updateAttachment() {
       this.lastSort = "";
       this.getAttachments();
@@ -504,6 +513,17 @@ export default {
 
       >div {
         margin-right: 8px;
+      }
+    }
+    
+    .refresh {
+      transition: transform .6s;
+      cursor: pointer;
+      margin: 0 0 0 8px;
+
+      &:hover {
+        transform: rotate(360deg);
+        color: var(--primary-color);
       }
     }
 
