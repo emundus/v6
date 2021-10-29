@@ -13,9 +13,11 @@
     --border-color: #E3E5E8;
     --text-color: #5E646E;
     --text-light-color: #F2F2F3;
+    --disabled-color: #C4C4C4;
 }
 
 .material-icons {
+    transition: all .3s;
     font-size: 18px !important;
     color: var(--grey-color);
 }
