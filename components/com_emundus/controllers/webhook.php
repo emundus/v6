@@ -324,7 +324,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
 		//$secret 	= JFactory::getConfig()->get('secret');
 		//$token 		= JFactory::getApplication()->input->get('token', '', 'ALNUM');
-		//$fnum 		= JFactory::getApplication()->input->get('fnum', '', 'STRING'); 
+		//$fnum 		= JFactory::getApplication()->input->get('fnum', '', 'STRING');
 		$aid = JFactory::getApplication()->input->get('aid', '', 'ALNUM');
 		$applicant_id = JFactory::getApplication()->input->get('applicant_id', '', 'ALNUM');
 
@@ -347,7 +347,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
         } catch (Exception $e) {
             $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage().' :: '.$query;
             JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
-	
+
 		    echo json_encode((object)(array('status' => false)));
 			exit();
 		}
@@ -516,10 +516,6 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
     public function export_banner(){
         $eMConfig 	= JComponentHelper::getParams('com_emundus');
-
-        $secret 	= JFactory::getConfig()->get('secret');
-        $token 		= JFactory::getApplication()->input->get('token', '', 'ALNUM');
-
         $banner_limit = $eMConfig->get('banner_limit');
 
         $db = JFactory::getDbo();
@@ -551,7 +547,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
                     from jos_emundus_1001_00
                     left join jos_emundus_campaign_candidature jecc on jos_emundus_1001_00.fnum = jecc.fnum
                     left join data_country dc on jos_emundus_1001_00.e_360_7754 = dc.id
-                    left join jos_users ju on ju.id = jecc.user_id
+                    left join jos_users ju on ju.id = jecc.applicant_id
                     left join jos_emundus_1001_01 j on jos_emundus_1001_00.fnum = j.fnum
                     left join jos_emundus_1025_00 e on jos_emundus_1001_00.fnum = e.fnum
                     left join jos_emundus_uploads jeu on jos_emundus_1001_00.fnum = jeu.fnum
@@ -589,15 +585,13 @@ class EmundusControllerWebhook extends JControllerLegacy {
     public function process_banner() {
 //        $request = file_get_contents('php://input');        /// POST method
 
-        $eMConfig 	= JComponentHelper::getParams('com_emundus');
-
         $cand_num 		= JFactory::getApplication()->input->get('noClientemundus');
         $cand_idBanner  = JFactory::getApplication()->input->get('IDBanner');
 
         header('Content-type: application/json');
 
-        if (!$cand_num || !$cand_idBanner || empty($cand_num) || empty($cand_idBanner)) {
-            JLog::add('Bad token sent.', JLog::ERROR, 'com_emundus.webhook');
+        if (empty($cand_num) || empty($cand_idBanner)) {
+            JLog::add('BAD_REQUEST_OR_MISSING_PARAMS', JLog::ERROR, 'com_emundus.webhook');
             echo json_encode(array('status' => 400, 'message' => JText::_('BAD_REQUEST_OR_MISSING_PARAMS')));
         } else {
             $this->update_banner($cand_idBanner, $cand_num);
@@ -611,8 +605,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $query = $db->getQuery(true);
 
         try {
-            $query->clear()
-                ->update($db->quoteName('#__emundus_campaign_candidature'))
+            $query->update($db->quoteName('#__emundus_campaign_candidature'))
                 ->set($db->quoteName('#__emundus_campaign_candidature.id_banner') . ' = ' . $db->quote($id))
                 ->where($db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quote($fnum));
 
