@@ -3,14 +3,14 @@
  * @package     Joomla.Plugin
  * @subpackage  Captcha
  *
- * @copyright   (C) 2018 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Captcha\Google\HttpBridgePostRequestMethod;
-use Joomla\Utilities\IpHelper;
+use Joomla\Utilities\IpHelper; 
 
 /**
  * Invisible reCAPTCHA Plugin.

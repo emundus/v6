@@ -3,7 +3,7 @@
  * @package     Joomla.Site
  * @subpackage  Templates.protostar
  *
- * @copyright   (C) 2016 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -16,6 +16,8 @@ $app              = JFactory::getApplication();
 
 // Output as HTML5
 $this->setHtml5(true);
+
+$fullWidth = 1;
 
 // Add JavaScript Frameworks
 JHtml::_('bootstrap.framework');
