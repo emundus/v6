@@ -4370,7 +4370,7 @@ class EmundusModelApplication extends JModelList
             case 'field':
                 // if (isset($params['database_join_display_type']) && $params['database_join_display_type'] == 'dropdown') {
                 // }
-                $params = json_decode($elements['params'], true);
+                $params = json_decode($element['params'], true);
 
                 if (!empty($element['default']) && preg_match("/\{jos\_(.+)\_\_\_(.*)\}$/", $element['default'], $matches)) {
                     $db = $this->getDbo();
@@ -4415,53 +4415,24 @@ class EmundusModelApplication extends JModelList
         // get table from fabrik list id
         $table = $this->getTableFromFabrikList($listId);
 
-        $select = "SELECT *";
-        $from = "FROM $table";
-        $joins = "";
-        $where = "";
+        $select = "SELECT * ";
+        $from = "FROM $table ";
+        $joins = [];
+        $where = [];
 
         foreach($data['groups'] as $key => $group) {
-            if ($key == 0) {
+            if ($key === 0) {
                 // parent group
-                foreach($group['filters'] as $filter) {
+                foreach($group['filters'] as $fkey => $filter) {
+                    $element = $this->getFabrikElementById($filter['id']); 
                     
-                }
-            } else {
-                // sub groups
-
-                $nbFilters = count($group['filters']);
-                $tmp = "";
-                foreach ($group['filters'] as $fkey => $filter) {
-                    if ($fkey == 0) {
-                        $tmp .= " (";
-                    }
-                    
-                    // filter id
-                    // Handle element type
-                    $element = $this->getFabrikElementById($filter['element_id']); 
-
-                    // filter action filter value
-                    $tmp .= $filter['id'] . " ";
-
-                    if ($filter['action'] == 'contains') {
-                        $tmp .= "LIKE '%{$filter['value']}%'";
-                    } elseif ($filter['action'] == '!=') {
-                        $tmp .= "!= '{$filter['value']}'";
-                    } else {
-                        $tmp .= "= '{$filter['value']}'";
-                    }
-
-                    // check if fkey is not last filter
-                    if ($fkey < $nbFilters - 1) {
-                        $tmp .= " " . $group['relation'] . " ";
-                    } else {
-                        $tmp .= ")";
-                    }
+                    $element['list'] = $listId;
+                    $this->mountQueryForElement($table, $element, $filter, $joins, $where);
                 }
             }
         }
 
-        return $select . $from . $joins . $where;
+        return $select . $from . implode(' ', $joins) . ' WHERE ' . implode(' ' . $data['relation'] . ' ', $where);
     }
 
     /**
@@ -4488,21 +4459,118 @@ class EmundusModelApplication extends JModelList
      * @param int $elementId
      * @return array
      */
-    public function getFabrikElementById($id)
+    private function getFabrikElementById($id)
     {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        if (!empty($eid)) {
-            $query->clear()
-                ->select('jfe.id, jfe.name, jfe.label, jfe.group_id')
-                ->from($db->quoteName('#__fabrik_elements', 'jfe'))
-                ->where($db->quoteName('jfe.id') . '=' . (int)$eid);
+        if (!empty($id)) {
+            $query
+                ->select('*')
+                ->from($db->quoteName('#__fabrik_elements'))
+                ->where($db->quoteName('id') . '=' . (int)$id);
 
             $db->setQuery($query);
-            return $db->loadObject();
+            return $db->loadAssoc();
         } else {
             return false;
         }
     }
+
+    private function mountQueryForElement($table, $element, $filter, &$joins, &$where)
+    {
+        $db = JFactory::getDbo();
+
+        switch($element['plugin']) {
+            case "birthday":
+            break;
+            case "calc":
+            break;
+            case "cascadingdropdown":
+            break;
+            case "checkbox":
+            break;
+            case "databasejoin":
+                $params = json_decode($element['params'], true);
+                $tableJoin = $this->getTableJoinKeyFromElement($element);
+
+                $query = $db->getQuery(true);
+                $query->select(array('el.id', 'el.name'))
+                ->from($db->quoteName('#__users', 'el'));
+
+                $tmpJoin = "LEFT JOIN " . $db->quoteName($params['join_db_name']) . " ON " . $db->quoteName($table) . "." . $tableJoin . " = " . $db->quoteName($params['join_db_name']) . "." . $db->quoteName($params['join_key_column']);
+                if (!in_array($tmpJoin, $joins)) {
+                    $joins[] = $tmpJoin;
+                }
+                $where[] = $db->quoteName($params['join_db_name']) . "." . $db->quoteName($params['join_key_column']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
+
+                break;
+            break;
+            case "date":            
+            break;
+            case "dropdown":
+            break;
+            case "emundusreferent":
+            break;
+            case "field":
+                if (!empty($element['default']) && preg_match("/\{(jos\_.+)\_\_\_(.*)\}$/", $element['default'], $matches)) {
+                    if ($matches[1] == $table) {
+                        $where[] = $db->quoteName($matches[1]) .".". $db->quoteName($matches[2]) ." ".$filter['action']." ". $filter['value'] ;
+                    }
+                } else {
+                    if ($filter['action'] == 'contains') {
+                        $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " LIKE '%" . $filter['value'] . "%'";
+                    } else {
+                        $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
+                    }
+
+                }
+            break;
+            case "internalid":
+            break;
+            case "jdate":
+            break;
+            case "radiobutton":
+            break;
+            case "textarea":
+                $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
+            break;
+            case "user":            
+            break;
+            case "viewlevel":
+            break;
+            case "years":
+            break;
+            case "yesno":
+            break;
+        }
+    }
+
+    private function getTableJoinKeyFromElement($element) 
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select(array('el.table_key'))
+        ->from($db->quoteName('#__fabrik_joins', 'el'))
+        ->where("el.element_id = " . (int)$element['id']);
+
+        $db->setQuery($query);
+
+        $result = $db->loadAssoc();
+
+        return $result['table_key'];
+    }
+
+    // private function findReferenceInsideTable($table, $tableToJoin, $columnToJoin)
+    // {
+    //     SELECT
+    //     `column_name`
+    //     FROM `information_schema`.`KEY_COLUMN_USAGE`
+    //     WHERE `constraint_schema` = SCHEMA()
+    //     AND `table_name` = 'jos_emundus_uploads'
+    //     AND `referenced_table_name` = 'jos_emundus_setup_attachments'
+    //     AND `referenced_column_name` = 'id'
+    // }
+
 }

@@ -17,7 +17,7 @@ JFactory::getSession()->set('application_layout', 'attachment');
 $lang = JFactory::getLanguage();
 ?>
 
-<!-- <div id="em-vue-filter-builder"></div> -->
+<div id="em-vue-filter-builder"></div>
 
 <div id="em-application-attachment"
     user=<?php echo $this->_user->id ?>
