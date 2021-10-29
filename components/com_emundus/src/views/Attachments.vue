@@ -31,7 +31,7 @@
               <span class="material-icons">search</span>
             </div>
             <div class="actions">
-              <div v-if="canExport" class="btn-icon-text" @click="exportAttachments">
+              <div v-if="canExport" class="btn-icon-text" @click="exportAttachments" :class="{'disabled': checkedAttachments.length < 1}">
                 <span class="material-icons export">
                   file_upload
                 </span>
@@ -42,7 +42,7 @@
               <span class="material-icons refresh" @click="refreshAttachments">
                 autorenew
               </span>
-              <span v-if="canDelete" class="material-icons delete" @click="deleteAttachments">
+              <span v-if="canDelete" class="material-icons delete" :class="{'disabled': checkedAttachments.length < 1}" @click="deleteAttachments">
                 delete_outlined
               </span>
             </div>
@@ -560,6 +560,15 @@ export default {
 
       >div {
         margin-right: 8px;
+        
+        &.disabled {
+          color: var(--disabled-color);
+          pointer-events: none;
+
+          .material-icons {
+            color: var(--disabled-color);
+          }
+        }
       }
     }
     
@@ -593,6 +602,11 @@ export default {
       transition: all .3s;
       width: 30px;
       color: var(--grey-color);
+
+      &.disabled {
+        color: var(--disabled-color);
+        pointer-events: none;
+      }
 
       &:hover {
         cursor: pointer;

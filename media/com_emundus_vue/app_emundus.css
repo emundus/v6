@@ -318,6 +318,13 @@
 #em-attachments #filters .actions > div[data-v-30bae934] {
   margin-right: 8px;
 }
+#em-attachments #filters .actions > div.disabled[data-v-30bae934] {
+  color: var(--disabled-color);
+  pointer-events: none;
+}
+#em-attachments #filters .actions > div.disabled .material-icons[data-v-30bae934] {
+  color: var(--disabled-color);
+}
 #em-attachments #filters .refresh[data-v-30bae934] {
   -webkit-transition: -webkit-transform 0.6s;
   transition: -webkit-transform 0.6s;
@@ -349,6 +356,10 @@
   transition: all 0.3s;
   width: 30px;
   color: var(--grey-color);
+}
+#em-attachments .wrapper .material-icons.delete.disabled[data-v-30bae934] {
+  color: var(--disabled-color);
+  pointer-events: none;
 }
 #em-attachments .wrapper .material-icons.delete[data-v-30bae934]:hover {
   cursor: pointer;
@@ -600,8 +611,11 @@
     --border-color: #E3E5E8;
     --text-color: #5E646E;
     --text-light-color: #F2F2F3;
+    --disabled-color: #C4C4C4;
 }
 .material-icons {
+    -webkit-transition: all .3s;
+    transition: all .3s;
     font-size: 18px !important;
     color: var(--grey-color);
 }
