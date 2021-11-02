@@ -521,19 +521,19 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $db = JFactory::getDbo();
         $res = new stdClass();
 
-        /* "program - label - semester" mapping --> stocked in "data" field */
-        // standard format: prog=univ__202020__stp..winter-school__202010__wstp..precoll__202010__col (split "__" between attributs, split by ".." between 2 elements)
+        /* "program - label - semester" mapping --> stocked in "prog" field */
+        // standard format: prog=univ,stp,202020|winter-school,wstp,202010
 
-        $prgData = explode("..", JFactory::getApplication()->input->get('prog'));
+        $prgData = explode("|",end(explode("prog=", explode('&', parse_url($_SERVER[REQUEST_URI])['query'])[4])));
 
         $progCode = array();
         $progLabel = array();
         $progSession = array();
 
         foreach($prgData as $prg) {
-            $progCode[] = current(explode("__", $prg));
-            $progLabel[] = explode("__", $prg)[1];
-            $progSession[] = end(explode("__", $prg));
+            $progCode[] = current(explode(",", $prg));
+            $progLabel[] = explode(",", $prg)[1];
+            $progSession[] = end(explode(",", $prg));
         }
 
         header('Content-type: application/json');
