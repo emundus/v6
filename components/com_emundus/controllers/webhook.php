@@ -516,7 +516,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
     public function export_banner(){
         $eMConfig 	= JComponentHelper::getParams('com_emundus');
-        $banner_limit = $eMConfig->get('banner_limit');
+        $banner_limit = JFactory::getApplication()->input->get('limit');
 
         $db = JFactory::getDbo();
         $res = new stdClass();
