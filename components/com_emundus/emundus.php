@@ -427,6 +427,8 @@ JText::script('APPLICATION_FORM');
 JText::script('UPLOAD_BY_APPLICANT');
 JText::script('SELECT_CATEGORY');
 JText::script('CATEGORY');
+JText::script('DELETE_SELECTED_ATTACHMENTS');
+JText::script('CONFIRM_DELETE_SELETED_ATTACHMENTS');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
