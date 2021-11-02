@@ -48,8 +48,8 @@ export default {
   async deleteAttachments(fnum, student_id, attachment_ids) {
     try {
       const formData = new FormData();
-      formData.append('ids', attachment_ids);
-
+      formData.append('ids', JSON.stringify(attachment_ids));
+      
       const response = await client().post(`index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=${fnum}&student_id=${student_id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
