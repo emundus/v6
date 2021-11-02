@@ -4343,4 +4343,13 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         exit;
     }
+
+    public function getattachmentcategories() 
+    {
+        $m_files = $this->getModel('Files');
+        $categories = $m_files->getAttachmentCategories();
+
+        echo json_encode((array('status' => true, 'categories' => $categories)));
+        exit;
+    }
 }

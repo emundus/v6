@@ -35,6 +35,16 @@ export default {
     }
   },
 
+  async getAttachmentCategories() {
+    try {
+      const response = await client().get('index.php?option=com_emundus&controller=files&task=getattachmentcategories');
+
+      return response.data;
+    } catch (e) {
+      throw e;
+    }
+  },
+
   async deleteAttachments(fnum, attachment_ids) {
     try {
       const response = await client().post('index.php?option=com_emundus&controller=application&task=deleteattachement', {

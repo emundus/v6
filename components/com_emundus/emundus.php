@@ -423,6 +423,10 @@ JText::script('MINI_DESCRIPTION');
 JText::script('CAMPAIGN_ID');
 JText::script('REPLACE');
 JText::script('NO_ATTACHMENTS_FOUND');
+JText::script('APPLICATION_FORM');
+JText::script('UPLOAD_BY_APPLICANT');
+JText::script('SELECT_CATEGORY');
+JText::script('CATEGORY');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
