@@ -529,13 +529,13 @@ class EmundusControllerWebhook extends JControllerLegacy {
                                 e_362_7761 as adrPersoVille, e_362_7763 as adrPersoCodePays, jecc.fnum as noClientemundus, 'summer.school@sciencepo.fr' as emailAssistante, filename as photo,
                                 
                                 case
-                                    WHEN jecc.programme = 'Universitaire' then 'STP'
+                                    WHEN jecc.programme = 'univ' then 'STP'
                                     WHEN jecc.programme = 'winter-school' then 'WSTP'
                                     WHEN jecc.programme = 'precoll' then 'STP_PRE_U'
                                 end as 'programme',
                                 
                                 case
-                                    WHEN jecc.programme = 'Universitaire' then '202120'
+                                    WHEN jecc.programme = 'univ' then '202120'
                                     WHEN jecc.programme = 'winter-school' then '202110'
                                     WHEN jecc.programme = 'precoll' then '202120'
                                 end as 'semestre',
