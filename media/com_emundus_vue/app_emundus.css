@@ -388,10 +388,6 @@
   width: -moz-fit-content;
   width: fit-content;
 }
-#em-attachments table th.date[data-v-30bae934], #em-attachments table td.date[data-v-30bae934] {
-  max-width: 120px;
-  width: 120px;
-}
 #em-attachments table th.desc[data-v-30bae934], #em-attachments table td.desc[data-v-30bae934] {
   max-width: 250px;
   width: initial;
@@ -406,6 +402,11 @@
 #em-attachments table thead tr th[data-v-30bae934] {
   border-top: 1px solid #e0e0e0;
   border-bottom: 1px solid #e0e0e0;
+  white-space: nowrap;
+}
+#em-attachments table thead tr th .material-icons[data-v-30bae934] {
+  -webkit-transform: translateY(3px);
+          transform: translateY(3px);
 }
 #em-attachments table tbody tr[data-v-30bae934] {
   border-bottom: 1px solid #e0e0e0;
