@@ -33,7 +33,7 @@
             <div class="actions">
               <select name="category" @change="filterByCategory">
                 <option value="all">{{ translate('SELECT_CATEGORY') }}</option>
-                <option v-for="(category, key) in categories" :key="key" :value="key">{{ translate(category) }}</option>
+                <option v-for="(category, key) in categories" :key="key" :value="key">{{ category }} </option>
               </select>
               <div v-if="canExport" class="btn-icon-text" @click="exportAttachments" :class="{'disabled': checkedAttachments.length < 1}">
                 <span class="material-icons export">
@@ -246,8 +246,8 @@ export default {
       const response = await attachmentService.getAttachmentCategories();
       if (response.status) {
         this.attachments.forEach(attachment => {
-          if (!response.categories[attachment.category]) {
-            response.categories[attachment.category] = attachment.category;
+          if (!response.categories[attachment.category] && attachment.category != "") {
+            response.categories[attachment.category] = this.translate(attachment.category);
           }
         });
         delete response.categories[""];
