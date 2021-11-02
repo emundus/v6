@@ -324,7 +324,7 @@ export default {
         this.attachments = this.attachments.filter(attachment => !this.checkedAttachments.includes(attachment.aid));
 
         // delete all checkedAttachments
-        const response = await attachmentService.deleteAttachments(this.displayedFnum, this.checkedAttachments);
+        const response = await attachmentService.deleteAttachments(this.displayedFnum, this.displayedUser.id, this.checkedAttachments);
         if (response.status == true) {
           // Display tooltip deleted succesfully  
         }
