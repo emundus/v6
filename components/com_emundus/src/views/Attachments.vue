@@ -57,13 +57,41 @@
                     <th>
                       <input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments">
                     </th>
-                    <th @click="orderBy('filename')">{{ translate('NAME') }}</th>
-                    <th class='date' @click="orderBy('timedate')">{{ translate('SEND_DATE') }}</th>
-                    <th class='category' @click="orderBy('category')">{{ translate('CATEGORY') }}</th>
-                    <th class='desc' @click="orderBy('description')">{{ translate('DESCRIPTION') }}</th>
-                    <th class='status' @click="orderBy('is_validated')">{{ translate('STATUS') }}</th>
-                    <th @click="orderBy('modified_by')">{{ translate('MODIFIED_BY') }}</th>
-                    <th class='date' @click="orderBy('modified')">{{ translate('MODIFICATION_DATE') }}</th>
+                    <th @click="orderBy('value')"> 
+                      {{ translate('NAME') }}
+                      <span v-if="sort.orderBy == 'value' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'value' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
+                    <th class='date' @click="orderBy('timedate')"> 
+                      {{ translate('SEND_DATE') }}
+                      <span v-if="sort.orderBy == 'timedate' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'timedate' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
+                    <th class='category' @click="orderBy('category')"> 
+                      {{ translate('CATEGORY') }}
+                      <span v-if="sort.orderBy == 'category' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'category' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
+                    <th class='desc' @click="orderBy('description')"> 
+                      {{ translate('DESCRIPTION') }}
+                      <span v-if="sort.orderBy == 'description' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'description' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
+                    <th class='status' @click="orderBy('is_validated')"> 
+                      {{ translate('STATUS') }}
+                      <span v-if="sort.orderBy == 'is_validated' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'is_validated' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
+                    <th @click="orderBy('modified_by')"> 
+                      {{ translate('MODIFIED_BY') }}
+                      <span v-if="sort.orderBy == 'modified_by' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'modified_by' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
+                    <th class='date' @click="orderBy('modified')"> 
+                      {{ translate('MODIFICATION_DATE') }}
+                      <span v-if="sort.orderBy == 'modified' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'modified' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -180,7 +208,11 @@ export default {
       displayedFnum: this.fnum,
       checkedAttachments: [],
       selectedAttachment: {},
-      lastSort: "",
+      sort: {
+        last: "",
+        order: "",
+        orderBy: ""
+      },
       canExport: false,
       canDelete: false,
       modalLoading: false,
@@ -236,7 +268,7 @@ export default {
     },
     async refreshAttachments() {
         this.loading = true;
-        this.lastSort = "";
+        this.resetOrder();
         this.attachments = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
 
         this.$store.dispatch('attachment/setAttachmentsOfFnum', {
@@ -248,7 +280,7 @@ export default {
         this.loading = false;
     }, 
     updateAttachment() {
-      this.lastSort = "";
+      this.resetOrder();
       this.getAttachments();
       this.$modal.hide('edit');
       this.selectedAttachment = {};
@@ -389,13 +421,26 @@ export default {
         }
       });
     },
+    resetOrder() {
+      this.sort = {
+        last: "",
+        order: "",
+        orderBy: ""
+      }
+    },
     orderBy(key) {
       // if last sort is the same as the current sort, reverse the order
 
-      if (this.lastSort == key) {
+      if (this.sort.last == key) {
+        if (this.sort.order == "asc") {
+          this.sort.order = "desc";
+        } else {
+          this.sort.order = "asc";
+        }
+
         this.attachments.reverse();
       } else {
-        // sort by key
+        // sort in ascending order by key
         this.attachments.sort((a, b) => {
           if (a[key] < b[key]) {
             return -1;
@@ -405,8 +450,12 @@ export default {
           }
           return 0;
         });
+
+        this.sort.order = "asc";
       }
-      this.lastSort = key;
+
+      this.sort.orderBy = key;
+      this.sort.last = key;
     },
     filterByCategory(e) {
       this.attachments.forEach(attachment => {
@@ -732,11 +781,6 @@ export default {
       width: fit-content;
     }
 
-    th.date, td.date {
-      max-width: 120px;
-      width: 120px;
-    }
-
     th.desc, td.desc {
       max-width: 250px;
       width: initial;
@@ -755,6 +799,11 @@ export default {
         th {
           border-top: 1px solid #e0e0e0;
           border-bottom: 1px solid #e0e0e0;
+          white-space: nowrap;
+
+          .material-icons {
+            transform: translateY(3px);
+          }
         }
       }
     }
