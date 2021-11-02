@@ -269,6 +269,7 @@ export default {
     async refreshAttachments() {
         this.loading = true;
         this.resetOrder();
+        this.checkedAttachments = [];
         this.attachments = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
 
         this.$store.dispatch('attachment/setAttachmentsOfFnum', {
