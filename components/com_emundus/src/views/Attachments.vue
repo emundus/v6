@@ -2,7 +2,7 @@
     <div id="em-attachments">
         <div class="head">
           <div class="prev-next-files" v-if="fnums.length > 1">
-            <div class="prev" :class="{'active': fnumPosition > 0}" @click="prevFile">
+            <div class="prev" :class="{'active': fnumPosition > 0}" @click="changeFile(fnumPosition - 1)">
               <!--
                 For new header
                 <span class="material-icons">
@@ -10,7 +10,7 @@
               </span> -->
               <i class="small arrow left icon"></i>
             </div>
-            <div class="next" :class="{'active': fnumPosition < fnums.length - 1}" @click="nextFile">
+            <div class="next" :class="{'active': fnumPosition < fnums.length - 1}" @click="changeFile(fnumPosition + 1)">
               <!--
                 For new header
                 <span class="material-icons">
@@ -139,13 +139,13 @@
             </div>
             <div class="flex-end">
               <div class="prev-next-attachments">
-                <div class="prev" :class="{'active': selectedAttachmentPosition > 0}" @click="prevAttachment">
+                <div class="prev" :class="{'active': selectedAttachmentPosition > 0}" @click="changeAttachment(selectedAttachmentPosition - 1, true)">
                   <span class="material-icons">
                     navigate_before
                   </span>
                 </div>
                 <span class="lvl">{{ selectedAttachmentPosition + 1 }} / {{ displayedAttachments.length }}</span>
-                <div class="next" :class="{'active': selectedAttachmentPosition < displayedAttachments.length - 1}" @click="nextAttachment">
+                <div class="next" :class="{'active': selectedAttachmentPosition < displayedAttachments.length - 1}" @click="changeAttachment(selectedAttachmentPosition + 1)">
                   <span class="material-icons">
                     navigate_next
                   </span>
@@ -262,7 +262,7 @@ export default {
       } else {
         this.loading = true;
         this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
-        this.getCategories();
+        this.categories = this.$store.state.attachment.categories;
         this.loading = false;
       }
     },
@@ -374,32 +374,16 @@ export default {
     },
 
     // navigation functions
-    prevFile() {
-      this.displayedFnum = this.fnums[this.fnumPosition - 1];
+    changeFile(position) {
+      this.displayedFnum = this.fnums[position];
       this.setDisplayedUser();
       this.getAttachments();
       this.setAccessRights();
     },
-    nextFile() {
-      this.displayedFnum = this.fnums[this.fnumPosition + 1];
-      this.setDisplayedUser();
-      this.getAttachments();
-      this.setAccessRights();
-    },
-    prevAttachment() {
-      this.slideTransition = "slide-fade-reverse";
+    changeAttachment(position, reverse = false) {
+      this.slideTransition = reverse ? "slide-fade-reverse" : "slide-fade";
       this.modalLoading = true;
-      this.selectedAttachment = this.displayedAttachments[this.selectedAttachmentPosition - 1];
-      this.$store.dispatch('attachment/setSelectedAttachment', this.selectedAttachment);
-
-      setTimeout(() => {
-        this.modalLoading = false;
-      }, 500);
-    },
-    nextAttachment() {
-      this.slideTransition = "slide-fade";
-      this.modalLoading = true;
-      this.selectedAttachment = this.displayedAttachments[this.selectedAttachmentPosition + 1];
+      this.selectedAttachment = this.displayedAttachments[position];
       this.$store.dispatch('attachment/setSelectedAttachment', this.selectedAttachment);
 
       setTimeout(() => {
@@ -430,14 +414,8 @@ export default {
     },
     orderBy(key) {
       // if last sort is the same as the current sort, reverse the order
-
       if (this.sort.last == key) {
-        if (this.sort.order == "asc") {
-          this.sort.order = "desc";
-        } else {
-          this.sort.order = "asc";
-        }
-
+        this.sort.order = this.sort.order == "asc" ? "desc" : "asc";
         this.attachments.reverse();
       } else {
         // sort in ascending order by key
