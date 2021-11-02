@@ -3,6 +3,7 @@ const state = {
     attachments: {},
     selectedAttachment: {},
     previews: {},
+    categories: {},
 };
 
 const getters = {
@@ -25,6 +26,9 @@ const actions = {
     setPreview({ commit }, previewData) {
         commit('setPreview', previewData);
     },
+    setCategories({ commit }, categories) {
+        commit('setCategories', categories);
+    }
 };
 
 const mutations = {
@@ -45,6 +49,9 @@ const mutations = {
     setPreview(state, previewData) {
         state.previews[previewData.id] = previewData.preview;
     },
+    setCategories(state, categories) {
+        state.categories = categories;
+    }
 };
 
 export default{

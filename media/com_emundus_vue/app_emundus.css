@@ -315,14 +315,18 @@
 #em-attachments #filters .actions .export[data-v-30bae934] {
   margin-right: 8px;
 }
-#em-attachments #filters .actions > div[data-v-30bae934] {
+#em-attachments #filters .actions select[data-v-30bae934] {
+  height: 37px;
+  border: 1px solid var(--border-color);
+}
+#em-attachments #filters .actions > div[data-v-30bae934], #em-attachments #filters .actions > select[data-v-30bae934] {
   margin-right: 8px;
 }
-#em-attachments #filters .actions > div.disabled[data-v-30bae934] {
+#em-attachments #filters .actions > div.disabled[data-v-30bae934], #em-attachments #filters .actions > select.disabled[data-v-30bae934] {
   color: var(--disabled-color);
   pointer-events: none;
 }
-#em-attachments #filters .actions > div.disabled .material-icons[data-v-30bae934] {
+#em-attachments #filters .actions > div.disabled .material-icons[data-v-30bae934], #em-attachments #filters .actions > select.disabled .material-icons[data-v-30bae934] {
   color: var(--disabled-color);
 }
 #em-attachments #filters .refresh[data-v-30bae934] {

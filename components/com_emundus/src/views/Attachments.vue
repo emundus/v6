@@ -31,6 +31,10 @@
               <span class="material-icons">search</span>
             </div>
             <div class="actions">
+              <select name="category" @change="filterByCategory">
+                <option value="all">{{ translate('SELECT_CATEGORY') }}</option>
+                <option v-for="(category, key) in categories" :key="key" :value="key">{{ translate(category) }}</option>
+              </select>
               <div v-if="canExport" class="btn-icon-text" @click="exportAttachments" :class="{'disabled': checkedAttachments.length < 1}">
                 <span class="material-icons export">
                   file_upload
@@ -55,6 +59,7 @@
                     </th>
                     <th @click="orderBy('filename')">{{ translate('NAME') }}</th>
                     <th class='date' @click="orderBy('timedate')">{{ translate('SEND_DATE') }}</th>
+                    <th class='category' @click="orderBy('category')">{{ translate('CATEGORY') }}</th>
                     <th class='desc' @click="orderBy('description')">{{ translate('DESCRIPTION') }}</th>
                     <th class='status' @click="orderBy('is_validated')">{{ translate('STATUS') }}</th>
                     <th @click="orderBy('modified_by')">{{ translate('MODIFIED_BY') }}</th>
@@ -71,6 +76,7 @@
                     </td>
                     <td class="td-document" @click="openModal(attachment)">{{ attachment.value }}</td>
                     <td class='date'>{{ formattedDate(attachment.timedate) }}</td>
+                    <td class='category'>{{ translate(categories[attachment.category]) }}</td>
                     <td class="desc">{{ attachment.description }}</td>
                     <td class="status valid-state" :class="{
                       'success': attachment.is_validated == 1, 
@@ -166,6 +172,7 @@ export default {
     return {
       loading: true,
       attachments: [],
+      categories: {},
       fnums: [],
       users: {},
       displayedUser: {},
@@ -182,6 +189,7 @@ export default {
   mounted() {
     this.getFnums();
     this.getUsers();
+    this.getCategories();
     this.getAttachments();
     this.setAccessRights();
   },
@@ -202,12 +210,20 @@ export default {
       this.displayedUser = this.users.find(user => user.id == response.fnumInfos.applicant_id);
       this.$store.dispatch('user/setDisplayedUser', this.displayedUser.id);
     },
+    async getCategories() {
+      const response = await attachmentService.getAttachmentCategories();
+      if (response.status) {
+        this.$store.dispatch('attachment/setCategories', response.categories);
+        this.categories = this.$store.state.attachment.categories;
+      }
+    },
     async getAttachments() {
       if (!this.$store.state.attachment.attachments[this.displayedFnum]) {
         this.refreshAttachments();
       } else {
         this.loading = true;
         this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
+        this.setCategories();
         this.loading = false;
       }
     },
@@ -215,6 +231,7 @@ export default {
         this.loading = true;
         this.lastSort = "";
         this.attachments = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
+        this.setCategories();
 
         this.$store.dispatch('attachment/setAttachmentsOfFnum', {
           fnum: [this.displayedFnum],
@@ -228,6 +245,19 @@ export default {
       this.getAttachments();
       this.$modal.hide('edit');
       this.selectedAttachment = {};
+    },
+    setCategories() {      
+      this.attachments.forEach(attachment => {
+        if (!this.categories[attachment.category]) {
+          this.categories[attachment.category] = attachment.category;
+        }
+      });
+
+      // sort categories 
+      this.categories = Object.keys(this.categories).sort().reduce((obj, key) => {
+        obj[key] = this.categories[key];
+        return obj;
+      }, {});
     },
     async setAccessRights() {
       if (!this.$store.state.user.rights[this.displayedFnum]) {
@@ -332,6 +362,19 @@ export default {
         });
       }
       this.lastSort = key;
+    },
+    filterByCategory(e) {
+      this.attachments.forEach(attachment => {
+        if (e.target.value == "all") {
+          attachment.show = true;
+        } else {
+          if (attachment.category == e.target.value) {
+            attachment.show = true;
+          } else {
+            attachment.show = false;
+          }
+        }
+      });
     },
     updateAllCheckedAttachments(e) {
       if (e.target.checked) {
@@ -558,7 +601,12 @@ export default {
         margin-right: 8px;
       }
 
-      >div {
+      select {
+        height: 37px;
+        border: 1px solid var(--border-color);
+      }
+
+      >div, >select {
         margin-right: 8px;
         
         &.disabled {
