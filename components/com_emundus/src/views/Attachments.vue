@@ -46,7 +46,7 @@
               <span class="material-icons refresh" @click="refreshAttachments">
                 autorenew
               </span>
-              <span v-if="canDelete" class="material-icons delete" :class="{'disabled': checkedAttachments.length < 1}" @click="deleteAttachments">
+              <span v-if="canDelete" class="material-icons delete" :class="{'disabled': checkedAttachments.length < 1}" @click="confirmDeleteAttachments">
                 delete_outlined
               </span>
             </div>
@@ -144,6 +144,7 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 import AttachmentPreview from '../components/AttachmentPreview.vue'
 import AttachmentEdit from '../components/AttachmentEdit.vue'
 import attachmentService from '../services/attachment.js';
@@ -282,6 +283,30 @@ export default {
           }
         })
       }
+    },
+
+    confirmDeleteAttachments() {
+      const title = this.translate('DELETE_SELECTED_ATTACHMENTS');
+      const text = this.translate('CONFIRM_DELETE_SELETED_ATTACHMENTS');
+      const yes = this.translate('JYES');
+      const no = this.translate('JNO');
+
+      Swal.fire(
+        {
+          title: title,
+          text: text,
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: yes,
+          cancelButtonText: no
+        }
+      ).then((result) => {
+        if (result.value) {
+          this.deleteAttachments();
+        }
+      });
     },
     async deleteAttachments() {
       if (this.canDelete) {
