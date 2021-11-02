@@ -521,29 +521,31 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $db = JFactory::getDbo();
         $res = new stdClass();
 
-        header('Content-type: application/json');
+        /* "program - label - semester" mapping --> stocked in "data" field */
+        // standard format: prog=univ__202020__stp..winter-school__202010__wstp..precoll__202010__col (split "__" between attributs, split by ".." between 2 elements)
 
+        $prgData = explode("..", JFactory::getApplication()->input->get('prog'));
+
+        $progCode = array();
+        $progLabel = array();
+        $progSession = array();
+
+        foreach($prgData as $prg) {
+            $progCode[] = current(explode("__", $prg));
+            $progLabel[] = explode("__", $prg)[1];
+            $progSession[] = end(explode("__", $prg));
+        }
+
+        header('Content-type: application/json');
         try {
             $query = "SELECT    e_360_7747 as nom, e_360_7749 as prenom, e_360_7746 as civilite, e_360_7751 as dateNaissance,e_360_7755 as villeNaissance, label_fr as paysNaissance, 
                                 e_360_7752 as nationalite, ju.email as email,trim(e_362_7764) as telephone, e_362_7757 as adrPersoL1,e_362_7758 as adrPersoL2,e_362_7760 as adrPersoCodePost,
-                                e_362_7761 as adrPersoVille, e_362_7763 as adrPersoCodePays, jecc.fnum as noClientemundus, 'summer.school@sciencepo.fr' as emailAssistante, filename as photo,
-                                
-                                case
-                                    WHEN jecc.programme = 'univ' then 'STP'
-                                    WHEN jecc.programme = 'winter-school' then 'WSTP'
-                                    WHEN jecc.programme = 'precoll' then 'STP_PRE_U'
-                                end as 'programme',
-                                
-                                case
-                                    WHEN jecc.programme = 'univ' then '202120'
-                                    WHEN jecc.programme = 'winter-school' then '202110'
-                                    WHEN jecc.programme = 'precoll' then '202120'
-                                end as 'semestre',
-                                
-                                case
-                                    when e.e_394_8112 = 'JYES' then 'Oui'
-                                    when e.e_394_8112 = 'JNO' then 'Non'
-                                end as 'usagePhoto'
+                                e_362_7761 as adrPersoVille, e_362_7763 as adrPersoCodePays, jecc.fnum as noClientemundus, 'summer.school@sciencepo.fr' as emailAssistante, filename as photo, programme,
+                        case
+                            when e.e_394_8112 = 'JYES' then 'Oui'
+                            when e.e_394_8112 = 'JNO' then 'Non'
+                        end as 'usagePhoto'
+                               
                     from jos_emundus_1001_00
                     left join jos_emundus_campaign_candidature jecc on jos_emundus_1001_00.fnum = jecc.fnum
                     left join data_country dc on jos_emundus_1001_00.e_360_7754 = dc.id
@@ -564,9 +566,22 @@ class EmundusControllerWebhook extends JControllerLegacy {
             $res->count = sizeof($raw);
             $res->message = '';
 
-            /* encode 64 bit images */
+            /* encode 64 bit images + mapping prog..lbl, prog..session*/
             foreach($raw as $data) {
                 $data->photo = base64_encode(file_get_contents($data->photo));
+
+                $raw_prg = $data->programme;
+                
+                if(in_array($raw_prg, $progCode)) {
+                    // array_search
+                    $prog_index = array_search($raw_prg,$progCode);
+                    
+                    // update lbl
+                    $data->programme = $progLabel[$prog_index];
+
+                    // set session
+                    $data->semestre = $progSession[$prog_index];
+                }
             }
 
             $res->results = $raw;
