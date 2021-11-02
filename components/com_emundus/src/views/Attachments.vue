@@ -76,7 +76,7 @@
                     </td>
                     <td class="td-document" @click="openModal(attachment)">{{ attachment.value }}</td>
                     <td class='date'>{{ formattedDate(attachment.timedate) }}</td>
-                    <td class='category'>{{ translate(categories[attachment.category]) }}</td>
+                    <td class='category'>{{ categories[attachment.category] ? translate(categories[attachment.category]) : attachment.category }}</td>
                     <td class="desc">{{ attachment.description }}</td>
                     <td class="status valid-state" :class="{
                       'success': attachment.is_validated == 1, 
@@ -144,13 +144,13 @@
 </template>
 
 <script>
-import Swal from "sweetalert2";
 import AttachmentPreview from '../components/AttachmentPreview.vue'
 import AttachmentEdit from '../components/AttachmentEdit.vue'
 import attachmentService from '../services/attachment.js';
 import userService from '../services/user.js';
 import fileService from '../services/file.js';
 import mixin from '../mixins/mixin.js';
+import Swal from "sweetalert2";
 
 export default {
   name: 'Attachments',
@@ -190,7 +190,6 @@ export default {
   mounted() {
     this.getFnums();
     this.getUsers();
-    this.getCategories();
     this.getAttachments();
     this.setAccessRights();
   },
@@ -214,6 +213,13 @@ export default {
     async getCategories() {
       const response = await attachmentService.getAttachmentCategories();
       if (response.status) {
+        this.attachments.forEach(attachment => {
+          if (!response.categories[attachment.category]) {
+            response.categories[attachment.category] = attachment.category;
+          }
+        });
+        delete response.categories[""];
+        
         this.$store.dispatch('attachment/setCategories', response.categories);
         this.categories = this.$store.state.attachment.categories;
       }
@@ -224,7 +230,7 @@ export default {
       } else {
         this.loading = true;
         this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
-        this.setCategories();
+        this.getCategories();
         this.loading = false;
       }
     },
@@ -232,13 +238,13 @@ export default {
         this.loading = true;
         this.lastSort = "";
         this.attachments = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
-        this.setCategories();
 
         this.$store.dispatch('attachment/setAttachmentsOfFnum', {
           fnum: [this.displayedFnum],
           attachments: this.attachments
         });
 
+        this.getCategories();
         this.loading = false;
     }, 
     updateAttachment() {
@@ -246,19 +252,6 @@ export default {
       this.getAttachments();
       this.$modal.hide('edit');
       this.selectedAttachment = {};
-    },
-    setCategories() {      
-      this.attachments.forEach(attachment => {
-        if (!this.categories[attachment.category]) {
-          this.categories[attachment.category] = attachment.category;
-        }
-      });
-
-      // sort categories 
-      this.categories = Object.keys(this.categories).sort().reduce((obj, key) => {
-        obj[key] = this.categories[key];
-        return obj;
-      }, {});
     },
     async setAccessRights() {
       if (!this.$store.state.user.rights[this.displayedFnum]) {
@@ -286,21 +279,26 @@ export default {
     },
 
     confirmDeleteAttachments() {
-      const title = this.translate('DELETE_SELECTED_ATTACHMENTS');
-      const text = this.translate('CONFIRM_DELETE_SELETED_ATTACHMENTS');
-      const yes = this.translate('JYES');
-      const no = this.translate('JNO');
+      let text = this.translate('CONFIRM_DELETE_SELETED_ATTACHMENTS');
+
+      this.checkedAttachments.forEach(aid => {
+        this.attachments.forEach((attachment) => {
+          if (attachment.aid == aid) {
+            text += attachment.value += ", ";
+          }
+        });
+      });
 
       Swal.fire(
         {
-          title: title,
+          title: this.translate('DELETE_SELECTED_ATTACHMENTS'),
           text: text,
           type: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
-          confirmButtonText: yes,
-          cancelButtonText: no
+          confirmButtonText: this.translate('JYES'),
+          cancelButtonText: this.translate('JNO')
         }
       ).then((result) => {
         if (result.value) {
@@ -318,6 +316,16 @@ export default {
         if (response.status == true) {
           // Display tooltip deleted succesfully  
         }
+      } else {
+        Swal.fire(
+          {
+            title: this.translate('ERROR'),
+            text: this.translate('YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS'),
+            type: 'error',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: this.translate('JCLOSE')
+          }
+        );
       }
     },
 
