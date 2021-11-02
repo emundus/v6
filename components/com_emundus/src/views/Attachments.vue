@@ -279,32 +279,44 @@ export default {
     },
 
     confirmDeleteAttachments() {
-      let text = this.translate('CONFIRM_DELETE_SELETED_ATTACHMENTS');
+      if (this.canDelete) {
+        let text = this.translate('CONFIRM_DELETE_SELETED_ATTACHMENTS');
 
-      this.checkedAttachments.forEach(aid => {
-        this.attachments.forEach((attachment) => {
-          if (attachment.aid == aid) {
-            text += attachment.value += ", ";
+        this.checkedAttachments.forEach(aid => {
+          this.attachments.forEach((attachment) => {
+            if (attachment.aid == aid) {
+              text += attachment.value + ", ";
+            }
+          });
+        });
+
+        Swal.fire(
+          {
+            title: this.translate('DELETE_SELECTED_ATTACHMENTS'),
+            text: text,
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: this.translate('JYES'),
+            cancelButtonText: this.translate('JNO')
+          }
+        ).then((result) => {
+          if (result.value) {
+            this.deleteAttachments();
           }
         });
-      });
-
-      Swal.fire(
-        {
-          title: this.translate('DELETE_SELECTED_ATTACHMENTS'),
-          text: text,
-          type: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: this.translate('JYES'),
-          cancelButtonText: this.translate('JNO')
-        }
-      ).then((result) => {
-        if (result.value) {
-          this.deleteAttachments();
-        }
-      });
+      } else {
+        Swal.fire(
+          {
+            title: this.translate('ERROR'),
+            text: this.translate('YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS'),
+            type: 'error',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: this.translate('JCLOSE')
+          }
+        );
+      }
     },
     async deleteAttachments() {
       if (this.canDelete) {
@@ -404,6 +416,8 @@ export default {
           if (attachment.category == e.target.value) {
             attachment.show = true;
           } else {
+            // remove attachments from checkedAttachment list
+            this.checkedAttachments = this.checkedAttachments.filter(aid => aid !== attachment.aid);
             attachment.show = false;
           }
         }
