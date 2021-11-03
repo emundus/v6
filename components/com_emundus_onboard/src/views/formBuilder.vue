@@ -477,13 +477,13 @@
             id: 0,
             value: [],
             icon: 'fas fa-font',
-            name: 'default_empty',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMPTY_SECTION"),
 
           },
           personal_informations: {
             id: 0,
             value: ['nom','prenom','email','telephone','birthday','nationalite'],
-            icon: 'fas fa-font',
+            icon: 'fas fa-id-card-alt',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_PERSONAL_INFORMATIONS"),
             label: {
               fr:"Informations Personelles",
@@ -495,11 +495,21 @@
           adress: {
             id: 1,
             value: ['adresse','code postal','pays','ville','adresseComplementaire'],
-            icon: 'fas fa-font',
+            icon: 'fas fa-address-card',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADRESSE"),
             label: {
               fr:"Adresse",
               en: "Adress",
+            }
+          },
+          eexperience_pro: {
+            id: 1,
+            value: ['date_debut','date_fin','fonction','employeur','ville_employeur','pays','missions'],
+            icon: 'fas fa-briefcase',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_WORK_EXPERIENCE"),
+            label: {
+              fr:"Expérience professionnelle",
+              en: "Work experience",
             }
           },
         },

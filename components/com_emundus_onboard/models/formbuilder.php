@@ -442,7 +442,7 @@ class EmundusonboardModelformbuilder extends JModelList
                 $params["default_value"] = "false";
                 $params["join_db_name"] = "";
                 $params["database_join_display_type"] = "dropdown";
-                $params["join_key_column"] ="";
+                $params["join_key_column"] = "";
                 $params["join_val_column"] = "";
                 $params["join_conn_id"] = "1";
                 $params["database_join_where_sql"] = "";
@@ -1703,6 +1703,22 @@ class EmundusonboardModelformbuilder extends JModelList
 
                     $created_elements[] = $this->createSimpleElement($gid, $plugin, null, 0, $label);
                     break;
+                case 'date_debut':
+                    $label = array(
+                        'fr' => 'Date de début du contrat',
+                        'en' => 'Contract start date',
+                    );
+
+                    $created_elements[] = $this->createSimpleElement($gid, 'birthday', null, 0, $label);
+                    break;
+                case 'date_fin':
+                    $label = array(
+                        'fr' => 'Date de fin du contrat',
+                        'en' => 'Contract end date',
+                    );
+
+                    $created_elements[] = $this->createSimpleElement($gid, 'birthday', null, 0, $label);
+                    break;
 
                 case 'telephone':
 
@@ -1711,8 +1727,47 @@ class EmundusonboardModelformbuilder extends JModelList
                         'en' => 'Phone',
                     );
 
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    break;
+                case 'fonction':
+
+                    $label = array(
+                        'fr' => 'Fonction',
+                        'en' => 'Function',
+                    );
+
 
                     $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    break;
+
+                case 'employeur':
+                    $label = array(
+                        'fr' => 'Employeur',
+                        'en' => 'Employer',
+                    );
+
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    break;
+
+                case 'ville_employeur':
+
+                    $label = array(
+                        'fr' => "Ville de l'employeur",
+                        'en' => 'Employer city',
+                    );
+
+
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    break;
+                case 'missions':
+
+                    $label = array(
+                        'fr' => 'Missions réalisées',
+                        'en' => 'Missions',
+                    );
+
+
+                    $created_elements[] = $this->createSimpleElement($gid, 'textarea', null, 0, $label);
                     break;
                 case 'adresse':
                     $label = array(
@@ -1772,7 +1827,7 @@ class EmundusonboardModelformbuilder extends JModelList
                     $element['params']["join_db_name"] = "data_nationality";
                     $element['params']["join_key_column"] = "id";
                     $element['params']["join_val_column"] = "label_fr";
-                    $element['params']["database_join_where_sql"]="order by id";
+                    $element['params']["database_join_where_sql"] = "order by id";
 
                     $joins_params = array(
                         "join-label" => "label_fr",
@@ -1812,7 +1867,7 @@ class EmundusonboardModelformbuilder extends JModelList
                     $element['params']["join_db_name"] = "data_country";
                     $element['params']["join_key_column"] = "id";
                     $element['params']["join_val_column"] = "label_fr";
-                    $element['params']["database_join_where_sql"]="order by id";
+                    $element['params']["database_join_where_sql"] = "order by id";
 
                     $joins_params = array(
                         "join-label" => "label_fr",
