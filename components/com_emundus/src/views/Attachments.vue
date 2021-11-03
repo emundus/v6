@@ -119,7 +119,7 @@
                 </tr>
             </tbody>
           </table>
-          <p v-else>{{ translate('NO_ATTACHMENTS_FOUND') }}</p>
+          <p v-else>{{ translate('COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND') }}</p>
         </div>
         
         <modal 
