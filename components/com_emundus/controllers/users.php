@@ -866,12 +866,6 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 	}
 
-	public function getuser() 
-	{
-		echo json_encode($this->_user);
-		exit;
-	}
-
 	public function getusers() 
 	{
 		$m_users = new EmundusModelUsers();
@@ -891,7 +885,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
-	public function getaccessrights() 
+	public function getattachmentaccessrights() 
 	{
 		$rights = [
 			'canDelete' => false,
@@ -899,15 +893,13 @@ class EmundusControllerUsers extends JControllerLegacy {
 			'canUpdate' => false,
 		];
 
-		$id = JFactory::getApplication()->input->getInt('id', null);
 		$fnum = JFactory::getApplication()->input->getString('fnum', null);
 
-		$rights['canDelete'] = EmundusHelperAccess::asAccessAction(4, 'd', $id, $fnum);
-		$rights['canUpdate'] = EmundusHelperAccess::asAccessAction(4, 'u', $id, $fnum);
-		$rights['canExport'] = EmundusHelperAccess::asAccessAction(8, 'c', $id, $fnum);
+		$rights['canDelete'] = EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $fnum);
+		$rights['canUpdate'] = EmundusHelperAccess::asAccessAction(4, 'u', $this->_user->id, $fnum);
+		$rights['canExport'] = EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum);
 
 		echo json_encode(array('status' => true, 'rights' => $rights));
 		exit;
 	}
-	
 }
