@@ -35,10 +35,11 @@
                     <span>{{ translate('MODIFICATION_DATE') }}</span>
                     <span>{{ formattedDate(attachment.modified) }}</span>
                 </div>
-                <div v-if="attachment.file_size">
+                <!-- TODO: add file size -->
+                <!-- <div v-if="attachment.file_size">
                     <span>{{ translate('FILE_SIZE') }}</span>
                     <span> ... kb </span>
-                </div>
+                </div> -->
             </div>
         </div>
         <div class="actions">
