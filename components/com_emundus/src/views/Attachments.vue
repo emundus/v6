@@ -43,15 +43,15 @@
                   {{ translate('EXPORT') }}
                 </span>
               </div>
-              <span class="material-icons refresh" @click="refreshAttachments">
+              <span class="material-icons refresh" @click="refreshAttachments" :title="translate('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE')">
                 autorenew
               </span>
-              <span v-if="canDelete" class="material-icons delete" :class="{'disabled': checkedAttachments.length < 1}" @click="confirmDeleteAttachments">
+              <span v-if="canDelete" class="material-icons delete" :class="{'disabled': checkedAttachments.length < 1}" @click="confirmDeleteAttachments" :title="translate('COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE')">
                 delete_outlined
               </span>
             </div>
           </div>
-          <table v-if="attachments.length">
+          <table v-if="attachments.length" :class="{'loading': loading}">
             <thead>
                 <tr>
                     <th>
@@ -278,6 +278,7 @@ export default {
         this.loading = true;
         this.resetOrder();
         this.checkedAttachments = [];
+        this.$refs['searchbar'].value = "";
         this.attachments = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
 
         this.$store.dispatch('attachment/setAttachmentsOfFnum', {
@@ -725,8 +726,7 @@ export default {
     width: calc(100% - 40px);
 
     &.loading {
-      min-height: calc(100vh - 400px);
-      visibility: hidden;
+      min-height: 50vh;
     }
 
     .material-icons.delete {
@@ -747,6 +747,10 @@ export default {
   }
 
   table {
+    &.loading {
+      visibility: hidden;
+    }
+
     border: 0;
 
     tr {
