@@ -130,7 +130,7 @@
                         chosen-class="plugin-chosen"
                         ghost-class="plugin-ghost"
                         style="padding-bottom: 2em;margin-top: 10%">-->
-                      <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(section,index) in sections" :id="'section_' + section.value" @dblclick="createGroup(section.value,section.label)" :title="section.name">
+                      <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 " v-for="(section,index) in sections" :id="'section_' + section.value" @click="createGroup(section.value,section.label)" :title="section.name" style="cursor: default" >
                         <em :class="section.icon"></em>
                         <span class="ml-10px">{{section.name}}</span>
                       </div>
@@ -482,7 +482,7 @@
           },
           personal_informations: {
             id: 0,
-            value: ['nom','prenom','email','telephone','birthday','databasejoin'],
+            value: ['nom','prenom','email','telephone','birthday','nationalite'],
             icon: 'fas fa-font',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_PERSONAL_INFORMATIONS"),
             label: {
@@ -494,7 +494,7 @@
 
           adress: {
             id: 1,
-            value: 'adresse',
+            value: ['adresse','code postal','pays','ville','adresseComplementaire'],
             icon: 'fas fa-font',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADRESSE"),
             label: {

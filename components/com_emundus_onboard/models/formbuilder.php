@@ -436,6 +436,38 @@ class EmundusonboardModelformbuilder extends JModelList
             if ($plugin == 'field') {
                 $params['text_input_format'] = array();
             }
+
+            if ($plugin == 'databasejoin') {
+                $params["password"] = "0";
+                $params["default_value"] = "false";
+                $params["join_db_name"] = "";
+                $params["database_join_display_type"] = "dropdown";
+                $params["join_key_column"] ="";
+                $params["join_val_column"] = "";
+                $params["join_conn_id"] = "1";
+                $params["database_join_where_sql"] = "";
+                $params["database_join_where_access"] = "1";
+                $params["database_join_where_when"] = "3";
+                $params["databasejoin_where_ajax"] = "0";
+                $params["database_join_filter_where_sql"] = "";
+                $params["database_join_show_please_select"] = "1";
+                $params["database_join_noselectionvalue"] = "";
+                $params["database_join_noselectionlabel"] = "";
+                $params["databasejoin_popupform"] = "41";
+                $params["fabrikdatabasejoin_frontend_add"] = "0";
+                $params["join_popupwidth"] = "";
+                $params["databasejoin_readonly_link"] = "0";
+                $params["fabrikdatabasejoin_frontend_select"] = "0";
+                $params["dbjoin_options_per_row"] = "3";
+                $params["dbjoin_multiselect_max"] = "0";
+                $params["dbjoin_multilist_size"] = "6";
+                $params["dbjoin_autocomplete_size"] = "20";
+                $params["dbjoin_autocomplete_rows"] = "10";
+                $params["dabase_join_label_eval"] = "";
+                $params["join_desc_column"] = "";
+                $params["dbjoin_autocomplete_how"] = "contains";
+                $params["join_val_column_concat"] = "";
+            }
             $params['notempty-message'] = array();
             $params['notempty-validation_condition'] = array();
         }
@@ -1655,98 +1687,97 @@ class EmundusonboardModelformbuilder extends JModelList
     {
         $created_elements = [];
         $user = JFactory::getUser()->id;
+
         foreach ($plugins as $plugin) {
-            if ($plugin == "birthday") {
-                $label = array(
-                    'fr' => 'Date de naissance',
-                    'en' => 'Birthday',
-                );
-                $created_elements[] = $this->createSimpleElement($gid, $plugin, null, 0, $label);
-            } else if ($plugin == "telephone") {
-                $label = array(
-                    'fr' => 'Téléphone',
-                    'en' => 'Phone',
-                );
-                $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
-            } else if($plugin=='email'){
-                $label = array(
-                    'fr' => 'Email',
-                    'en' => 'Email',
-                );
-                $created_elements[] = $this->createSimpleElement($gid, $plugin, null, 0, $label);
-            } else {
-                if($plugin=='databasejoin'){
+
+
+            switch ($plugin) {
+
+
+                case 'birthday':
+
+                    $label = array(
+                        'fr' => 'Date de naissance',
+                        'en' => 'Birthday',
+                    );
+
+                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, 0, $label);
+                    break;
+
+                case 'telephone':
+
+                    $label = array(
+                        'fr' => 'Téléphone',
+                        'en' => 'Phone',
+                    );
+
+
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    break;
+                case 'adresse':
+                    $label = array(
+                        'fr' => 'Adresse',
+                        'en' => 'Address',
+                    );
+
+
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    break;
+                case 'code postal':
+                    $label = array(
+                        'fr' => 'Code postal',
+                        'en' => 'postal code',
+                    );
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    break;
+                case 'ville':
+                    $label = array(
+                        'fr' => 'Ville',
+                        'en' => 'City',
+                    );
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    break;
+                case 'adresseComplementaire':
+                    $label = array(
+                        'fr' => 'Adresse complémentaire',
+                        'en' => 'Additional addresd',
+                    );
+
+
+                    $created_elements[] = $this->createSimpleElement($gid, 'field', null, 0, $label);
+                    break;
+
+                case 'email':
+
+                    $label = array(
+                        'fr' => 'Email',
+                        'en' => 'Email',
+                    );
+
+                    $created_elements[] = $this->createSimpleElement($gid, $plugin, null, 0, $label);
+
+                    break;
+                case 'nationalite':
+
                     $label = array(
                         'fr' => 'Nationalité',
                         'en' => 'Nationality',
                     );
-                    $params=array("bootstrap_class"=>"input-xlarge",
-                        "show_in_rss_feed"=>"0",
-                        "show_label_in_rss_feed"=>"0",
-                        "use_as_rss_enclosure"=>"0",
-                        "rollover"=>"","tipseval"=>"0",
-                        "tiplocation"=>"top-left",
-                        "labelindetails"=>"0",
-                        "labelinlist"=>"0",
-                        "comment"=>"",
-                        "edit_access"=>"1",
-                        "edit_access_user"=>"",
-                        "view_access"=>"1",
-                        "view_access_user"=>"",
-                        "list_view_access"=>"1",
-                        "encrypt"=>"0",
-                        "store_in_db"=>"1",
-                        "default_on_copy"=>"0",
-                        "can_order"=>"0",
-                        "validations"=>array(
-                            "plugin"=>["notempty"],
-                            "plugin_published"=>["1"],
-                            "validate_in"=>["both"],
-                            "validation_on"=>["both"],
-                            "validate_hidden"=>["0"],
-                            "must_validate"=>["0"],
-                            "show_icon"=>["1"]
-                        ),
-                        "password"=>"0",
-                        "default_value"=>"false",
-                        "join_db_name"=>"data_nationality",
-                        "database_join_display_type"=>"dropdown",
-                        "join_key_column"=>"id",
-                        "join_val_column"=>"label_fr",
-                        "join_conn_id"=>"1",
-                        "database_join_where_sql"=>"order by id",
-                        "database_join_where_access"=>"1",
-                        "database_join_where_when"=>"3",
-                        "databasejoin_where_ajax"=>"0",
-                        "database_join_filter_where_sql"=>"",
-                        "database_join_show_please_select"=>"1",
-                        "database_join_noselectionvalue"=>"",
-                        "database_join_noselectionlabel"=>"",
-                        "databasejoin_popupform"=>"41",
-                        "fabrikdatabasejoin_frontend_add"=>"0",
-                        "join_popupwidth"=>"",
-                        "databasejoin_readonly_link"=>"0",
-                        "fabrikdatabasejoin_frontend_select"=>"0",
-                        "dbjoin_options_per_row"=>"3",
-                        "dbjoin_multiselect_max"=>"0",
-                        "dbjoin_multilist_size"=>"6",
-                        "dbjoin_autocomplete_size"=>"20",
-                        "dbjoin_autocomplete_rows"=>"10",
-                        "dabase_join_label_eval"=>"",
-                        "join_desc_column"=>"",
-                        "dbjoin_autocomplete_how"=>"contains",
-                        "join_val_column_concat"=>"",
-                    );
 
-                    $el_id=$this->createSimpleElement($gid, $plugin,null,0,$label);
+                    $el_id = $this->createSimpleElement($gid, 'databasejoin', null, 0, $label);
+
                     $created_elements[] = $el_id;
-                    $element= json_decode(json_encode($this->getElement($el_id,$gid)), true);
+                    $element = json_decode(json_encode($this->getElement($el_id, $gid)), true);
 
-                    $element['params']=$params;
-                    $joins_params=array(
-                                "join-label"=>"label_fr",
-                        "type"=>"element",
-                        "pk"=>"`data_nationality`.`id`");
+                    $element['params']["join_db_name"] = "data_nationality";
+                    $element['params']["join_key_column"] = "id";
+                    $element['params']["join_val_column"] = "label_fr";
+                    $element['params']["database_join_where_sql"]="order by id";
+
+                    $joins_params = array(
+                        "join-label" => "label_fr",
+                        "type" => "element",
+                        "pk" => "`data_nationality`.`id`");
 
                     $db = $this->getDbo();
                     $query = $db->getQuery(true);
@@ -1755,30 +1786,71 @@ class EmundusonboardModelformbuilder extends JModelList
                         ->set($db->quoteName('element_id') . ' = ' . $db->quote($el_id))
                         ->set($db->quoteName('join_from_table') . ' = ' . $db->quote(''))
                         ->set($db->quoteName('table_join') . ' = ' . $db->quote('data_nationality'))
-                        ->set($db->quoteName('table_key') . ' = ' . $db->quote('e_'.$gid.'_'.$el_id))
+                        ->set($db->quoteName('table_key') . ' = ' . $db->quote('e_' . $gid . '_' . $el_id))
                         ->set($db->quoteName('table_join_key') . ' = ' . $db->quote('id'))
                         ->set($db->quoteName('join_type') . ' = ' . $db->quote('left'))
                         ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
                         ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($joins_params)));
                     $db->setQuery($query);
+
+
                     $db->execute();
-                    $update=$this->UpdateParams($element,$user);
+
+                    $this->UpdateParams($element, $user);
+                    break;
+                case 'pays':
+                    $label = array(
+                        'fr' => 'Pays',
+                        'en' => 'Country',
+                    );
+
+                    $el_id = $this->createSimpleElement($gid, 'databasejoin', null, 0, $label);
+
+                    $created_elements[] = $el_id;
+                    $element = json_decode(json_encode($this->getElement($el_id, $gid)), true);
+
+                    $element['params']["join_db_name"] = "data_country";
+                    $element['params']["join_key_column"] = "id";
+                    $element['params']["join_val_column"] = "label_fr";
+                    $element['params']["database_join_where_sql"]="order by id";
+
+                    $joins_params = array(
+                        "join-label" => "label_fr",
+                        "type" => "element",
+                        "pk" => "`data_counrty`.`id`");
+
+                    $db = $this->getDbo();
+                    $query = $db->getQuery(true);
+                    $query->insert($db->quoteName('#__fabrik_joins'));
+                    $query->set($db->quoteName('list_id') . ' = ' . $db->quote(0))
+                        ->set($db->quoteName('element_id') . ' = ' . $db->quote($el_id))
+                        ->set($db->quoteName('join_from_table') . ' = ' . $db->quote(''))
+                        ->set($db->quoteName('table_join') . ' = ' . $db->quote('data_country'))
+                        ->set($db->quoteName('table_key') . ' = ' . $db->quote('e_' . $gid . '_' . $el_id))
+                        ->set($db->quoteName('table_join_key') . ' = ' . $db->quote('id'))
+                        ->set($db->quoteName('join_type') . ' = ' . $db->quote('left'))
+                        ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($joins_params)));
+                    $db->setQuery($query);
 
 
+                    $db->execute();
 
-                    /*var_dump($element);
-                    die();*/
-                } else{
-                    $created_elements[] = $this->createSimpleElement($gid, $plugin );
-                }
+                    $this->UpdateParams($element, $user);
+                    break;
+
+                default:
+
+                    $created_elements[] = $this->createSimpleElement($gid, $plugin);
+                    break;
+
 
             }
 
-
-
         }
 
-        return ["data"=>$created_elements];
+
+        return ["data" => $created_elements];
 
     }
 
