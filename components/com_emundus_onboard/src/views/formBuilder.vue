@@ -614,9 +614,9 @@
                 plugin: plugin
               })
             }).then((result) => {
-              console.log('*********');
-              console.log(order);
+
                 this.getSimpleElement(gid,result.data.scalar,order,plugin);
+              this.loading = false;
             });
 
           }
@@ -627,6 +627,7 @@
       },
 
       getSimpleElement(gid,element,order,plugin){
+        this.loading=true;
         axios({
           method: "get",
           url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
@@ -658,8 +659,8 @@
           })
 
           this.menuHighlightCustumisation(response,gid,order);
+          this.loading=false;
 
-          this.loading = false;
         });
       },
 
@@ -764,14 +765,13 @@
             plugins: plugins,
           })
         }).then(resp=>{
-          console.log(resp.data);
 
           resp.data.data.forEach((el,index)=>{
 
-            console.log('order dhsdqqjjqjqqk' +index);
+
             this.getSimpleElement(gid,el,index);
           })
-          this.loading=false;
+
         })
       },
       createGroup(plugins,label) {
