@@ -245,11 +245,19 @@ export default {
     async getCategories() {
       const response = await attachmentService.getAttachmentCategories();
       if (response.status) {
+        // translate categories values
+        Object.entries(response.categories).forEach(([key, value]) => {
+          response.categories[key] = this.translate(value);
+        });
+
+        // Add attachment categories if not already given by the server
         this.attachments.forEach(attachment => {
           if (!response.categories[attachment.category] && attachment.category != "") {
             response.categories[attachment.category] = this.translate(attachment.category);
           }
         });
+
+        // remove empty categories
         delete response.categories[""];
         
         this.$store.dispatch('attachment/setCategories', response.categories);
