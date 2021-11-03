@@ -431,6 +431,8 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_FILTER_ACTION');
 JText::script('COM_EMUNDUS_ATTACHMENTS_REPLACE');
 JText::script('COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND');
 JText::script('COM_EMUNDUS_ATTACHMENTS_WAITING');
+JText::script('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
