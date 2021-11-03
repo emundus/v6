@@ -12,7 +12,7 @@
                 <div class="input-group">
                     <label for="status">{{ translate('STATUS') }}</label>
                     <select name="status" v-model="attachment.is_validated" :disabled="!canUpdate">
-                        <option value=0> {{ translate('WAITING') }} </option>
+                        <option value=0> {{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }} </option>
                         <option value=1> {{ translate('VALID') }} </option>
                         <option value=-2> {{ translate('INVALID') }} </option>
                     </select>
@@ -24,15 +24,15 @@
             </div>
             <div class="non-editable-data">
                 <div>
-                    <span>{{ translate('SEND_DATE') }}</span>
+                    <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_SEND_DATE') }}</span>
                     <span>{{ formattedDate(attachment.timedate) }}</span>
                 </div>
                 <div v-if="attachment.modified_by">
-                    <span>{{ translate('MODIFIED_BY') }}</span>
+                    <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY') }}</span>
                     <span>{{ getUserNameById(attachment.modified_by) }}</span>
                 </div>
                 <div v-if="attachment.modified">
-                    <span>{{ translate('MODIFICATION_DATE') }}</span>
+                    <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE') }}</span>
                     <span>{{ formattedDate(attachment.modified) }}</span>
                 </div>
                 <!-- TODO: add file size -->

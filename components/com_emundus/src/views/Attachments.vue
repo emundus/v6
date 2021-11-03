@@ -63,12 +63,12 @@
                       <span v-if="sort.orderBy == 'value' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
                     </th>
                     <th class='date' @click="orderBy('timedate')"> 
-                      {{ translate('SEND_DATE') }}
+                      {{ translate('COM_EMUNDUS_ATTACHMENTS_SEND_DATE') }}
                       <span v-if="sort.orderBy == 'timedate' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
                       <span v-if="sort.orderBy == 'timedate' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
                     </th>
                     <th class='category' @click="orderBy('category')"> 
-                      {{ translate('CATEGORY') }}
+                      {{ translate('COM_EMUNDUS_ATTACHMENTS_CATEGORY') }}
                       <span v-if="sort.orderBy == 'category' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
                       <span v-if="sort.orderBy == 'category' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
                     </th>
@@ -83,12 +83,12 @@
                       <span v-if="sort.orderBy == 'is_validated' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
                     </th>
                     <th @click="orderBy('modified_by')"> 
-                      {{ translate('MODIFIED_BY') }}
+                      {{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY') }}
                       <span v-if="sort.orderBy == 'modified_by' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
                       <span v-if="sort.orderBy == 'modified_by' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
                     </th>
                     <th class='date' @click="orderBy('modified')"> 
-                      {{ translate('MODIFICATION_DATE') }}
+                      {{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE') }}
                       <span v-if="sort.orderBy == 'modified' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
                       <span v-if="sort.orderBy == 'modified' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
                     </th>
@@ -112,7 +112,7 @@
                       }">
                       <span v-if="attachment.is_validated == 1">{{ translate('VALID') }}</span>
                       <span v-else-if="attachment.is_validated == -2">{{ translate('INVALID') }}</span>
-                      <span v-else>{{ translate('WAITING') }}</span>
+                      <span v-else>{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}</span>
                     </td>
                     <td>{{ getUserNameById(attachment.modified_by) }}</td>
                     <td class='date'>{{ formattedDate(attachment.modified) }}</td>
