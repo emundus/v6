@@ -529,6 +529,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
         header('Content-type: application/json');
         try {
+            // controle des remontees --> Si is_up_banner = 0 or null, do not call api
             $query = "SELECT    e_360_7747 as nom, e_360_7749 as prenom, e_360_7746 as civilite, e_360_7751 as dateNaissance,e_360_7755 as villeNaissance, label_fr as paysNaissance, 
                                 e_360_7752 as nationalite, ju.email as email,trim(e_362_7764) as telephone, e_362_7757 as adrPersoL1,e_362_7758 as adrPersoL2,e_362_7760 as adrPersoCodePost,
                                 e_362_7761 as adrPersoVille, e_362_7763 as adrPersoCodePays, jecc.fnum as noClientemundus, 'summer.school@sciencepo.fr' as emailAssistante, filename as photo, code_prg_banner as programme, semester as semestre,
@@ -546,8 +547,8 @@ class EmundusControllerWebhook extends JControllerLegacy {
                     left join #__emundus_1025_00 e on #__emundus_1001_00.fnum = e.fnum
                     left join #__emundus_uploads jeu on #__emundus_1001_00.fnum = jeu.fnum
                     left join #__emundus_setup_campaigns jesc on jecc.campaign_id = jesc.id
-                    left join #__emundus_setup_programmes jesp on jesc.training = jesp.code
                     where jecc.status = 4 
+                      and jesc.is_up_banner = 1
                       and jeu.attachment_id = 10 
                       and (jecc.id_banner is null or jecc.id_banner = '')
             ";
