@@ -515,6 +515,9 @@ class EmundusControllerWebhook extends JControllerLegacy {
     }
 
     public function export_banner(){
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        $mFile = new EmundusModelFiles;
+
         $eMConfig 	= JComponentHelper::getParams('com_emundus');
         $banner_limit = JFactory::getApplication()->input->get('limit', 100);
 
@@ -524,35 +527,26 @@ class EmundusControllerWebhook extends JControllerLegacy {
         /* "program - label - semester" mapping --> stocked in "prog" field */
         // standard format: prog=univ,stp,202020|winter-school,wstp,202010
 
-        $prgData = explode("|",end(explode("prog=", explode('&', parse_url($_SERVER[REQUEST_URI])['query'])[4])));
-
-        $progCode = array();
-        $progLabel = array();
-        $progSession = array();
-
-        foreach($prgData as $prg) {
-            $progCode[] = current(explode(",", $prg));
-            $progLabel[] = explode(",", $prg)[1];
-            $progSession[] = end(explode(",", $prg));
-        }
-
         header('Content-type: application/json');
         try {
             $query = "SELECT    e_360_7747 as nom, e_360_7749 as prenom, e_360_7746 as civilite, e_360_7751 as dateNaissance,e_360_7755 as villeNaissance, label_fr as paysNaissance, 
                                 e_360_7752 as nationalite, ju.email as email,trim(e_362_7764) as telephone, e_362_7757 as adrPersoL1,e_362_7758 as adrPersoL2,e_362_7760 as adrPersoCodePost,
-                                e_362_7761 as adrPersoVille, e_362_7763 as adrPersoCodePays, jecc.fnum as noClientemundus, 'summer.school@sciencepo.fr' as emailAssistante, filename as photo, programme,
+                                e_362_7761 as adrPersoVille, e_362_7763 as adrPersoCodePays, jecc.fnum as noClientemundus, 'summer.school@sciencepo.fr' as emailAssistante, filename as photo, code_prg_banner as programme, semester as semestre,
                         case
                             when e.e_394_8112 = 'JYES' then 'Oui'
                             when e.e_394_8112 = 'JNO' then 'Non'
+                            when e.e_394_8112 is null then 'Non'
                         end as 'usagePhoto'
                                
-                    from jos_emundus_1001_00
-                    left join jos_emundus_campaign_candidature jecc on jos_emundus_1001_00.fnum = jecc.fnum
-                    left join data_country dc on jos_emundus_1001_00.e_360_7754 = dc.id
-                    left join jos_users ju on ju.id = jecc.applicant_id
-                    left join jos_emundus_1001_01 j on jos_emundus_1001_00.fnum = j.fnum
-                    left join jos_emundus_1025_00 e on jos_emundus_1001_00.fnum = e.fnum
-                    left join jos_emundus_uploads jeu on jos_emundus_1001_00.fnum = jeu.fnum
+                    from #__emundus_1001_00
+                    left join #__emundus_campaign_candidature jecc on #__emundus_1001_00.fnum = jecc.fnum
+                    left join data_country dc on #__emundus_1001_00.e_360_7754 = dc.id
+                    left join #__users ju on ju.id = jecc.applicant_id
+                    left join #__emundus_1001_01 j on #__emundus_1001_00.fnum = j.fnum
+                    left join #__emundus_1025_00 e on #__emundus_1001_00.fnum = e.fnum
+                    left join #__emundus_uploads jeu on #__emundus_1001_00.fnum = jeu.fnum
+                    left join #__emundus_setup_campaigns jesc on jecc.campaign_id = jesc.id
+                    left join #__emundus_setup_programmes jesp on jesc.training = jesp.code
                     where jecc.status = 4 
                       and jeu.attachment_id = 10 
                       and (jecc.id_banner is null or jecc.id_banner = '')
@@ -568,20 +562,18 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
             /* encode 64 bit images + mapping prog..lbl, prog..session*/
             foreach($raw as $data) {
-                $data->photo = base64_encode(file_get_contents($data->photo));
+                // get user_id from $data->noClientemundus
+                $fnum_Info = $mFile->getFnumsInfos([$data->noClientemundus])[$data->noClientemundus];
+                $user_id = $fnum_Info['applicant_id'];
 
-                $raw_prg = $data->programme;
-                
-                if(in_array($raw_prg, $progCode)) {
-                    // array_search
-                    $prog_index = array_search($raw_prg,$progCode);
-                    
-                    // update lbl
-                    $data->programme = $progLabel[$prog_index];
+                // get url to image
+                $img_url = "images/emundus/files" . DS . $user_id . DS . $data->photo;
 
-                    // set session
-                    $data->semestre = $progSession[$prog_index];
-                }
+                $handle = fopen($img_url, "r");
+                $contents = fread($handle, filesize($img_url));
+                fclose($handle);
+
+                $data->photo = base64_encode($contents);
             }
 
             $res->results = $raw;
