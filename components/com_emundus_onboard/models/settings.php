@@ -654,6 +654,18 @@ class EmundusonboardModelsettings extends JModelList {
         return true;
     }
 
+    function updateDataColumnValue($table,$column,$value,$table_primary_key_column,$table_primary_key_column_value){
+
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+        $query->clear()
+            ->update($db->quoteName($table))
+            ->set($db->quoteName($column) . ' = ' . $db->quote($value))
+            ->where($db->quoteName($table_primary_key_column) . ' = ' . $db->quote($table_primary_key_column_value));
+        $db->setQuery($query);
+        $db->execute();
+
+    }
     function getDatasFromTable($table){
         $db = $this->getDbo();
         $query = $db->getQuery(true);

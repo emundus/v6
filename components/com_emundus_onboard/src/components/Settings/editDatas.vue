@@ -26,6 +26,7 @@
                 {{ImportDatas}}
             </button>
         </div>
+
         <div class="mt-1">
             <div v-for="(database,index) in databases" class="db-table">
                 <div :class="[index == indexOpen ? 'down-arrow' : 'right-arrow']" class="db-item" @click="getDatas(database.database_name,index)">
@@ -39,16 +40,24 @@
                     </a>-->
                     <table class="db-description">
                         <tr class="db-columns">
-                            <th v-for="(data,i) in datas.columns" :id="'column_' + data">{{data}}</th>
+                            <th v-for="(data,i) in datas.columns" :id="'column_' + data">
+                              {{data}}
+                            </th>
                         </tr>
                         <tr v-for="(data, i) in datas.datas" class="db-values">
-                            <th v-for="value in data">{{value}}</th>
+                            <th v-for="value in data">
+                             {{value}}
+
+                            </th>
                         </tr>
                     </table>
                 </div>
                 </transition>
             </div>
         </div>
+
+      <ReferencielItem :databases="databases"/>
+
         <div class="loading-form" v-if="loading">
             <Ring-Loader :color="'#12db42'" />
         </div>
@@ -59,6 +68,7 @@
     import axios from "axios";
     import ModalAddDatas from "../../views/advancedModals/ModalAddDatas";
     import ModalImportDatas from "../../views/advancedModals/ModalImportDatas";
+    import ReferencielItem from "../list_components/referentielItem";
 
     const qs = require("qs");
 
@@ -68,6 +78,7 @@
         components: {
             ModalAddDatas,
             ModalImportDatas,
+            ReferencielItem,
         },
 
         props: {
@@ -162,4 +173,6 @@
         cursor: pointer;
         height: 35px;
     }
+
+
 </style>

@@ -512,6 +512,29 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+    public function updateDataColumnValue() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $dbtable = $jinput->getString('db');
+            $column= $jinput->getString('column');
+
+            $value=$jinput->getString('value');
+            $table_primary_key_column=$jinput->getString('primary_key_column');
+            $table_primary_key_column_value=$jinput->getInt('primary_key_column_value');
+
+            $datas = $m_settings->updateDataColumnValue($dbtable,$column,$value,$table_primary_key_column,$table_primary_key_column_value);
+            $response = array('status' => '1', 'msg' => 'SUCCESS', 'data' => $datas);
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
 
     public function savedatas() {
         $user = JFactory::getUser();
