@@ -40,8 +40,7 @@ class XmlDataFilling {
 
     /// get data mapping description
     public function getDataMapping() {
-        /// get data mapping from "apogee_data_mapping.json"
-        return(json_decode(file_get_contents($this->jsonDataFile)));
+        return json_decode(file_get_contents(dirname(EMUNDUS_PATH_ABS) . DS . 'letters' . DS . $this->jsonDataFile));
     }
 
     public function fillData($xmlDocument, $_description, $fnum) {
