@@ -343,12 +343,17 @@ class EmundusViewApplication extends JViewLegacy {
                         $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum);
 
                         $offset = $app->get('offset', 'UTC');
+                        $i = 0;
                         foreach ($fileLogs as $key => $log) {
-                            $dateTime = new DateTime($log->date, new DateTimeZone($offset));
-                            $fileLogs[$key]->date = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
+                            $dateTime = new DateTime($log->timestamp, new DateTimeZone($offset));
+                            $fileLogs[$key]->timestamp = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
+                            $messages[$i] = EmundusModelLogs::setActionMessage($log->action_id, $log->user_id_from);
+                            $i++;
                         }
 
+
                         $this->assignRef('fileLogs', $fileLogs);
+                        $this->assignRef('messages', $messages);
                         $this->assignRef('fnum', $fnum);
 
                     } else{
