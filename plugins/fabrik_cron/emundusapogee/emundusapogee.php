@@ -112,7 +112,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         if(!is_null($sending_status)) { $query->andWhere($db->quoteName('#__emundus_campaign_candidature.status') . ' IN ( ' . $sending_status . ' )'); }
 
         # uncomment this line if you want to limit the records
-        $query->setLimit(30);
+        # $query->setLimit(30);
 
         $db->setQuery($query);
         $available_fnums = $db->loadColumn();
@@ -154,7 +154,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
             $_soapConnect->sendRequest($_soapConnect->webServiceConnect($wsdl_url,$_xmlString,$credentials));
 
             # uncomment this line if you want to export requests into XML file (** should be deactivate on PROD env **)
-            $_xmlSchemaObject->exportXMLFile($_xmlDataRequest, EMUNDUS_PATH_ABS . DS . $fnum);
+            # $_xmlSchemaObject->exportXMLFile($_xmlDataRequest, EMUNDUS_PATH_ABS . DS . $fnum);
         }
     }
 }
