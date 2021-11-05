@@ -336,14 +336,11 @@ class EmundusViewApplication extends JViewLegacy {
                     break;
 
                 case 'logs':
-                    // Need to update action_id to a new value corresponding to log actions, when it will exist
                     if (EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $fnum)) {
 
-                        // Need to update action_id for same reason, when action for logs will exist
-                        // EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 10, 'r', 'COM_EMUNDUS_LOGS_LOGS_BACKOFFICE');
+                        // EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 37, 'r', 'COM_EMUNDUS_LOGS_LOGS_BACKOFFICE');
 
-                        $bannedLogs = array('COM_EMUNDUS_LOGS_ATTACHMENTS_BACKOFFICE', 'COM_EMUNDUS_LOGS_COMMENTS_BACKOFFICE', 'COM_EMUNDUS_LOGS_TAGS_BACKOFFICE', 'COM_EMUNDUS_LOGS_FORM_BACKOFFICE', 'COM_EMUNDUS_LOGS_EMAIL_BACKOFFICE');
-                        $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum, null, null, null, $bannedLogs);
+                        $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum);
 
                         $offset = $app->get('offset', 'UTC');
                         $i = 0;

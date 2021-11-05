@@ -45,27 +45,34 @@ class EmundusModelLogs extends JModelList {
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		// Only log if logging is activated and, if actions to log are defined: check if our action fits the case.
 		$log_actions = $eMConfig->get('log_actions', null);
+		$log_actions_exclude = $eMConfig->get('log_actions_exclude', null);
+		$log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', 62);
 		if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array($action, explode(',',$log_actions)))) {
-
-			if (empty($user_to))
-				$user_to = '';
-
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
-
-			$columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message'];
-			$values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message)];
-
-			$query->insert($db->quoteName('#__emundus_logs'))
-				->columns($db->quoteName($columns))
-				->values(implode(',', $values));
-
-			$db->setQuery($query);
-
-			try {
-				$db->execute();
-			} catch (Exception $e) {
-				JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+			// Only log if action is not banned from logs
+			if (!in_array($action, explode(',',$log_actions_exclude))) {
+				// Only log if user is not banned from logs
+				if (!in_array($user_from, explode(',',$log_actions_exclude_user))) {
+					if (empty($user_to))
+					$user_to = '';
+	
+					$db = JFactory::getDbo();
+					$query = $db->getQuery(true);
+	
+					$columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message'];
+					$values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message)];
+	
+					$query->insert($db->quoteName('#__emundus_logs'))
+						->columns($db->quoteName($columns))
+						->values(implode(',', $values));
+	
+					$db->setQuery($query);
+	
+					try {
+						$db->execute();
+					} catch (Exception $e) {
+						JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+					}
+				}
 			}
 		}
 	}
