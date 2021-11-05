@@ -264,21 +264,27 @@ class EmundusModelLogs extends JModelList {
 	 * Writes the message that will be shown in the logs menu.
 	 * @param int $fnum
 	 * @param int $user_from
-	 * @param string $message
+	 * @param int $action
 	 * @param string $crud
 	 * @since 3.8.8
 	 * @return Mixed Returns false on error and a string on success.
 	 */
-	public function setActionMessage($fnum, $user_from, $message, $crud = null) {
+	public function setActionMessage($fnum, $user_from, $action, $crud = null) {
 		// If the user ID from is not a number, something is wrong.
 		if (!is_numeric($user_from)) {
 			JLog::add('Getting user actions in model/logs with a user ID from that isnt a number.', JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
-		switch ($message) {
+		switch (true) {
+			case ($action == 14 && $crud == 'c'):
+				$finalMessage = JText::_('COM_EMUNDUS_LOGS_ADD_TAG');
+			break;
+			case ($action == 14 && $crud == 'd'):
+				$finalMessage = JText::_('COM_EMUNDUS_LOGS_DELETE_TAG');
+			break;
 			default:
-				$finalMessage = JText::_($message);
+				$finalMessage = 'Action sur le dossier';
 			break;
 		}
 
