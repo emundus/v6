@@ -653,7 +653,20 @@ class EmundusonboardModelsettings extends JModelList {
         }
         return true;
     }
+    function addNewDataColunmn($table,$column){
+        $dbtype = 'TEXT';
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+        $query = "ALTER TABLE " . $table . " ADD " . $column .  " " . $dbtype . " NULL";
+        $db->setQuery($query);
+        try {
+            $db->execute();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/formbuilder | Failed to add new column to referentail database  : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
 
+    }
     function updateDataColumnValue($table,$column,$value,$table_primary_key_column,$table_primary_key_column_value){
 
         $db = $this->getDbo();
@@ -769,6 +782,7 @@ class EmundusonboardModelsettings extends JModelList {
         $name = strtolower($this->clean($form['label']));
 
         // Check if a table already get the same name and increment them
+
         $query->clear()
             ->select('COUNT(*)')
             ->from($db->quoteName('information_schema.tables'))
@@ -778,8 +792,11 @@ class EmundusonboardModelsettings extends JModelList {
 
         $increment = '00';
         if ($result < 10) {
+
+
             $increment = '0' . strval($result);
         } elseif ($result > 10) {
+
             $increment = strval($result);
         }
 
@@ -833,7 +850,7 @@ class EmundusonboardModelsettings extends JModelList {
 
             return true;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at saving imported datas : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/settings | Error at saving imported datas : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }

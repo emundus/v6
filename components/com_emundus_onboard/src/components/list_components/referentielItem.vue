@@ -207,11 +207,27 @@ export default {
         new_column_name = column_name.replace(/ /g, '_');
       }
       if(this.datas.columns.indexOf(new_column_name)==-1){
-        this.datas.columns.push(new_column_name);
 
-        this.datas.datas.forEach( el => {
-          el[new_column_name] = null;
-        });
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=settings&task=addNewDataColunmn",
+          params: {
+            db: this.current_referentiel_db_name,
+            column: new_column_name,
+          },
+          paramsSerializer: params => {
+            return qs.stringify(params);
+          }
+        }).then(resp=>{
+
+          this.datas.columns.push(new_column_name);
+
+          this.datas.datas.forEach( el => {
+            el[new_column_name] = null;
+          });
+
+          this.tip();
+        })
       }
       //suppresion du table temporaire des new columns
       this.newColumns.splice(i, 1);
