@@ -6,22 +6,21 @@
       <div class="tabs">
 
         <div class="tab" v-for="(database,index) in databases">
-          <input type="radio" :id="'database'+database.label" @click="getDatas(database.database_name,index)" name="rd">
-          <label class="tab-label" :for="'database'+database.label" @click="getDatas(database.database_name,index)">{{database.label}}</label>
-          <div class="tab-content">
-            <div class="tab-content-details">
-            <button @click="addColum()">Ajouter un colonne</button>
+          <input type="radio" :id="'database'+database.label"   name="rd">
+          <label class="tab-label" :for="'database'+database.label" @click="getData(database,index)">{{database.label}}</label>
+          <div class="tab-content"  v-if="index === indexOpened">
+
+            <button @click="addColum()" type="button" class="bouton-sauvergarder-et-continuer" >Ajouter un colonne</button>
+            <p>&nbsp;</p>
             <table class="table table-bordered table-striped table-responsive">
               <thead>
               <tr>
                 <th scope="col" v-for="(data,i) in datas.columns" :id="'column_' + data">{{data}}</th>
                 <th scope="col" v-for="(data,i) in newColumns" :id="'column_new_th_' + i">
-
-                  <span>{{data}}</span>
                   <input v-model="newColumns[i]"  @keyup.enter="saveColumn(newColumns[i],i)" class="form__input field-general w-input link" type="text" :id="'column_new_'+ i"  v-show="addingNewColumn" placeholder="Saisir le nom de la colonne"/>
-                 <!-- <a @click="saveColumn(newColumns[i],i)" v-show="addingNewColumn" class="d-flex actions-update-label link">
+                  <a @click="saveColumn(newColumns[i],i)" v-show="addingNewColumn" class="link link-bt">
                     <em class="fas fa-check" data-toggle="tooltip" data-placement="top"></em>
-                  </a>-->
+                  </a>
                 </th>
                 <!--<th scope="col">First</th>
                 <th scope="col">Last</th>
@@ -34,15 +33,15 @@
                   <span @click="enableDataValueInput(value,i,j)"  v-show="indexHighlight != i+'_'+j+'_'+value" style="cursor: pointer;" title="Clicker pour modifier">{{value}}</span>
                   <input v-model="data_value" class="form__input field-general w-input link" type="text" @keyup.enter="updateDataValue(value,i,j)" :id="'data_value_' +value+'_'+ i" v-show="clickUpdatingLabel && indexHighlight == i+'_'+j+'_'+value"/>
 
-                  <a @click="updateDataValue(value,i,j)" v-show="clickUpdatingLabel && indexHighlight == i+'_'+j+'_'+value" class="d-flex actions-update-label link">
+                  <a @click="updateDataValue(value,i,j)" v-show="clickUpdatingLabel && indexHighlight == i+'_'+j+'_'+value" class="link link-bt">
                     <em class="fas fa-check" data-toggle="tooltip" data-placement="top"></em>
                   </a>
                 </td>
                 <td  v-for="(value,j) in data" style="cursor: pointer;"  title="Clicker pour modifier" v-if="value == null">
                   <span @click="enableDataValueInput(value,i,j)"  v-show="indexHighlight != i+'_'+j+'_'+value" style="cursor: pointer;" title="Clicker pour modifier">Cliquer pour ajouter une valeur</span>
-                  <input v-model="data_value" class="form__input field-general w-input link" type="text" @keyup.enter="updateDataValue(value,i,j)" :id="'data_value_' +value+'_'+ i" v-show="clickUpdatingLabel && indexHighlight == i+'_'+j+'_'+value"/>
+                  <input v-model="data_value" class="form__input field-general w-input link " type="text" @keyup.enter="updateDataValue(value,i,j)" :id="'data_value_' +value+'_'+ i" v-show="clickUpdatingLabel && indexHighlight == i+'_'+j+'_'+value"/>
 
-                  <a @click="updateDataValue(value,i,j)" v-show="clickUpdatingLabel && indexHighlight == i+'_'+j+'_'+value" class="d-flex actions-update-label link">
+                  <a @click="updateDataValue(value,i,j)" v-show="clickUpdatingLabel && indexHighlight == i+'_'+j+'_'+value" class="d-flex actions-update-label link link-bt">
                     <em class="fas fa-check" data-toggle="tooltip" data-placement="top"></em>
                   </a>
                 </td>
@@ -58,7 +57,7 @@
               </tr>-->
               </tbody>
             </table>
-            </div>
+
           </div>
         </div>
       </div>
@@ -91,9 +90,9 @@ export default {
       newColumns:[],
       datas: {
         columns: [],
-        datas: []
+        datas: [],
       },
-      indexOpen: -1,
+      indexOpened: -1,
       indexHighlight: "",
       loading: false,
       clickUpdatingLabel:false,
@@ -120,16 +119,16 @@ export default {
     updateLoading(value) {
       this.$emit('updateLoading', value);
     },
-    getDatas(db_name,index){
-      if(index == this.indexOpen){
-        console.log(index);
-        this.indexOpen = -1;
-        console.log(this.indexOpen);
+    getData(database,index){
+      if(this.indexOpened === index){
+
+        this.indexOpened = -1;
+
       } else {
         this.loading = true;
-        console.log(index);
-        this.indexOpen = index;
-        console.log(this.indexOpen);
+
+        this.indexOpened = index;
+
         this.datas = {
           columns: [],
           datas: []
@@ -138,7 +137,7 @@ export default {
           method: "get",
           url: "index.php?option=com_emundus_onboard&controller=settings&task=getdatasfromtable",
           params: {
-            db: db_name,
+            db: database.database_name,
           },
           paramsSerializer: params => {
             return qs.stringify(params);
@@ -147,21 +146,12 @@ export default {
           this.loading = false;
           this.datas.datas = response.data.data;
           this.datas.columns = Object.keys(this.datas.datas[0]);
-          console.log(this.datas.columns[0]);
-          this.current_referentiel_db_name=db_name;
-          console.log(this.datas.columns);
+          this.current_referentiel_db_name = database.database_name;
+
         });
       }
     },
     updateDataValue(value,i,j){
-      console.log(j)
-      let index= this.datas.columns.indexOf(j);
-      console.log(index);
-      console.log(((this.datas.datas)[i]));
-      console.log(this.datas.datas[i]);
-      console.log(((this.datas.datas)[i])[j]);
-      console.log(this.datas.datas[i][j]);
-
       this.datas.datas[i][j]=this.data_value;
       this.indexHighlight="";
       this.clickUpdatingLabel = false;
@@ -179,23 +169,21 @@ export default {
           return qs.stringify(params);
         }
       }).then(resp=>{
-        console.log(resp);
-        console.log("hello succesfull done");
+
+        this.tip();
       })
-      console.log(value);
+
     },
     enableDataValueInput(value,i,j){
-      console.log(value);
-      console.log(j);
 
       this.clickUpdatingLabel = true;
       this.indexHighlight=i+'_'+j+'_'+value;
 
       this.data_value=value;
-      console.log(this.indexHighlight);
+
       setTimeout(() => {
         document.getElementById('data_value_'+value+'_'+ i).focus();
-        console.log("focus now");
+
       }, 100);
     },
     addColum(){
@@ -205,13 +193,12 @@ export default {
       let last_index=this.newColumns.length-1;
       setTimeout(() => {
         document.getElementById('column_new_'+last_index).focus();
-        console.log("focus now");
+
       }, 100);
     },
 
     saveColumn(column_name, i) {
       // eslint-disable-next-line camelcase
-      console.log(column_name);
       let new_column_name="";
       if(column_name==""){
         new_column_name="new_column_"+i;
@@ -225,19 +212,25 @@ export default {
         this.datas.datas.forEach( el => {
           el[new_column_name] = null;
         });
-      }else{
-        console.log("already exist");
       }
-
       //suppresion du table temporaire des new columns
       this.newColumns.splice(i, 1);
-
-
     },
-    validateFilters() {
-      this.$emit('validateFilters');
+    tip() {
+      this.show(
+          "foo-velocity",
+          Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
+          Joomla.JText._("COM_EMUNDUS_ONBOARD_COLOR_SUCCESS"),
+      );
     },
-
+    show(group, text = "", title = "Information") {
+      this.$notify({
+        group,
+        title: `${title}`,
+        text: text,
+        duration: 3000
+      });
+    },
     moment(date) {
       return moment(date);
     },
@@ -301,12 +294,16 @@ input[type="radio"] {
   opacity: 0;
   z-index: -1;
 }
-.link{
-  display:inline-block;
+
+.link {
+  display:inline;
+}
+.link-bt{
+  margin-left: 8px;
 }
 input[type="text"]{
-  display:inline;
-  widtth: 100px;
+
+  width: 90%;
 }
 a {
   display: inline;
@@ -360,7 +357,7 @@ a {
   }
 
   &-content {
-    max-height: 0;
+    height: auto;
     padding: 0 1em;
     color: black;
     background: white;
@@ -396,7 +393,7 @@ input:checked {
   }
 
   ~ .tab-content {
-    max-height: 100vh;
+    height: auto;
     padding: 1em;
   }
 }

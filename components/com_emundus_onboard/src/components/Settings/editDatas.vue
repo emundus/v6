@@ -28,7 +28,8 @@
         </div>
 
         <div class="mt-1">
-            <div v-for="(database,index) in databases" class="db-table">
+          <ReferencielItem :databases="databases"/>
+            <!--<div v-for="(database,index) in databases" class="db-table">
                 <div :class="[index == indexOpen ? 'down-arrow' : 'right-arrow']" class="db-item" @click="getDatas(database.database_name,index)">
                     <h3>{{database.label}}</h3>
                     <p>{{database.description}}</p>
@@ -37,7 +38,7 @@
                 <div v-if="index == indexOpen" class="mt-1">
 <!--                    <a class="bouton-sauvergarder-et-continuer-3 mr-1" style="float: left" @click="$modal.show('modalAddDatas')">
                         {{UpdateDatas}}
-                    </a>-->
+                    </a>
                     <table class="db-description">
                         <tr class="db-columns">
                             <th v-for="(data,i) in datas.columns" :id="'column_' + data">
@@ -53,10 +54,10 @@
                     </table>
                 </div>
                 </transition>
-            </div>
+            </div>-->
         </div>
 
-      <ReferencielItem :databases="databases"/>
+
 
         <div class="loading-form" v-if="loading">
             <Ring-Loader :color="'#12db42'" />
