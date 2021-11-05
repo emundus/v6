@@ -336,9 +336,11 @@ class EmundusViewApplication extends JViewLegacy {
                     break;
 
                 case 'logs':
+                    // Need to update action_id to a new value corresponding to log actions, when it will exist
                     if (EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $fnum)) {
 
-                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 10, 'r', 'COM_EMUNDUS_LOGS_LOGS_BACKOFFICE');
+                        // Need to update action_id for same reason, when action for logs will exist
+                        // EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 10, 'r', 'COM_EMUNDUS_LOGS_LOGS_BACKOFFICE');
 
                         $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum);
 
@@ -347,7 +349,7 @@ class EmundusViewApplication extends JViewLegacy {
                         foreach ($fileLogs as $key => $log) {
                             $dateTime = new DateTime($log->timestamp, new DateTimeZone($offset));
                             $fileLogs[$key]->timestamp = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
-                            $messages[$i] = EmundusModelLogs::setActionMessage($log->action_id, $log->user_id_from);
+                            $messages[$i] = EmundusModelLogs::setActionMessage($log->fnum_to, $log->user_id_from, $log->message);
                             $i++;
                         }
 

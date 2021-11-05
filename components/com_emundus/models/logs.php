@@ -171,10 +171,10 @@ class EmundusModelLogs extends JModelList {
 	public function getActionsOnFnum($fnum, $user_from = null, $action = null, $crud = null) {
 
 		// If the user ID from is not a number, something is wrong.
-		// if (!is_numeric($user_from)) {
-		//	JLog::add('Getting user actions in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
-		//	return false;
-		// }
+		if (!empty($user_from) && !is_numeric($user_from)) {
+			JLog::add('Getting user actions in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
+			return false;
+		}
 
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -191,7 +191,8 @@ class EmundusModelLogs extends JModelList {
 		$query->select('*')
 			->from($db->quoteName('#__emundus_logs', 'lg'))
 			->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.id').' = '.$db->QuoteName('lg.user_id_from'))
-			->where($where);
+			->where($where)
+			->order($db->QuoteName('lg.id') . ' DESC');
 
 		$db->setQuery($query);
 
@@ -251,132 +252,30 @@ class EmundusModelLogs extends JModelList {
 
 	/**
 	 * Writes the message that will be shown in the logs menu.
-	 * @param int $action
+	 * @param int $fnum
+	 * @param int $user_from
+	 * @param string $message
 	 * @param string $crud
 	 * @since 3.8.8
 	 * @return Mixed Returns false on error and an array of objects on success.
 	 */
-	public function setActionMessage($action, $user_from, $crud = null) {
-		// If the action ID is not a number, something is wrong.
-		if (!is_numeric($action)) {
-			JLog::add('Getting user actions in model/logs with a action ID that isnt a number.', JLog::ERROR, 'com_emundus');
-			return false;
-		}
-		// Same with the user ID from
+	public function setActionMessage($fnum, $user_from, $message, $crud = null) {
+		// If the user ID from is not a number, something is wrong.
 		if (!is_numeric($user_from)) {
 			JLog::add('Getting user actions in model/logs with a user ID from that isnt a number.', JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
-		switch ($action) {
-			case 1:
-				$message = 'Action sur le dossier';
-			break;
-			case 4:
-				$message = 'Génération d\'un document sur le dossier';
-			break;
-			case 5:
-				$message = 'Action sur l\'évaluation du dossier';
-			break;
-			case 6:
-				$message = 'Export en format Excel du dossier';
-			break;
-			case 7:
-				$message = 'Export en format ZIP du dossier';
-			break;
-			case 8:
-				$message = 'Export en format PDF du dossier';
-			break;
-			case 9:
-				$message = 'Envoi d\'un mail au candidat';
-			break;
-			case 10:
-				$message = 'Ajout d\'un commentaire sur le dossier';
-			break;
-			case 11:
-				$message = 'Accès aux documents mis en ligne par le candidat';
-			break;
-			case 12:
-				$message = 'Action sur les droits utilisateur du candidat';
-			break;
-			case 13:
-				$message = 'Action sur le statut du dossier';
-			break;
-			case 14:
-				$message = 'Action sur les étiquettes';
-			break;
-			case 15:
-				$message = 'Envoi d\'un mail aux évaluateurs du dossier';
-			break;
-			case 16:
-				$message = 'Envoi d\'un mail au groupe rattaché au dossier';
-			break;
-			case 18:
-				$message = 'Envoi d\un mail aux experts rattachés au dossier';
-			break;
-			case 19:
-				$message = 'Ajout du candidat à un groupe';
-			break;
-			case 20:
-				$message = 'Ajout d\un utilisateur';
-			break;
-			case 21:
-				$message = 'Activiation d\un utilisateur';
-			break;
-			case 22:
-				$message = 'Désactivation d\un utilisateur';
-			break;
-			case 23:
-				$message = 'Affectation d\un utilisateur à un groupe';
-			break;
-			case 24:
-				$message = 'Edition d\un utilisateur';
-			break;
-			case 25:
-				$message = 'Visualisation des droits d\un utilisateur';
-			break;
-			case 26:
-				$message = 'Suppression d\un utilisateur';
-			break;
-			case 27:
-				$message = 'Export d\'un document sur le dossier';
-			break;
-			case 28:
-				$message = 'Publication de quelque chose';
-			break;
-			case 29:
-				$message = 'Ajout d\'une décision sur le dossier';
-			break;
-			case 30:
-				$message = 'Copie du dossier';
-			break;
-			case 31:
-				$message = 'Exportation du trombinoscope';
-			break;
-			case 32:
-				$message = 'Ajout d\'une admission sur le dossier';
-			break;
-			case 33:
-				$message = 'Export externe';
-			break;
-			case 34:
-				$message = 'Ajout d\une interview sur le dossier';
-			break;
-			case 35:
-				$message = 'Exportation d\une fiche de synthèse du dossier';
-			break;
-			case 36:
-				$message = 'Envoi d\'un message sur le dossier';
-			break;
+		switch ($message) {
 			default:
-				$message = 'Cet utilisateur a effectué une action sur le dossier';
+				$finalMessage = JText::_($message);
 			break;
 		}
 
 		try {
-			return $message;
+			return $finalMessage;
 		} catch (Exception $e) {
-			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+			JLog::add('Could not set logs message in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
