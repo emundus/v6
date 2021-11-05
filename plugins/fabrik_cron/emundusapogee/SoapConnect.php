@@ -1,10 +1,9 @@
 <?php
-require_once("XmlSchema.php");  /// include XMLSchema class
+require_once("XmlSchema.php");
 
-/// credential type == NoAuth // API Key // Bearer Token // Basic Auth // Digest Auth // OAuth 1.0 // OAuth 2.0 // Haw Authentication // AWS Signature // NTLM Authentication // Akamai EdgeGrid
+# credential types : NoAuth // API Key // Bearer Token // Basic Auth // Digest Auth // OAuth 1.0 // OAuth 2.0 // Haw Authentication // AWS Signature // NTLM Authentication // Akamai EdgeGrid
 
 class SoapConnect {
-    /// url = "https://applications-test.u-paris2.fr/ApoWs/services/OpiMetier?wsdl"
     public function setSoapHeader($xmlTree, $credentials) {
         $headers = array(
             'type' => 'Content-Type: text/xml; charset="utf-8"',
@@ -17,16 +16,16 @@ class SoapConnect {
 
         switch($credentials->auth_type) {
             case 0:
-                print_r('no authentication');
+                # not available at this moment
                 break;
             case 1:
-                print_r('bearer token');
+                # not available at this moment
                 break;
             case 2:
-                $headers['auth']  =  $headers['auth'] . 'Basic ' . base64_encode($credentials->auth_user.':'.$credentials->auth_pwd);            /// basic auth = base64_encode(username:password)
+                $headers['auth']  =  $headers['auth'] . 'Basic ' . base64_encode($credentials->auth_user.':'.$credentials->auth_pwd);     # basic auth = base64_encode(username:password) - more info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication
                 break;
             case 3:
-                print_r('digest authentication');
+                # not available at this moment
                 break;
             default:
                 exit;
@@ -36,7 +35,7 @@ class SoapConnect {
     }
 
     public function webServiceConnect($wsdl,$xmlTree,$credentials) {
-        /// set a connection via CURL
+        # init connection to web server with CURL
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -58,11 +57,12 @@ class SoapConnect {
                 break;
         }
 
-        return $ch;     // return a CURL object
+        return $ch;
     }
 
     public function sendRequest($curl_obj) {
-        return curl_exec($curl_obj); 
+        # send request
+        curl_exec($curl_obj);
     }
 }
 

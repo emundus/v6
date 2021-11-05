@@ -335,8 +335,8 @@ class ApogeeCustom {
         $this->setDepPay_Civility();
         $this->setDepPay_LastYear();
 
-        $this->setConvocation();
-        $this->setTitreAccessExterne(); /// expected results :: print
+        /* $this->setConvocation();
+        $this->setTitreAccessExterne(); /// expected results :: print */
         return $this->xmlTree;
     }
 }

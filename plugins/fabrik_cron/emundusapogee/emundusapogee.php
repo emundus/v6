@@ -54,31 +54,35 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         $params = $this->getParams();
 
         /*
-         * First of all, get all fnums having OPI code (get from jos_emundus_final_grade // where opi_code is not null or empty)
+         * First of all, we get all fnums having OPI code - satisfying 3 following conditions:
+         * 1. OPI code must exist (not null + not empty)
+         * 2. Date of birth (DoB) must exist (not null + not empty)
+         * 3. Firstname must exist (not null + not empty)
+         * 4. Lastname must exist (not null + not empty)
          * */
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        ///get wsdl url
+        // get WSDL url
         $wsdl_url = $params->get('webservice_url');
 
-        /// get authentication type
+        // get authentication type (e.g: Basic Auth, Token, Digest, etc)
         $auth_type = $params->get('webservice_authentication');
 
-        /// get username
+        // get user login
         $login_username = $params->get('webservice_username');
 
-        /// get password
+        // get user password
         $login_password = $params->get('webservice_password');
 
-        /// grouping credentials
+        // and then, we group all authentication information into CREDENTIAL group (easy to manage)
         $credentials = new stdClass();
         $credentials->auth_type = $auth_type;
         $credentials->auth_user = $login_username;
         $credentials->auth_pwd = $login_password;
 
-        /// get status to send data
+        // (optional) we define the status by which we send request (e.g: "Accepted", "Pre-accepted", etc)
         $sending_status = $params->get('status_to_send_request');
 
         /*
@@ -86,60 +90,71 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
          * */
 
         $query->clear()
-            ->select('#__emundus_final_grade.fnum')
+            ->select('#__emundus_campaign_candidature.fnum')
             ->from($db->quoteName('#__emundus_final_grade'))
             ->leftJoin($db->quoteName('#__emundus_campaign_candidature') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName('#__emundus_final_grade.fnum'))
+            ->leftJoin($db->quoteName('#__emundus_personal_detail') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName('#__emundus_personal_detail.fnum'))
+            ->leftJoin($db->quoteName('#__emundus_1001_00') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName('#__emundus_1001_00.fnum'))
+            ->leftJoin($db->quoteName('#__emundus_users') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.applicant_id') . ' = ' . $db->quoteName('#__emundus_users.user_id'))
             ->where($db->quoteName('#__emundus_final_grade.code_opi') . ' is not null')
-            ->andWhere($db->quoteName('#__emundus_final_grade.code_opi') . " != ''");
+            ->andWhere($db->quoteName('#__emundus_final_grade.code_opi') . " != ''")
 
+            ->andWhere($db->quoteName('#__emundus_personal_detail.birth_date') . " != ''")
+            ->andWhere($db->quoteName('#__emundus_personal_detail.birth_date') . " is not null")
+
+            ->andWhere($db->quoteName('#__emundus_users.firstname') . " is not null")
+            ->andWhere($db->quoteName('#__emundus_users.firstname') . " != ''")
+
+            ->andWhere($db->quoteName('#__emundus_users.lastname') . " is not null")
+            ->andWhere($db->quoteName('#__emundus_users.lastname') . " != ''");
+
+        // if no status is defined, we get all
         if(!is_null($sending_status)) { $query->andWhere($db->quoteName('#__emundus_campaign_candidature.status') . ' IN ( ' . $sending_status . ' )'); }
 
-        $query->setLimit(10);     // setLimit to easily test
+        # uncomment this line if you want to limit the records
+        $query->setLimit(30);
 
         $db->setQuery($query);
         $available_fnums = $db->loadColumn();
 
-        /// get request description filename
+        // next, we request description (schema) - json file
         $json_request_schema = $params->get('xml_description_json');
 
-        /// get data desription filename
+        // and, data description (data mapping schema) - json file
         $json_request_data = $params->get('xml_data_json');
 
-        /// build XML Schema (input of DataFilling)
+        // now, it's time to build XML request
         $_xmlSchemaObject = new XmlSchema($json_request_schema);
-        $_xmlSchemaRequest = $_xmlSchemaObject->buildSoapRequest($json_request_schema);       /// return : XML Tree
+        $_xmlSchemaRequest = $_xmlSchemaObject->buildSoapRequest($json_request_schema);     # return type: XMLDocument
 
-        /// invoke Apogee Custom
-        $_xmlCustomSchema_schema = new ApogeeCustom($_xmlSchemaRequest);
-        $_xmlCustomSchema_schema->buildCustomSchema();
+        # customize XML schema (uncomment these lines if needed)
+        # $_xmlCustomSchema_schema = new ApogeeCustom($_xmlSchemaRequest);
+        # $_xmlCustomSchema_schema->buildCustomSchema();
 
-        $_xmlSchemaObject->exportXMLFile($_xmlCustomSchema_schema->xmlTree, EMUNDUS_PATH_ABS . DS . 'text-xml');
-
-        /// inject data mapping file
+        // now, we fill data into XML request (using data description file)
         $_xmlDataObject = new XmlDataFilling($json_request_data);
 
         foreach($available_fnums as $fnum) {
-            /// filling data for each fnum
+            // filling data for each fnum
             $_xmlDataRequest = $_xmlDataObject->fillData($_xmlSchemaRequest, $_xmlSchemaObject->getSchemaDescription(), $fnum);
 
-            /// invoke Apogee Custom
+            # invoke Apogee Custom
             $_xmlCustomSchema_data = new ApogeeCustom($_xmlDataRequest,$fnum);
             $_xmlCustomSchema_data->buildCustomData();
 
-            $_xmlSchemaObject->exportXMLFile($_xmlCustomSchema_data->xmlTree, EMUNDUS_PATH_ABS . DS . $fnum);
+            $_xmlString = $_xmlSchemaObject->exportXMLString($_xmlDataRequest);
 
-//            $_xmlString = $_xmlSchemaObject->exportXMLString($_xmlDataRequest);
-//            /* connect to SOAP server */
-//            $_soapConnect = new SoapConnect;
-//
-//            /* set request header */
-//            $_soapConnect->setSoapHeader($_xmlString,$credentials);
-//
-//            /* send request in form XML string */
-//            $_soapConnect->sendRequest($_soapConnect->webServiceConnect($wsdl_url,$_xmlString,$credentials));
+            // connect to SOAP
+            $_soapConnect = new SoapConnect;
 
-//            $this->setCustomValues($_xmlDataRequest);
-//            $_xmlSchemaObject->exportXMLFile($_xmlDataRequest, EMUNDUS_PATH_ABS . DS . $fnum);
+            // set HTTP request header
+            $_soapConnect->setSoapHeader($_xmlString,$credentials);
+
+            // send request
+            $_soapConnect->sendRequest($_soapConnect->webServiceConnect($wsdl_url,$_xmlString,$credentials));
+
+            # uncomment this line if you want to export requests into XML file (** should be deactivate on PROD env **)
+            $_xmlSchemaObject->exportXMLFile($_xmlDataRequest, EMUNDUS_PATH_ABS . DS . $fnum);
         }
     }
 }
