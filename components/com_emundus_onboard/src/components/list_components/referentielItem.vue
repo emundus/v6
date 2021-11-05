@@ -12,10 +12,49 @@
 
             <button @click="addColum()" type="button" class="bouton-sauvergarder-et-continuer" >Ajouter un colonne</button>
             <p>&nbsp;</p>
+            <!---- Import from csv side ----->
+            <div class="" id="importe data">
+              <vue-csv-import v-model="csv" :map-fields="columnTobeUpdateFromCSV" :key="csv_comp" tableSelectClass="dropdown-toggle" tableClass="custom-table-csv" v-if="importCSV" ref="csvimport">
+                <template slot="hasHeaders" slot-scope="{headers, toggle}">
+                  <label style="display: none">
+                    <input type="checkbox" id="hasHeaders" :value="headers" @change="toggle">
+                    Headers?
+                  </label>
+                </template>
+
+                <template slot="error">
+                  {{FileTypeInvalid}}
+                </template>
+
+                <template slot="thead">
+                  <p style="margin-top: 2em;width: max-content;">{{CSVAssociate}}</p>
+                  <tr>
+                    <th>{{MyColumns}}</th>
+                    <th>{{CSVColumns}}</th>
+                  </tr>
+                </template>
+
+                <template slot="next" slot-scope="{load}">
+                  <button class="bouton-sauvergarder-et-continuer" style="float: right" @click.prevent="load">{{Load}}</button>
+                </template>
+
+                <template slot="submit" slot-scope="{submit}">
+                  <button @click.prevent="submit">send!</button>
+                </template>
+              </vue-csv-import>
+              <button @click="validateColumnMappingAndImportData()">Enregistrer</button>
+            </div>
+
+            <!---- End import csv side --->
             <table class="table table-bordered table-striped table-responsive">
               <thead>
               <tr>
-                <th scope="col" v-for="(data,i) in datas.columns" :id="'column_' + data">{{data}}</th>
+                <th scope="col" v-for="(data,i) in datas.columns" :id="'column_' + data">
+                  {{data}}
+                  <a @click="importColumDataFormCSV(data,i)"  class="link link-bt">
+                    <em class="fas fa-check" data-toggle="tooltip" data-placement="top"></em>
+                  </a>
+                </th>
                 <th scope="col" v-for="(data,i) in newColumns" :id="'column_new_th_' + i">
                   <input v-model="newColumns[i]"  @keyup.enter="saveColumn(newColumns[i],i)" class="form__input field-general w-input link" type="text" :id="'column_new_'+ i"  v-show="addingNewColumn" placeholder="Saisir le nom de la colonne"/>
                   <a @click="saveColumn(newColumns[i],i)" v-show="addingNewColumn" class="link link-bt">
@@ -69,15 +108,14 @@
 </template>
 
 <script>
-import actions from "./action_menu";
+
 import moment from "moment";
 import axios from "axios";
 import qs from "qs";
-import {list} from "../../store";
-
+import { VueCsvImport } from 'vue-csv-import';
 export default {
   name: "referentielItem",
-  components: {actions},
+  components: {VueCsvImport},
   props: {
     data: Object,
     selectItem: Function,
@@ -88,6 +126,8 @@ export default {
     return {
       selectedData: [],
       newColumns:[],
+      columnTobeUpdateFromCSV:[],
+      indexTobeUpdateFromCSV: -1,
       datas: {
         columns: [],
         datas: [],
@@ -100,6 +140,9 @@ export default {
       addingNewColumn: false,
       data_value:"",
       current_referentiel_db_name:"",
+      csv: null,
+      csv_comp: 0,
+      importCSV: false,
       publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
       unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
       passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
@@ -111,13 +154,43 @@ export default {
       AdvancedSettings: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADVANCED_SETTINGS"),
       Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOSSIERS_PROGRAM"),
       Files: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES"),
-      File: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE")
+      File: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE"),
+      MyColumns: Joomla.JText._("COM_EMUNDUS_ONBOARD_MY_COLUMNS"),
+      CSVColumns: Joomla.JText._("COM_EMUNDUS_ONBOARD_CSV_COLUMNS"),
+      CSVAssociate: Joomla.JText._("COM_EMUNDUS_ONBOARD_CSV_ASSOCIATION"),
+      Load: Joomla.JText._("COM_EMUNDUS_ONBOARD_LOAD_FILE"),
     };
   },
 
   methods: {
     updateLoading(value) {
       this.$emit('updateLoading', value);
+    },
+    importColumDataFormCSV(column_name,indexTobeUpdateFromCSV){
+      this.importCSV=true;
+      this.indexTobeUpdateFromCSV=indexTobeUpdateFromCSV;
+      this.columnTobeUpdateFromCSV.push("colonne_de_reference");
+      this.columnTobeUpdateFromCSV.push(column_name);
+    },
+    validateColumnMappingAndImportData(){
+      let colonne_reference=this.csv[0]["colonne_de_reference"];
+      let column_to_be_update_name=this.columnTobeUpdateFromCSV[1];
+      console.log("column to be update  "+column_to_be_update_name);
+      this.csv.forEach(csv_el=>{
+        this.datas.datas.forEach(data_el=>{
+          console.log(data_el);
+          console.log(csv_el);
+          if(data_el[this.datas.columns[0]]==csv_el.colonne_de_reference){
+            console.log(" data el id "+data_el.id);
+            console.log(" csv el el id "+csv_el.colonne_de_reference);
+            console.log('ok');
+            console.log(" csv " +csv_el[column_to_be_update_name]);
+
+            data_el[column_to_be_update_name]=csv_el[column_to_be_update_name];
+          }
+        })
+      })
+
     },
     getData(database,index){
       if(this.indexOpened === index){
@@ -285,6 +358,13 @@ export default {
     isActive() {
       return list.getters.isSelected(this.data.id);
     },
+  },
+  watch:{
+    csv: function(value){
+      console.log("*********** CSV VALUE ********")
+      console.log(value);
+      console.log(this.columnTobeUpdateFromCSV);
+    }
   }
 }
 </script>
