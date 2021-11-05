@@ -342,7 +342,8 @@ class EmundusViewApplication extends JViewLegacy {
                         // Need to update action_id for same reason, when action for logs will exist
                         // EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 10, 'r', 'COM_EMUNDUS_LOGS_LOGS_BACKOFFICE');
 
-                        $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum);
+                        $bannedLogs = array('COM_EMUNDUS_LOGS_ATTACHMENTS_BACKOFFICE', 'COM_EMUNDUS_LOGS_COMMENTS_BACKOFFICE', 'COM_EMUNDUS_LOGS_TAGS_BACKOFFICE', 'COM_EMUNDUS_LOGS_FORM_BACKOFFICE', 'COM_EMUNDUS_LOGS_EMAIL_BACKOFFICE');
+                        $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum, null, null, $bannedLogs);
 
                         $offset = $app->get('offset', 'UTC');
                         $i = 0;
@@ -352,7 +353,6 @@ class EmundusViewApplication extends JViewLegacy {
                             $messages[$i] = EmundusModelLogs::setActionMessage($log->fnum_to, $log->user_id_from, $log->message);
                             $i++;
                         }
-
 
                         $this->assignRef('fileLogs', $fileLogs);
                         $this->assignRef('messages', $messages);
