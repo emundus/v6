@@ -343,7 +343,7 @@ class EmundusViewApplication extends JViewLegacy {
                         // EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 10, 'r', 'COM_EMUNDUS_LOGS_LOGS_BACKOFFICE');
 
                         $bannedLogs = array('COM_EMUNDUS_LOGS_ATTACHMENTS_BACKOFFICE', 'COM_EMUNDUS_LOGS_COMMENTS_BACKOFFICE', 'COM_EMUNDUS_LOGS_TAGS_BACKOFFICE', 'COM_EMUNDUS_LOGS_FORM_BACKOFFICE', 'COM_EMUNDUS_LOGS_EMAIL_BACKOFFICE');
-                        $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum, null, null, $bannedLogs);
+                        $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum, null, null, null, $bannedLogs);
 
                         $offset = $app->get('offset', 'UTC');
                         $i = 0;
