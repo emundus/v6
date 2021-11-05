@@ -14,7 +14,7 @@
         <div class="section-sub-menu">
           <div class="container-2 w-container" style="max-width: unset">
             <div class="d-flex">
-              <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
+              <img src="/images/emundus/menus/megaphone.svg" srcset="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
               <h2 class="tchooz-section-titles" v-if="menuHighlight != -1">{{formCategories[langue][menuHighlight]}}</h2>
               <h2 class="tchooz-section-titles" v-if="menuHighlightProg != -1">{{formPrograms[langue][menuHighlightProg]}}</h2>
             </div>
@@ -24,13 +24,13 @@
             <hr>
             <div class="d-flex">
               <p>
-                <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>  {{From}} {{form.start_date}}   {{To}} {{form.end_date}}
+                <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>  {{translations.From}} <strong>{{form.start_date}}</strong>   {{translations.To}} <strong>{{form.end_date}}</strong>
               </p>
             </div>
 
             <div v-if="profileId == null && loading == false" style="display: flex;" class="d-flex required">
               <em class="fas fa-exclamation-circle icon-warning-margin"></em>
-              <p>{{chooseProfileWarning}}</p>
+              <p>{{translations.chooseProfileWarning}}</p>
             </div>
             </div>
 
@@ -68,7 +68,7 @@
         <!-- end Menu -->
 
         <div v-if="menuHighlightProg != -1" class="warning-message-program mb-1">
-          <p style="color: #e5283b;"><em class="fas fa-exclamation-triangle mr-1 red"></em>{{ProgramWarning}}</p>
+          <p style="color: #e5283b;"><em class="fas fa-exclamation-triangle mr-1 red"></em>{{translations.ProgramWarning}}</p>
           <ul v-if="campaignsByProgram.length > 0">
             <li v-for="(campaign, index) in campaignsByProgram">{{campaign.label}}</li>
           </ul>
@@ -113,7 +113,7 @@
               :manyLanguages="manyLanguages"
           />
 
-          <add-documents-form
+<!--          <add-documents-form
               v-if="menuHighlight == 3"
               :funnelCategorie="formCategories[langue][menuHighlight]"
               :profileId="profileId"
@@ -121,7 +121,7 @@
               :menuHighlight="menuHighlight"
               :langue="actualLanguage"
               :manyLanguages="manyLanguages"
-          ></add-documents-form>
+          ></add-documents-form>-->
 
 <!--          <add-gestionnaires
               v-if="menuHighlightProg == 0 && program.id != 0"
@@ -149,17 +149,6 @@
         </transition>
       </div>
     </div>
-
-    <!--        <div class="section-sauvegarder-et-continuer-funnel">
-                <div class="w-container">
-                    <div class="container-evaluation w-clearfix">
-                        <button @click="next()" class="bouton-sauvergarder-et-continuer" type="button">{{ Continuer }}</button>
-                        <button class="bouton-sauvergarder-et-continuer w-retour" type="button" @click="previous()">
-                            {{ Retour }}
-                        </button>
-                    </div>
-                </div>
-            </div>-->
     <div class="loading-form" v-if="loading">
       <Ring-Loader :color="'#12DB42'" />
     </div>
@@ -259,13 +248,11 @@ export default {
         "Informations générales",
         "Documents préalables",
         "Formulaire",
-        "Documents d'informations",
       ],
       [
         "Global informations",
         "Preliminary documents",
         "Form",
-        "Informations documents",
       ]
     ],
 
@@ -319,20 +306,13 @@ export default {
       manager: null,
     },
 
-    From: Joomla.JText._("COM_EMUNDUS_ONBOARD_FROM"),
-    To: Joomla.JText._("COM_EMUNDUS_ONBOARD_TO"),
-    Since: Joomla.JText._("COM_EMUNDUS_ONBOARD_SINCE"),
-    Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-    CAMPAIGN: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN"),
-    FORM: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
-    ChooseEvaluatorGroup: Joomla.JText._(
-        "COM_EMUNDUS_ONBOARD_CHOOSE_EVALUATOR_GROUP"
-    ),
-    Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-    Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-    chooseForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_FORM"),
-    chooseProfileWarning: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING"),
-    ProgramWarning: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_WARNING"),
+    translations:{
+      DATE_FORMAT: Joomla.JText._("DATE_FORMAT_JS_LC2"),
+      From: Joomla.JText._("COM_EMUNDUS_ONBOARD_FROM"),
+      To: Joomla.JText._("COM_EMUNDUS_ONBOARD_TO"),
+      chooseProfileWarning: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING"),
+      ProgramWarning: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_WARNING"),
+    },
   }),
 
   methods: {
@@ -344,12 +324,12 @@ export default {
       this.form.start_date = campaign.start_date;
       this.form.end_date = campaign.end_date;
       this.form.start_date = moment(this.form.start_date).format(
-          "DD/MM/YYYY h:mm A"
+          this.translations.DATE_FORMAT
       );
       if (this.form.end_date == "0000-00-00 00:00:00") {
         this.form.end_date = null;
       } else {
-        this.form.end_date = moment(this.form.end_date).format("DD/MM/YYYY h:mm A");
+        this.form.end_date = moment(this.form.end_date).format(this.translations.DATE_FORMAT);
       }
 
       axios.get(

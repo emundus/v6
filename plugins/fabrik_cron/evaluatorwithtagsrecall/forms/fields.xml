@@ -15,7 +15,7 @@
 				   description="PLG_CRON_ACL_ARO_GROUPS_DESC"
 				   label="PLG_CRON_ACL_ARO_GROUPS"
 				   size="50"
-				   default="13" />
+				   default="" />
 
 			<field name="reminder_profile"
 				   type="text"
@@ -38,7 +38,14 @@
 				   description="PLG_CRON_EVAL_REMINDER_INTERVAL_DESC"
 				   label="PLG_CRON_EVAL_REMINDER_INTERVAL"
 				   size="30"
-				   default="10"/>
+				   default=""/>
+
+			<field name="remider_elements"
+				   type="text"
+				   description="PLG_CRON_EVAL_REMINDER_ELEMENTS_DESC"
+				   label="PLG_CRON_EVAL_REMINDER_ELEMENTS"
+				   size="30"
+				   default=""/>
 
 		</fieldset>
 

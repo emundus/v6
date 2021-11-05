@@ -11,17 +11,11 @@
  */
 
 jQuery(document).ready(function ($) {
-    var sourcefiles = $("#dropfiles-template-default-files").html();
-    var sourcecategories = $("#dropfiles-template-default-categories").html();
+
     var default_hash = window.location.hash;
     var tree = $('.dropfiles-foldertree-default');
     var tree_source_cat = $('.dropfiles-content-default.dropfiles-content-multi').data('category');
     var cParents = {};
-
-    if (typeof sourcefiles != 'undefined' && sourcefiles != null) {
-        var reg = new RegExp(dropfilesRootUrl + "{{", 'g');
-        sourcefiles = sourcefiles.replace(reg, "{{");
-    }
 
     $(".dropfiles-content-default").each(function (index) {
         var topCat = $(this).data('category');
@@ -142,8 +136,10 @@ jQuery(document).ready(function ($) {
 
     default_initClick();
     initManageFile($('.dropfiles-content-default.dropfiles-content-multi .catlink').parents('.dropfiles-content-default.dropfiles-content-multi').data('category'));
+
     default_hash = default_hash.replace('#', '');
-    if (default_hash != '') {
+
+    if (default_hash !== '') {
         var hasha = default_hash.split('-');
         var re = new RegExp("^(p[0-9]+)$");
         var page = null;
@@ -153,18 +149,25 @@ jQuery(document).ready(function ($) {
             page = stringpage.replace('p', '');
         }
 
-        var hash_category_id = hasha[0];
-        if (!parseInt(hash_category_id)) {
-            return;
+        var hash_category_id = hasha[1];
+        var hash_sourcecat = hasha[0];
+
+        if (parseInt(hash_category_id) > 0 || hash_category_id === 'all_0') {
+            if (hash_category_id == 'all_0') {
+                hash_category_id = 0;
+            }
+            setTimeout(function () {
+                default_load(hash_sourcecat, hash_category_id, page);
+            }, 100);
         }
-        setTimeout(function () {
-            default_load($('.dropfiles-content-default.dropfiles-content-multi').data('category'), hash_category_id, null);
-        }, 100)
     }
 
     function default_load(sourcecat, category, page) {
         var pathname = window.location.pathname;
         var container = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "]");
+        if (container.length == 0) {
+            return;
+        }
         $(document).trigger('dropfiles:category-loading');
         $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "]").find('#current_category').val(category);
         $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default").empty();
@@ -176,16 +179,18 @@ jQuery(document).ready(function ($) {
             dataType: "json"
         }).done(function (categories) {
             if (page != null) {
-                window.history.pushState('', document.title, pathname + '#' + category + '-' + categories.category.alias + '-p' + page);
+                window.history.pushState('', document.title, pathname + '#' + sourcecat + '-' + category + '-' + categories.category.alias + '-p' + page);
             } else {
-                window.history.pushState('', document.title, pathname + '#' + category + '-' + categories.category.alias);
+                window.history.pushState('', document.title, pathname + '#' + sourcecat + '-' + category + '-' + categories.category.alias);
             }
             $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "]").find('#current_category_slug').val(categories.category.alias);
 
-            var template = Handlebars.compile(sourcecategories);
-            var html = template(categories);
-
-            $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default").prepend(html);
+            var sourcecategories =  $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "]").parent().find("#dropfiles-template-default-categories-"+sourcecat).html();
+            if (sourcecategories) {
+                var template = Handlebars.compile(sourcecategories);
+                var html = template(categories);
+                $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default").prepend(html);
+            }
 
             for (i = 0; i < categories.categories.length; i++) {
                 cParents[categories.categories[i].id] = categories.categories[i];
@@ -217,9 +222,14 @@ jQuery(document).ready(function ($) {
             url: dropfilesBaseUrl + "index.php?option=com_dropfiles&view=frontfiles&format=json&id=" + category,
             dataType: "json"
         }).done(function (content) {
-            var template = Handlebars.compile(sourcefiles);
-            var html = template(content);
-            $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default").append(html);
+            var sourcefiles =  $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "]").parent().find("#dropfiles-template-default-files-"+sourcecat).html();
+            if (sourcefiles) {
+                sourcefiles = fixJoomlaSef(sourcefiles);
+                var template = Handlebars.compile(sourcefiles);
+                var html = template(content);
+                $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default").append(html);
+            }
+
             if (typeof(dropfilesColorboxInit) !== 'undefined') {
                 dropfilesColorboxInit();
             }
@@ -336,4 +346,15 @@ jQuery(document).ready(function ($) {
         link_manager = link_manager + '&task=site_manage&site_catid=' + current_category + '&tmpl=dropfilesfrontend';
         $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "]").find('.openlink-manage-files').attr('href', link_manager);
     }
+
+    // Remove the root url in case it's added by Joomla Sef plugin
+    function fixJoomlaSef(template) {
+        if (typeof template != 'undefined' && template != null) {
+            var reg = new RegExp(dropfilesRootUrl + "{{", 'g');
+            template = template.replace(reg, "{{");
+        }
+
+        return template;
+    }
+
 });

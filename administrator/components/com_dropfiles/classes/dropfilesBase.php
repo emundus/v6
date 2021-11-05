@@ -86,7 +86,7 @@ class DropfilesBase
 
         $document->addStyleSheet($uri_dropfiles_assets . '/css/jquery.gritter.css');
         $document->addStyleSheet($uri_dropfiles_assets . '/css/upload.min.css');
-        $document->addStyleSheet($uri_dropfiles_assets . '/ui/css/style.css');
+        $document->addStyleSheet($uri_dropfiles_assets . '/ui/css/style.css?v=5.8');
         $document->addStyleSheet($uri_dropfiles_assets . '/ui/css/statistics.css');
         $document->addStyleSheet($uri_dropfiles_assets . '/css/jaofiletree.css');
         $document->addStyleSheet($uri_dropfiles_assets . '/css/jquery.restable.css');
@@ -120,7 +120,7 @@ class DropfilesBase
         self::loadLanguage();
         $uri_dropfiles_assets = JURI::root() . 'components/com_dropfiles/assets';
         JHtml::_('jquery.framework');
-        if (version_compare(JVERSION, '3.10.0', 'ge')) {
+        if (self::isJoomla40()) {
             JHtml::_('behavior.core');
         } else {
             JHtml::_('behavior.framework', true);

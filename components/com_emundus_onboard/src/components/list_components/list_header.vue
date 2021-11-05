@@ -4,15 +4,15 @@
       <transition :name="'slide-down'" type="transition">
         <div>
           <div class="d-flex" v-if="data.type === 'campaign'">
-            <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
+            <img src="images/emundus/menus/megaphone.svg" srcset="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
             <h1 class="tchooz-section-titles">{{ translations.Campaigns }}</h1>
           </div>
           <div class="d-flex" v-if="data.type === 'email'">
-            <img src="/images/emundus/menus/email.png" class="tchooz-icon-title" alt="email">
+            <img src="images/emundus/menus/email.png" srcset="/images/emundus/menus/email.png" class="tchooz-icon-title" alt="email">
             <h1 class="tchooz-section-titles">{{ translations.Emails }}</h1>
           </div>
           <div class="d-flex" v-if="data.type === 'form' ||data.type === 'grilleEval' ||data.type === 'formulaire'">
-            <img src="/images/emundus/menus/form.png" class="tchooz-icon-title" alt="form">
+            <img src="images/emundus/menus/form.png" srcset="/images/emundus/menus/form.png" class="tchooz-icon-title" alt="form">
             <h1 class="tchooz-section-titles">{{ translations.Forms }}</h1>
           </div>
 

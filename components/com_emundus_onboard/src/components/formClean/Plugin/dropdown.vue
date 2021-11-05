@@ -51,15 +51,15 @@
         </div>
         </draggable>
         <button @click.prevent="add" type="button" v-if="databasejoin != 1" class="bouton-sauvergarder-et-continuer-3 button-add-option" style="margin-bottom: 2em">{{translations.AddOption}}</button>
-        <select v-if="databasejoin == 1" class="dropdown-toggle" v-model="databasejoin_data" style="margin: 20px 0 30px 0;">
+        <select v-if="databasejoin == 1" class="dropdown-toggle" v-model="databasejoin_data" style="margin: 20px 0 30px 0;" @change="retrieveDataBaseJoinColumns()">
           <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
         </select>
-<!--        <div v-if="databasejoin_data">
+       <div v-if="databasejoin == 1">
           <label>{{translations.OrderBy}}</label>
           <select class="dropdown-toggle" v-model="databasejoin_data_order" style="margin: 20px 0 30px 0;">
-            <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
+            <option v-for="val in databases_colums" :value="val.COLUMN_NAME">{{val.COLUMN_NAME}}</option>
           </select>
-        </div>-->
+        </div>
       </div>
     </div>
   </div>
@@ -81,11 +81,12 @@ export default {
   data() {
     return {
       arraySubValues: [],
+      databases_colums: [],
       databasejoin: "0",
       no_default_value: false,
       display_first_option: null,
       databasejoin_data: 0,
-      databasejoin_data_order: 'id',
+      databasejoin_data_order: '',
       translations: {
         helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
         suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
@@ -111,16 +112,23 @@ export default {
       this.needtoemit();
     },
     initialised: function() {
+
       if(this.element.plugin === 'databasejoin'){
         this.databasejoin = 1;
+
+
         this.databases.forEach((db,index) => {
           if(db.database_name == this.element.params.join_db_name){
             this.databasejoin_data = index;
+            this.retrieveDataBaseJoinColumns();
+            let order= this.element.params.database_join_where_sql;
+            this.databasejoin_data_order=order.replace( /order by /g,"");
           }
         })
       } else  {
         this.element.params.default_value = false;
         this.no_default_value = false;
+        this.retrieveDataBaseJoinColumns();
         if(typeof this.element.params.sub_options !== 'undefined') {
           if(typeof this.element.params.sub_options.sub_initial_selection !== 'undefined') {
             this.element.params.sub_options.sub_values.forEach((value,i) => {
@@ -158,6 +166,25 @@ export default {
           this.arraySubValues = this.element.params.sub_options.sub_labels;
         }
       }
+    },
+
+    retrieveDataBaseJoinColumns(){
+      axios({
+        method: "post",
+        url:
+            "index.php?option=com_emundus_onboard&controller=formbuilder&task=getdatabasesjoinOrdonancementColomns",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          database_name: (this.databases[this.databasejoin_data]).database_name,
+        })
+      }).then((response) => {
+          this.databases_colums = response.data.data;
+      }).catch(e => {
+        console.log(e);
+       });
+
     },
     needtoemit: _.debounce(function() {
       this.$emit("subOptions", this.arraySubValues);
@@ -203,6 +230,7 @@ export default {
     databasejoin: function(value){
       if(value == 1) {
         this.checkOnboarding();
+
         this.element.plugin = 'databasejoin';
         this.element.params.join_db_name = this.databases[this.databasejoin_data].database_name;
         this.element.params.database_join_display_type = 'dropdown';
@@ -221,6 +249,7 @@ export default {
         delete this.element.params.join_key_column;
         delete this.element.params.join_val_column;
         delete this.element.params.join_val_column_concat;
+        delete this.element.params.database_join_where_sql;
         if(typeof this.element.params.sub_options === 'undefined') {
           this.element.params.sub_options = {
             'sub_values': [],
@@ -230,17 +259,13 @@ export default {
         }
       }
     },
-    databasejoin_data: function(value){
-      this.element.params.join_db_name = this.databases[value].database_name;
-      this.element.params.join_key_column = this.databases[value].join_column_id;
-      this.element.params.database_join_display_type = 'dropdown';
-      if(this.databases[value].translation == '1') {
-        this.element.params.join_val_column = this.databases[value].join_column_val + '_fr';
-        this.element.params.join_val_column_concat = '{thistable}.' + this.databases[value].join_column_val + '_{shortlang}';
-      } else {
-        this.element.params.join_val_column = this.databases[value].join_column_val;
-        this.element.params.join_val_column_concat = '';
+    databasejoin_data_order: function(value){
+
+      if(this.databasejoin == 1) {
+
+      this.element.params.database_join_where_sql= "order by "+value;
       }
+
     },
 
     no_default_value: function(value){

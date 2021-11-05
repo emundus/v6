@@ -14,27 +14,17 @@
 <?php
 
     if (!empty($user->campaign_id)) {
+         $query = 'SELECT esa.value, esap.id as _id, esa.id as id
+           FROM #__emundus_setup_attachment_profiles esap
+           JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
+           WHERE esap.displayed = 1 AND esap.mandatory = 0 AND (esap.campaign_id ='.$user->campaign_id.' OR esap.profile_id ='.$user->profile.')
+           ORDER BY esap.ordering';
 
-        $query = 'SELECT esa.value, esap.id as _id, esa.id as id
-        FROM #__emundus_setup_attachment_profiles esap
-        JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
-        WHERE esap.displayed = 1 AND esap.campaign_id ='.$user->campaign_id.'
-        ORDER BY esap.ordering';
-
-        $_db->setQuery($query);
-        $all_forms = $_db->loadObjectList();
-
-        $query = 'SELECT esa.value, esap.id as _id, esa.id as id
-        FROM #__emundus_setup_attachment_profiles esap
-        JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
-        WHERE esap.displayed = 1 AND esap.mandatory = 0 AND esap.campaign_id ='.$user->campaign_id.'
-        ORDER BY esap.ordering';
-
-        $_db->setQuery($query);
-        $forms = $_db->loadObjectList();
+         $_db->setQuery($query);
+         $forms = $_db->loadObjectList();
     }
 
-    if (empty($all_forms)) {
+    if (empty($forms)) {
         $query = 'SELECT esa.value, esap.id as _id, esa.id as id
         FROM #__emundus_setup_attachment_profiles esap
         JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
@@ -45,15 +35,7 @@
 	    try {
 		    $forms = $_db->loadObjectList();
 	    } catch (Exception $e) {
-
-		    // This is in the case of a legacy platform running new code on an old schema.
-		    $query = 'SELECT esa.value, esap.id as _id, esa.id as id
-                FROM #__emundus_setup_attachment_profiles esap
-                JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
-                WHERE esap.displayed = 1 AND esap.mandatory = 1 AND esap.profile_id ='.$user->profile.'
-                ORDER BY esa.ordering';
-		    $_db->setQuery($query);
-		    $forms = $_db->loadObjectList();
+            JLog::add('Error in views/tmpl/opt_attach at query : '.$query, JLog::ERROR, 'com_emundus');
 	    }
     }
 

@@ -161,6 +161,7 @@ class PlgFabrik_FormEmundusconfirmpostgkqcm extends plgFabrik_Form
 		JPluginHelper::importPlugin('emundus');
 		$dispatcher = JEventDispatcher::getInstance();
 		$dispatcher->trigger('onBeforeSubmitFile', [$student->id, $student->fnum]);
+        $dispatcher->trigger('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
         // Get status by element
         $tables = explode(',',$this->getParam('qcmcomplete_parenttable', 'jos_emundus_qcm'));
@@ -219,6 +220,7 @@ class PlgFabrik_FormEmundusconfirmpostgkqcm extends plgFabrik_Form
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 		$dispatcher->trigger('onAfterSubmitFile', [$student->id, $student->fnum]);
+        $dispatcher->trigger('callEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
 		$student->candidature_posted = 1;
 
