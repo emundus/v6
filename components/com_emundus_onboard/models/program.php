@@ -159,6 +159,7 @@ class EmundusonboardModelprogram extends JModelList {
 
     public function addProgram($data) {
 
+        $user = JFactory::getUser();
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -206,7 +207,7 @@ class EmundusonboardModelprogram extends JModelList {
                 // Affect coordinator to the group of the program
                 $query->clear()
                     ->insert($db->quoteName('#__emundus_groups'))
-                    ->set($db->quoteName('user_id') . ' = ' . $db->quote(95))
+                    ->set($db->quoteName('user_id') . ' = ' . $db->quote($user->id))
                     ->set($db->quoteName('group_id') . ' = ' . $group_id);
                 $db->setQuery($query);
                 $db->execute();

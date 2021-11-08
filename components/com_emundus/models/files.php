@@ -65,6 +65,8 @@ class EmundusModelFiles extends JModelLegacy
         $db = JFactory::getDbo();
         $mainframe = JFactory::getApplication();
 
+        JPluginHelper::importPlugin('emundus');
+
         // Get current menu parameters
         $current_user = JFactory::getUser();
         $menu = @JFactory::getApplication()->getMenu();
@@ -337,9 +339,13 @@ class EmundusModelFiles extends JModelLegacy
         $can_be_ordering[] = 'jos_emundus_campaign_candidature.id';
         $can_be_ordering[] = 'jos_emundus_campaign_candidature.fnum';
         $can_be_ordering[] = 'jos_emundus_campaign_candidature.status';
+        $can_be_ordering[] = 'jos_emundus_campaign_candidature.form_progress';
+        $can_be_ordering[] = 'jos_emundus_campaign_candidature.attachment_progress';
         $can_be_ordering[] = 'fnum';
         $can_be_ordering[] = 'status';
         $can_be_ordering[] = 'name';
+        $can_be_ordering[] = 'form_progress';
+        $can_be_ordering[] = 'attachment_progress';
         $can_be_ordering[] = 'eta.id_tag';
 
 
@@ -519,12 +525,12 @@ class EmundusModelFiles extends JModelLegacy
                                     } else {
                                         $query['q'] .= ' AND ';
                                         // Check if it is a join table
-                                        $sql = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
+                                        $sql = 'SELECT join_from_table,table_key,table_join_key FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
                                         $db->setQuery($sql);
-                                        $join_from_table = $db->loadResult();
+                                        $join_from_table = $db->loadObject();
 
-                                        if (!empty($join_from_table)) {
-                                            $table = $join_from_table;
+                                        if (!empty($join_from_table->join_from_table)) {
+                                            $table = $join_from_table->join_from_table;
                                             $table_join = $tab[0];
 
                                             // Do not do LIKE %% search on elements that come from a <select>, we should get the exact value.
@@ -534,12 +540,14 @@ class EmundusModelFiles extends JModelLegacy
                                                 $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
                                             }
 
-                                            if (!isset($query[$table])) {
+                                            $query['join'] .= ' left join '.$table.' on ' .$table.'.'. $join_from_table->table_key .' like '.$table_join.'.'.$join_from_table->table_join_key;
+
+                                            /*if (!isset($query[$table])) {
                                                 $query[$table] = true;
                                                 if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias)) {
                                                     $query['join'] .= ' left join '.$table.' on ' .$table.'.fnum like jos_emundus_campaign_candidature.fnum ';
                                                 }
-                                            }
+                                            }*/
 
                                             if (!isset($query[$table_join])) {
                                                 $query[$table_join] = true;
@@ -1243,7 +1251,7 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getSelectList()
     {
-        $lists = '';
+        $lists = [];
 
         if (!empty($this->col)) {
             foreach ($this->col as $c) {
@@ -1852,9 +1860,7 @@ class EmundusModelFiles extends JModelLegacy
 
             $query = substr_replace($query, ";", -1);
             $db->setQuery($query);
-            $db->execute();
-
-            return true;
+            return $db->execute();
         }
         catch (Exception $e)
         {
@@ -1911,8 +1917,6 @@ class EmundusModelFiles extends JModelLegacy
     public function updateState($fnums, $state) {
 
         $db = $this->getDbo();
-
-        JPluginHelper::importPlugin('emundus');
         $dispatcher = JEventDispatcher::getInstance();
 
         $query = $db->getQuery(true);
@@ -1933,6 +1937,8 @@ class EmundusModelFiles extends JModelLegacy
                 foreach ($fnums as $fnum) {
 
                     $dispatcher->trigger('onBeforeStatusChange', [$fnum, $state]);
+                    $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state]]);
+
                     $query = $db->getQuery(true);
 
                     $query
@@ -1943,6 +1949,7 @@ class EmundusModelFiles extends JModelLegacy
                     $db->setQuery($query);
                     $res = $db->execute();
                     $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
+                    $dispatcher->trigger('callEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state]]);
 
                     if (!empty($profile)) {
 
@@ -1958,6 +1965,7 @@ class EmundusModelFiles extends JModelLegacy
             }
             else {
                 $dispatcher->trigger('onBeforeStatusChange', [$fnums, $state]);
+                $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange', ['fnums' => $fnums, 'state' => $state]]);
                 $query = $db->getQuery(true);
 
                 $query
@@ -1968,6 +1976,7 @@ class EmundusModelFiles extends JModelLegacy
                 $db->setQuery($query);
                 $res = $db->execute();
                 $dispatcher->trigger('onAfterStatusChange', [$fnums, $state]);
+                $dispatcher->trigger('callEventHandler', ['onAfterStatusChange', ['fnums' => $fnums, 'state' => $state]]);
 
                 if (!empty($profile)) {
                     $query = $db->getQuery(true);
@@ -1998,7 +2007,6 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function updatePublish($fnums, $publish) {
 
-        JPluginHelper::importPlugin('emundus');
         $dispatcher = JEventDispatcher::getInstance();
 
         $db = $this->getDbo();
@@ -2008,6 +2016,7 @@ class EmundusModelFiles extends JModelLegacy
             EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_LOGS_UPDATE_PUBLISH');
 
             $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
+            $dispatcher->trigger('callEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
             $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
             $db->setQuery($query);
             try {
@@ -2018,6 +2027,7 @@ class EmundusModelFiles extends JModelLegacy
                 return false;
             }
             $dispatcher->trigger('onAfterPublishChange', [$fnum, $publish]);
+            $dispatcher->trigger('callEventHandler', ['onAfterPublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
         }
         return $res;
     }
@@ -2436,7 +2446,7 @@ class EmundusModelFiles extends JModelLegacy
                                 $where = $r1[1].' IN (
                                 SELECT '.$db->quoteName($f_join->table_join.'.'.$f_join->table_key).'
                                 FROM '.$db->quoteName($f_join->table_join).' 
-                                WHERE '.$db->quoteName($f_join->table_join.'.'.$f_join->table_join_key).' = '.$r_element->id.')';
+                                WHERE '.$db->quoteName($f_join->table_join.'.'.$f_join->table_join_key).' = '.$elt->id.')';
                             } else {
                                 $where = $r1[1].'='.$elt->table_join.'.'.$elt->element_name;
                             }
@@ -3525,9 +3535,9 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function deleteFile($fnum) {
 
-        JPluginHelper::importPlugin('emundus');
         $dispatcher = JEventDispatcher::getInstance();
         $dispatcher->trigger('onBeforeDeleteFile', $fnum);
+        $dispatcher->trigger('callEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
 
         $db = JFactory::getDbo();
 
@@ -3569,6 +3579,7 @@ class EmundusModelFiles extends JModelLegacy
             $db->setQuery($query);
             $res = $db->execute();
             $dispatcher->trigger('onAfterDeleteFile', $fnum);
+            $dispatcher->trigger('callEventHandler', ['onAfterDeleteFile', ['fnum' => $fnum]]);
             return $res;
         } catch(Exception $e) {
             echo $e->getMessage();

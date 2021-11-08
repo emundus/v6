@@ -11,18 +11,12 @@
  */
 
 jQuery(document).ready(function ($) {
-    var sourcefiles = $("#dropfiles-template-ggd-files").html();
-    var sourcecategories = $("#dropfiles-template-ggd-categories").html();
-    var sourcefile = $("#dropfiles-template-ggd-box").html();
+
     var gdd_hash = window.location.hash;
     var ggd_cParents = {};
     var ggd_tree = $('.dropfiles-foldertree-ggd');
-
-    if (typeof sourcefiles != 'undefined' && sourcefiles != null) {
-        var reg = new RegExp(dropfilesRootUrl + "{{", 'g');
-        sourcefile = sourcefile.replace(reg, "{{");
-        sourcefiles = sourcefiles.replace(reg, "{{");
-    }
+    var sourcefile = $("#dropfiles-template-ggd-box").html();
+    sourcefile = fixJoomlaSef(sourcefile);
 
     var ggd_root_cat = $('.dropfiles-content-ggd').data('category');
 
@@ -138,6 +132,7 @@ jQuery(document).ready(function ($) {
     }
 
     initClickFile();
+
     gdd_hash = gdd_hash.replace('#', '');
     if (gdd_hash != '') {
         var hasha = gdd_hash.split('-');
@@ -149,13 +144,17 @@ jQuery(document).ready(function ($) {
             page = stringpage.replace('p', '');
         }
 
-        var hash_category_id = hasha[0];
-        if (!parseInt(hash_category_id)) {
-            return;
+        var hash_category_id = hasha[1];
+        var hash_sourcecat = hasha[0];
+
+        if (parseInt(hash_category_id) > 0 || hash_category_id === 'all_0') {
+            if (hash_category_id == 'all_0') {
+                hash_category_id = 0;
+            }
+            setTimeout(function () {
+                load(hash_sourcecat, hash_category_id, page);
+            }, 100);
         }
-        setTimeout(function () {
-            load($('.dropfiles-content-ggd').data('category'), hash_category_id, page);
-        }, 100)
     }
 
     function ggd_initClick() {
@@ -241,6 +240,9 @@ jQuery(document).ready(function ($) {
     function load(sourcecat, category, page) {
         var pathname = window.location.pathname;
         var container = $(".dropfiles-content-ggd.dropfiles-content-multi[data-category=" + sourcecat + "]");
+        if (container.length == 0) {
+            return;
+        }
         $(document).trigger('dropfiles:category-loading');
         $(".dropfiles-content-ggd.dropfiles-content-multi[data-category=" + sourcecat + "]").find('#current_category').val(category);
         $(".dropfiles-content-ggd.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-ggd").empty();
@@ -251,14 +253,14 @@ jQuery(document).ready(function ($) {
             url: dropfilesBaseUrl + "index.php?option=com_dropfiles&view=frontcategories&format=json&id=" + category + "&top=" + sourcecat,
             dataType: "json"
         }).done(function (categories) {
-
             if (page != null) {
-                window.history.pushState('', document.title, pathname + '#' + category + '-' + categories.category.alias + '-p' + page);
+                window.history.pushState('', document.title, pathname + '#' + sourcecat + '-' + category + '-' + categories.category.alias + '-p' + page);
             } else {
-                window.history.pushState('', document.title, pathname + '#' + category + '-' + categories.category.alias);
+                window.history.pushState('', document.title, pathname + '#' + sourcecat + '-' + category + '-' + categories.category.alias);
             }
             $(".dropfiles-content-ggd.dropfiles-content-multi[data-category=" + sourcecat + "]").find('#current_category_slug').val(categories.category.alias);
 
+            var sourcecategories = $("#dropfiles-template-ggd-categories-"+sourcecat).html();
             var template = Handlebars.compile(sourcecategories);
             var html = template(categories);
             $(".dropfiles-content-ggd.dropfiles-content-multi[data-category=" + sourcecat + "]").data('current', category);
@@ -294,6 +296,8 @@ jQuery(document).ready(function ($) {
             url: dropfilesBaseUrl + "index.php?option=com_dropfiles&view=frontfiles&format=json&id=" + category,
             dataType: "json"
         }).done(function (content) {
+            var sourcefiles = $("#dropfiles-template-ggd-files-" + sourcecat).html();
+            sourcefiles = fixJoomlaSef(sourcefiles);
             var template = Handlebars.compile(sourcefiles);
             var html = template(content);
             $(".dropfiles-content-ggd.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-ggd").append(html);
@@ -410,6 +414,16 @@ jQuery(document).ready(function ($) {
         var link_manager = $(".dropfiles-content-ggd.dropfiles-content-multi[data-category=" + sourcecat + "]").find('.openlink-manage-files').data('urlmanage');
         link_manager = link_manager + '&task=site_manage&site_catid=' + current_category + '&tmpl=dropfilesfrontend';
         $(".dropfiles-content-ggd.dropfiles-content-multi[data-category=" + sourcecat + "]").find('.openlink-manage-files').attr('href', link_manager);
+    }
+
+    // Remove the root url in case it's added by Joomla Sef plugin
+    function fixJoomlaSef(template) {
+        if (typeof template != 'undefined' && template != null) {
+            var reg = new RegExp(dropfilesRootUrl + "{{", 'g');
+            template = template.replace(reg, "{{");
+        }
+
+        return template;
     }
 
 });

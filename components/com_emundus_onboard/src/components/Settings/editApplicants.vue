@@ -3,7 +3,7 @@
       <div class="section-sub-menu sub-form">
         <div class="container-2 w-container" style="max-width: unset">
           <div class="d-flex">
-            <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
+            <img src="images/emundus/menus/megaphone.svg" srcset="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
             <h1 class="tchooz-section-titles">{{ Applicants }}</h1>
           </div>
           <p class="mt-1">{{Desc}}</p>

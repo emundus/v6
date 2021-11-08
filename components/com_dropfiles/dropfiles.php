@@ -44,8 +44,9 @@ if (preg_match('/^front.*/', $task) ||
     DropfilesBase::initComponent();
 
     // Execute the task.
-    if ($view === 'dropfiles' || $view === 'users' || $view === null) {
-        $config['base_path'] = JPATH_COMPONENT_ADMINISTRATOR;
+    if ($view === 'dropfiles' || $view === 'users' || $view === null || strpos($task, 'googledrive.') === 0
+        || strpos($task, 'dropbox.') === 0 || strpos($task, 'onedrive.') === 0) {
+        $config['base_path'] = JPATH_ADMINISTRATOR . '/components/com_dropfiles';
     }
 }
 // Include dependancies

@@ -97,10 +97,15 @@ class EmundusController extends JControllerLegacy {
             $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
         }
 
-        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.@$campaign['training'].'.php';
-
-        if (!file_exists($file)) {
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$campaign['training'].'.php';
+        $file_custom = JPATH_LIBRARIES.DS.'emundus'.DS.'custom'.DS.'pdf_'.$campaign['training'].'.php';
+        if (!file_exists($file) && !file_exists($file_custom)) {
             $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+        }
+        else{
+            if (file_exists($file_custom)){
+                $file = $file_custom;
+            }
         }
 
         if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
@@ -1658,7 +1663,7 @@ class EmundusController extends JControllerLegacy {
             }
             $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $file, 'F');
 
-            $result = array('status' => true, 'file' => $file, 'msg' => JText::_('FILES_ADDED'));
+            $result = array('status' => true, 'file' => $file, 'msg' => JText::_('FILES_ADDED'), 'path'=>JURI::base());
         } else {
             $result = array('status' => false, 'msg' => JText::_('FILE_NOT_FOUND'));
         }

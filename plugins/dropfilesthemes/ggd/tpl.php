@@ -133,7 +133,7 @@ $allowedgoogleext    = 'pdf,ppt,doc,xls,dxf,ps,eps,xps,psd,tif,tiff,bmp,svg,page
 
 
 <?php if ((int) DropfilesBase::loadValue($this->params, 'ggd_showsubcategories', 1) === 1) : ?>
-    <script type="text/x-handlebars-template" id="dropfiles-template-ggd-categories">
+    <script type="text/x-handlebars-template" id="dropfiles-template-ggd-categories-<?php echo $this->category->id; ?>">
         <div class="dropfiles-categories">
             <?php if ((int) DropfilesBase::loadValue($this->params, 'ggd_showcategorytitle', 1) === 1) : ?>
                 {{#with category}}
@@ -168,7 +168,7 @@ $allowedgoogleext    = 'pdf,ppt,doc,xls,dxf,ps,eps,xps,psd,tif,tiff,bmp,svg,page
     </script>
 <?php endif; ?>
 
-    <script type="text/x-handlebars-template" id="dropfiles-template-ggd-files">
+    <script type="text/x-handlebars-template" id="dropfiles-template-ggd-files-<?php echo $this->category->id; ?>">
         {{#if category}}
             {{#if category.type}}
                 <input type="hidden" id="current-category-type" class="type {{category.type}}" data-category-type="{{category.type}}"/>

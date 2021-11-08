@@ -2,7 +2,10 @@
   "name": "components",
   "version": "0.1.0",
   "private": true,
-  "workspaces": ["com_emundus_onboard","com_emundus_messenger"],
+  "workspaces": [
+    "com_emundus_onboard",
+    "com_emundus_messenger"
+  ],
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -27,6 +30,7 @@
     "vue-csv-import": "3.3.5",
     "vue-datetime": "^1.0.0-beta.14",
     "vue-js-modal": "^1.3.35",
+    "vue-multiselect": "^2.1.6",
     "vue-notification": "^1.3.20",
     "vue-router": "^3.4.7",
     "vue-spinners-css": "^1.1.5",
