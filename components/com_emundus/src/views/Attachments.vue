@@ -2,7 +2,7 @@
     <div id="em-attachments">
         <div class="head">
           <div class="prev-next-files" v-if="fnums.length > 1">
-            <div class="prev" :class="{'active': fnumPosition > 0}" @click="prevFile">
+            <div class="prev" :class="{'active': fnumPosition > 0}" @click="changeFile(fnumPosition - 1)">
               <!--
                 For new header
                 <span class="material-icons">
@@ -10,7 +10,7 @@
               </span> -->
               <i class="small arrow left icon"></i>
             </div>
-            <div class="next" :class="{'active': fnumPosition < fnums.length - 1}" @click="nextFile">
+            <div class="next" :class="{'active': fnumPosition < fnums.length - 1}" @click="changeFile(fnumPosition + 1)">
               <!--
                 For new header
                 <span class="material-icons">
@@ -31,7 +31,11 @@
               <span class="material-icons">search</span>
             </div>
             <div class="actions">
-              <div v-if="canExport" class="btn-icon-text" @click="exportAttachments">
+              <select name="category" @change="filterByCategory">
+                <option value="all">{{ translate('SELECT_CATEGORY') }}</option>
+                <option v-for="(category, key) in categories" :key="key" :value="key">{{ category }} </option>
+              </select>
+              <div v-if="canExport" class="btn-icon-text" @click="exportAttachments" :class="{'disabled': checkedAttachments.length < 1}">
                 <span class="material-icons export">
                   file_upload
                 </span>
@@ -39,26 +43,55 @@
                   {{ translate('EXPORT') }}
                 </span>
               </div>
-              <span class="material-icons refresh" @click="refreshAttachments">
+              <span class="material-icons refresh" @click="refreshAttachments" :title="translate('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE')">
                 autorenew
               </span>
-              <span v-if="canDelete" class="material-icons delete" @click="deleteAttachments">
+              <span v-if="canDelete" class="material-icons delete" :class="{'disabled': checkedAttachments.length < 1}" @click="confirmDeleteAttachments" :title="translate('COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE')">
                 delete_outlined
               </span>
             </div>
           </div>
-          <table v-if="attachments.length">
+          <table v-if="attachments.length" :class="{'loading': loading}">
             <thead>
                 <tr>
                     <th>
                       <input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments">
                     </th>
-                    <th @click="orderBy('filename')">{{ translate('NAME') }}</th>
-                    <th class='date' @click="orderBy('timedate')">{{ translate('SEND_DATE') }}</th>
-                    <th class='desc' @click="orderBy('description')">{{ translate('DESCRIPTION') }}</th>
-                    <th class='status' @click="orderBy('is_validated')">{{ translate('STATUS') }}</th>
-                    <th @click="orderBy('modified_by')">{{ translate('MODIFIED_BY') }}</th>
-                    <th class='date' @click="orderBy('modified')">{{ translate('MODIFICATION_DATE') }}</th>
+                    <th @click="orderBy('value')"> 
+                      {{ translate('NAME') }}
+                      <span v-if="sort.orderBy == 'value' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'value' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
+                    <th class='date' @click="orderBy('timedate')"> 
+                      {{ translate('COM_EMUNDUS_ATTACHMENTS_SEND_DATE') }}
+                      <span v-if="sort.orderBy == 'timedate' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'timedate' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
+                    <th class='category' @click="orderBy('category')"> 
+                      {{ translate('COM_EMUNDUS_ATTACHMENTS_CATEGORY') }}
+                      <span v-if="sort.orderBy == 'category' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'category' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
+                    <th class='desc' @click="orderBy('description')"> 
+                      {{ translate('DESCRIPTION') }}
+                      <span v-if="sort.orderBy == 'description' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'description' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
+                    <th class='status' @click="orderBy('is_validated')"> 
+                      {{ translate('STATUS') }}
+                      <span v-if="sort.orderBy == 'is_validated' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'is_validated' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
+                    <th @click="orderBy('modified_by')"> 
+                      {{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY') }}
+                      <span v-if="sort.orderBy == 'modified_by' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'modified_by' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
+                    <th class='date' @click="orderBy('modified')"> 
+                      {{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE') }}
+                      <span v-if="sort.orderBy == 'modified' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'modified' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -71,6 +104,7 @@
                     </td>
                     <td class="td-document" @click="openModal(attachment)">{{ attachment.value }}</td>
                     <td class='date'>{{ formattedDate(attachment.timedate) }}</td>
+                    <td class='category'>{{ categories[attachment.category] ? translate(categories[attachment.category]) : attachment.category }}</td>
                     <td class="desc">{{ attachment.description }}</td>
                     <td class="status valid-state" :class="{
                       'success': attachment.is_validated == 1, 
@@ -78,14 +112,14 @@
                       }">
                       <span v-if="attachment.is_validated == 1">{{ translate('VALID') }}</span>
                       <span v-else-if="attachment.is_validated == -2">{{ translate('INVALID') }}</span>
-                      <span v-else>{{ translate('WAITING') }}</span>
+                      <span v-else>{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}</span>
                     </td>
                     <td>{{ getUserNameById(attachment.modified_by) }}</td>
                     <td class='date'>{{ formattedDate(attachment.modified) }}</td>
                 </tr>
             </tbody>
           </table>
-          <p v-else>{{ translate('NO_ATTACHMENTS_FOUND') }}</p>
+          <p v-else>{{ translate('COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND') }}</p>
         </div>
         
         <modal 
@@ -105,13 +139,13 @@
             </div>
             <div class="flex-end">
               <div class="prev-next-attachments">
-                <div class="prev" :class="{'active': selectedAttachmentPosition > 0}" @click="prevAttachment">
+                <div class="prev" :class="{'active': selectedAttachmentPosition > 0}" @click="changeAttachment(selectedAttachmentPosition - 1, true)">
                   <span class="material-icons">
                     navigate_before
                   </span>
                 </div>
                 <span class="lvl">{{ selectedAttachmentPosition + 1 }} / {{ displayedAttachments.length }}</span>
-                <div class="next" :class="{'active': selectedAttachmentPosition < displayedAttachments.length - 1}" @click="nextAttachment">
+                <div class="next" :class="{'active': selectedAttachmentPosition < displayedAttachments.length - 1}" @click="changeAttachment(selectedAttachmentPosition + 1)">
                   <span class="material-icons">
                     navigate_next
                   </span>
@@ -144,6 +178,7 @@ import attachmentService from '../services/attachment.js';
 import userService from '../services/user.js';
 import fileService from '../services/file.js';
 import mixin from '../mixins/mixin.js';
+import Swal from "sweetalert2";
 
 export default {
   name: 'Attachments',
@@ -166,13 +201,18 @@ export default {
     return {
       loading: true,
       attachments: [],
+      categories: {},
       fnums: [],
       users: {},
       displayedUser: {},
       displayedFnum: this.fnum,
       checkedAttachments: [],
       selectedAttachment: {},
-      lastSort: "",
+      sort: {
+        last: "",
+        order: "",
+        orderBy: ""
+      },
       canExport: false,
       canDelete: false,
       modalLoading: false,
@@ -202,18 +242,43 @@ export default {
       this.displayedUser = this.users.find(user => user.id == response.fnumInfos.applicant_id);
       this.$store.dispatch('user/setDisplayedUser', this.displayedUser.id);
     },
+    async getCategories() {
+      const response = await attachmentService.getAttachmentCategories();
+      if (response.status) {
+        // translate categories values
+        Object.entries(response.categories).forEach(([key, value]) => {
+          response.categories[key] = this.translate(value);
+        });
+
+        // Add attachment categories if not already given by the server
+        this.attachments.forEach(attachment => {
+          if (!response.categories[attachment.category] && attachment.category != "") {
+            response.categories[attachment.category] = this.translate(attachment.category);
+          }
+        });
+
+        // remove empty categories
+        delete response.categories[""];
+        
+        this.$store.dispatch('attachment/setCategories', response.categories);
+        this.categories = this.$store.state.attachment.categories;
+      }
+    },
     async getAttachments() {
       if (!this.$store.state.attachment.attachments[this.displayedFnum]) {
         this.refreshAttachments();
       } else {
         this.loading = true;
         this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
+        this.categories = this.$store.state.attachment.categories;
         this.loading = false;
       }
     },
     async refreshAttachments() {
         this.loading = true;
-        this.lastSort = "";
+        this.resetOrder();
+        this.checkedAttachments = [];
+        this.$refs['searchbar'].value = "";
         this.attachments = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
 
         this.$store.dispatch('attachment/setAttachmentsOfFnum', {
@@ -221,10 +286,11 @@ export default {
           attachments: this.attachments
         });
 
+        this.getCategories();
         this.loading = false;
     }, 
     updateAttachment() {
-      this.lastSort = "";
+      this.resetOrder();
       this.getAttachments();
       this.$modal.hide('edit');
       this.selectedAttachment = {};
@@ -253,46 +319,81 @@ export default {
         })
       }
     },
+
+    confirmDeleteAttachments() {
+      if (this.canDelete) {
+        let text = this.translate('CONFIRM_DELETE_SELETED_ATTACHMENTS');
+
+        this.checkedAttachments.forEach(aid => {
+          this.attachments.forEach((attachment) => {
+            if (attachment.aid == aid) {
+              text += attachment.value + ", ";
+            }
+          });
+        });
+
+        Swal.fire(
+          {
+            title: this.translate('DELETE_SELECTED_ATTACHMENTS'),
+            text: text,
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: this.translate('JYES'),
+            cancelButtonText: this.translate('JNO')
+          }
+        ).then((result) => {
+          if (result.value) {
+            this.deleteAttachments();
+          }
+        });
+      } else {
+        Swal.fire(
+          {
+            title: this.translate('ERROR'),
+            text: this.translate('YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS'),
+            type: 'error',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: this.translate('JCLOSE')
+          }
+        );
+      }
+    },
     async deleteAttachments() {
       if (this.canDelete) {
         // remove all checked attachments from attachments array
         this.attachments = this.attachments.filter(attachment => !this.checkedAttachments.includes(attachment.aid));
 
         // delete all checkedAttachments
-        const response = await attachmentService.deleteAttachments(this.displayedFnum, this.checkedAttachments);
+        const response = await attachmentService.deleteAttachments(this.displayedFnum, this.displayedUser.id, this.checkedAttachments);
         if (response.status == true) {
           // Display tooltip deleted succesfully  
         }
+      } else {
+        Swal.fire(
+          {
+            title: this.translate('ERROR'),
+            text: this.translate('YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS'),
+            type: 'error',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: this.translate('JCLOSE')
+          }
+        );
       }
     },
 
     // navigation functions
-    prevFile() {
-      this.displayedFnum = this.fnums[this.fnumPosition - 1];
+    changeFile(position) {
+      this.displayedFnum = this.fnums[position];
       this.setDisplayedUser();
       this.getAttachments();
       this.setAccessRights();
     },
-    nextFile() {
-      this.displayedFnum = this.fnums[this.fnumPosition + 1];
-      this.setDisplayedUser();
-      this.getAttachments();
-      this.setAccessRights();
-    },
-    prevAttachment() {
-      this.slideTransition = "slide-fade-reverse";
+    changeAttachment(position, reverse = false) {
+      this.slideTransition = reverse ? "slide-fade-reverse" : "slide-fade";
       this.modalLoading = true;
-      this.selectedAttachment = this.displayedAttachments[this.selectedAttachmentPosition - 1];
-      this.$store.dispatch('attachment/setSelectedAttachment', this.selectedAttachment);
-
-      setTimeout(() => {
-        this.modalLoading = false;
-      }, 500);
-    },
-    nextAttachment() {
-      this.slideTransition = "slide-fade";
-      this.modalLoading = true;
-      this.selectedAttachment = this.displayedAttachments[this.selectedAttachmentPosition + 1];
+      this.selectedAttachment = this.displayedAttachments[position];
       this.$store.dispatch('attachment/setSelectedAttachment', this.selectedAttachment);
 
       setTimeout(() => {
@@ -314,13 +415,20 @@ export default {
         }
       });
     },
+    resetOrder() {
+      this.sort = {
+        last: "",
+        order: "",
+        orderBy: ""
+      }
+    },
     orderBy(key) {
       // if last sort is the same as the current sort, reverse the order
-
-      if (this.lastSort == key) {
+      if (this.sort.last == key) {
+        this.sort.order = this.sort.order == "asc" ? "desc" : "asc";
         this.attachments.reverse();
       } else {
-        // sort by key
+        // sort in ascending order by key
         this.attachments.sort((a, b) => {
           if (a[key] < b[key]) {
             return -1;
@@ -330,8 +438,27 @@ export default {
           }
           return 0;
         });
+
+        this.sort.order = "asc";
       }
-      this.lastSort = key;
+
+      this.sort.orderBy = key;
+      this.sort.last = key;
+    },
+    filterByCategory(e) {
+      this.attachments.forEach(attachment => {
+        if (e.target.value == "all") {
+          attachment.show = true;
+        } else {
+          if (attachment.category == e.target.value) {
+            attachment.show = true;
+          } else {
+            // remove attachments from checkedAttachment list
+            this.checkedAttachments = this.checkedAttachments.filter(aid => aid !== attachment.aid);
+            attachment.show = false;
+          }
+        }
+      });
     },
     updateAllCheckedAttachments(e) {
       if (e.target.checked) {
@@ -558,8 +685,22 @@ export default {
         margin-right: 8px;
       }
 
-      >div {
+      select {
+        height: 37px;
+        border: 1px solid var(--border-color);
+      }
+
+      >div, >select {
         margin-right: 8px;
+        
+        &.disabled {
+          color: var(--disabled-color);
+          pointer-events: none;
+
+          .material-icons {
+            color: var(--disabled-color);
+          }
+        }
       }
     }
     
@@ -585,14 +726,18 @@ export default {
     width: calc(100% - 40px);
 
     &.loading {
-      min-height: calc(100vh - 400px);
-      visibility: hidden;
+      min-height: 50vh;
     }
 
     .material-icons.delete {
       transition: all .3s;
       width: 30px;
       color: var(--grey-color);
+
+      &.disabled {
+        color: var(--disabled-color);
+        pointer-events: none;
+      }
 
       &:hover {
         cursor: pointer;
@@ -602,6 +747,10 @@ export default {
   }
 
   table {
+    &.loading {
+      visibility: hidden;
+    }
+
     border: 0;
 
     tr {
@@ -623,11 +772,6 @@ export default {
       width: fit-content;
     }
 
-    th.date, td.date {
-      max-width: 120px;
-      width: 120px;
-    }
-
     th.desc, td.desc {
       max-width: 250px;
       width: initial;
@@ -646,6 +790,11 @@ export default {
         th {
           border-top: 1px solid #e0e0e0;
           border-bottom: 1px solid #e0e0e0;
+          white-space: nowrap;
+
+          .material-icons {
+            transform: translateY(3px);
+          }
         }
       }
     }

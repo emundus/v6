@@ -35,14 +35,27 @@ export default {
     }
   },
 
-  async deleteAttachments(fnum, attachment_ids) {
+  async getAttachmentCategories() {
     try {
-      const response = await client().post('index.php?option=com_emundus&controller=application&task=deleteattachement', {
-        params: {
-          fnum: fnum,
-          ids: JSON.stringify(attachment_ids),
+      const response = await client().get('index.php?option=com_emundus&controller=files&task=getattachmentcategories');
+
+      return response.data;
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  async deleteAttachments(fnum, student_id, attachment_ids) {
+    try {
+      const formData = new FormData();
+      formData.append('ids', JSON.stringify(attachment_ids));
+      
+      const response = await client().post(`index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=${fnum}&student_id=${student_id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         }
-      });
+      );
 
       return response;
     } catch (e) {

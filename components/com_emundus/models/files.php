@@ -3715,7 +3715,6 @@ class EmundusModelFiles extends JModelLegacy
 
         if (isset($element[0])) {
             $params = json_decode($element[0]);
-
             if (!empty($params->sub_options->sub_values)) {
                 foreach ($params->sub_options->sub_values as $key => $value) {
                     $return[$value] = $params->sub_options->sub_labels[$key];
