@@ -322,23 +322,25 @@ export default {
 
     confirmDeleteAttachments() {
       if (this.canDelete) {
-        let text = this.translate('CONFIRM_DELETE_SELETED_ATTACHMENTS') +  "\n";
+        let html = '<p>' + this.translate('CONFIRM_DELETE_SELETED_ATTACHMENTS') +  '</p><br>';
 
+        let list = '';
         this.checkedAttachments.forEach(aid => {
           this.attachments.forEach((attachment) => {
             if (attachment.aid == aid) {
-              text += attachment.value + ", ";
+              list += attachment.value + ", ";
             }
           });
         });
 
         // remove last ", "
-        text = text.substring(0, text.length - 2);
+        list = list.substring(0, list.length - 2);
+        html += '<p>' + list + '</p>';
 
         Swal.fire(
           {
             title: this.translate('DELETE_SELECTED_ATTACHMENTS'),
-            text: text,
+            html: html,
             type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
