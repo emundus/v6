@@ -4093,7 +4093,7 @@ class EmundusModelApplication extends JModelList
                 $preview['content'] = '<div class="wrapper">' . $htmlWriter->getContent() . '</div>';
                 $preview['overflowY'] = true;
                 $preview['style'] = 'word';
-                $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENT_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
+                $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
 
             } else if (in_array($extension, ['xls', 'xlsx', 'ods', 'csv'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
@@ -4107,14 +4107,14 @@ class EmundusModelApplication extends JModelList
                 $preview['overflowX'] = true;
                 $preview['style'] = 'sheet';
 
-                $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENT_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
+                $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
             } else if (in_array($extension, ['ppt', 'pptx', 'odp'])) {
                 // ? PHPPresentation is not giving html support... need to create it manually ? 
                 $preview['content'] = $this->convertPowerPointToHTML($filePath);
                 $preview['overflowY'] = true;
                 $preview['style'] = 'presentation';
 
-                $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENT_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
+                $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
             } else if (in_array($extension, ['mp3', 'wav', 'ogg'])) {
                 $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><audio controls><source src="' . JURI::base() . $filePath . '" type="audio/' . $extension . '"></audio></div>';
             } else if (in_array($extension, ['mp4', 'webm', 'ogg'])) {
