@@ -103,11 +103,8 @@ import editTags from "../components/Settings/editTags";
 import editHomepage from "../components/Settings/editHomepage";
 import editStyle from "../components/Settings/editStyle";
 import editDatas from "../components/Settings/editDatas";
-import editUsers from "../components/Settings/editUsers";
 import editCGV from "../components/Settings/editCGV";
 import editFooter from "../components/Settings/editFooter";
-import Tasks from "@/views/tasks";
-import HelpSettings from "@/components/Settings/helpSettings";
 import EditApplicants from "@/components/Settings/editApplicants";
 
 const qs = require("qs");

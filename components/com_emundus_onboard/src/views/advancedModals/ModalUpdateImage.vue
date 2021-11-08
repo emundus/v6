@@ -58,7 +58,6 @@
 </template>
 
 <script>
-  import axios from "axios";
   import vueDropzone from 'vue2-dropzone'
   import Swal from "sweetalert2";
   const qs = require("qs");

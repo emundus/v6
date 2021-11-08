@@ -100,7 +100,6 @@
 
 <script>
 import axios from "axios";
-import ModalEmailPreview from "./ModalEmailPreview";
 const qs = require("qs");
 
 export default {

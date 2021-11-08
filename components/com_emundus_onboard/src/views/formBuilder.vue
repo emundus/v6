@@ -270,8 +270,6 @@
 
   import _ from 'lodash';
   import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
-  import List from "./list";
-  import Tasks from "@/views/tasks";
   import ModalTestingForm from "@/components/formClean/ModalTestingForm";
   import ModalAddDocuments from "./advancedModals/ModalAddDocuments";
   import Swal from "sweetalert2";
