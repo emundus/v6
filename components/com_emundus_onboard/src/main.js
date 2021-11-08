@@ -2,7 +2,6 @@ import Vue from 'vue';
 Vue.config.productionTip = false;
 Vue.config.devtools = true;
 
-import VueRouter from 'vue-router';
 import VueJsModal from 'vue-js-modal';
 import { VTooltip, VPopover, VClosePopover } from 'v-tooltip';
 import * as VueSpinnersCss from 'vue-spinners-css';
@@ -20,7 +19,6 @@ Vue.component('table-column', TableColumn);
 Vue.use(Notifications, { velocity });
 Vue.use(VueJsModal);
 Vue.use(VueSpinnersCss);
-Vue.use(VueRouter);
 
 import App from "./App";
 
