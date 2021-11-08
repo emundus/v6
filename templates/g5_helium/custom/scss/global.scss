@@ -1048,14 +1048,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  max-width: max-content;
+  max-width: 20em;
   margin-bottom: 30px;
 
   p {
     width: 100%;
   }
   a#add-application {
-    width: 100%; 
+    width: 100%;
     text-align: center !important;
   }
 }
