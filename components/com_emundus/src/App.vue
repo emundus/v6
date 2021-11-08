@@ -30,6 +30,11 @@ export default {
     }
 
     moment.locale(this.$store.state.global.lang);
+
+    // baseUrl
+    if (this.data.base) {
+      this.$store.dispatch('attachment/setAttachmentPath', this.data.base + '/images/emundus/files/');
+    }
   },
 };
 </script>
