@@ -22,6 +22,11 @@ Vue.use(VueSpinnersCss);
 
 import App from "./App";
 
+
+// TODO: use mixin for translate
+// see https://emundus.atlassian.net/wiki/spaces/EKB/pages/2016903204/Mixins
+// or go watch inside com_emundus/src/main.js and see how it works
+
 new Vue({
   el: '#em-component-vue',
   render(h) {
