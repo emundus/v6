@@ -322,7 +322,7 @@ export default {
 
     confirmDeleteAttachments() {
       if (this.canDelete) {
-        let text = this.translate('CONFIRM_DELETE_SELETED_ATTACHMENTS');
+        let text = this.translate('CONFIRM_DELETE_SELETED_ATTACHMENTS') +  "\n";
 
         this.checkedAttachments.forEach(aid => {
           this.attachments.forEach((attachment) => {
@@ -331,6 +331,9 @@ export default {
             }
           });
         });
+
+        // remove last ", "
+        text = text.substring(0, text.length - 2);
 
         Swal.fire(
           {
@@ -341,7 +344,8 @@ export default {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: this.translate('JYES'),
-            cancelButtonText: this.translate('JNO')
+            cancelButtonText: this.translate('JNO'),
+            reverseButtons: true
           }
         ).then((result) => {
           if (result.value) {
