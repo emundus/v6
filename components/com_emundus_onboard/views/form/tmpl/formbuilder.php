@@ -250,14 +250,16 @@ if(count($languages) > 1){
 $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 
+$component = JFactory::getApplication()->input->get('evaluation') ? 'evaluationbuilder' : 'formbuilder';
+
 ?>
 
 <div id="em-component-vue"
-     component="formbuilder"
+     component="<?= $component ?>"
      prid="<?= JFactory::getApplication()->input->get('prid') ?>"
      index="<?= JFactory::getApplication()->input->get('index') ?>"
      cid="<?= JFactory::getApplication()->input->get('cid') ?>"
-     eval="<?= JFactory::getApplication()->input->get('eval') ?>"
+     eval="<?= JFactory::getApplication()->input->get('evaluation') ?>"
      actualLanguage="<?= $actualLanguage ?>"
      manyLanguages="<?= $many_languages ?>"
      coordinatorAccess="<?= $coordinator_access ?>"

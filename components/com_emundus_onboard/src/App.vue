@@ -29,6 +29,7 @@ import addcampaign from "./views/addCampaign"
 import addemail from "./views/addEmail"
 import addformnextcampaign from "./views/addFormNextCampaign"
 import formbuilder from "./views/formBuilder"
+import evaluationbuilder from "./views/evaluationBuilder"
 import settings from "./views/globalSettings"
 //
 
@@ -47,6 +48,7 @@ export default {
     addformnextcampaign,
     addemail,
     formbuilder,
+    evaluationbuilder,
     settings,
   },
   data: () => ({
