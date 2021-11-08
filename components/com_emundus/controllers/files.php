@@ -1434,6 +1434,22 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
+    public function getallfnums() 
+    {
+        $m_files = $this->getModel('Files');
+        $fnums = $m_files->getAllFnums();
+
+        $validFnums = array();
+        foreach ($fnums as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum) && $fnum != 'em-check-all-all' && $fnum != 'em-check-all') {
+                $validFnums[] = $fnum;
+            }
+        }
+
+        echo json_encode($validFnums);
+        exit();
+    }
+
     public function getcolumn($elts) {
         return(array) json_decode(stripcslashes($elts));
     }
@@ -4327,8 +4343,13 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         exit;
     }
+
+    public function getattachmentcategories() 
+    {
+        $m_files = $this->getModel('Files');
+        $categories = $m_files->getAttachmentCategories();
+
+        echo json_encode((array('status' => true, 'categories' => $categories)));
+        exit;
+    }
 }
-
-
-
-
