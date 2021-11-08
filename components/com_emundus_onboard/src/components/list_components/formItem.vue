@@ -17,7 +17,7 @@
               <p class="associated-campaigns" v-if="campaigns.length == 1">{{translations.campaignAssociated}} :</p>
               <p class="associated-campaigns" v-if="campaigns.length > 1">{{translations.campaignsAssociated}} :</p>
               <ul style="margin-top: 10px;margin-left: 0">
-                <li v-for="(campaign, index) in campaigns" class="campaigns-item">{{campaign.label}}</li>
+                <li v-for="(campaign, index) in campaigns" :key="index" class="campaigns-item">{{campaign.label}}</li>
               </ul>
             </div>
             <div class="d-flex">
@@ -126,11 +126,13 @@ export default {
   },
 
   created() {
-    list.getters.formsAccess[0].forEach(element => {
-      if(element === this.data.id){
-        this.updateAccess = true;
-      }
-    });
+    if (list.getters.formsAccess.length > 0) {
+      list.getters.formsAccess[0].forEach(element => {
+        if (element === this.data.id){
+          this.updateAccess = true;
+        }
+      });
+    }
 
     this.getAssociatedCampaigns();
   },
