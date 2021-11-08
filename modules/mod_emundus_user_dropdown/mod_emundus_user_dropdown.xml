@@ -47,6 +47,7 @@
 				<field name="show_registration" type="radio" default="0" label="COM_EMUNDUS_USERDROPDOWN_SHOW_REGISTRATION" description="COM_EMUNDUS_USERDROPDOWN_SHOW_REGISTRATION_DESC">
 					<option value="0">JNo</option>
 					<option value="1">JYes</option>
+					<option value="2">COM_EMUNDUS_USERDROPDOWN_SHOW_REGISTRATION_NEVER</option>
 				</field>
 
 				<field name="switch_profile_redirect" type="text" default="index.php" size="5" label="COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_REDIRECT" description="COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_REDIRECT_DESC" />
