@@ -2,7 +2,7 @@
 /**
  * Joomla! Content Management System
  *
- * @copyright  (C) 2017 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 namespace Joomla\CMS\Menu;
@@ -12,8 +12,7 @@ defined('JPATH_PLATFORM') or die;
 /**
  * Menu Tree class to represent a menu tree hierarchy
  *
- * @since       3.8.0
- * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
+ * @since  3.8.0
  */
 class Tree
 {
@@ -48,8 +47,6 @@ class Tree
 	 * Constructor
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function __construct()
 	{
@@ -63,8 +60,6 @@ class Tree
 	 * @return  Node
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function getRoot()
 	{
@@ -77,8 +72,6 @@ class Tree
 	 * @return  Node
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function getCurrent()
 	{
@@ -93,8 +86,6 @@ class Tree
 	 * @return  void
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function setCurrent($node)
 	{
@@ -112,8 +103,6 @@ class Tree
 	 * @return  Node
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function getParent($setCurrent = true)
 	{
@@ -135,8 +124,6 @@ class Tree
 	 * @return  Node  The root node
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function reset($clear = false)
 	{
@@ -160,8 +147,6 @@ class Tree
 	 * @return  Node  The newly added node
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function addChild(Node $node, $setCurrent = false)
 	{
@@ -182,8 +167,6 @@ class Tree
 	 * @return  string	CSS class name
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0
 	 */
 	public function getIconClass()
 	{
@@ -228,8 +211,6 @@ class Tree
 	 * @return  string[]
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0
 	 */
 	public function getCss()
 	{

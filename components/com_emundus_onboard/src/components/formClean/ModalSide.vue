@@ -221,7 +221,8 @@ export default {
             pid: this.element.id
           })
         }).then((result) => {
-          resolve(response.data.status);
+
+          resolve(result.data.status);
         });
       })
     },
@@ -239,6 +240,7 @@ export default {
             template: this.template,
           })
         }).then((response) => {
+
           resolve(response.data.scalar)
         });
       })
@@ -299,6 +301,7 @@ export default {
         method: "get",
         url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getPagesModel"
       }).then(response => {
+
         var BreakException = {};
         try {
           Object.values(response.data).forEach((model, index) => {

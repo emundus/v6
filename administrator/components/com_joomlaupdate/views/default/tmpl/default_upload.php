@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_joomlaupdate
  *
- * @copyright   (C) 2016 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -142,14 +142,6 @@ JFactory::getDocument()->addStyleDeclaration($css);
 				</td>
 				<td>
 					<?php echo $this->methodSelectUpload; ?>
-				</td>
-			</tr>
-			<tr id="upload_ftp_notice" <?php echo $this->ftpFieldsDisplay; ?>>
-				<td>
-					<?php echo JText::_('COM_JOOMLAUPDATE_VIEW_DEFAULT_FTP_NOTICE'); ?>
-				</td>
-				<td>
-					<?php echo JText::_('COM_JOOMLAUPDATE_VIEW_DEFAULT_FTP_NOTICE_MESSAGE'); ?>
 				</td>
 			</tr>
 			<tr id="upload_ftp_hostname" <?php echo $this->ftpFieldsDisplay; ?>>
