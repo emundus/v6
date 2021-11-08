@@ -62,7 +62,7 @@ export default {
     };
   },
   mounted() {
-    this.names = this.$store.state.filters.map((filter, index) => {
+    this.names = this.$store.state.filterBuilder.filters.map((filter, index) => {
       if (index == 0) {
         this.selectedFilter = filter.id;
       }
@@ -73,13 +73,13 @@ export default {
     });
 
     if (
-      this.$store.state.queryFilters.groups[this.group] &&
-      this.$store.state.queryFilters.groups[this.group].filters &&
-      this.$store.state.queryFilters.groups[this.group].filters[this.id]
+      this.$store.state.filterBuilder.queryFilters.groups[this.group] &&
+      this.$store.state.filterBuilder.queryFilters.groups[this.group].filters &&
+      this.$store.state.filterBuilder.queryFilters.groups[this.group].filters[this.id]
     ) {
-      this.selectedFilter = this.$store.state.queryFilters.groups[this.group].filters[this.id].id;
-      this.selectedAction = this.$store.state.queryFilters.groups[this.group].filters[this.id].action;
-      this.selectedValue = this.$store.state.queryFilters.groups[this.group].filters[this.id].value;
+      this.selectedFilter = this.$store.state.filterBuilder.queryFilters.groups[this.group].filters[this.id].id;
+      this.selectedAction = this.$store.state.filterBuilder.queryFilters.groups[this.group].filters[this.id].action;
+      this.selectedValue = this.$store.state.filterBuilder.queryFilters.groups[this.group].filters[this.id].value;
     } else {
       this.updateFilter();
     }
@@ -87,7 +87,7 @@ export default {
   methods: {
     updateFilter() {
       // update the actions and the values based on name selected
-      this.$store.dispatch("updateQueryFilters", {
+      this.$store.dispatch("filterBuilder/updateQueryFilters", {
         group: this.group,
         id: this.id,
         filter: {
@@ -98,7 +98,7 @@ export default {
       });
     },
     removeFilter() {
-      this.$store.dispatch("removeQueryFilter", {
+      this.$store.dispatch("filterBuilder/removeQueryFilter", {
         group: this.group,
         id: this.id,
       });
@@ -108,19 +108,19 @@ export default {
   },
   computed: {
     actions() {
-      const filter = this.$store.state.filters.find(
+      const filter = this.$store.state.filterBuilder.filters.find(
         (filter) => filter.id == this.selectedFilter
       );
       return filter ? filter.actions : [];
     },
     values() {
-      const filter = this.$store.state.filters.find(
+      const filter = this.$store.state.filterBuilder.filters.find(
         (filter) => filter.id == this.selectedFilter
       );
       return filter ? filter.values : [];
     },
     type() {
-      const filter = this.$store.state.filters.find(
+      const filter = this.$store.state.filterBuilder.filters.find(
         (filter) => filter.id == this.selectedFilter
       );
       return filter ? filter.type : null;

@@ -52,7 +52,7 @@ export default {
     };
   },
   mounted() {
-    this.filters = this.$store.state.queryFilters.groups[this.id] ? Object.entries(this.$store.state.queryFilters.groups[this.id].filters).map(filter => Number(filter[0])) : [];
+    this.filters = this.$store.state.filterBuilder.queryFilters.groups[this.id] ? Object.entries(this.$store.state.filterBuilder.queryFilters.groups[this.id].filters).map(filter => Number(filter[0])) : [];
   },
   methods: {
     addFilter() {
@@ -62,14 +62,14 @@ export default {
       this.filters = this.filters.filter(filter => filter !== filterId);
     },
     removeGroup() {
-      this.$store.dispatch("removeGroup", this.id);
+      this.$store.dispatch("filterBuilder/removeGroup", this.id);
 
       this.$emit("removeGroup", this.id);
     },
   },
   watch: {
     andOr() {
-      this.$store.dispatch("updateAndOr", {
+      this.$store.dispatch("filterBuilder/updateAndOr", {
         group: this.id,
         and_or: this.andOr,
       });

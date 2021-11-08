@@ -1,6 +1,5 @@
 <template>
   <div id="filter-builder">
-    <h2>Filtres</h2>
     <div class="filters">
       <div class="rows">
         <div class="relation">
@@ -87,12 +86,12 @@ export default {
       const response = await filterService.getFilters(this.type, this.id);
 
       if (response.status == true) {
-        this.$store.dispatch("setFilters", response.filters);
+        this.$store.dispatch("filterBuilder/setFilters", response.filters);
       }
     },
     async applyFilters() {
       // build query and send result ? or just send the filters ?
-      const response = await filterService.mountQuery(this.id, this.$store.state.queryFilters);
+      const response = await filterService.mountQuery(this.id, this.$store.state.filterBuilder.queryFilters);
 
       if (response.status == true) {
         this.$emit("applyFilters", response.query);
@@ -135,7 +134,7 @@ export default {
   },
   watch: {
     andOr() {
-      this.$store.dispatch("updateAndOr", {
+      this.$store.dispatch("filterBuilder/updateAndOr", {
         group: 0,
         and_or: this.andOr,
       });

@@ -31,6 +31,7 @@
               <span class="material-icons">search</span>
             </div>
             <div class="actions">
+              <FilterBuilder id="70"></FilterBuilder>
               <select name="category" @change="filterByCategory">
                 <option value="all">{{ translate('SELECT_CATEGORY') }}</option>
                 <option v-for="(category, key) in categories" :key="key" :value="key">{{ category }} </option>
@@ -172,8 +173,9 @@
 </template>
 
 <script>
-import AttachmentPreview from '../components/AttachmentPreview.vue'
-import AttachmentEdit from '../components/AttachmentEdit.vue'
+import AttachmentPreview from '../components/AttachmentPreview.vue';
+import AttachmentEdit from '../components/AttachmentEdit.vue';
+import FilterBuilder from '../components/FilterBuilder/FilterBuilder.vue';
 import attachmentService from '../services/attachment.js';
 import userService from '../services/user.js';
 import fileService from '../services/file.js';
@@ -184,7 +186,8 @@ export default {
   name: 'Attachments',
   components: {
     AttachmentPreview,
-    AttachmentEdit
+    AttachmentEdit,
+    FilterBuilder
   },
   props: {
     user: {
