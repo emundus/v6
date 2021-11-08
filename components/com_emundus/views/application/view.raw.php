@@ -27,7 +27,6 @@ require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'interview.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
 
-
 class EmundusViewApplication extends JViewLegacy {
     protected $_user = null;
     var $_db = null;
@@ -103,16 +102,27 @@ class EmundusViewApplication extends JViewLegacy {
                     break;
 
                 case 'assoc_files':
+                    $_mDecision = new EmundusModelDecision;
                     $show_related_files = $params->get('show_related_files', 0);
-                    $assoc_files = new stdClass();
-                    
-                    if($show_related_files && (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asManagerAccessLevel($this->_user->id))) {
+
+                    if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asManagerAccessLevel($this->_user->id)) {
                         $campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id']);
+
                         $assoc_files->camps = $campaignInfo;
                         $assoc_files->fnumInfos = $fnumInfos;
                         $assoc_files->fnum = $fnum;
+
+
+                    } else {
+                        $campaignInfo = $m_application->getCampaignByFnum($fnum);
                     }
+
+                    $assoc_files = new stdClass();
+                    $assoc_files->camps = $campaignInfo;
+                    $assoc_files->fnumInfos = $fnumInfos;
+                    $assoc_files->fnum = $fnum;
                     $this->assignRef('assoc_files', $assoc_files);
+
                     break;
 
                 case 'attachment':
