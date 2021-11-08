@@ -42,6 +42,8 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
         $fnum_infos = $_mFile->getFnumInfos($fnum);
 
         $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
         $getLastOpiQuery = $db->getQuery(true);
 
         try {
@@ -70,8 +72,11 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
 
                 if($checkFnum == null) {
                     // fnum does not exist, create new decision with opi
-                    $_rawData = array('time_date' => date('Y-m-d H:i:s'), 'student_id' => $fnum_infos['uid'], 'campaign_id' => $fnum_infos['id'], 'fnum' => $fnum, 'final_grade' => 2, 'code_opi' => $opi_full_code);
-                    $query = "INSERT INTO #__emundus_final_grade (time_date,user,campaign_id,fnum,final_grade) VALUE ( " . implode(',', $_rawData) . " )";
+                    $_rawData = array('time_date' => date('Y-m-d H:i:s'), 'user_id' => $fnum_infos['uid'], 'campaign_id' => $fnum_infos['id'], 'fnum' => $fnum, 'final_grade' => 2, 'code_opi' => $opi_full_code);
+
+                    $query->clear()->insert($db->quoteName('#__emundus_final_grade'))
+                        ->columns($db->quoteName(array_keys($_rawData)))
+                        ->values(implode(',', $db->quote(array_values($_rawData))));
 
                 } else {
                     /// fnum exist, update it with opi
@@ -87,8 +92,11 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
 
                 if($checkFnum == null) {
                     /// fnum does not exist --> create new decision with OPI
-                    $_rawData = array('time_date' => date('Y-m-d H:i:s'), 'student_id' => $fnum_infos['uid'], 'campaign_id' => $fnum_infos['id'], 'fnum' => $fnum, 'final_grade' => 2, 'code_opi' => $opi_full_code);
-                    $query = "INSERT INTO #__emundus_final_grade (time_date,user,campaign_id,fnum,final_grade,code_opi) VALUE (" . implode(',', $db->quote(array_values($_rawData))) . ")";
+                    $_rawData = array('time_date' => date('Y-m-d H:i:s'), 'user_id' => $fnum_infos['uid'], 'campaign_id' => $fnum_infos['id'], 'fnum' => $fnum, 'final_grade' => 2, 'code_opi' => $opi_full_code);
+
+                    $query->clear()->insert($db->quoteName('#__emundus_final_grade'))
+                        ->columns($db->quoteName(array_keys($_rawData)))
+                        ->values(implode(',', $db->quote(array_values($_rawData))));
                 } else {
                     /// fnum already exists, but code_opi does not exists (call another SQL query)
                     if (is_null($checkFnum->code_opi)) {
