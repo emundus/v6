@@ -19,5 +19,6 @@
         "vue"
     ],
     "rules": {
+        "indent": ["error", 2]
     }
 }

@@ -10,6 +10,9 @@ import { TableComponent, TableColumn } from 'vue-table-component';
 import Notifications from 'vue-notification';
 import velocity from 'velocity-animate';
 
+/** Import Mixins **/
+import mixin_errors from '../../../media/com_emundus/js/mixins/errors.js';
+
 Vue.directive('tooltip', VTooltip);
 Vue.directive('close-popover', VClosePopover);
 Vue.component('v-popover', VPopover);
@@ -19,6 +22,9 @@ Vue.component('table-column', TableColumn);
 Vue.use(Notifications, { velocity });
 Vue.use(VueJsModal);
 Vue.use(VueSpinnersCss);
+
+/** Use Mixins **/
+Vue.mixin(mixin_errors);
 
 import App from "./App";
 
