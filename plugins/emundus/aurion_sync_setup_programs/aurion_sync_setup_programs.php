@@ -20,7 +20,7 @@ class plgEmundusAurion_sync_setup_programs extends JPlugin {
 		$this->query = $this->db->getQuery(true);
 
 		jimport('joomla.log.log');
-		JLog::addLogger(array('text_file' => 'com_emundus.syncSetupPrograms.php'), JLog::ALL, array('com_emundus'));
+		JLog::addLogger(array('text_file' => 'com_emundus.syncSetupPrograms.php'), JLog::ALL, array('com_emundus_syncSetupPrograms'));
 	}
 
 	/**
@@ -81,7 +81,7 @@ class plgEmundusAurion_sync_setup_programs extends JPlugin {
 				try {
 					$db_au_prog_data = $this->db->loadAssocList($programme_id);
 				} catch (Exception $e) {
-					JLog::add('Could not get the program IDs from the prog table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+					JLog::add('Could not get the program IDs from the prog table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupPrograms');
 					return false;
 				}
 
@@ -95,7 +95,7 @@ class plgEmundusAurion_sync_setup_programs extends JPlugin {
 				try {
 					$db_em_prog_ids = $this->db->loadColumn();
 				} catch (Exception $e) {
-					JLog::add('Could not get the program IDs from the prog table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+					JLog::add('Could not get the program IDs from the prog table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupPrograms');
 					return false;
 				}
 
@@ -137,7 +137,7 @@ class plgEmundusAurion_sync_setup_programs extends JPlugin {
 					try {
 						$this->db->execute();
 					} catch (Exception $e) {
-						JLog::add('Could not INSERT data into jos_emundus_setup_programmes. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+						JLog::add('Could not INSERT data into jos_emundus_setup_programmes. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupPrograms');
 						return false;
 					}
 				}
@@ -170,7 +170,7 @@ class plgEmundusAurion_sync_setup_programs extends JPlugin {
 						try {
 							$this->db->execute();
 						} catch (Exception $e) {
-							JLog::add('Could not UPDATE data into jos_emundus_setup_programmes. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+							JLog::add('Could not UPDATE data into jos_emundus_setup_programmes. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupPrograms');
 							return false;
 						}
 					}
