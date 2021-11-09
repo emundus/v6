@@ -530,36 +530,35 @@ class EmundusControllerWebhook extends JControllerLegacy {
         header('Content-type: application/json');
         try {
             // controle des remontees --> Si is_up_banner = 0 or null, do not call api
-            $query = "SELECT    e_360_7747 as nom, e_360_7749 as prenom, e_360_7746 as civilite, e_360_7751 as dateNaissance,e_360_7755 as villeNaissance, label_fr as paysNaissance, 
-                                e_360_7752 as nationalite, ju.email as email,trim(e_362_7764) as telephone, e_362_7757 as adrPersoL1,e_362_7758 as adrPersoL2,e_362_7760 as adrPersoCodePost,
-                                e_362_7761 as adrPersoVille, e_362_7763 as adrPersoCodePays, jecc.fnum as noClientemundus, 'summer.school@sciencepo.fr' as emailAssistante, filename as photo, code_prg_banner as programme, semester as semestre,
-                        case
-                            when e.e_394_8112 = 'JYES' then 'Oui'
-                            when e.e_394_8112 = 'JNO' then 'Non'
-                            when e.e_394_8112 is null then 'Non'
-                        end as 'usagePhoto'
-                               
-                    from #__emundus_1001_00
-                    left join #__emundus_campaign_candidature jecc on #__emundus_1001_00.fnum = jecc.fnum
-                    left join data_country dc on #__emundus_1001_00.e_360_7754 = dc.id
-                    left join #__users ju on ju.id = jecc.applicant_id
-                    left join #__emundus_1001_01 j on #__emundus_1001_00.fnum = j.fnum
-                    left join #__emundus_1025_00 e on #__emundus_1001_00.fnum = e.fnum
-                    left join #__emundus_uploads jeu on #__emundus_1001_00.fnum = jeu.fnum
-                    left join #__emundus_setup_campaigns jesc on jecc.campaign_id = jesc.id
-                    where jecc.status = 4 
-                      and jesc.is_up_banner = 1
-                      and jeu.attachment_id = 10 
-                      and (jecc.id_banner is null or jecc.id_banner = '')
+            $query = "SELECT e_360_7747 AS Nom, e_360_7749 AS Prenom, e_360_7746 AS Civilite, e_360_7751 AS dateNaissance,e_360_7755 AS villeNaissance, dc.code AS paysNaissance,
+                                dn.code AS nationalite, code_prg_banner AS programme, semester AS semestre, ju.email AS email,trim(e_362_7764) AS telephone, e_362_7757 AS adrPersoL1,e_362_7758 AS adrPersoL2,e_362_7760 AS adrPersoCodePost,
+                                e_362_7761 AS adrPersoVille, dc1.code AS adrPersoCodePays, e.e_394_8112 AS usagePhoto, jecc.fnum AS noClientemundus, 'summer.school@sciencepo.fr' AS emailAssistante, filename AS photo
+
+                        FROM #__emundus_1001_00
+                        
+                        LEFT JOIN #__emundus_campaign_candidature jecc ON #__emundus_1001_00.fnum = jecc.fnum
+                        LEFT JOIN data_country dc ON #__emundus_1001_00.e_360_7754 = dc.id
+                        LEFT JOIN data_nationality dn ON #__emundus_1001_00.e_360_7752 = dn.id
+                        LEFT JOIN #__users ju ON ju.id = jecc.applicant_id
+                        LEFT JOIN #__emundus_1001_01 j ON #__emundus_1001_00.fnum = j.fnum
+                        LEFT JOIN data_country dc1 ON j.e_362_7763 = dc1.id
+                        LEFT JOIN #__emundus_1025_00 e ON #__emundus_1001_00.fnum = e.fnum
+                        LEFT JOIN #__emundus_uploads jeu ON #__emundus_1001_00.fnum = jeu.fnum
+                        LEFT JOIN #__emundus_setup_campaigns jesc ON jecc.campaign_id = jesc.id
+                        
+                        WHERE jecc.status = 4
+                            AND jesc.is_up_banner = 1
+                            AND jeu.attachment_id = 10
+                            AND (jecc.id_banner IS NULL OR jecc.id_banner = '')   
             ";
 
             $db->setQuery($query,0,$banner_limit);
 
             $raw = $db->loadObjectList();
 
-            $res->status = 'OK';
-            $res->count = sizeof($raw);
-            $res->message = '';
+            $res->Status = 'OK';
+            $res->Message = '';
+            $res->Count = sizeof($raw);
 
             /* encode 64 bit images + mapping prog..lbl, prog..session*/
             foreach($raw as $data) {
@@ -575,9 +574,21 @@ class EmundusControllerWebhook extends JControllerLegacy {
                 fclose($handle);
 
                 $data->photo = base64_encode($contents);
+
+                if($data->usagePhoto === 'JNO' or is_null($data->usagePhoto)) {
+                    $data->usagePhoto = 'Non';
+                } else {
+                    $data->usagePhoto = 'Oui';
+                }
+
+                if($data->Civilite === 'Femme') {
+                    $data->Civilite = 0;
+                } else {
+                    $data->Civilite = 1;
+                }
             }
 
-            $res->results = $raw;
+            $res->Results = $raw;
             echo json_encode((array)$res);
             exit;
         } catch(Exception $e) {
