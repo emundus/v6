@@ -773,6 +773,7 @@ class EmundusController extends JControllerLegacy {
 
             foreach ($files as $key => $file) {
 
+                $pageCount = 0;
                 if (empty($file['name'])) {
                     $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> try to upload empty file';
                     JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -994,7 +995,7 @@ class EmundusController extends JControllerLegacy {
                         $can_be_deleted = @$post['can_be_deleted_'.$attachments]!=''?$post['can_be_deleted_'.$attachments]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
                         $can_be_viewed = @$post['can_be_viewed_'.$attachments]!=''?$post['can_be_viewed_'.$attachments]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
 
-                        $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$fnumInfos['id'].', '.$db->Quote($fnum).'),';
+                        $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$fnumInfos['id'].', '.$db->Quote($fnum).', '.$pageCount.'),';
                         $nb++;
                     } else {
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> Cannot move file : '.$file['tmp_name'].' to '.$chemin.$user->id.DS.$paths;
@@ -1139,7 +1140,7 @@ class EmundusController extends JControllerLegacy {
         unlink($file['tmp_name']);
 
         if (!empty($query)) {
-            $query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum)
+            $query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum, pdf_pages_count)
                         VALUES '.substr($query,0,-1);
 
             try {
