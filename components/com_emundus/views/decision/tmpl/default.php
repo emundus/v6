@@ -110,7 +110,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 	var filterEmpty = '<?php echo JText::_('ALERT_EMPTY_FILTER');?>';
 	var nodelete = '<?php echo JText::_('CAN_NOT_DELETE_FILTER');?>';
 	var jtextArray = ['<?php echo JText::_('ENTER_COMMENT')?>',
-	                  '<?php echo JText::_('TITLE')?>',
+	                  '<?php echo JText::_('COM_EMUNDUS_FORM_TITLE')?>',
 	                  '<?php echo JText::_('COMMENT_SENT')?>'];
 	var loading = '<?php echo JURI::base().'media/com_emundus/images/icones/loader.gif'?>';
 	var loadingLine = '<?php echo JURI::base().'media/com_emundus/images/icones/loader-line.gif'?>';

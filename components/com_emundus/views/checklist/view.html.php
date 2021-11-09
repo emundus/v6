@@ -118,11 +118,11 @@ class EmundusViewChecklist extends JViewLegacy {
                 $is_other_campaign 	= $this->get('isOtherActiveCampaign');
 
                 if ($need == 0) {
-                    $title = JText::_('APPLICATION_COMPLETED_TITLE');
-                    $text = JText::_('APPLICATION_COMPLETED_TEXT');
+                    $title = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_COMPLETED_TITLE');
+                    $text = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_COMPLETED_TEXT');
                 } else {
-                    $title = JText::_('APPLICATION_INCOMPLETED_TITLE');
-                    $text = JText::_('APPLICATION_INCOMPLETED_TEXT');
+                    $title = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_INCOMPLETED_TITLE');
+                    $text = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_INCOMPLETED_TEXT');
                 }
 
                 if ($notify_complete_file) {

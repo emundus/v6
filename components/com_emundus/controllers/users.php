@@ -88,7 +88,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$user = clone(JFactory::getUser(0));
 
 		if (preg_match('/^[0-9a-zA-Z\_\@\-\.]+$/', $username) !== 1) {
-			echo json_encode((object)array('status' => false, 'msg' => JText::_('USERNAME_NOT_GOOD')));
+			echo json_encode((object)array('status' => false, 'msg' => JText::_('COM_EMUNDUS_USERS_ERROR_USERNAME_NOT_GOOD')));
 			exit;
 		}
 		if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $email) !== 1) {

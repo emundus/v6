@@ -79,7 +79,7 @@
 						</th>
 						<th>
 							<input type="checkbox" class="em-modal-check em-check-all" name="d-check-all" id="d-check-all" checked style="width: 20px !important"/>
-							<label for="d-check-all"><?php echo JText::_('DELETE')?></label>
+							<label for="d-check-all"><?php echo JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></label>
 						</th>
 					</tr>
 					</thead>

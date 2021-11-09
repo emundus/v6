@@ -72,7 +72,7 @@
                                         <th><?= JText::_('CREATE')?></th>
                                         <th><?= JText::_('RETRIEVE')?></th>
                                         <th><?= JText::_('UPDATE')?></th>
-                                        <th><?= JText::_('DELETE')?></th>
+                                        <th><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
                                     <?php endforeach;?>
                                     <?php break; endforeach;?>
                             </tr>
@@ -190,7 +190,7 @@
 							<th><?= JText::_('CREATE')?></th>
 							<th><?= JText::_('RETRIEVE')?></th>
 							<th><?= JText::_('UPDATE')?></th>
-							<th><?= JText::_('DELETE')?></th>
+							<th><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
 						<?php endforeach;?>
 						<?php break; endforeach;?>
 				</tr>

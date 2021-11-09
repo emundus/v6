@@ -191,8 +191,8 @@ class EmundusHelperEmails {
 
             $email .= '<fieldset>
 				<legend>
-					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_APPLICATION_RESULT').'::'.JText::_('EMAIL_APPLICATION_RESULT_TIP').'">
-						<img src="'.JURI::base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_TO').'"/> '.JText::_('EMAIL_TO').' '.$applicant->name.' &bull; <i>'.$applicant->email.'</i>
+					<span class="editlinktip hasTip" title="'.JText::_('COM_EMUNDUS_EMAILS_EMAIL_APPLICATION_RESULT').'::'.JText::_('COM_EMUNDUS_EMAILS_EMAIL_APPLICATION_RESULT_TIP').'">
+						<img src="'.JURI::base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('COM_EMUNDUS_EMAILS_EMAIL_TO').'"/> '.JText::_('COM_EMUNDUS_EMAILS_EMAIL_TO').' '.$applicant->name.' &bull; <i>'.$applicant->email.'</i>
 					</span>
 				</legend>
 				<div>';
@@ -261,7 +261,7 @@ class EmundusHelperEmails {
             $email .= '</select>
 						<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
 						<select name="mail_to[]" type="text" class="inputbox" id="mail_to" size="100" style="width: 100% !important;" multiple="multiple">
-							<option value="">'.JText::_('EMAIL_TO').'</option>';
+							<option value="">'.JText::_('COM_EMUNDUS_EMAILS_EMAIL_TO').'</option>';
             foreach ($users as $expert) {
                 $email .= '<option value="'.$expert['email'].'">'.$expert['first_name'].' '.$expert['last_name'].((!empty($expert['group']))?' ('.JText::_($expert['group']).')':'').'</option>';
             }
@@ -583,7 +583,7 @@ class EmundusHelperEmails {
                 }
             }
         }
-        $mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent&desc=2', JText::_('REPORTS_MAILS_SENT').$info, 'message');
+        $mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent&desc=2', JText::_('COM_EMUNDUS_EMAILS_REPORTS_MAILS_SENT').$info, 'message');
 
     }
 
@@ -760,7 +760,7 @@ class EmundusHelperEmails {
                 }
             }
         }
-        $mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent', JText::_('REPORTS_MAILS_SENT').$info, 'message');
+        $mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent', JText::_('COM_EMUNDUS_EMAILS_REPORTS_MAILS_SENT').$info, 'message');
     }
 }
 ?>

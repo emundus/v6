@@ -28,7 +28,7 @@ if (count($this->files)>0 && isset($this->files) && is_array($this->files)) {
         <input type="checkbox" id="checkall" onClick="javascript:check_all()"/>
         <?php echo JHTML::_('grid.sort', JText::_('#'), 'user_id', $this->lists['order_Dir'], $this->lists['order']); ?>
         </th>
-        <th><?php echo JText::_('NAME'); ?></th>
+        <th><?php echo JText::_('COM_EMUNDUS_FORM_NAME'); ?></th>
 		<th><?php echo JHTML::_('grid.sort', JText::_('FILE'), 'filename', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 	</tr>
     </thead>
@@ -85,7 +85,7 @@ if (count($this->listFiles)>0 && isset($this->listFiles) && is_array($this->list
         <input type="checkbox" id="checkall" onClick="javascript:check_all()"/>
         <?php echo JHTML::_('grid.sort', JText::_('#'), 'user_id', $this->lists['order_Dir'], $this->lists['order']); ?>
         </th>
-        <th><?php echo JText::_('NAME'); ?></th>
+        <th><?php echo JText::_('COM_EMUNDUS_FORM_NAME'); ?></th>
 		<th><?php echo JHTML::_('grid.sort', JText::_('FILE'), 'filename', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 	</tr>
     </thead>

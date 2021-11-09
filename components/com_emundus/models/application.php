@@ -3922,7 +3922,7 @@ class EmundusModelApplication extends JModelList
                 $nbuploads++;
             }
         }
-        $titleupload = $nbuploads > 0 ? JText::_('FILES_UPLOADED') : JText::_('FILE_UPLOADED');
+        $titleupload = $nbuploads > 0 ? JText::_('COM_EMUNDUS_ATTACHMENTS_FILES_UPLOADED') : JText::_('COM_EMUNDUS_ATTACHMENTS_ERROR_FILE_UPLOADED');
         $html .= '<h2>' . $titleupload . ' : ' . $nbuploads . '</h2>';
 
         return $html;
@@ -3949,7 +3949,7 @@ class EmundusModelApplication extends JModelList
                 $path_href = JURI::base() . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
                 $html .= '<li><b>' . $upload->value . '</b>';
                 $html .= '<ul>';
-                $html .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . JText::_('DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
+                $html .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . JText::_('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
                 $html .= '</ul>';
                 $html .= '</li>';
             }

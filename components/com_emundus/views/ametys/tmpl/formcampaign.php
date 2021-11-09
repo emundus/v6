@@ -17,7 +17,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 <form class="ui form">
   <div class="two fields">
   	<div class="field">
-	    <label><?php echo JText::_('SCHOOLYEAR'); ?></label>
+	    <label><?php echo JText::_('COM_EMUNDUS_AMETYS_SCHOOLYEAR'); ?></label>
 	    <input id="year" type="text" placeholder="<?php echo date('Y'); ?>" value="<?php echo date('Y'); ?>">
 	</div>
 	<div class="field">
@@ -33,7 +33,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
   </div>
   
   <div class="field">
-    <label><?php echo JText::_('SHORT_DESC'); ?></label>
+    <label><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_SHORT_DESC'); ?></label>
     <textarea id='short_description'></textarea>
   </div>
 

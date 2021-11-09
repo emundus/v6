@@ -188,7 +188,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
                         $id = $m_application->uploadAttachment($attachment);
                     } else {
-                        $msg .= JText::_('COM_EMUNDUS_FILETYPE_INVALIDE');
+                        $msg .= JText::_('COM_EMUNDUS_ATTACHMENTS_FILETYPE_INVALIDE');
                     }
 
                     $data .= '"message":"'.$msg.'",';

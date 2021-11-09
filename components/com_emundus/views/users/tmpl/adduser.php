@@ -386,7 +386,7 @@ if ($s == '') {
 			var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/;
 			if ($(this).val().length == 0 || !re.test($(this).val())) {
 				$(this).parent('.form-group').addClass('has-error');
-				$(this).after('<span class="help-block">'+Joomla.JText._('NOT_A_VALID_EMAIL')+'</span>');
+				$(this).after('<span class="help-block">'+Joomla.JText._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL')+'</span>');
 			}
 		});
 
@@ -400,7 +400,7 @@ if ($s == '') {
 			if (!re.test($('#login').val())) {
 				if (!$(this).parent('.form-group').hasClass('has-error')) {
 					$(this).parent('.form-group').addClass('has-error');
-					$(this).after('<span class="help-block">'+Joomla.JText._('NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER')+'</span>');
+					$(this).after('<span class="help-block">'+Joomla.JText._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER')+'</span>');
 				}
 			} else {
 				$(this).parent('.form-group').removeClass('has-error');

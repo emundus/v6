@@ -85,7 +85,7 @@
 					</th>
 					<th>
 						<input type="checkbox" class="em-modal-check em-check-all" name="d-check-all" id="d-check-all"/>
-						<label for="d-check-all"><?= JText::_('DELETE'); ?></label>
+						<label for="d-check-all"><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE'); ?></label>
 					</th>
 				</tr>
 				</thead>

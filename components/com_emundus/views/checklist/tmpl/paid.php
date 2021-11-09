@@ -21,7 +21,7 @@ if (!empty($this->applications)) : ?>
 
     <div class="col-xs-6 col-md-4">
       <p>
-        <?php echo JText::_('FILE_NUMBER'); ?> : <i><?php echo $application->fnum; ?></i>
+        <?php echo JText::_('COM_EMUNDUS_FILE_NUMBER'); ?> : <i><?php echo $application->fnum; ?></i>
       </p>
 
       <a id='print' class="btn btn-info em-container-paid-print" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=pdf'); ?>" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?> "> <i class="icon-print"></i> <?php echo JText::_('PRINT_APPLICATION_FILE'); ?></a>

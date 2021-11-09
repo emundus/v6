@@ -41,7 +41,7 @@
 								<label for="u-check-all"><?php echo JText::_('UPDATE')?></label>
 							</th>
 							<th>
-								<label for="d-check-all"><?php echo JText::_('DELETE')?></label>
+								<label for="d-check-all"><?php echo JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></label>
 							</th>
 						</tr>
 						</thead>

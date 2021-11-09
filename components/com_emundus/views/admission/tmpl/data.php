@@ -144,7 +144,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                                 <span class="glyphicon glyphicon-share-alt em-field" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
                                             <?php elseif ($value->type == 'fileupload') :?>
                                                 <?php if (!empty($value->val) && $value->val != "/") :?>
-                                                    <a href="<?php echo $value->val ?>" target="_blank"> <?php echo JText::_('LINK_TO_DOWNLOAD'); ?> <span class="glyphicon glyphicon-save"></span> </a>
+                                                    <a href="<?php echo $value->val ?>" target="_blank"> <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD'); ?> <span class="glyphicon glyphicon-save"></span> </a>
                                                 <?php else :?>
                                                     <p> No File </p>
                                                 <?php endif; ?>

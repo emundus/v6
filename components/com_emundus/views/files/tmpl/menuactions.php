@@ -81,7 +81,7 @@ endif;
                 <table style="width: 95%">
                     <tr>
                         <td>
-                            <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('TITLE');?></h4>
+                            <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('COM_EMUNDUS_FORM_TITLE');?></h4>
                         </td>
                         <td style="text-align: right;" id="can-val">
                             <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>

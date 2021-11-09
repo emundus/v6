@@ -70,7 +70,7 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
                                         </button>
                                         <?php if (($this->_user->id == $comment->user_id && EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum)) || EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $this->fnum)) :?>
                                             <div class="action">
-                                                <button type="button" class="btn btn-danger btn-xs delete-comment" title="<?php echo JText::_('DELETE');?>">
+                                                <button type="button" class="btn btn-danger btn-xs delete-comment" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_DELETE');?>">
                                                     <span class="glyphicon glyphicon-trash"></span>
                                                 </button>
                                             </div>
@@ -155,7 +155,7 @@ $(document).on('click', '.comments .delete-comment', function(e) {
 });
 
 var textArea = '<hr><div id="form" class="em-decision-form-content">' +
-                    '<input placeholder="<?php echo JText::_('TITLE');?>" class="form" id="comment-title" type="text" style="height:50px !important;width:100% !important;" value="" name="comment-title"/><br>' +
+                    '<input placeholder="<?php echo JText::_('COM_EMUNDUS_FORM_TITLE');?>" class="form" id="comment-title" type="text" style="height:50px !important;width:100% !important;" value="" name="comment-title"/><br>' +
                     '<textarea placeholder="<?php echo JText::_('ENTER_COMMENT');?>" class="form" style="height:200px !important;width:100% !important;"  id="comment-body"></textarea><br>' +
                 '<button type="button" class="btn btn-success"> <?php echo JText::_('ADD_COMMENT');?> </button></div>';
 
@@ -209,7 +209,7 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
                                             '<div class="hidden cid">'+result.id+'</div>'+
                                         '</button>'+
                                         '<div class="action">'+
-                                            '<button type="button" class="btn btn-danger btn-xs delete-comment" title="<?php echo JText::_('DELETE');?>">'+
+                                            '<button type="button" class="btn btn-danger btn-xs delete-comment" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_DELETE');?>">'+
                                                 '<span class="glyphicon glyphicon-trash"></span>'+
                                             '</button>'+
                                         '</div>'+

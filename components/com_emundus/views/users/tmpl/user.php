@@ -195,7 +195,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
     </div>
 
 <?php else :?>
-	<?php echo JText::_('NO_RESULT'); ?>
+	<?php echo JText::_('COM_EMUNDUS_NO_RESULT'); ?>
 <?php endif; ?>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script>

@@ -1,7 +1,7 @@
-<?php 
-defined('_JEXEC') or die('Restricted access'); 
+<?php
+defined('_JEXEC') or die('Restricted access');
 
-JHTML::_('behavior.modal'); 
+JHTML::_('behavior.modal');
 JHTML::stylesheet( 'emundus.css', 'media/com_emundus/css/' );
 
 $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
@@ -23,7 +23,7 @@ $user = JFactory::getUser();
 	 <input type="hidden" name="filter_order" value="<?php echo $this->lists['filter_order']; ?>" />
 	 <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['filter_order_Dir']; ?>" />
 	 <input type="hidden" name="itemid" value="<?php echo $itemid; ?>"/>
-<?php 
+<?php
 if(isset($this->active_campaigns)&&!empty($this->active_campaigns)){ ?>
  <table id="userlist" width="100%" class="em_campaigns_form_table">
   <thead>
@@ -32,7 +32,7 @@ if(isset($this->active_campaigns)&&!empty($this->active_campaigns)){ ?>
   </tr>
   <tr>
 <?php
- foreach ($this->active_campaigns[0] as $key=>$value){ 
+ foreach ($this->active_campaigns[0] as $key=>$value){
 	if($key == 'id'){
 		echo '<th align="center" style="font-size:9px;"><input type="checkbox" id="checkall" class="emundusraw" onClick="check_all(\'ud\',this)" /></th>';
 	}else
@@ -41,27 +41,27 @@ if(isset($this->active_campaigns)&&!empty($this->active_campaigns)){ ?>
 ?>
   </tr>
   </thead>
-  <tbody><?php 
-  $i=1; $j=0; 
+  <tbody><?php
+  $i=1; $j=0;
   foreach($this->active_campaigns as $ac) { ?>
 		<tr class="row<?php echo $j++%2; ?>">
-		<?php 
-	foreach ($ac as $key=>$value){ 
+		<?php
+	foreach ($ac as $key=>$value){
 	if($key=='id'){ ?>
-		 <td> <?php 
-		 echo $i+$limitstart; $i++; 
+		 <td> <?php
+		 echo $i+$limitstart; $i++;
 		 echo '<input id="cb'.$value.'" type="checkbox" name="ud[]" value="'.$value.'"/>';
-		 ?> 
-		 </td><?php 	
-	}elseif($key == 'profile'){ 
+		 ?>
+		 </td><?php
+	}elseif($key == 'profile'){
 		 echo '<td>';
 		 echo $this->profile[$evalu['user_id']];
 		 echo '</td>';
 	}else
 		echo '<td>'.$value.'</td>';
-	} 
+	}
 ?>
-	</tr><?php 
+	</tr><?php
   } ?>
   </tbody>
   <tfoot>
@@ -71,10 +71,10 @@ if(isset($this->active_campaigns)&&!empty($this->active_campaigns)){ ?>
   </tfoot>
  </table>
 <?php } else { ?>
-<h2><?php echo JText::_('NO_RESULT'); ?></h2>
-<?php 
+<h2><?php echo JText::_('COM_EMUNDUS_NO_RESULT'); ?></h2>
+<?php
 @$j++;
-} 
+}
 ?>
 
 <script>
@@ -103,24 +103,24 @@ function tableOrdering( order, dir, task ) {
 }
 
 function OnSubmitForm() {
-	if(typeof document.pressed !== "undefined") { 
+	if(typeof document.pressed !== "undefined") {
 		var button_name=document.pressed.split("|");
 		// alert(button_name[0]);
 		switch(button_name[0]) {
-			case 'validate': 
+			case 'validate':
 				document.adminForm.action ="index.php?option=com_emundus&controller=campaign&task=setcampaign&uid="+button_name[1]+"&limitstart=<?php echo $ls; ?>";
 			break;
-			case 'search_button': 
+			case 'search_button':
 				document.adminForm.action ="index.php?option=com_emundus&view=campaign";
 			break;
-			case 'clear_button': 
+			case 'clear_button':
 				document.adminForm.action ="index.php?option=com_emundus&controller=campaign&task=clear";
 			break;
 			default: return false;
 		}
 		return true;
 	}
-} 
+}
 <?php JHTML::script( 'emundus.js', 'media/com_emundus/js/' ); ?>
 </script>
 </div>

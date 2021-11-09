@@ -131,9 +131,9 @@ $email_list = array();
                 <div class="upload-file em-form-attachments-uploadFile" id="upload_file">
 
                     <div class="file-browse">
-                        <span id="em-filename"><?= JText::_('FILE_NAME'); ?></span>
+                        <span id="em-filename"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_FILE_NAME'); ?></span>
 
-                        <label for="em-file_to_upload" type="button"><?= JText::_('SELECT_FILE_TO_UPLOAD') ?>
+                        <label for="em-file_to_upload" type="button"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SELECT_FILE_TO_UPLOAD') ?>
                             <input type="file" id="em-file_to_upload" onChange="addFile();">
                         </label>
                     </div>

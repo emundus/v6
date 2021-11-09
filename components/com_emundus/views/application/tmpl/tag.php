@@ -53,7 +53,7 @@ JFactory::getSession()->set('application_layout', 'tag');
                                         <div class="comment-text em-tags-action">
                                             <h2><span class="label <?php echo $tag['class']; ?>" style="float:unset"><?php echo $tag['label']; ?></span>
                                                 <?php if($this->_user->id == $tag['user_id'] || EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $this->fnum)):?>
-                                                        <button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">
+                                                        <button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_DELETE');?>">
                                                             <span class="glyphicon glyphicon-trash"></span>
                                                         </button>
                                                 <?php endif; ?>

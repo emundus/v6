@@ -372,7 +372,7 @@ class EmundusViewFiles extends JViewLegacy {
 				    }
 
 			    } else {
-				    $data = JText::_('NO_RESULT');
+				    $data = JText::_('COM_EMUNDUS_NO_RESULT');
 			    }
 
 				/* Get the values from the state object that were inserted in the model's construct function */

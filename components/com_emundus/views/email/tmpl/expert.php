@@ -23,7 +23,7 @@ JHTML::stylesheet('media/com_emundus/css/emundus_files.css');
 $document->addScript('media/com_emundus/js/webtoolkit.aim.js');
 
 $current_user = JFactory::getUser();
-    
+
 $itemid = $jinput->get->getInt('Itemid');
 
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
@@ -54,14 +54,14 @@ $email = $m_emails->getEmail($this->default_email_tmpl);
 <?php
 $files = [];
 foreach ($fnums as $fnum => $fnumInfo) {
-    
+
 	$attachments = $m_evaluations->getEvaluationDocuments($fnum, $fnumInfo['campaign_id'], $doc_to_attach);
-	
+
 	if (empty($attachments)) {
-	    
+
 		require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
         $files[$fnum] = letter_pdf($fnumInfo['applicant_id'], $fnumInfo['step'], $fnumInfo['training'], $fnumInfo['campaign_id'], 0, "F", $fnum);
-	
+
 	} else {
 
 		if (!empty($attachments)) {
@@ -130,8 +130,8 @@ if (!empty($attachment_types)) :?>
 <?php
 $files_path = "";
 if (!empty($files)) {
-    echo '<fieldset><legend>'.JText::_('ATTACHMENTS').'</legend>';
-    echo '<label><input type="checkbox" name="delete_attachment_box" id="delete_attachment_box" value="1"> '.JText::_('DELETE_ATTACHMENT_ONCE_MESSAGE_SENT').'</label>';
+    echo '<fieldset><legend>'.JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS').'</legend>';
+    echo '<label><input type="checkbox" name="delete_attachment_box" id="delete_attachment_box" value="1"> '.JText::_('COM_EMUNDUS_EXPERT_DELETE_ATTACHMENT_ONCE_MESSAGE_SENT').'</label>';
     echo "<hr>";
 
     foreach ($files as $fnum => $file_for_fnum) {
@@ -184,7 +184,7 @@ document.getElementById("adminForm").addEventListener("submit", event => {
 
         var btn = document.getElementsByName(document.pressed);
         btn[0].disabled = true;
-        btn[0].value = "<?= JText::_('SENDING_EMAIL'); ?>";
+        btn[0].value = "<?= JText::_('COM_EMUNDUS_EMAILS_SENDING_EMAIL'); ?>";
 
         var delete_attachment = 0;
         if (document.getElementById('delete_attachment_box').checked) {

@@ -463,7 +463,7 @@ class EmundusControllerFiles extends JControllerLegacy
         echo json_encode((object)(array('status' => true,
             'tags' => $tags,
             'tag' => JText::_('TAGS'),
-            'select_tag' => JText::_('PLEASE_SELECT_TAG'))));
+            'select_tag' => JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG'))));
         exit;
     }
 
@@ -1599,7 +1599,7 @@ class EmundusControllerFiles extends JControllerLegacy
             if ($anonymize_data) {
                 $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('PROGRAMME')."\t";
             } else {
-                $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('PROGRAMME')."\t";
+                $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('COM_EMUNDUS_FORM_LAST_NAME')."\t".JText::_('COM_EMUNDUS_FORM_FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('PROGRAMME')."\t";
             }
 
             $nbcol = 6;
@@ -2601,10 +2601,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('STATUS'));
         $objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
         $i++;
-        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('LAST_NAME'));
+        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_FORM_LAST_NAME'));
         $objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
-        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('FIRST_NAME'));
+        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_FORM_FIRST_NAME'));
         $objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
         $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('EMAIL'));
@@ -3185,7 +3185,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     }
                 } else {
                     $res->status = false;
-                    $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
+                    $res->msg = JText::_('COM_EMUNDUS_LETTERS_ERROR_CANNOT_GENERATE_FILE');
                 }
 
                 echo json_encode($res);

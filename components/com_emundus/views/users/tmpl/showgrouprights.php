@@ -40,7 +40,7 @@ span:hover {
 						<label for="u-check-all"><?= JText::_('UPDATE'); ?></label>
 					</th>
 					<th>
-						<label for="d-check-all"><?= JText::_('DELETE'); ?></label>
+						<label for="d-check-all"><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE'); ?></label>
 					</th>
 				</tr>
 				</thead>

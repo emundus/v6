@@ -232,7 +232,7 @@ class EmundusHelperMessages {
                 }
             }
         }
-		$mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent', JText::_('REPORTS_MAILS_SENT').$info, 'message');
+		$mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent', JText::_('COM_EMUNDUS_EMAILS_REPORTS_MAILS_SENT').$info, 'message');
 	}
 }
 ?>

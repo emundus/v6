@@ -1147,7 +1147,7 @@ class EmundusHelperFiles
         }
         $filters .= '</select>
 
-						<button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><i class="fas fa-trash"></i></button></div>
+						<button class="btn btn-xs" id="del-filter" title="'.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'"><i class="fas fa-trash"></i></button></div>
                             <div class="alert alert-dismissable alert-success em-alert-filter" id="saved-filter">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                                 <strong>'.JText::_('FILTER_SAVED').'</strong>
@@ -1247,7 +1247,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $profile_user .= '<div class="form-group em-filter" id="profile_users">
 									<div class="em_label">
-                                    	<label class="control-label em-filter-label">'.JText::_('PROFILE_FILTER').'</label>
+                                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_USERS_PROFILE_FILTER').'</label>
                                     </div>';
             }
 
@@ -1312,7 +1312,7 @@ class EmundusHelperFiles
             if (!$hidden) {
 	            $group_eval .= '<div class="em_filters em-filter" id="gp_evaluator">
 									<div class="em_label">
-                                   		<label class="control-label em-filter-label">' . JText::_('GROUP_FILTER') . '</label>
+                                   		<label class="control-label em-filter-label">' . JText::_('COM_EMUNDUS_USERS_GROUP_FILTER') . '</label>
                                     </div>
                                     <div class="em_filtersElement">';
             }
@@ -1350,7 +1350,7 @@ class EmundusHelperFiles
 
             if (!$hidden) {
 	            $final_grade .= '<div class="em_filters em-filter" id="finalgrade">
-                                    <div class="em_label"><label class="control-label">' . JText::_('FINAL_GRADE_FILTER') . '</label></div>
+                                    <div class="em_label"><label class="control-label">' . JText::_('COM_EMUNDUS_USERS_FINAL_GRADE_FILTER') . '</label></div>
                                     <div class="em_filtersElement">';
             }
 
@@ -1380,7 +1380,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $missing_doc .= '<div class="em_filters em-filter" id="missing_doc">
                                     <div class="em_label">
-                                        <label>'.JText::_('MISSING_DOC').'</label>
+                                        <label>'.JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC').'</label>
                                     </div>
                                     <div class="em_filtersElement">';
             }
@@ -1508,7 +1508,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $schoolyear .= '<div id="schoolyear" class="em-filter">
                                     <div class="em_label">
-                                    	<label class="control-label em-filter-label">'.JText::_('SCHOOLYEARS').' &ensp;<a href="javascript:clearchosen(\'#select_multiple_schoolyears\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a></label>
+                                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_PROFILES_SCHOOLYEARS').' &ensp;<a href="javascript:clearchosen(\'#select_multiple_schoolyears\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a></label>
                                     </div>
                                    <div class="em_filtersElement">';
             }
@@ -1972,7 +1972,7 @@ class EmundusHelperFiles
             $adv_filter .= '</div>
 
             <div class="em_save_filter">
-                <input value="'.JText::_('SAVE_FILTER').'" class="btn btn-sm btn-warning" title="'.JText::_('SAVE_FILTER').'" type="button" id="save-filter">
+                <input value="'.JText::_('COM_EMUNDUS_FILES_SAVE_FILTER').'" class="btn btn-sm btn-warning" title="'.JText::_('COM_EMUNDUS_FILES_SAVE_FILTER').'" type="button" id="save-filter">
             </div>
             </div>';
 

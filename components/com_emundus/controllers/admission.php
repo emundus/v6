@@ -330,7 +330,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
             'create'        => JText::_('CREATE'),
             'retrieve'      => JText::_('RETRIEVE'),
             'update'        => JText::_('UPDATE'),
-            'delete'        => JText::_('DELETE')
+            'delete'        => JText::_('COM_EMUNDUS_ACTIONS_DELETE')
         ]));
         exit;
     }
@@ -344,7 +344,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
             'status'        => true,
             'tags'          => $tags,
             'tag'           => JText::_('TAGS'),
-            'select_tag'    => JText::_('PLEASE_SELECT_TAG')
+            'select_tag'    => JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG')
         ]));
         exit;
     }
@@ -901,7 +901,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
         // On traite les en-têtes
         if ($start == 0) {
-            $line=JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('CAMPAIGN')."\t";
+            $line=JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('COM_EMUNDUS_FORM_LAST_NAME')."\t".JText::_('COM_EMUNDUS_FORM_FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('CAMPAIGN')."\t";
             $nbcol = 6;
 
             foreach ($ordered_elements as $fKey => $fLine) {
@@ -1260,10 +1260,10 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('STATUS'));
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
         $i++;
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('LAST_NAME'));
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_FORM_LAST_NAME'));
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('FIRST_NAME'));
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_FORM_FIRST_NAME'));
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('EMAIL'));

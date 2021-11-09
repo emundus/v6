@@ -731,7 +731,7 @@ class EmundusController extends JControllerLegacy {
 	            echo '{"aid":"0","status":false,"message":"'.$error.' -> empty $_FILES" }';
             }
 
-            JFactory::getApplication()->enqueueMessage(JText::_('FILE_TOO_BIG'), 'error');
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_ATTACHMENTS_ERROR_FILE_TOO_BIG'), 'error');
             $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid);
             return false;
         }
@@ -796,7 +796,7 @@ class EmundusController extends JControllerLegacy {
                         $cpt = $db->loadResult();
 
                         if ($cpt >= $attachment['nbmax']) {
-                            $error = JText::_('MAX_ALLOWED').$attachment['nbmax'];
+                            $error = JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').$attachment['nbmax'];
                             if ($format == "raw") {
                                 echo '{"aid":"0","status":false,"message":"'.$error.'" }';
                             } else {
@@ -1105,7 +1105,7 @@ class EmundusController extends JControllerLegacy {
                 $id = $db->insertid();
 
                 if ($format == "raw") {
-                    echo '{"id":"'.$id.'","status":true, "message":"'.JText::_('DELETE').'"}';
+                    echo '{"id":"'.$id.'","status":true, "message":"'.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'"}';
                 } else {
                     JFactory::getApplication()->enqueueMessage($nb.($nb>1?' '.JText::_("FILES_BEEN_UPLOADED"):' '.JText::_("FILE_BEEN_UPLOADED")), 'message');
                     $this->setRedirect($url);

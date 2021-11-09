@@ -21,14 +21,14 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
 ?>
 
 <!--<div class="title" id="em_application_attachments">
-    <i class="dropdown icon"></i> <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
+    <i class="dropdown icon"></i> <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
 </div>-->
 <div class="row">
     <div class="panel panel-default widget em-container-attachment em-container-form">
         <div class="panel-heading em-container-form-heading">
             <h3 class="panel-title">
             <span class="glyphicon glyphicon-paperclip"></span>
-                <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
+                <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
                 <?php if ($can_export && count($this->userAttachments) > 0) :?>
                     <button class="btn btn-default" id="em_export_pdf"  target="_blank" type="button" data-toggle="tooltip" data-placement="right" title="<?= JText::_('EXPORT_FILE_ATTACHMENT'); ?>">
                         <span class="glyphicon glyphicon-save" ></span>
@@ -50,11 +50,11 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
             <div class="em-utilitize">
                 <div class="em-select-all-files">
                     <input type="checkbox" name="em_application_attachments_all" id="em_application_attachments_all" />
-                    <p><?= JText::_('SELECT_ALL_FILES'); ?></p>
+                    <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SELECT_ALL_FILES'); ?></p>
                 </div>
 
                 <div class="input-group em-searchbar">
-                    <input type="text" id="em-searchbar" class="form-control" placeholder="<?= JText::_('KEYWORDS'); ?>">
+                    <input type="text" id="em-searchbar" class="form-control" placeholder="<?= JText::_('COM_EMUNDUS_ATTACHMENTS_KEYWORDS'); ?>">
                     <span class="input-group-btn">
                         <button id="btn-em-searchbar" class="btn btn-default" type="button"><?= JText::_('SEARCH'); ?></button>
                     </span>
@@ -82,7 +82,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                     <tr id="em-tr-collapse<?= $new_cat_id; ?>" class="em-tr-collapse">
                                         <th><?= $checkbox; ?> #
                                         </th>
-                                        <div class="tooltipSelectAttachments selector<?= $new_cat_id; ?>"><p><?= JText::_('COM_EMUNDUS_SELECT_FILES_OF_CATEGORY'); ?></p></div>
+                                        <div class="tooltipSelectAttachments selector<?= $new_cat_id; ?>"><p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SELECT_FILES_OF_CATEGORY'); ?></p></div>
 
                                         <th><?= JText::_('ATTACHMENT_FILENAME'); ?></th>
                                         <th><?= JText::_('ATTACHMENT_DATE'); ?></th>
@@ -135,7 +135,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                                 <thead>
                                                     <tr id="em-tr-collapse'.$valueCategory.'" class="em-tr-collapse">
                                                         <th>' . $checkbox . ' #</th>
-                                                        <div class="tooltipSelectAttachments selector'.$valueCategory.'"><p>' . JText::_('COM_EMUNDUS_SELECT_FILES_OF_CATEGORY'). '</p></div>
+                                                        <div class="tooltipSelectAttachments selector'.$valueCategory.'"><p>' . JText::_('COM_EMUNDUS_ATTACHMENTS_SELECT_FILES_OF_CATEGORY'). '</p></div>
                                                         <th>' . JText::_('ATTACHMENT_FILENAME') . '</th>
                                                         <th>' . JText::_('ATTACHMENT_DATE') . '</th>
                                                         <th>' . JText::_('ATTACHMENT_DESCRIPTION') . '</th>
@@ -211,7 +211,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                     <div class="modal-content">
                         <div class="modal-header em-modal-actions-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="em-modal-actions-title"><?= JText::_('TITLE'); ?></h4>
+                            <h4 class="modal-title" id="em-modal-actions-title"><?= JText::_('COM_EMUNDUS_FORM_TITLE'); ?></h4>
                         </div>
                         <div class="modal-body em-modal-actions-body">
 

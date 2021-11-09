@@ -1,11 +1,11 @@
 ﻿<?php
-defined('_JEXEC') or die('Restricted access'); 
+defined('_JEXEC') or die('Restricted access');
 
 $itemid 	= JRequest::getVar('Itemid', null, 'GET', 'none',0);
 $view 		= JRequest::getVar('view', null, 'GET', 'none',0);
 $task 		= JRequest::getVar('task', null, 'GET', 'none',0);
 $tmpl 		= JRequest::getVar('tmpl', null, 'GET', 'none',0);
- 
+
 jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.modal');
 
@@ -185,8 +185,8 @@ function age($naiss) {
               <a data-html="<?php echo htmlentities($info); ?>" href="#" title="" >
               <div class="title-campaign"><?php echo $campaign->label; ?></div>
               </a><?php echo $delete_link; ?></div>
-            <?php                           
-                    
+            <?php
+
                     echo '<div class="ui divider"></div>';
                    // echo "</div>";
             }
@@ -227,7 +227,7 @@ function age($naiss) {
           </tbody>
         </table>
       </div>
-      <div class="title" id="em_application_attachments"> <i class="dropdown icon"></i> <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?> </div>
+      <div class="title" id="em_application_attachments"> <i class="dropdown icon"></i> <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?> </div>
       <div class="content">
         <div class="actions">
           <button class="ui left red icon button" data-title="<?php echo JText::_('DELETE_SELECTED_ATTACHMENTS'); ?>" onclick="document.pressed=this.name;" name="delete_attachments"> <i class="trash icon"></i> </button>
@@ -281,7 +281,7 @@ function age($naiss) {
 		} else echo JText::_('NO_ATTACHMENT');
 		?>
       </div>
-      <div class="active title" id="em_application_forms"> <i class="dropdown icon"></i> <?php echo JText::_('APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COMPLETED"); ?> </div>
+      <div class="active title" id="em_application_forms"> <i class="dropdown icon"></i> <?php echo JText::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COMPLETED"); ?> </div>
       <div class="active content">
         <div class="actions"> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(); ?>/index.php?option=com_emundus&amp;task=pdf&amp;user=<?php echo $this->student->id; ?>">
           <button class="ui icon button" data-title="<?php echo JText::_('DOWNLOAD_APPLICATION_FORM'); ?>"> <i class="large file icon"></i> </button>
@@ -491,10 +491,10 @@ $('.basic.modal.confirm.campaign')
         },
         onApprove : function() {
             switch ($('#confirm_type').val()){
-                case "delete_campaign" : 
+                case "delete_campaign" :
                     var id = $('#campaign_id').val();
                     var table = $('#campaign_table').val();
-                    deleteData(id, table);  
+                    deleteData(id, table);
                     $('.campaign.'+id).fadeOut('slow');
                     break;
 
@@ -521,10 +521,10 @@ $('.basic.modal.confirm.course')
         },
         onApprove : function() {
             switch ($('#confirm_type').val()){
-                case "delete_course" : 
+                case "delete_course" :
                     var id = $('#course_id').val();
                     var table = $('#course_table').val();
-                    deleteData(id, table); 
+                    deleteData(id, table);
                     $('.course.'+id).fadeOut('slow');
                     break;
 
@@ -583,35 +583,35 @@ function check_all(id) {
 		}
 	}
 }
-function OnSubmitForm() { 
-	if(typeof document.pressed !== "undefined") { 
+function OnSubmitForm() {
+	if(typeof document.pressed !== "undefined") {
 		document.applicant_form.task.value = "";
 		var button_name=document.pressed.split('|');
 		switch(button_name[0]) {
-			case "export_zip": 
+			case "export_zip":
 				document.applicant_form.task.value = "export_zip";
 				document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&controller=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&task=export_zip";
 			break;
-			case "export_to_xls": 
+			case "export_to_xls":
 				document.applicant_form.task.value = "transfert_view";
 				document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&task=transfert_view&v=<?php echo $view; ?>";
 			break;
-			case "applicant_email": 
+			case "applicant_email":
 				document.applicant_form.task.value = "applicantEmail";
 				document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&controller=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&task=applicantEmail";
 			break;
-			case "default_email": 
+			case "default_email":
 				if (confirm("<?php echo JText::_("CONFIRM_DEFAULT_EMAIL"); ?>")) {
 					document.applicant_form.task.value = "defaultEmail";
 					document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&controller=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&task=defaultEmail";
-				} else 
+				} else
 					return false;
 			break;
-			case "delete_attachments": 
+			case "delete_attachments":
 				document.applicant_form.task.value = "delete_attachments";
 				if (confirm("<?php echo JText::_("CONFIRM_DELETE_SELETED_ATTACHMENTS"); ?>")) {
 	        		document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&controller=<?php echo $view; ?>&task=delete_attachments&Itemid=<?php echo $itemid; ?>&sid=<?php echo $this->student->id; ?>";
-			 	} else 
+			 	} else
 			 		return false;
 			break;
 			default: return false;
@@ -622,7 +622,7 @@ function OnSubmitForm() {
 
 function getXMLHttpRequest() {
 	var xhr = null;
-	 
+
 	if (window.XMLHttpRequest || window.ActiveXObject) {
 		if (window.ActiveXObject) {
 			try {
@@ -637,14 +637,14 @@ function getXMLHttpRequest() {
 		alert("Votre navigateur ne supporte pas l\'objet XMLHTTPRequest...");
 		return null;
 	}
-	 
+
 	return xhr;
 }
-		
+
 function deleteComment(comment_id){
 	var xhr = getXMLHttpRequest();
 	xhr.onreadystatechange = function()
-	{ 
+	{
 		if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
 		{
 			if(xhr.responseText!="SQL Error"){
@@ -662,13 +662,13 @@ function deleteComment(comment_id){
     return true;
 }
 
-function deleteData(id, table){ 
+function deleteData(id, table){
 	var xhr = getXMLHttpRequest();
 	xhr.onreadystatechange = function()
 	{
 		if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
 		{
-			if(xhr.responseText!="SQL Error"){ 
+			if(xhr.responseText!="SQL Error"){
 				return true;
                 /*var comment = (($('comment_'+comment_id).parentNode).parentNode).id;
                 var comment_content = ($('comment_'+comment_id).parentNode).id;
@@ -697,7 +697,7 @@ function deleteData(id, table){
 
 function delayAct(user_id){
 	document.applicant_form.action = "index.php?option=com_emundus&view=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&sid=<?php echo $this->student->id; ?> <?php if(!empty($tmpl)){ echo'&tmpl='.$tmpl; }?>";
-	setTimeout("document.applicant_form.submit()",10) 
+	setTimeout("document.applicant_form.submit()",10)
 }
 
 

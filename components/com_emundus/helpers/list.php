@@ -358,7 +358,7 @@ class EmundusHelperList{
                 @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_user_id" id="em_user_id_'.$user['user_id'].'">#'.$user['user_id'].'</div>';
                 if(in_array('gender',$params)){
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_gender" id="em_gender_'.$user['user_id'].'">';
-                    @$actions[$user['user_id']][@$user['user']][@$user['campaign_id']] .= '<span class="editlinktip hasTip" title="'.JText::_('MAIL_TO').'::'.$user_info[0]->email.'">';
+                    @$actions[$user['user_id']][@$user['user']][@$user['campaign_id']] .= '<span class="editlinktip hasTip" title="'.JText::_('COM_EMUNDUS_MAILS_MAIL_TO').'::'.$user_info[0]->email.'">';
                     if (strtolower($user_info[0]->gender) == 'male')
                         @$actions[$user['user_id']][@$user['user']][@$user['campaign_id']] .= '<a href="mailto:'.$user_info[0]->email.'"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/user_male.png" width="22" height="22" align="bottom" /></a>';
                     elseif (strtolower($user_info[0]->gender) == 'female')
@@ -370,7 +370,7 @@ class EmundusHelperList{
                 }
                 if(in_array('email',$params)){
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_email" id="em_email_'.$user['user_id'].'">';
-                    @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<span class="editlinktip hasTip" title="'.JText::_('MAIL_TO').'::'.$user_info[0]->email.'">';
+                    @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<span class="editlinktip hasTip" title="'.JText::_('COM_EMUNDUS_MAILS_MAIL_TO').'::'.$user_info[0]->email.'">';
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<a href="mailto:'.$user_info[0]->email.'"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/mailreminder.png" width="22" height="22" align="bottom" /></a>';
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</span>';
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';
@@ -397,7 +397,7 @@ class EmundusHelperList{
                 if(in_array('attachments',$params)){
                     $uploads = EmundusHelperList::getUploadList($user['user_id']);
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_attachments" id="em_attachments_'.$user['user_id'].'"><div id="container" class="emundusraw">';
-                    @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul id="emundus_nav"><li><a href="#"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('ATTACHMENTS').'" title="'.JText::_('ATTACHMENTS').'" width="22" height="22" align="absbottom" /></a>';
+                    @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul id="emundus_nav"><li><a href="#"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS').'" title="'.JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS').'" width="22" height="22" align="absbottom" /></a>';
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul>';
                     foreach ( $uploads as $row ) {
                         @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<li>';
@@ -413,7 +413,7 @@ class EmundusHelperList{
                 if(in_array('forms',$params)){
                     $forms = EmundusHelperList::getFormsList($user['user_id']);
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_forms" id="em_forms_'.$user['user_id'].'"><div id="container" class="emundusraw">';
-                    @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul id="emundus_nav"><li><a href="#"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('FORMS').'" title="'.JText::_('FORMS').'" width="22" height="22" align="absbottom" /></a><ul>';
+                    @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul id="emundus_nav"><li><a href="#"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/folder_documents.png" alt="'.JText::_('COM_EMUNDUS_ATTACHMENTS_FORMS').'" title="'.JText::_('COM_EMUNDUS_ATTACHMENTS_FORMS').'" width="22" height="22" align="absbottom" /></a><ul>';
                     if (count($forms) > 0) {
                         foreach ( $forms as $row ) {
                             @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<li>';
@@ -689,7 +689,7 @@ class EmundusHelperList{
 
                 @$actions[$user['user_id']][$user['user']][@$user['campaign_id']] .= "<div class='em_filesrequest'>".$user->value." : ".$user->email." ".$user->time_date."</div>";
                 @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_attachments" id="em_attachments_'.$user['user_id'].'"><div id="container" class="emundusraw">';
-                @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul id="emundus_nav"><li><a href="#"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('REQUEST').'" title="'.JText::_('ATTACHMENTS').'" width="22" height="22" align="absbottom" /></a>';
+                @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul id="emundus_nav"><li><a href="#"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('REQUEST').'" title="'.JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS').'" width="22" height="22" align="absbottom" /></a>';
                 @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul>';
 
                 foreach ( $uploads as $row ) {
@@ -881,7 +881,7 @@ class EmundusHelperList{
 				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
 				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
 				WHERE element.id IN ('.$elements.')';
-//echo str_replace("#_", "jos", $query); 
+//echo str_replace("#_", "jos", $query);
         $db->setQuery($query);
 
         return @EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels", "element_value"));
