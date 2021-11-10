@@ -227,8 +227,16 @@ class EmundusModelFiles extends JModelLegacy
                 elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton' || $def_elmt->element_plugin == 'checkbox') {
 
                     if (@$group_params->repeat_group_button == 1) {
+                        $element_attribs = json_decode($def_elmt->element_attribs);
+                        $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+                        foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                            $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
+                                JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                        }
+                        $select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name,'GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")',$select);
+
                         $this->_elements_default[] = '(
-                                    SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")
+                                    SELECT ' . $select . '
                                     FROM '.$def_elmt->table_join.'
                                     WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
                                   ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
