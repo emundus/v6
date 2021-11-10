@@ -1513,11 +1513,11 @@ class EmundusController extends JControllerLegacy {
             if ($value > 0) {
                 $img = 'tick.png';
                 $btn = 'unvalidate|'.$uid;
-                $alt = JText::_('VALIDATED').'::'.JText::_('VALIDATED_NOTE');
+                $alt = JText::_('COM_EMUNDUS_FORMS_VALIDATED').'::'.JText::_('COM_EMUNDUS_FORMS_VALIDATED_NOTE');
             } else {
                 $img = 'publish_x.png';
                 $btn = 'validate|'.$uid;
-                $alt = JText::_('UNVALIDATED').'::'.JText::_('UNVALIDATED_NOTE');
+                $alt = JText::_('COM_EMUNDUS_FORMS_UNVALIDATED').'::'.JText::_('COM_EMUNDUS_FORMS_UNVALIDATED_NOTE');
             }
             echo '<span class="hasTip" title="'.$alt.'">
                     <input type="image" src="media/com_emundus/images/icones/'.$img.'" onclick="validation('.$uid.', \''.$value.'\', \''.$cible.'\');" ></span> ';
@@ -1671,7 +1671,7 @@ class EmundusController extends JControllerLegacy {
         echo json_encode((object) $result);
         exit();
     }
-    
+
     /**
      * unregisterevent
      *

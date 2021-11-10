@@ -142,7 +142,7 @@ if ($allowed_attachments !== true) {
         </div>
         <div class="form-group em-form-subject">
             <div class="inputbox input-xlarge form-control form-inline">
-                <span class='label label-grey' for="mail_from" ><?= JText::_('SUBJECT'); ?>:</span>
+                <span class='label label-grey' for="mail_from" ><?= JText::_('COM_EMUNDUS_EMAILS_SUBJECT'); ?>:</span>
                 <div class="form-group" style="display:inline-block !important;" id="mail_subject" contenteditable="true"><?= JFactory::getConfig()->get('sitename'); ?></div>
             </div>
 
@@ -159,8 +159,8 @@ if ($allowed_attachments !== true) {
             <div class="form-group col-sm-12 col-md-5">
                 <label for="em-select_attachment_type" ><?= JText::_('SELECT_ATTACHMENT_TYPE'); ?></label>
                 <select name="em-select_attachment_type" id="em-select_attachment_type" class="form-control download" onChange="toggleAttachmentType(this);">
-                    <option value=""> <?= JText::_('PLEASE_SELECT'); ?> </option>
-                    <option value="upload"> <?= JText::_('UPLOAD'); ?> </option>
+                    <option value=""> <?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?> </option>
+                    <option value="upload"> <?= JText::_('COM_EMUNDUS_UPLOAD'); ?> </option>
                     <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
                         <option value="candidate_file"> <?= JText::_('CANDIDATE_FILE'); ?> </option>
                     <?php endif; ?>
@@ -192,7 +192,7 @@ if ($allowed_attachments !== true) {
                 <!-- Get a file from setup_attachments -->
                 <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
                     <div class="hidden em-form-attachments-candidateFile" id="candidate_file">
-                        <label for="em-select_candidate_file" ><?= JText::_('UPLOAD'); ?></label>
+                        <label for="em-select_candidate_file" ><?= JText::_('COM_EMUNDUS_UPLOAD'); ?></label>
                         <select id="em-select_candidate_file" name="candidate_file" class="form-control download" onchange="addFile();">
                             <?php if (!$setup_attachments) :?>
                                 <option value="%"> <?= JText::_('NO_FILES_FOUND'); ?> </option>
@@ -207,12 +207,12 @@ if ($allowed_attachments !== true) {
                 <?php if(!empty($_applicant_letters)) { ?>
                     <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
                         <div class="hidden em-form-attachments-setupLetters" id="setup_letters">
-                            <label for="em-select_setup_letters" ><?= JText::_('UPLOAD'); ?></label>
+                            <label for="em-select_setup_letters" ><?= JText::_('COM_EMUNDUS_UPLOAD'); ?></label>
                             <select id="em-select_setup_letters" name="setup_letters" class="form-control" onchange="addFile();">
                                 <?php if (!$setup_letters) :?>
                                     <option value="%"> <?= JText::_('NO_FILES_FOUND'); ?> </option>
                                 <?php else: ?>
-                                    <option value="%"> <?= JText::_('PLEASE_SELECT'); ?> </option>
+                                    <option value="%"> <?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?> </option>
                                     <?php foreach ($setup_letters as $letter): ?>
                                         <option value="<?= $letter->id; ?>"> <?= $letter->value; ?></option>
                                     <?php endforeach; ?>

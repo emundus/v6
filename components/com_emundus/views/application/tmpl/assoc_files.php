@@ -1,4 +1,4 @@
-<?php 
+<?php
 JFactory::getSession()->set('application_layout', 'assoc_files');
 
 if (!empty((array)$this->assoc_files)) : ?>
@@ -32,10 +32,10 @@ if (!empty((array)$this->assoc_files)) : ?>
 				<div class="panel-body em-container-assocFiles-body">
 					<div>
 						<ul>
-							<li><span><strong><?php echo JText::_('ACADEMIC_YEAR')?> :</strong> <?php echo $camp->year?></span></li>
+							<li><span><strong><?php echo JText::_('COM_EMUNDUS_ACADEMIC_YEAR')?> :</strong> <?php echo $camp->year?></span></li>
 							<li><span><?php echo $camp->training?></span></li>
 							<li><span><strong><?php echo JText::_('F_NUM')?> :</strong> <?php echo $camp->fnum?></span></li>
-							
+
 							<?php if($camp->submitted==1):?>
 								<li><span><strong><?php echo JText::_('SUBMITTED')?> :</strong> <?php echo JText::_('JYES');?></span></li>
 								<li><span><strong><?php echo JText::_('DATE_SUBMITTED')?> :</strong> <?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?></span></li>

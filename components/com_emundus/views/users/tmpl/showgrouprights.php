@@ -11,7 +11,7 @@ span:hover {
 }
 </style>
 
-<h3><?= JText::_('SHOW_RIGTH'); ?></h3>
+<h3><?= JText::_('COM_EMUNDUS_GROUPS_SHOW_RIGHTS'); ?></h3>
 <?php foreach($this->groups as $k => $g) :?>
 	<fieldset id="<?= $k; ?>" class="em-showgroupright">
 		<h5>
@@ -19,7 +19,7 @@ span:hover {
 		</h5>
         <?php if (!empty($g['progs'])) :?>
             <ul class="em-showgroupright-program">
-                <strong><?= JText::_('COM_EMUNDUS_GROUP_PROGRAM'); ?></strong>
+                <strong><?= JText::_('COM_EMUNDUS_GROUPS_PROGRAM'); ?></strong>
                 <?php foreach ($g['progs'] as $p) :?>
                     <li><?= $p['label']; ?></li>
                 <?php endforeach;?>

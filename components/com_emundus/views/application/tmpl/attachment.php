@@ -56,7 +56,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                 <div class="input-group em-searchbar">
                     <input type="text" id="em-searchbar" class="form-control" placeholder="<?= JText::_('COM_EMUNDUS_ATTACHMENTS_KEYWORDS'); ?>">
                     <span class="input-group-btn">
-                        <button id="btn-em-searchbar" class="btn btn-default" type="button"><?= JText::_('SEARCH'); ?></button>
+                        <button id="btn-em-searchbar" class="btn btn-default" type="button"><?= JText::_('COM_EMUNDUS_ACTIONS_SEARCH'); ?></button>
                     </span>
                 </div>
             </div>
@@ -87,7 +87,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                         <th><?= JText::_('ATTACHMENT_FILENAME'); ?></th>
                                         <th><?= JText::_('ATTACHMENT_DATE'); ?></th>
                                         <th><?= JText::_('ATTACHMENT_DESCRIPTION'); ?></th>
-                                        <th><?= JText::_('ACADEMIC_YEAR'); ?></th>
+                                        <th><?= JText::_('COM_EMUNDUS_ACADEMIC_YEAR'); ?></th>
                                         <th><?= JText::_('VALIDATION_STATE'); ?></th>
                                     </tr>
                                 </thead>
@@ -139,7 +139,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                                         <th>' . JText::_('ATTACHMENT_FILENAME') . '</th>
                                                         <th>' . JText::_('ATTACHMENT_DATE') . '</th>
                                                         <th>' . JText::_('ATTACHMENT_DESCRIPTION') . '</th>
-                                                        <th>' . JText::_('ACADEMIC_YEAR') . '</th>
+                                                        <th>' . JText::_('COM_EMUNDUS_ACADEMIC_YEAR') . '</th>
                                                         <th>' . JText::_('VALIDATION_STATE') . '</th>
                                                     </tr>
                                                 </thead>

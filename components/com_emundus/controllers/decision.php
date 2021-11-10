@@ -249,7 +249,7 @@ class EmundusControllerDecision extends JControllerLegacy
         {
             $elements = @EmundusHelperFiles::getElements();
 
-            echo json_encode((object)(array('status' => true, 'default' => JText::_('PLEASE_SELECT'), 'defaulttrash' => JText::_('REMOVE_SEARCH_ELEMENT'), 'options' => $elements)));
+            echo json_encode((object)(array('status' => true, 'default' => JText::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => JText::_('REMOVE_SEARCH_ELEMENT'), 'options' => $elements)));
             exit;
         }
         catch(Exception $e)
@@ -293,7 +293,7 @@ class EmundusControllerDecision extends JControllerLegacy
 
             $html= @EmundusHelperFiles::setSearchBox($element[0], '', $element[0]->tab_name . '.' . $element[0]->element_name, $index);
 
-            echo json_encode((object)(array('status' => true, 'default' => JText::_('PLEASE_SELECT'), 'defaulttrash' => JText::_('REMOVE_SEARCH_ELEMENT'), 'html' => $html)));
+            echo json_encode((object)(array('status' => true, 'default' => JText::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => JText::_('REMOVE_SEARCH_ELEMENT'), 'html' => $html)));
             exit;
         }
         catch(Exception $e)
@@ -371,10 +371,10 @@ class EmundusControllerDecision extends JControllerLegacy
             'groups' => $evalGroups['groups'],
             'users' => $evalGroups['users'],
             'actions' => $actions,
-            'group' => JText::_('GROUP_EVAL'),
+            'group' => JText::_('COM_EMUNDUS_GROUPS_GROUP_EVAL'),
             'eval' => JText::_('EVALUATORS'),
-            'select_group' => JText::_('PLEASE_SELECT_GROUP'),
-            'select_eval' => JText::_('PLEASE_SELECT_ASSESSOR'),
+            'select_group' => JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_GROUP'),
+            'select_eval' => JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_ASSESSOR'),
             'check' => JText::_('CHECK_ACL'),
             'create' => JText::_('CREATE'),
             'retrieve' => JText::_('RETRIEVE'),
@@ -412,7 +412,7 @@ class EmundusControllerDecision extends JControllerLegacy
         if ($fnums == "all") {
             $fnums = $m_files->getAllFnums();
 		}
-		
+
         $validFnums = array();
 
         foreach($fnums as $fnum) {
@@ -429,7 +429,7 @@ class EmundusControllerDecision extends JControllerLegacy
         exit;
     }
 
-    
+
     public function deletetags()
     {
         $jinput = JFactory::getApplication()->input;
@@ -444,7 +444,7 @@ class EmundusControllerDecision extends JControllerLegacy
         if ($fnums == "all") {
             $fnums = $m_files->getAllFnums();
 		}
-		
+
         foreach ($fnums as $fnum)
         {
             foreach ($tags as $tag){
@@ -756,7 +756,7 @@ class EmundusControllerDecision extends JControllerLegacy
 
         require_once($file);
         pdf_evaluation(!empty($student_id)?$student_id:$this->_user->id, $fnum, true, null);
-        
+
         exit();
     }
 
@@ -789,7 +789,7 @@ class EmundusControllerDecision extends JControllerLegacy
 
         require_once($file);
         pdf_decision(!empty($student_id)?$student_id:$this->_user->id, $fnum);
-        
+
         exit();
     }
 
@@ -859,7 +859,7 @@ class EmundusControllerDecision extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getVar('fnums', null);
 		$fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-		
+
         $model = $this->getModel('Files');
         if($fnums == "all")
         {
@@ -900,7 +900,7 @@ class EmundusControllerDecision extends JControllerLegacy
 		if (count($fnums) == 0) {
 			$fnums = array($session->get('application_fnum'));
 		}
-		
+
         $jinput = JFactory::getApplication()->input;
 
         $file = $jinput->getVar('file', null, 'STRING');
@@ -979,7 +979,7 @@ class EmundusControllerDecision extends JControllerLegacy
 
         // On traite les en-têtes
         if ($start == 0) {
-            $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('COM_EMUNDUS_FORM_LAST_NAME')."\t".JText::_('COM_EMUNDUS_FORM_FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('CAMPAIGN')."\t";
+            $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('COM_EMUNDUS_FORM_LAST_NAME')."\t".JText::_('COM_EMUNDUS_FORM_FIRST_NAME')."\t".JText::_('COM_EMUNDUS_EMAIL')."\t".JText::_('COM_EMUNDUS_CAMPAIGN')."\t";
             $nbcol = 6;
             foreach ($ordered_elements as $fLine) {
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
@@ -1101,7 +1101,7 @@ class EmundusControllerDecision extends JControllerLegacy
 /*
     public function export_xls_from_csv()
     {
-        // PHPExcel 
+        // PHPExcel
         ini_set('include_path', JPATH_BASE . DS . 'libraries' . DS);
         include 'PHPExcel.php';
         include 'PHPExcel/Writer/Excel5.php';
@@ -1219,7 +1219,7 @@ class EmundusControllerDecision extends JControllerLegacy
         @set_time_limit(10800);
         jimport( 'joomla.user.user' );
         error_reporting(0);
-        // PHPExcel 
+        // PHPExcel
         ini_set('include_path', JPATH_BASE.DS.'libraries'.DS);
 
         include 'PHPExcel.php';
@@ -1320,10 +1320,10 @@ class EmundusControllerDecision extends JControllerLegacy
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_FORM_FIRST_NAME'));
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('EMAIL'));
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_EMAIL'));
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('CAMPAIGN'));
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_CAMPAIGN'));
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
 
@@ -1358,7 +1358,7 @@ class EmundusControllerDecision extends JControllerLegacy
                         $col++;
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $userProfil['firstname']);
                         $col++;
-                    } 
+                    }
                     elseif($k === 'jos_emundus_evaluations___user')
                     {
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $line, strip_tags(JFactory::getUser($v)->name));

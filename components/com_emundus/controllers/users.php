@@ -132,7 +132,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 
 		if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html')) {
-			echo json_encode((object) array('status' => false, 'uid' => $uid, 'msg' => JText::_('CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
+			echo json_encode((object) array('status' => false, 'uid' => $uid, 'msg' => JText::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
 		}
 
 		// Envoi de la confirmation de création de compte par email
@@ -210,7 +210,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 			exit();
 		}
 
-		echo json_encode((object)array('status' => true, 'msg' => JText::_('USER_CREATED')));
+		echo json_encode((object)array('status' => true, 'msg' => JText::_('COM_EMUNDUS_USERS_USER_CREATED')));
 		exit;
 	}
 
@@ -514,9 +514,9 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$res = $m_users->addGroup($gname, $gdesc, $actions, explode(',', $progs));
 
 		if ($res !== false) {
-			$msg = JText::_('GROUP_ADDED');
+			$msg = JText::_('COM_EMUNDUS_GROUPS_GROUP_ADDED');
 		} else {
-			$msg = JText::_('AN_ERROR_OCCURED');
+			$msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
 		}
 
 		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
@@ -555,8 +555,8 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		if ($res !== false) {
 			$res = true;
-			$msg = JText::_('COM_EMUNDUS_ACTIVATE_ACCOUNT');
-		} else $msg = JText::_('AN_ERROR_OCCURED');
+			$msg = JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT');
+		} else $msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
 
 		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
 		exit;
@@ -588,11 +588,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		if ($res === true) {
 			$res = true;
-			$msg = JText::_('USERS_AFFECTED_SUCCESS');
+			$msg = JText::_('COM_EMUNDUS_GROUPS_USERS_AFFECTED_SUCCESS');
 		} elseif ($res === 0) {
-			$msg = JText::_('NO_GROUP_AFFECTED');
+			$msg = JText::_('COM_EMUNDUS_GROUPS_NO_GROUP_AFFECTED');
 		} else {
-			$msg = JText::_('AN_ERROR_OCCURED');
+			$msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
 		}
 
 		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
@@ -634,14 +634,14 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		if ($res === true || !is_array($res)) {
 			$res = true;
-			$msg = JText::_('USERS_EDITED');
+			$msg = JText::_('COM_EMUNDUS_USERS_EDITED');
 		} else {
 			if (is_array($res)) {
 				$res['status'] = false;
 				echo json_encode((object)($res));
 				exit;
 			}
-			else $msg = JText::_('AN_ERROR_OCCURED');
+			else $msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
 		}
 		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
 		exit;
@@ -692,7 +692,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 
 		if ($users_id != "") {
-			$msg = JText::sprintf('THIS_USER_CAN_NOT_BE_DELETED', $users_id);
+			$msg = JText::sprintf('COM_EMUNDUS_USERS_THIS_USER_CAN_NOT_BE_DELETED', $users_id);
 		}
 		echo json_encode((object) array('status' => $res, 'msg' => $msg));
 

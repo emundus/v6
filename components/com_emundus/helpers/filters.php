@@ -483,7 +483,7 @@ class EmundusHelperFilters {
 				$query_params = json_decode($query_params);
 				$option_list =  @EmundusHelperFilters::buildOptions($selected->element_name, $query_params);
 				$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="document.adminForm.task.value=\'\'; javascript:submit()">
-				<option value="">'.JText::_('PLEASE_SELECT').'</option>';
+				<option value="">'.JText::_('COM_EMUNDUS_PLEASE_SELECT').'</option>';
 				if (!empty($option_list)) {
 					foreach ($option_list as $value) {
 						$current_filter .= '<option value="'.$value->elt_key.'"';
@@ -499,7 +499,7 @@ class EmundusHelperFilters {
 				$query_params = json_decode($query_params);
 				$option_list =  @EmundusHelperFilters::buildOptions($selected->element_name, $query_params);
 				$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="document.adminForm.task.value=\'\'; javascript:submit()">
-				<option value="">'.JText::_('PLEASE_SELECT').'</option>';
+				<option value="">'.JText::_('COM_EMUNDUS_PLEASE_SELECT').'</option>';
 				if (!empty($option_list)) {
 					foreach ($option_list as $value) {
 						$current_filter .= '<option value="'.$value->elt_key.'"';

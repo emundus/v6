@@ -96,9 +96,9 @@ class EmundusControllerGroups extends JControllerLegacy {
 			}
 		}
 		if (count($ids)>1)
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('MESSAGE_APPLICANTS_AFFECTED').count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANTS_AFFECTED').count($ids), 'message');
 		elseif (count($ids)==1)
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('MESSAGE_APPLICANT_AFFECTED').count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANT_AFFECTED').count($ids), 'message');
 		else
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
 	}
@@ -138,9 +138,9 @@ class EmundusControllerGroups extends JControllerLegacy {
 			}
 		}
 		if (count($ids)>1)
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('MESSAGE_APPLICANTS_UNAFFECTED').count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANTS_UNAFFECTED').count($ids), 'message');
 		elseif (count($ids)==1)
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('MESSAGE_APPLICANT_UNAFFECTED').count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANT_UNAFFECTED').count($ids), 'message');
 		else
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
 	}
@@ -168,7 +168,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 			$db->setQuery($query);
 			$db->execute();
 		}
-		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_DONE'), 'message');
+		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('COM_EMUNDUS_ACTIONS_ACTION_DONE'), 'message');
 	}
 
 	////// EMAIL ASSESSORS WITH DEFAULT MESSAGE///////////////////
@@ -299,7 +299,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 		if ($error>0)
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_ABORDED'), 'error');
 		else
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_DONE'), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('COM_EMUNDUS_ACTIONS_ACTION_DONE'), 'message');
 	}
 
 	////// EMAIL GROUP OF ASSESSORS O AN ASSESSOR WITH CUSTOM MESSAGE///////////////////
@@ -427,7 +427,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 			unset($replacements);
 		}
 
-		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_DONE'), 'message');
+		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('COM_EMUNDUS_ACTIONS_ACTION_DONE'), 'message');
 	}
 
 	public function addgroups() {

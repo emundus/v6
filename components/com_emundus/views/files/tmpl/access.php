@@ -12,7 +12,7 @@
 		<?php foreach ($this->users as $user) :?>
 
 			<h4 title="<?= $user['fnum']; ?>"><?= $user['name']; ?> (<?= $user['label']; ?> - <?= $user['year']; ?>)</h4>
-        
+
 			<?php if (!empty($this->groupFnum[$user['fnum']])) :?>
 				<strong><?= JText::_('COM_EMUNDUS_GROUPS'); ?></strong>
 				<ul>
@@ -27,7 +27,7 @@
 					<?php } ?>
 				</ul>
 			<?php endif; ?>
-        
+
 			<?php if (!empty($this->evalFnum[$user['fnum']])) :?>
 				<strong><?= JText::_('COM_EMUNDUS_ASSESSORS'); ?></strong>
 				<ul>
@@ -50,21 +50,21 @@
 			<?= JText::_('CHECK_ACL'); ?>
 		</div>
 		<div class="form-group em-access em-access-form">
-			<label class="col-lg-2 control-label  em-access"><?= JText::_('GROUPS')?></label>
-			<select class="col-lg-7 modal-chzn-select  em-access" multiple="true" data-placeholder="<?= JText::_('PLEASE_SELECT_GROUP'); ?>" name="em-access-groups-eval" id="em-access-groups-eval" value="">
+			<label class="col-lg-2 control-label  em-access"><?= JText::_('COM_EMUNDUS_GROUPS')?></label>
+			<select class="col-lg-7 modal-chzn-select  em-access" multiple="true" data-placeholder="<?= JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_GROUP'); ?>" name="em-access-groups-eval" id="em-access-groups-eval" value="">
 				<?php foreach ($this->groups as $group) :?>
 					<option value="<?= $group['id']; ?>"><?= $group['label']; ?></option>
 				<?php endforeach; ?>
             </select>
 
 			<label class="col-lg-2 control-label em-access"><?= JText::_('EVALUATORS'); ?></label>
-            <select class="col-lg-7 modal-chzn-select" multiple="true" data-placeholder="<?= JText::_('PLEASE_SELECT_ASSESSOR'); ?>" name="em-access-evals" id="em-access-evals" value="">
+            <select class="col-lg-7 modal-chzn-select" multiple="true" data-placeholder="<?= JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_ASSESSOR'); ?>" name="em-access-evals" id="em-access-evals" value="">
 				<?php foreach ($this->evals as $eval) :?>
 					<option value="<?= $eval['user_id']; ?>"><?= $eval['name']; ?> (<?= $eval['email']; ?>) :: <?= $eval['label']; ?></option>
 				<?php endforeach; ?>
             </select>
 
-            <input type="checkbox" id="evaluator-email"><label for="evaluator-email"><?= JText::_('NOTIFY_EVALUATORS'); ?></label>
+            <input type="checkbox" id="evaluator-email"><label for="evaluator-email"><?= JText::_('COM_EMUNDUS_GROUPS_NOTIFY_EVALUATORS'); ?></label>
 		</div>
 		<div class="panel-body em-access em-access-body">
 			<table id="em-modal-action-table em-access" class="table table-hover em-access-body-table">

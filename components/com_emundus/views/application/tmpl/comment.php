@@ -64,7 +64,7 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
 								<?php if (($this->_user->id == $comment->user_id && EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum))|| EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum)) :?>
                                 <div class="action em-list-status-action">
                                     <div class="edit-comment-container">
-                                        <button type="button" class="btn btn-info btn-xs edit-comment" title="<?php echo JText::_('EDIT');?>" >
+                                        <button type="button" class="btn btn-info btn-xs edit-comment" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_EDIT');?>" >
                                             <span class="glyphicon glyphicon-edit"></span>
                                             <div class="hidden cid"><?php echo $comment->id; ?></div>
                                         </button>
@@ -81,7 +81,7 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
                                             <span class="glyphicon glyphicon-remove"></span>
                                             <div class="hidden cid"><?php echo $comment->id; ?></div>
                                         </button>
-                                        <button type="button" class="btn btn-success btn-xs confirm-edit-comment" title="<?php echo JText::_('EDIT');?>" >
+                                        <button type="button" class="btn btn-success btn-xs confirm-edit-comment" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_EDIT');?>" >
                                             <span class="glyphicon glyphicon-ok"></span>
                                             <div class="hidden cid"><?php echo $comment->id; ?></div>
                                         </button>
@@ -204,7 +204,7 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
                                 '<textarea style="display: none;" class="ctext">'+escapeHtml(comment)+'</textarea>'+
                                 '<div class="action">'+
                                     '<div class="edit-comment-container">'+
-                                        '<button type="button" class="btn btn-info btn-xs edit-comment" title="<?php echo JText::_('EDIT');?>" >'+
+                                        '<button type="button" class="btn btn-info btn-xs edit-comment" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_EDIT');?>" >'+
                                             '<span class="glyphicon glyphicon-edit"></span>'+
                                             '<div class="hidden cid">'+result.id+'</div>'+
                                         '</button>'+
@@ -219,7 +219,7 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
                                             '<span class="glyphicon glyphicon-remove"></span>'+
                                             '<div class="hidden cid">'+result.id+'</div>'+
                                         '</button>'+
-                                        '<button type="button" class="btn btn-success btn-xs confirm-edit-comment" title="<?php echo JText::_('EDIT');?>" >'+
+                                        '<button type="button" class="btn btn-success btn-xs confirm-edit-comment" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_EDIT');?>" >'+
                                             '<span class="glyphicon glyphicon-ok"></span>'+
                                             '<div class="hidden cid">'+result.id+'</div>'+
                                         '</button>'+

@@ -247,7 +247,7 @@ class EmundusViewEvaluation extends JViewLegacy
 									}
 
 									if (EmundusHelperAccess::asAccessAction(5,'u',$this->_user->id)) {
-										$link_edit = '<a href="'.$form_url_edit.$user['evaluation_id'].'" target="_blank"><span class="glyphicon icon-edit" title="'.JText::_('EDIT').'"> </span></a>';
+										$link_edit = '<a href="'.$form_url_edit.$user['evaluation_id'].'" target="_blank"><span class="glyphicon icon-edit" title="'.JText::_('COM_EMUNDUS_ACTIONS_EDIT').'"> </span></a>';
 									}
 
 									$userObj->val = @$link_view.' '.@$link_edit.' '.$value;

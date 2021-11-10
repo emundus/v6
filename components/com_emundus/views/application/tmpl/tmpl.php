@@ -12,9 +12,9 @@
 		<table>
 			<thead>
 			<tr>
-				<th><strong><?php echo JText::_('USERNAME'); ?></strong></th>
+				<th><strong><?php echo JText::_('COM_EMUNDUS_USERNAME'); ?></strong></th>
 				<th><strong><?php echo JText::_('ACCOUNT_CREATED_ON');?></strong></th>
-				<th><strong><?php echo JText::_('LAST_VISIT');?></strong></th>
+				<th><strong><?php echo JText::_('COM_EMUNDUS_USERS_LAST_VISIT');?></strong></th>
 				<th><strong><?php echo JText::_('STATUS');?></strong></th>
 			</tr>
 			</thead>

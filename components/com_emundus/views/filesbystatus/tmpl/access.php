@@ -47,14 +47,14 @@
 			<?php echo JText::_('CHECK_ACL')?>
 		</div>
 		<div class="form-group em-access-filesbystatus-form" style="color:black !important">
-			<label class="col-lg-2 control-label"><?php echo JText::_('GROUPS')?></label>
-			<select class="col-lg-7 modal-chzn-select" multiple="true" data-placeholder="<?php echo JText::_('PLEASE_SELECT_GROUP')?>" name="em-access-groups-eval" id="em-access-groups-eval" value="">
+			<label class="col-lg-2 control-label"><?php echo JText::_('COM_EMUNDUS_GROUPS')?></label>
+			<select class="col-lg-7 modal-chzn-select" multiple="true" data-placeholder="<?php echo JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_GROUP')?>" name="em-access-groups-eval" id="em-access-groups-eval" value="">
 				<?php foreach($this->groups as $group):?>
 					<option value = "<?php echo $group['id']?>"><?php echo $group['label']?></option>
 				<?php endforeach;?>
 				</select>
 
-			<label class="col-lg-2 control-label"><?php echo JText::_('EVALUATORS')?></label><select class="col-lg-7 modal-chzn-select" multiple="true" data-placeholder="<?php echo JText::_('PLEASE_SELECT_ASSESSOR')?>" name="em-access-evals" id="em-access-evals" value="">
+			<label class="col-lg-2 control-label"><?php echo JText::_('EVALUATORS')?></label><select class="col-lg-7 modal-chzn-select" multiple="true" data-placeholder="<?php echo JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_ASSESSOR')?>" name="em-access-evals" id="em-access-evals" value="">
 				<?php foreach($this->evals as $eval):?>
 					<option value = "<?php echo $eval['user_id']?>"><?php echo $eval['name']?></option>
 				<?php endforeach;?>

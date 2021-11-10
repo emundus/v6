@@ -29,11 +29,11 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 							<?php if($kl == 'check'): ?>
 								<label for="em-check-all">
 									<input type="checkbox" value="-1" id="em-check-all" class="em-check" style="width:20px !important;"/>
-									<span><?php echo JText::_('COM_EMUNDUS_CHECK_ALL')?></span>
+									<span><?php echo JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL')?></span>
 								</label>
 								<label class="em-hide em-check-all-all" for="em-check-all-all">
 									<input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width:20px !important;"/>
-									<span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
+									<span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL')?></span>
 								</label>
 							<?php elseif($this->lists['order'] == $kl):?>
 								<?php if($this->lists['order_dir'] == 'desc'):?>
@@ -62,7 +62,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<?php if($k == 'check'): ?>
 										<label for = "<?php echo $line['fnum']->val ?>_check">
 											<input type="checkbox" name="<?php echo $line['fnum']->val ?>_check" id="<?php echo $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
-											<?php 
+											<?php
 												$tab = explode('-', $key);
 												echo ($tab[1] + $this->pagination->limitstart);
 												?>
@@ -80,7 +80,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									<?php elseif($k == "id_tag"):?>
 										<?php echo @$this->colsSup['id_tag'][$line['fnum']->val]?>
 									<?php else:?>
-										<?php 
+										<?php
 											if($value->type == 'text' ) {
 												echo strip_tags($value->val);
 											}else {
@@ -101,7 +101,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		<div class="em-container-pagination">
 			<label for = "pager-select" class="em-container-pagination-label"><?php echo JText::_('DISPLAY')?></label>
 			<select name="pager-select" class="chzn-select" id="pager-select">
-				<option value="0" <?php if($this->pagination->limit == 100000){echo "selected=true";}?>><?php echo JText::_('ALL')?></option>
+				<option value="0" <?php if($this->pagination->limit == 100000){echo "selected=true";}?>><?php echo JText::_('COM_EMUNDUS_ACTIONS_ALL')?></option>
 				<option value="5" <?php if($this->pagination->limit == 5){echo "selected=true";}?>>5</option>
 				<option value="10" <?php if($this->pagination->limit == 10){echo "selected=true";}?>>10</option>
 				<option value="15" <?php if($this->pagination->limit == 15){echo "selected=true";}?>>15</option>

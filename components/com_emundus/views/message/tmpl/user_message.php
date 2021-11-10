@@ -116,7 +116,7 @@ $email_list = array();
 		</div>
 		<div class="form-group em-form-subject">
 			<div class="inputbox input-xlarge form-control form-inline">
-				<span class='label label-grey' for="mail_from" ><?= JText::_('SUBJECT'); ?>:</span>
+				<span class='label label-grey' for="mail_from" ><?= JText::_('COM_EMUNDUS_EMAILS_SUBJECT'); ?>:</span>
 				<div class="form-group" style="display:inline-block !important;" id="mail_subject" contenteditable="true"><?= JFactory::getConfig()->get('sitename'); ?></div>
 			</div>
 

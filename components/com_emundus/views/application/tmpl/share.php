@@ -84,7 +84,7 @@
                                         <?php if($this->defaultActions[$aid]['c'] == 1):?>
                                             <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-c'?>" state="<?= $actions['c']?>">
                                                 <?php if($actions['c'] > 0): ?>
-                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
+                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
                                                 <?php elseif($actions['c'] < 0):?>
                                                     <span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
                                                 <?php else:?>
@@ -97,7 +97,7 @@
                                         <?php if($this->defaultActions[$aid]['r'] == 1):?>
                                             <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-r'?>" state="<?= $actions['r']?>">
                                                 <?php if($actions['r'] > 0): ?>
-                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
+                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
                                                 <?php elseif($actions['r'] < 0):?>
                                                     <span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
                                                 <?php else:?>
@@ -110,7 +110,7 @@
                                         <?php if($this->defaultActions[$aid]['u'] == 1): ?>
                                             <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-u'?>" state="<?= $actions['u']?>">
                                                 <?php if($actions['u'] > 0): ?>
-                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
+                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
                                                 <?php elseif($actions['u'] < 0):?>
                                                     <span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
                                                 <?php else:?>
@@ -123,7 +123,7 @@
                                         <?php if($this->defaultActions[$aid]['d'] == 1):?>
                                             <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-d'?>" state="<?= $actions['d']?>">
                                                 <?php if($actions['d'] > 0): ?>
-                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
+                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
                                                 <?php elseif($actions['d'] < 0):?>
                                                     <span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
                                                 <?php else:?>
@@ -202,7 +202,7 @@
 							<?php if($this->defaultActions[$aid]['c'] == 1): ?>
 								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-c'?>" state="<?= $actions['c']?>">
 										<?php if($actions['c'] > 0): ?>
-											<span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
+											<span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
 										<?php elseif($actions['c'] < 0):?>
 											<span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
 										<?php else:?>
@@ -216,7 +216,7 @@
 								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-r'?>" state="<?= $actions['r']?>">
 
 										<?php if($actions['r'] > 0): ?>
-											<span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
+											<span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
 										<?php elseif($actions['r'] < 0):?>
 											<span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
 										<?php else:?>
@@ -230,7 +230,7 @@
 								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-u'?>" state="<?= $actions['u']?>">
 
 									<?php if($actions['u'] > 0): ?>
-										<span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
+										<span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
 									<?php elseif($actions['u'] < 0):?>
 										<span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
 									<?php else:?>
@@ -243,7 +243,7 @@
 							<?php if($this->defaultActions[$aid]['d'] == 1):?>
 								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-d'?>" state="<?= $actions['d']?>">
 									<?php if($actions['d'] > 0): ?>
-										<span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
+										<span class="glyphicon glyphicon-ok green" title="<?= JText::_('COM_EMUNDUS_ACTIONS_ACTIVE')?>"></span>
 									<?php elseif($actions['d'] < 0):?>
 										<span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
 									<?php else:?>
@@ -342,7 +342,7 @@
 		if(e.handle !== true)
 		{
 			e.handle = true;
-			var r = confirm("<?= JText::_("COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS")?>");
+			var r = confirm("<?= JText::_("COM_EMUNDUS_ACCESS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS")?>");
 			if(r)
 			{
 				var url = $(this).attr('href');

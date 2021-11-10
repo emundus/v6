@@ -35,7 +35,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
 
         $this->_user    = JFactory::getSession()->get('emundusUser');
-    
+
         $this->_db      = JFactory::getDBO();
 
         parent::__construct($config);
@@ -249,7 +249,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
             $elements = $h_files->getElements();
             echo json_encode((object)([
                 'status'        => true,
-                'default'       => JText::_('PLEASE_SELECT'),
+                'default'       => JText::_('COM_EMUNDUS_PLEASE_SELECT'),
                 'defaulttrash'  => JText::_('REMOVE_SEARCH_ELEMENT'),
                 'options'       => $elements
             ]));
@@ -322,10 +322,10 @@ class EmundusControllerAdmission extends JControllerLegacy {
             'groups'        => $evalGroups['groups'],
             'users'         => $evalGroups['users'],
             'actions'       => $actions,
-            'group'         => JText::_('GROUP_EVAL'),
+            'group'         => JText::_('COM_EMUNDUS_GROUPS_GROUP_EVAL'),
             'eval'          => JText::_('EVALUATORS'),
-            'select_group'  => JText::_('PLEASE_SELECT_GROUP'),
-            'select_eval'   => JText::_('PLEASE_SELECT_ASSESSOR'),
+            'select_group'  => JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_GROUP'),
+            'select_eval'   => JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_ASSESSOR'),
             'check'         => JText::_('CHECK_ACL'),
             'create'        => JText::_('CREATE'),
             'retrieve'      => JText::_('RETRIEVE'),
@@ -379,21 +379,21 @@ class EmundusControllerAdmission extends JControllerLegacy {
          exit;
      }
 
-    
+
      public function deletetags()
      {
          $jinput = JFactory::getApplication()->input;
          $fnums  = $jinput->getString('fnums', null);
          $tags    = $jinput->getVar('tag', null);
- 
+
          $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
- 
+
          $m_files = $this->getModel('Files');
          $m_application = $this->getModel('application');
- 
+
          if ($fnums == "all")
              $fnums = $m_files->getAllFnums();
- 
+
          foreach ($fnums as $fnum)
          {
              foreach ($tags as $tag){
@@ -410,7 +410,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
          }
          unset($fnums);
          unset($tags);
- 
+
          echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAGS_DELETE_SUCCESS'))));
          exit;
      }
@@ -600,7 +600,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $form = $jinput->getString('form', null);
         $code = $jinput->getVar('code', null);
         $code = explode(',', $code);
-        
+
         $m_admission = $this->getModel('Admission');
         $h_files = new EmundusHelperFiles;
 
@@ -644,7 +644,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $fnums_post  = $jinput->getVar('fnums', null);
 
         $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
-		
+
         $m_files = $this->getModel('Files');
 
         if ($fnums_array == 'all') {
@@ -655,9 +655,9 @@ class EmundusControllerAdmission extends JControllerLegacy {
                 $fnums[] = $value->fnum;
             }
         }
-		
+
 		$validFnums = array();
-		
+
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
                 $validFnums[] = $fnum;
@@ -901,7 +901,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
         // On traite les en-têtes
         if ($start == 0) {
-            $line=JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('COM_EMUNDUS_FORM_LAST_NAME')."\t".JText::_('COM_EMUNDUS_FORM_FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('CAMPAIGN')."\t";
+            $line=JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('COM_EMUNDUS_FORM_LAST_NAME')."\t".JText::_('COM_EMUNDUS_FORM_FIRST_NAME')."\t".JText::_('COM_EMUNDUS_EMAIL')."\t".JText::_('COM_EMUNDUS_CAMPAIGN')."\t";
             $nbcol = 6;
 
             foreach ($ordered_elements as $fKey => $fLine) {
@@ -1049,7 +1049,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
 /*
     public function export_xls_from_csv() {
 
-        // PHPExcel 
+        // PHPExcel
         ini_set('include_path', JPATH_BASE . DS . 'libraries' . DS);
         include 'PHPExcel.php';
         include 'PHPExcel/Writer/Excel5.php';
@@ -1169,7 +1169,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         @set_time_limit(10800);
         jimport( 'joomla.user.user' );
         error_reporting(0);
-        // PHPExcel 
+        // PHPExcel
         ini_set('include_path', JPATH_BASE.DS.'libraries'.DS);
 
         include 'PHPExcel.php';
@@ -1266,10 +1266,10 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_FORM_FIRST_NAME'));
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('EMAIL'));
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_EMAIL'));
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('CAMPAIGN'));
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_CAMPAIGN'));
         $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
 

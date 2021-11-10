@@ -36,7 +36,7 @@ $Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
                     <?php foreach ($this->attachments as $attachment) :?>
                         <tr>
                             <td>
-                                <a href="index.php?option=com_fabrik&view=form&formid=34&rowid=<?php echo $attachment->id; ?>&listid=36">[<?php echo JText::_('EDIT'); ?>]</a>
+                                <a href="index.php?option=com_fabrik&view=form&formid=34&rowid=<?php echo $attachment->id; ?>&listid=36">[<?php echo JText::_('COM_EMUNDUS_ACTIONS_EDIT'); ?>]</a>
                                 <?php echo $attachment->value; ?> (<?php echo $attachment->allowed_types; ?>)
                                 <input type="hidden" name="aid[]" value="<?php echo $attachment->id; ?>" />
                             </td>

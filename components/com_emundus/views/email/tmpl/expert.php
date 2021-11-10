@@ -94,7 +94,7 @@ foreach ($fnums as $fnum => $fnumInfo) {
             submit_attachment = document.getElementById('submit_attachment');
             submit_attachment.disabled = false;
             submit_attachment.style = "background: url('')";
-            submit_attachment.value = "<?= JText::_('UPLOAD'); ?>";
+            submit_attachment.value = "<?= JText::_('COM_EMUNDUS_UPLOAD'); ?>";
             var objJSON = JSON.parse(response);
             var html = '<div id="em_dl_'+objJSON.id+'" class="em_dl"><a class="dO" target="_blank" href="'+objJSON.url+'"><div class="vI">'+objJSON.name+'</div> <div class="vJ"> ('+objJSON.filesize+' <?= JText::_("BYTES") ?>)</div></a><div class="em_email_icon" id="attachment_'+objJSON.id+'">';
             html += '<img src="<?= JURI::base(); ?>media/com_emundus/images/icones/x_8px.png" alt="<?= JText::_("DELETE_ATTACHMENT"); ?>" title="<?= JText::_("DELETE_ATTACHMENT"); ?>" onClick="if (confirm(\'<?= htmlentities(JText::_("DELETE_ATTACHMENT_CONFIRM")); ?>\')) {deleteAttachment('+objJSON.id+');}"/></div>';
@@ -118,7 +118,7 @@ if (!empty($attachment_types)) :?>
                 <input name="can_be_deleted" type="hidden" value="0" />
                 <input name="MAX_FILE_SIZE" type="hidden" value="10000000" />
                 <input name="filename" type="file" />
-                <input id="submit_attachment" type="submit" value="<?= JText::_('UPLOAD').' ('.$fnumInfo['name'].')'; ?>" />
+                <input id="submit_attachment" type="submit" value="<?= JText::_('COM_EMUNDUS_UPLOAD').' ('.$fnumInfo['name'].')'; ?>" />
             </div>
         </form>
     <?php endforeach; ?>

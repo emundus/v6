@@ -49,11 +49,11 @@ class EmundusHelperEmails {
         if (in_array('default',$params)) {
             $email .= '<fieldset class="em_email_block-fieldset">
 				<legend>
-					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'::'.JText::_('EMAIL_ASSESSORS_DEFAULT_TIP').'">
-						<img src="'.JURI::base().'media/com_emundus/images/icones/mail_replayall_22x22.png" alt="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'"/>'.JText::_('EMAIL_ASSESSORS_DEFAULT').'
+					<span class="editlinktip hasTip" title="'.JText::_('COM_EMUNDUS_GROUPS_EMAIL_ASSESSORS_DEFAULT').'::'.JText::_('COM_EMUNDUS_GROUPS_EMAIL_ASSESSORS_DEFAULT_TIP').'">
+						<img src="'.JURI::base().'media/com_emundus/images/icones/mail_replayall_22x22.png" alt="'.JText::_('COM_EMUNDUS_GROUPS_EMAIL_ASSESSORS_DEFAULT').'"/>'.JText::_('COM_EMUNDUS_GROUPS_EMAIL_ASSESSORS_DEFAULT').'
 					</span>
 				</legend>
-				<div><input type="submit" class="btn btn-large btn-success" name="default_email" value="'.JText::_( 'SEND_DEFAULT_EMAIL' ).'" ></div>
+				<div><input type="submit" class="btn btn-large btn-success" name="default_email" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_DEFAULT_EMAIL' ).'" ></div>
 			</fieldset>';
         }
 
@@ -68,7 +68,7 @@ class EmundusHelperEmails {
             $all_groups = EmundusHelperFilters::getGroups();
 
             $email .= '<select name="mail_group[]" id="mail_group" multiple="multiple" size="6">
-						<option value=""> '.JText::_('PLEASE_SELECT_GROUP').' </option>' ;
+						<option value=""> '.JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_GROUP').' </option>' ;
             foreach($all_groups as $groups) {
                 $email .= '<option value="'.$groups->id.'"';
                 if($current_group==$groups->id) $email .= ' selected';
@@ -84,8 +84,8 @@ class EmundusHelperEmails {
                 $email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
             }
             $email.='</select>';
-            $email.= ' <input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="'.$default_template->subject.'" size="100" style="width: inherit !important;" />';
-            $email .= $mail_body.'<input class="btn btn-large btn-success" type="submit" name="group_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >';
+            $email.= ' <input placeholder="'.JText::_( 'COM_EMUNDUS_EMAILS_SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="'.$default_template->subject.'" size="100" style="width: inherit !important;" />';
+            $email .= $mail_body.'<input class="btn btn-large btn-success" type="submit" name="group_email" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" >';
         }
 
         if (in_array('applicants', $params)) {
@@ -103,8 +103,8 @@ class EmundusHelperEmails {
                     $email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
                 }
                 $email.='</select>';
-                $email.= '<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />';
-                $email .=$mail_body.'<input class="btn btn-large btn-success" type="submit" name="applicant_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >';
+                $email.= '<input placeholder="'.JText::_( 'COM_EMUNDUS_EMAILS_SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />';
+                $email .=$mail_body.'<input class="btn btn-large btn-success" type="submit" name="applicant_email" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" >';
 
             } else {
                 $email .= '<div class="well well-sm">';
@@ -127,8 +127,8 @@ class EmundusHelperEmails {
                     $email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
                 }
                 $email .='</select>';
-                $email .= ' <input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />';
-                $email .= $mail_body.'<div><input class="btn btn-large btn-success" type="submit" name="applicant_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>';
+                $email .= ' <input placeholder="'.JText::_( 'COM_EMUNDUS_EMAILS_SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />';
+                $email .= $mail_body.'<div><input class="btn btn-large btn-success" type="submit" name="applicant_email" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" ></div>';
             }
         }
 
@@ -151,9 +151,9 @@ class EmundusHelperEmails {
                 }
                 $email .= '</select>';
 
-                $email .= '<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="'.$default_template->subject.'" size="100" style="width: inherit !important;" />';
+                $email .= '<input placeholder="'.JText::_( 'COM_EMUNDUS_EMAILS_SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="'.$default_template->subject.'" size="100" style="width: inherit !important;" />';
                 $email .= '<input placeholder="'.JText::_( 'EMAIL_TO' ).'" type="text" name="ud[]" value=""/> ';
-                $email .= $mail_body.'<input type="submit" class="btn btn-large btn-success" name="applicant_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >';
+                $email .= $mail_body.'<input type="submit" class="btn btn-large btn-success" name="applicant_email" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" >';
             } else {
                 foreach ($users as $user) {
                     $email_list = array();
@@ -173,9 +173,9 @@ class EmundusHelperEmails {
                     $email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
                 }
                 $email.='</select>';
-                $email .= '<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="'.$default_template->subject.'" size="100" style="width: inherit !important;" />';
+                $email .= '<input placeholder="'.JText::_( 'COM_EMUNDUS_EMAILS_SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="'.$default_template->subject.'" size="100" style="width: inherit !important;" />';
 
-                $email .= $mail_body.'<input type="submit" class="btn btn-large btn-success" name="applicant_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >';
+                $email .= $mail_body.'<input type="submit" class="btn btn-large btn-success" name="applicant_email" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" >';
             }
         }
 
@@ -204,7 +204,7 @@ class EmundusHelperEmails {
 				</p>
 					<input name="mail_attachments" type="hidden" class="inputbox" id="mail_attachments" value="" />
 					<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="evaluation_result" />
-				<p><div><input class="btn btn-large btn-success" type="submit" name="evaluation_result_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div></p>
+				<p><div><input class="btn btn-large btn-success" type="submit" name="evaluation_result_email" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" ></div></p>
 			</fieldset>';
 
             $email .= '<script>
@@ -259,7 +259,7 @@ class EmundusHelperEmails {
                 $email .= '<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
             }
             $email .= '</select>
-						<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
+						<input placeholder="'.JText::_( 'COM_EMUNDUS_EMAILS_SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
 						<select name="mail_to[]" type="text" class="inputbox" id="mail_to" size="100" style="width: 100% !important;" multiple="multiple">
 							<option value="">'.JText::_('COM_EMUNDUS_EMAILS_EMAIL_TO').'</option>';
             foreach ($users as $expert) {
@@ -272,7 +272,7 @@ class EmundusHelperEmails {
 						<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="expert" />
 						<p>
 							<div>
-								<input class="btn btn-large btn-success" type="submit" name="expert" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >
+								<input class="btn btn-large btn-success" type="submit" name="expert" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" >
 							</div>
 						</p>
 						
@@ -378,11 +378,11 @@ class EmundusHelperEmails {
             $email.='</select>';
 
             $email.= '
-					<input name="mail_subject" placeholder="'.JText::_( 'SUBJECT' ).'" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
+					<input name="mail_subject" placeholder="'.JText::_( 'COM_EMUNDUS_EMAILS_SUBJECT' ).'" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
 					<input name="mail_to" type="text" class="inputbox input-xlarge" id="mail_to" value="'.$student->username.'" size="100" disabled/>
 					<input type="hidden" name="ud[]" value="'.$email_to.'" >';
 
-            $email .= $mail_body.'<div><input class="btn btn-large btn-success" type="submit" name="applicant_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>';
+            $email .= $mail_body.'<div><input class="btn btn-large btn-success" type="submit" name="applicant_email" value="'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'" ></div>';
         }
         $email .= '</div>
 					<script>$(document).on("click", "input[type=\'submit\']", function() { if($("#mail_subject").val() == ""){$("#mail_subject").css("border", "2px solid red"); return false;} else document.pressed=this.name; }); </script>

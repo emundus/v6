@@ -40,14 +40,14 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                         <div class="selectAll" id="selectAll">
                             <label for="em-check-all">
                                 <input value="-1" id="em-check-all" type="checkbox" class="em-check" />
-                                <span id="span-check-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL');?></span>
+                                <span id="span-check-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL');?></span>
                             </label>
                             <label class="em-check-all-all" for="em-check-all-all">
                                 <input value="all" id="em-check-all-all" type="checkbox" class="em-check-all-all" />
-                                <span id="span-check-all-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL_ALL'); ?></span>
+                                <span id="span-check-all-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL'); ?></span>
                             </label>
                             <label class="em-check-none" for="em-check-none">
-                                <span id="span-check-none"><?= JText::_('COM_EMUNDUS_CHECK_NONE'); ?></span>
+                                <span id="span-check-none"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
                             </label>
                         </div>
                         <th id="<?php echo $key?>">
@@ -150,7 +150,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 	<div class="em-container-pagination">
         <label for = "pager-select" class="em-container-pagination-label"><?php echo JText::_('DISPLAY')?></label>
         <select name="pager-select" class="chzn-select" id="pager-select">
-            <option value="0" <?php if($this->pagination->limit == 100000){echo "selected=true";}?>><?php echo JText::_('ALL')?></option>
+            <option value="0" <?php if($this->pagination->limit == 100000){echo "selected=true";}?>><?php echo JText::_('COM_EMUNDUS_ACTIONS_ALL')?></option>
             <option value="5" <?php if($this->pagination->limit == 5){echo "selected=true";}?>>5</option>
             <option value="10" <?php if($this->pagination->limit == 10){echo "selected=true";}?>>10</option>
             <option value="15" <?php if($this->pagination->limit == 15){echo "selected=true";}?>>15</option>
@@ -256,11 +256,11 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 
         let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check ').filter(':checked').length;
         let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
-        let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_SELECT_ALL') : countCheckedCheckbox;
+        let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') : countCheckedCheckbox;
         //console.log(countCheckedCheckbox);
-        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_SELECT_USER') : Joomla.JText._('COM_EMUNDUS_SELECT_USERS');
+        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_USERS_SELECT_USER') : Joomla.JText._('COM_EMUNDUS_USERS_SELECT_USERS');
         if (countCheckedCheckbox !== 0) {
-            $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
+            $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
         } else {
             $('#countCheckedCheckbox').html('');
         }

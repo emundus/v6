@@ -462,7 +462,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             if (!empty($toAttach['upload'])) {
 
-                $files .= '<strong>'.JText::_('UPLOAD').'</strong>';
+                $files .= '<strong>'.JText::_('COM_EMUNDUS_UPLOAD').'</strong>';
 
                 $files .= '<ul>';
                 foreach ($toAttach['upload'] as $attach) {

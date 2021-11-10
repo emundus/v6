@@ -257,7 +257,7 @@ class EmundusModelUsers extends JModelList {
                 foreach ($search as $str) {
                     $val = explode(': ', $str);
 
-                    if ($val[0] == "ALL") {
+                    if ($val[0] == "COM_EMUNDUS_ACTIONS_ALL") {
                         $q .= ' OR e.lastname LIKE '.$db->Quote('%'.$val[1].'%').'
                         OR e.firstname LIKE '.$db->Quote('%'.$val[1].'%').'
                         OR u.email LIKE '.$db->Quote('%'.$val[1].'%').'
@@ -1444,7 +1444,7 @@ class EmundusModelUsers extends JModelList {
             ->leftJoin($db->quoteName('#__emundus_setup_groups','esg').' ON '.$db->quoteName('g.group_id').' = '.$db->quoteName('esg.id'))
             ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','esgc').' ON '.$db->quoteName('esgc.parent_id').' = '.$db->quoteName('esg.id'))
             ->where($db->quoteName('g.user_id') . ' = ' . $uid);
-            
+
         $db->setQuery($query);
         try {
             return $db->loadColumn();

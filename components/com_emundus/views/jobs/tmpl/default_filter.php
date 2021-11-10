@@ -22,7 +22,7 @@ $elements = $db->loadObjectList();
 
 
 $options_etablissement = array();
-$options_etablissement[] = JHTML::_('select.option', "", JText::_('PLEASE_SELECT'));
+$options_etablissement[] = JHTML::_('select.option', "", JText::_('COM_EMUNDUS_PLEASE_SELECT'));
 $i=0;
 
 foreach($elements as $key=>$value) :
@@ -44,7 +44,7 @@ $domaines = @EmundusHelperFiles::getElementsValuesOther(2262);
 $values = $domaines->sub_values;
 $labels = $domaines->sub_labels;
 $options = array();
-$options[] = JHTML::_('select.option', "", JText::_('PLEASE_SELECT'));
+$options[] = JHTML::_('select.option', "", JText::_('COM_EMUNDUS_PLEASE_SELECT'));
 $i=0;
 foreach($labels as $key=>$value) :
 

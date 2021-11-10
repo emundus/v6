@@ -78,7 +78,7 @@ if (!empty($this->custom_title)) :?>
             <h3><?= $this->title; ?></h3>
             <?php
                 if ($this->sent && count($this->result) == 0) {
-	                echo '<h3>' . JText::_('APPLICATION_SENT') . '</h3>';
+	                echo '<h3>' . JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_SENT') . '</h3>';
                 } else {
 	                echo $this->text;
                 }
@@ -346,8 +346,8 @@ if (!empty($this->custom_title)) :?>
     Dropzone.options.formA'.$attachment->id.' =  {
         maxFiles: '.$attachment->nbmax .',
         maxFilesize: maxFilesize.substr(0, maxFilesize.length-1), // MB
-        dictDefaultMessage: "'.JText::_('COM_EMUNDUS_UPLOAD_DROP_FILE_OR_CLICK').'",
-        dictInvalidFileType: "'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'",
+        dictDefaultMessage: "'.JText::_('COM_EMUNDUS_ATTACHMENTS_UPLOAD_DROP_FILE_OR_CLICK').'",
+        dictInvalidFileType: "'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'",
         url: "index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid.'&format=raw",
 
         accept: function(file, done) {
@@ -355,7 +355,7 @@ if (!empty($this->custom_title)) :?>
             var sFileExtension = sFileName.split(".")[sFileName.split(".").length - 1].toLowerCase();
 
             if (sFileExtension == "php") {
-              done("'.JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
+              done("'.JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'");
             } else {
                 var allowedExtension = "'.$attachment->allowed_types.'";
                 var n = allowedExtension.indexOf(sFileExtension);
@@ -383,11 +383,11 @@ if (!empty($this->custom_title)) :?>
                     Swal.fire({
                             position: "top",
                             type: "warning",
-                            title: "'. JText::_("PLEASE_ONLY").' '.$attachment->allowed_types.'",
+                            title: "'. JText::_("COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY").' '.$attachment->allowed_types.'",
                             confirmButtonText: "'. JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
                             showCancelButton: false
                         });
-                    done("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
+                    done("'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'");
                     this.removeFile(file);
                 }
             }
@@ -482,7 +482,7 @@ if (!empty($this->custom_title)) :?>
                 </tr>
                 <tr class="em-allowed-files">
                     <td>
-                    <p><em>'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p><p><em>'.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>
+                    <p><em>'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p><p><em>'.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>
                     </td>
                 </tr>';
                 } else {

@@ -53,7 +53,7 @@ function age($naiss) {
                         </a>
                         <button class="mini ui icon button" data-title="<?php echo JText::_('EXPORT_TO_ZIP'); ?>" onclick="document.pressed=this.name;" name="export_zip"> <i class="archive icon"></i> </button>
                         <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(); ?>index.php?option=com_fabrik&amp;c=form&amp;view=form&amp;formid=67&amp;tableid=70&amp;rowid=&amp;jos_emundus_uploads___user_id[value]=<?php echo $this->student->id; ?>&amp;student_id=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1">
-                        <button class="mini ui icon button" data-title="<?php echo JText::_('UPLOAD_FILE_FOR_STUDENT'); ?>" data-content="<?php echo JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>"> <i class="attachment basic icon"></i> </button>
+                        <button class="mini ui icon button" data-title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_UPLOAD_FILE_FOR_STUDENT'); ?>" data-content="<?php echo JText::_('COM_EMUNDUS_APPLICATION_YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>"> <i class="attachment basic icon"></i> </button>
                         </a> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(); ?>index.php?option=com_fabrik&amp;c=form&amp;view=form&amp;formid=89&amp;tableid=92&amp;rowid=&amp;jos_emundus_comments___applicant_id[value]=<?php echo $this->student->id; ?>&amp;student_id=<?php echo $this->student->id; ?>&amp;tmpl=component&amp;iframe=1">
                         <button class="mini ui icon button" data-title="<?php echo JText::_('ADD_COMMENT'); ?>"> <i class="comment basic icon"></i> </button>
                         </a> <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y: window.getHeight()*0.8}}" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&amp;view=email&amp;tmpl=component&amp;sid=<?php echo $this->student->id; ?>&amp;Itemid=<?php echo $itemid; ?>">
@@ -81,7 +81,7 @@ function age($naiss) {
                                         echo '<i class="item right"></i>'.$details->element_label.' : <b>'.$value.'</b>';
                                     }
                                     echo '<i class="item right"></i><a href="mailto:'.$this->student->email.'">'.$this->student->email.'</a>';
-                                    echo '<i class="item right"></i>'.JText::_('PROFILE').' : <b>'.$this->userInformations['profile'].'</b>';
+                                    echo '<i class="item right"></i>'.JText::_('COM_EMUNDUS_PROFILE').' : <b>'.$this->userInformations['profile'].'</b>';
                                     ?>
                       </div>
                     </div>
@@ -93,7 +93,7 @@ function age($naiss) {
         </div>
         <div class="column">
           <div class="ui fluid form segment">
-            <h3 class="ui header"><?php echo JText::_('CAMPAIGN'); ?></h3>
+            <h3 class="ui header"><?php echo JText::_('COM_EMUNDUS_CAMPAIGN'); ?></h3>
             <div class="content">
               <?php
             foreach($this->userCampaigns as $campaign){
@@ -102,7 +102,7 @@ function age($naiss) {
                           <div class="item">
                             <div class="header">'. $campaign->training.'</div>
                           <div class="item">
-                            <div class="header">'. JText::_('ACADEMIC_YEAR').'</div>'.$campaign->year.'
+                            <div class="header">'. JText::_('COM_EMUNDUS_ACADEMIC_YEAR').'</div>'.$campaign->year.'
                           </div>';
                 if($campaign->submitted==1){
                      $info .= '<div class="item">
@@ -201,9 +201,9 @@ function age($naiss) {
         <table>
           <thead>
             <tr>
-              <th><strong><?php echo JText::_('USERNAME'); ?></strong></th>
+              <th><strong><?php echo JText::_('COM_EMUNDUS_USERNAME'); ?></strong></th>
               <th><strong><?php echo JText::_('ACCOUNT_CREATED_ON');?></strong></th>
-              <th><strong><?php echo JText::_('LAST_VISIT');?></strong></th>
+              <th><strong><?php echo JText::_('COM_EMUNDUS_USERS_LAST_VISIT');?></strong></th>
               <th><strong><?php echo JText::_('STATUS');?></strong></th>
             </tr>
           </thead>
@@ -235,7 +235,7 @@ function age($naiss) {
 			if (EmundusHelperAccess::asCoordinatorAccessLevel($this->current_user->id)) {
 			?>
           <a class="modal clean" target="_self" rel="{handler:'iframe',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.8,onClose:function(){delayAct('<?php echo $this->student->id; ?>');}}}" href="<?php echo JURI::base(); ?>/index.php?option=com_fabrik&c=form&view=form&formid=67&tableid=70&rowid=&jos_emundus_uploads___user_id[value]=<?php echo $this->student->id; ?>&jos_emundus_uploads___fnum[value]=<?php echo $this->student->fnum; ?>&student_id=<?php echo $this->student->id; ?>&tmpl=component&iframe=1">
-          <button class="ui right icon button" data-title="<?php echo JText::_('UPLOAD_FILE_FOR_STUDENT'); ?>" data-content="<?php echo JText::_('YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>"> <i class="large attachment basic icon"></i> </button>
+          <button class="ui right icon button" data-title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_UPLOAD_FILE_FOR_STUDENT'); ?>" data-content="<?php echo JText::_('COM_EMUNDUS_APPLICATION_YOU_CAN_ATTACH_A_DOCUMENT_FOR_THE_STUDENT_THRU_THAT_LINK'); ?>"> <i class="large attachment basic icon"></i> </button>
           </a>
           <?php
 			 }
@@ -262,10 +262,10 @@ function age($naiss) {
                             <div class="header">'. JText::_('ATTACHMENT_DATE').'</div>'.JHtml::_('date', $attachment->timedate, JText::_('DATE_FORMAT_LC2')).'
                           </div>
                           <div class="item">
-                            <div class="header">'. JText::_('CAMPAIGN').'</div>'.$attachment->campaign_label.'
+                            <div class="header">'. JText::_('COM_EMUNDUS_CAMPAIGN').'</div>'.$attachment->campaign_label.'
                           </div>
                            <div class="item">
-                            <div class="header">'. JText::_('ACADEMIC_YEAR').'</div>'.$attachment->year.'
+                            <div class="header">'. JText::_('COM_EMUNDUS_ACADEMIC_YEAR').'</div>'.$attachment->year.'
                           </div>
                         </div>';
 
@@ -601,7 +601,7 @@ function OnSubmitForm() {
 				document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&controller=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&task=applicantEmail";
 			break;
 			case "default_email":
-				if (confirm("<?php echo JText::_("CONFIRM_DEFAULT_EMAIL"); ?>")) {
+				if (confirm("<?php echo JText::_("COM_EMUNDUS_EMAILS_CONFIRM_DEFAULT_EMAIL"); ?>")) {
 					document.applicant_form.task.value = "defaultEmail";
 					document.applicant_form.action ="index.php?option=com_emundus&view=<?php echo $view; ?>&controller=<?php echo $view; ?>&Itemid=<?php echo $itemid; ?>&task=defaultEmail";
 				} else

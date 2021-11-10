@@ -901,7 +901,7 @@ class EmundusModelEmails extends JModelList {
                     }
 
                     $print_message .= '<hr>'.JText::_('EMAIL_SENT').' : '.$m_to;
-                    $print_message .= '<hr>'.JText::_('SUBJECT').' : '.$mail_subject;
+                    $print_message .= '<hr>'.JText::_('COM_EMUNDUS_EMAILS_SUBJECT').' : '.$mail_subject;
                     $print_message .= '<hr>'.$body;
                 }
 
@@ -1123,7 +1123,7 @@ class EmundusModelEmails extends JModelList {
 				}
 
 				$print_message .= '<hr>'.JText::_('EMAIL_SENT').' : '.$m_to;
-				$print_message .= '<hr>'.JText::_('SUBJECT').' : '.$mail_subject;
+				$print_message .= '<hr>'.JText::_('COM_EMUNDUS_EMAILS_SUBJECT').' : '.$mail_subject;
 				$print_message .= '<hr>'.$body;
 			}
 		}

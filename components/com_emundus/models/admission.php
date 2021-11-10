@@ -1175,7 +1175,7 @@ class EmundusModelAdmission extends JModelList
 
 		    $val = explode(': ', $str);
 
-		    if ($val[0] == "ALL") {
+		    if ($val[0] == "COM_EMUNDUS_ACTIONS_ALL") {
 
 			    if (is_numeric($val[1])) {
 

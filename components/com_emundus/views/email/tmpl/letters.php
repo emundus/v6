@@ -89,7 +89,7 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 				submit_attachment = document.getElementById('submit_attachment');
 				submit_attachment.disabled=false;
 				submit_attachment.style="background: url('')";
-				submit_attachment.value = "<?php echo JText::_('UPLOAD'); ?>";
+				submit_attachment.value = "<?php echo JText::_('COM_EMUNDUS_UPLOAD'); ?>";
     			var objJSON = JSON.parse(response);
 				var html = '<div id="em_dl_'+objJSON.id+'" class="em_dl"><a class="dO" target="_blank" href="'+objJSON.url+'"><div class="vI">'+objJSON.name+'</div> <div class="vJ"> ('+objJSON.filesize+' <?php echo JText::_("BYTES") ?>)</div></a><div class="em_email_icon" id="attachment_'+objJSON.id+'">';
 				html += '<img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/x_8px.png" alt="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" title="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" onClick="if (confirm(\'<?php echo htmlentities(JText::_("DELETE_ATTACHMENT_CONFIRM")); ?>\')) {deleteAttachment('+objJSON.id+');}"/></div>';
@@ -110,7 +110,7 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 			<input name="can_be_deleted" type="hidden" value="0" />
 			<input name="MAX_FILE_SIZE" type="hidden" value="10000000" />
 			<input name="filename" type="file" />
-			<input id="submit_attachment" type="submit" value="<?php echo JText::_('UPLOAD'); ?>" />
+			<input id="submit_attachment" type="submit" value="<?php echo JText::_('COM_EMUNDUS_UPLOAD'); ?>" />
 		</div>
 	</form>
 	<?php

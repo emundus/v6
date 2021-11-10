@@ -338,7 +338,7 @@ class EmundusControllerFiles extends JControllerLegacy
     public function getadvfilters() {
         try {
             $elements = @EmundusHelperFiles::getElements();
-            echo json_encode((object)(array('status' => true, 'default' => JText::_('PLEASE_SELECT'), 'defaulttrash' => JText::_('REMOVE_SEARCH_ELEMENT'), 'options' => $elements)));
+            echo json_encode((object)(array('status' => true, 'default' => JText::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => JText::_('REMOVE_SEARCH_ELEMENT'), 'options' => $elements)));
             exit;
         } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -389,7 +389,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
             $html = $h_files->setSearchBox($element[$id], '', $tab_name . '.' . $element[$id]->element_name, $index);
 
-            echo json_encode((object)(array('status' => true, 'default' => JText::_('PLEASE_SELECT'), 'defaulttrash' => JText::_('REMOVE_SEARCH_ELEMENT'), 'html' => $html)));
+            echo json_encode((object)(array('status' => true, 'default' => JText::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => JText::_('REMOVE_SEARCH_ELEMENT'), 'html' => $html)));
             exit;
         } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -1599,7 +1599,7 @@ class EmundusControllerFiles extends JControllerLegacy
             if ($anonymize_data) {
                 $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('PROGRAMME')."\t";
             } else {
-                $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('COM_EMUNDUS_FORM_LAST_NAME')."\t".JText::_('COM_EMUNDUS_FORM_FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('PROGRAMME')."\t";
+                $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('COM_EMUNDUS_FORM_LAST_NAME')."\t".JText::_('COM_EMUNDUS_FORM_FIRST_NAME')."\t".JText::_('COM_EMUNDUS_EMAIL')."\t".JText::_('PROGRAMME')."\t";
             }
 
             $nbcol = 6;
@@ -2607,10 +2607,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_FORM_FIRST_NAME'));
         $objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
-        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('EMAIL'));
+        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_EMAIL'));
         $objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
-        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('CAMPAIGN'));
+        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_CAMPAIGN'));
         $objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
         $i++;
 
@@ -2655,7 +2655,7 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($colOpt as $kOpt => $vOpt) {
                 switch ($kOpt) {
                     case "photo":
-                        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('PHOTO'));
+                        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_PHOTO'));
                         break;
 	                case "attachment":
 	                case "forms":
