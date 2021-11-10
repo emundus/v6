@@ -102,7 +102,7 @@ class EmundusViewApplication extends JViewLegacy {
                     break;
 
                 case 'assoc_files':
-                    $_mDecision = new EmundusModelDecision;
+                    //$_mDecision = new EmundusModelDecision;
                     $show_related_files = $params->get('show_related_files', 0);
 
                     if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asManagerAccessLevel($this->_user->id)) {
