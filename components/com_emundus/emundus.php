@@ -403,13 +403,8 @@ JText::script('COM_EMUNDUS_MODEL_ERR');
 // UPLOADED IMAGE IS TOO SMALL
 JText::script('ERROR_IMAGE_TOO_SMALL');
 
-
-// OPI CODE
-JText::script('OPI_CODE');
-
 JText::script('COM_EMUNDUS_EMAILS_CC_PLACEHOLDER');
 JText::script('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER');
-
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');

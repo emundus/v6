@@ -18,6 +18,8 @@ jimport('joomla.application.component.model');
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_onboard/models');        // call com_emundus_onboard model
 
+use Joomla\CMS\Filesystem\File;
+
 class EmundusModelApplication extends JModelList
 {
     var $_user = null;
@@ -143,7 +145,7 @@ class EmundusModelApplication extends JModelList
 
         if (EmundusHelperAccess::isExpert($this->_user->id)) {
             if (isset($search) && !empty($search)) {
-                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, eu.modified, eu.modified_by, esc.label as campaign_label, esc.year, esc.training
 				            FROM #__emundus_uploads AS eu
 				            LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
 				            LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
@@ -154,7 +156,7 @@ class EmundusModelApplication extends JModelList
 				            OR eu.timedate like "%' . $search . '%")
 				            ORDER BY esa.category,esa.ordering,esa.value DESC';
             } else {
-                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, eu.modified, eu.modified_by, esc.label as campaign_label, esc.year, esc.training
 			                FROM #__emundus_uploads AS eu
 			                LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
 			                LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
@@ -164,7 +166,7 @@ class EmundusModelApplication extends JModelList
             }
         } else {
             if (isset($search) && !empty($search)) {
-                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, eu.modified, eu.modified_by, esc.label as campaign_label, esc.year, esc.training
                 FROM #__emundus_uploads AS eu
                 LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
                 LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
@@ -174,7 +176,7 @@ class EmundusModelApplication extends JModelList
                 OR eu.timedate like "%' . $search . '%")
                 ORDER BY esa.category,esa.ordering,esa.value ASC';
             } else {
-                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
+                $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, eu.modified, eu.modified_by, esc.label as campaign_label, esc.year, esc.training
                 FROM #__emundus_uploads AS eu
                 LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
                 LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
@@ -3980,5 +3982,527 @@ class EmundusModelApplication extends JModelList
         $html .= '</ol>';
 
         return $html;
+    }
+
+    /**
+     * Update attachment file, description, is_validated values
+     * 
+     * @param fnum file number
+     * @param user the user updating the file
+     * @param attachment values to update
+     * 
+     * @return (array) containing status of update and file content update  
+     */
+    public function updateAttachment($data) {
+        $return = [
+            "update" => false
+        ];
+        
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
+
+
+
+        if (isset($data['file'])) {
+            // replace content of current attachment
+            $content = file_get_contents($data['file']['tmp_name']);
+            $attachment = $this->getUploadByID($data['id']);
+            $updated = file_put_contents(EMUNDUS_PATH_REL . $attachment['user_id'] . "/" . $attachment['filename'], $content);
+            
+            $return['file_update'] = $updated ? true : false;
+        }
+
+        // update attachments fields in database
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->update($db->quoteName('#__emundus_uploads'))
+            ->set($db->quoteName('description') . ' = ' . $db->quote($data['description']))
+            ->set($db->quoteName('is_validated') . ' = ' . $db->quote($data['is_validated']))
+            ->set($db->quoteName('modified') . ' = ' . $db->quote(date("Y-m-d H:i:s")))
+            ->set($db->quoteName('modified_by') . ' = ' . $db->quote($data['user']))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($data['id']));
+
+        //execute query
+        try {
+            $db->setQuery($query);
+            $db->execute();
+            $return['update'] = true;
+        } catch (Exception $e) {
+            // log error
+            $return['update'] = false;
+        }
+
+        return $return;
+    }
+
+    /**
+     * Generate preview based on file types
+     * @param user id of the applicant
+     * @param filename
+     * 
+     * @return preview html tags
+     */
+    public function getAttachmentPreview($user, $fileName) 
+    {
+        $preview = [
+            'status' => true,
+            'content' => '',
+            'overflowX' => false,
+            'overflowY' => false,
+            'style' => '',
+            'msg' => ''
+        ];
+        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        
+        $filePath = EMUNDUS_PATH_REL . $user . "/" . $fileName;
+        $fileExists = File::exists($filePath);
+
+        if ($fileExists) {
+
+            // create preview based on filetype
+            if (in_array($extension, ['pdf', 'txt'])) {
+                $preview['content'] = '<iframe src="' . JURI::base() . $filePath . '" width="100%" height="100%" style="border:none;"></iframe>';
+            } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="' . JURI::base() . $filePath . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
+            } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {   
+                require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+
+                switch($extension) {
+                    case 'odt':
+                        $class = 'ODText';
+                        break;
+                    case 'rtf':
+                        $class = 'RTF';
+                        break;
+                    case 'doc':
+                    case 'docx':
+                    default: 
+                        $class = 'Word2007';
+                }
+             
+                // ? Check if render as pdf would be a better solution 
+                // $rendererName = \PhpOffice\PhpWord\Settings::PDF_RENDERER_TCPDF;
+                // \PhpOffice\PhpWord\Settings::setPdfRenderer($rendererName, JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf');
+                // $pdf = new \PhpOffice\PhpWord\Writer\PDF($phpWord);
+                // $pdf->save($fileName . '.pdf');
+                // $preview['content'] = '<iframe src="' . JPATH_BASE . DS . $fileName . '.pdf" width="99%" height="99%"></iframe>';
+
+                $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . $filePath, $class);
+                $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
+                $preview['content'] = '<div class="wrapper">' . $htmlWriter->getContent() . '</div>';
+                $preview['overflowY'] = true;
+                $preview['style'] = 'word';
+                $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
+
+            } else if (in_array($extension, ['xls', 'xlsx', 'ods', 'csv'])) {
+                require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+             
+                $phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_BASE . DS . $filePath);
+                $htmlWriter = new \PhpOffice\PhpSpreadsheet\Writer\HTML($phpSpreadsheet);
+                $htmlWriter->setGenerateSheetNavigationBlock(true);
+                $htmlWriter->setSheetIndex(null);
+                $preview['content'] = $htmlWriter->generateHtmlAll();
+                $preview['overflowY'] = true;
+                $preview['overflowX'] = true;
+                $preview['style'] = 'sheet';
+
+                $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
+            } else if (in_array($extension, ['ppt', 'pptx', 'odp'])) {
+                // ? PHPPresentation is not giving html support... need to create it manually ? 
+                $preview['content'] = $this->convertPowerPointToHTML($filePath);
+                $preview['overflowY'] = true;
+                $preview['style'] = 'presentation';
+
+                $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
+            } else if (in_array($extension, ['mp3', 'wav', 'ogg'])) {
+                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><audio controls><source src="' . JURI::base() . $filePath . '" type="audio/' . $extension . '"></audio></div>';
+            } else if (in_array($extension, ['mp4', 'webm', 'ogg'])) {
+                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><video controls  style="max-width: 100%;"><source src="'. JURI::base() . $filePath . '" type="video/' . $extension . '"></video></div>';
+            } else {
+                $preview['status'] = false;
+                $preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('FILE_TYPE_NOT_SUPPORTED') . '</p></div>';
+            } 
+        } else {
+            $preview['status'] = false;
+            $preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('FILE_NOT_FOUND') . '</p></div>';
+        }
+
+        return $preview;
+    }
+
+    private function convertPowerPointToHTML($filePath) 
+    {
+        $content = '';
+
+        // create a ziparchive
+        $zip = new ZipArchive;
+        
+        if ($zip->open($filePath)) {
+            // get xml content of all slides
+            $slides = [];
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $filename = $zip->getNameIndex($i);
+                if (strpos($filename, 'ppt/slides/slide') !== false) {
+                    $slides[] = $zip->getFromIndex($i);
+                }
+            }
+
+            // get style properties of all slides
+            $slideStyles = [];
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $filename = $zip->getNameIndex($i);
+                if (strpos($filename, 'ppt/slideMasters/slideMaster') !== false) {
+                    $slideStyles[] = $zip->getFromIndex($i);
+                }
+            }
+
+            $zip->close();
+            
+            // create html content from slides and style
+            $content = '<div class="wrapper" style="display: flex;flex-direction:column;justify-content: flex-start;align-items: center;">';
+            foreach ($slides as $key => $slide) {
+                $content .= '<div class="slide" style="width: 100%;height: 100%;">';
+
+                $dom = new DOMDocument();
+                $dom->loadXML($slide);
+
+                $xpath = new DOMXPath($dom);
+
+                $query = '//a:p';
+                $entries = $xpath->query($query);
+
+                foreach($entries as $e_key => $entry) {
+                    $content .= "<p>";
+                    
+                    // use . for relative query
+                    $query = './/a:t';
+                    $text_entries = $xpath->query($query, $entry);
+
+                    foreach($text_entries as $text) {
+                        $content .= $text->nodeValue;
+                    }
+                
+                    $content .= "</p>";
+                }
+
+                // $content .= $dom->saveXML();
+
+                $content .= '</div>';
+            }
+        }
+
+        return $content;
+    }
+
+    /**
+     * Generate filters options from fabrik list
+     * @param type (string) list only for now
+     * @param id (int) id of the element
+     * */
+    public function getFilters($type, $id) 
+    {
+        $return = [];
+
+        // get form id from list
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select(array('el.id', 'el.name', 'el.label', 'el.plugin', 'el.default', 'el.params'))
+        ->from($db->quoteName('#__fabrik_lists', 'list'))
+        ->join('LEFT', $db->quoteName('#__fabrik_formgroup', 'fg') . ' ON ' . $db->quoteName('list.form_id') . ' = ' . $db->quoteName('fg.form_id'))
+        ->join('LEFT', $db->quoteName('#__fabrik_elements', 'el') . ' ON ' . $db->quoteName('el.group_id') . ' = ' . $db->quoteName('fg.group_id'))
+        ->where($db->quoteName('list.id') .'='. $db->quote($id) . ' AND ' . $db->quoteName('el.published') . ' = 1');
+        
+        $db->setQuery($query);
+
+        $results = $db->loadAssocList();
+
+        $unhandledElements = [
+            "internalid",
+            "fileupload"
+        ];
+
+        foreach($results as $result) {
+            if (in_array($result['plugin'], $unhandledElements)) {
+                continue;
+            }
+
+            $return[] = [
+                'id' => $result['id'],
+                'name' => $result['name'],
+                'label' => $result['label'],
+                'type' => $this->getFilterType($result),
+                'actions' => $this->getActionsByElementPlugin($result['plugin'], $result['params']),
+                'values' => $this->getValuesByElement($result)
+            ];
+        }
+
+        return $return;
+    }
+
+    private function getFilterType($element) 
+    {
+        $return = '';
+
+        switch ($element['plugin']) {
+            case 'field':
+                $params = json_decode($element['params'], true);
+                if (!isset($params['database_join_display_type']) && empty($element['default'])) {
+                    $return = 'text';                
+                } else {
+                    $return = 'select';                
+                }
+            break;   
+            default:
+                $return = 'select';
+                break;      
+        }
+
+        return $return;
+    }
+
+    private function getActionsByElementPlugin($plugin, $params) 
+    {
+        $actions = [];
+        switch ($plugin) {
+            case 'field': 
+                $params = json_decode($params, true);
+
+                if (isset($params['database_join_display_type'])) {
+                    $actions = [
+                        '=' => 'est égal à',
+                        '!=' => 'n\'est pas égal à',
+                    ];
+                } else {
+                    $actions = [
+                        '=' => 'est égal à',
+                        '!=' => 'n\'est pas égal à',
+                        'contains' => 'inclus'
+                    ];
+                }
+                break;
+
+            case 'textarea':
+                $actions = [
+                    '=' => 'est égal à',
+                    '!=' => 'n\'est pas égal à',
+                    'contains' => 'inclus'
+                ];
+                break;
+            case 'databasejoin':
+            case 'dropdown':
+            case 'user':
+            case 'date': 
+            case 'jdate': 
+            case 'radiobutton':
+                $actions = [
+                    '=' => 'est égal à',
+                    '!=' => 'n\'est pas égal à',
+                ];
+                break;
+            default:
+                $actions = [];
+                break;
+        };
+
+        return $actions;
+    }
+
+    private function getValuesByElement($element) 
+    {
+        $values = [];
+
+        switch($element['plugin']) {
+            case 'databasejoin': 
+                $params = json_decode($element['params'], true);
+
+                $table  = $params['join_db_name'];
+                $key = $params['join_key_column'];
+                $value = $params['join_val_column'];
+    
+                $db = $this->getDbo();
+                $query = $db->getQuery(true);
+    
+                $query->select(array("el.$key", "el.$value"))
+                ->from($db->quoteName($table, 'el'));
+    
+                $db->setQuery($query);
+    
+                $results = $db->loadAssocList();
+    
+                foreach($results as $result) {
+                    $values[$result[$key]] = $result[$value];
+                }
+                break;
+            case 'user':
+                $db = $this->getDbo();
+                $query = $db->getQuery(true);
+    
+                $query->select(array('el.id', 'el.name'))
+                ->from($db->quoteName('#__users', 'el'));
+    
+                $db->setQuery($query);
+    
+                $results = $db->loadAssocList();
+    
+                foreach($results as $result) {
+                    $values[$result['id']] = $result['name'];
+                }
+                break;
+            case 'date':
+            case 'jdate':
+                $values = [
+                    'today' => 'aujourd\'hui',
+                    'yesterday' => 'hier',
+                    'lastweek' => 'la semaine dernière',
+                    'lastmonth' => 'le mois dernier',
+                    'lastyear' => 'l\'année dernière'
+                ];
+                break;
+            case 'dropdown':
+            case 'radiobutton':
+                $params = json_decode($element['params'], true);
+
+                // create array from two arrays
+                $values = array_combine($params['sub_options']['sub_values'], $params['sub_options']['sub_labels']);
+            break;
+            case 'field':
+                // if (isset($params['database_join_display_type']) && $params['database_join_display_type'] == 'dropdown') {
+                // }
+                $params = json_decode($elements['params'], true);
+
+                if (!empty($element['default']) && preg_match("/\{jos\_(.+)\_\_\_(.*)\}$/", $element['default'], $matches)) {
+                    $db = $this->getDbo();
+                    $query = $db->getQuery(true);
+
+                    $table = '#__' . $matches[1];
+                    $key = $matches[2];
+        
+                    $query->select("DISTINCT $key")
+                    ->from($db->quoteName($table));
+        
+                    $db->setQuery($query);
+        
+                    $results = $db->loadAssocList();
+
+                    foreach($results as $result) {
+                        $values[$result[$key]] = $result[$key];
+                    }
+                } elseif ($params['textformat'] == 'text') {
+                    $values = 'text-input';
+                }
+
+                break;
+            default:
+                $values = [];
+            break;
+        }
+
+        return $values;
+    }
+
+    /**
+     * Mount SQL query based on filters values
+     * @param int $listId
+     * @param array $data
+     * @return string
+     */
+    public function mountQuery($listId, $data) 
+    {
+        $return = "";
+
+        // get table from fabrik list id
+        $table = $this->getTableFromFabrikList($listId);
+
+        $select = "SELECT *";
+        $from = "FROM $table";
+        $joins = "";
+        $where = "";
+
+        foreach($data['groups'] as $key => $group) {
+            if ($key == 0) {
+                // parent group
+                foreach($group['filters'] as $filter) {
+                    
+                }
+            } else {
+                // sub groups
+
+                $nbFilters = count($group['filters']);
+                $tmp = "";
+                foreach ($group['filters'] as $fkey => $filter) {
+                    if ($fkey == 0) {
+                        $tmp .= " (";
+                    }
+                    
+                    // filter id
+                    // Handle element type
+                    $element = $this->getFabrikElementById($filter['element_id']); 
+
+                    // filter action filter value
+                    $tmp .= $filter['id'] . " ";
+
+                    if ($filter['action'] == 'contains') {
+                        $tmp .= "LIKE '%{$filter['value']}%'";
+                    } elseif ($filter['action'] == '!=') {
+                        $tmp .= "!= '{$filter['value']}'";
+                    } else {
+                        $tmp .= "= '{$filter['value']}'";
+                    }
+
+                    // check if fkey is not last filter
+                    if ($fkey < $nbFilters - 1) {
+                        $tmp .= " " . $group['relation'] . " ";
+                    } else {
+                        $tmp .= ")";
+                    }
+                }
+            }
+        }
+
+        return $select . $from . $joins . $where;
+    }
+
+    /**
+     * Get table from fabrik list id
+     * @param int $listId
+     * @return string
+     */
+    private function getTableFromFabrikList($listId) 
+    {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select(array('el.db_table_name'))
+        ->from($db->quoteName('#__fabrik_lists', 'el'))
+        ->where("el.id = $listId");
+
+        $db->setQuery($query);
+
+        return $db->loadResult();
+    }
+
+    /**
+     * Get element from fabrik list id
+     * @param int $elementId
+     * @return array
+     */
+    public function getFabrikElementById($id)
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if (!empty($eid)) {
+            $query->clear()
+                ->select('jfe.id, jfe.name, jfe.label, jfe.group_id')
+                ->from($db->quoteName('#__fabrik_elements', 'jfe'))
+                ->where($db->quoteName('jfe.id') . '=' . (int)$eid);
+
+            $db->setQuery($query);
+            return $db->loadObject();
+        } else {
+            return false;
+        }
     }
 }
