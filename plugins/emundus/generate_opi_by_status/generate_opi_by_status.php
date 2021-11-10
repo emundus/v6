@@ -72,7 +72,7 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
 
                 if($checkFnum == null) {
                     // fnum does not exist, create new decision with opi
-                    $_rawData = array('time_date' => date('Y-m-d H:i:s'), 'user_id' => $fnum_infos['uid'], 'campaign_id' => $fnum_infos['id'], 'fnum' => $fnum, 'final_grade' => 2, 'code_opi' => $opi_full_code);
+                    $_rawData = array('time_date' => date('Y-m-d H:i:s'), 'user' => $fnum_infos['uid'], 'campaign_id' => $fnum_infos['id'], 'fnum' => $fnum, 'final_grade' => 2, 'code_opi' => $opi_full_code);
 
                     $query->clear()->insert($db->quoteName('#__emundus_final_grade'))
                         ->columns($db->quoteName(array_keys($_rawData)))
@@ -92,7 +92,7 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
 
                 if($checkFnum == null) {
                     /// fnum does not exist --> create new decision with OPI
-                    $_rawData = array('time_date' => date('Y-m-d H:i:s'), 'user_id' => $fnum_infos['uid'], 'campaign_id' => $fnum_infos['id'], 'fnum' => $fnum, 'final_grade' => 2, 'code_opi' => $opi_full_code);
+                    $_rawData = array('time_date' => date('Y-m-d H:i:s'), 'user' => $fnum_infos['uid'], 'campaign_id' => $fnum_infos['id'], 'fnum' => $fnum, 'final_grade' => 2, 'code_opi' => $opi_full_code);
 
                     $query->clear()->insert($db->quoteName('#__emundus_final_grade'))
                         ->columns($db->quoteName(array_keys($_rawData)))
