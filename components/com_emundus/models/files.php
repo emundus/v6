@@ -224,7 +224,7 @@ class EmundusModelFiles extends JModelLegacy
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
                 }
-                elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
+                elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton' || $def_elmt->element_plugin == 'checkbox') {
 
                     if (@$group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
@@ -237,7 +237,7 @@ class EmundusModelFiles extends JModelLegacy
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
                             $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-                                addslashes($element_attribs->sub_options->sub_labels[$key]) . '")';
+                                JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                         }
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
@@ -525,12 +525,12 @@ class EmundusModelFiles extends JModelLegacy
                                     } else {
                                         $query['q'] .= ' AND ';
                                         // Check if it is a join table
-                                        $sql = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
+                                        $sql = 'SELECT join_from_table,table_key,table_join_key FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
                                         $db->setQuery($sql);
-                                        $join_from_table = $db->loadResult();
+                                        $join_from_table = $db->loadObject();
 
-                                        if (!empty($join_from_table)) {
-                                            $table = $join_from_table;
+                                        if (!empty($join_from_table->join_from_table)) {
+                                            $table = $join_from_table->join_from_table;
                                             $table_join = $tab[0];
 
                                             // Do not do LIKE %% search on elements that come from a <select>, we should get the exact value.
@@ -540,12 +540,14 @@ class EmundusModelFiles extends JModelLegacy
                                                 $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
                                             }
 
-                                            if (!isset($query[$table])) {
+                                            $query['join'] .= ' left join '.$table.' on ' .$table.'.'. $join_from_table->table_key .' like '.$table_join.'.'.$join_from_table->table_join_key;
+
+                                            /*if (!isset($query[$table])) {
                                                 $query[$table] = true;
                                                 if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias)) {
                                                     $query['join'] .= ' left join '.$table.' on ' .$table.'.fnum like jos_emundus_campaign_candidature.fnum ';
                                                 }
-                                            }
+                                            }*/
 
                                             if (!isset($query[$table_join])) {
                                                 $query[$table_join] = true;
@@ -3715,7 +3717,6 @@ class EmundusModelFiles extends JModelLegacy
 
         if (isset($element[0])) {
             $params = json_decode($element[0]);
-
             if (!empty($params->sub_options->sub_values)) {
                 foreach ($params->sub_options->sub_values as $key => $value) {
                     $return[$value] = $params->sub_options->sub_labels[$key];
