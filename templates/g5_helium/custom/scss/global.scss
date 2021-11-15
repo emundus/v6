@@ -979,7 +979,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 }
 
-/* MODULE APPLICATIONS  - COULEUR BTN IMPRIMER*/
+/* MODULE APPLICATIONS */
+.list-group.candidacy-files-list .row .ui.yellow.segment:not(.inverted) {
+  border-top: 2px solid $base-secondary-color !important;
+}
+
+/* MODULE APPLICATIONS COULEUR BTN IMPRIMER*/
 .homepage #g-main-mainbody #content-bottom-a {
   .platform-content .btn.btn-info {
     background: darken($base-secondary-color, 8%);
@@ -2966,7 +2971,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   .view-list thead {
 
     .fabrik___heading  a.fabrikorder,
-    .fabrik___heading  a.fabrikorder-desc
+    .fabrik___heading  a.fabrikorder-desc,
     .fabrik___heading th.heading.fabrik_ordercell  a.fabrikorder-desc {
       color: $dark-blue;
     }
