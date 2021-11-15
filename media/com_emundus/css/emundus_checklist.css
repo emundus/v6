@@ -449,7 +449,7 @@ body.view-reset label#jform_username-lbl::after,
     .fabrikActions.form-actions .row-fluid .span4 button.btn.save-btn {
         margin: 0px !important;
     }
-    
+
     /* save button */
     .gantry.view-form .form-actions .row-fluid {
         flex-direction: column;
