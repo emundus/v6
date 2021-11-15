@@ -3935,7 +3935,7 @@ class EmundusModelApplication extends JModelList
 
     /// get count uploaded files
     public function getCountUploadedFile($fnum,$user_id) {
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
         $m_application = new EmundusModelApplication;
 
         $html = '';
@@ -3955,7 +3955,7 @@ class EmundusModelApplication extends JModelList
 
     /// get list uploaded files
     public function getListUploadedFile($fnum, $user_id) {
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
         $m_application = new EmundusModelApplication;
 
         $html = '';
