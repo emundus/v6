@@ -2087,7 +2087,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
     &:hover,
     &:focus &:active {
-      background-color: darken($base-primary-color, 10%);
+      background-color: darken($dark-blue, 20%);
       color: #fff;
       outline: none;
     }
