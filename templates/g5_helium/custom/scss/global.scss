@@ -2881,6 +2881,19 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
           color: $red;
         }
       }
+
+      a.listplugin.btn-default {
+        background: $dark-blue;
+        border-color: $dark-blue;
+
+        &:hover,
+        &:active,
+        &:focus {
+          background: #fff;
+          border-color: $dark-blue;
+          color: $dark-blue;
+        }
+      }
     }
 
     tbody td.fabrik_actions .btn-group {
@@ -2950,9 +2963,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
 
-  .view-list {
+  .view-list thead {
 
-    .fabrik___heading  a.fabrikorder, .fabrik___heading  a.fabrikorder-desc {
+    .fabrik___heading  a.fabrikorder,
+    .fabrik___heading  a.fabrikorder-desc
+    .fabrik___heading th.heading.fabrik_ordercell  a.fabrikorder-desc {
       color: $dark-blue;
     }
     .filtertable {
