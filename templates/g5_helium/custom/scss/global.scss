@@ -2968,10 +2968,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
 
-  .view-list thead {
+  .view-list {
 
     .fabrik___heading  a.fabrikorder,
-    .fabrik___heading  a.fabrikorder-desc {
+    .fabrik___heading  a.fabrikorder-desc,
+    .fabrik___heading th.heading.fabrik_ordercell  a.fabrikorder-desc {
       color: $dark-blue;
     }
     .filtertable {
