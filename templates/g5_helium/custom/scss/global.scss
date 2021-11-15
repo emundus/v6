@@ -2975,6 +2975,17 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     .fabrik___heading a.fabrikorder-asc {
       color: $dark-blue;
     }
+
+    .fabrik_filter_submit.button {
+      background: $dark-blue;
+      border-color: $dark-blue;
+      &:hover, &:active, &:focus {
+        background: #fff;
+        border-color: $dark-blue;
+        color: $dark-blue;
+      }
+    }
+
     .filtertable {
       thead tr.fabrik___heading {
 
