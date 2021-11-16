@@ -864,7 +864,7 @@ class EmundusControllerFiles extends JControllerLegacy
             // Get triggered email
             include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
             $m_email = new EmundusModelEmails;
-            $trigger_emails = $m_email->getEmailTrigger($state, $code, '0,1');
+            $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
             $toAttach = [];
 
             if (count($trigger_emails) > 0) {
