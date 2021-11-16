@@ -4,7 +4,8 @@
   "private": true,
   "workspaces": [
     "com_emundus_onboard",
-    "com_emundus_messenger"
+    "com_emundus_messenger",
+    "com_emundus_workflow"
   ],
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -54,7 +55,7 @@
     "css-loader": "^3.6.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
-    "node-sass": "^4.14.1",
+    "node-sass": "^6.0.1",
     "sass": "^1.34.1",
     "sass-loader": "^10.0.0",
     "style-loader": "^1.3.0",
