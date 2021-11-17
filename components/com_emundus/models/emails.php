@@ -598,7 +598,11 @@ class EmundusModelEmails extends JModelList {
                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                         $params = json_decode($elt['params']);
                         $elm = array();
-                        $index = array_intersect(json_decode($val["val"]), $params->sub_options->sub_values);
+                        if($elt['plugin'] == "checkbox"){
+                            $index = array_intersect(json_decode($val["val"]), $params->sub_options->sub_values);
+                        } else {
+                            $index = array_intersect((array)$val["val"], $params->sub_options->sub_values);
+                        }
                         foreach ($index as $value) {
                             $key = array_search($value,$params->sub_options->sub_values);
                             $elm[] = JText::_($params->sub_options->sub_labels[$key]);
