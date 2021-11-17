@@ -132,7 +132,6 @@ echo <<<EOT
     margin-bottom: 20px;
     border-radius: 5px !important;
     padding: 20px;
-    margin-top: 20px;
 }
 
 .view-form.view-registration .fabrikGroup {
@@ -1128,14 +1127,6 @@ footer#g-footer {
     font-weight: 300;
 }
 
-.page-header h1 {
-    margin-top: 50px !important; 
-}
-
-.view-form:not(.em-formRegistrationCenter) .page-header h1 {
-    margin-top: 50px !important; 
-    margin-bottom: 30px !important; 
-}
 
 ol {
     width: 59%;

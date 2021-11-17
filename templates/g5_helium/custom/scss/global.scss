@@ -517,7 +517,6 @@ input[type="text"],
 .view-form #g-container-main,
 .view-details #g-container-main {
   .page-header {
-    padding-bottom: 15px;
     background: transparent;
   }
 }
@@ -604,10 +603,6 @@ input[type="text"],
 #top-a {
   display: flex;
   justify-content: center;
-}
-
-.page-header {
-  margin-top: 50px ;
 }
 
 /* FOOTER */
@@ -3347,12 +3342,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 /* TITRE FORMULAIRE */
 .view-form .applicant-form .page-header h1 {
-  // Headline 1
-  font-family: $font;
-  font-size: 80px;
+  // Headline 4
+  font-family: Inter;
+  font-size: 32px;
   font-style: normal;
   font-weight: 600;
-  line-height: 97px;
+  line-height: 39px;
   letter-spacing: 0em;
   text-align: left;
   color: $neutral-900;
@@ -3371,8 +3366,13 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   color: $neutral-600;
 }
 
+/* GROUPE */
+.view-form .fabrikForm .fabrikGroup {
+  margin-top: 64px;
+}
+
 /* LEGEND */
-.fabrikForm .fabrikGroup .legend {
+.view-form .fabrikForm .fabrikGroup .legend {
   // Headline 5
   font-family: $font;
   font-size: 24px;
@@ -3384,8 +3384,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   color: $neutral-800;
 }
 
-/* INTR0 GROUP */
-.fabrikForm .fabrikGroup .groupintro p {
+/* INTR0 GROUPE */
+.view-form .fabrikForm .fabrikGroup .groupintro p {
   // Body 16;
   font-family: $font;
   font-size: 16px;
@@ -3398,7 +3398,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 }
 
 /* LABEL */
-.fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer .fabrikLabel {
+.view-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer .fabrikLabel {
   // Body 16 Medium;
   font-family: $font;
   font-size: 16px;
