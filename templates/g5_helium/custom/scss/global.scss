@@ -5,6 +5,8 @@
 @import "dependencies";
 @import "variables";
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 /* Here you can add Anything you want to be present on the entire site AND with variables */
 /* - Laura.scss */
 
@@ -25,6 +27,8 @@ $red: #e5283B;
 
 $complete-gradient: linear-gradient(rgba(240,238,109,10), rgba(50,238,95,50), rgba(240,238,109,96));
 $simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
+
+$font:'Inter', sans-serif;
 
 /* GENERAL */
 
@@ -3328,7 +3332,16 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
-  /******************************* RESPONSIVE ***********************************/
+/******************************* FORMULAIRE ***********************************/
+
+/* FABRIK LABEL */
+
+.fabrikLabel {
+  font-family: $font;
+}
+
+
+/******************************* RESPONSIVE ***********************************/
   /* LAPTOP  MENU TCHO0Z */
   @media screen and (max-width: 1366px),
   screen and (max-height: 769px) {
