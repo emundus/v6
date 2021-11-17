@@ -34,6 +34,8 @@ $neutral-700: #4B4B4B;
 $neutral-800: #2B2B2B;
 $neutral-900: #000000;
 $required: #e5283B;
+$valid: #20835F;
+$focus: #1C6EF2;
 
 $red: #e5283B;
 
@@ -3425,29 +3427,48 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 .view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer .fabrikElement .fabrikinput {
   height: 48px;
   border-radius: 4px;
-  padding: 0px, 12px, 0px, 12px;
+  padding: 0px 12px 0px 12px;
+  background: $neutral-50;
+  border: 1px solid $neutral-400
+  border-radius: 4px;
+  box-shadow: none;
 
   &:hover {
-    background: #FFFFFF;
+    background: $neutral-50;
     border: 1px solid #727272;
-    box-sizing: border-box;
     border-radius: 4px;
+    box-shadow: none;
   }
 
   &:focus {
-    background: #FFFFFF;
-    border: 1px solid #1C6EF2;
-    box-sizing: border-box;
+    background: $neutral-50;
+    border: 1px solid $focus;
     border-radius: 4px;
+    box-shadow: none;
   }
 
   &.readonly  {
-    background: #E3E3E3;
-    border: 1px solid #E3E3E3;
-    box-sizing: border-box;
+    background: $neutral-400
+    border: 1px solid $neutral-400;
     border-radius: 4px;
+    box-shadow: none;
   }
 }
+
+.control-group.error input {
+  background: $neutral-50;
+  border: 1px solid $required;
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+.control-group.success input {
+  background: $neutral-50;
+  border: 1px solid $valid;
+  box-shadow: none;
+  border-radius: 4px;
+}
+
 
 /* ETOILE */
 .view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer .fabrikLabel .icon-star.small {
@@ -3490,8 +3511,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   text-align: left;
   color: $required;
 }
-
-
 
 
 /******************************* RESPONSIVE ***********************************/
