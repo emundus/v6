@@ -23,6 +23,17 @@ $grey: #B0B0BF;
 $light-grey: #F4F4F6;
 $white: #FFFFFF;
 
+$neutral-50: #FFFFFF;
+$neutral-100: #FAFAFA;
+$neutral-200: #F3F3F3;
+$neutral-300: #EDEDED;
+$neutral-400: #E3E3E3;
+$neutral-500: #A4A4A4;
+$neutral-600: #727272;
+$neutral-700: #4B4B4B;
+$neutral-800: #2B2B2B;
+$neutral-900: #000000;
+
 $red: #e5283B;
 
 $complete-gradient: linear-gradient(rgba(240,238,109,10), rgba(50,238,95,50), rgba(240,238,109,96));
@@ -3334,6 +3345,32 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 /******************************* FORMULAIRE ***********************************/
 
+/* TITRE FORMULAIRE */
+.view-form .applicant-form .page-header h1 {
+  // Headline 1
+  font-family: $font;
+  font-size: 80px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 97px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: $neutral-900;
+}
+
+/* INTRO FORMULAIRE */
+.view-form .applicant-form p:nth-child(1) {
+  // Body 16;
+  font-family: $font;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19px;
+  letter-spacing: 0.0015em;
+  text-align: left;
+  color: $neutral-600;
+}
+
 /* LEGEND */
 .fabrikForm .fabrikGroup .legend {
   // Headline 5
@@ -3344,10 +3381,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   line-height: 29px;
   letter-spacing: 0em;
   text-align: left;
+  color: $neutral-800;
 }
 
 /* INTR0 GROUP */
-.fabrikForm .fabrikGroup .groupintro {
+.fabrikForm .fabrikGroup .groupintro p {
   // Body 16;
   font-family: $font;
   font-size: 16px;
@@ -3356,6 +3394,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   line-height: 19px;
   letter-spacing: 0.0015em;
   text-align: left;
+  color: $neutral-600;
 }
 
 /* LABEL */
@@ -3368,6 +3407,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   line-height: 19px;
   letter-spacing: 0.0015em;
   text-align: left;
+  color: $neutral-800;
 }
 
 
