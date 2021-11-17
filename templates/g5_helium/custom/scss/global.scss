@@ -3334,10 +3334,40 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 /******************************* FORMULAIRE ***********************************/
 
-/* FABRIK LABEL */
-
-.fabrikLabel {
+/* LEGEND */
+.fabrikForm .fabrikGroup .legend {
+  // Headline 5
   font-family: $font;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 29px;
+  letter-spacing: 0em;
+  text-align: left;
+}
+
+/* INTR0 GROUP */
+.fabrikForm .fabrikGroup .groupintro {
+  // Body 16;
+  font-family: $font;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19px;
+  letter-spacing: 0.0015em;
+  text-align: left;
+}
+
+/* LABEL */
+.fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer .fabrikLabel {
+  // Body 16 Medium;
+  font-family: $font;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 19px;
+  letter-spacing: 0.0015em;
+  text-align: left;
 }
 
 
