@@ -33,6 +33,7 @@ $neutral-600: #727272;
 $neutral-700: #4B4B4B;
 $neutral-800: #2B2B2B;
 $neutral-900: #000000;
+$required: #e5283B;
 
 $red: #e5283B;
 
@@ -3366,7 +3367,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   color: $neutral-600;
 }
 
-/* FORMULAIRE */
+/* BLOC FORMULAIRE */
 .view-form .applicant-form  {
   margin-top: 32px;
 }
@@ -3420,6 +3421,30 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   color: $neutral-800;
 }
 
+/* ETOILE */
+.view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer .fabrikLabel .icon-star.small {
+  font-family: $font;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: $required;
+}
+
+/* TEXTE D AIDE */
+.view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer .fabrikLabel > span {
+  // Body 14
+  font-family: $font;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 17px;
+  letter-spacing: 0.0025em;
+  text-align: left;
+  color: $neutral-600;
+}
 
 /******************************* RESPONSIVE ***********************************/
   /* LAPTOP  MENU TCHO0Z */

@@ -86,11 +86,6 @@ echo <<<EOT
     display: inline-block;
 }
 
-.view-form form .row-fluid .control-group.fabrikElementContainer label.fabrikLabel.control-label.fabrikTip i.icon-star.small {
-    top: -5px;
-}
-
-
 .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn:not(.active) {
     background-color: #c6c6c6;
         margin-left: 0px;
@@ -474,14 +469,6 @@ form#member-profile .form-horizontal .control-label {
     display: none !important;
 }*/
 
-.icon-star.small {
-    margin-top: 0px;
-    padding-top: 0px;
-    position: relative;
-    padding-left: 2px;
-    color: #c30505;
-    font-size: 5px;
-}
 
 .view-registration .icon-star.small {
     margin-top: 0px;
