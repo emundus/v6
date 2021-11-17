@@ -1355,10 +1355,8 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   position: relative;
 }
 
-.view-form:not(.login) .fabrikForm fieldset > .row-fluid, 
 .view-details .fabrikForm fieldset > .row-fluid,
 .view-checklist .fabrikForm fieldset > .row-fluid, 
-.view-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid, 
 .view-details .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid 
 .view-checklist .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
   padding: 5px 30px;

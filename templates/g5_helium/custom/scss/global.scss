@@ -138,13 +138,6 @@ a {
   color: $base-secondary-color;
 }
 
-label {
-  color: #000;
-  margin-bottom: 5px;
-  font-weight: bold;
-  display: inline-block;
-}
-
 .view-form label.fabrikLabel.fabrikTip {
   display: flex;
   flex-direction: row;
@@ -3382,6 +3375,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 /* GROUPE */
 .view-form .applicant-form .fabrikForm .fabrikGroup {
   margin-bottom: 64px;
+  padding: 80px 64px 80px 64px;
+  border-radius: 16px;
 }
 
 /* LEGEND */
@@ -3410,6 +3405,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   color: $neutral-600;
 }
 
+/* BLOC ELEMENT */
+.view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer.control-group {
+  margin: 0px;
+}
+
 /* LABEL */
 .view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer .fabrikLabel {
   // Body 16 Medium;
@@ -3421,6 +3421,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   letter-spacing: 0.0015em;
   text-align: left;
   color: $neutral-800;
+  display: inline-block;
+  margin-bottom: 12px;
 }
 
 /* INPUT */
@@ -3497,6 +3499,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   text-align: left;
   color: $neutral-600;
   display: flex;
+  margin-bottom: 12px;
 
   .icon-question-sign {
     display: none;
