@@ -7,7 +7,7 @@
  */
 
 // ensure this file is being included by a parent file
-defined( '_JEXEC' ) or die( JText::_('RESTRICTED_ACCESS') );
+defined( '_JEXEC' ) or die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 
@@ -117,12 +117,12 @@ class EmundusControllerExport extends JControllerLegacy
                     $request->setMargins(Request::NO_MARGINS);
                     $request->setScale(0.75);
                 }
-                
+
                 # store method allows you to... store the resulting PDF in a particular destination.
                 $client->store($request, $dest);
-                
+
                 # if you wish to redirect the response directly to the browser, you may also use:
-                $client->post($request);          
+                $client->post($request);
             } catch (RequestException $e) {
                 # this exception is thrown if given paper size or margins are not correct.
                 $res->status = false;
@@ -155,7 +155,7 @@ class EmundusControllerExport extends JControllerLegacy
         $current_user = JFactory::getUser();
 
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-            die(JText::_('RESTRICTED_ACCESS'));
+            die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
         } else {
             $jinput = JFactory::getApplication()->input;
 

@@ -20,7 +20,7 @@ class EmundusViewTrombinoscope extends JViewLegacy {
 
         $current_user = JFactory::getUser();
         if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-	        die(JText::_('RESTRICTED_ACCESS'));
+	        die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
         }
 
         $app = JFactory::getApplication();
@@ -47,7 +47,7 @@ class EmundusViewTrombinoscope extends JViewLegacy {
         $params = array('mode' => 'simple');
         $editor = JFactory::getEditor();
 
-        // DISPLAY THE EDITOR (name, html, width, height, columns, rows, bottom buttons, id, asset, author, params)
+        // COM_EMUNDUS_DISPLAY THE EDITOR (name, html, width, height, columns, rows, bottom buttons, id, asset, author, params)
         $wysiwyg = $editor->display('trombi_tmpl', $templ[$htmlLetters[0]['attachment_id']]['body'], '100%', '250', '20', '20', true, 'trombi_tmpl', null, null, $params);
 	    $wysiwyg_header = $editor->display('trombi_head', $templ[$htmlLetters[0]['attachment_id']]['header'], '100%', '250', '20', '20', true, 'trombi_head', null, null, $params);
 	    $wysiwyg_footer = $editor->display('trombi_foot', $templ[$htmlLetters[0]['attachment_id']]['footer'], '100%', '250', '20', '20', true, 'trombi_foot', null, null, $params);

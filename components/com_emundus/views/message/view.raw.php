@@ -38,7 +38,7 @@ class EmundusViewMessage extends JViewLegacy {
 		$current_user = JFactory::getUser();
 
     	if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-		    die (JText::_('RESTRICTED_ACCESS'));
+		    die (JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 	    }
 
 		// List of fnum is sent via GET in JSON format.

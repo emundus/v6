@@ -27,7 +27,7 @@ $fnum = $fabrikFormData['fnum_raw'];
 
 $sid            = $app->input->get('sid');
 
-if (!EmundusHelperAccess::isApplicant($current_user->id)) { 
+if (!EmundusHelperAccess::isApplicant($current_user->id)) {
     $query = 'UPDATE #__emundus_users SET profile='.$profile.' WHERE user_id = '.$sid;
     try {
         $db->setQuery($query);
@@ -48,7 +48,7 @@ if (!EmundusHelperAccess::isApplicant($current_user->id)) {
     }
 }
 
-if (EmundusHelperAccess::isApplicant($current_user->id)) {  
+if (EmundusHelperAccess::isApplicant($current_user->id)) {
 
     $country = $fabrikFormData['birth_country_raw'][0];
     $rowid = $fabrikFormData['rowid'];
@@ -93,7 +93,7 @@ if (EmundusHelperAccess::isApplicant($current_user->id)) {
     $app->redirect("index.php?option=com_emundus&view=checklist&Itemid=1516");
 } else {
 	echo '<script>window.parent.$("html, body").animate({scrollTop : 0}, 300);</script>';
-	die('<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>');
+	die('<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("COM_EMUNDUS_SAVED").'</h1>');
 }
 
 

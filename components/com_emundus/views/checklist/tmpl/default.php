@@ -450,7 +450,7 @@ if (!empty($this->custom_title)) :?>
                             // Change icon on fieldset
                             document.getElementById("l'.$attachment->id.'").className = "";
                             document.getElementById("'.$attachment->id.'").className = "";
-                            alert("'.JText::_('ATTACHMENT_DELETED').'");
+                            alert("'.JText::_('COM_EMUNDUS_ATTACHMENTS_DELETED').'");
                         }
     
                     },
@@ -499,7 +499,7 @@ if (!empty($this->custom_title)) :?>
                 if ($this->isLimitObtained === true) {
                     $div .= JError::raiseNotice(401, JText::_('LIMIT_OBTAINED'));
                 } else {
-                    $div .= JError::raiseNotice(401, JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($this->user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($this->user->end_date) )));
+                    $div .= JError::raiseNotice(401, JText::sprintf('COM_EMUNDUS_PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($this->user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($this->user->end_date) )));
                 }
             }
             $div .= '</table></div></fieldset>';

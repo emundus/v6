@@ -41,7 +41,7 @@ if (!empty($s_elements)) {
 
 		<?php foreach ($this->elements as $t) :?>
 
-			<?php 
+			<?php
                 $fabrik_elements[] = $t->fabrik_element;
 
                 if ($tbl_tmp == '') :?>
@@ -148,9 +148,9 @@ if (!empty($s_elements)) {
                 </div>
 		    </div>
      <?php else: ?>
-        <?= JText::_('NO_FORM_DEFINED'); ?>
-    <?php endif; 
-    
+        <?= JText::_('COM_EMUNDUS_FORM_NO_FORM_DEFINED'); ?>
+    <?php endif;
+
     $today  = date("MdYHis");
     $name   = md5($today.rand(0,10));
     $name   = $name.'.csv';
@@ -162,6 +162,6 @@ if (!empty($s_elements)) {
     }
     fprintf($csv, chr(0xEF).chr(0xBB).chr(0xBF));
     $res = fputcsv($csv, $fabrik_elements, ",", '"', "\\");
-    echo '<div class="em-link"><a href="index.php?option=com_emundus&controller=files&task=download&name='.$name.'">'.JText::_('EXPORT').'</a></div>';
+    echo '<div class="em-link"><a href="index.php?option=com_emundus&controller=files&task=download&name='.$name.'">'.JText::_('COM_EMUNDUS_EXPORTS_EXPORT').'</a></div>';
 
     ?>

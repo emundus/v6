@@ -447,7 +447,7 @@ class EmundusControllerFiles extends JControllerLegacy
         if(empty($fnumErrorList)) {
             echo json_encode((object)(array('status' => true, 'msg' => JText::_('COMMENT_SUCCESS'), 'id' => $res)));
         } else {
-            echo json_encode((object)(array('status' => false, 'msg' => JText::_('ERROR'). implode(', ', $fnumErrorList))));
+            echo json_encode((object)(array('status' => false, 'msg' => JText::_('COM_EMUNDUS_ERROR'). implode(', ', $fnumErrorList))));
         }
         exit;
     }
@@ -550,7 +550,7 @@ class EmundusControllerFiles extends JControllerLegacy
         unset($fnums);
         unset($tags);
 
-        echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAGS_DELETE_SUCCESS'))));
+        echo json_encode((object)(array('status' => true, 'msg' => JText::_('COM_EMUNDUS_TAGS_DELETE_SUCCESS'))));
         exit;
     }
 
@@ -604,7 +604,7 @@ class EmundusControllerFiles extends JControllerLegacy
             if ($res !== false) {
                 $msg = JText::_('SHARE_SUCCESS');
             } else {
-                $msg = JText::_('SHARE_ERROR');
+                $msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
             }
         } else {
             $fnums = $m_files->getAllFnums();
@@ -621,7 +621,7 @@ class EmundusControllerFiles extends JControllerLegacy
             if ($res !== false) {
                 $msg = JText::_('SHARE_SUCCESS');
             } else {
-                $msg = JText::_('SHARE_ERROR');
+                $msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
             }
         }
 
@@ -698,7 +698,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         echo json_encode((object)(array('status' => true,
             'states' => $states,
-            'state' => JText::_('STATE'),
+            'state' => JText::_('COM_EMUNDUS_STATE'),
             'select_state' => JText::_('PLEASE_SELECT_STATE'))));
         exit;
     }
@@ -712,28 +712,28 @@ class EmundusControllerFiles extends JControllerLegacy
                 array (
                     'id' =>  '1',
                     'step' =>  '1' ,
-                    'value' => JText::_('PUBLISHED') ,
+                    'value' => JText::_('COM_EMUNDUS_APPLICATION_PUBLISHED') ,
                     'ordering' =>  '1'
                 ),
             1 =>
                 array (
                     'id' =>  '0',
                     'step' =>  '0' ,
-                    'value' => JText::_('ARCHIVED') ,
+                    'value' => JText::_('COM_EMUNDUS_APPLICATION_ARCHIVED') ,
                     'ordering' =>  '2'
                 ),
             3 =>
                 array (
                     'id' =>  '3',
                     'step' =>  '-1' ,
-                    'value' => JText::_('TRASHED') ,
+                    'value' => JText::_('COM_EMUNDUS_APPLICATION_TRASHED') ,
                     'ordering' =>  '3'
                 )
         );
 
         echo json_encode((object)(array('status' => true,
             'states' => $publish,
-            'state' => JText::_('PUBLISH'),
+            'state' => JText::_('COM_EMUNDUS_APPLICATION_PUBLISH'),
             'select_publish' => JText::_('PLEASE_SELECT_PUBLISH'))));
         exit;
     }
@@ -788,7 +788,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $trigger_emails = $m_email->getEmailTrigger($state, $code, '0,1');
 
-        echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => JText::_('MAIL_CHANGE_STATUT_INFO'))));
+        echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => JText::_('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO'))));
         exit;
     }
 
@@ -851,8 +851,8 @@ class EmundusControllerFiles extends JControllerLegacy
 
                 $row = array('applicant_id' => $fnum['applicant_id'],
                     'user_id' => $this->_user->id,
-                    'reason' => JText::_('STATUS'),
-                    'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('TO').' '.$status[$state]['value'].' ('.$state.')',
+                    'reason' => JText::_('COM_EMUNDUS_STATUS'),
+                    'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('COM_EMUNDUS_TO').' '.$status[$state]['value'].' ('.$state.')',
                     'fnum' => $fnum['fnum'],
                     'status_from' => $fnum['step'],
                     'status_to' => $state
@@ -987,17 +987,17 @@ class EmundusControllerFiles extends JControllerLegacy
 
                                 $send = $mailer->Send();
                                 if ($send !== true) {
-                                    $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
+                                    $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
                                     JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
                                 } else {
                                     $message = array(
                                         'user_id_from' => $from_id,
                                         'user_id_to' => $file['applicant_id'],
                                         'subject' => $subject,
-                                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+                                        'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body
                                     );
                                     $m_email->logEmail($message);
-                                    $msg .= JText::_('EMAIL_SENT').' : '.$to.'<br>';
+                                    $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
                                     JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
                                 }
                             }
@@ -1040,17 +1040,17 @@ class EmundusControllerFiles extends JControllerLegacy
 
                             $send = $mailer->Send();
                             if ($send !== true) {
-                                $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
+                                $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
                                 JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
                             } else {
                                 $message = array(
                                     'user_id_from' => $from_id,
                                     'user_id_to' => $recipient['id'],
                                     'subject' => $subject,
-                                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+                                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body
                                 );
                                 $m_email->logEmail($message);
-                                $msg .= JText::_('EMAIL_SENT').' : '.$to.'<br>';
+                                $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
                                 JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
                             }
                         }
@@ -1060,7 +1060,7 @@ class EmundusControllerFiles extends JControllerLegacy
             //
             //***************************************************
 
-            $msg .= JText::_('STATE_SUCCESS');
+            $msg .= JText::_('COM_EMUNDUS_APPLICATION_STATE_SUCCESS');
         } else {
             $msg .= JText::_('STATE_ERROR');
         }
@@ -1103,7 +1103,7 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
             }
-            $msg = JText::_('STATE_SUCCESS');
+            $msg = JText::_('COM_EMUNDUS_APPLICATION_STATE_SUCCESS');
         } else $msg = JText::_('STATE_ERROR');
 
         echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
@@ -1230,7 +1230,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $current_user = JFactory::getUser();
 
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-            die( JText::_('RESTRICTED_ACCESS') );
+            die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
         $jinput = JFactory::getApplication()->input;
         $forms      = $jinput->getInt('forms', 0);
@@ -1339,7 +1339,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         fprintf($fichier_csv, chr(0xEF).chr(0xBB).chr(0xBF));
         if (!fclose($fichier_csv)) {
-            $result = array('status' => false, 'msg'=>JText::_('ERROR_CANNOT_CLOSE_CSV_FILE'));
+            $result = array('status' => false, 'msg'=>JText::_('COM_EMUNDUS_EXPORTS_ERROR_CANNOT_CLOSE_CSV_FILE'));
             echo json_encode((object) $result);
             exit();
         }
@@ -1447,7 +1447,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $current_user = JFactory::getUser();
 
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-            die(JText::_('RESTRICTED_ACCESS'));
+            die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
         }
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -1597,9 +1597,9 @@ class EmundusControllerFiles extends JControllerLegacy
 
             $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
             if ($anonymize_data) {
-                $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('PROGRAMME')."\t";
+                $line = JText::_('COM_EMUNDUS_FILE_F_NUM')."\t".JText::_('COM_EMUNDUS_STATUS')."\t".JText::_('COM_EMUNDUS_PROGRAMME')."\t";
             } else {
-                $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('COM_EMUNDUS_FORM_LAST_NAME')."\t".JText::_('COM_EMUNDUS_FORM_FIRST_NAME')."\t".JText::_('COM_EMUNDUS_EMAIL')."\t".JText::_('PROGRAMME')."\t";
+                $line = JText::_('COM_EMUNDUS_FILE_F_NUM')."\t".JText::_('COM_EMUNDUS_STATUS')."\t".JText::_('COM_EMUNDUS_FORM_LAST_NAME')."\t".JText::_('COM_EMUNDUS_FORM_FIRST_NAME')."\t".JText::_('COM_EMUNDUS_EMAIL')."\t".JText::_('COM_EMUNDUS_PROGRAMME')."\t";
             }
 
             $nbcol = 6;
@@ -1662,7 +1662,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         if ($k === 'jos_emundus_evaluations___user' && strcasecmp($v, $evaluator) != 0) {
                             foreach($fnumsArray[$idx] as $key => $value) {
                                 if (substr($key, 0, 26) === "jos_emundus_evaluations___") {
-                                    $fnumsArray[$idx][$key] = JText::_('NO_RIGHT');
+                                    $fnumsArray[$idx][$key] = JText::_('COM_EMUNDUS_ACCESS_NO_RIGHT');
                                 }
                             }
                         }
@@ -1796,7 +1796,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
         if (!fclose($csv)) {
-            $result = array('status' => false, 'msg'=>JText::_('ERROR_CANNOT_CLOSE_CSV_FILE'));
+            $result = array('status' => false, 'msg'=>JText::_('COM_EMUNDUS_EXPORTS_ERROR_CANNOT_CLOSE_CSV_FILE'));
             echo json_encode((object) $result);
             exit();
         }
@@ -1935,7 +1935,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $current_user = JFactory::getUser();
 
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-            die(JText::_('RESTRICTED_ACCESS'));
+            die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
         }
 
         $m_files = $this->getModel('Files');
@@ -2120,7 +2120,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $dataresult = [
                 'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
                 'options' => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-                'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('FILES_ADDED')//.' : '.$fnum
+                'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
             ];
             $result = array('status' => true, 'json' => $dataresult);
 
@@ -2129,7 +2129,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $dataresult = [
                 'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
                 'options' => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-                'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('FILE_NOT_FOUND')
+                'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
             ];
 
             $result = array('status' => false, 'json' => $dataresult);
@@ -2143,7 +2143,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $current_user = JFactory::getUser();
 
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-            die(JText::_('RESTRICTED_ACCESS'));
+            die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
         }
 
         $jinput = JFactory::getApplication()->input;
@@ -2295,7 +2295,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $dataresult = [
                 'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
                 'options' => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-                'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('FILES_ADDED')//.' : '.$fnum
+                'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
             ];
             $result = array('status' => true, 'json' => $dataresult);
 
@@ -2304,7 +2304,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $dataresult = [
                 'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
                 'options' => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-                'admission' => $admission, 'file' => $file, 'ids' => $ids, 'msg' => JText::_('FILE_NOT_FOUND')
+                'admission' => $admission, 'file' => $file, 'ids' => $ids, 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
             ];
 
             $result = array('status' => false, 'json' => $dataresult);
@@ -2498,7 +2498,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $current_user = JFactory::getUser();
 
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-            die(JText::_('RESTRICTED_ACCESS'));
+            die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
         }
 
         @set_time_limit(10800);
@@ -2595,10 +2595,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $objPHPSpreadsheet->getActiveSheet()->freezePane('A2');
 
         $i = 0;
-        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('F_NUM'));
+        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_FILE_F_NUM'));
         $objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
         $i++;
-        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('STATUS'));
+        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_STATUS'));
         $objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
         $i++;
         $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_FORM_LAST_NAME'));
@@ -2781,7 +2781,7 @@ class EmundusControllerFiles extends JControllerLegacy
             readfile($file);
             exit;
         } else {
-            echo JText::_('FILE_NOT_FOUND').' : '.$file;
+            echo JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND').' : '.$file;
         }
     }
 
@@ -2797,7 +2797,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $current_user = JFactory::getUser();
 
         if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application' && !$acl_override) {
-	        die(JText::_('RESTRICTED_ACCESS'));
+	        die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
         }
 
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
@@ -3005,7 +3005,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $current_user   = JFactory::getUser();
 
         if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application')
-            die( JText::_('RESTRICTED_ACCESS') );
+            die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
         require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'pdf.php');
@@ -3059,7 +3059,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $current_user = JFactory::getUser();
 
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-            die( JText::_('RESTRICTED_ACCESS') );
+            die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
         $jinput = JFactory::getApplication()->input;
         $fnum   = $jinput->getString('fnum', null);
@@ -3083,7 +3083,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $current_user = JFactory::getUser();
 
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-            die( JText::_('RESTRICTED_ACCESS') );
+            die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
         $jinput = JFactory::getApplication()->input;
         $fnum   = $jinput->getString('fnum', null);
@@ -3109,7 +3109,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $current_user = JFactory::getUser();
 
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-            die( JText::_('RESTRICTED_ACCESS') );
+            die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);

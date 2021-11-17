@@ -824,7 +824,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                     'user_id_from' => $user->id,
                     'user_id_to' => $fnum->applicant_id,
                     'subject' => $subject,
-                    'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $fnum->email . '</i><br>' . $body . $files,
+                    'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $fnum->email . '</i><br>' . $body . $files,
                     'type' => (empty($template->type))?'':$template->type
                 ];
                 $m_emails->logEmail($log);
@@ -973,7 +973,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 					'user_id_from' => $current_user->id,
 					'user_id_to' => $user->id,
 					'subject' => $subject,
-					'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user->email . '</i><br>' . $body . $files,
+					'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
 					'type' => !empty($template)?$template->type:''
 				];
 				$m_emails->logEmail($log);
@@ -1656,7 +1656,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 //                'user_id_from' => $user->id,
 //                'user_id_to' => $fnum_info['applicant_id'],
 //                'subject' => $subject,
-//                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $fnum_info['email'] . '</i><br>' . $body . $file_path,
+//                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $fnum_info['email'] . '</i><br>' . $body . $file_path,
 //                'type' => $email_recap[0]->id,
 //            ];
 //            $m_emails->logEmail($log);

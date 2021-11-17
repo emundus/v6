@@ -34,13 +34,13 @@ if (!empty((array)$this->assoc_files)) : ?>
 						<ul>
 							<li><span><strong><?php echo JText::_('COM_EMUNDUS_ACADEMIC_YEAR')?> :</strong> <?php echo $camp->year?></span></li>
 							<li><span><?php echo $camp->training?></span></li>
-							<li><span><strong><?php echo JText::_('F_NUM')?> :</strong> <?php echo $camp->fnum?></span></li>
+							<li><span><strong><?php echo JText::_('COM_EMUNDUS_FILE_F_NUM')?> :</strong> <?php echo $camp->fnum?></span></li>
 
 							<?php if($camp->submitted==1):?>
-								<li><span><strong><?php echo JText::_('SUBMITTED')?> :</strong> <?php echo JText::_('JYES');?></span></li>
-								<li><span><strong><?php echo JText::_('DATE_SUBMITTED')?> :</strong> <?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?></span></li>
+								<li><span><strong><?php echo JText::_('COM_EMUNDUS_APPLICATION_SUBMITTED')?> :</strong> <?php echo JText::_('JYES');?></span></li>
+								<li><span><strong><?php echo JText::_('COM_EMUNDUS_APPLICATION_DATE_SUBMITTED')?> :</strong> <?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?></span></li>
 							<?php else:?>
-								<li><span><strong><?php echo JText::_('SUBMITTED')?> :</strong> <?php echo JText::_('JNO');?></span></li>
+								<li><span><strong><?php echo JText::_('COM_EMUNDUS_APPLICATION_SUBMITTED')?> :</strong> <?php echo JText::_('JNO');?></span></li>
 							<?php endif;?>
 						</ul>
 

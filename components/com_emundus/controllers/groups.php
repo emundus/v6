@@ -275,7 +275,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 				$db->query();
 				$period=$db->loadRow();
 
-				$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
+				$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('COM_EMUNDUS_TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
 
 				$replacements = array ($user->id, $user->name, $user->email, $list, JURI::base(), $eval, $period_str, '<br />');
 				// template replacements
@@ -321,12 +321,12 @@ class EmundusControllerGroups extends JControllerLegacy {
 		$filter_order_Dir = JRequest::getVar('filter_order_Dir', null, 'POST', null, 0);
 
 		if ($subject == '') {
-			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
+			JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_SUBJECT' ) );
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
 			return;
 		}
 		if ($message == '') {
-			JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_A_MESSAGE' ) );
+			JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_A_MESSAGE' ) );
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
 			return;
 		}
@@ -342,7 +342,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 		elseif (isset($ae_id) && $ae_id > 0)
 			$users[] = $ae_id;
 		else {
-			JError::raiseWarning( 500, JText::_('ERROR') );
+			JError::raiseWarning( 500, JText::_('COM_EMUNDUS_ERROR') );
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir);
 			return;
 		}
@@ -410,7 +410,7 @@ class EmundusControllerGroups extends JControllerLegacy {
 			$db->query();
 			$period=$db->loadRow();
 
-			$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
+			$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])).' '.JText::_('COM_EMUNDUS_TO').' '.strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
 
 			$replacements = array ($user->id, $user->name, $user->email, $list, JURI::base(), $eval, $period_str, '<br />');
 			// template replacements

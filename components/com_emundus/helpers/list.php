@@ -377,7 +377,7 @@ class EmundusHelperList{
                 }
                 if(in_array('details',$params)){
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_details" id="em_details_'.$user['user_id'].'">';
-                    @$actions[@$user['user_id']][@$user['user']][@$user['campaign_id']] .= '<a class="modal" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}" href="index.php?option=com_emundus&view=application&sid='.@$user['user_id'].'&campaign_id='.@$user['campaign_id'].'&rowid='.@$user['evaluation_id'].'&Itemid='.$itemid.'&tmpl=component&iframe=1"><img height="16" width="16" align="bottom" title="'.JText::_('DETAILS').'" src="'.$this->baseurl.'/media/com_emundus/images/icones/viewmag_16x16.png"/></a>';
+                    @$actions[@$user['user_id']][@$user['user']][@$user['campaign_id']] .= '<a class="modal" rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}" href="index.php?option=com_emundus&view=application&sid='.@$user['user_id'].'&campaign_id='.@$user['campaign_id'].'&rowid='.@$user['evaluation_id'].'&Itemid='.$itemid.'&tmpl=component&iframe=1"><img height="16" width="16" align="bottom" title="'.JText::_('COM_EMUNDUS_DETAILS').'" src="'.$this->baseurl.'/media/com_emundus/images/icones/viewmag_16x16.png"/></a>';
                     @$actions[@$user['user_id']][@$user['user']][@$user['campaign_id']] .= '</div>';
                 }
                 if(in_array('upload',$params)){
@@ -439,12 +439,12 @@ class EmundusHelperList{
                         @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';
                     } else {
                         @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_letter" id="em_letter_'.$user['user_id'].'_'.$user['campaign_id'].'">';
-                        @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= ''; //JText::_("UPDATE_EVALUATION");
+                        @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= ''; //JText::_("COM_EMUNDUS_EVALUATION_UPDATE_EVALUATION");
                         @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';
                     }
                 }
                 if(in_array('expert',$params)){
-                    $expert = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].', '.$user['campaign_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=email&layout=expert&campaign_id='.$user['campaign_id'].'&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'SEND_APPLICATION_BY_EMAIL' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/add_user_22x22.png" /></a>';
+                    $expert = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].', '.$user['campaign_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_emundus&view=email&layout=expert&campaign_id='.$user['campaign_id'].'&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'COM_EMUNDUS_APPLICATION_SEND_APPLICATION_BY_EMAIL' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/add_user_22x22.png" /></a>';
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_expert" id="em_expert'.$user['user_id'].'_'.$user['campaign_id'].'">';
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= $expert;
                     @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '</div>';
@@ -559,11 +559,11 @@ class EmundusHelperList{
 
                 $add = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].', '.$user['campaign_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&c=form&view=form&formid='.$form_eval.'&tableid=31&rowid=&jos_emundus_evaluations___student_id[value]='.$user['user_id'].'&jos_emundus_evaluations___campaign_id[value]='.$user['campaign_id'].'&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" class="modal"><img title="'.JText::_( 'COM_EMUNDUS_FILES_ADD_EVALUATION' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/add.png" /></a>';
 
-                $edit = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].', '.$user['campaign_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid='.$form_eval.'&random=0&rowid='.@$user['evaluation_id'].'&usekey=id&student_id='. $user['user_id'].'&tmpl=component&iframe=1&jos_emundus_evaluations___campaign_id='.@$user['campaign_id'].'&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'UPDATE_EVALUATION' ).'" src="'.$this->baseurl.'/images/M_images/edit.png" /></a>';
+                $edit = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9},onClose:function(){delayAct('.$user['user_id'].', '.$user['campaign_id'].');}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=form&formid='.$form_eval.'&random=0&rowid='.@$user['evaluation_id'].'&usekey=id&student_id='. $user['user_id'].'&tmpl=component&iframe=1&jos_emundus_evaluations___campaign_id='.@$user['campaign_id'].'&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'COM_EMUNDUS_EVALUATION_UPDATE_EVALUATION' ).'" src="'.$this->baseurl.'/images/M_images/edit.png" /></a>';
 
-                $view = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=details&fabrik='.$form_eval.'&random=0&rowid='.@$user['evaluation_id'].'&usekey=id&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'VIEW_EVALUATION' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/zoom_application.png" /></a>';
+                $view = '<a rel="{handler:\'iframe\',size:{x:window.getWidth()*0.8,y:window.getHeight()*0.9}}" href="'.$this->baseurl.'/index.php?option=com_fabrik&view=details&fabrik='.$form_eval.'&random=0&rowid='.@$user['evaluation_id'].'&usekey=id&student_id='. $user['user_id'].'&tmpl=component&iframe=1&Itemid='.$itemid.'" target="_self" name="" class="modal"><img title="'.JText::_( 'COM_EMUNDUS_EVALUATION_VIEW_EVALUATION' ).'" src="'.$this->baseurl.'/media/com_emundus/images/icones/zoom_application.png" /></a>';
 
-                $delete = '<input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/b_drop.png" name="delete" onclick="document.pressed=\'delete_eval|'.$user['user_id'].'-'.$user['evaluation_id'].'\'" alt="'.JText::_('DELETE_EVALUATION').'" title="'.JText::_('DELETE_EVALUATION').'" />';
+                $delete = '<input type="image" src="'.$this->baseurl.'/media/com_emundus/images/icones/b_drop.png" name="delete" onclick="document.pressed=\'delete_eval|'.$user['user_id'].'-'.$user['evaluation_id'].'\'" alt="'.JText::_('COM_EMUNDUS_EVALUATION_DELETE_EVALUATION').'" title="'.JText::_('COM_EMUNDUS_EVALUATION_DELETE_EVALUATION').'" />';
 
                 if( (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) && $this->evaluators_can_see > 1 ) {
                     $canview = true;
@@ -689,7 +689,7 @@ class EmundusHelperList{
 
                 @$actions[$user['user_id']][$user['user']][@$user['campaign_id']] .= "<div class='em_filesrequest'>".$user->value." : ".$user->email." ".$user->time_date."</div>";
                 @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<div class="em_attachments" id="em_attachments_'.$user['user_id'].'"><div id="container" class="emundusraw">';
-                @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul id="emundus_nav"><li><a href="#"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('REQUEST').'" title="'.JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS').'" width="22" height="22" align="absbottom" /></a>';
+                @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul id="emundus_nav"><li><a href="#"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('COM_EMUNDUS_EXPERTS_REQUEST').'" title="'.JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS').'" width="22" height="22" align="absbottom" /></a>';
                 @$actions[$user['user_id']][$user['user']][$user['campaign_id']] .= '<ul>';
 
                 foreach ( $uploads as $row ) {
@@ -824,10 +824,10 @@ class EmundusHelperList{
                 $i = 1;
                 foreach($com as $c){
                     $comments[$user['user_id']] .= '<div id="comment'.$i.'_'.$user['user_id'].'">';
-                    if(in_array('evaluator',$params)) $comments[$user['user_id']] .= '<span><b>'.JText::_('EVALUATOR').':</b> '.$c->evaluator_name.' </span>';
-                    if(in_array('date',$params)) $comments[$user['user_id']] .= '<span><b>'.JText::_('DATE').':</b> '.$c->com_date.' </span>';
-                    if(in_array('reason',$params)) $comments[$user['user_id']] .= '<span><b>'.JText::_('REASON').':</b> '.$c->reason.' </span>';
-                    if(in_array('comment',$params)) $comments[$user['user_id']] .= '<span><b>'.JText::_('COMMENT').':</b> '.$c->comment.' </span>';
+                    if(in_array('evaluator',$params)) $comments[$user['user_id']] .= '<span><b>'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR').':</b> '.$c->evaluator_name.' </span>';
+                    if(in_array('date',$params)) $comments[$user['user_id']] .= '<span><b>'.JText::_('COM_EMUNDUS_DATE').':</b> '.$c->com_date.' </span>';
+                    if(in_array('reason',$params)) $comments[$user['user_id']] .= '<span><b>'.JText::_('COM_EMUNDUS_COMMENTS_REASON').':</b> '.$c->reason.' </span>';
+                    if(in_array('comment',$params)) $comments[$user['user_id']] .= '<span><b>'.JText::_('COM_EMUNDUS_COMMENT').':</b> '.$c->comment.' </span>';
                     $comments[$user['user_id']] .= '</div>';
                     $i++;
                 }
@@ -842,7 +842,7 @@ class EmundusHelperList{
         // Starting a session.
         $session = JFactory::getSession();
         if(empty($filter_comment) && $session->has( 'comments' )) $filter_comment = $session->get( 'comments' );
-        $comments = '<div id="show_comment"><label>'.JText::_('SHOW_COMMENT').'</label>';
+        $comments = '<div id="show_comment"><label>'.JText::_('COM_EMUNDUS_COMMENTS_SHOW_COMMENT').'</label>';
         $comments .= '<input name="comments" type="checkbox" onClick="javascript:submit()" value="1" ';
         if($filter_comment==1) $comments .= 'checked=checked';
         $comments .= '/></div>';
@@ -859,7 +859,7 @@ class EmundusHelperList{
     }
 
     function createApplicationStatutblock($params){
-        $statut = '<div id="em_comments"><img class="selectallarrow" width="38" height="22" alt="'.JText::_('FOR_SELECTION').'" src="'.JURI::base().'media/com_emundus/images/icones/arrow_ltr.png"><textarea name="comments" id="comments" rows="1" cols="50%" onFocus="if(this.value == this.defaultValue) this.value=\'\'">'.JText::_('COMMENTS').'</textarea>';
+        $statut = '<div id="em_comments"><img class="selectallarrow" width="38" height="22" alt="'.JText::_('FOR_SELECTION').'" src="'.JURI::base().'media/com_emundus/images/icones/arrow_ltr.png"><textarea name="comments" id="comments" rows="1" cols="50%" onFocus="if(this.value == this.defaultValue) this.value=\'\'">'.JText::_('COM_EMUNDUS_COMMENTS').'</textarea>';
         $statut .= '<div id="em_comments_action">';
         if(in_array('complete',$params)) $statut .= '<input type="submit" class="green" name="push_true" value="'.JText::_('COM_EMUNDUS_APPLICATION_PUSH_TRUE').'" onclick="document.pressed=this.name" />';
         if(in_array('incomplete',$params)) $statut .= '<input type="submit" class="red" name="push_false" value="'.JText::_('COM_EMUNDUS_APPLICATION_PUSH_FALSE').'" onclick="document.pressed=this.name" />';

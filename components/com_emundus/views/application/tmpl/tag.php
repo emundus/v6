@@ -10,8 +10,8 @@ JFactory::getSession()->set('application_layout', 'tag');
         <div class="panel panel-default widget em-container-tags">
             <div class="panel-heading em-container-tags-heading">
                 <h3 class="panel-title" style="display:inline-block">
-                    <span class="glyphicon glyphicon-tags"></span> 
-                    <?php echo JText::_('TAGS'); ?> 
+                    <span class="glyphicon glyphicon-tags"></span>
+                    <?php echo JText::_('TAGS'); ?>
                     <span class="label label-info" style="float:unset"><?php echo count($this->tags); ?></span>
                 </h3>&ensp;&ensp;
 
@@ -24,10 +24,10 @@ JFactory::getSession()->set('application_layout', 'tag');
                             <?php endforeach; ?>
                             </optgroup>
                         <?php endforeach; ?>
-                        
+
                     </select>&ensp;&ensp;
                     <button class="btn btn-success btn-xs" id="add-tags">
-                        <?php echo JText::_('ADD'); ?>
+                        <?php echo JText::_('COM_EMUNDUS_ADD'); ?>
                     </button>
 	            <?php endif;?>
                 <div class="btn-group pull-right">
@@ -129,7 +129,7 @@ JFactory::getSession()->set('application_layout', 'tag');
         if(e.handle === true) {
             e.handle = false;
             var tags = $("#mytags").val();
-        
+
             url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=tagfile';
             $.ajax(
                 {
@@ -153,9 +153,9 @@ JFactory::getSession()->set('application_layout', 'tag');
                                 {
                                     console.log(jqXHR.responseText);
                                 }
-                                
+
                             });
-                        } 
+                        }
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         console.log(jqXHR.responseText);

@@ -148,7 +148,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 		</table>
 	</div>
 	<div class="em-container-pagination">
-        <label for = "pager-select" class="em-container-pagination-label"><?php echo JText::_('DISPLAY')?></label>
+        <label for = "pager-select" class="em-container-pagination-label"><?php echo JText::_('COM_EMUNDUS_DISPLAY')?></label>
         <select name="pager-select" class="chzn-select" id="pager-select">
             <option value="0" <?php if($this->pagination->limit == 100000){echo "selected=true";}?>><?php echo JText::_('COM_EMUNDUS_ACTIONS_ALL')?></option>
             <option value="5" <?php if($this->pagination->limit == 5){echo "selected=true";}?>>5</option>

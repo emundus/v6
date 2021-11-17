@@ -7,7 +7,7 @@
  * @license    GNU/GPL
  * @author     Benjamin Rivalland
 */
- 
+
 // no direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
 //error_reporting(E_ALL);
@@ -17,7 +17,7 @@ jimport( 'joomla.application.component.view');
  *
  * @package    Emundus
  */
- 
+
 class EmundusViewFilesbystatus extends JViewLegacy
 {
 	protected $itemId;
@@ -32,7 +32,7 @@ class EmundusViewFilesbystatus extends JViewLegacy
     {
 		$current_user = JFactory::getUser();
 		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id) )
-			die( JText::_('RESTRICTED_ACCESS') );
+			die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
     	// translation to load in javacript file ; /media/com_emundus/em_files.js
     	// put it in com_emundus/emundus.php
@@ -52,7 +52,7 @@ class EmundusViewFilesbystatus extends JViewLegacy
 		//$delayAct = EmundusHelperJavascript::delayAct();
 		//$this->assignRef('delayAct', $delayAct);
 		//$this->assignRef('submitForm', $submitForm);
-		
+
 		parent::display($tpl);
 	}
 

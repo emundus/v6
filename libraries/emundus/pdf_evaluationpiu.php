@@ -20,10 +20,10 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     $config = JFactory::getConfig();
     $user = $m_profile->getEmundusUser($user_id);
     $fnum = empty($fnum)?$user->fnum:$fnum;
-    
+
     $infos = $m_profile->getFnumDetails($fnum);
     $campaign_id = $infos['campaign_id'];
-    
+
     // Get form HTML
     $htmldata = '';
 
@@ -49,7 +49,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     $db->setQuery($query);
     $item = $db->loadObject();
 //die(str_replace("#_", "jos", $query));
-   
+
 
     //get logo
     $template = $app->getTemplate(true);
@@ -63,7 +63,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
     unset($logo);
     unset($title);
-    
+
     $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
     $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
     $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
@@ -73,9 +73,9 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
     $pdf->SetFont('helvetica', '', 10);
     $pdf->AddPage();
-    
-/*** Applicant ***/   
-$htmldata .= 
+
+/*** Applicant ***/
+$htmldata .=
 '<style>
 .card  { background-color: #cecece; border: none; display:block; line-height:80%;}
 .name  { display: block; font-size: 12pt; margin: 0 0 0 20px; padding:0; display:block; line-height:110%;}
@@ -162,7 +162,7 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
         $htmldata .='</td></tr></table>';
     }
     $htmldata .= '</td></tr></table></div>';
-    
+
 } elseif ($options[0] == "0") {
     $htmldata .= '';
 } else {
@@ -227,7 +227,7 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
     } else {
         $path = $name;
     }
-    
+
     @chdir('tmp');
     if ($output) {
         $pdf->Output($path, 'FI');
@@ -276,8 +276,8 @@ function getEvaluation($fnums) {
 				continue;
 			}
 
-			$str = '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';
-			$str .= '<h1 style="text-align: center;">'.JText::_('EVALUATOR').': '.JFactory::getUser($evaluator)->name.'</h1>';
+			$str = '<em>'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';
+			$str .= '<h1 style="text-align: center;">'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR').': '.JFactory::getUser($evaluator)->name.'</h1>';
 
 			if ($evaluator_profile == '1012') {
 				$str .= '<h2 style="text-align: center;">Evaluation Recherche</h2>';
@@ -288,7 +288,7 @@ function getEvaluation($fnums) {
 			$str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
 			foreach ($elements as $elt_id => $element) {
-				
+
 				$k = $element->tab_name.'___'.$element->element_name;
 
 				if ($element->element_name != 'id' &&

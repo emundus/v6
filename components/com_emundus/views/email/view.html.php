@@ -7,11 +7,11 @@
  * @license    GNU/GPL
  * @author     Benjamin Rivalland
 */
- 
+
 // no direct access
- 
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
- 
+
 jimport( 'joomla.application.component.view');
 //error_reporting(E_ALL);
 /**
@@ -19,7 +19,7 @@ jimport( 'joomla.application.component.view');
  *
  * @package    Emundus
  */
- 
+
 class EmundusViewEmail extends JViewLegacy
 {
 	var $_user = null;
@@ -36,27 +36,27 @@ class EmundusViewEmail extends JViewLegacy
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
-		
+
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
-		
+
 		parent::__construct($config);
 	}
 
     public function display($tpl = null) {
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-		    die(JText::_('RESTRICTED_ACCESS'));
+		    die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 	    }
 /******
  * DEPRECATED
  * You should use raw view
- * 
+ *
 	    $document = JFactory::getDocument();
 		$document->addStyleSheet("media/com_emundus/css/emundus.css" );
 		$document->addStyleSheet("media/com_emundus/lib/chosen/chosen.min.css" );
 		$document->addScript("media/com_emundus/lib/chosen/chosen.jquery.min.js" );
-		
+
 		$jinput = JFactory::getApplication()->input;
 	    $fnums_post = $jinput->getString('fnums', null);
 		$fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);

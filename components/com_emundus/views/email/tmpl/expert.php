@@ -97,7 +97,7 @@ foreach ($fnums as $fnum => $fnumInfo) {
             submit_attachment.value = "<?= JText::_('COM_EMUNDUS_UPLOAD'); ?>";
             var objJSON = JSON.parse(response);
             var html = '<div id="em_dl_'+objJSON.id+'" class="em_dl"><a class="dO" target="_blank" href="'+objJSON.url+'"><div class="vI">'+objJSON.name+'</div> <div class="vJ"> ('+objJSON.filesize+' <?= JText::_("BYTES") ?>)</div></a><div class="em_email_icon" id="attachment_'+objJSON.id+'">';
-            html += '<img src="<?= JURI::base(); ?>media/com_emundus/images/icones/x_8px.png" alt="<?= JText::_("DELETE_ATTACHMENT"); ?>" title="<?= JText::_("DELETE_ATTACHMENT"); ?>" onClick="if (confirm(\'<?= htmlentities(JText::_("DELETE_ATTACHMENT_CONFIRM")); ?>\')) {deleteAttachment('+objJSON.id+');}"/></div>';
+            html += '<img src="<?= JURI::base(); ?>media/com_emundus/images/icones/x_8px.png" alt="<?= JText::_("COM_EMUNDUS_ATTACHMENTS_DELETE_ATTACHMENT"); ?>" title="<?= JText::_("COM_EMUNDUS_ATTACHMENTS_DELETE_ATTACHMENT"); ?>" onClick="if (confirm(\'<?= htmlentities(JText::_("COM_EMUNDUS_ATTACHMENTS_DELETE_ATTACHMENT_CONFIRM")); ?>\')) {deleteAttachment('+objJSON.id+');}"/></div>';
 
             document.getElementById("em_attachment").innerHTML += html;
             $('#mail_attachments').value += "," + "<?= str_replace('\\', '\\\\', EMUNDUS_PATH_ABS); ?>" + objJSON.aid + "<?= str_replace('\\', '\\\\', DS); ?>" + objJSON.filename;
@@ -142,7 +142,7 @@ if (!empty($files)) {
                 <div id="em_dl_'.$file['id'].'" class="em_dl">
                     <div class="vI"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.$file['name'].'" title="'.$file['name'].'" width="22" height="22" align="absbottom" /> '.$file['name'].'</div>
                     <div class="em_email_icon" id="attachment_'.$file['id'].'">
-                        <img src="'.JURI::base().'media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].'); document.getElementById(\'mail_attachments\').value=\'\';}"/>
+                        <img src="'.JURI::base().'media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("COM_EMUNDUS_ATTACHMENTS_DELETE_ATTACHMENT").'" title="'.JText::_("COM_EMUNDUS_ATTACHMENTS_DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("COM_EMUNDUS_ATTACHMENTS_DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].'); document.getElementById(\'mail_attachments\').value=\'\';}"/>
                     </div>
                 </div>
             </div>';
@@ -154,7 +154,7 @@ if (!empty($files)) {
 } else {
     echo '<div id="em_attachment">
         <input type="hidden" name="delete_attachment_box" id="delete_attachment_box" value="0">
-        <a href="index.php?option=com_fabrik&view=list&listid=108">'.JText::_('NO_FILE_FROM_TEMPLATE').'<a>
+        <a href="index.php?option=com_fabrik&view=list&listid=108">'.JText::_('COM_EMUNDUS_LETTERS_NO_FILE_FROM_TEMPLATE').'<a>
         </div></ul>';
 }
 ?>
@@ -224,7 +224,7 @@ document.getElementById("adminForm").addEventListener("submit", event => {
                     if (result.sent.length > 0) {
 
                         // Block containing the email adresses of the sent emails.
-                        var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                        var sent_to = '<p>' + Joomla.JText._('COM_EMUNDUS_MAILS_SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
                         result.sent.forEach(element => {
                             sent_to += '<li class="list-group-item alert-success">'+element+'</li>';
                         });

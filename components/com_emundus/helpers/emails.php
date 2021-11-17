@@ -43,7 +43,7 @@ class EmundusHelperEmails {
         $current_user = JFactory::getUser();
         $email = '<div class="em_email_block" id="em_email_block">
 					<input placeholder="'.JText::_('NAME_FROM').'" name="mail_from_name" type="text" class="inputbox input-xlarge" id="mail_from_name" value="'.$current_user->name.'" />
-					<input placeholder="'.JText::_('EMAIL_FROM').'" name="mail_from" type="text" class="inputbox input-xlarge" id="mail_from" value="'.$current_user->email.'" />
+					<input placeholder="'.JText::_('COM_EMUNDUS_MAILS_EMAIL_FROM').'" name="mail_from" type="text" class="inputbox input-xlarge" id="mail_from" value="'.$current_user->email.'" />
 					<input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id" value="'.$current_user->id.'" /><br>';
 
         if (in_array('default',$params)) {
@@ -95,7 +95,7 @@ class EmundusHelperEmails {
             $email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
             if (is_null($users)) {
-                $email.= '<label for="select_template">'.JText::_( 'TEMPLATE' ).'</label>';
+                $email.= '<label for="select_template">'.JText::_( 'COM_EMUNDUS_MAILS_TEMPLATE' ).'</label>';
                 $AllEmail_template = EmundusHelperEmails::getAllEmail(2);
                 $email.='<select name="select_template" onChange="getTemplate(this);">
 					<option value="%">'.JText::_( 'SELECT_TEMPLATE' ).'</option>';
@@ -471,12 +471,12 @@ class EmundusHelperEmails {
         $message	= JRequest::getVar( 'mail_body','','POST','STRING',JREQUEST_ALLOWHTML);
 
         if ($subject == '') {
-            JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
+            JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_SUBJECT' ) );
             $mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&desc=2&Itemid='.$itemid);
             return;
         }
         if ($message == '') {
-            JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_A_MESSAGE' ) );
+            JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_A_MESSAGE' ) );
             $mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&desc=2&Itemid='.$itemid);
             return;
         }
@@ -575,7 +575,7 @@ class EmundusHelperEmails {
                     } catch (Exception $e) {
                         echo 'Error database: ' . $e ; die();
                     }
-                    $info .= "<hr>".($i+1)." : ".$user->email." ".JText::_('SENT');
+                    $info .= "<hr>".($i+1)." : ".$user->email." ".JText::_('COM_EMUNDUS_APPLICATION_SENT');
                     if ($i%10 == 0) {
                         @set_time_limit(10800);
                         usleep(1000);
@@ -626,22 +626,22 @@ class EmundusHelperEmails {
         $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
         if ($captcha !== 1) {
-            JError::raiseWarning( 500, JText::_( 'ERROR_NOT_A_VALID_POST' ) );
+            JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_NOT_A_VALID_POST' ) );
             $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
             return;
         }
         if (count( $users_id ) == 0) {
-            JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
+            JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
             $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
             return;
         }
         if ($subject == '') {
-            JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_SUBJECT' ) );
+            JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_SUBJECT' ) );
             $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
             return;
         }
         if ($message == '') {
-            JError::raiseWarning( 500, JText::_( 'ERROR_YOU_MUST_PROVIDE_A_MESSAGE' ) );
+            JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_A_MESSAGE' ) );
             $mainframe->redirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&tmpl='.JRequest::getCmd( 'tmpl' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
             return;
         }
@@ -752,7 +752,7 @@ class EmundusHelperEmails {
                         echo 'Error database: ' . $e;
                         die();
                     }
-                    $info .= "<hr>" . ($i + 1) . " : " . $user->email . " " . JText::_('SENT');
+                    $info .= "<hr>" . ($i + 1) . " : " . $user->email . " " . JText::_('COM_EMUNDUS_APPLICATION_SENT');
                     if ($i % 10 == 0) {
                         @set_time_limit(10800);
                         usleep(1000);

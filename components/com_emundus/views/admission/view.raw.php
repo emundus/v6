@@ -48,7 +48,7 @@ class EmundusViewAdmission extends JViewLegacy
     public function display($tpl = null) {
 
         if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
-            die (JText::_('RESTRICTED_ACCESS'));
+            die (JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
 	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 
@@ -139,7 +139,7 @@ class EmundusViewAdmission extends JViewLegacy
 
 				// Columns
 				$defaultElements = $this->get('DefaultElements');
-				$data = array(array('check' => '#', 'name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
+				$data = array(array('check' => '#', 'name' => JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'c.status' => JText::_('COM_EMUNDUS_STATUS')));
 				$fl = array();
 
 			    // Get admission criterion
@@ -148,7 +148,7 @@ class EmundusViewAdmission extends JViewLegacy
 						$fl[$elt->tab_name . '.' . $elt->element_name] = $elt->element_label;
 					}
 				}
-				$fl['jos_emundus_final_grade.user'] = JText::_('RECORDED_BY');
+				$fl['jos_emundus_final_grade.user'] = JText::_('COM_EMUNDUS_DECISION_RECORDED_BY');
 				// merge admission criterion on application files
 				$data[0] = array_merge($data[0], $fl);
 				$fnumArray = array();
@@ -166,7 +166,7 @@ class EmundusViewAdmission extends JViewLegacy
 						$col = explode('.', $col);
 						switch ($col[0]) {
 							case 'evaluators':
-								$data[0]['EVALUATORS'] = JText::_('EVALUATORS');
+								$data[0]['EVALUATORS'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS');
 								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $m_admission);
 								break;
 							case 'overall':
@@ -238,7 +238,7 @@ class EmundusViewAdmission extends JViewLegacy
 
 								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 									$userObj->val = !empty($value)?'<a href="#" data-toggle="modal" data-target="#basicModal" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'">
-											<span class="glyphicon icon-eye-open" title="'.JText::_('DETAILS').'">  </span>
+											<span class="glyphicon icon-eye-open" title="'.JText::_('COM_EMUNDUS_DETAILS').'">  </span>
 										</a>'.$value:'';
 								} else $userObj->val = $value;
 

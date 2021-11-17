@@ -168,7 +168,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 		</div>
 		<div class="em-container-pagination">
             <div class="em-container-pagination-select">
-                <label for="pager-select" class="em-paginate-label em-container-pagination-label"><?= JText::_('DISPLAY') ?></label>
+                <label for="pager-select" class="em-paginate-label em-container-pagination-label"><?= JText::_('COM_EMUNDUS_DISPLAY') ?></label>
                 <select name="pager-select" class="chzn-select" id="pager-select">
                     <option value="0" <?php if ($this->pagination->limit == 0) { echo "selected=true"; } ?>><?= JText::_('COM_EMUNDUS_ACTIONS_ALL')?></option>
                     <option value="5" <?php if ($this->pagination->limit == 5) { echo "selected=true"; } ?>>5</option>
@@ -219,12 +219,12 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                             openFiles(fnum);
                         } else {
                             $('.em-dimmer').remove();
-                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?= JText::_('CANNOT_OPEN_FILE') ?></div>");
+                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?= JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>");
                         }
                     },
                     error: function (jqXHR) {
                         $('.em-dimmer').remove();
-                        $("<div class=\"alert alert-warning\"><?= JText::_('CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
+                        $("<div class=\"alert alert-warning\"><?= JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
                         console.log(jqXHR.responseText);
                     }
                 })

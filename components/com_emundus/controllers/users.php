@@ -205,7 +205,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 			}
 
 		} catch (Exception $e) {
-			echo json_encode((object)array('status' => false, 'msg' => JText::_('EMAIL_NOT_SENT')));
+			echo json_encode((object)array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT')));
 			JLog::add($e->__toString(), JLog::ERROR, 'com_emundus.email');
 			exit();
 		}
@@ -307,7 +307,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		JArrayHelper::toInteger($cid, 0);
 
 		if (count( $cid ) == 0) {
-			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
+			JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			exit;
 		}
@@ -737,10 +737,10 @@ class EmundusControllerUsers extends JControllerLegacy {
                 $c_messages->sendEmailNoFnum($selectUser->email, $lbl, $post, $id);
 
                 if ($c_messages != true) {
-                    $msg = JText::_('EMAIL_NOT_SENT');
+                    $msg = JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT');
 
                 } else {
-                    $msg = JText::_('EMAIL_SENT');
+                    $msg = JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT');
                 }
             }
         }

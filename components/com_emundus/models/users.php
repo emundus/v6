@@ -758,7 +758,7 @@ class EmundusModelUsers extends JModelList {
         try {
 
             if (!$user->save()) {
-                JFactory::getApplication()->enqueueMessage(JText::_('CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
                 $res = array('msg' => $user->getError());
                 return $res;
             } else {

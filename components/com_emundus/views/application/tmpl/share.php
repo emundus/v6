@@ -12,7 +12,7 @@
             <div class="panel-heading em-container-share-heading">
                 <h3 class="panel-title">
                 	<span class="glyphicon glyphicon-eye-open"></span>
-                	<?= JText::_('CHECK_ACL'); ?>
+                	<?= JText::_('COM_EMUNDUS_ACCESS_CHECK_ACL'); ?>
                 </h3>
                 <div class="btn-group pull-right">
                     <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
@@ -69,9 +69,9 @@
                             <tr>
                                 <?php foreach($this->access['groups'] as $gid => $groups) :?>
                                     <?php foreach($groups['actions'] as $actions) :?>
-                                        <th><?= JText::_('CREATE')?></th>
-                                        <th><?= JText::_('RETRIEVE')?></th>
-                                        <th><?= JText::_('UPDATE')?></th>
+                                        <th><?= JText::_('COM_EMUNDUS_ACCESS_CREATE')?></th>
+                                        <th><?= JText::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></th>
+                                        <th><?= JText::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
                                         <th><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
                                     <?php endforeach;?>
                                     <?php break; endforeach;?>
@@ -187,9 +187,9 @@
 				<tr>
 					<?php foreach($this->access['users'] as $gid => $groups):?>
 						<?php foreach($groups['actions'] as $actions):?>
-							<th><?= JText::_('CREATE')?></th>
-							<th><?= JText::_('RETRIEVE')?></th>
-							<th><?= JText::_('UPDATE')?></th>
+							<th><?= JText::_('COM_EMUNDUS_ACCESS_CREATE')?></th>
+							<th><?= JText::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></th>
+							<th><?= JText::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
 							<th><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
 						<?php endforeach;?>
 						<?php break; endforeach;?>

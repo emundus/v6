@@ -27,7 +27,7 @@ $app 	= JFactory::getApplication();
 $db   	= JFactory::getDBO();
 
 $jinput = $app->input;
-$itemid = $jinput->get('Itemid'); 
+$itemid = $jinput->get('Itemid');
 
 $fnum_from 		= $formModel->getElementData('jos_emundus_campaign_candidature___fnum', true);
 $campaign_id 	= $formModel->getElementData('jos_emundus_campaign_candidature___campaign_id', true);
@@ -44,7 +44,7 @@ $fnum_to = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($a
 
 // 1. Get definition of fnum_from
 if ($copied == 1) {
-	
+
 	try {
 		$query = 'SELECT * FROM #__emundus_campaign_candidature WHERE fnum like '.$db->Quote($fnum_from);
 		$db->setQuery($query);
@@ -71,9 +71,9 @@ if ($copied == 1) {
 		$profiles = new EmundusModelProfile();
 
         $fnumInfos = $profiles->getFnumDetails($fnum_from);
-        
+
         $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
-		
+
 		$result = $m_application->copyApplication($fnum_from, $fnum_to, $pid);
 
 		// 4. Duplicate attachments for new fnum
@@ -87,7 +87,7 @@ if ($copied == 1) {
 	    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$query;
 	    JLog::add($error, JLog::ERROR, 'com_emundus');
 	}
-	
+
 } elseif ($copied == 2) {
 
 	// Move the file to another campaign
@@ -97,14 +97,14 @@ if ($copied == 1) {
 	$m_application->moveApplication($fnum_from, $fnum_to, $campaign_id, $status);
 
 } else {
-	// new empty file	
+	// new empty file
 	try {
 
 		$query = 'INSERT INTO #__emundus_campaign_candidature (`applicant_id`, `user_id`, `campaign_id`, `submitted`, `date_submitted`, `cancelled`, `fnum`, `status`, `published`, `copied`) 
 					VALUES ('.$applicant_id.', '.$user->id.', '.$campaign_id.', 0, NULL, 0, '.$db->Quote($fnum_to).', '.$status.', 1, 0)';
 		$db->setQuery($query);
 		$db->execute();
-	
+
 	} catch(Exception $e) {
 	    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$query;
 	    JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -114,4 +114,4 @@ if ($copied == 1) {
 
 // 5. Exit plugin before store
 echo '<script>window.parent.$("html, body").animate({scrollTop : 0}, 300);</script>';
-die('<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>');
+die('<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("COM_EMUNDUS_SAVED").'</h1>');

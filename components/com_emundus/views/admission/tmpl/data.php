@@ -164,7 +164,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 		</div>
 		<div class="em-container-pagination">
             <div class="em-container-pagination-select">
-                <label for="pager-select" class="em-container-pagination-label"><?php echo JText::_('DISPLAY')?></label>
+                <label for="pager-select" class="em-container-pagination-label"><?php echo JText::_('COM_EMUNDUS_DISPLAY')?></label>
                 <select name="pager-select" class="chzn-select" id="pager-select">
                     <option value="0" <?php echo ($this->pagination->limit == 0)?"selected=true":'';?>><?php echo JText::_('COM_EMUNDUS_ACTIONS_ALL')?></option>
                     <option value="5" <?php echo ($this->pagination->limit == 5)?"selected=true":'';?>>5</option>

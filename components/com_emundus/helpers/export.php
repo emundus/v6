@@ -378,7 +378,7 @@ class EmundusHelperExport {
 			else
 				$pdf->Image(EMUNDUS_PATH_ABS.$aid.DS.$fileName, '', '', '', '', '', '', '', true, 300, '', false, false, 0, false, false, true);
 		} else {
-			$htmlData = JText::_('ENCRYPTED_FILE').' : ';
+			$htmlData = JText::_('COM_EMUNDUS_EXPORTS_ENCRYPTED_FILE').' : ';
 			$htmlData .= '<a href="'.JURI::base(true).DS.EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'">'.JURI::base(true).DS.EMUNDUS_PATH_REL.DS.$aid.DS.$fileName.'</a>';
 			$pdf->startTransaction();
 			$start_y = $pdf->GetY();

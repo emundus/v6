@@ -85,7 +85,7 @@ $email_list = array();
         <div class="form-group em-form-recipients">
             <!-- List of users / their emails, gotten from the fnums selected. -->
             <div class="well well-sm" id="em-recipitents">
-                <span class='label label-grey'><?= JText::_('TO'); ?>:</span>
+                <span class='label label-grey'><?= JText::_('COM_EMUNDUS_TO'); ?>:</span>
                 <?php $uids = []; ?>
                 <?php foreach ($this->users as $user) :?>
 

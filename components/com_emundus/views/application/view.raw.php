@@ -50,7 +50,7 @@ class EmundusViewApplication extends JViewLegacy {
 
     function display($tpl = null) {
         if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-            die(JText::_('RESTRICTED_ACCESS'));
+            die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
         }
 
         $app = JFactory::getApplication();
@@ -84,15 +84,15 @@ class EmundusViewApplication extends JViewLegacy {
                             'APPLICATION_TAGS' => $fnum,
                             'APPLICATION_PROGRESS' => $fnum
                         );
-    
+
                         $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum);
-                        
+
                         $synthesis->program = $program;
                         $synthesis->camp = $campaignInfo;
                         $synthesis->fnum = $fnum;
                         $synthesis->block = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
                         // replace {fabrik_element_ids} in body
-    
+
                         $element_ids = $m_email->getFabrikElementIDs($synthesis->block);
                         if (count(@$element_ids[0]) > 0) {
                             $element_values = $m_email->getFabrikElementValues($fnum, $element_ids[1]);
@@ -141,7 +141,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('nameCategory', $nameCategory);
 
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -152,7 +152,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('campaign_id', $fnumInfos['campaign_id']);
                         $this->assignRef('student', $student);
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -237,7 +237,7 @@ class EmundusViewApplication extends JViewLegacy {
                                 $this->assignRef('evaluation_select', $evals);
 
                             } else {
-                                echo JText::_("RESTRICTED_ACCESS");
+                                echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                                 exit();
                             }
                         }
@@ -245,7 +245,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->campaign_id = $fnumInfos['campaign_id'];
                         $this->assignRef('fnum', $fnum);
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -294,7 +294,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('$formid', $formid);
 
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -330,7 +330,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('userComments', $userComments);
                         $this->assignRef('fnum', $fnum);
                     } else{
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -353,7 +353,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('fnum', $fnum);
 
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -380,7 +380,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('forms', $forms);
 
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -396,7 +396,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('defaultActions', $defaultActions);
 
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -412,7 +412,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('messages', $messages);
 
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -461,7 +461,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('$formid', $admission_form->form_id);
 
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -521,7 +521,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->campaign_id = $fnumInfos['campaign_id'];
                         $this->assignRef('fnum', $fnum);
                     } else {
-                        echo JText::_("RESTRICTED_ACCESS");
+                        echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
                     }
                     break;
@@ -534,6 +534,6 @@ class EmundusViewApplication extends JViewLegacy {
 
             parent::display($tpl);
 
-        } else echo JText::_("RESTRICTED_ACCESS");
+        } else echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
     }
 }

@@ -32,13 +32,13 @@
 						<tr>
 							<th></th>
 							<th>
-								<label for="c-check-all"><?php echo JText::_('CREATE')?></label>
+								<label for="c-check-all"><?php echo JText::_('COM_EMUNDUS_ACCESS_CREATE')?></label>
 							</th>
 							<th>
-								<label for="r-check-all"><?php echo JText::_('RETRIEVE')?></label>
+								<label for="r-check-all"><?php echo JText::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></label>
 							</th>
 							<th>
-								<label for="u-check-all"><?php echo JText::_('UPDATE')?></label>
+								<label for="u-check-all"><?php echo JText::_('COM_EMUNDUS_ACCESS_UPDATE')?></label>
 							</th>
 							<th>
 								<label for="d-check-all"><?php echo JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></label>

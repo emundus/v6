@@ -209,7 +209,7 @@ class EmundusController extends JControllerLegacy {
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_emploi.php';
 
         if (!file_exists($file)) {
-            die(JText::_('FILE_NOT_FOUND'));
+            die(JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND'));
         }
         if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
             mkdir(EMUNDUS_PATH_ABS.$student_id);
@@ -236,7 +236,7 @@ class EmundusController extends JControllerLegacy {
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_thesis.php';
 
         if (!file_exists($file)) {
-            die(JText::_('FILE_NOT_FOUND'));
+            die(JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND'));
         }
         if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
             mkdir(EMUNDUS_PATH_ABS.$student_id);
@@ -478,10 +478,10 @@ class EmundusController extends JControllerLegacy {
                             if (is_file($chemin.$user->id.DS.'tn_'.$file['filename'])) {
                                 unlink($chemin.$user->id.DS.'tn_'.$file['filename']);
                             }
-                            $message .= '<br>'.JText::_('ATTACHMENT_DELETED').' : '.$file['filename'].'. ';
+                            $message .= '<br>'.JText::_('COM_EMUNDUS_ATTACHMENTS_DELETED').' : '.$file['filename'].'. ';
 
                         } else {
-                            $message .= '<br>'.JText::_('FILE_NOT_FOUND').' : '.$file['filename'].'. ';
+                            $message .= '<br>'.JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND').' : '.$file['filename'].'. ';
                         }
                     }
 
@@ -1401,7 +1401,7 @@ class EmundusController extends JControllerLegacy {
 	            exit;
             }
         } else {
-            JError::raiseWarning(500, JText::_( 'FILE_NOT_FOUND' ).' '.$url);
+            JError::raiseWarning(500, JText::_( 'COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND' ).' '.$url);
         }
     }
 
@@ -1663,9 +1663,9 @@ class EmundusController extends JControllerLegacy {
             }
             $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $file, 'F');
 
-            $result = array('status' => true, 'file' => $file, 'msg' => JText::_('FILES_ADDED'), 'path'=>JURI::base());
+            $result = array('status' => true, 'file' => $file, 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED'), 'path'=>JURI::base());
         } else {
-            $result = array('status' => false, 'msg' => JText::_('FILE_NOT_FOUND'));
+            $result = array('status' => false, 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND'));
         }
 
         echo json_encode((object) $result);

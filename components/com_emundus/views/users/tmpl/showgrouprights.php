@@ -31,13 +31,13 @@ span:hover {
 				<tr>
 					<th></th>
 					<th>
-						<label for="c-check-all"><?= JText::_('CREATE'); ?></label>
+						<label for="c-check-all"><?= JText::_('COM_EMUNDUS_ACCESS_CREATE'); ?></label>
 					</th>
 					<th>
-						<label for="r-check-all"><?= JText::_('RETRIEVE'); ?></label>
+						<label for="r-check-all"><?= JText::_('COM_EMUNDUS_ACCESS_RETRIEVE'); ?></label>
 					</th>
 					<th>
-						<label for="u-check-all"><?= JText::_('UPDATE'); ?></label>
+						<label for="u-check-all"><?= JText::_('COM_EMUNDUS_ACCESS_UPDATE'); ?></label>
 					</th>
 					<th>
 						<label for="d-check-all"><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE'); ?></label>
@@ -113,7 +113,7 @@ span:hover {
 			</ul>
 		<?php endif;?>
         <div class="modal-footer">
-            <button type="button" class="btn btn-success"><a href="index.php" style="color: unset"><?php echo JText::_('OK');?></a></button>
+            <button type="button" class="btn btn-success"><a href="index.php" style="color: unset"><?php echo JText::_('COM_EMUNDUS_OK');?></a></button>
         </div>
 	</fieldset>
 <?php endforeach;?>

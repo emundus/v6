@@ -21,16 +21,16 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
 ?>
 
 <!--<div class="title" id="em_application_attachments">
-    <i class="dropdown icon"></i> <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
+    <i class="dropdown icon"></i> <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("COM_EMUNDUS_APPLICATION_SENT"); ?>
 </div>-->
 <div class="row">
     <div class="panel panel-default widget em-container-attachment em-container-form">
         <div class="panel-heading em-container-form-heading">
             <h3 class="panel-title">
             <span class="glyphicon glyphicon-paperclip"></span>
-                <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
+                <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("COM_EMUNDUS_APPLICATION_SENT"); ?>
                 <?php if ($can_export && count($this->userAttachments) > 0) :?>
-                    <button class="btn btn-default" id="em_export_pdf"  target="_blank" type="button" data-toggle="tooltip" data-placement="right" title="<?= JText::_('EXPORT_FILE_ATTACHMENT'); ?>">
+                    <button class="btn btn-default" id="em_export_pdf"  target="_blank" type="button" data-toggle="tooltip" data-placement="right" title="<?= JText::_('COM_EMUNDUS_EXPORTS_EXPORT_FILE_ATTACHMENT'); ?>">
                         <span class="glyphicon glyphicon-save" ></span>
                     </button>
                 <?php endif; ?>
@@ -84,17 +84,17 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                         </th>
                                         <div class="tooltipSelectAttachments selector<?= $new_cat_id; ?>"><p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SELECT_FILES_OF_CATEGORY'); ?></p></div>
 
-                                        <th><?= JText::_('ATTACHMENT_FILENAME'); ?></th>
-                                        <th><?= JText::_('ATTACHMENT_DATE'); ?></th>
-                                        <th><?= JText::_('ATTACHMENT_DESCRIPTION'); ?></th>
+                                        <th><?= JText::_('COM_EMUNDUS_ATTACHMENTS_FILENAME'); ?></th>
+                                        <th><?= JText::_('COM_EMUNDUS_ATTACHMENTS_DATE'); ?></th>
+                                        <th><?= JText::_('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION'); ?></th>
                                         <th><?= JText::_('COM_EMUNDUS_ACADEMIC_YEAR'); ?></th>
-                                        <th><?= JText::_('VALIDATION_STATE'); ?></th>
+                                        <th><?= JText::_('COM_EMUNDUS_ATTACHMENTS_VALIDATION_STATE'); ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 <?php
                                 } else {
-	                                echo JText::_('NO_ATTACHMENT');
+	                                echo JText::_('COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENT');
                                 }
 
                         foreach ($this->userAttachments as $cat => $attachment) {
@@ -106,7 +106,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                 <?php if (count($this->userAttachments) > 0 && EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $this->fnum)) :?>
                                     <div style="width:40px;  margin-top: -15px; text-align: center">
                                         <span class="glyphicon glyphicon-chevron-down"></span><br />
-                                        <button class="btn btn-danger btn-xs btn-attach" data-title="<?= JText::_('DELETE_SELECTED_ATTACHMENTS'); ?>" id="em_delete_attachments" name="em_delete_attachments" link="index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=<?= $this->fnum; ?>&student_id=<?= $this->student_id; ?>">
+                                        <button class="btn btn-danger btn-xs btn-attach" data-title="<?= JText::_('COM_EMUNDUS_ATTACHMENTS_DELETE_SELECTED_ATTACHMENTS'); ?>" id="em_delete_attachments" name="em_delete_attachments" link="index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=<?= $this->fnum; ?>&student_id=<?= $this->student_id; ?>">
                                             <span class="glyphicon glyphicon-trash"></span>
                                         </button>
                                     </div>
@@ -136,11 +136,11 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                                     <tr id="em-tr-collapse'.$valueCategory.'" class="em-tr-collapse">
                                                         <th>' . $checkbox . ' #</th>
                                                         <div class="tooltipSelectAttachments selector'.$valueCategory.'"><p>' . JText::_('COM_EMUNDUS_ATTACHMENTS_SELECT_FILES_OF_CATEGORY'). '</p></div>
-                                                        <th>' . JText::_('ATTACHMENT_FILENAME') . '</th>
-                                                        <th>' . JText::_('ATTACHMENT_DATE') . '</th>
-                                                        <th>' . JText::_('ATTACHMENT_DESCRIPTION') . '</th>
+                                                        <th>' . JText::_('COM_EMUNDUS_ATTACHMENTS_FILENAME') . '</th>
+                                                        <th>' . JText::_('COM_EMUNDUS_ATTACHMENTS_DATE') . '</th>
+                                                        <th>' . JText::_('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION') . '</th>
                                                         <th>' . JText::_('COM_EMUNDUS_ACADEMIC_YEAR') . '</th>
-                                                        <th>' . JText::_('VALIDATION_STATE') . '</th>
+                                                        <th>' . JText::_('COM_EMUNDUS_ATTACHMENTS_VALIDATION_STATE') . '</th>
                                                     </tr>
                                                 </thead>
                                             <tbody>';
@@ -151,8 +151,8 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                         if (count($this->userAttachments) > 0) {
 
 	                        $path = $attachment->lbl == "_archive" ? EMUNDUS_PATH_REL . "archives/" . $attachment->filename : EMUNDUS_PATH_REL . $this->student_id . '/' . $attachment->filename;
-                            $img_missing = (!file_exists($path)) ? '<img style="border:0;" src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="' . JText::_('FILE_NOT_FOUND') . '"/> ' : "";
-                            $img_dossier = (is_dir($path)) ? '<img style="border:0;" src="media/com_emundus/images/icones/dossier.png" width=20 height=20 title="' . JText::_('FILE_NOT_FOUND') . '"/> ' : "";
+                            $img_missing = (!file_exists($path)) ? '<img style="border:0;" src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="' . JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND') . '"/> ' : "";
+                            $img_dossier = (is_dir($path)) ? '<img style="border:0;" src="media/com_emundus/images/icones/dossier.png" width=20 height=20 title="' . JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND') . '"/> ' : "";
                             $img_locked = (strpos($attachment->filename, "_locked") > 0) ? '<img src="media/com_emundus/images/icones/encrypted.png" />' : "";
 
                             $class = "";
@@ -161,15 +161,15 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                             if ($attachment->is_validated == -2 || $attachment->is_validated == null) {
                                 $class = "glyphicon-unchecked";
                                 $color = "gray";
-                                $meaning = JText::_('UNCHECKED');
+                                $meaning = JText::_('COM_EMUNDUS_ATTACHMENTS_UNCHECKED');
                             } elseif ($attachment->is_validated == 1) {
                                 $class = "glyphicon-ok";
                                 $color = "green";
-                                $meaning = JText::_('VALID');
+                                $meaning = JText::_('COM_EMUNDUS_ATTACHMENTS_VALID');
                             } else {
                                 $class = "glyphicon-warning-sign";
                                 $color = "orange";
-                                $meaning = JText::_('INVALID');
+                                $meaning = JText::_('COM_EMUNDUS_ATTACHMENTS_INVALID');
                             }
 
                             $checkbox = '';
@@ -194,12 +194,12 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
 
                             $i++;
                             } else {
-                                echo JText::_('NO_ATTACHMENT');
+                                echo JText::_('COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENT');
                             }
                         }
                         echo '</tbody></table>';
                         if (count($this->userAttachments) > 0 && EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $this->fnum)) {
-                            echo '<div style="width:40px;  margin-top: -15px; text-align: center"><span class="glyphicon glyphicon-chevron-down"></span><br /><button class="btn btn-danger btn-xs btn-attach" data-title="' . JText::_('DELETE_SELECTED_ATTACHMENTS') . '" id="em_delete_attachments" name="em_delete_attachments" link="index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=' . $this->fnum . '&student_id=' . $this->student_id . '">
+                            echo '<div style="width:40px;  margin-top: -15px; text-align: center"><span class="glyphicon glyphicon-chevron-down"></span><br /><button class="btn btn-danger btn-xs btn-attach" data-title="' . JText::_('COM_EMUNDUS_ATTACHMENTS_DELETE_SELECTED_ATTACHMENTS') . '" id="em_delete_attachments" name="em_delete_attachments" link="index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=' . $this->fnum . '&student_id=' . $this->student_id . '">
                                     <span class="glyphicon glyphicon-trash"></span></button></div> ';
                         } ?>
                         </div>
@@ -217,8 +217,8 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
 
                         </div>
                         <div class="modal-footer em-modal-actions-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal"><?= JText::_('CANCEL'); ?></button>
-                            <button type="button" class="btn btn-success"><?= JText::_('OK'); ?></button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal"><?= JText::_('COM_EMUNDUS_ACTIONS_CANCEL'); ?></button>
+                            <button type="button" class="btn btn-success"><?= JText::_('COM_EMUNDUS_OK'); ?></button>
                         </div>
                     </div>
                 </div>
@@ -228,13 +228,13 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                     <div class="modal-content">
                         <div class="modal-header em-modal-form-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4>
+                            <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('COM_EMUNDUS_LOADING');?></h4>
                         </div>
                         <div class="modal-body em-modal-form-body">
                             <img src="<?= JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif" alt="loader">
                         </div>
                         <div class="modal-footer em-modal-form-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EMUNDUS_ACTIONS_CANCEL')?></button>
                         </div>
                     </div>
                 </div>
@@ -303,12 +303,12 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
             var checked = getChecked();
 
             if (checked.length > 0) {
-                var res = confirm("<?php echo JText::_('CONFIRM_DELETE_SELETED_ATTACHMENTS')?>");
+                var res = confirm("<?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_CONFIRM_DELETE_SELETED_ATTACHMENTS')?>");
                 if (res) {
                     var url = $(this).attr('link');
                     $('#em-modal-actions .modal-body').empty();
                     $('#em-modal-actions .modal-body').append('<div><img src="' + loadingLine + '" alt="' +
-                    Joomla.JText._('LOADING') + '"/></div>');
+                    Joomla.JText._('COM_EMUNDUS_LOADING') + '"/></div>');
                     $('#em-modal-actions .modal-footer').hide();
                     $('#em-modal-actions .modal-dialog').addClass('modal-lg');
                     $('#em-modal-actions .modal').show();
@@ -341,7 +341,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                     });
                 }
             } else {
-                alert("<?php echo JText::_('YOU_MUST_SELECT_ATTACHMENT')?>");
+                alert("<?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_YOU_MUST_SELECT_ATTACHMENT')?>");
             }
         }
 
@@ -383,8 +383,8 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
 
         } else {
             Swal.fire({
-                title: Joomla.JText._('INFORMATION'),
-                text: Joomla.JText._('SELECT_AT_LEAST_ONE_FILE'),
+                title: Joomla.JText._('COM_EMUNDUS_EXPORTS_INFORMATION'),
+                text: Joomla.JText._('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_FILE'),
                 type: 'warning'
             })
         }
@@ -396,18 +396,18 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
         var state = -2;
         if ($(this).find("span").hasClass("glyphicon-unchecked")) {
             $(this).find("span").removeClass("glyphicon-unchecked").addClass("glyphicon-ok").css("color", "green");
-            $("#"+id).attr('title',Joomla.JText._('VALID'));
+            $("#"+id).attr('title',Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_VALID'));
             state = 1
 
         } else {
             if ($(this).find("span").hasClass("glyphicon-ok")) {
                 $(this).find("span").removeClass("glyphicon-ok").addClass("glyphicon-warning-sign").css("color", "orange");
-                $("#"+id).attr('title',Joomla.JText._('INVALID'));
+                $("#"+id).attr('title',Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_INVALID'));
                 state = 0
             } else {
                 if($(this).find("span").hasClass("glyphicon-warning-sign")){
                     $(this).find("span").removeClass("glyphicon-warning-sign").addClass("glyphicon-unchecked").css("color", "gray");
-                    $("#"+id).attr('title',Joomla.JText._('UNCHECKED'));
+                    $("#"+id).attr('title',Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_UNCHECKED'));
                     state = -2
                 }
             }

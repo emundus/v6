@@ -49,7 +49,7 @@ $Itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
                         </tr>
                     <?php endforeach; ?>
                     <tr>
-                        <td colspan="5" align="center"><input type="submit" class="btn btn-warning" value="<?php echo JText::_('UPDATE'); ?>" /></td>
+                        <td colspan="5" align="center"><input type="submit" class="btn btn-warning" value="<?php echo JText::_('COM_EMUNDUS_ACCESS_UPDATE'); ?>" /></td>
                     </tr>
                 </tbody>
             </table>

@@ -15,8 +15,8 @@ $path = JPATH_BASE.DS.'images'.DS.'emundus'.DS.'files'.DS;
 
 <fieldset class="em-controlfiles-form-contentServ">
 <legend>
-<img src="<?php JURI::base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILES_NOT_FOUND_IN_SERVER'); ?>"/>
-<?php echo JText::_('FILES_NOT_FOUND_IN_SERVER'); ?>
+<img src="<?php JURI::base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('COM_EMUNDUS_ATTACHMENTS_FILES_NOT_FOUND_IN_SERVER'); ?>"/>
+<?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_FILES_NOT_FOUND_IN_SERVER'); ?>
 </legend>
 <?php
 if (count($this->files)>0 && isset($this->files) && is_array($this->files)) {
@@ -35,7 +35,7 @@ if (count($this->files)>0 && isset($this->files) && is_array($this->files)) {
 	<tfoot>
 		<tr>
 			<td colspan="10">
-			<?php echo JText::_('TOTAL_FILES_IN_DB').' = '.$this->total; ?>
+			<?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TOTAL_FILES_IN_DB').' = '.$this->total; ?>
 			</td>
 		</tr>
 	</tfoot>
@@ -72,8 +72,8 @@ if (count($this->files)>0 && isset($this->files) && is_array($this->files)) {
 
 <fieldset class="em-controlfiles-form-contentBdd">
 <legend>
-<img src="<?php JURI::base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('FILES_NOT_FOUND_IN_DB'); ?>"/>
-<?php echo JText::_('FILES_NOT_FOUND_IN_DB'); ?>
+<img src="<?php JURI::base(); ?>media/com_emundus/images/icones/viewmag_22x22.png" alt="<?php JText::_('COM_EMUNDUS_ATTACHMENTS_FILES_NOT_FOUND_IN_DB'); ?>"/>
+<?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_FILES_NOT_FOUND_IN_DB'); ?>
 </legend>
 <?php
 if (count($this->listFiles)>0 && isset($this->listFiles) && is_array($this->listFiles)) {
@@ -92,7 +92,7 @@ if (count($this->listFiles)>0 && isset($this->listFiles) && is_array($this->list
 	<tfoot>
 		<tr>
 			<td colspan="10">
-			<?php echo JText::_('TOTAL_FILES_IN_SERVER').' = '.count($this->listFiles); ?>
+			<?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TOTAL_FILES_IN_SERVER').' = '.count($this->listFiles); ?>
 			</td>
 		</tr>
 	</tfoot>

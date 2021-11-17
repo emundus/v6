@@ -11,9 +11,9 @@
  * @license        GNU/GPL
  * @author        Benjamin Rivalland
  */
- 
+
 // no direct access
- 
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 //error_reporting(E_ALL);
 jimport( 'joomla.application.component.view');
@@ -22,7 +22,7 @@ jimport( 'joomla.application.component.view');
  *
  * @package    Emundus
  */
- 
+
 class EmundusViewAmetys extends JViewLegacy
 {
 	//protected $itemId;
@@ -32,7 +32,7 @@ class EmundusViewAmetys extends JViewLegacy
 	{
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-		
+
 		parent::__construct($config);
 	}
 
@@ -40,7 +40,7 @@ class EmundusViewAmetys extends JViewLegacy
     {
     	$current_user = JFactory::getUser();
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id))
-			die( JText::_('RESTRICTED_ACCESS') );
+			die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
 	   	$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_emundus');
@@ -56,7 +56,7 @@ class EmundusViewAmetys extends JViewLegacy
 			case 'formcampaign':
 				// get list of applicant profiles
 				$mProfle = new EmundusModelProfile;
-				$applicantProfiles = $mProfle->getApplicantsProfiles(); 
+				$applicantProfiles = $mProfle->getApplicantsProfiles();
 				$this->assignRef('applicantProfiles', $applicantProfiles);
 			break;
 

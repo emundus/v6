@@ -39,7 +39,7 @@ class EmundusControllerThesis extends EmundusController {
 
         // Get the model.
         $model = $this->getModel('Thesis', 'EmundusModel');
-        $fnum = $model->apply($user->id, $thesisId); 
+        $fnum = $model->apply($user->id, $thesisId);
         if ($fnum) {
             if(is_null($tmpl))
             // Redirect to the selected thesis screen.
@@ -48,9 +48,9 @@ class EmundusControllerThesis extends EmundusController {
                 $this->setMessage(JText::_('COM_EMUNDUS_THESIS_APPLIED'), 'message');
                 $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesis&tmpl=component&fnum='.$fnum.'&id='.$thesisId.'&Itemid='.$Itemid, false));
             }
-            
+
         } else {
-            JError::raiseWarning( 100, JText::_('ERROR') );
+            JError::raiseWarning( 100, JText::_('COM_EMUNDUS_ERROR') );
             $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesiss&Itemid='.$Itemid, false));
         }
     }
@@ -100,7 +100,7 @@ class EmundusControllerThesis extends EmundusController {
         if ($model->cancel($user->id, $fnum))
             $this->setMessage(JText::_('COM_EMUNDUS_THESIS_DELETED'));
         else
-            JError::raiseWarning( 100, JText::_('ERROR') );
+            JError::raiseWarning( 100, JText::_('COM_EMUNDUS_ERROR') );
 
         $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=thesiss&Itemid=1617', false));
     }

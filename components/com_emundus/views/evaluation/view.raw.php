@@ -138,9 +138,9 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				// Columns
 				$defaultElements = $this->get('DefaultElements');
-				$datas = array(array('check' => '#', 'name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
+				$datas = array(array('check' => '#', 'name' => JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'c.status' => JText::_('COM_EMUNDUS_STATUS')));
 				$fl = array();
-                $fl['jos_emundus_evaluations.user'] = JText::_('EVALUATOR');
+                $fl['jos_emundus_evaluations.user'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
 			    // Get eval crieterion
 				if (count($defaultElements) > 0) {
 					foreach ($defaultElements as $key => $elt) {
@@ -162,7 +162,7 @@ class EmundusViewEvaluation extends JViewLegacy
 						$col = explode('.', $col);
 						switch ($col[0]) {
 							case 'evaluators':
-								$datas[0]['EVALUATORS'] = JText::_('EVALUATORS');
+								$datas[0]['EVALUATORS'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS');
 								$colsSup['evaluators'] = $h_files->createEvaluatorList($col[1], $m_evaluation);
 								break;
 							case 'overall':
@@ -243,7 +243,7 @@ class EmundusViewEvaluation extends JViewLegacy
 								if ($formid > 0 && !empty($value)) {
 
 									if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction(5,'r',$this->_user->id)) {
-										$link_view = '<a href="'.$form_url_view.$user['evaluation_id'].'" target="_blank" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'"><span class="glyphicon icon-eye-open" title="'.JText::_('DETAILS').'">  </span></a>';
+										$link_view = '<a href="'.$form_url_view.$user['evaluation_id'].'" target="_blank" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'"><span class="glyphicon icon-eye-open" title="'.JText::_('COM_EMUNDUS_DETAILS').'">  </span></a>';
 									}
 
 									if (EmundusHelperAccess::asAccessAction(5,'u',$this->_user->id)) {

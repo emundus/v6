@@ -114,7 +114,7 @@ if (empty($id)) {
             },
             error: function () {
                 // handle error
-                $("#em-contacts").append('<span class="alert"> <?= JText::_('ERROR'); ?> </span>')
+                $("#em-contacts").append('<span class="alert"> <?= JText::_('COM_EMUNDUS_ERROR'); ?> </span>')
             }
         });
 
@@ -150,7 +150,7 @@ if (empty($id)) {
                 },
                 error: function () {
                     // handle error
-                    $("#em-messages").append('<span class="alert"> <?= JText::_('ERROR'); ?> </span>')
+                    $("#em-messages").append('<span class="alert"> <?= JText::_('COM_EMUNDUS_ERROR'); ?> </span>')
                 }
             });
         } else {
@@ -199,7 +199,7 @@ if (empty($id)) {
             },
             error: function () {
                 // handle error
-                $("#em-messages").append('<span class="alert"> <?= JText::_('ERROR'); ?> </span>')
+                $("#em-messages").append('<span class="alert"> <?= JText::_('COM_EMUNDUS_ERROR'); ?> </span>')
             }
         });
     });

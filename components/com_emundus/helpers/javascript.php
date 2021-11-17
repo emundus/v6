@@ -169,21 +169,21 @@ function OnSubmitForm() {
 			break;
 			case \'delete_attachements\':
 				document.adminForm.task.value = "delete_attachements";
-				if (confirm("'.JText::_("CONFIRM_DELETE_SELETED_ATTACHEMENTS").'")) {
+				if (confirm("'.JText::_("COM_EMUNDUS_ATTACHMENTS_CONFIRM_DELETE_SELETED_ATTACHEMENTS").'")) {
 	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delete_attachements&Itemid='.$itemid.'";
 			 	} else
 			 		return false;
 			break;
 			case \'delete_comments\':
 				document.adminForm.task.value = "delete_comments";
-				if (confirm("'.JText::_("CONFIRM_DELETE_SELETED_COMMENTS").'")) {
+				if (confirm("'.JText::_("COM_EMUNDUS_COMMENTS_CONFIRM_DELETE_SELETED_COMMENTS").'")) {
 	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=delete_comments&Itemid='.$itemid.'";
 			 	} else
 			 		return false;
 			break;
 			case \'add_comment\':
 				document.adminForm.task.value = "add_comment";
-				if (confirm("'.JText::_("ADD_COMMENT").'")) {
+				if (confirm("'.JText::_("COM_EMUNDUS_COMMENTS_ADD_COMMENT").'")) {
 	        		document.adminForm.action ="index.php?option=com_emundus&view='.$view.'&controller='.$view.'&task=add_comment&Itemid='.$itemid.'";
 			 	} else
 			 		return false;
@@ -286,11 +286,11 @@ function OnSubmitForm() {
 		$script = '
 		function save_filter()
 		{
-			var name=prompt("'.JText::_('FILTER_NAME').'","");
+			var name=prompt("'.JText::_('COM_EMUNDUS_FILTERS_FILTER_NAME').'","");
 			while (name=="")
 			{
-				alert("'.JText::_('ALERT_EMPTY_FILTER').'");
-				name=prompt("'.JText::_('FILTER_NAME').'","name");
+				alert("'.JText::_('COM_EMUNDUS_FILTERS_ALERT_EMPTY_FILTER').'");
+				name=prompt("'.JText::_('COM_EMUNDUS_FILTERS_FILTER_NAME').'","name");
 			}
 			if(name){
 				getJsonInput(name);

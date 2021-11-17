@@ -42,7 +42,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
 			<div class="panel panel-info em-hide" id="em-appli-menu">
 				<div class="panel-heading em-hide-heading">
-					<h3 class="panel-title"><?php echo JText::_('APPLICATIONS_ACTIONS')?></h3>
+					<h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_APPLICATION_ACTIONS')?></h3>
 				</div>
 				<div class="panel-body em-hide-body">
 					<div class="list-group">
@@ -52,7 +52,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
 			<div class="panel panel-info em-hide" id="em-synthesis">
 				<div class="panel-heading em-hide-heading">
-					<h3 class="panel-title"><?php echo JText::_('APPLICATION_SYNTHESIS')?></h3>
+					<h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_APPLICATION_SYNTHESIS')?></h3>
 				</div>
 				<div class="panel-body em-hide-body">
 				</div>
@@ -60,7 +60,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
 			<div class="panel panel-info em-hide" id="em-assoc-files">
 				<div class="panel-heading em-hide-heading">
-					<h3 class="panel-title"><?php echo JText::_('LINKED_APPLICATION_FILES')?></h3>
+					<h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_ACCESS_LINKED_APPLICATION_FILES')?></h3>
 				</div>
 				<div class="panel-body em-hide-body">
 
@@ -72,7 +72,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 			<div class="clearfix"></div>
 			<div class="panel panel-info em-hide" id="em-last-open">
 				<div class="panel-heading em-hide-heading">
-					<h3 class="panel-title"><?php echo JText::_('LAST_OPEN_FILES')?></h3>
+					<h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_APPLICATION_LAST_OPEN_FILES')?></h3>
 				</div>
 				<div class="panel-body em-hide-body">
 					<div class="list-group">
@@ -92,7 +92,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<span class="navbar-brand" href="#"><?php echo JText::_('ACTIONS')?></span>
+					<span class="navbar-brand" href="#"><?php echo JText::_('COM_EMUNDUS_ACTIONS')?></span>
 				</div>
 			</div>
 			<div class="panel panel-default em-container-data"></div>
@@ -105,12 +105,12 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
 	var itemId = <?php echo $this->itemId;?>;
 	var cfnum = '<?php echo @$this->cfnum;?>';
-	var filterName = '<?php echo JText::_('FILTER_NAME');?>';
-	var filterEmpty = '<?php echo JText::_('ALERT_EMPTY_FILTER');?>';
-	var nodelete = '<?php echo JText::_('CAN_NOT_DELETE_FILTER');?>';
-	var jtextArray = ['<?php echo JText::_('ENTER_COMMENT')?>',
+	var filterName = '<?php echo JText::_('COM_EMUNDUS_FILTERS_FILTER_NAME');?>';
+	var filterEmpty = '<?php echo JText::_('COM_EMUNDUS_FILTERS_ALERT_EMPTY_FILTER');?>';
+	var nodelete = '<?php echo JText::_('COM_EMUNDUS_FILTERS_CAN_NOT_DELETE_FILTER');?>';
+	var jtextArray = ['<?php echo JText::_('COM_EMUNDUS_COMMENTS_ENTER_COMMENT')?>',
 	                  '<?php echo JText::_('COM_EMUNDUS_FORM_TITLE')?>',
-	                  '<?php echo JText::_('COMMENT_SENT')?>'];
+	                  '<?php echo JText::_('COM_EMUNDUS_COMMENTS_SENT')?>'];
 	var loading = '<?php echo JURI::base().'media/com_emundus/images/icones/loader.gif'?>';
 	var loadingLine = '<?php echo JURI::base().'media/com_emundus/images/icones/loader-line.gif'?>';
 
@@ -140,13 +140,13 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
                         } else {
                             console.log(result);
                             $('.em-dimmer').remove();
-                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>");
+                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>");
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown)
                     {
                         $('.em-dimmer').remove();
-                        $("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
+                        $("<div class=\"alert alert-warning\"><?php echo JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
                         console.log(jqXHR.responseText);
                     }
                 })
@@ -173,7 +173,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
 		$(document).on("hidden.bs.modal", function (e) {
 		    $(e.target).removeData("bs.modal").find("#basicModal .modal-content").empty();
-		    $('#basicModal .modal-content').replaceWith('<div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><?php echo JText::_("LOADING");?></h4></div><div class="modal-body"><img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_("CANCEL")?></button></div></div>');
+		    $('#basicModal .modal-content').replaceWith('<div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><?php echo JText::_("COM_EMUNDUS_LOADING");?></h4></div><div class="modal-body"><img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_("COM_EMUNDUS_ACTIONS_CANCEL")?></button></div></div>');
 		});
 	})
 

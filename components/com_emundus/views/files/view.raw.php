@@ -42,7 +42,7 @@ class EmundusViewFiles extends JViewLegacy {
 		$h_files = new EmundusHelperFiles;
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-			die(JText::_('RESTRICTED_ACCESS'));
+			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
 	   	$app = JFactory::getApplication();
@@ -205,7 +205,7 @@ class EmundusViewFiles extends JViewLegacy {
 				$displayPhoto = false;
 
 			    $defaultElements = $this->get('DefaultElements');
-			    $data = array(array('check' => '#', 'name' => JText::_('APPLICATION_FILES'), 'status' => JText::_('STATUS')));
+			    $data = array(array('check' => '#', 'name' => JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'status' => JText::_('COM_EMUNDUS_STATUS')));
 			    $fl = array();
 			    if (count($defaultElements) > 0) {
 				    foreach ($defaultElements as $key => $elt) {
@@ -222,7 +222,7 @@ class EmundusViewFiles extends JViewLegacy {
 					    $col = explode('.', $col);
 					    switch ($col[0]) {
 						    case 'evaluators':
-							    $data[0]['EVALUATORS'] = JText::_('EVALUATORS');
+							    $data[0]['EVALUATORS'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS');
 							    $colsSup['evaluators'] = $h_files->createEvaluatorList($col[1], $m_files);
 							    break;
 							case 'overall':
