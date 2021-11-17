@@ -138,12 +138,6 @@ a {
   color: $base-secondary-color;
 }
 
-.view-form label.fabrikLabel.fabrikTip {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
 .hidden {
   display: none;
 }
@@ -3407,7 +3401,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 /* BLOC ELEMENT */
 .view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer.control-group {
-  margin: 50px 0px 0px 0px;
+  margin: 32px 0px 16px 0px;
 }
 
 /* LABEL */
@@ -3423,10 +3417,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   color: $neutral-800;
   display: inline-block;
   margin-bottom: 12px;
-
-    &.fabrikTip {
-      margin-bottom: 12px;
-    }
 }
 
 /* INPUT */
@@ -3461,14 +3451,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   &[placeholder]  {
-    color: $neutral-500;
-    font-family:  $font;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 19px;
-    letter-spacing: 0.0015em;
-    text-align: left;
+    color: $neutral-500 !important;
   }
 
   &[value]  {
@@ -3527,9 +3510,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   color: $neutral-600;
   display: flex;
   margin-bottom: 12px;
+  margin-top: 12px;
 
   &:empty{
     margin-bottom: 0px;
+    margin-top: 0px;
   }
 
 
