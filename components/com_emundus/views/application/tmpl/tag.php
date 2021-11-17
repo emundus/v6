@@ -11,7 +11,7 @@ JFactory::getSession()->set('application_layout', 'tag');
             <div class="panel-heading em-container-tags-heading">
                 <h3 class="panel-title" style="display:inline-block">
                     <span class="glyphicon glyphicon-tags"></span>
-                    <?php echo JText::_('TAGS'); ?>
+                    <?php echo JText::_('COM_EMUNDUS_TAGS'); ?>
                     <span class="label label-info" style="float:unset"><?php echo count($this->tags); ?></span>
                 </h3>&ensp;&ensp;
 
@@ -66,7 +66,7 @@ JFactory::getSession()->set('application_layout', 'tag');
                             <?php
                             $i++;
                         }
-                    } else echo JText::_('NO_TAG');
+                    } else echo JText::_('COM_EMUNDUS_TAGS_NO_TAG');
                     ?>
                 </ul>
             </div>

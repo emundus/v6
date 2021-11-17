@@ -340,7 +340,7 @@ class EmundusControllerApplication extends JControllerLegacy
             if($result!=1 && $result!=true)
                 $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETE_ERROR'));
             else
-                $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETED'));
+                $tab = array('status' => $result, 'msg' => JText::_('COM_EMUNDUS_TAGS_DELETED'));
         }else{
             if(EmundusHelperAccess::asAccessAction(14, 'd', $user->id, $fnum))
             {
@@ -348,7 +348,7 @@ class EmundusControllerApplication extends JControllerLegacy
                 if($result!=1 && $result!=true)
                     $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETE_ERROR'));
                 else
-                    $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETED'));
+                    $tab = array('status' => $result, 'msg' => JText::_('COM_EMUNDUS_TAGS_DELETED'));
             } else{
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));

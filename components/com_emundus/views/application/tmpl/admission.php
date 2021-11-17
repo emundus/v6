@@ -28,7 +28,7 @@ JFactory::getSession()->set('application_layout', 'admission');
                     <?php endif;?>
                 </h3>
                 <?php if (!empty($this->url_form)):?>
-                    <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('OPEN_ADMISSION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('OPEN_ADMISSION_FORM_IN_NEW_TAB'); ?></a>
+                    <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('COM_EMUNDUS_ADMISSION_OPEN_ADMISSION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('COM_EMUNDUS_ADMISSION_OPEN_ADMISSION_FORM_IN_NEW_TAB'); ?></a>
                 <?php endif;?>
                 <div class="btn-group pull-right">
                     <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
@@ -47,7 +47,7 @@ JFactory::getSession()->set('application_layout', 'admission');
                                     width="100%" scrolling="no" marginheight="0" marginwidth="0" onload="resizeIframe(this)"></iframe>
                             <?php else:?>
                                 <div class="em_no-form">
-                                    <?php echo JText::_('NO_ADMISSION_FORM_SET'); ?>
+                                    <?php echo JText::_('COM_EMUNDUS_ADMISSION_NO_ADMISSION_FORM_SET'); ?>
                                 </div>
                             <?php endif;?>
                         </div>

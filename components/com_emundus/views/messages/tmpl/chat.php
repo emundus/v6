@@ -36,7 +36,7 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
                 <div class="message-list">
                     <?php if (empty($this->messages)) :?>
                         <div class="w-col w-col-6">
-                            <p class="name-message"><?= JText::_('NO_MESSAGES_WITH'); ?></p>
+                            <p class="name-message"><?= JText::_('COM_EMUNDUS_CHATROOM_NO_MESSAGES_WITH'); ?></p>
                         </div>
                     <?php else:?>
                         <?php foreach ($this->messages as $message) :?>

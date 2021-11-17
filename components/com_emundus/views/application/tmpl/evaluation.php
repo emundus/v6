@@ -31,7 +31,7 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                 <?php endif;?>
             </h3>
             <?php if (!empty($this->url_form)) :?>
-                <a href="<?= $this->url_form; ?>" target="_blank" title="<?= JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?= JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB'); ?></a>
+                <a href="<?= $this->url_form; ?>" target="_blank" title="<?= JText::_('COM_EMUNDUS_EVALUATIONS_OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?= JText::_('COM_EMUNDUS_EVALUATIONS_OPEN_EVALUATION_FORM_IN_NEW_TAB'); ?></a>
             <?php endif;?>
             <?php
                 if (EmundusHelperAccess::asAccessAction(5, 'd', $this->_user->id, $this->fnum)) :?>

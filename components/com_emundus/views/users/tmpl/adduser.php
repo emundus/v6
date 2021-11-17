@@ -189,7 +189,7 @@ if ($s == '') {
 						url:'index.php?option=com_emundus&controller=users&task=ldapsearch&search='+$('#s')[0].value,
 						dataType: 'html',
 						beforeSend: function() {
-							ldapResult.text('<?= Jtext::_('SEARCHING'); ?> ['+$('#s')[0].value+']');
+							ldapResult.text('<?= Jtext::_('COM_EMUNDUS_FILTERS_SEARCHING'); ?> ['+$('#s')[0].value+']');
 						},
 						success: function(result) {
 
@@ -198,7 +198,7 @@ if ($s == '') {
 							if (!result.status) {
                                 ldapResult.html("<span class='alert alert-error'> <?php echo JText::_('COM_EMUNDUS_ERROR_OCCURED'); ?> </span>")
                             } else if (result.count == 0) {
-                                ldapResult.html("<span class='alert alert-error'> <?php echo JText::_('LDAP_NO_RESULT'); ?> </span>")
+                                ldapResult.html("<span class='alert alert-error'> <?php echo JText::_('COM_EMUNDUS_LDAP_NO_RESULT'); ?> </span>")
                             } else {
 								ldapResult.html("");
 								// Foreach user
@@ -248,13 +248,13 @@ if ($s == '') {
                                         addUser = '';
 									if (user.exists) {
 										cardColor = 'alert-success';
-                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('LDAP_USER_EXISTS'); ?>">'+
+                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('COM_EMUNDUS_LDAP_USER_EXISTS'); ?>">'+
                                                         '<div class="hide uid">'+username.value+'</div>'+
                                                         '<span class="glyphicon glyphicon-ok" style="font-size:30px; padding-top:60px;"></span>'+
                                                     '</div>';
                                     } else {
                                         cardColor = 'ldap-card';
-                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('LDAP_USER_NEW'); ?>">'+
+                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('COM_EMUNDUS_LDAP_USER_NEW'); ?>">'+
                                                         '<div class="hide uid">'+username.value+'</div>'+
                                                         '<span class="glyphicon glyphicon-plus" style="font-size:30px; padding-top:60px;"></span>'+
                                                     '</div>';

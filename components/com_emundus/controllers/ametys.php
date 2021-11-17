@@ -30,14 +30,14 @@ class EmundusControllerAmetys extends EmundusController {
             JRequest::setVar('view', $default );
         }
         parent::display();
-    }  
+    }
 
-    public function getprogrammes(){ 
+    public function getprogrammes(){
         $user = JFactory::getUser();
         $view = JRequest::getVar('view', null, 'GET', 'none',0);
         $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
 
-        $model = $this->getModel('ametys');   
+        $model = $this->getModel('ametys');
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)){
             $result = 0;
@@ -54,7 +54,7 @@ class EmundusControllerAmetys extends EmundusController {
         exit;
     }
 
-    public function addcampaigns(){ 
+    public function addcampaigns(){
         $user = JFactory::getUser();
         $view = JRequest::getVar('view', null, 'GET', 'none',0);
         $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
@@ -65,8 +65,8 @@ class EmundusControllerAmetys extends EmundusController {
         $data['year'] = JRequest::getVar('year', null, 'POST', 'none',0);
         $data['short_description'] = JRequest::getVar('short_description', null, 'POST', 'none',0);
 
-        $mcampaign = $this->getModel('campaign');   
-        $mprogramme = $this->getModel('programme');   
+        $mcampaign = $this->getModel('campaign');
+        $mprogramme = $this->getModel('programme');
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -81,9 +81,9 @@ class EmundusControllerAmetys extends EmundusController {
             if (count($programmes) > 0)
                 $result = $mcampaign->addCampaignsForProgrammes($data, $programmes);
             else $result = false;
-            
+
             if ($result === false)
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_CAMPAIGNS'), 'data' => $result);
+                $tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_AMETYS_ERROR_CANNOT_ADD_CAMPAIGNS'), 'data' => $result);
             else $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_CAMPAIGNS_ADDED'), 'data' => $result);
         }
         echo json_encode((object)$tab);

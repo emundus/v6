@@ -445,7 +445,7 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         if(empty($fnumErrorList)) {
-            echo json_encode((object)(array('status' => true, 'msg' => JText::_('COMMENT_SUCCESS'), 'id' => $res)));
+            echo json_encode((object)(array('status' => true, 'msg' => JText::_('COM_EMUNDUS_COMMENTS_SUCCESS'), 'id' => $res)));
         } else {
             echo json_encode((object)(array('status' => false, 'msg' => JText::_('COM_EMUNDUS_ERROR'). implode(', ', $fnumErrorList))));
         }
@@ -462,7 +462,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         echo json_encode((object)(array('status' => true,
             'tags' => $tags,
-            'tag' => JText::_('TAGS'),
+            'tag' => JText::_('COM_EMUNDUS_TAGS'),
             'select_tag' => JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG'))));
         exit;
     }
@@ -506,7 +506,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $dispatcher->trigger('callEventHandler', ['onAfterTagAdd', ['fnums' => $validFnums, 'tag' => $tag]]);
         }
 
-        echo json_encode((object)(array('status' => $res, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $tagged)));
+        echo json_encode((object)(array('status' => $res, 'msg' => JText::_('COM_EMUNDUS_TAGS_SUCCESS'), 'tagged' => $tagged)));
         exit;
     }
 
@@ -602,7 +602,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
 
             if ($res !== false) {
-                $msg = JText::_('SHARE_SUCCESS');
+                $msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
             } else {
                 $msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
             }
@@ -619,7 +619,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
 
             if ($res !== false) {
-                $msg = JText::_('SHARE_SUCCESS');
+                $msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
             } else {
                 $msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
             }
@@ -2709,7 +2709,7 @@ class EmundusControllerFiles extends JControllerLegacy
 		                $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_ASSOCIATED_USERS'));
 		                break;
 	                case 'overall':
-		                $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('EVALUATION_OVERALL'));
+		                $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL'));
 		                break;
                 }
                 $col++;

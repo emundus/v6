@@ -58,7 +58,7 @@ class EmundusModelStats extends JModelLegacy {
                                     WHERE (`el`.`action_id` = 32)
                                     GROUP BY  `el`.`fnum_to`";
 
-                $label = JText::_("jos_emundus_stats_nombre_candidature_offre");
+                $label = JText::_("COM_EMUNDUS_STATS_NOMBRE_CANDIDATURE_OFFRE");
             break;
 
             case 'jos_emundus_stats_nombre_comptes':
@@ -80,7 +80,7 @@ class EmundusModelStats extends JModelLegacy {
                                     WHERE (`jos_emundus_setup_profiles`.`published` = 1))
                                 GROUP BY  `eu`.`profile`,date_format(`eu`.`registerDate`,'%Y%m%d')";
 
-                    $label = JText::_("jos_emundus_stats_nombre_comptes");
+                    $label = JText::_("COM_EMUNDUS_STATS_NOMBRE_COMPTES");
             break;
 
             case 'jos_emundus_stats_nombre_connexions':
@@ -96,7 +96,7 @@ class EmundusModelStats extends JModelLegacy {
                                 WHERE (`el`.`action_id` = -(2))
                                 GROUP BY  date_format(`el`.`timestamp`,'%Y%m%d')";
 
-                $label = JText::_("jos_emundus_stats_nombre_connexions");
+                $label = JText::_("COM_EMUNDUS_STATS_NOMBRE_CONNEXIONS");
             break;
 
             case 'jos_emundus_stats_nombre_consult_offre':
@@ -119,7 +119,7 @@ class EmundusModelStats extends JModelLegacy {
                                         WHERE (`el`.`action_id` = 33)
                                         GROUP BY  `el`.`fnum_to`";
 
-                $label = JText::_("jos_emundus_stats_nombre_consult_offre");
+                $label = JText::_("COM_EMUNDUS_STATS_NOMBRE_CONSULT_OFFRE");
                 break;
 
             case 'jos_emundus_stats_nombre_relations_etablies':
@@ -147,7 +147,7 @@ class EmundusModelStats extends JModelLegacy {
 							    AND (`ecc`.`submitted` = 1))
 							    GROUP BY `c`.`name_en`";
 
-                $label = JText::_("jos_emundus_stats_nationality");
+                $label = JText::_("COM_EMUNDUS_STATS_NATIONALITY");
             break;
 
             case 'jos_emundus_stats_gender':
@@ -166,7 +166,7 @@ class EmundusModelStats extends JModelLegacy {
                                     AND (`ecc`.`submitted` = 1))
                                 GROUP BY  `epd`.`gender`";
 
-                $label = JText::_("jos_emundus_stats_gender");
+                $label = JText::_("COM_EMUNDUS_STATS_GENDER");
             break;
 
             case 'jos_emundus_stats_files_graph':
@@ -187,7 +187,7 @@ class EmundusModelStats extends JModelLegacy {
                                 LEFT JOIN `jos_users` `u` on((`u`.`id` = `ecc`.`user_id`)))
                                 GROUP BY  `ecc`.`campaign_id`,`ecc`.`status`, `ecc`.`id`";
 
-                $label = JText::_("jos_emundus_stats_files");
+                $label = JText::_("COM_EMUNDUS_STATS_FILES");
             break;
         }
 

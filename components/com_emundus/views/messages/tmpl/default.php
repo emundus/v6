@@ -25,7 +25,7 @@ if (empty($id)) {
 <div class="showContent em-messages" id="em-contacts">
 
     <?php if (empty($this->message_contacts)) :?>
-        <div class="no-messages"><?= JText::_('NO_MESSAGES'); ?></div>
+        <div class="no-messages"><?= JText::_('COM_EMUNDUS_NO_MESSAGES'); ?></div>
     <?php else :?>
     <ul id="em-message-list" class="em-messages-list">
         <?php foreach ($this->message_contacts as $message_contact) :?>

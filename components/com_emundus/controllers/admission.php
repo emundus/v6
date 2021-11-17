@@ -293,7 +293,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
             echo json_encode(([
                 'status'    => true,
-                'msg'       => JText::_('COMMENT_SUCCESS')
+                'msg'       => JText::_('COM_EMUNDUS_COMMENTS_SUCCESS')
             ]));
             exit;
 
@@ -343,7 +343,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         echo json_encode((object)([
             'status'        => true,
             'tags'          => $tags,
-            'tag'           => JText::_('TAGS'),
+            'tag'           => JText::_('COM_EMUNDUS_TAGS'),
             'select_tag'    => JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG')
         ]));
         exit;
@@ -375,7 +375,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
          $res = $m_files->tagFile($validFnums, $tag);
          $tagged = $m_files->getTaggedFile($tag);
 
-         echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $tagged)));
+         echo json_encode((object)(array('status' => true, 'msg' => JText::_('COM_EMUNDUS_TAGS_SUCCESS'), 'tagged' => $tagged)));
          exit;
      }
 
@@ -446,7 +446,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
             }
 
             if ($res !== false)
-                $msg = JText::_('SHARE_SUCCESS');
+                $msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
             else
                 $msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
 
@@ -471,7 +471,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
             }
 
             if ($res !== false)
-                $msg = JText::_('SHARE_SUCCESS');
+                $msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
             else
                 $msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
         }

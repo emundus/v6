@@ -215,11 +215,11 @@ class EmundusViewFilesbystatus extends JViewLegacy
 							    $colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
 							    break;
 							case 'overall':
-								$datas[0] = array_merge($datas[0], array('overall' => JText::_('EVALUATION_OVERALL')));
+								$datas[0] = array_merge($datas[0], array('overall' => JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL')));
 								break;
                             case 'tags':
                                 $taggedFile = $model->getTaggedFile();
-                                $datas[0]['eta.id_tag'] = JText::_('TAGS');
+                                $datas[0]['eta.id_tag'] = JText::_('COM_EMUNDUS_TAGS');
                                 $colsSup['id_tag'] = array();
                                 break;
                             case 'access':

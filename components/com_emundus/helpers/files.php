@@ -1643,7 +1643,7 @@ class EmundusHelperFiles
 	        if (!$hidden) {
 		        $tag .= '<div id="tag" class="em-filter">
                     		<div class="em_label">
-                    			<label class="control-label em-filter-label">'.JText::_('TAG').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_tags\')"><span class="fas fa-undo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
+                    			<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_TAGS_TAG').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_tags\')"><span class="fas fa-undo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
                             </div>
                     		<div class="em_filtersElement">';
 	        }
