@@ -14,6 +14,23 @@ if ($locallang == "fr-FR") {
     setlocale (LC_ALL, 'en_GB');
 }
 
+// sort arrays by label and not by date
+usort($currentCampaign, function($a, $b) {
+    return $a->label <=> $b->label;
+});
+
+usort($allCampaign, function($a, $b) {
+    return $a->label <=> $b->label;
+});
+
+usort($pastCampaign, function($a, $b) {
+    return $a->label <=> $b->label;
+});
+
+usort($futurCampaign, function($a, $b) {
+    return $a->label <=> $b->label;
+});
+
 ?>
 
 <?= $mod_em_campaign_intro; ?>
