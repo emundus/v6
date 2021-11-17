@@ -1528,10 +1528,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   margin-bottom: 20px;
 }
 
-.fabrikForm .row-fluid .fabrikErrorMessage.help-inline.text-danger i {
-  margin-right: 10px;
-}
-
 .view-form .fabrikGroupRepeater .pull-right .addGroup i {
   color: #3e8ac5 !important;
 }

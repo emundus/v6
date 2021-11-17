@@ -3497,6 +3497,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   text-align: left;
   color: $neutral-600;
   display: flex;
+
+  .icon-question-sign {
+    display: none;
+  }
 }
 
 /* ERREUR */
@@ -3510,6 +3514,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   letter-spacing: 0.0025em;
   text-align: left;
   color: $required;
+
+  &.help-inline {
+    padding: 0px;
+  }
+
+  .icon-warning {
+    display: none;
+  }
 }
 
 
