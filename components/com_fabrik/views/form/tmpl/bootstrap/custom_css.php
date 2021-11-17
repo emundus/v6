@@ -70,10 +70,6 @@ echo <<<EOT
     margin:auto;
 }
 
-.view-form #g-container-main .page-header, 
-.view-details #g-container-main .page-header { 
-    padding-bottom: 30px;
-}
 
 /* FORMULAIRE */
 
@@ -214,7 +210,6 @@ form .optional {
 }
 
 .fabrikForm {
-    margin-top: 0 !important;
     overflow: visible;
 }
 

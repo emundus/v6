@@ -3366,13 +3366,23 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   color: $neutral-600;
 }
 
+/* FORMULAIRE */
+.view-form .applicant-form  {
+  margin-top: 32px;
+}
+
+/* FORMULAIRE */
+.view-form .applicant-form .fabrikForm  {
+  margin-top: 32px;
+}
+
 /* GROUPE */
-.view-form .fabrikForm .fabrikGroup {
-  margin-top: 64px;
+.view-form .applicant-form .fabrikForm .fabrikGroup {
+  margin-bottom: 64px;
 }
 
 /* LEGEND */
-.view-form .fabrikForm .fabrikGroup .legend {
+.view-form .applicant-form .fabrikForm .fabrikGroup .legend {
   // Headline 5
   font-family: $font;
   font-size: 24px;
@@ -3385,7 +3395,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 }
 
 /* INTR0 GROUPE */
-.view-form .fabrikForm .fabrikGroup .groupintro p {
+.view-form .applicant-form .fabrikForm .fabrikGroup .groupintro p {
   // Body 16;
   font-family: $font;
   font-size: 16px;
@@ -3398,7 +3408,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 }
 
 /* LABEL */
-.view-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer .fabrikLabel {
+.view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer .fabrikLabel {
   // Body 16 Medium;
   font-family: $font;
   font-size: 16px;
