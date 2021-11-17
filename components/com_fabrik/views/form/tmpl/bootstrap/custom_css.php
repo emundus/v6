@@ -1634,22 +1634,6 @@ form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
   display: inline-flex;
 }
 
-form {
-  margin: 20px 0 !important;
-  legend {
-    a, a:hover, a:focus {
-      background: #fcfcfc;
-      padding-left: 2rem;
-      padding-top: 1rem;
-      border-radius: 0;
-      color: #000;
-      display: contents;
-      font-size: 1.5rem;
-      line-height: 1.5;
-    }
-  }
-}
-
 .mceToolbar button,
 .timeButton,
 .calendarbutton,
