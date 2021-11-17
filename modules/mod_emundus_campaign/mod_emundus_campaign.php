@@ -80,6 +80,13 @@ if ($params->get('mod_em_campaign_layout') == "institut_fr") {
     $programs = $m_progs->getProgrammes(1, $program_array);
 }
 
+if ($params->get('mod_em_campaign_layout') == "celsa") {
+    $helper = new modEmundusCampaignHelper;
+
+    $formations = $helper->getFormationsWithType();
+    $formationTypes = $helper->getFormationTypes();
+}
+
 if (isset($searchword) && !empty($searchword)) {
     $condition = ' AND (pr.code LIKE "%"'.$db->Quote($searchword).'"%" OR ca.label LIKE "%"'.$db->Quote($searchword).'"%" OR ca.description LIKE "%"'.$db->Quote($searchword).'"%" OR ca.short_description LIKE "%"'.$db->Quote($searchword).'"%") ';
 }
