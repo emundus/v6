@@ -219,6 +219,38 @@ class modEmundusCampaignHelper {
             return null;
         }
     }
+
+    public function getFormationsWithType() {
+        $db = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+
+        $query
+            ->select('*')
+            ->from($db->quoteName('data_formation'));
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    public function getFormationTypes() {
+        $db = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+
+        $query
+            ->select('*')
+            ->from($db->quoteName('data_formation_type'));
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            return null;
+        }
+    }
 }
 
 
