@@ -3407,7 +3407,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 /* BLOC ELEMENT */
 .view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer.control-group {
-  margin: 0px;
+  margin: 0px 0px 50px 0px;
 }
 
 /* LABEL */
@@ -3501,6 +3501,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   display: flex;
   margin-bottom: 12px;
 
+  &:empty{
+    margin-bottom: 0px;
+  }
+
+
   .icon-question-sign {
     display: none;
   }
@@ -3517,6 +3522,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   letter-spacing: 0.0025em;
   text-align: left;
   color: $required;
+  margin-top: 4px;
 
   &.help-inline {
     padding: 0px;
