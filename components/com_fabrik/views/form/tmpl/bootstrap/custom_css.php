@@ -1716,10 +1716,6 @@ a.btn-attach:active {
   cursor: pointer;
 }
 
-.fabrikElement {
-  width: 100%;
-}
-
 
 /*** CONNEXION - CANDIDATER ***/
 
