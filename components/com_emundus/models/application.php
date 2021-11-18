@@ -4415,7 +4415,7 @@ class EmundusModelApplication extends JModelList
         // get table from fabrik list id
         $table = $this->getTableFromFabrikList($listId);
 
-        $select = "SELECT * ";
+        $select = "SELECT $table.id ";
         $from = "FROM $table ";
         $joins = [];
         $where = [];
