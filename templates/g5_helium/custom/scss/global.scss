@@ -3394,8 +3394,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   border: none;
                   border-radius: 4px 4px 0px 0px;
                   height: 48px;
-                  margin-right: 10px;
-                  padding-right: 0px;
+                  margin-right: 20px;
                 }
               }
             }
@@ -3521,7 +3520,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                 padding: 0px !important;
               }
 
-              label.radio input[type="checkbox"] {
+              label.checkbox input[type="checkbox"] {
                 width: 15px;
                 height: 15px;
                 border-radius: 20px;
