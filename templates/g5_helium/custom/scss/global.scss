@@ -3539,72 +3539,71 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
              .fabrikSubGroupElements {
 
-               /* GROUPE REPEAT */
-              .fabrikGroupRepeater  {
+               /* TABLEAU */
+               .table-striped tbody tr:nth-child(2n+1) td,
+               .table-striped tbody tr:nth-child(2n+1) th {
+                 background: $neutral-50;
+               }
 
+               /* GROUPE REPEAT */
+              .fabrikGroupRepeater.pull-right.btn-group,
+              .fabrikGroupRepeater .pull-right {
                   position: absolute;
                   top: -5px;
                   right: 10px;
                   display: flex;
-                  .pull-right {
-                    display: flex;
-                    flex-direction: row;
-                    align-items: flex-end;
-                  }
 
-                  a {
-                    margin-right: 10px !important;
-                    font-size: 11.9px;
-                  }
+                a {
+                  margin-right: 10px;
+                  font-size: 11.9px;
+                }
 
-               .addGroup {
-                cursor: pointer !important;
+               .addGroup.btn.btn-small.btn-success {
+                cursor: pointer;
                  text-align: right;
                  padding: 8px 15px 0 0;
-                 border: none !important;
+                 border: none;
 
                    .tooltip {
-                     display: none !important;
+                     display: none;
                    }
 
                    i {
-                     color: #3e8ac5 !important;
-                     color: #3e8ac5;
+                     color: $neutral-600;
                      &:hover {
-                       color: #26729B;
-                       color: darken(#3e8ac5, 10%);
+                       color: $neutral-800;
                      }
                    }
 
                  &:hover, &:focus, &active {
-                   border: none !important;
-                   background-color: transparent !important;
+                   border: none;
+                   background-color: transparent;
                  }
                 }
 
-               .deleteGroup {
+               .deleteGroup.btn.btn-small.btn-danger {
                   padding: 8px 16px 0 0;
                  cursor: pointer;
-                 border: none !important;
+                 border: none;
 
                  .tooltip {
-                   display: none !important;
+                   display: none;
                  }
 
                  i {
-                   color: #E03C35;
+                   color: $neutral-600;
                    &:hover {
-                     color: darken(#E03C35, 10%);
+                     color: $neutral-800;
                    }
                  }
 
                  &:hover, &:focus, &:active {
-                   border: none !important;
-                   background-color: transparent !important;
+                   border: none;
+                   background-color: transparent;
                  }
-                }
+               }
               }
-             }
+            }
           }
 
           /* ERREUR */
