@@ -34,8 +34,7 @@ ALTER TABLE `jos_users` CHANGE `registerDate` `registerDate` TIMESTAMP NOT NULL 
 ALTER TABLE `jos_users` CHANGE `lastResetTime` `lastResetTime` TIMESTAMP NULL DEFAULT NULL COMMENT 'Date of last password reset';
 ALTER TABLE `jos_users` CHANGE `lastvisitDate` `lastvisitDate` TIMESTAMP NULL DEFAULT NULL;
 
-ALTER TABLE `jos_users` DROP INDEX `idx_externallogin`;
-ALTER TABLE `jos_users` ADD INDEX `idx_externallogin` (`password`);
+ALTER TABLE `jos_users` ADD INDEX `idx_externallogin_2` (`password`);
 
 -- INSERT INTO jos_assets
 INSERT INTO jos_assets (parent_id, level, name, title, rules) VALUES (1, 1, 'com_externallogin', 'COM_EXTERNALLOGIN', '{}');
