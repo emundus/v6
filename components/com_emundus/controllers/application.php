@@ -496,7 +496,7 @@ class EmundusControllerApplication extends JControllerLegacy
             if (!$isNotOnlyApplicantionForms) {
 	            $res = new stdClass();
 	            $res->status = false;
-	            $res->msg = JText::_('CANNOT_EXPORT_FILETYPE');
+	            $res->msg = JText::_('COM_EMUNDUS_EXPORTS_CANNOT_EXPORT_FILETYPE');
 	            echo json_encode($res);
 	            exit();
             }

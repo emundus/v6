@@ -41,7 +41,7 @@ $email = $m_emails->getEmail($this->default_email_tmpl);
 <div id="em-email-messages"></div>
 
 <div class="em-modal-sending-emails" id="em-modal-sending-emails">
-    <div id="em-sending-email-caption"><?= JText::_('SENDING_EMAILS') ;?></div>
+    <div id="em-sending-email-caption"><?= JText::_('COM_EMUNDUS_EMAILS_SENDING_EMAILS') ;?></div>
     <img class="em-sending-email-img" id="em-sending-email-img" src="media/com_emundus/images/sending-email.gif">
 </div>
 
@@ -231,20 +231,20 @@ document.getElementById("adminForm").addEventListener("submit", event => {
 
                         Swal.fire({
                             type: 'success',
-                            title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
+                            title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
                             html: sent_to+'</ul>'
                         });
 
                     } else {
                         Swal.fire({
                             type: 'error',
-                            title: Joomla.JText._('NO_EMAILS_SENT')
+                            title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT')
                         })
                     }
 
                     if (result.failed.length > 0) {
                         // Block containing the email adresses of the failed emails.
-                        $("#em-email-messages").append('<div class="alert alert-danger">'+Joomla.JText._('EMAILS_FAILED')+'<span class="badge">'+result.failed.length+'</span>'+
+                        $("#em-email-messages").append('<div class="alert alert-danger">'+Joomla.JText._('COM_EMUNDUS_EMAILS_FAILED')+'<span class="badge">'+result.failed.length+'</span>'+
                                                     '<ul class="list-group" id="em-mails-failed"></ul>');
 
                         result.failed.forEach(element => {
@@ -255,12 +255,12 @@ document.getElementById("adminForm").addEventListener("submit", event => {
                     }
 
                 } else {
-                    $("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
+                    $("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('COM_EMUNDUS_EMAILS_SEND_FAILED')+'</span>')
                 }
                 $('#em-email').append(result.message);
             },
             error: function() {
-                $("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
+                $("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('COM_EMUNDUS_EMAILS_SEND_FAILED')+'</span>')
             }
         });
     }

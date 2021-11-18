@@ -34,7 +34,7 @@ $email_list = array();
 <div id="em-email-messages"></div>
 
 <div class="em-modal-sending-emails" id="em-modal-sending-emails">
-    <div id="em-sending-email-caption" class="em-sending-email-caption"><?= JText::_('SENDING_EMAILS'); ?></div>
+    <div id="em-sending-email-caption" class="em-sending-email-caption"><?= JText::_('COM_EMUNDUS_EMAILS_SENDING_EMAILS'); ?></div>
     <img class="em-sending-email-img" id="em-sending-email-img" src="media/com_emundus/images/sending-email.gif" alt="Sending email loop">
 </div>
 
@@ -44,12 +44,12 @@ $email_list = array();
 
             <!-- Dropdown to select the email categories used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectCategory">
-                <label for="select_category" ><?= JText::_('SELECT_CATEGORY'); ?></label>
+                <label for="select_category" ><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_CATEGORY'); ?></label>
                 <select name="select_category" id="select_category" class="form-control" onChange="setCategory(this);">
                     <?php if (!$message_categories) :?>
-                        <option value="%"> <?= JText::_('NO_CATEGORIES_FOUND'); ?> </option>
+                        <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_CATEGORIES_FOUND'); ?> </option>
                     <?php else: ?>
-                        <option value="%"> <?= JText::_('SELECT_CATEGORY'); ?> </option>
+                        <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_SELECT_CATEGORY'); ?> </option>
                         <?php foreach ($message_categories as $message_category) :?>
                             <?php if (!empty($message_category)) :?>
                                 <option value="<?= $message_category; ?>"> <?= $message_category; ?></option>
@@ -61,12 +61,12 @@ $email_list = array();
 
             <!-- Dropdown to select the email template used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail">
-                <label for="select_template" ><?= JText::_('SELECT_TEMPLATE'); ?></label>
+                <label for="select_template" ><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?></label>
                 <select name="select_template" id="message_template" class="form-control" onChange="getTemplate(this);">
                     <?php if (!$message_templates) :?>
-                        <option value="%"> <?= JText::_('NO_TEMPLATES_FOUND'); ?> </option>
+                        <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_TEMPLATES_FOUND'); ?> </option>
                     <?php else: ?>
-                        <option value="%"> <?= JText::_('SELECT_TEMPLATE'); ?> </option>
+                        <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?> </option>
                         <?php foreach ($message_templates as $message_template) :?>
                             <option value="<?= $message_template->id; ?>"> <?= $message_template->subject; ?></option>
                         <?php endforeach; ?>
@@ -78,7 +78,7 @@ $email_list = array();
         <!-- Add current user to Bcc -->
         <div class="checkbox em-form-checkbox-copyEmail">
             <label>
-                <input type="checkbox" id="sendUserACopy"> <?= JText::_('SEND_COPY_TO_CURRENT_USER'); ?>
+                <input type="checkbox" id="sendUserACopy"> <?= JText::_('COM_EMUNDUS_EMAILS_SEND_COPY_TO_CURRENT_USER'); ?>
             </label>
         </div>
 

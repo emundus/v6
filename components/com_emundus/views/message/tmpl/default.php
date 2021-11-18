@@ -19,7 +19,7 @@ $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
 
 // Load the WYSIWYG editor used to edit the mail body.
 $editor = JFactory::getEditor('tinymce');
-$mail_body = $editor->display('mail_body', JText::_('DEAR').' [NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, array('mode' => 'simple'));
+$mail_body = $editor->display('mail_body', JText::_('COM_EMUNDUS_EMAILS_DEAR').' [NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, array('mode' => 'simple'));
 
 $m_messages = new EmundusModelMessages();
 
@@ -57,7 +57,7 @@ if ($allowed_attachments !== true) {
 <div id="em-email-messages"></div>
 
 <div class="em-modal-sending-emails" id="em-modal-sending-emails">
-    <div id="em-sending-email-caption" class="em-sending-email-caption"><?= JText::_('SENDING_EMAILS'); ?></div>
+    <div id="em-sending-email-caption" class="em-sending-email-caption"><?= JText::_('COM_EMUNDUS_EMAILS_SENDING_EMAILS'); ?></div>
     <img class="em-sending-email-img" id="em-sending-email-img" src="media/com_emundus/images/sending-email.gif">
 </div>
 
@@ -68,12 +68,12 @@ if ($allowed_attachments !== true) {
 
             <!-- Dropdown to select the email categories used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectCategory">
-                <label for="select_category" ><?= JText::_('SELECT_CATEGORY'); ?></label>
+                <label for="select_category" ><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_CATEGORY'); ?></label>
                 <select name="select_category" class="form-control" onChange="setCategory(this);">
                     <?php if (!$message_categories) :?>
-                        <option value="%"> <?= JText::_('NO_CATEGORIES_FOUND'); ?> </option>
+                        <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_CATEGORIES_FOUND'); ?> </option>
                     <?php else: ?>
-                        <option value="%"> <?= JText::_('SELECT_CATEGORY'); ?> </option>
+                        <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_SELECT_CATEGORY'); ?> </option>
                         <?php foreach ($message_categories as $message_category) :?>
                             <?php if (!empty($message_category)) :?>
                                 <option value="<?= $message_category; ?>"> <?= $message_category; ?></option>
@@ -85,12 +85,12 @@ if ($allowed_attachments !== true) {
 
             <!-- Dropdown to select the email template used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail">
-                <label for="select_template" ><?= JText::_('SELECT_TEMPLATE'); ?></label>
+                <label for="select_template" ><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?></label>
                 <select name="select_template" id="message_template" class="form-control" onChange="getTemplate(this);">
                     <?php if (!$message_templates) :?>
-                        <option value="%"> <?= JText::_('NO_TEMPLATES_FOUND'); ?> </option>
+                        <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_TEMPLATES_FOUND'); ?> </option>
                     <?php else: ?>
-                        <option value="%"> <?= JText::_('SELECT_TEMPLATE'); ?> </option>
+                        <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?> </option>
                         <?php foreach ($message_templates as $message_template) :?>
                             <option value="<?= $message_template->id; ?>"> <?= $message_template->subject; ?></option>
                         <?php endforeach; ?>
@@ -157,16 +157,16 @@ if ($allowed_attachments !== true) {
 
         <div class="form-inline row em-form-attachments">
             <div class="form-group col-sm-12 col-md-5">
-                <label for="em-select_attachment_type" ><?= JText::_('SELECT_ATTACHMENT_TYPE'); ?></label>
+                <label for="em-select_attachment_type" ><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_ATTACHMENT_TYPE'); ?></label>
                 <select name="em-select_attachment_type" id="em-select_attachment_type" class="form-control download" onChange="toggleAttachmentType(this);">
                     <option value=""> <?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?> </option>
                     <option value="upload"> <?= JText::_('COM_EMUNDUS_UPLOAD'); ?> </option>
                     <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
-                        <option value="candidate_file"> <?= JText::_('CANDIDATE_FILE'); ?> </option>
+                        <option value="candidate_file"> <?= JText::_('COM_EMUNDUS_EMAILS_CANDIDATE_FILE'); ?> </option>
                     <?php endif; ?>
                     <?php if(!empty($_applicant_letters)) { ?>
                         <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
-                            <option value="setup_letters"> <?= JText::_('SETUP_LETTERS_ATTACH'); ?> </option>
+                            <option value="setup_letters"> <?= JText::_('COM_EMUNDUS_EMAILS_SETUP_LETTERS_ATTACH'); ?> </option>
                         <?php endif; ?>
                     <?php } ?>
                 </select>
@@ -195,7 +195,7 @@ if ($allowed_attachments !== true) {
                         <label for="em-select_candidate_file" ><?= JText::_('COM_EMUNDUS_UPLOAD'); ?></label>
                         <select id="em-select_candidate_file" name="candidate_file" class="form-control download" onchange="addFile();">
                             <?php if (!$setup_attachments) :?>
-                                <option value="%"> <?= JText::_('NO_FILES_FOUND'); ?> </option>
+                                <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_FILES_FOUND'); ?> </option>
                             <?php else: ?>
                                 <option value="%"> <?= JText::_('JGLOBAL_SELECT_AN_OPTION'); ?> </option>
                             <?php endif; ?>
@@ -210,7 +210,7 @@ if ($allowed_attachments !== true) {
                             <label for="em-select_setup_letters" ><?= JText::_('COM_EMUNDUS_UPLOAD'); ?></label>
                             <select id="em-select_setup_letters" name="setup_letters" class="form-control" onchange="addFile();">
                                 <?php if (!$setup_letters) :?>
-                                    <option value="%"> <?= JText::_('NO_FILES_FOUND'); ?> </option>
+                                    <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_FILES_FOUND'); ?> </option>
                                 <?php else: ?>
                                     <option value="%"> <?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?> </option>
                                     <?php foreach ($setup_letters as $letter): ?>

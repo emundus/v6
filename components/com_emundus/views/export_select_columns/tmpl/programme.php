@@ -99,7 +99,7 @@ if (!empty($s_elements)) {
                             </div>
                             <div class="panel-body">
                                     <div class="em-element-title">
-                                        <div class="em-element-title-id" onclick="copyid();" data-toggle="tooltip" data-placement="left" title="<?=JText::_('SELECT_TO_COPY');?>">
+                                        <div class="em-element-title-id" onclick="copyid();" data-toggle="tooltip" data-placement="left" title="<?=JText::_('COM_EMUNDUS_EMTAGS_SELECT_TO_COPY');?>">
                                             <p></p>
                                         </div>
                                         <div class="em-element-title-label">
@@ -119,7 +119,7 @@ if (!empty($s_elements)) {
                             </div>
                             <div class="panel-body">
                                 <div class="em-element-title">
-                                    <div class="em-element-title-id" onclick="copyid();" data-toggle="tooltip" data-placement="left" title="<?= JText::_('SELECT_TO_COPY'); ?>">
+                                    <div class="em-element-title-id" onclick="copyid();" data-toggle="tooltip" data-placement="left" title="<?= JText::_('COM_EMUNDUS_EMTAGS_SELECT_TO_COPY'); ?>">
                                         <p></p>
                                     </div>
                                     <div class="em-element-title-label">
@@ -129,7 +129,7 @@ if (!empty($s_elements)) {
                             <?php endif; ?>
 
                             <div class="em-element">
-                                <div class="em-element-id" onclick="copyid('<?= '${'.$t->id.'}'; ?>');" data-toggle="tooltip" data-placement="left" title="<?= JText::_('SELECT_TO_COPY'); ?>">
+                                <div class="em-element-id" onclick="copyid('<?= '${'.$t->id.'}'; ?>');" data-toggle="tooltip" data-placement="left" title="<?= JText::_('COM_EMUNDUS_EMTAGS_SELECT_TO_COPY'); ?>">
                                     <?= '${'.$t->id.'}'; ?>
                                 </div>
                                 <div class="em-element-label">

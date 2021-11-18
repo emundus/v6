@@ -1084,8 +1084,8 @@ class EmundusController extends JControllerLegacy {
                     /// change name the resize image
                     rename($chemin . $user->id . DS . 'tn_' . $paths, $file_src);
                 } else if ($w_src * $h_src < (int)$image_resolution->min_width * (int)$image_resolution->min_height) {
-                    $errorInfo = "ERROR_IMAGE_TOO_SMALL";
-                    echo '{"aid":"0","status":false,"message":"' . JText::_('ERROR_IMAGE_TOO_SMALL') . " " . (int)$image_resolution->min_width . 'px x ' . (int)$image_resolution->min_height . 'px' . '"}';
+                    $errorInfo = "COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL";
+                    echo '{"aid":"0","status":false,"message":"' . JText::_('COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL') . " " . (int)$image_resolution->min_width . 'px x ' . (int)$image_resolution->min_height . 'px' . '"}';
                     unlink($file_src);          /// remove uploaded file
                     return false;
                 }

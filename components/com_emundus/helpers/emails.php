@@ -79,7 +79,7 @@ class EmundusHelperEmails {
 
             $AllEmail_template = EmundusHelperEmails::getAllEmail(2);
             $email.='<select name="select_template" onChange="getTemplate(this);">
-				<option value="%">-- '.JText::_( 'SELECT_TEMPLATE' ).' --</option>';
+				<option value="%">-- '.JText::_( 'COM_EMUNDUS_EMAILS_SELECT_TEMPLATE' ).' --</option>';
             foreach ($AllEmail_template as $email_template){
                 $email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
             }
@@ -98,7 +98,7 @@ class EmundusHelperEmails {
                 $email.= '<label for="select_template">'.JText::_( 'COM_EMUNDUS_MAILS_TEMPLATE' ).'</label>';
                 $AllEmail_template = EmundusHelperEmails::getAllEmail(2);
                 $email.='<select name="select_template" onChange="getTemplate(this);">
-					<option value="%">'.JText::_( 'SELECT_TEMPLATE' ).'</option>';
+					<option value="%">'.JText::_( 'COM_EMUNDUS_EMAILS_SELECT_TEMPLATE' ).'</option>';
                 foreach ($AllEmail_template as $email_template){
                     $email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
                 }
@@ -122,7 +122,7 @@ class EmundusHelperEmails {
 
                 $AllEmail_template = EmundusHelperEmails::getAllEmail(2);
                 $email.='<select name="select_template" onChange="getTemplate(this);">
-					<option value="%">-- '.JText::_( 'SELECT_TEMPLATE' ).' --</option>';
+					<option value="%">-- '.JText::_( 'COM_EMUNDUS_EMAILS_SELECT_TEMPLATE' ).' --</option>';
                 foreach ($AllEmail_template as $email_template){
                     $email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
                 }
@@ -145,7 +145,7 @@ class EmundusHelperEmails {
                 $email = '<input type="text" name="ud[]" value=""/> ';
                 $AllEmail_template = EmundusHelperEmails::getAllEmail(2);
                 $email .= '<select name="select_template" onChange="getTemplate(this);">
-					<option value="%">-- '.JText::_( 'SELECT_TEMPLATE' ).' --</option>';
+					<option value="%">-- '.JText::_( 'COM_EMUNDUS_EMAILS_SELECT_TEMPLATE' ).' --</option>';
                 foreach ($AllEmail_template as $email_template){
                     $email .= '<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
                 }
@@ -168,7 +168,7 @@ class EmundusHelperEmails {
 
                 $AllEmail_template = EmundusHelperEmails::getAllEmail(2);
                 $email .= '<br><select name="select_template" onChange="getTemplate(this);">
-				<option value="%">-- '.JText::_( 'SELECT_TEMPLATE' ).' --</option>';
+				<option value="%">-- '.JText::_( 'COM_EMUNDUS_EMAILS_SELECT_TEMPLATE' ).' --</option>';
                 foreach ($AllEmail_template as $email_template){
                     $email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
                 }
@@ -254,7 +254,7 @@ class EmundusHelperEmails {
 
             $AllEmail_template = EmundusHelperEmails::getAllEmail(2);
             $email .= '<select name="select_template" onChange="getTemplate(this);">
-						<option value="%">-- '.JText::_('SELECT_TEMPLATE').' --</option>';
+						<option value="%">-- '.JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE').' --</option>';
             foreach ($AllEmail_template as $email_template) {
                 $email .= '<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
             }
@@ -371,7 +371,7 @@ class EmundusHelperEmails {
 
             $AllEmail_template = EmundusHelperEmails::getAllEmail(2);
             $email.='<select name="select_template" onChange="getTemplate(this);">
-				<option value="%">-- '.JText::_( 'SELECT_TEMPLATE' ).' --</option>';
+				<option value="%">-- '.JText::_( 'COM_EMUNDUS_EMAILS_SELECT_TEMPLATE' ).' --</option>';
             foreach ($AllEmail_template as $email_template){
                 $email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
             }

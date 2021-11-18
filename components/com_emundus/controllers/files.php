@@ -4233,7 +4233,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $type = $jinput->post->getString('type');
 
         if (empty($fnums)) {
-            echo json_encode((object)(array('status' => false, 'msg' => JText::_('FILES_EXPORTED_TO_EXTERNAL_ERROR'))));
+            echo json_encode((object)(array('status' => false, 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_EXPORTED_TO_EXTERNAL_ERROR'))));
             exit;
         }
 
@@ -4246,10 +4246,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $dispatcher->trigger('callEventHandler', ['onExportFiles', ['fnums' => $fnums, 'type' => $type]]);
 
         if (is_array($status) && !in_array(false, $status)) {
-            $msg = JText::_('FILES_EXPORTED_TO_EXTERNAL');
+            $msg = JText::_('COM_EMUNDUS_EXPORTS_FILES_EXPORTED_TO_EXTERNAL');
             $result = true;
         } else {
-            $msg = JText::_('FILES_EXPORTED_TO_EXTERNAL_ERROR');
+            $msg = JText::_('COM_EMUNDUS_EXPORTS_FILES_EXPORTED_TO_EXTERNAL_ERROR');
             $result = false;
         }
 

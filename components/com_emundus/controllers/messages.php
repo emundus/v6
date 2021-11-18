@@ -474,7 +474,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             if (!empty($toAttach['candidate_file'])) {
 
-                $files .= '<strong>'.JText::_('CANDIDATE_FILE').'</strong>';
+                $files .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_CANDIDATE_FILE').'</strong>';
 
                 $files .= '<ul>';
                 foreach ($toAttach['candidate_file'] as $attach) {
@@ -486,7 +486,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             if (!empty($toAttach['letter'])) {
 
-                $files .= '<strong>'.JText::_('SETUP_LETTERS_ATTACH').'</strong><ul>';
+                $files .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_SETUP_LETTERS_ATTACH').'</strong><ul>';
                 foreach ($toAttach['letter'] as $attach) {
 	                $files .= '<li>'.$attach.'</li>';
                 }
@@ -1181,7 +1181,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 			    'user_id_from'  => $user->id,
 			    'user_id_to'    => $fnum['applicant_id'],
 			    'subject'       => $subject,
-			    'message'       => '<i>'.JText::_('MESSAGE_SENT_TO').' '.$fnum['email'].'</i><br>'.$body,
+			    'message'       => '<i>'.JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO').' '.$fnum['email'].'</i><br>'.$body,
 			    'type'          => $template->type
 		    ];
 		    $m_emails->logEmail($log);
