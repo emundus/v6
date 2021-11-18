@@ -3394,6 +3394,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   border: none;
                   border-radius: 4px 4px 0px 0px;
                   height: 48px;
+                  margin-right: 10px;
+                  padding-right: 0px;
                 }
               }
             }
@@ -3470,29 +3472,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   }
                 }
               }
-
-              /* CHECKBOX - RADIO */
-              .fabrikgrid_radio {
-                margin-top: 12px;
-
-                input[type="radio"] {
-                  width: 15px;
-                  height: 15px;
-                  border-radius: 20px;
-                  padding: 0px !important;
-                }
-
-                input[type="checkbox"] {
-                  width: 15px;
-                  height: 15px;
-                  border-radius: 20px;
-                  padding: 0px !important;
-                }
-
-                span {
-                  height: auto !important;
-                }
-              }
             }
 
           /* ERREUR */
@@ -3531,6 +3510,28 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               margin-top: 12px;
             }
 
+            /* CHECKBOX - RADIO */
+            .row-fluid .fabrikgrid_radio {
+              margin-top: 12px;
+
+              label.radio input[type="radio"] {
+                width: 15px;
+                height: 15px;
+                border-radius: 20px;
+                padding: 0px !important;
+              }
+
+              label.radio input[type="checkbox"] {
+                width: 15px;
+                height: 15px;
+                border-radius: 20px;
+                padding: 0px !important;
+              }
+
+              span {
+                height: auto !important;
+              }
+            }
          }
       }
 

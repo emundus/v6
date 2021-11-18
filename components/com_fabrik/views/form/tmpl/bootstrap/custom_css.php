@@ -1058,11 +1058,6 @@ footer#g-footer {
     position: relative;
 }
 
-.radio input[type="radio"], .checkbox input[type="checkbox"] {
-    margin-left: 0px !important;
-    margin-top: 5px !important;
-}
-
 .header-right a.btn.btn-danger.connexion, .header-right a.btn.btn-danger.inscription  {
     line-height: inherit;
     letter-spacing: inherit;
@@ -1170,12 +1165,6 @@ body.em-formRegistrationCenter  {
     color: #16afe1 !important; 
 }
 
-
-/* AJOUT APRES MAJ */
-.view-form input[type='radio']  { 
-    border: 1px solid #e0e0e5 !important;
-}
-
 form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
         height: 41px !important; 
         border-radius: 4px; 
@@ -1271,11 +1260,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-}
-
-.radio input[type="radio"],
-.checkbox input[type="checkbox"] {
-  margin-top: 0;
 }
 
 /* Formulaire Fabrik */
