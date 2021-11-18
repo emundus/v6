@@ -3404,28 +3404,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                 padding-left: 0px;
                 height: 48px;
               }
-
-              .fabrikgrid_radio {
-                margin-top: 12px;
-
-                &[type="radio"] {
-                  width: 15px;
-                  height: 15px;
-                  border-radius: 20px;
-                  padding: 0px !important;
-                }
-
-                &[type="checkbox"] {
-                  width: 15px;
-                  height: 15px;
-                  border-radius: 20px;
-                  padding: 0px !important;
-                }
-
-                span {
-                  height: auto !important;
-                }
-              }
             }
 
             /* TEXTAREA */
@@ -3484,6 +3462,29 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   &:focus {
                     border: 1px solid $focus;
                   }
+                }
+              }
+
+              /* CHECKBOX - RADIO */
+              .fabrikgrid_radio {
+                margin-top: 12px;
+                
+                &[type="radio"] {
+                  width: 15px;
+                  height: 15px;
+                  border-radius: 20px;
+                  padding: 0px !important;
+                }
+
+                &[type="checkbox"] {
+                  width: 15px;
+                  height: 15px;
+                  border-radius: 20px;
+                  padding: 0px !important;
+                }
+
+                span {
+                  height: auto !important;
                 }
               }
             }
