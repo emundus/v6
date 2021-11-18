@@ -1403,10 +1403,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background: #fff;
   }
 
-  .fabrikForm .row-fluid .control-group .control-label {
-    color: #000;
-  }
-
   .fabrikForm .controls .btn-danger:hover,
   #em-modal-actions .modal-content .modal-header .btn-danger:hover {
     color: $base-primary-color;
@@ -3418,7 +3414,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             display: inline-block;
             margin-bottom: 12px;
 
-
             /* ETOILE */
             .icon-star.small {
               font-family: $font;
@@ -3435,7 +3430,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             }
 
             /* TEXTE D AIDE */
-            & > span {
+             span {
               // Body 14
               font-family: $font;
               font-size: 14px;
@@ -3454,7 +3449,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                 margin-top: 0px;
               }
 
-
               .icon-question-sign {
                 display: none;
               }
@@ -3462,65 +3456,78 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
           }
 
           /* INPUT */
-          .fabrikElement .fabrikinput {
-            height: 48px;
-            border-radius: 4px;
-            padding: 0px 12px 0px 12px;
-            background: $neutral-50;
-            border: 1px solid $neutral-400;
-            border-radius: 4px;
-            box-shadow: none;
+          .fabrikElement {
+            .fabrikinput {
 
-            &:hover {
-              background: $neutral-50;
-              border: 1px solid #727272;
+              height: 48px;
               border-radius: 4px;
-              box-shadow: none;
-            }
-
-            &:focus {
+              padding: 0px 12px 0px 12px;
               background: $neutral-50;
-              border: 1px solid $focus;
-              border-radius: 4px;
-              box-shadow: none;
-            }
-
-            &.readonly  {
-              background: $neutral-400;
               border: 1px solid $neutral-400;
               border-radius: 4px;
               box-shadow: none;
+
+              &:hover {
+                background: $neutral-50;
+                border: 1px solid #727272;
+                border-radius: 4px;
+                box-shadow: none;
+              }
+
+              &:focus {
+                background: $neutral-50;
+                border: 1px solid $focus;
+                border-radius: 4px;
+                box-shadow: none;
+              }
+
+              &.readonly {
+                background: $neutral-400;
+                border: 1px solid $neutral-400;
+                border-radius: 4px;
+                box-shadow: none;
+              }
+
+              &[placeholder] {
+                color: $neutral-500 !important;
+              }
+
+              &[value] {
+                //styleName: Inter/Body 16;
+                font-family: $font;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 19px;
+                letter-spacing: 0.0015em;
+                text-align: left;
+                color: $neutral-800;
+              }
+
+
+              &.success input {
+                background: $neutral-50;
+                border: 1px solid $valid;
+                box-shadow: none;
+                border-radius: 4px;
+              }
+
+              &.error input {
+                background: $neutral-50;
+                border: 1px solid $required;
+                border-radius: 4px;
+                box-shadow: none;
+              }
             }
 
-            &[placeholder]  {
-              color: $neutral-500 !important;
+            /* TEXTAREA */
+            .label-info, .badge-info {
+                background: $focus;
+            }
+            .label, .badge {
+              background: $neutral-600;
             }
 
-            &[value]  {
-              //styleName: Inter/Body 16;
-              font-family:  $font;
-              font-size: 16px;
-              font-style: normal;
-              font-weight: 400;
-              line-height: 19px;
-              letter-spacing: 0.0015em;
-              text-align: left;
-              color: $neutral-800;
-            }
-          }
-
-          &.success input {
-            background: $neutral-50;
-            border: 1px solid $valid;
-            box-shadow: none;
-            border-radius: 4px;
-          }
-
-          &.error input {
-            background: $neutral-50;
-            border: 1px solid $required;
-            border-radius: 4px;
-            box-shadow: none;
           }
 
           /* ERREUR */
