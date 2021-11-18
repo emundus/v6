@@ -3330,221 +3330,226 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 /******************************* FORMULAIRE ***********************************/
 
-/* TITRE FORMULAIRE */
-.view-form .applicant-form .page-header h1 {
-  // Headline 4
-  font-family: Inter;
-  font-size: 32px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 39px;
-  letter-spacing: 0em;
-  text-align: left;
-  color: $neutral-900;
-}
+.view-form,
+.view-reset,
+.view-login,
+.view-form.view-registration {
 
-/* INTRO FORMULAIRE */
-.view-form .applicant-form p:nth-child(1) {
-  // Body 16;
-  font-family: $font;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 19px;
-  letter-spacing: 0.0015em;
-  text-align: left;
-  color: $neutral-600;
-}
+  /* BLOC FORMULAIRE */
+  .applicant-form {
+    margin-top: 48px;
 
-/* BLOC FORMULAIRE */
-.view-form .applicant-form  {
-  margin-top: 48px;
-}
+    /* TITRE FORMULAIRE */
+    .page-header h1 {
+      // Headline 4
+      font-family: Inter;
+      font-size: 32px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 39px;
+      letter-spacing: 0em;
+      text-align: left;
+      color: $neutral-900;
+    }
 
-/* FORMULAIRE */
-.view-form .applicant-form .fabrikForm  {
-  margin-top: 32px;
-}
+    /* INTRO FORMULAIRE */
+    p:nth-child(1) {
+      // Body 16;
+      font-family: $font;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 19px;
+      letter-spacing: 0.0015em;
+      text-align: left;
+      color: $neutral-600;
+    }
 
-/* GROUPE */
-.view-form .applicant-form .fabrikForm .fabrikGroup {
-  margin-bottom: 64px;
-  padding: 80px 64px 80px 64px;
-  border-radius: 16px;
-}
+    /* FORMULAIRE */
+    .fabrikForm  {
+      margin-top: 32px;
 
-/* LEGEND */
-.view-form .applicant-form .fabrikForm .fabrikGroup .legend {
-  // Headline 5
-  font-family: $font;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 29px;
-  letter-spacing: 0em;
-  text-align: left;
-  color: $neutral-800;
-}
+      /* GROUPE */
+      .fabrikGroup {
+        margin-bottom: 64px;
+        padding: 80px 64px 80px 64px;
+        border-radius: 16px;
 
-/* INTR0 GROUPE */
-.view-form .applicant-form .fabrikForm .fabrikGroup .groupintro p {
-  // Body 16;
-  font-family: $font;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 19px;
-  letter-spacing: 0.0015em;
-  text-align: left;
-  color: $neutral-600;
-}
+        /* LEGEND */
+        .legend {
+          // Headline 5
+          font-family: $font;
+          font-size: 24px;
+          font-style: normal;
+          font-weight: 600;
+          line-height: 29px;
+          letter-spacing: 0em;
+          text-align: left;
+          color: $neutral-800;
+        }
 
-/* BLOC ELEMENT */
-.view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer.control-group {
-  margin: 32px 0px 16px 0px;
-}
+        /* INTR0 GROUPE */
+        .groupintro p {
+          // Body 16;
+          font-family: $font;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 19px;
+          letter-spacing: 0.0015em;
+          text-align: left;
+          color: $neutral-600;
+        }
 
-/* LABEL */
-.view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer .fabrikLabel {
-  // Body 16 Medium;
-  font-family: $font;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 19px;
-  letter-spacing: 0.0015em;
-  text-align: left;
-  color: $neutral-800;
-  display: inline-block;
-  margin-bottom: 12px;
-}
+        /* BLOC ELEMENT */
+        .row-fluid .fabrikElementContainer.control-group {
+            margin: 32px 0px 16px 0px;
 
-/* INPUT */
-.view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer .fabrikElement .fabrikinput {
-  height: 48px;
-  border-radius: 4px;
-  padding: 0px 12px 0px 12px;
-  background: $neutral-50;
-  border: 1px solid $neutral-400;
-  border-radius: 4px;
-  box-shadow: none;
+          /* LABEL */
+          .fabrikLabel {
+            // Body 16 Medium;
+            font-family: $font;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 19px;
+            letter-spacing: 0.0015em;
+            text-align: left;
+            color: $neutral-800;
+            display: inline-block;
+            margin-bottom: 12px;
 
-  &:hover {
-    background: $neutral-50;
-    border: 1px solid #727272;
-    border-radius: 4px;
-    box-shadow: none;
+
+            /* ETOILE */
+            .icon-star.small {
+              font-family: $font;
+              font-size: 5px;
+              font-style: normal;
+              font-weight: 400;
+              line-height: 19px;
+              letter-spacing: 0em;
+              text-align: left;
+              position: relative;
+              top: -5px;
+              margin-right: -2px;
+              color: $required;
+            }
+
+            /* TEXTE D AIDE */
+            > span {
+              // Body 14
+              font-family: $font;
+              font-size: 14px;
+              font-style: normal;
+              font-weight: 400;
+              line-height: 17px;
+              letter-spacing: 0.0025em;
+              text-align: left;
+              color: $neutral-600;
+              display: flex;
+              margin-bottom: 12px;
+              margin-top: 12px;
+
+              &:empty{
+                margin-bottom: 0px;
+                margin-top: 0px;
+              }
+
+
+              .icon-question-sign {
+                display: none;
+              }
+            }
+          }
+
+          /* INPUT */
+          .fabrikElement .fabrikinput {
+            height: 48px;
+            border-radius: 4px;
+            padding: 0px 12px 0px 12px;
+            background: $neutral-50;
+            border: 1px solid $neutral-400;
+            border-radius: 4px;
+            box-shadow: none;
+
+            &:hover {
+              background: $neutral-50;
+              border: 1px solid #727272;
+              border-radius: 4px;
+              box-shadow: none;
+            }
+
+            &:focus {
+              background: $neutral-50;
+              border: 1px solid $focus;
+              border-radius: 4px;
+              box-shadow: none;
+            }
+
+            &.readonly  {
+              background: $neutral-400;
+              border: 1px solid $neutral-400;
+              border-radius: 4px;
+              box-shadow: none;
+            }
+
+            &[placeholder]  {
+              color: $neutral-500 !important;
+            }
+
+            &[value]  {
+              //styleName: Inter/Body 16;
+              font-family:  $font;
+              font-size: 16px;
+              font-style: normal;
+              font-weight: 400;
+              line-height: 19px;
+              letter-spacing: 0.0015em;
+              text-align: left;
+              color: $neutral-800;
+            }
+          }
+
+          &.success input {
+            background: $neutral-50;
+            border: 1px solid $valid;
+            box-shadow: none;
+            border-radius: 4px;
+          }
+
+          &.error input {
+            background: $neutral-50;
+            border: 1px solid $required;
+            border-radius: 4px;
+            box-shadow: none;
+          }
+
+          /* ERREUR */
+          .fabrikErrorMessage  {
+            // Body 14
+            font-family: $font;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 17px;
+            letter-spacing: 0.0025em;
+            text-align: left;
+            color: $required;
+            margin-top: 4px;
+
+            &.help-inline {
+              padding: 0px;
+            }
+
+            .icon-warning {
+              display: none;
+            }
+          }
+        }
+      }
+    }
   }
-
-  &:focus {
-    background: $neutral-50;
-    border: 1px solid $focus;
-    border-radius: 4px;
-    box-shadow: none;
-  }
-
-  &.readonly  {
-    background: $neutral-400;
-    border: 1px solid $neutral-400;
-    border-radius: 4px;
-    box-shadow: none;
-  }
-
-  &[placeholder]  {
-    color: $neutral-500 !important;
-  }
-
-  &[value]  {
-    //styleName: Inter/Body 16;
-    font-family:  $font;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 19px;
-    letter-spacing: 0.0015em;
-    text-align: left;
-    color: $neutral-800;
-  }
 }
-
-.control-group.error input {
-  background: $neutral-50;
-  border: 1px solid $required;
-  border-radius: 4px;
-  box-shadow: none;
-}
-
-.control-group.success input {
-  background: $neutral-50;
-  border: 1px solid $valid;
-  box-shadow: none;
-  border-radius: 4px;
-}
-
-
-/* ETOILE */
-.view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer .fabrikLabel .icon-star.small {
-  font-family: $font;
-  font-size: 5px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 19px;
-  letter-spacing: 0em;
-  text-align: left;
-  position: relative;
-  top: -5px;
-  margin-right: -2px;
-  color: $required;
-}
-
-/* TEXTE D AIDE */
-.view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer > span {
-  // Body 14
-  font-family: $font;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 17px;
-  letter-spacing: 0.0025em;
-  text-align: left;
-  color: $neutral-600;
-  display: flex;
-  margin-bottom: 12px;
-  margin-top: 12px;
-
-  &:empty{
-    margin-bottom: 0px;
-    margin-top: 0px;
-  }
-
-
-  .icon-question-sign {
-    display: none;
-  }
-}
-
-/* ERREUR */
-.view-form .applicant-form .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer .fabrikErrorMessage  {
-  // Body 14
-  font-family: $font;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 17px;
-  letter-spacing: 0.0025em;
-  text-align: left;
-  color: $required;
-  margin-top: 4px;
-
-  &.help-inline {
-    padding: 0px;
-  }
-
-  .icon-warning {
-    display: none;
-  }
-}
-
 
 /******************************* RESPONSIVE ***********************************/
   /* LAPTOP  MENU TCHO0Z */
