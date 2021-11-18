@@ -1152,11 +1152,6 @@ body.em-formRegistrationCenter  {
     overflow-x: hidden;
 }
 
-.view-form .fabrikElement select {
-    height: 50px !important;
-    border-radius: 4px;
-}
-
 .view-form .fabrikElement div a.chzn-single {
    border-radius: 0px; 
 }
@@ -1491,10 +1486,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 .view-form .fabrikGroupRepeater .pull-right .addGroup i {
   color: #3e8ac5 !important;
-}
-
-form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm label.radio {
-  padding-left: 0px; 
 }
 
 .fabrikgrid_checkbox span {

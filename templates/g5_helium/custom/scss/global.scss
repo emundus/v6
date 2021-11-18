@@ -3401,7 +3401,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             letter-spacing: 0.0015em;
             text-align: left;
             color: $neutral-800;
-            display: inline-block;
 
               /* ETOILE */
               .icon-star.small {
@@ -3425,7 +3424,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 
           /* TEXTE D AIDE */
-          span {
+          span:not(.badge) {
             // Body 14
             font-family: $font;
             font-size: 14px;
@@ -3458,14 +3457,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               box-shadow: none;
 
               &:hover {
-                background: $neutral-50;
                 border: 1px solid #727272;
                 border-radius: 4px;
                 box-shadow: none;
               }
 
               &:focus {
-                background: $neutral-50;
                 border: 1px solid $focus;
                 border-radius: 4px;
                 box-shadow: none;
@@ -3496,14 +3493,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 
               &.success input {
-                background: $neutral-50;
                 border: 1px solid $valid;
                 box-shadow: none;
                 border-radius: 4px;
               }
 
               &.error input {
-                background: $neutral-50;
                 border: 1px solid $required;
                 border-radius: 4px;
                 box-shadow: none;
@@ -3524,7 +3519,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               background-position-y: 54%;
               -webkit-appearance: none;
               background-image: url(/images/emundus/arrow.svg);
-              background-size: 25px;
+              background-size: 8px;
               background-repeat: no-repeat;
             }
           }
