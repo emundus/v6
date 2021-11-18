@@ -3504,8 +3504,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
             /* TEXTAREA */
             textarea {
-              height: auto;
-              margin-top: 12px;
+              height: auto !important;
+              margin-top: 12px !important;
             }
             .label-info, .badge-info {
                 background: $focus !important;
@@ -3522,7 +3522,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               background-image: url(/images/emundus/arrow.svg);
               background-size: 8px;
               background-repeat: no-repeat;
-               margin-top: 12px;
             }
 
             .fabrikSubElementContainer {
@@ -3547,16 +3546,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   display: flex;
                   justify-content: center;
                   align-items: center;
-                  
+
                   &:hover {
-                    border-top: 1px solid $neutral-800;
-                    border-left: 1px solid $neutral-800;
-                    border-bottom: 1px solid $neutral-800;
+                    border: 1px solid $neutral-800;
                   }
                   &:focus {
-                    border-top: 1px solid $focus;
-                    border-left: 1px solid $focus;
-                    border-bottom: 1px solid $focus;
+                    border: 1px solid $focus;
                   }
                 }
               }

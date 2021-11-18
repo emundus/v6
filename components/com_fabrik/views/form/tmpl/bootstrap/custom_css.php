@@ -1384,15 +1384,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   width: auto !important;
 }
 
-.view-form .fabrikElement button.timeButton {
-  width: 41px !important;
-  height: 50px !important; 
-}
-
-.view-form .fabrikElement button.timeButton i {
-    margin-top: 16px; 
-}
-
 .form-validate .control-label label {
   color: #565656 !important;
 }
