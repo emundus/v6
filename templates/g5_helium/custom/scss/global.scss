@@ -3497,6 +3497,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                 border-radius: 4px;
                 box-shadow: none;
               }
+
+              &#file-upload-button {
+                height: 48px;
+              }
             }
 
             /* TEXTAREA */
@@ -3519,6 +3523,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               background-image: url(/images/emundus/arrow.svg);
               background-size: 8px;
               background-repeat: no-repeat;
+               height: 48px !important;
             }
 
             .fabrikSubElementContainer {
@@ -3544,6 +3549,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   justify-content: center;
                   align-items: center;
                   color: $neutral-800;
+
+                  i.icon-clock {
+                    margin: 0px;
+                  }
 
                   &:hover {
                     border: 1px solid $neutral-800;
