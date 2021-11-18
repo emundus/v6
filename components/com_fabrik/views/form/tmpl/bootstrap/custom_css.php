@@ -114,12 +114,6 @@ echo <<<EOT
     padding: 0;
 }
 
-.view-form:not(.em-formRegistrationCenter) .fabrikGroup {
-    background: #fff;
-    margin-bottom: 20px;
-    border-radius: 5px !important;
-    padding: 20px;
-}
 
 .view-form.view-registration .fabrikGroup {
     padding: 0px;
@@ -812,10 +806,6 @@ form#member-profile .controls button,
     margin-bottom: 0;
 }
 
-.span12 .page-header {
-    border: none;
-}
-
 #form_102 .nav {
     display: none;
 }
@@ -1162,11 +1152,6 @@ body.em-formRegistrationCenter  {
     overflow-x: hidden;
 }
 
-
-.view-form input[type='text'], .view-form input[type='tel'], .view-forminput[type='number'], .view-form textarea , .view-form input[type='email'], .view-form select {
-        border-radius: 4px;
-}
-
 .view-form .fabrikElement select {
     height: 50px !important;
     border-radius: 4px;
@@ -1249,13 +1234,7 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
     margin-top: -2px;
 }
 
-.fabrikMainError.alert.alert-error.fabrikError {
-    border-color: #b94a48;
-    color: #b94a48;
-}
-.fabrikMainError.alert.alert-error.fabrikError .close{
-    color: #b94a48 !important;
-}
+
 
 /*** HIDE VALIDATION TITLE ***/
 .popover-title {
@@ -1346,10 +1325,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 /* Formulaire Fabrik */
 
- 
-.view-form .fabrikForm fieldset, .view-details .fabrikForm fieldset, .view-checklist .fabrikForm fieldset {
-  position: relative;
-}
 
 .view-details .fabrikForm fieldset > .row-fluid,
 .view-checklist .fabrikForm fieldset > .row-fluid, 
@@ -1402,10 +1377,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 .form-actions .row-fluid .span4 .btn-group .register:hover {
     text-shadow: none;
     color: white; 
-}
-
-.view-form .row-fluid > .fabrikElementContainer, .view-details .row-fluid > .fabrikElementContainer, .view-checklist .row-fluid > .fabrikElementContainer{
-  flex-direction: column;
 }
 
 .form-horizontal .controls {

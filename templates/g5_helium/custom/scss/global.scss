@@ -271,10 +271,6 @@ ul {
   list-style: initial;
 }
 
-.page-header {
-  border-bottom: none;
-}
-
 .contentpane.modal form#job-form[name="adminForm"] .em-container-trombi {
   justify-content: flex-start !important;
   flex-direction: column !important;
@@ -3350,6 +3346,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       letter-spacing: 0em;
       text-align: left;
       color: $neutral-900;
+      margin-bottom: 8px;
     }
 
     /* INTRO FORMULAIRE */
@@ -3374,6 +3371,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
         margin-bottom: 64px;
         padding: 80px 64px 80px 64px;
         border-radius: 16px;
+        background: #fff;
 
         /* LEGEND */
         .legend {
@@ -3403,7 +3401,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
         /* BLOC ELEMENT */
         .row-fluid .fabrikElementContainer.control-group {
-            margin: 32px 0px 16px 0px;
+            margin: 48px 0px 48px 0px;
+          flex-direction: column;
 
           /* LABEL */
           .fabrikLabel {
@@ -3436,7 +3435,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             }
 
             /* TEXTE D AIDE */
-            > span {
+            & > span {
               // Body 14
               font-family: $font;
               font-size: 14px;
@@ -3544,6 +3543,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             .icon-warning {
               display: none;
             }
+          }
+
+          .fabrikMainError.alert.alert-error.fabrikError {
+            border-color: $required;
+            color: $required;
+          }
+          .fabrikMainError.alert.alert-error.fabrikError .close{
+            color: $required !important;
           }
         }
       }
