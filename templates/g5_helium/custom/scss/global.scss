@@ -3532,11 +3532,32 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                 display: flex;
                 flex-direction: row-reverse;
                 input {
-                  border-radius: 0px 4px 4px 0px;
+                  border-radius: 0 4px 4px 0;
                 }
-                button.calendarbutton {
-                  border-radius: 4px 0px 0px 4px;
-                  border-top: 1px solid ;
+                button.calendarbutton,
+                button.timeButton {
+                  border-radius: 4px 0 0 4px !important;
+                  border-top: 1px solid $neutral-400;
+                  border-left: 1px solid $neutral-400;
+                  border-bottom: 1px solid $neutral-400;
+                  margin-top: 12px;
+                  width: 48px !important;
+                  height: 48px !important;
+                  background: $neutral-200;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  
+                  &:hover {
+                    border-top: 1px solid $neutral-800;
+                    border-left: 1px solid $neutral-800;
+                    border-bottom: 1px solid $neutral-800;
+                  }
+                  &:focus {
+                    border-top: 1px solid $focus;
+                    border-left: 1px solid $focus;
+                    border-bottom: 1px solid $focus;
+                  }
                 }
               }
             }

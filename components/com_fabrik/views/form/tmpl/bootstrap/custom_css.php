@@ -97,9 +97,6 @@ echo <<<EOT
     border: none !important;
     box-shadow: none !important;
 }
-.calendarbutton, .timeButton {
-    height: 41px !important;
-}
 
 .view-form main#g-main-mainbody {
     padding-right: 5%;
@@ -1387,11 +1384,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   width: auto !important;
 }
 
-.view-form .fabrikElement button.calendarbutton {
-  width: 41px !important;
-}
-
-
 .view-form .fabrikElement button.timeButton {
   width: 41px !important;
   height: 50px !important; 
@@ -1399,11 +1391,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 .view-form .fabrikElement button.timeButton i {
     margin-top: 16px; 
-}
-
-
-.view-form .fabrikElement button.calendarbutton i {
-  color: white;
 }
 
 .form-validate .control-label label {
