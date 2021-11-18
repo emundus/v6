@@ -3471,10 +3471,13 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                 height: 48px;
               }
 
-              &[type="radio"] {
+              &[type="radio"], &[type="checkbox"] {
                 width: 15px;
                 height: 15px;
                 border-radius: 20px;
+                padding: 0px !important;
+                top: 6px;
+                position: relative;
               }
             }
 
