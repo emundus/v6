@@ -1330,24 +1330,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
     padding-right: 0%;
 }
 
-.fabrikForm .fabrikSubGroup .fabrikGroupRepeater  {
-  position: absolute;
-  top: -5px;
-  right: 10px;
-  display: flex;
-}
-
-.view-form .fabrikGroup td.fabrikGroupRepeater .pull-right {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-end;
-}
-
-.view-form .fabrikGroup td.fabrikGroupRepeater .pull-right a {
-    margin-right: 10px !important;
-    font-size: 11.9px;
-}
-
 .form-actions .row-fluid {
   display: flex;
   flex-direction: row-reverse;
@@ -1459,10 +1441,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   margin-bottom: 20px;
 }
 
-.view-form .fabrikGroupRepeater .pull-right .addGroup i {
-  color: #3e8ac5 !important;
-}
-
 .fabrikgrid_checkbox span {
   padding-left: 5px;
 }
@@ -1489,46 +1467,6 @@ form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
   align-items: flex-start !important;
 }
 
-
-/* BOUTONS + et - */
-
-.view-form form .table-striped tbody tr:nth-child(2n+1) td, .view-form form .table-striped tbody tr:nth-child(2n+1) th  {
-    border: none; 
-    background: transparent; 
-}
-
-.view-form .fabrikGroupRepeater .addGroup {
-  cursor: pointer !important;
-}
-
-.view-form .fabrikGroupRepeater .addGroup .tooltip {
-    display: none !important;
-}
-
-.view-form .fabrikGroupRepeater .deleteGroup {
-  cursor: pointer;
-}
-
-.view-form.fabrikGroupRepeater .deleteGroup .tooltip {
-    display: none !important;
-}
-
-.view-form .fabrikGroupRepeater .addGroup {
-  text-align: right;
-  padding: 8px 15px 0 0;
-}
-
-.view-form .fabrikGroupRepeater .addGroup:hover {
-    color: #26729B;
-}
-
-.view-form .fabrikGroupRepeater .deleteGroup {
-  padding: 8px 16px 0 0;
-}
-
-.icon-clock {
-  color: #000 !important;
-}
 
 .form-actions .row-fluid {
     text-align: center;
@@ -1849,10 +1787,6 @@ a.btn-attach:active {
       .view-checklist .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid, 
       .view-details .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid{
         padding: 0px !important;
-    }
-
-    .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
-        top: 0px!important;
     }
 }
 
