@@ -1359,16 +1359,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     border-radius: 0px !important;
   }
 
-  .fabrikForm select {
-    background-position-x: 98%;
-    background-position-y: 54%;
-    -webkit-appearance: none;
-    background-image: url(/images/emundus/arrow-2.png);
-    background-size: 25px;
-    background-repeat: no-repeat;
-    padding: 0 30px 0 10px;
-  }
-
   #sidebar-a .em-send-button a.btn.btn-success.btn-xs {
     color: #fff;
     background: $base-primary-color;
@@ -3428,41 +3418,39 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               margin-right: -2px;
               color: $required;
             }
+          }
 
-            /* TEXTE D AIDE */
-             span {
-              // Body 14
-              font-family: $font;
-              font-size: 14px;
-              font-style: normal;
-              font-weight: 400;
-              line-height: 17px;
-              letter-spacing: 0.0025em;
-              text-align: left;
-              color: $neutral-600;
-              display: flex;
-              margin-bottom: 12px;
-              margin-top: 12px;
+          /* TEXTE D AIDE */
+          span {
+            // Body 14
+            font-family: $font;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 17px;
+            letter-spacing: 0.0025em;
+            text-align: left;
+            color: $neutral-600;
+            display: flex;
+            margin-bottom: 12px;
+            margin-top: 12px;
 
-              &:empty{
-                margin-bottom: 0px;
-                margin-top: 0px;
-              }
+            &:empty{
+              margin-bottom: 0px;
+              margin-top: 0px;
+            }
 
-              .icon-question-sign {
-                display: none;
-              }
+            .icon-question-sign {
+              display: none;
             }
           }
 
           /* INPUT */
           .fabrikElement {
             .fabrikinput {
-
               height: 48px;
               border-radius: 4px;
               padding: 0px 12px 0px 12px;
-              background: $neutral-50;
               border: 1px solid $neutral-400;
               border-radius: 4px;
               box-shadow: none;
@@ -3522,12 +3510,21 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
             /* TEXTAREA */
             .label-info, .badge-info {
-                background: $focus;
+                background: $focus !important;
             }
             .label, .badge {
               background: $neutral-600;
             }
 
+            /* SELECT */
+            .fabrikForm select {
+              background-position-x: 98%;
+              background-position-y: 54%;
+              -webkit-appearance: none;
+              background-image: url(/images/emundus/arrow.svg);
+              background-size: 25px;
+              background-repeat: no-repeat;
+            }
           }
 
           /* ERREUR */
