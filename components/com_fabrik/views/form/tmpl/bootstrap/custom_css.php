@@ -195,9 +195,6 @@ form .optional {
     overflow: visible;
 }
 
-.icon-plus {
-    margin-right: 0 !important;
-}
 
 .view-form #drawer .attached p, .view-checklist #drawer .attached p, .view-details #drawer .attached p {
     margin: 0 !important;
@@ -780,22 +777,6 @@ form#member-profile .controls button,
 .pull-right,
 .view-registration .offset1.span4 {
     float: none;
-}
-
-.fabrikGroupRepeater .pull-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.fabrikGroupRepeater .pull-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.fabrikGroupRepeater .pull-right .icon-plus {
-    margin-right: 5px !important;
 }
 
 .form-actions {
