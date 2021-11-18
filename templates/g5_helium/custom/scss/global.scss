@@ -1385,9 +1385,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
-  .icon-calendar {
-    color: #000;
-  }
 
   .btn.calendarbutton {
     background: #fff;
@@ -3546,6 +3543,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   display: flex;
                   justify-content: center;
                   align-items: center;
+                  color: $neutral-800;
 
                   &:hover {
                     border: 1px solid $neutral-800;

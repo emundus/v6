@@ -1526,10 +1526,6 @@ form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
   padding: 8px 16px 0 0;
 }
 
-.icon-calendar {
-  color: #000 !important;
-}
-
 .icon-clock {
   color: #000 !important;
 }
