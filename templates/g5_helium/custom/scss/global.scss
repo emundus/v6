@@ -816,12 +816,6 @@ body>.g-container {
   }
 }
 
-/* BOUTON RADIO SELECTIONNE- COULEUR */
-.view-form input[type='radio']:checked {
-  background: #1b1f3c;
-  outline: none;
-}
-
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
 
 view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
@@ -1364,10 +1358,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     &:hover {
       background-color: darken(#F5F5F5, 10%);
     }
-  }
-
-  .view-form input[type='radio'] {
-    border: 2px solid $base-secondary-color;
   }
 
   /* STATUS ET ETIQUETTES */
@@ -3396,20 +3386,36 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                 box-shadow: none;
               }
 
-              &[type="file"]::-ms-browse,
-              &[type="file"]::-webkit-file-upload-button,
-              &[type="file"]::file-selector-button {
-                background: $neutral-200;
-                border: none;
+
+              &[type="file"] {
                 padding-left: 0px;
-                height: 48px;
+                &::-webkit-file-upload-button {
+                  background: $neutral-200;
+                  border: none;
+                  border-radius: 4px 4px 0px 0px;
+                  height: 48px;
+                }
               }
             }
 
             /* TEXTAREA */
             textarea {
               margin-top: 12px !important;
+
+              &:hover {
+                border: 1px solid #727272;
+                border-radius: 4px;
+                box-shadow: none;
+              }
+
+              &:focus {
+                border: 1px solid $focus;
+                border-radius: 4px;
+                box-shadow: none;
+              }
             }
+
+            /* LIMITE */
             .label-info, .badge-info {
                 background: $focus !important;
             }
@@ -3468,15 +3474,15 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               /* CHECKBOX - RADIO */
               .fabrikgrid_radio {
                 margin-top: 12px;
-                
-                &[type="radio"] {
+
+                input[type="radio"] {
                   width: 15px;
                   height: 15px;
                   border-radius: 20px;
                   padding: 0px !important;
                 }
 
-                &[type="checkbox"] {
+                input[type="checkbox"] {
                   width: 15px;
                   height: 15px;
                   border-radius: 20px;

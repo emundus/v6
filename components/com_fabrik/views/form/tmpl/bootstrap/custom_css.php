@@ -200,10 +200,6 @@ form .optional {
     margin: 0 !important;
 }
 
-.view-form textarea {
-    margin: 10px 0 !important;
-}
-
 label {
     line-height: normal;
     margin-bottom: 0;
@@ -1190,10 +1186,6 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
           margin-bottom: 0px !important;
 }
 
-.view-form input[type='radio']:checked  { 
-    background: #1b1f3c;
-}
-
 .view-form .fabrikActions.form-actions .row-fluid button, .view-details .fabrikActions.form-actions .row-fluid button {
     font-weight: 300; 
     height: 41px !important; 
@@ -1222,13 +1214,6 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
     width: 10px;
     height: 10px;
 }
-
-.view-form input[type='radio']:checked {
-      height: 12px;
-      width: 12px;
-    
-}
-
 
 /* FORMULAIRE D'INSCRIPTION */
 
@@ -1398,11 +1383,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 .fabrikForm .row-fluid .fabrikElement select.input-small {
   width: 120px;
-}
-
-.fabrikForm .row-fluid .fabrikElement textarea {
-  margin-top: 0 !important;
-  width: 100%; 
 }
 
 .fabrikForm .row-fluid .fabrikElement .fabrik_characters_left {
