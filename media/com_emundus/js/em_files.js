@@ -5134,14 +5134,33 @@ $(document).ready(function() {
                             $('#status-class').addClass('label label-' + recap.class);
                             $('#status-class').append(recap.value);
 
+                            /* '<strong><u>' +  Joomla.JText._('EMAIL_SUBJECT') + '</u>' + ' : ' + '</strong>' + */
                             // message preview
                             $('#email-candidat-message-preview').append(
                                 '<div id="email-preview" class="email___message_body_item">' +
-                                '<label for="email-preview-label">' + Joomla.JText._('EMAIL_SUBJECT') + ' : </label>' +
+                                '<div class="form-group em-form-subject">' +
+                                    '<div class="inputbox input-xlarge form-control form-inline">' +
+                                        '<span class="label label-grey" for="mail_from" >' + Joomla.JText._('EMAIL_SUBJECT') + ':' + '</span>' +
+                                        '<div class="form-group" style="display:inline-block !important;" id="email-preview-label" contenteditable="true"></br></div>' +
+                                    '</div>'+
+                                '</div>' +
+
                                 '<div id="message-subject"></div>' +
-                                '<div id="message-body"></div>' +
+                                '<textarea id="message-body"></textarea>' +
                                 '</div>'
                             );
+
+                            // var plainText = jQuery('<div>').html(email_recap.message).text();
+                            $('#message-body').text(email_recap.message);
+
+                            tinymce.init({
+                                selector: '#message-body',
+                                menubar: false,
+                                font_formats: "Sans Serif = arial, helvetica, sans-serif;Serif = times new roman, serif;Fixed Width = monospace;Wide = arial black, sans-serif;Narrow = arial narrow, sans-serif;Comic Sans MS = comic sans ms, sans-serif;Garamond = garamond, serif;Georgia = georgia, serif;Tahoma = tahoma, sans-serif;Trebuchet MS = trebuchet ms, sans-serif;Verdana = verdana, sans-serif",
+                                toolbar: "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | outdent indent",
+                                fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
+                                height: 350
+                            });
 
                             /// render attachment letters to candidat preview
                             letter_recap.forEach(letter => {
@@ -5156,8 +5175,11 @@ $(document).ready(function() {
                                 );
                             })
 
-                            $("label[for='email-preview-label']").append(email_recap.subject);
-                            $('#message-body').append(email_recap.message);
+                            // $("label[for='email-preview-label']").append(email_recap.subject);
+                            $("#email-preview-label").text(email_recap.subject);
+
+
+                            //$('#message-body').text(plainText);
 
                         } else {
                             console.log(false);

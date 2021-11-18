@@ -445,6 +445,7 @@ JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
 JHTML::script('media/com_emundus/js/em_files.js');
 JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
 JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
+JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
 
 JHtml::styleSheet('media/com_emundus_messenger/app_messenger.css');
 JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
