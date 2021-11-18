@@ -3402,23 +3402,27 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             text-align: left;
             color: $neutral-800;
             display: inline-block;
-            margin-bottom: 12px;
 
-            /* ETOILE */
-            .icon-star.small {
-              font-family: $font;
-              font-size: 5px;
-              font-style: normal;
-              font-weight: 400;
-              line-height: 19px;
-              letter-spacing: 0em;
-              text-align: left;
-              position: relative;
-              top: -5px;
-              margin-right: -2px;
-              color: $required;
-            }
-          }
+              /* ETOILE */
+              .icon-star.small {
+                font-family: $font;
+                font-size: 5px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 19px;
+                letter-spacing: 0em;
+                text-align: left;
+                position: relative;
+                top: -5px;
+                margin-right: -2px;
+                color: $required;
+              }
+
+              &.fabrikTip {
+                margin-bottom: 12px;
+              }
+           }
+
 
           /* TEXTE D AIDE */
           span {
@@ -3433,11 +3437,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             color: $neutral-600;
             display: flex;
             margin-bottom: 12px;
-            margin-top: 12px;
 
             &:empty{
               margin-bottom: 0px;
-              margin-top: 0px;
             }
 
             .icon-question-sign {
@@ -3517,7 +3519,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             }
 
             /* SELECT */
-            .fabrikForm select {
+             select {
               background-position-x: 98%;
               background-position-y: 54%;
               -webkit-appearance: none;
