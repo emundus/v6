@@ -1,6 +1,15 @@
 <template>
-  <div id="filter-builder">
-    <div class="filters">
+  <div id="filter-builder" :class="{'active': open}">
+    <div class="header">
+      <p>Filtres avancés</p>
+      <span v-if="!open" class="material-icons" @click="open = true">
+        expand_more
+      </span>
+      <span v-if="open" class="material-icons" @click="open = false">
+        expand_less
+      </span>
+    </div>
+    <div class="filters" :class="{'active': open}">
       <div class="rows">
         <div class="relation">
           <select name="and_or" v-model="andOr">
@@ -40,7 +49,7 @@
         </div>
       </div>
     </div>
-    <div class="actions">
+    <div class="actions" :class="{'active': open}">
       <div class="btn-primary-vue" @click="addFilter">
         Annuler
       </div>
@@ -74,11 +83,13 @@ export default {
   },
   data() {
     return {
+      open: false,
       andOr: "AND",
       orderedElements: [],
     };
   },
   mounted() {
+    console.log("FilterBuilder mounted"); 
     this.getFilters();
   },
   methods: {
@@ -147,11 +158,38 @@ export default {
 
 <style lang="scss" scoped>
 #filter-builder {
-  width: fit-content;
+  max-width: 300px;
   background-color: white;
-  padding: 16px;
+  padding: 8px 16px;
   border-radius: 4px;
   margin: 20px;
+  max-height: 36px;
+  overflow: hidden;
+  transition: all 0.7s linear;
+  position: absolute;
+  top: -17px;
+  right: 410px;
+
+  &.active {
+    max-width: 1000px;
+    max-height: 90vh;
+  }
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .filters, .actions {
+    opacity: 0;
+    transition: all .7s;
+
+    &.active {
+      opacity: 1;
+    }
+  }
 
   .filter-row {
     margin-left: 40px;

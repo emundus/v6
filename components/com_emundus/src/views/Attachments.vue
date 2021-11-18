@@ -472,7 +472,7 @@ export default {
     async filterAttachmentSelection(sqlRequest) {
       this.loading = true;
       const response = await attachmentService.filterAttachmentSelection(this.displayedFnum, sqlRequest);
-      
+
       if (response.status == true) {
         this.attachments = response.data;
         this.checkedAttachments = [];
@@ -674,6 +674,7 @@ export default {
   }
 
   #filters {
+    position: relative;
     margin-bottom: 20px;
     display: flex;
     flex-direction: row;
