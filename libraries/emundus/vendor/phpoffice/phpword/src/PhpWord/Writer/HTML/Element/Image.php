@@ -34,9 +34,6 @@ class Image extends Text
      */
     public function write()
     {
-        return json_encode($this->element);
-        exit;
-
         if (!$this->element instanceof ImageElement) {
             return '';
         }

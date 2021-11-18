@@ -2,7 +2,7 @@
 /**
  * Joomla! Content Management System
  *
- * @copyright  (C) 2008 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -217,14 +217,6 @@ class Update extends \JObject
 	protected $minimum_stability = Updater::STABILITY_STABLE;
 
 	/**
-	 * Array with compatible versions used by the pre-update check
-	 *
-	 * @var    array
-	 * @since  3.10.2
-	 */
-	protected $compatibleVersions = array();
-
-	/**
 	 * Gets the reference to the current direct parent
 	 *
 	 * @return  object
@@ -419,13 +411,14 @@ class Update extends \JObject
 
 					if ($phpMatch && $stabilityMatch && $dbMatch)
 					{
-						if (!empty($this->currentUpdate->downloadurl) && !empty($this->currentUpdate->downloadurl->_data))
+						if (isset($this->latest))
 						{
-							$this->compatibleVersions[] = $this->currentUpdate->version->_data;
+							if (version_compare($this->currentUpdate->version->_data, $this->latest->version->_data, '>') == 1)
+							{
+								$this->latest = $this->currentUpdate;
+							}
 						}
-
-						if (!isset($this->latest)
-							|| version_compare($this->currentUpdate->version->_data, $this->latest->version->_data, '>'))
+						else
 						{
 							$this->latest = $this->currentUpdate;
 						}

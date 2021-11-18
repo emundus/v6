@@ -2,7 +2,7 @@
     <div id="attachment-edit">
         <div class="wrapper">
             <h2 class="title">{{ attachment.value }}</h2>
-            <div class="editable-data"> 
+            <div class="editable-data">
                 <div class="input-group">
                     <label for="description">{{ translate('DESCRIPTION') }} </label>
                     <textarea name="description" type="text" v-model="attachment.description" :disabled="!canUpdate">
@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="actions">
-            <button v-if="canUpdate" @click="saveChanges" class="btn-primary-vue">{{ translate('SAVE') }}</button>
+            <button v-if="canUpdate" @click="saveChanges" class="btn-primary-vue">{{ translate('COM_EMUNDUS_ATTACHMENTS_SAVE') }}</button>
         </div>
 
         <div v-if="error" class="error">{{ errorMessage }}</div>
@@ -98,7 +98,7 @@ export default {
                     fnum: this.fnum,
                     attachment: this.attachment
                 });
-                
+
                 if (response.status.file_update) {
                     // need to update file preview
                     const data = await attachmentService.getPreview(this.$store.state.user.displayedUser, this.attachment.filename);
@@ -127,7 +127,7 @@ export default {
     },
     computed: {
         allowedType() {
-            let allowed_type = ''; 
+            let allowed_type = '';
 
             if (this.attachment.filename) {
                 allowed_type = '.' + this.attachment.filename.split('.').pop();
@@ -243,7 +243,7 @@ export default {
         button {
             transition: all .3s;
             padding: 8px 12px;
-        
+
             &:last-of-type {
                 margin-left: 10px;
             }

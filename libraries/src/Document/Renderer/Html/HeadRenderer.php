@@ -2,7 +2,7 @@
 /**
  * Joomla! Content Management System
  *
- * @copyright  (C) 2015 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -170,8 +170,7 @@ class HeadRenderer extends DocumentRenderer
 				$buffer .= '<!--[if ' . $conditional . ']>';
 			}
 
-			$relation = isset($attribs['rel']) ? $attribs['rel'] : 'stylesheet';
-			$buffer .= '<link href="' . $src . '" rel="' . $relation . '"';
+			$buffer .= '<link href="' . $src . '" rel="stylesheet"';
 
 			// Add script tag attributes.
 			foreach ($attribs as $attrib => $value)

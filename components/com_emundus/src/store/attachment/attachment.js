@@ -28,6 +28,9 @@ const actions = {
     },
     setCategories({ commit }, categories) {
         commit('setCategories', categories);
+    },
+    setAttachmentPath({ commit }, path) {
+        commit('setAttachmentPath', path);
     }
 };
 
@@ -51,6 +54,9 @@ const mutations = {
     },
     setCategories(state, categories) {
         state.categories = categories;
+    },
+    setAttachmentPath(state, path) {
+        state.attachmentPath = path;
     }
 };
 
