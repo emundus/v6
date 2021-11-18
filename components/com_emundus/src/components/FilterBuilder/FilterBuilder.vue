@@ -90,11 +90,13 @@ export default {
       }
     },
     async applyFilters() {
-      // build query and send result ? or just send the filters ?
-      const response = await filterService.mountQuery(this.id, this.$store.state.filterBuilder.queryFilters);
+      if (Object.entries(this.$store.state.filterBuilder.queryFilters.groups[0].filters).length > 0 || this.$store.state.filterBuilder.queryFilters.groups.length > 1) {
+        // build query and send result ? or just send the filters ?
+        const response = await filterService.mountQuery(this.id, this.$store.state.filterBuilder.queryFilters);
 
-      if (response.status == true) {
-        this.$emit("applyFilters", response.query);
+        if (response.status == true) {
+          this.$emit("applyFilters", response.query);
+        }
       }
     },
     addFilter() {

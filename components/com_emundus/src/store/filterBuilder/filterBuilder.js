@@ -35,7 +35,7 @@ const mutations = {
         delete state.queryFilters.groups[data.group].filters[data.id];
     },
     updateAndOr(state, data) {
-        if (data.id !== '0') {
+        if (data.group != '0') {
             state.queryFilters.groups[data.group].relation = data.and_or;
         } else {
             state.queryFilters.relation = data.and_or;

@@ -4596,4 +4596,24 @@ class EmundusModelApplication extends JModelList
     //     AND `referenced_column_name` = 'id'
     // }
 
+    public function filterAttachmentSelection($fnum, $sql) 
+    {
+        $result = array();
+        $db = JFactory::getDbo();
+
+        $db->setQuery($sql);
+
+        $queryattachments = $db->loadAssocList();
+        $fnumAttachments = $this->getAttachmentsByFnum($fnum);
+
+        foreach($fnumAttachments as $fnumAttachment) {
+            foreach($queryattachments as $queryattachment) {
+                if ($fnumAttachment->id == $queryattachment['id']) {
+                    $result[] = $fnumAttachment;
+                }
+            }
+        }
+
+        return $result;
+    }
 }

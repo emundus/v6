@@ -719,9 +719,22 @@ class EmundusControllerApplication extends JControllerLegacy
         $filters = json_decode($filters, true);
         
         $m_application = $this->getModel('Application');
-        $res = $m_application->mountQuery($listId, $filters);
+        $req = $m_application->mountQuery($listId, $filters);
 
-        echo json_encode($res);
+        echo json_encode(array('status' => true, 'query' => $req));
         exit;
+    }
+
+    public function filterattachmentselection() 
+    {
+        $jinput = JFactory::getApplication()->input;
+        $sql = $jinput->getVar('sqlRequest', null);
+        $fnum = $jinput->getVar('fnum', null);
+
+        $m_application = $this->getModel('Application');
+        $res = $m_application->filterAttachmentSelection($fnum, $sql);
+
+        echo json_encode(array('status' => true, 'data' => $res));
+        exit;   
     }
 }

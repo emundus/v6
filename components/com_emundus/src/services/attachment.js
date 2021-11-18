@@ -105,5 +105,19 @@ export default {
         'Content-Type': 'multipart/form-data'
       }
     });
+  },
+  async filterAttachmentSelection(fnum, sqlRequest) {
+    try {
+      const response = await client().get('index.php?option=com_emundus&controller=application&task=filterattachmentselection', {
+        params: {
+          fnum: fnum,
+          sqlRequest: sqlRequest,
+        }
+      });
+
+      return response.data;
+    } catch (e) {
+      throw e;
+    }
   }
 };
