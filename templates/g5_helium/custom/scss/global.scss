@@ -3306,11 +3306,16 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               }
            }
 
+          /* DISPLAY */
+          &.plg-display .fabrikinput {
+            height: auto;
+            border: none;
+             padding: 0px;
+          }
+
 
           /* TEXTE D AIDE */
-          span:not(.badge),
-          .fabrikinput[type="checkbox"]:not span,
-          .fabrikinput[value]:not span {
+          span:not(.badge) {
             // Body 14
             font-family: $font;
             font-size: 14px;
@@ -3400,22 +3405,26 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                 height: 48px;
               }
 
-              &[type="radio"] {
-                width: 15px;
-                height: 15px;
-                border-radius: 20px;
-                padding: 0px !important;
-                top: 7px;
-                position: relative;
-              }
+              .fabrikgrid_radio {
+                margin-top: 12px;
 
-              &[type="checkbox"] {
-                width: 15px;
-                height: 15px;
-                border-radius: 20px;
-                padding: 0px !important;
-                top:8px;
-                position: relative;
+                &[type="radio"] {
+                  width: 15px;
+                  height: 15px;
+                  border-radius: 20px;
+                  padding: 0px !important;
+                }
+
+                &[type="checkbox"] {
+                  width: 15px;
+                  height: 15px;
+                  border-radius: 20px;
+                  padding: 0px !important;
+                }
+
+                span {
+                  height: auto !important;
+                }
               }
             }
 

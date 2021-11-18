@@ -1395,19 +1395,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   position: relative;
 }
 
-.fabrikForm .row-fluid .fabrikgrid_radio {
-  display: flex !important;
-  align-items: center !important;
-}
-
-.fabrikForm .row-fluid .fabrikgrid_radio span {
-    color: #000 !important;
-}
-
-.fabrikForm .row-fluid .fabrikgrid_radio label span {
-    display: flex !important;
-    align-items: center !important;
-}
 
 .fabrikForm .row-fluid .fabrikElement select.input-small {
   width: 120px;
