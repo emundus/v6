@@ -1251,9 +1251,6 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
     
 }
 
-.view-form form.fabrikForm .row-fluid .plg-date .input-append {
-    display: flex;
-}
 
 /* FORMULAIRE D'INSCRIPTION */
 

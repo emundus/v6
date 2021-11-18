@@ -3416,10 +3416,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                 margin-right: -2px;
                 color: $required;
               }
-
-              &.fabrikTip {
-                margin-bottom: 12px;
-              }
            }
 
 
@@ -3435,10 +3431,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             text-align: left;
             color: $neutral-600;
             display: flex;
-            margin-bottom: 12px;
+            margin-top: 12px;
 
             &:empty{
-              margin-bottom: 0px;
+              margin-top: 0px;
             }
 
             .icon-question-sign {
@@ -3455,6 +3451,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               border: 1px solid $neutral-400;
               border-radius: 4px;
               box-shadow: none;
+              margin-top: 12px;
 
               &:hover {
                 border: 1px solid #727272;
@@ -3506,6 +3503,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             }
 
             /* TEXTAREA */
+            textarea {
+              height: auto;
+              margin-top: 12px;
+            }
             .label-info, .badge-info {
                 background: $focus !important;
             }
@@ -3521,6 +3522,23 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               background-image: url(/images/emundus/arrow.svg);
               background-size: 8px;
               background-repeat: no-repeat;
+               margin-top: 12px;
+            }
+
+            .fabrikSubElementContainer {
+
+              /* DATE */
+              .input-append {
+                display: flex;
+                flex-direction: row-reverse;
+                input {
+                  border-radius: 0px 4px 4px 0px;
+                }
+                button.calendarbutton {
+                  border-radius: 4px 0px 0px 4px;
+                  border-top: 1px solid ;
+                }
+              }
             }
           }
 
