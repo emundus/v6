@@ -3,7 +3,6 @@
     <div class="wrapper">
       <div class="rows">
         <div class="relation">
-          <label>Condition</label>
           <select name="and_or" v-model="andOr">
             <option value="AND">ET</option>
             <option value="OR">OU</option>
@@ -84,7 +83,11 @@ export default {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin: 20px 0 20px 40px;
+  margin: 20px 0 20px 0px;
+
+  .relation {
+    margin-bottom: 10px;
+  }
 
   .wrapper {
     display: flex;

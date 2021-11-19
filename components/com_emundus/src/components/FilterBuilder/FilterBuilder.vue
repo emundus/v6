@@ -2,10 +2,10 @@
   <div id="filter-builder" :class="{'active': open}">
     <div class="header">
       <p>Filtres avancés</p>
-      <span v-if="!open" class="material-icons" @click="open = true">
+      <span v-if="!open" class="material-icons click" @click="open = true">
         expand_more
       </span>
-      <span v-if="open" class="material-icons" @click="open = false">
+      <span v-if="open" class="material-icons click" @click="open = false">
         expand_less
       </span>
     </div>
@@ -38,7 +38,7 @@
           </div>
         </div>
       </div>
-      <div class="actions">
+      <div class="actions" :class="{'active': open}">
         <div class="btn-primary-vue" @click="addGroup">
           <span class="material-icons"> add </span>
           Ajouter un groupe
@@ -50,7 +50,7 @@
       </div>
     </div>
     <div class="actions" :class="{'active': open}">
-      <div class="btn-primary-vue" @click="addFilter">
+      <div class="btn-primary-vue" @click="cancel">
         Annuler
       </div>
       <div class="btn-primary-vue" @click="applyFilters">
@@ -89,7 +89,6 @@ export default {
     };
   },
   mounted() {
-    console.log("FilterBuilder mounted"); 
     this.getFilters();
   },
   methods: {
@@ -101,6 +100,7 @@ export default {
       }
     },
     async applyFilters() {
+      this.open = false;
       if (Object.entries(this.$store.state.filterBuilder.queryFilters.groups[0].filters).length > 0 || this.$store.state.filterBuilder.queryFilters.groups.length > 1) {
         // build query and send result ? or just send the filters ?
         const response = await filterService.mountQuery(this.id, this.$store.state.filterBuilder.queryFilters);
@@ -109,6 +109,9 @@ export default {
           this.$emit("applyFilters", response.query);
         }
       }
+    },
+    cancel() {
+      this.open = false;
     },
     addFilter() {
       this.orderedElements.push({
@@ -162,8 +165,9 @@ export default {
   background-color: white;
   padding: 8px 16px;
   border-radius: 4px;
-  margin: 20px;
-  max-height: 36px;
+  border: 1px solid var(--border-color);
+  margin: 19px;
+  max-height: 37px;
   overflow: hidden;
   transition: all 0.7s linear;
   position: absolute;
@@ -173,6 +177,15 @@ export default {
   &.active {
     max-width: 1000px;
     max-height: 90vh;
+    box-shadow: var(--box-shadow);
+  }
+
+  .click {
+    cursor: pointer;
+  }
+
+  .rows {
+    margin-top: 15px;
   }
 
   .header {
@@ -185,14 +198,16 @@ export default {
   .filters, .actions {
     opacity: 0;
     transition: all .7s;
+    pointer-events: none;
 
     &.active {
       opacity: 1;
+      pointer-events: all;
     }
   }
 
   .filter-row {
-    margin-left: 40px;
+    margin-left: 0px;
   }
 
   .actions {
