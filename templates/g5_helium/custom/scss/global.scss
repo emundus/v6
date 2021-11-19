@@ -3358,7 +3358,15 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               }
 
               &[placeholder] {
+                //styleName: Inter/Body 16;
                 color: $neutral-500 !important;
+                font-family: $font;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 19px;
+                letter-spacing: 0.0015em;
+                text-align: left;
               }
 
               &[value] {
@@ -3538,9 +3546,18 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
         .fabrikSubGroupElements, .fabrikSubGroup {
 
           /* TABLEAU */
-          .table-striped tbody tr:nth-child(2n+1) td,
-          .table-striped tbody tr:nth-child(2n+1) th {
+           tr:nth-child(2n+1) td,
+           tr:nth-child(2n+1) th {
             background: $neutral-50;
+             font-family: $font;
+             font-size: 16px;
+             font-style: normal;
+             font-weight: 500;
+             line-height: 19px;
+             letter-spacing: 0.0015em;
+             text-align: left;
+             color: $neutral-800;
+             margin-bottom: 0px;
           }
 
           /* GROUPE REPEAT */
@@ -3563,6 +3580,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               }
 
               i {
+                font-size: 12px;
                 color: $neutral-600;
                 &:hover {
                   color: $neutral-800;
@@ -3586,6 +3604,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               }
 
               i {
+                font-size: 12px;
                 color: $neutral-600;
                 &:hover {
                   color: $neutral-800;
