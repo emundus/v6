@@ -5033,6 +5033,7 @@ $(document).ready(function() {
     $(document).on('mouseover', '[id^=candidat_]', function(e){ $(this).css('cursor', 'pointer').attr('title', Joomla.JText._('SEND_EMAIL_TOOLTIPS'));})
 
     $(document).on('click', '[id^=candidat_]', function(e){
+        tinymce.remove();
         let fnum = $(this).attr('id').split('candidat_')[1];
 
         $('#em-modal-actions').modal({backdrop:true,keyboard:true},'toggle');
@@ -5139,9 +5140,8 @@ $(document).ready(function() {
                             $('#email-candidat-message-preview').append(
                                 '<div id="email-preview" class="email___message_body_item">' +
                                 '<div class="form-group em-form-subject">' +
-                                    '<div class="inputbox input-xlarge form-control form-inline">' +
                                         '<span class="label label-grey" for="mail_from" >' + Joomla.JText._('EMAIL_SUBJECT') + ':' + '</span>' +
-                                        '<div class="form-group" style="display:inline-block !important;" id="email-preview-label" contenteditable="true"></br></div>' +
+                                        '<input type="text" id="email-preview-label" style="height:35px; font-weight: bold;">'+
                                     '</div>'+
                                 '</div>' +
 
@@ -5176,7 +5176,7 @@ $(document).ready(function() {
                             })
 
                             // $("label[for='email-preview-label']").append(email_recap.subject);
-                            $("#email-preview-label").text(email_recap.subject);
+                            $("#email-preview-label").val(email_recap.subject);
 
 
                             //$('#message-body').text(plainText);
@@ -5188,11 +5188,17 @@ $(document).ready(function() {
                         /// send email
                         $('#send-email').on('click', function(e) {
                             let tmpl = email_recap;
+
+                            let raw = {
+                                title : $('#email-preview-label').val(),
+                                content : tinyMCE.activeEditor.getContent()
+                            };
+
                             $.ajax({
                                 type: 'POST',
                                 url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
                                 dataType: 'JSON',
-                                data: { fnum: fnum },
+                                data: { fnum: fnum, raw: raw },
                                 success: function(result) {
                                     /// never success ???
                                 }, error: function(jqXHR, textStatus) {

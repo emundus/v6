@@ -1536,6 +1536,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $fnum = $jinput->post->getRaw('fnum', null);
 
+        $raw = $jinput->post->getRaw('raw', null);
+
         if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
             die(JText::_("ACCESS_DENIED"));
         }
@@ -1593,8 +1595,13 @@ class EmundusControllerMessages extends JControllerLegacy {
         ];
 
         $tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum_info['fnum']);
+        /* old code
         $body = $m_emails->setTagsFabrik($email_recap[0]->message, [$fnum_info['fnum']]);
         $subject = $m_emails->setTagsFabrik($email_recap[0]->subject, [$fnum_info['fnum']]);
+        */
+
+        $body = $m_emails->setTagsFabrik($raw['content'], [$fnum_info['fnum']]);
+        $subject = $m_emails->setTagsFabrik($raw['title'], [$fnum_info['fnum']]);
 
         // Tags are replaced with their corresponding values using the PHP preg_replace function.
         $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
@@ -1645,28 +1652,30 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mailer->addAttachment($file_path);
         $send = $mailer->Send();
 
-//        /// track the log of email
-//        if ($send !== true) {
-//            $failed[] = $fnum_info['email'];
-//            echo 'Error sending email: ' . $send->__toString();
-//            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-//        } else {
-//            $sent[] = $fnum_info['email'];
-//            $log = [
-//                'user_id_from' => $user->id,
-//                'user_id_to' => $fnum_info['applicant_id'],
-//                'subject' => $subject,
-//                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $fnum_info['email'] . '</i><br>' . $body . $file_path,
-//                'type' => $email_recap[0]->id,
-//            ];
-//            $m_emails->logEmail($log);
-//            // Log the email in the eMundus logging system.
-//            EmundusModelLogs::log($user->id, $fnum_info['applicant_id'], $fnum_info['fnum'], 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
-//        }
-//        // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
-//        if ($config->get('smtphost') === 'smtp.mailtrap.io') {
-//            sleep(5);
-//        }
+        /* track the log of email */
+        if ($send !== true) {
+            $failed[] = $fnum_info['email'];
+            echo 'Error sending email: ' . $send->__toString();
+            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+        } else {
+            $sent[] = $fnum_info['email'];
+            $log = [
+                'user_id_from' => $user->id,
+                'user_id_to' => $fnum_info['applicant_id'],
+                'subject' => $subject,
+                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $fnum_info['email'] . '</i><br>' . $body . $file_path,
+                'type' => $email_recap[0]->id,
+            ];
+            
+            echo '<pre>'; var_dump($log); echo '</pre>'; die;
+            $m_emails->logEmail($log);
+            // Log the email in the eMundus logging system.
+            EmundusModelLogs::log($user->id, $fnum_info['applicant_id'], $fnum_info['fnum'], 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+        }
+        // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
+        if ($config->get('smtphost') === 'smtp.mailtrap.io') {
+            sleep(15);
+        }
 
         echo json_encode(['status' => true]);
         exit;
