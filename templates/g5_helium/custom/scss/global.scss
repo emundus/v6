@@ -3510,7 +3510,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             }
 
             /* CHECKBOX - RADIO */
-            .row-fluid .fabrikgrid_radio {
+            .row-fluid .fabrikgrid_radio,
+            .row-fluid .fabrikgrid_checkbox {
               margin-top: 12px;
 
               label.radio input[type="radio"] {
