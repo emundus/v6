@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 
         <?php if (sizeof($contact_info) > 0) :?>
 
-            <div class="panel-heading"><?php echo JText::_('VIDEO_CALLING'); ?></div>
+            <div class="panel-heading"><?php echo JText::_('MOD_EM_BOOK_INTERVIEW_VIDEO_CALLING'); ?></div>
 
             <?php foreach ($contact_info as $type => $text) :?>
                 <div class="form-group">

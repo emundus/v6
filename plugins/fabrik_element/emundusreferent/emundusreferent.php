@@ -96,14 +96,14 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		}
 		$str = '<div><label class="fabrikLabel " for="'.$element->name.'">'.$element->label.'<img class="fabrikTip fabrikImg" title="" src="media/com_fabrik/images/notempty.png"></label>';
 		if ($this->isReferentLetterUploaded($this->_attachment_id,$fnum) || $this->isReferentFormUploaded($this->_attachment_id,$fnum) == 1) {
-			$str .= '<span class="emundusreferent_uploaded">'.JText::_('REFERENCE_LETTER_UPLOADED').'<span>';
+			$str .= '<span class="emundusreferent_uploaded">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_REFERENCE_LETTER_UPLOADED').'<span>';
 		} else {
 			$str .= '<input ' ;
 			foreach ($bits as $key => $val) {
 				$str .= $key.' = "'.$val.'" ';
 			}
 			$str .= " />\n";
-			$txt_button = ($value>0)?JText::_('SEND_EMAIL_AGAIN'):JText::_('SEND_EMAIL');
+			$txt_button = ($value>0)?JText::_('PLG_ELEMENT_EMUNDUSREFERENT_SEND_EMAIL_AGAIN'):JText::_('PLG_ELEMENT_EMUNDUSREFERENT_SEND_EMAIL');
 			$str .= '<div id="'.$id.'_response"><input type="button" class="fabrikinput button btn-referent" id="'.$id.'_btn" name="'.$name.'" value="'.$txt_button.'" /></div>';
 
 			$str .= '<img src="'.COM_FABRIK_LIVESITE.'media/com_fabrik/images/ajax-loader.gif" class="loader" id="'.$id.'_loader" alt="'.JText::_('Loading').'" style="display:none;padding-left:10px;" />';
@@ -140,9 +140,9 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$filterid = $this->getHTMLId($repeatCounter) . 'value';
 
 		$opts->email = $params->get('email_element');
-		$opts->sending = JText::_('SENDING_EMAIL');
-		$opts->sendmail = JText::_('SEND_EMAIL');
-		$opts->sendmailagain = JText::_('SEND_EMAIL_AGAIN');
+		$opts->sending = JText::_('PLG_ELEMENT_EMUNDUSREFERENT_SENDING_EMAIL');
+		$opts->sendmail = JText::_('PLG_ELEMENT_EMUNDUSREFERENT_SEND_EMAIL');
+		$opts->sendmailagain = JText::_('PLG_ELEMENT_EMUNDUSREFERENT_SEND_EMAIL_AGAIN');
 		$opts->attachment_id = $params->get('attachment_id');
 		$opts->form_recommend = $params->get('form_id', '68');
 		$opts->fullName = $this->getFullName(false, true);
@@ -233,12 +233,12 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$fnum = $jinput->post->get('fnum');
 
 		if (empty($recipient)) {
-			$response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('EMAIL_MISSING_ERROR').'</span>');
+			$response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_MISSING_ERROR').'</span>');
 			die(json_encode($response));
 		}
 
 		if (empty($fnum)) {
-			$response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('FNUM_INCORRECT_ERROR').'</span>');
+			$response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_FNUM_INCORRECT_ERROR').'</span>');
 			die(json_encode($response));
 		}
 
@@ -250,17 +250,17 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		try {
 			$cc_id = $db->loadResult();
 			if (empty($cc_id)) {
-				$response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('FNUM_INCORRECT_ERROR').'</span>');
+				$response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_FNUM_INCORRECT_ERROR').'</span>');
 				die(json_encode($response));
 			}
 		} catch (Exception $e) {
 			JLog::add('Error getting CC by fnum in query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-			$response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('FNUM_INCORRECT_ERROR').'</span>');
+			$response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_FNUM_INCORRECT_ERROR').'</span>');
 			die(json_encode($response));
 		}
 
 		if (empty($attachment_id)) {
-			$response = array("result" => 0, "message" => '<span class="emundusreferent_error">'.JText::_('EMAIL_ERROR').'</span>');
+			$response = array("result" => 0, "message" => '<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_ERROR').'</span>');
 			die(json_encode($response));
 		}
 
@@ -336,7 +336,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 
 			if ($send !== true) {
 				JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-				$response = array("result" => 0, "message" => '<span class="emundusreferent_error">'.JText::_('EMAIL_ERROR').'</span>');
+				$response = array("result" => 0, "message" => '<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_ERROR').'</span>');
 			} else {
 				JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_SENT').' : '.$recipient, 'message');
 				$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
@@ -347,10 +347,10 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 				} catch (Exception $e) {
 					JLog::add('Error logging email : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 				}
-				$response = array("result" => 1, "message" => '<span class="emundusreferent_sent">'.JText::_('EMAIL_SENT').'</span>');
+				$response = array("result" => 1, "message" => '<span class="emundusreferent_sent">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT').'</span>');
 			}
 		} else {
-			$response = array("result" => 1, "message" => '<span class="emundusreferent_uploaded">'.JText::_('REFERENCE_LETTER_UPLOADED').'</span>');
+			$response = array("result" => 1, "message" => '<span class="emundusreferent_uploaded">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_REFERENCE_LETTER_UPLOADED').'</span>');
 		}
 		echo json_encode($response);
 	}

@@ -83,6 +83,7 @@ class LanguageFileToBase extends JApplicationCli {
             $file = explode('/', $file);
             $file_name = end($file);
             $language = strtok($file_name, '.');
+
             foreach ($parsed_file as $key => $val) {
                 $row = [$db->quote($key), $db->quote($language), $db->quote($val)];
                 $db_values[] = implode(',', $row);
@@ -100,7 +101,7 @@ class LanguageFileToBase extends JApplicationCli {
         try {
             $db->execute();
         } catch (Exception $exception) {
-            echo "<pre>";var_dump('error inserting data');echo "</pre>";die();
+            echo "<pre>";var_dump('error inserting data : ' . $exception->getMessage());echo "</pre>";die();
 
         }
     }

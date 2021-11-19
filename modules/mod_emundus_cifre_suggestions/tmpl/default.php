@@ -49,7 +49,7 @@ defined('_JEXEC') or die;
                             </div>
                         </div>
                         <a href="<?= JRoute::_(JURI::base()."consultez-les-offres/details/299/".$offer->search_engine_page); ?>" class="cta-offre w-inline-block">
-                            <div class="text-block-2"><?= JText::_('MOD_EMUNDUS_CIFRE_OFFERS_VIEW'); ?></div>
+                            <div class="text-block-2"><?= JText::_('MOD_EMUNDUS_CIFRE_SUGGESTIONS_VIEW'); ?></div>
                         </a>
                     </div>
                 </div>

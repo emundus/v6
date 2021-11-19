@@ -32,7 +32,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
     <div class="w-container">
         <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
             <a class="big-card-add w-inline-block" href="<?= JURI::base(); ?>component/fabrik/form/102">
-                <div class="ajouter-sujet"><?= JText::_('ADD_APPLICATION_FILE'); ?></div>
+                <div class="ajouter-sujet"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></div>
             </a>
         <?php endif; ?>
 
@@ -92,7 +92,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 
 	                            <?php if ($application->status === '0') :?>
                                     <!-- Edit button -->
-                                    <a id="edit" href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>" title="<?= JText::_('OPEN_APPLICATION'); ?>">
+                                    <a id="edit" href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION'); ?>">
                                         <span class="fa fa-edit"></span>
                                     </a>
                                 <?php endif; ?>
@@ -100,16 +100,16 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 
                                 <?php if ($application->status === '6') :?>
                                     <!-- Automatically unpublished offers have a republish button that appears. -->
-                                    <a class="cta-republish w-button" href="#" onclick="publishfile('<?= $application->fnum; ?>')"><?= JText::_('REPUBLISH_APPLICATION'); ?></a>
+                                    <a class="cta-republish w-button" href="#" onclick="publishfile('<?= $application->fnum; ?>')"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_REPUBLISH_APPLICATION'); ?></a>
                                 <?php endif; ?>
 
                                 <!-- Trash button -->
                                 <?php if ($application->status === '0') :?>
-                                    <a id="trash" onClick="deletefile('<?= $application->fnum; ?>')" href="#row<?= $application->fnum; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>">
+                                    <a id="trash" onClick="deletefile('<?= $application->fnum; ?>')" href="#row<?= $application->fnum; ?>" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE'); ?>">
                                         <i class="icon-trash"></i>
                                     </a>
                                 <?php elseif ($application->status === '1') :?>
-                                    <a id="trash" onClick="completefile('<?= $application->fnum; ?>', true)" href="#row<?= $application->fnum; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>">
+                                    <a id="trash" onClick="completefile('<?= $application->fnum; ?>', true)" href="#row<?= $application->fnum; ?>" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE'); ?>">
                                         <i class="icon-trash"></i>
                                     </a>
                                 <?php else :?>
@@ -126,7 +126,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                     <strong><?= JText::_('OFFER_IS_DRAFT'); ?><br>‍</strong>
                                     <span class="text-span-2"><?= JText::_('OFFER_IS_DRAFT_DESCRIPTION'); ?><br></span>
                                 </p>
-                                <a class="cta-brouillon w-button" href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>"><?= JText::_('OPEN_APPLICATION'); ?></a>
+                                <a class="cta-brouillon w-button" href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION'); ?></a>
                             <?php else :?>
                                 <div class="column-card-container w-row">
 
@@ -186,9 +186,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                     <!-- Favorite system. -->
 	                                                <?php if ($contact['state'] === '2') :?>
                                                         <?php if ($contact['favorite']) :?>
-                                                            <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
+                                                            <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
                                                         <?php else :?>
-                                                            <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_FAV'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
+                                                            <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_FAVORITE_CLICK_HERE_FAV'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
                                                         <?php endif; ?>
                                                     <?php endif; ?>
 
@@ -246,9 +246,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 	                                                                <?php endif; ?>
 
                                                                     <?php if ($contact['notify']) :?>
-                                                                        <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
+                                                                        <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
                                                                     <?php else :?>
-                                                                        <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
+                                                                        <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
                                                                     <?php endif; ?>
 
                                                                     <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block">
@@ -313,16 +313,16 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 	                                            }
 
 	                                            ?>
-                                            
+
                                                 <!-- Équipe de recherche -->
                                                 <div class="card w-clearfix" id="card-<?= $contact['link_id']; ?>">
 
                                                     <!-- Favorite system. -->
 	                                                <?php if ($contact['state'] === '2') :?>
                                                         <?php if ($contact['favorite']) :?>
-                                                            <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
+                                                            <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
                                                         <?php else :?>
-                                                            <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_FAV'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
+                                                            <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_FAVORITE_CLICK_HERE_FAV'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
                                                         <?php endif; ?>
                                                     <?php endif; ?>
 
@@ -379,9 +379,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 	                                                                <?php endif; ?>
 
                                                                     <?php if ($contact['notify']) :?>
-                                                                        <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
+                                                                        <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
                                                                     <?php else :?>
-                                                                        <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
+                                                                        <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
                                                                     <?php endif; ?>
 
                                                                     <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block">
@@ -427,7 +427,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 	                                            $contact_favorites[$contact['link_id']] = $m_cifre->checkForTwoFavorites($other_fnum, (int)substr($other_fnum,-7));
 	                                            $contact_nb_faves[$contact['link_id']] = count($contact_favorites[$contact['link_id']]);
 	                                            if ($contact_nb_faves[$contact['link_id']] === 2) {
-	                                                
+
 		                                            $m_messages = new EmundusModelMessages();
 
 		                                            $favorite_users = [];
@@ -446,16 +446,16 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 	                                            }
 
 	                                            ?>
-                                            
+
                                                 <!-- Acteur public ou associatif -->
                                                 <div class="card w-clearfix" id="card-<?= $contact['link_id']; ?>">
 
                                                     <?php if ($contact['state'] === '2') :?>
                                                         <!-- Favorite system. -->
                                                         <?php if ($contact['favorite']) :?>
-                                                            <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
+                                                            <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
                                                         <?php else :?>
-                                                            <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_FAV'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
+                                                            <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_FAVORITE_CLICK_HERE_FAV'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
                                                         <?php endif; ?>
                                                     <?php endif; ?>
 
@@ -509,9 +509,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 	                                                                <?php endif; ?>
 
                                                                     <?php if ($contact['notify']) :?>
-                                                                        <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
+                                                                        <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
                                                                     <?php else :?>
-                                                                        <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
+                                                                        <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
                                                                     <?php endif; ?>
 
                                                                     <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block">
@@ -579,7 +579,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 	                    }
 
 	                    ?>
-                    
+
                         <div class="wrapper-big-card" id="card-<?= $chat_request['link_id']; ?>">
                             <div class="card w-clearfix">
                                 <a href="#" class="star link-block-3 w-inline-block" data-ix="star"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5ea32c2fd949eca178361a94_star.svg" alt="" class="image-8"></a>
@@ -620,9 +620,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 
 	                                            <?php if ($chat_request['state'] === '2') :?>
                                                     <?php if ($chat_request['notify']) :?>
-                                                        <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $chat_request['link_id']; ?>)"></i>
+                                                        <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $chat_request['link_id']; ?>)"></i>
                                                     <?php else :?>
-                                                        <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $chat_request['link_id']; ?>)"></i>
+                                                        <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $chat_request['link_id']; ?>)"></i>
                                                     <?php endif; ?>
                                                 <?php endif; ?>
 
@@ -649,7 +649,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 
         <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
             <a class="big-card-add w-inline-block" href="<?= JURI::base(); ?>component/fabrik/form/102">
-                <div class="ajouter-sujet"><?= JText::_('ADD_APPLICATION_FILE'); ?></div>
+                <div class="ajouter-sujet"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></div>
             </a>
         <?php endif; ?>
 
@@ -666,7 +666,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                 confirmButton: 'button-2 w-button',
                 cancelButton: 'button-2 w-button'
             },
-            title: '<?= JText::_('CONFIRM_DELETE_FILE'); ?>',
+            title: '<?= JText::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_DELETE_FILE'); ?>',
             icon: 'warning',
             showCancelButton: true,
             showConfirmButton: true,
@@ -684,7 +684,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
             customClass: {
                 title: "heading no-dash"
             },
-            title: '<?= JText::_('CONFIRM_PUBLISH_FILE'); ?>',
+            title: '<?= JText::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_PUBLISH_FILE'); ?>',
             icon: 'warning',
             showCloseButton: true
         }).then(confirm => {
@@ -699,7 +699,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
             customClass: {
                 title: "heading no-dash"
             },
-            title: '<?= JText::_('CONFIRM_UNPUBLISH_FILE'); ?>',
+            title: '<?= JText::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_UNPUBLISH_FILE'); ?>',
             icon: 'warning',
             showCloseButton: true
         }).then(confirm => {
@@ -711,13 +711,13 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 
     function completefile(fnum, trash) {
 
-        const trashButton = trash ? "<a href=\"index.php?option=com_emundus&task=completefile&status=7&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>\" class=\"cta-offre w-inline-block\"><?= JText::_('UNPUBLISH_FILE'); ?></a>":"";
+        const trashButton = trash ? "<a href=\"index.php?option=com_emundus&task=completefile&status=7&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>\" class=\"cta-offre w-inline-block\"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_UNPUBLISH_FILE'); ?></a>":"";
 
         Swal.fire({
             customClass: {
                 title: "heading no-dash"
             },
-            title: '<?= JText::_('CONFIRM_COMPLETE_FILE'); ?>',
+            title: '<?= JText::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_COMPLETE_FILE'); ?>',
             html: trashButton +
                 "<a href=\"index.php?option=com_emundus&task=completefile&status=2&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>\" class=\"cta-offre w-inline-block\"><?= JText::_('FILE_BOOKED_WITH_HESAM'); ?></a>" +
                 "<a href=\"index.php?option=com_emundus&task=completefile&status=5&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>\" class=\"cta-offre w-inline-block\"><?= JText::_('FILE_BOOKED_WITHOUT_HESAM'); ?></a>",
@@ -824,7 +824,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
             customClass: {
                 title: "heading no-dash"
             },
-            title: '<?= JText::_('SHARE_OFFER'); ?>',
+            title: '<?= JText::_('MOD_EMUNDUS_APPLICATIONS_SHARE_OFFER'); ?>',
             html: '<a href="https://twitter.com/intent/tweet?url='+encodeURIComponent(link)+'&text='+encodeURIComponent(text)+'" class="twitter-button cta-offre w-inline-block" target="_blank">Twitter</a>' +
                 '<a href="https://www.facebook.com/sharer.php?u='+encodeURIComponent(link)+'" class="fb-button cta-offre w-inline-block" target="_blank">Facebook</a>' +
                 '<a href="https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(link)+'&summary='+text.replace(/ /g,"+")+'" class="linkedin-button cta-offre w-inline-block" target="_blank">LinkedIn</a>',
@@ -864,7 +864,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                     });
                     star_icon.setAttribute('onclick', 'unfavorite('+link_id+')');
                     star_icon.setAttribute('id', 'favorite-'+link_id);
-                    star_icon.setAttribute('data-original-title', '<?= JText::_('FAVORITE_CLICK_HERE_UNFAV');?>');
+                    star_icon.setAttribute('data-original-title', '<?= JText::_('MOD_EMUNDUS_APPLICATIONS_FAVORITE_CLICK_HERE_UNFAV');?>');
 
                     if (other_fav) {
                         const other_fav_link_id = other_fav.id.split("-").pop();
@@ -875,7 +875,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                         });
                         other_fav.setAttribute('onclick', 'favorite(' + other_fav_link_id + ')');
                         other_fav.removeAttribute('id');
-                        other_fav.setAttribute('data-original-title', '<?= JText::_('FAVORITE_CLICK_HERE_FAV');?>');
+                        other_fav.setAttribute('data-original-title', '<?= JText::_('MOD_EMUNDUS_APPLICATIONS_FAVORITE_CLICK_HERE_FAV');?>');
                     }
 
                     if (result.reload) {
@@ -925,7 +925,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                     });
                     star_icon.setAttribute('onclick', 'favorite('+link_id+')');
                     star_icon.removeAttribute('id');
-                    star_icon.setAttribute('data-original-title', '<?= JText::_('FAVORITE_CLICK_HERE_FAV');?>');
+                    star_icon.setAttribute('data-original-title', '<?= JText::_('MOD_EMUNDUS_APPLICATIONS_FAVORITE_CLICK_HERE_FAV');?>');
                 } else {
                     star_icon.style.color = '#d91e18';
                 }
@@ -963,7 +963,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                         animation: 'horizontalFlip'
                     });
                     bell_icon.setAttribute('onclick', 'unnotify('+link_id+')');
-                    bell_icon.setAttribute('data-original-title', '<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF');?>');
+                    bell_icon.setAttribute('data-original-title', '<?= JText::_('MOD_EMUNDUS_APPLICATIONS_NOTIFY_CLICK_HERE_UNNOTIF');?>');
 
                 } else {
                     bell_icon.style.color = '#d91e18';
@@ -1001,7 +1001,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                         animation: 'horizontalFlip'
                     });
                     bell_icon.setAttribute('onclick', 'notify('+link_id+')');
-                    bell_icon.setAttribute('data-original-title', '<?= JText::_('NOTIFY_CLICK_HERE');?>');
+                    bell_icon.setAttribute('data-original-title', '<?= JText::_('MOD_EMUNDUS_APPLICATIONS_NOTIFY_CLICK_HERE');?>');
                 } else {
                     bell_icon.style.color = '#d91e18';
                 }

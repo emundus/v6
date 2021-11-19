@@ -100,7 +100,7 @@ endif; ?>
 
     //TODO do the delete if we need to
     function deletefile(fnum) {
-        if (confirm("<?php echo JText::_('CONFIRM_DELETE_FILE'); ?>")) {
+        if (confirm("<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_DELETE_FILE'); ?>")) {
             document.location.href="index.php?option=com_emundus&task=deletefile&fnum="+fnum;
         }
     }

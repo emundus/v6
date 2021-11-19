@@ -30,10 +30,10 @@ if (!empty($tab)) :?>
                     <div class='container-2 w-container' style='max-width: unset'>
                         <div class='d-flex'>
                             <img src='" . JURI::base() . "images/emundus/menus/dashboard.png' class='tchooz-icon-title' alt='dashboard'>
-                            <h1 class='tchooz-section-titles'>".JText::_('DASHBOARD')."</h1>
+                            <h1 class='tchooz-section-titles'>".JText::_('MOD_EMUNDUSPANEL_DASHBOARD')."</h1>
                         </div>
                         <div class='actions-add-block'>
-                            <p class='tchooz-section-description'>".JText::_('STATISTICS')."</p>
+                            <p class='tchooz-section-description'>".JText::_('MOD_EMUNDUSPANEL_STATISTICS')."</p>
                         </div>
                     </div>
                     </div>";
@@ -47,7 +47,7 @@ if (!empty($tab)) :?>
             }
 
             /*if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1 && (($lean_mode && !$only_applicant) || !$lean_mode)) {
-                echo '<p>'.JText::_('SELECT_PROGRAMME').'</p>';
+                echo '<p>'.JText::_('MOD_EMUNDUSPANEL_SELECT_PROGRAMME').'</p>';
                 echo '<br/><div class="select">';
                 echo '<legend><select class="form-control form-control-sm" id="profile" name="profiles" onchange="postCProfile()"> ';
                 foreach ($user->emProfiles as $profile) {

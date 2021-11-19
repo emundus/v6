@@ -26,7 +26,7 @@
 		<language tag="fr-FR">fr-FR.mod_emundus_send_application.ini</language>
 		<language tag="fr-FR">fr-FR.mod_emundus_send_application.sys.ini</language>
 	</languages>
-	<help key="EMUNDUS_SITE" />
+	<help key="MOD_EMUNDUS_SEND_APPLICATION_EMUNDUS_SITE" />
 	<config>
 		<fields name="params">
 			<fieldset name="standard" label="Settings">
