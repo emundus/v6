@@ -305,17 +305,6 @@ form legend a, form legend a:hover, form legend a:focus {
     width: 100%;
 }
 
-.fabrikGroup .fabrikElementReadOnly {
-    margin-top: 0;
-    display: flex;
-    flex-direction: column;
-    padding-top: 5px;
-}
-
-.fabrikGroup .fabrikElementReadOnly:first-child {
-    padding-top: 0;
-}
-
 .row-striped .row-fluid [class*="span"] {
     display: flex;
     align-items: center;
@@ -1054,9 +1043,6 @@ footer#g-footer {
 
 /*Position du bouton aligné avec le titre*/
 
-.fabrikForm .fabrikSubGroup{
-    position: relative;
-}
 
 .header-right a.btn.btn-danger.connexion, .header-right a.btn.btn-danger.inscription  {
     line-height: inherit;

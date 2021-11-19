@@ -3296,14 +3296,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               }
            }
 
-          /* DISPLAY */
-          &.plg-display .fabrikinput {
-            height: auto;
-            border: none;
-             padding: 0px;
-          }
-
-
           /* TEXTE D AIDE */
           span:not(.badge) {
             // Body 14
@@ -3327,8 +3319,18 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             }
           }
 
-          /* INPUT */
+
           .fabrikElement {
+
+            /* DISPLAY */
+            &.plg-display .fabrikinput {
+              height: auto;
+              border: none;
+              padding: 0px;
+              margin: 0px;
+            }
+
+            /* INPUT */
             .fabrikinput:not(textarea) {
               height: 48px;
               border-radius: 4px;
@@ -3543,11 +3545,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
          }
       }
 
-        .fabrikSubGroupElements, .fabrikSubGroup {
+        .fabrikSubGroupElements,
+        .fabrikSubGroup {
 
           /* TABLEAU */
-           tr:nth-child(2n+1) td,
-           tr:nth-child(2n+1) th {
+           td,
+           th {
             background: $neutral-50;
              font-family: $font;
              font-size: 16px;
@@ -3560,6 +3563,13 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
              margin-bottom: 0px;
           }
 
+          .fabrikGroupRepeater {
+            position: absolute;
+            top: -5px;
+            right: 10px;
+            display: flex;
+          }
+
           /* GROUPE REPEAT */
           .fabrikGroupRepeater.pull-right.btn-group,
           .fabrikGroupRepeater .pull-right {
@@ -3568,12 +3578,15 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             right: 10px;
             display: flex;
 
+
             .addGroup.btn.btn-small.btn-success,
             .addGroup {
               cursor: pointer;
               text-align: right;
               padding: 8px 15px 0 0;
               border: none;
+              padding: 8px 12px;
+              margin-right: 10px;
 
               .tooltip {
                 display: none;
