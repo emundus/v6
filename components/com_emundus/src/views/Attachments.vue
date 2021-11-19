@@ -32,10 +32,6 @@
             </div>
             <div class="actions">
               <FilterBuilder id="70" otherIds="36" @applyFilters="filterAttachmentSelection"></FilterBuilder>
-              <select name="category" @change="filterByCategory">
-                <option value="all">{{ translate('SELECT_CATEGORY') }}</option>
-                <option v-for="(category, key) in categories" :key="key" :value="key">{{ category }} </option>
-              </select>
               <div v-if="canExport" class="btn-icon-text" @click="exportAttachments" :class="{'disabled': checkedAttachments.length < 1}">
                 <span class="material-icons export">
                   file_upload
@@ -128,8 +124,8 @@
           name="edit"
           height="70%"
           width="70%"
-          :minWidth="690"
-          :minHeight="550"
+          :minWidth="750"
+          :minHeight="600"
           styles="display:flex;flex-direction:column;justify-content:center;align-items:center;">
           <div class="modal-head">
             <div class="flex-start">
@@ -871,6 +867,13 @@ export default {
         white-space: nowrap;
         cursor: pointer;
       }
+
+      // media width inferior to 1600px
+      @media (max-width: 1600px) {
+        th, td, th.desc, td.desc, .td-document {
+          white-space: normal;
+        }
+      } 
     }
 
     .attachment-check {
@@ -1000,6 +1003,17 @@ export default {
     max-height: 100%;
     display: flex;
     padding: 0;
+  }
+
+  #filter-builder {
+    position: absolute;
+    top: -17px;
+    right: 190px;;
+  }
+
+  #edit-modal .v--modal-box  {
+    min-width: 800px;
+    min-height: 600px;
   }
 }
 </style>

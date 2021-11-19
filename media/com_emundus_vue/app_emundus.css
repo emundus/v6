@@ -220,9 +220,6 @@
   overflow: hidden;
   -webkit-transition: all 0.7s linear;
   transition: all 0.7s linear;
-  position: absolute;
-  top: -17px;
-  right: 410px;
 }
 #filter-builder.active[data-v-8da6b152] {
   max-width: 1000px;
@@ -279,6 +276,7 @@
 #filter-builder .actions .btn-primary-vue[data-v-8da6b152] {
   margin-left: 10px;
 }
+@charset "UTF-8";
 #em-attachments[data-v-30bae934] {
   font-size: 14px;
 }
@@ -569,6 +567,11 @@
   white-space: nowrap;
   cursor: pointer;
 }
+@media (max-width: 1600px) {
+#em-attachments table tbody th[data-v-30bae934], #em-attachments table tbody td[data-v-30bae934], #em-attachments table tbody th.desc[data-v-30bae934], #em-attachments table tbody td.desc[data-v-30bae934], #em-attachments table tbody .td-document[data-v-30bae934] {
+    white-space: normal;
+}
+}
 #em-attachments table .attachment-check[data-v-30bae934] {
   width: 15px;
   height: 15px;
@@ -730,6 +733,15 @@
   display: -ms-flexbox;
   display: flex;
   padding: 0;
+}
+#em-attachments #filter-builder[data-v-30bae934] {
+  position: absolute;
+  top: -17px;
+  right: 190px;
+}
+#em-attachments #edit-modal .v--modal-box  [data-v-30bae934] {
+  min-width: 800px;
+  min-height: 600px;
 }
 :root {
     --primary-color: #16AFE1;

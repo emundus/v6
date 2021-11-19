@@ -174,9 +174,6 @@ export default {
   max-height: 37px;
   overflow: hidden;
   transition: all 0.7s linear;
-  position: absolute;
-  top: -17px;
-  right: 410px;
 
   &.active {
     max-width: 1000px;
