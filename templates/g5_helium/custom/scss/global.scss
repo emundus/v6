@@ -3170,9 +3170,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
 
     /* INTRO FORMULAIRE */
-    p:nth-child(1) {
-      @include body-16;
+     p:first-of-type {
+      @include body-14;
       color: $neutral-600;
+      margin-top: 8px;
     }
 
     /* FORMULAIRE */
@@ -3206,10 +3207,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
           /* DISPLAY */
           &.plg-display .fabrikinput {
-            height: auto;
-            border: none;
-            padding: 0px;
-            margin: 0px;
+            height: auto !important;
+            border: none !important;
+            padding: 0px !important;
           }
 
 
@@ -3258,6 +3258,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
               &.readonly {
                 @include input-readonly;
+              }
+
+              &:-internal-autofill-selected {
+                @include input-default;
+                @include body-16;
+                background: transparent !important;
               }
 
               &[placeholder] {
