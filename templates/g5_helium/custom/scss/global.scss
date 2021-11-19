@@ -10,40 +10,6 @@
 /* Here you can add Anything you want to be present on the entire site AND with variables */
 /* - Laura.scss */
 
-/** VARIABLES **/
-$light-blue: #26CAEA;
-$dark-blue: #16AFE1;
-$light-green: #32EE5F;
-$dark-green: #12DB42;
-$light-yellow: #F0EE6D;
-
-$night-blue: #353544;
-$dark-grey: #5A5A72;
-$grey: #B0B0BF;
-$light-grey: #F4F4F6;
-$white: #FFFFFF;
-
-$neutral-50: #FFFFFF;
-$neutral-100: #FAFAFA;
-$neutral-200: #F3F3F3;
-$neutral-300: #EDEDED;
-$neutral-400: #E3E3E3;
-$neutral-500: #A4A4A4;
-$neutral-600: #727272;
-$neutral-700: #4B4B4B;
-$neutral-800: #2B2B2B;
-$neutral-900: #000000;
-$required: #e5283B;
-$valid: #20835F;
-$focus: #1C6EF2;
-
-$red: #e5283B;
-
-$complete-gradient: linear-gradient(rgba(240,238,109,10), rgba(50,238,95,50), rgba(240,238,109,96));
-$simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
-
-$font:'Inter', sans-serif;
-
 /* GENERAL */
 
 *:focus {
@@ -3199,28 +3165,13 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
     /* TITRE FORMULAIRE */
     .page-header h1 {
-      // Headline 4
-      font-family: Inter;
-      font-size: 32px;
-      font-style: normal;
-      font-weight: 600;
-      line-height: 39px;
-      letter-spacing: 0em;
-      text-align: left;
-      color: $neutral-900;
-      margin-bottom: 8px;
+      @include headline-4;
+      color: $neutral-800;
     }
 
     /* INTRO FORMULAIRE */
     p:nth-child(1) {
-      // Body 16;
-      font-family: $font;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 19px;
-      letter-spacing: 0.0015em;
-      text-align: left;
+      @include body-16;
       color: $neutral-600;
     }
 
@@ -3237,75 +3188,46 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
         /* LEGEND */
         .legend {
-          // Headline 5
-          font-family: $font;
-          font-size: 24px;
-          font-style: normal;
-          font-weight: 600;
-          line-height: 29px;
-          letter-spacing: 0em;
-          text-align: left;
+          @include headline-5;
           color: $neutral-800;
         }
 
         /* INTR0 GROUPE */
         .groupintro p {
-          // Body 16;
-          font-family: $font;
-          font-size: 16px;
-          font-style: normal;
-          font-weight: 400;
-          line-height: 19px;
-          letter-spacing: 0.0015em;
-          text-align: left;
+          @include body-16;
           color: $neutral-600;
           margin-top: 8px;
         }
 
         /* BLOC ELEMENT */
         .row-fluid .fabrikElementContainer.control-group {
-            margin: 48px 0px 48px 0px;
+          margin: 48px 0px 48px 0px;
           flex-direction: column;
+
+          /* DISPLAY */
+          &.plg-display .fabrikinput {
+            height: auto;
+            border: none;
+            padding: 0px;
+            margin: 0px;
+          }
+
 
           /* LABEL */
           .fabrikLabel {
-            // Body 16 Medium;
-            font-family: $font;
-            font-size: 16px;
-            font-style: normal;
-            font-weight: 500;
-            line-height: 19px;
-            letter-spacing: 0.0015em;
-            text-align: left;
+            @include body-16-medium;
             color: $neutral-800;
             margin-bottom: 0px;
 
               /* ETOILE */
               .icon-star.small {
-                font-family: $font;
-                font-size: 5px;
-                font-style: normal;
-                font-weight: 400;
-                line-height: 19px;
-                letter-spacing: 0em;
-                text-align: left;
-                position: relative;
-                top: -5px;
-                margin-right: -2px;
-                color: $required;
+                @include star;
               }
            }
 
           /* TEXTE D AIDE */
           span:not(.badge) {
-            // Body 14
-            font-family: $font;
-            font-size: 14px;
-            font-style: normal;
-            font-weight: 400;
-            line-height: 17px;
-            letter-spacing: 0.0025em;
-            text-align: left;
+            @include body-14;
             color: $neutral-600;
             display: flex;
             margin-top: 12px;
@@ -3322,78 +3244,39 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
           .fabrikElement {
 
-            /* DISPLAY */
-            &.plg-display .fabrikinput {
-              height: auto;
-              border: none;
-              padding: 0px;
-              margin: 0px;
-            }
-
             /* INPUT */
             .fabrikinput:not(textarea) {
-              height: 48px;
-              border-radius: 4px;
-              padding: 0px 12px 0px 12px;
-              border: 1px solid $neutral-400;
-              border-radius: 4px;
-              box-shadow: none;
-              margin-top: 12px;
+              @include input-default;
 
               &:hover {
-                border: 1px solid #727272;
-                border-radius: 4px;
-                box-shadow: none;
+                @include input-hover;
               }
 
               &:focus {
-                border: 1px solid $focus;
-                border-radius: 4px;
-                box-shadow: none;
+                @include input-focus;
               }
 
               &.readonly {
-                background: $neutral-400;
-                border: 1px solid $neutral-400;
-                border-radius: 4px;
-                box-shadow: none;
+                @include input-readonly;
               }
 
               &[placeholder] {
-                //styleName: Inter/Body 16;
                 color: $neutral-500 !important;
-                font-family: $font;
-                font-size: 16px;
-                font-style: normal;
-                font-weight: 400;
-                line-height: 19px;
-                letter-spacing: 0.0015em;
-                text-align: left;
+                @include body-16;
               }
 
               &[value] {
-                //styleName: Inter/Body 16;
-                font-family: $font;
-                font-size: 16px;
-                font-style: normal;
-                font-weight: 400;
-                line-height: 19px;
-                letter-spacing: 0.0015em;
-                text-align: left;
+                @include body-16;
                 color: $neutral-800;
               }
 
 
               &.success input {
-                border: 1px solid $valid;
-                box-shadow: none;
-                border-radius: 4px;
+                @include input-valid;
               }
 
               &.error input {
-                border: 1px solid $required;
-                border-radius: 4px;
-                box-shadow: none;
+                @include input-error;
               }
 
 
@@ -3436,13 +3319,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
             /* SELECT */
              select {
-              background-position-x: 98%;
-              background-position-y: 54%;
-              -webkit-appearance: none;
-              background-image: url(/images/emundus/arrow.svg);
-              background-size: 8px;
-              background-repeat: no-repeat;
-               height: 48px !important;
+              @include select-default;
             }
 
             .fabrikSubElementContainer {
@@ -3485,15 +3362,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
           /* ERREUR */
           .fabrikErrorMessage  {
-            // Body 14
-            font-family: $font;
-            font-size: 14px;
-            font-style: normal;
-            font-weight: 400;
-            line-height: 17px;
-            letter-spacing: 0.0025em;
-            text-align: left;
-            color: $required;
+           @include body-14;
+            color: $red;
             margin-top: 4px;
 
             &.help-inline {
@@ -3506,11 +3376,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
           }
 
           .fabrikMainError.alert.alert-error.fabrikError {
-            border-color: $required;
-            color: $required;
+            border-color: $red;
+            color: $red;
           }
           .fabrikMainError.alert.alert-error.fabrikError .close{
-            color: $required !important;
+            color: $red !important;
           }
 
 
@@ -3564,20 +3434,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
           }
 
           .fabrikGroupRepeater {
-            position: absolute;
-            top: -5px;
-            right: 10px;
-            display: flex;
+            position: relative;
+            bottom: 50px;
+            background: transparent;
           }
 
           /* GROUPE REPEAT */
           .fabrikGroupRepeater.pull-right.btn-group,
           .fabrikGroupRepeater .pull-right {
-            position: absolute;
-            top: -5px;
-            right: 10px;
-            display: flex;
-
 
             .addGroup.btn.btn-small.btn-success,
             .addGroup {
