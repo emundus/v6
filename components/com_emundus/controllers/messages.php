@@ -840,7 +840,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
             if ($config->get('smtphost') === 'smtp.mailtrap.io') {
-            	sleep(5);
+            	sleep(15);
             }
 
         }
@@ -1689,7 +1689,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                 'user_id_to' => $fnum_info['applicant_id'],
                 'subject' => $subject,
                 'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $fnum_info['email'] . '</i><br>' . $body . $files,
-                'type' => $email_recap[0]->id,
+                'type' => (empty($template->type))?'':$template->type,
             ];
             $m_emails->logEmail($log);
             // Log the email in the eMundus logging system.
