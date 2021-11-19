@@ -5191,7 +5191,8 @@ $(document).ready(function() {
 
                             let raw = {
                                 title : $('#email-preview-label').val(),
-                                content : tinyMCE.activeEditor.getContent()
+                                content : tinyMCE.activeEditor.getContent(),
+                                template: email_recap.email_tmpl,
                             };
 
                             $.ajax({

@@ -1600,9 +1600,26 @@ class EmundusControllerMessages extends JControllerLegacy {
         $subject = $m_emails->setTagsFabrik($email_recap[0]->subject, [$fnum_info['fnum']]);
         */
 
+        /* get email template */
+        $template_id = $raw['template'];
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select($db->quoteName('Template'))
+            ->from($db->quoteName('#__emundus_email_templates'))
+            ->where($db->quoteName('id') . ' = ' . $template_id);
+        $db->setQuery($query);
+        $template = $db->loadResult();
+
+        /* get email template */
+
         $body = $m_emails->setTagsFabrik($raw['content'], [$fnum_info['fnum']]);
         $subject = $m_emails->setTagsFabrik($raw['title'], [$fnum_info['fnum']]);
 
+        /* attach email template to body */
+        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template);
+        
         // Tags are replaced with their corresponding values using the PHP preg_replace function.
         $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
         $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
@@ -1643,10 +1660,12 @@ class EmundusControllerMessages extends JControllerLegacy {
         $attachment_ids = array_unique(array_filter($attachment_ids));
 
         /// get attachment letters by fnum
+        $files = '<ul>';
         $file_path = [];
         foreach($attachment_ids as $key => $value) {
             $attached_letters = $_meval->getFilesByAttachmentFnums($value, [$fnum]);
             $file_path[] = EMUNDUS_PATH_ABS . $attached_letters[0]->user_id . DS . $attached_letters[0]->filename;
+            $files .= '<li>' . $attached_letters[0]->value . '</li>';
         }
 
         $mailer->addAttachment($file_path);
@@ -1663,11 +1682,9 @@ class EmundusControllerMessages extends JControllerLegacy {
                 'user_id_from' => $user->id,
                 'user_id_to' => $fnum_info['applicant_id'],
                 'subject' => $subject,
-                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $fnum_info['email'] . '</i><br>' . $body . $file_path,
+                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $fnum_info['email'] . '</i><br>' . $body . $files,
                 'type' => $email_recap[0]->id,
             ];
-            
-            echo '<pre>'; var_dump($log); echo '</pre>'; die;
             $m_emails->logEmail($log);
             // Log the email in the eMundus logging system.
             EmundusModelLogs::log($user->id, $fnum_info['applicant_id'], $fnum_info['fnum'], 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
