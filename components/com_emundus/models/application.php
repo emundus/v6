@@ -4199,12 +4199,32 @@ class EmundusModelApplication extends JModelList
      * Generate filters options from fabrik list
      * @param type (string) list only for now
      * @param id (int) id of the element
+     * @param otherIds List of other ids to join with the current one
      * */
-    public function getFilters($type, $id) 
+    public function getFilters($type, $id, $otherIds = "") 
+    {
+        $return = $type == 'list' ? $this->getFiltersFromListId($id) : [];
+
+        if (!empty($otherIds)) {
+            $ids = explode(',', $otherIds);
+            foreach ($ids as $id) {
+                $filters = $type == 'list' ? $this->getFiltersFromListId($id) : [];
+
+                if (!empty($filters)) {
+                    $return = array_merge($return, $filters);
+                }
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * Generate filters from fabrik list id
+     **/
+    private function getFiltersFromListId($id) 
     {
         $return = [];
-
-        // get form id from list
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -4275,11 +4295,22 @@ class EmundusModelApplication extends JModelList
                         '!=' => 'n\'est pas égal à',
                     ];
                 } else {
-                    $actions = [
-                        '=' => 'est égal à',
-                        '!=' => 'n\'est pas égal à',
-                        'contains' => 'inclus'
-                    ];
+                    if (isset($params['text_format']) && $params['text_format'] == 'integer') {
+                        $actions = [
+                            '=' => 'est égal à',
+                            '!=' => 'n\'est pas égal à',
+                            '>' => 'est supérieur à',
+                            'inferior' => 'est inférieur à',
+                            '>=' => 'est supérieur ou égal à',
+                            'infOrEq' => 'est inférieur ou égal à',
+                        ];
+                    } else {
+                        $actions = [
+                            '=' => 'est égal à',
+                            '!=' => 'n\'est pas égal à',
+                            'contains' => 'inclus'
+                        ];
+                    }
                 }
                 break;
 
@@ -4389,7 +4420,7 @@ class EmundusModelApplication extends JModelList
                     foreach($results as $result) {
                         $values[$result[$key]] = $result[$key];
                     }
-                } elseif ($params['textformat'] == 'text') {
+                } elseif ($params['textformat'] == 'text' || $params['text_format'] == 'text') {
                     $values = 'text-input';
                 }
 
@@ -4444,6 +4475,10 @@ class EmundusModelApplication extends JModelList
                     $where[] = "(" . implode(" " . $group['relation'] . " ", $subWhere) . ")";
                 }
             }
+        }
+
+        if (empty($where)) {
+            return $select . $from . implode(' ', $joins);
         }
 
         return $select . $from . implode(' ', $joins) . ' WHERE ' . implode(' ' . $data['relation'] . ' ', $where);
@@ -4524,6 +4559,8 @@ class EmundusModelApplication extends JModelList
                 if (!in_array($tmpJoin, $joins)) {
                     $joins[] = $tmpJoin;
                 }
+
+                $filter['action'] = $filter['action'] == 'inferior' ? "<" : ($filter['action'] == "infOrEq" ? "<=" : $filter['action']);
                 $where[] = $db->quoteName($params['join_db_name']) . "." . $db->quoteName($params['join_key_column']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
 
                 break;
@@ -4535,17 +4572,35 @@ class EmundusModelApplication extends JModelList
             case "emundusreferent":
             break;
             case "field":
-                if (!empty($element['default']) && preg_match("/\{(jos\_.+)\_\_\_(.*)\}$/", $element['default'], $matches)) {
-                    if ($matches[1] == $table) {
-                        $where[] = $db->quoteName($matches[1]) .".". $db->quoteName($matches[2]) ." ".$filter['action']." ". $filter['value'] ;
+                $tableAssociatedToElement = $this->getTableAssociatedToElement($element['id']);
+
+                if ($table == $tableAssociatedToElement) {
+                    if (!empty($element['default']) && preg_match("/\{(jos\_.+)\_\_\_(.*)\}$/", $element['default'], $matches)) {
+                        if ($matches[1] == $table) {
+                            $where[] = $db->quoteName($matches[1]) .".". $db->quoteName($matches[2]) ." ".$filter['action']." ". $filter['value'] ;
+                        }
+                    } else {
+                        if ($filter['action'] == 'contains') {
+                            $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " LIKE '%" . $filter['value'] . "%'";
+                        } else {
+                            $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
+                        }
+    
                     }
                 } else {
-                    if ($filter['action'] == 'contains') {
-                        $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " LIKE '%" . $filter['value'] . "%'";
-                    } else {
-                        $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
-                    }
+                    // add left join on tableAssociatedToElement
+                    $column = $this->findReferenceInsideTable($table, $tableAssociatedToElement, "id");
+                    if (!empty($column)) {
+                        $tmpJoin = "LEFT JOIN " . $db->quoteName($tableAssociatedToElement) . " ON " . $db->quoteName($table) . "." . $db->quoteName($column) . " = " . $db->quoteName($tableAssociatedToElement) . ".id";
+                        if (!in_array($tmpJoin, $joins)) {
+                            $joins[] = $tmpJoin;
+                        }
 
+                        
+                        // add where condition
+                        $filter['action'] = $filter['action'] == 'inferior' ? "<" : ($filter['action'] == "infOrEq" ? "<=" : $filter['action']);
+                        $where[] = $db->quoteName($tableAssociatedToElement) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
+                    }   
                 }
             break;
             case "internalid":
@@ -4569,6 +4624,18 @@ class EmundusModelApplication extends JModelList
         }
     }
 
+    private function getTableAssociatedToElement($id) 
+    {
+        $db = JFactory::getDbo();
+        $db->setQuery("SELECT db_table_name
+            FROM jos_fabrik_lists
+            LEFT JOIN jos_fabrik_formgroup ON jos_fabrik_lists.form_id = jos_fabrik_formgroup.form_id
+            LEFT JOIN jos_fabrik_elements ON jos_fabrik_elements.group_id = jos_fabrik_formgroup.group_id
+            WHERE jos_fabrik_elements.id = $id");
+
+        return $db->loadResult();
+    }
+
     private function getTableJoinKeyFromElement($element) 
     {
         $db = JFactory::getDbo();
@@ -4585,16 +4652,19 @@ class EmundusModelApplication extends JModelList
         return $result['table_key'];
     }
 
-    // private function findReferenceInsideTable($table, $tableToJoin, $columnToJoin)
-    // {
-    //     SELECT
-    //     `column_name`
-    //     FROM `information_schema`.`KEY_COLUMN_USAGE`
-    //     WHERE `constraint_schema` = SCHEMA()
-    //     AND `table_name` = 'jos_emundus_uploads'
-    //     AND `referenced_table_name` = 'jos_emundus_setup_attachments'
-    //     AND `referenced_column_name` = 'id'
-    // }
+    private function findReferenceInsideTable($table, $tableToJoin, $columnToJoin)
+    {
+        $db = JFactory::getDbo();
+        $db->setQuery("SELECT `column_name`
+            FROM `information_schema`.`KEY_COLUMN_USAGE`
+            WHERE `constraint_schema` = SCHEMA()
+            AND `table_name` = 'jos_emundus_uploads'
+            AND `referenced_table_name` = 'jos_emundus_setup_attachments'
+            AND `referenced_column_name` = 'id'"
+        );
+
+        return $db->loadResult();
+    }
 
     public function filterAttachmentSelection($fnum, $sql) 
     {

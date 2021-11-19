@@ -31,7 +31,7 @@
               <span class="material-icons">search</span>
             </div>
             <div class="actions">
-              <FilterBuilder id="70" @applyFilters="filterAttachmentSelection"></FilterBuilder>
+              <FilterBuilder id="70" otherIds="36" @applyFilters="filterAttachmentSelection"></FilterBuilder>
               <select name="category" @change="filterByCategory">
                 <option value="all">{{ translate('SELECT_CATEGORY') }}</option>
                 <option v-for="(category, key) in categories" :key="key" :value="key">{{ category }} </option>

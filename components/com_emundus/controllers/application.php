@@ -703,9 +703,10 @@ class EmundusControllerApplication extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $type = $jinput->getS('type', null);
         $id = $jinput->getVar('id', null);
+        $otherIds = $jinput->getVar('otherids', null);
         
         $m_application = $this->getModel('Application');
-        $filters = $m_application->getFilters($type, $id);
+        $filters = $m_application->getFilters($type, $id, $otherIds);
 
         echo json_encode(array('status' => true, 'filters' => $filters));
         exit;
@@ -717,7 +718,7 @@ class EmundusControllerApplication extends JControllerLegacy
         $filters = $jinput->getVar('filters', null);
         $listId = $jinput->getVar('id', null);
         $filters = json_decode($filters, true);
-        
+
         $m_application = $this->getModel('Application');
         $req = $m_application->mountQuery($listId, $filters);
 

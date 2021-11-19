@@ -80,6 +80,10 @@ export default {
       type: String,
       default: "70",
     },
+    otherIds: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
@@ -93,7 +97,7 @@ export default {
   },
   methods: {
     async getFilters() {
-      const response = await filterService.getFilters(this.type, this.id);
+      const response = await filterService.getFilters(this.type, this.id, this.otherIds);
 
       if (response.status == true) {
         this.$store.dispatch("filterBuilder/setFilters", response.filters);
