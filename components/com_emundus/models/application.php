@@ -4672,16 +4672,10 @@ class EmundusModelApplication extends JModelList
         $db = JFactory::getDbo();
 
         $db->setQuery($sql);
+        $attachments = $db->loadAssocList();
 
-        $queryattachments = $db->loadAssocList();
-        $fnumAttachments = $this->getAttachmentsByFnum($fnum);
-
-        foreach($fnumAttachments as $fnumAttachment) {
-            foreach($queryattachments as $queryattachment) {
-                if ($fnumAttachment->id == $queryattachment['id']) {
-                    $result[] = $fnumAttachment;
-                }
-            }
+        foreach ($attachments as $attachment) {
+            $result[] = $attachment['id'];
         }
 
         return $result;

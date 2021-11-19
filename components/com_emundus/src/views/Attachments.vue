@@ -474,10 +474,17 @@ export default {
       const response = await attachmentService.filterAttachmentSelection(this.displayedFnum, sqlRequest);
 
       if (response.status == true) {
-        this.attachments = response.data;
-        this.checkedAttachments = [];
-        this.resetOrder();
+        this.attachments.forEach(attachment => {
+          if (response.data.includes(attachment.aid)) {
+            attachment.show = true;
+          } else {
+            // remove attachments from checkedAttachment list
+            this.checkedAttachments = this.checkedAttachments.filter(aid => aid !== attachment.aid);
+            attachment.show = false;
+          }
+        });
       }
+      
       this.loading = false;
     },
     updateAllCheckedAttachments(e) {
