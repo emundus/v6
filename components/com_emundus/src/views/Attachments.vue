@@ -239,8 +239,22 @@ export default {
     },
     async setDisplayedUser() {
       const response = await fileService.getFnumInfos(this.displayedFnum);
-      this.displayedUser = this.users.find(user => user.id == response.fnumInfos.applicant_id);
-      this.$store.dispatch('user/setDisplayedUser', this.displayedUser.id);
+      const foundUser = this.users.find(user => user.id == response.fnumInfos.applicant_id);
+
+      if (!foundUser) {
+        const resp = await userService.getUserById(response.fnumInfos.applicant_id);
+
+        if (resp.status) {
+          this.users.push(resp.user[0]);
+          this.displayedUser = resp.user[0];
+          this.$store.dispatch('user/setDisplayedUser', this.displayedUser.id);
+        } else {
+          this.displayErrorMessage(this.translate('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND'));
+        }
+      } else {
+        this.displayedUser = foundUser;
+        this.$store.dispatch('user/setDisplayedUser', this.displayedUser.id);
+      }
     },
     async getCategories() {
       const response = await attachmentService.getAttachmentCategories();
