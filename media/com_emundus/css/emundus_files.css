@@ -440,7 +440,7 @@ div#em-appli-block button.btn.btn-default {
     position: absolute;
     right: 20px;
     margin: 0;
-    top: 7px;
+    top: 0px;
 }
 button#em-close-file {
     color: #ffffff;
@@ -804,9 +804,9 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
-    height: 50px !important;
+    height: 35px !important;
     border-radius: 0;
-    padding: 10px;
+    padding: 4px;
 }
 
 .g-back-office-emundus-tableau .panel-body .em_label label, .g-back-office-emundus-tableau div#em_adv_filters label {
@@ -2335,7 +2335,7 @@ button#em-close-file {
     text-shadow: none;
     background-image: none;
     margin-top: -3px;
-    height: 36px;
+    height: 34px;
 }
 
 button#em-close-file:hover, button#em-close-file:focus, button#em-close-file:active {
@@ -2398,7 +2398,9 @@ table#groups-table a:hover {
 /* MENU ACTIONS */
 .navbar.navbar-inverse {
     border-radius: 0;
-    padding: 10px;
+    padding: 5px;
+    height: 35px !important;
+    min-height: auto !important;
 }
 
 .em-cell a:focus {
