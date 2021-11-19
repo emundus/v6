@@ -5049,6 +5049,10 @@ $(document).ready(function() {
         $('.modal-footer').show();
         $('.modal-lg').css({ width: '80%' });
         $('.modal-dialog').css({ width: '80%' });
+        $('.modal-dialog').append('<div class="em-modal-sending-emails" id="em-modal-sending-emails">' +
+            '<div id="em-sending-email-caption" class="em-sending-email-caption">' + Joomla.JText._('SENDING_EMAILS') + '</div>'+
+            '<img class="em-sending-email-img" id="em-sending-email-img" src="media/com_emundus/images/sending-email.gif"/>' +
+        '</div>');
 
         $('#can-val').empty();
         $('#can-val').append('<a id="send-email" class="btn btn-success" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL').replace(/\\/g, '')+'</a>');
@@ -5146,12 +5150,12 @@ $(document).ready(function() {
                                 '</div>' +
 
                                 '<div id="message-subject"></div>' +
-                                '<textarea id="message-body"></textarea>' +
+                                '<div id="message-body" contenteditable="true"></div>' +
                                 '</div>'
                             );
 
                             // var plainText = jQuery('<div>').html(email_recap.message).text();
-                            $('#message-body').text(email_recap.message);
+                            $('#message-body').append(email_recap.message);
 
                             tinymce.init({
                                 selector: '#message-body',
@@ -5195,13 +5199,46 @@ $(document).ready(function() {
                                 template: email_recap.email_tmpl,
                             };
 
+                            $('#em-modal-sending-emails').css('display', 'block');
+
                             $.ajax({
                                 type: 'POST',
                                 url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
                                 dataType: 'JSON',
                                 data: { fnum: fnum, raw: raw },
                                 success: function(result) {
-                                    /// never success ???
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnum',
+                                        dataType: 'JSON',
+                                        data: { fnum: fnum , tmpl: email_recap.id },
+                                        success: function(value) {
+                                            if(value.status) {
+                                                addDimmer();
+                                                $('#em-modal-sending-emails').css('display', 'none');
+                                                $('#em-modal-actions').modal('hide');
+
+                                                reloadData();
+                                                reloadActions($('#view').val(), undefined, false);
+                                                $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
+                                                $('body').removeClass('modal-open');
+
+                                                Swal.fire({
+                                                    type: 'success',
+                                                    title: Joomla.JText._('EMAILS_SENT'),
+                                                });
+                                            } else {
+                                                $('#em-modal-sending-emails').css('display', 'none');
+                                                Swal.fire({
+                                                    type: 'error',
+                                                    title: Joomla.JText._('NO_EMAILS_SENT')
+                                                })
+                                            }
+
+                                        }, error: function(jqXHR) {
+                                            console.log(jqXHR.responseText);
+                                        }}
+                                    )
                                 }, error: function(jqXHR, textStatus) {
                                     $.ajax({
                                         type: 'POST',
@@ -5209,13 +5246,27 @@ $(document).ready(function() {
                                         dataType: 'JSON',
                                         data: { fnum: fnum , tmpl: email_recap.id },
                                         success: function(value) {
-                                            addDimmer();
-                                            $('#em-modal-actions').modal('hide');
+                                            if(value.status) {
+                                                addDimmer();
+                                                $('#em-modal-sending-emails').css('display', 'none');
+                                                $('#em-modal-actions').modal('hide');
 
-                                            reloadData();
-                                            reloadActions($('#view').val(), undefined, false);
-                                            $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-                                            $('body').removeClass('modal-open');
+                                                reloadData();
+                                                reloadActions($('#view').val(), undefined, false);
+                                                $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
+                                                $('body').removeClass('modal-open');
+
+                                                Swal.fire({
+                                                    type: 'success',
+                                                    title: Joomla.JText._('EMAILS_SENT'),
+                                                });
+                                            } else {
+                                                $('#em-modal-sending-emails').css('display', 'none');
+                                                Swal.fire({
+                                                    type: 'error',
+                                                    title: Joomla.JText._('NO_EMAILS_SENT')
+                                                })
+                                            }
 
                                         }, error: function(jqXHR) {
                                             console.log(jqXHR.responseText);
