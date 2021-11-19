@@ -517,11 +517,13 @@ class EmundusControllerMessages extends JControllerLegacy {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 
         $m_messages = new EmundusModelMessages();
         $m_emails = new EmundusModelEmails();
         $m_files = new EmundusModelFiles();
         $m_campaign = new EmundusModelCampaign();
+        $m_eval = new EmundusModelEvaluation;
 
         $user = JFactory::getUser();
         $config = JFactory::getConfig();
@@ -692,13 +694,10 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                     $_fnum = $fnum->fnum;
 
-                    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-                    $_mEval = new EmundusModelEvaluation;
-
-                    $_letter = $_mEval->getLetterTemplateForFnum($_fnum, [$setup_letter]);
+                    $_letter = $m_eval->getLetterTemplateForFnum($_fnum, [$setup_letter]);
 
                     if(!empty($_letter)) {
-                        $res = $_mEval->generateLetters($_fnum, [$setup_letter], 0, 0, 0);          /// canSee = 0 // showMode = 0 // mergeMode = 0
+                        $res = $m_eval->generateLetters($_fnum, [$setup_letter], 0, 0, 0);          /// canSee = 0 // showMode = 0 // mergeMode = 0
                         $_files = json_decode($res)->files;
 
                         foreach ($_files as $k => $f) {
@@ -786,23 +785,30 @@ class EmundusControllerMessages extends JControllerLegacy {
                 }
                 if(count($attachments['candidate_file']) > 0) {
                     foreach ($attachments['candidate_file'] as $attach) {
+                        $raw = $m_eval->getAttachmentByIds([$attach]);
+                        $nameType = current($raw)['value'];
 
-                        $idTypeFile = $attach;
+                        $files .= '<li>' . $nameType . '</li>';
+
+                        /* $idTypeFile = $attach;
                         $typeAttachments = $this->getTypeAttachment($idTypeFile);
                         foreach ($typeAttachments as $typeAttachment) {
                             $nameType = $typeAttachment->value;
-                        }
+                        } */
 
                         $files .= '<li>' . $nameType . '</li>';
                     }
                 }
                 if(count($attachments['setup_letters']) > 0) {
                     foreach ($attachments['setup_letters'] as $attach) {
-                        $idTypeFile = $attach;
+                        $raw = $m_eval->getAttachmentByIds([$attach]);
+                        $nameType = current($raw)['value'];
+
+                        /* $idTypeFile = $attach;
                         $typeAttachments = $this->getTypeLetters($idTypeFile);
                         foreach ($typeAttachments as $typeAttachment) {
                             $nameType = $typeAttachment->title;
-                        }
+                        }*/
                         $files .= '<li>' . $nameType . '</li>';
                     }
                 }
