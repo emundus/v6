@@ -3246,7 +3246,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
             /* INPUT */
             .fabrikinput:not(textarea) {
-              @include input-default;
+                @include input-default;
 
               &:hover {
                 @include input-hover;
@@ -3283,11 +3283,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               &[type="file"] {
                 padding-left: 0px;
                 &::-webkit-file-upload-button {
-                  background: $neutral-200;
                   border: none;
-                  border-radius: 4px 4px 0px 0px;
-                  height: 48px;
                   margin-right: 20px;
+                  @include button-select-default;
                 }
               }
             }
@@ -3297,15 +3295,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               margin-top: 12px !important;
 
               &:hover {
-                border: 1px solid #727272;
-                border-radius: 4px;
-                box-shadow: none;
+                @include input-hover;
               }
 
               &:focus {
-                border: 1px solid $focus;
-                border-radius: 4px;
-                box-shadow: none;
+                @include input-focus;
               }
             }
 
@@ -3333,28 +3327,25 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                 }
                 button.calendarbutton,
                 button.timeButton {
-                  border-radius: 4px 0 0 4px !important;
                   border-top: 1px solid $neutral-400;
                   border-left: 1px solid $neutral-400;
                   border-bottom: 1px solid $neutral-400;
                   margin-top: 12px;
                   width: 48px !important;
-                  height: 48px !important;
-                  background: $neutral-200;
                   display: flex;
                   justify-content: center;
                   align-items: center;
-                  color: $neutral-800;
+                  @include button-select-default;
 
                   i.icon-clock {
                     margin: 0px;
                   }
 
                   &:hover {
-                    border: 1px solid $neutral-800;
+                    @include input-hover;
                   }
                   &:focus {
-                    border: 1px solid $focus;
+                    @include input-focus;
                   }
                 }
               }
@@ -3394,18 +3385,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             .row-fluid .fabrikgrid_checkbox {
               margin-top: 12px;
 
-              label.radio input[type="radio"] {
-                width: 15px;
-                height: 15px;
-                border-radius: 20px;
-                padding: 0px !important;
-              }
-
-              label.checkbox input[type="checkbox"] {
-                width: 15px;
-                height: 15px;
-                border-radius: 20px;
-                padding: 0px !important;
+              label.checkbox input[type="checkbox"],
+              label.radio input[type="radio"]{
+                @include radio-checkbox;
               }
 
               span {
@@ -3421,14 +3403,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
           /* TABLEAU */
            td,
            th {
-            background: $neutral-50;
-             font-family: $font;
-             font-size: 16px;
-             font-style: normal;
-             font-weight: 500;
-             line-height: 19px;
-             letter-spacing: 0.0015em;
-             text-align: left;
+             background: $neutral-50;
+             @include body-16-medium;
              color: $neutral-800;
              margin-bottom: 0px;
           }
@@ -3464,7 +3440,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                 }
               }
 
-              &:hover, &:focus, &active {
+              &:hover, &:focus, &:active {
                 border: none;
                 background-color: transparent;
               }
