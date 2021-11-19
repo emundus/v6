@@ -4090,11 +4090,18 @@ class EmundusModelApplication extends JModelList
 
                 $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . $filePath, $class);
                 $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
-                $preview['content'] = '<div class="wrapper">' . $htmlWriter->getContent() . '</div>';
-                $preview['overflowY'] = true;
-                $preview['style'] = 'word';
-                $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
-
+                $content = $htmlWriter->getContent();
+                
+                $contentWithoutSpaces = preg_replace('/\s+/', '', $content);
+                if (strpos($contentWithoutSpaces, '<body></') !== false) {
+                    $preview['status'] = false;
+                    $preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_UNAVAILABLE') . '</p></div>';
+                } else {
+                    $preview['content'] = '<div class="wrapper">' . $content . '</div>';
+                    $preview['overflowY'] = true;
+                    $preview['style'] = 'word';
+                    $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');                
+                }
             } else if (in_array($extension, ['xls', 'xlsx', 'ods', 'csv'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
              
