@@ -31,7 +31,7 @@
               <span class="material-icons">search</span>
             </div>
             <div class="actions">
-              <select v-if="categories.length > 1" name="category" @change="filterByCategory">
+              <select v-if="Object.entries(categories).length > 1" name="category" @change="filterByCategory">
                 <option value="all">{{ translate('SELECT_CATEGORY') }}</option>
                 <option v-for="(category, key) in categories" :key="key" :value="key">{{ category }} </option>
               </select>
