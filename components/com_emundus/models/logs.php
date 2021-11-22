@@ -277,19 +277,82 @@ class EmundusModelLogs extends JModelList {
 		}
 
 		switch (true) {
+			case ($action == 1 && $crud == 'r'):
+				$message = JText::_('COM_EMUNDUS_LOGS_FORM_BACKOFFICE');
+			break;
+			case ($action == 4 && $crud == 'c'):
+				$message = 'Ajout d\'une pièce jointe';
+			break;
+			case ($action == 4 && $crud == 'r'):
+				$message = JText::_('COM_EMUNDUS_LOGS_ATTACHMENTS_BACKOFFICE');
+			break;
+			case ($action == 4 && $crud == 'd'):
+				$message = 'Suppression d\une pièce jointe';
+			break;
+			case ($action == 5 && $crud == 'c'):
+				$message = 'Ajout d\une évaluation';
+			break;
+			case ($action == 5 && $crud == 'r'):
+				$message = JText::_('COM_EMUNDUS_LOGS_OPEN_EVALUATION');
+			break;
+			case ($action == 5 && $crud == 'u'):
+				$message = 'Modification du formulaire d\évaluation';
+			break;
+			case ($action == 5 && $crud == 'd'):
+				$message = 'Suppression d\une évaluation';
+			break;
+			case ($action == 9 && $crud == 'c'):
+				$message = JText::_('COM_EMUNDUS_LOGS_SEND_EMAIL');
+			break;
+			case ($action == 9 && $crud == 'r'):
+				$message = JText::_('COM_EMUNDUS_LOGS_EMAIL_BACKOFFICE');
+			break;
+			case ($action == 10 && $crud == 'c'):
+				$message = JText::_('COM_EMUNDUS_LOGS_ADD_COMMENT');
+			break;
+			case ($action == 10 && $crud == 'r'):
+				$message = JText::_('COM_EMUNDUS_LOGS_COMMENTS_BACKOFFICE');
+			break;
+			case ($action == 10 && $crud == 'u'):
+				$message = JText::_('COM_EMUNDUS_LOGS_UPDATE_COMMENT');
+			break;
+			case ($action == 10 && $crud == 'd'):
+				$message = JText::_('COM_EMUNDUS_LOGS_DELETE_COMMENT');
+			break;
+			case ($action == 13 && $crud == 'u'):
+				$message = JText::_('COM_EMUNDUS_LOGS_UPDATE_PUBLISH');
+			break;
+			case ($action == 13 && $crud == 'd'):
+				$message = 'Suppression du statut de publication';
+			break;
 			case ($action == 14 && $crud == 'c'):
-				$finalMessage = JText::_('COM_EMUNDUS_LOGS_ADD_TAG');
+				$message = JText::_('COM_EMUNDUS_LOGS_ADD_TAG');
+			break;
+			case ($action == 14 && $crud == 'r'):
+				$message = JText::_('COM_EMUNDUS_LOGS_TAGS_BACKOFFICE');
 			break;
 			case ($action == 14 && $crud == 'd'):
-				$finalMessage = JText::_('COM_EMUNDUS_LOGS_DELETE_TAG');
+				$message = JText::_('COM_EMUNDUS_LOGS_DELETE_TAG');
+			break;
+			case ($action == 29 && $crud == 'c'):
+				$message = 'Ajout d\une décision';
+			break;
+			case ($action == 29 && $crud == 'r'):
+				$message = JText::_('COM_EMUNDUS_LOGS_OPEN_DECISION');
+			break;
+			case ($action == 29 && $crud == 'u'):
+				$message = 'Modification de la décision';
+			break;
+			case ($action == 29 && $crud == 'd'):
+				$message = 'Suppression de la décision';
 			break;
 			default:
-				$finalMessage = 'Action sur le dossier';
+				$message = 'Action sur le dossier';
 			break;
 		}
 
 		try {
-			return $finalMessage;
+			return $message;
 		} catch (Exception $e) {
 			JLog::add('Could not set logs message in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
