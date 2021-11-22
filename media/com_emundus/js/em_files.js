@@ -104,7 +104,8 @@ function search() {
         }),
         success: function(result) {
             if (result.status) {
-                reloadData($('#view').val());
+                refreshFilter($('#view').val())
+                // reloadData($('#view').val());    /* old version */
             }
         },
         error: function(jqXHR) {
@@ -141,6 +142,7 @@ function reloadData(view)
     $.ajax({
         type: 'GET',
         url: 'index.php?option=com_emundus&view='+view+'&layout=data&format=raw&Itemid=' + itemId + '&cfnum=' + cfnum,
+        async: false,
         dataType: 'html',
         success: function(data)
         {
@@ -5033,6 +5035,8 @@ $(document).ready(function() {
     $(document).on('mouseover', '[id^=candidat_]', function(e){ $(this).css('cursor', 'pointer').attr('title', Joomla.JText._('SEND_EMAIL_TOOLTIPS'));})
 
     $(document).on('click', '[id^=candidat_]', function(e){
+        // e.preventDefault();
+        // $.ajaxQ.abortAll();
         tinymce.remove();
         let fnum = $(this).attr('id').split('candidat_')[1];
 
@@ -5049,10 +5053,11 @@ $(document).ready(function() {
         $('.modal-footer').show();
         $('.modal-lg').css({ width: '80%' });
         $('.modal-dialog').css({ width: '80%' });
+
         $('.modal-dialog').append('<div class="em-modal-sending-emails" id="em-modal-sending-emails">' +
             '<div id="em-sending-email-caption" class="em-sending-email-caption">' + Joomla.JText._('SENDING_EMAILS') + '</div>'+
             '<img class="em-sending-email-img" id="em-sending-email-img" src="media/com_emundus/images/sending-email.gif"/>' +
-        '</div>');
+            '</div>');
 
         $('#can-val').empty();
         $('#can-val').append('<a id="send-email" class="btn btn-success" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL').replace(/\\/g, '')+'</a>');
@@ -5144,9 +5149,9 @@ $(document).ready(function() {
                             $('#email-candidat-message-preview').append(
                                 '<div id="email-preview" class="email___message_body_item">' +
                                 '<div class="form-group em-form-subject">' +
-                                        '<span class="label label-grey" for="mail_from" >' + Joomla.JText._('EMAIL_SUBJECT') + ':' + '</span>' +
-                                        '<input type="text" id="email-preview-label" style="height:35px; font-weight: bold;">'+
-                                    '</div>'+
+                                '<span class="label label-grey" for="mail_from" >' + Joomla.JText._('EMAIL_SUBJECT') + ':' + '</span>' +
+                                '<input type="text" id="email-preview-label" style="height:35px; font-weight: bold;">'+
+                                '</div>'+
                                 '</div>' +
 
                                 '<div id="message-subject"></div>' +
@@ -5191,6 +5196,7 @@ $(document).ready(function() {
 
                         /// send email
                         $('#send-email').on('click', function(e) {
+                            $('#em-modal-sending-emails').css('display', 'block');
                             let tmpl = email_recap;
 
                             let raw = {
@@ -5199,17 +5205,17 @@ $(document).ready(function() {
                                 template: email_recap.email_tmpl,
                             };
 
-                            $('#em-modal-sending-emails').css('display', 'block');
-
                             $.ajax({
                                 type: 'POST',
                                 url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
+                                async: false,
                                 dataType: 'JSON',
                                 data: { fnum: fnum, raw: raw },
                                 success: function(result) {
                                     $.ajax({
                                         type: 'POST',
                                         url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnum',
+                                        async: false,
                                         dataType: 'JSON',
                                         data: { fnum: fnum , tmpl: email_recap.id },
                                         success: function(value) {
@@ -5243,6 +5249,7 @@ $(document).ready(function() {
                                     $.ajax({
                                         type: 'POST',
                                         url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnum',
+                                        async: false,
                                         dataType: 'JSON',
                                         data: { fnum: fnum , tmpl: email_recap.id },
                                         success: function(value) {
