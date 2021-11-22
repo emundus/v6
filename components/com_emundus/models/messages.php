@@ -1263,6 +1263,7 @@ class EmundusModelMessages extends JModelList {
                         $m_files->tagFile([$fnum_info['fnum']], [$tag->id]);
                     }
                 }
+                return true;
             }
         } else {
             return false;

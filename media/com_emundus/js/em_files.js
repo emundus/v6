@@ -5055,8 +5055,8 @@ $(document).ready(function() {
         $('.modal-dialog').css({ width: '80%' });
 
         $('.modal-dialog').append('<div class="em-modal-sending-emails" id="em-modal-sending-emails">' +
-            '<div id="em-sending-email-caption" class="em-sending-email-caption">' + Joomla.JText._('SENDING_EMAILS') + '</div>'+
-            '<img class="em-sending-email-img" id="em-sending-email-img" src="media/com_emundus/images/sending-email.gif"/>' +
+            '<div id="em-sending-email-caption" class="em-sending-email-caption">' + Joomla.JText._('SENDING_EMAILS') + '</div>' +
+            '<img class="em-sending-email-img" id="em-sending-email-img" src="/media/com_emundus/images/sending-email.gif"/>' +
             '</div>');
 
         $('#can-val').empty();
