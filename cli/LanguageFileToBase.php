@@ -62,6 +62,7 @@ class LanguageFileToBase extends JApplicationCli {
             echo "Error getting extensions";
         }
 
+        // Components, modules, extensions files
         $files = [];
         foreach ($this->getPlatformLanguages() as $language) {
             foreach ($extensions as $extension) {
@@ -70,9 +71,24 @@ class LanguageFileToBase extends JApplicationCli {
                     $files[] = $file;
                 }
             }
+            // Overrides
+            $override_file = JPATH_BASE . '/language/overrides/' . $language.'.override.ini';
+            if (file_exists($override_file)) {
+                $files[] = $override_file;
+            }
+            //
         }
+        //
 
-        $db_columns = [$db->quoteName('label'), $db->quoteName('lang_code'), $db->quoteName('override')];
+        $db_columns = [
+            $db->quoteName('tag'),
+            $db->quoteName('lang_code'),
+            $db->quoteName('override'),
+            $db->quoteName('original_text'),
+            $db->quoteName('original_md5'),
+            $db->quoteName('override_md5'),
+            $db->quoteName('location'),
+            $db->quoteName('created_by')];
         $db_values = [];
 
         foreach ($files as $file) {
@@ -85,24 +101,38 @@ class LanguageFileToBase extends JApplicationCli {
             $language = strtok($file_name, '.');
 
             foreach ($parsed_file as $key => $val) {
-                $row = [$db->quote($key), $db->quote($language), $db->quote($val)];
-                $db_values[] = implode(',', $row);
+                $query->clear()
+                    ->select('count(id)')
+                    ->from($db->quoteName('jos_emundus_setup_languages'))
+                    ->where($db->quoteName('tag') . ' = ' . $db->quote($key))
+                    ->andWhere($db->quoteName('lang_code') . ' = ' . $db->quote($language))
+                    ->andWhere($db->quoteName('location') . ' = ' . $db->quote($file_name));
+                $db->setQuery($query);
+
+                if($db->loadResult() == 0) {
+                    $row = [$db->quote($key), $db->quote($language), $db->quote($val), $db->quote($val), $db->quote(md5($val)), $db->quote(md5($val)), $db->quote($file_name), 62];
+                    $db_values[] = implode(',', $row);
+                }
             }
         }
 
-        $query
-            ->clear()
-            ->insert($db->quoteName('jos_emundus_setup_languages'))
-            ->columns($db_columns)
-            ->values($db_values);
+        if(sizeof($db_values) > 0) {
+            $query
+                ->clear()
+                ->insert($db->quoteName('jos_emundus_setup_languages'))
+                ->columns($db_columns)
+                ->values($db_values);
 
-        $db->setQuery($query);
+            $db->setQuery($query);
 
-        try {
-            $db->execute();
-        } catch (Exception $exception) {
-            echo "<pre>";var_dump('error inserting data : ' . $exception->getMessage());echo "</pre>";die();
-
+            try {
+                $db->execute();
+            } catch (Exception $exception) {
+                echo "<pre>";
+                var_dump('error inserting data : ' . $exception->getMessage());
+                echo "</pre>";
+                die();
+            }
         }
     }
 
