@@ -22,19 +22,21 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
 	.widget li.list-group-item:hover { background-color: rgba(86,61,124,.1); }
 	.widget .mic-info { color: #666666;font-size: 11px; }
 	.widget .action { margin-top:5px; }
-	.widget .comment-text { font-size: 12px; }
+    .widget .log-user { font-size: 16px; font-weight:600;}
+    .widget .log-message { font-size:18px;}
 	.widget .btn-block { border-top-left-radius:0px;border-top-right-radius:0px; }
+    .widget .filter-item { list-style:none; }
 </style>
 
-<div class="comments">
+<div class="logs">
     <div class="row">
         <div class="panel panel-default widget em-container-comment">
             <div class="panel-heading em-container-comment-heading">
 
                 <h3 class="panel-title">
-                	<span class="glyphicon glyphicon-comment"></span>
+                	<span class="glyphicon glyphicon-list"></span>
                 	<?php echo JText::_('LOGS'); ?>
-                	<span class="label label-info"><?php echo count($this->fileLogs); ?></span>
+                    <span class="label label-info"><?php echo count($this->fileLogs); ?></span>
                 </h3>
 
                 <div class="btn-group pull-right">
@@ -53,10 +55,9 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
                         <div class="row">
                             <div class="col-xs-10 col-md-11">
                                 <div class="em-list-status">
-                                    <div class="comment-name">
-                                        <?php echo $log->firstname . ' ' . $log->lastname; ?> - <?php echo $log->timestamp; ?>
-                                    </div>
-                                    <div class="comment-text em-list-status-comment"><?php echo $this->messages[$i]; ?></div>
+                                    <div class="log-user"><?php echo $log->firstname . ' ' . $log->lastname; ?></div>
+                                    <div class="log-message em-list-status-log"><?php echo $this->messages[$i]; ?></div>
+                                    <div class="log-time">- <?php echo $log->timestamp; ?></div>
                                 </div>
                             </div>
                         </div>
