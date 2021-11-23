@@ -474,6 +474,16 @@ defined('_JEXEC') or die;
         } else {
             jQuery("#tooltip-" + menu).css('margin-left', '0');
             jQuery("#tooltip-" + menu).css('display', 'block');
+
+            //Reposition tooltip if out of viewport
+            const box = document.querySelector("#tooltip-" + menu);
+            const rect = box.getBoundingClientRect();
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+            //add to current margin-top the height that's missing
+            if(rect.bottom > viewportHeight){
+                jQuery("#tooltip-" + menu).css('margin-top', -(rect.bottom - viewportHeight - parseInt(jQuery("#tooltip-" + menu).css('margin-top'),10))+'px');
+            }
         }
     }
 
