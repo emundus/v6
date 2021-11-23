@@ -306,10 +306,8 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $userComments = $m_application->getFileComments($fnum);
 
-                        $offset = $app->get('offset', 'UTC');
                         foreach ($userComments as $key => $comment) {
-                            $dateTime = new DateTime($comment->date, new DateTimeZone($offset));
-                            $userComments[$key]->date = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
+                            $comment->date = EmundusHelperDate::displayDate($comment->date, 'DATE_FORMAT_LC2', 0);
                         }
 
                         $this->assignRef('userComments', $userComments);
@@ -321,10 +319,8 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $userComments = $m_application->getFileOwnComments($fnum,$this->_user->id);
 
-                        $offset = $app->get('offset', 'UTC');
                         foreach ($userComments as $key => $comment) {
-                            $dateTime = new DateTime($comment->date, new DateTimeZone($offset));
-                            $userComments[$key]->date = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
+                            $comment->date = EmundusHelperDate::displayDate($comment->date, 'DATE_FORMAT_LC2', 0);
                         }
 
                         $this->assignRef('userComments', $userComments);
@@ -338,16 +334,14 @@ class EmundusViewApplication extends JViewLegacy {
                 case 'logs':
                     if (EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $fnum)) {
 
-                        // EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 37, 'r', 'COM_EMUNDUS_LOGS_LOGS_BACKOFFICE');
+                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 37, 'r', 'COM_EMUNDUS_LOGS_LOGS_BACKOFFICE');
 
                         $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum);
 
-                        $offset = $app->get('offset', 'UTC');
                         $messages = [];
                         foreach ($fileLogs as $key => $log) {
-                            $dateTime = new DateTime($log->timestamp, new DateTimeZone($offset));
-                            $fileLogs[$key]->timestamp = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
-                            $messages[] = EmundusModelLogs::setActionMessage($log->fnum_to, $log->user_id_from, $log->action_id, $log->verb);
+                            $log->timestamp = EmundusHelperDate::displayDate($log->timestamp);
+                            $messages[] = EmundusModelLogs::setActionMessage($log->fnum_to, $log->user_id_from, $log->action_id, $log->verb, $log->params);
                         }
 
                         $this->assignRef('fileLogs', $fileLogs);

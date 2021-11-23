@@ -40,7 +40,7 @@ class EmundusModelLogs extends JModelList {
 	 *
 	 * @since 3.8.8
 	 */
-	static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '') {
+	static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '', $params = '') {
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		// Only log if logging is activated and, if actions to log are defined: check if our action fits the case.
@@ -58,8 +58,13 @@ class EmundusModelLogs extends JModelList {
 					$db = JFactory::getDbo();
 					$query = $db->getQuery(true);
 	
-					$columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message'];
-					$values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message)];
+					if ($params) {
+						$columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params'];
+						$values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $params];
+					} else {
+						$columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message'];
+						$values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message)];
+					}
 	
 					$query->insert($db->quoteName('#__emundus_logs'))
 						->columns($db->quoteName($columns))
@@ -269,13 +274,16 @@ class EmundusModelLogs extends JModelList {
 	 * @since 3.8.8
 	 * @return Mixed Returns false on error and a string on success.
 	 */
-	public function setActionMessage($fnum, $user_from, $action = null, $crud = null) {
+	public function setActionMessage($fnum, $user_from, $action = null, $crud = null, $params = '') {
 		// If the user ID from is not a number, something is wrong.
 		if (!is_numeric($user_from)) {
 			JLog::add('Getting user actions in model/logs with a user ID from that isnt a number.', JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
+		if ($params) {
+			$params = json_decode($params);
+		}
 		$message = '';
 
 		switch ($action) {
@@ -416,7 +424,7 @@ class EmundusModelLogs extends JModelList {
 				$message = JText::_('COM_EMUNDUS_LOGS_STATUS');
 				switch ($crud) {
 					case('u'):
-						$message .= JText::_('COM_EMUNDUS_LOGS_STATUS_UPDATE');
+						$message .= JText::_('COM_EMUNDUS_LOGS_STATUS_UPDATE') . $params->status_from . ' -> ' . $params->status_to;
 					break;
 				}
 			break;
@@ -441,7 +449,7 @@ class EmundusModelLogs extends JModelList {
 				$message = JText::_('COM_EMUNDUS_LOGS_LOGS');
 				switch ($crud) {
 					case('r'):
-						$message = JText::_('COM_EMUNDUS_LOGS_LOGS_BACKOFFICE');
+						$message .= JText::_('COM_EMUNDUS_LOGS_LOGS_BACKOFFICE');
 					break;
 				}
 			break;
