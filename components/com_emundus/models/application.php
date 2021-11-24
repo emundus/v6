@@ -4051,7 +4051,8 @@ class EmundusModelApplication extends JModelList
             'overflowX' => false,
             'overflowY' => false,
             'style' => '',
-            'msg' => ''
+            'msg' => '',
+            'error' => ''
         ];
         $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
@@ -4095,6 +4096,7 @@ class EmundusModelApplication extends JModelList
                 $contentWithoutSpaces = preg_replace('/\s+/', '', $content);
                 if (strpos($contentWithoutSpaces, '<body></') !== false) {
                     $preview['status'] = false;
+                    $preview['error'] = 'unavailable';
                     $preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_UNAVAILABLE') . '</p></div>';
                 } else {
                     $preview['content'] = '<div class="wrapper">' . $content . '</div>';
@@ -4128,10 +4130,12 @@ class EmundusModelApplication extends JModelList
                 $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><video controls  style="max-width: 100%;"><source src="'. JURI::base() . $filePath . '" type="video/' . $extension . '"></video></div>';
             } else {
                 $preview['status'] = false;
+                $preview['error'] = 'unsupported';
                 $preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('FILE_TYPE_NOT_SUPPORTED') . '</p></div>';
             }
         } else {
             $preview['status'] = false;
+            $preview['error'] = 'file_not_found';
             $preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('FILE_NOT_FOUND') . '</p></div>';
         }
 
