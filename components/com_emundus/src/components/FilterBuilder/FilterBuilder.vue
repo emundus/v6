@@ -9,6 +9,14 @@
         expand_less
       </span>
     </div>
+    <div class="actions" :class="{'active': open}">
+      <div class="btn-secondary-vue" @click="cancel">
+        Annuler
+      </div>
+      <div class="btn-primary-vue" @click="applyFilters">
+        Appliquer les filtres
+      </div>
+    </div>
     <div class="filters" :class="{'active': open}">
       <div class="rows">
         <div class="relation">
@@ -47,14 +55,6 @@
           <span class="material-icons"> add </span>
           Ajouter un filtre
         </div>
-      </div>
-    </div>
-    <div class="actions" :class="{'active': open}">
-      <div class="btn-primary-vue" @click="cancel">
-        Annuler
-      </div>
-      <div class="btn-primary-vue" @click="applyFilters">
-        Appliquer les filtres
       </div>
     </div>
   </div>
