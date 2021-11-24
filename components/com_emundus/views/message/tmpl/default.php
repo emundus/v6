@@ -379,7 +379,7 @@ if ($allowed_attachments !== true) {
                     /// reset #em-select_attachment_type
                     $('#em-select_attachment_type option:selected').removeAttr('selected');
 
-                    if (data.data.receivers != null && data.data.receivers != undefined && data.data.receivers != "") {
+                    if (data.data.receivers.length > 0) {
                         let receivers = data.data.receivers;
 
                         let receiver_cc = [];
@@ -422,7 +422,7 @@ if ($allowed_attachments !== true) {
                             selectize_bcc.addItem("BCC: " + bcc);
                         })
 
-                        if(fabrik_cc.length > 0 && fabrik_cc != "" && fabrik_cc != null && fabrik_cc != undefined) {
+                        if(fabrik_cc.length > 0) {
                             var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                             // call to controller --> get fabrik value
                             $.ajax({
@@ -448,7 +448,7 @@ if ($allowed_attachments !== true) {
                         }
 
                         // do the same thing with bcc receivers
-                        if(fabrik_bcc.length > 0 && fabrik_bcc != "" && fabrik_bcc != null && fabrik_bcc != undefined) {
+                        if(fabrik_bcc.length > 0) {
                             var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                             // call to controller --> get fabrik value
                             $.ajax({

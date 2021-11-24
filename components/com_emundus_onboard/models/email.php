@@ -242,12 +242,12 @@ class EmundusonboardModelemail extends JModelList {
         }
     }
 
-     public function getEmailById($id) {
-         $db = JFactory::getDbo();
-         $query = $db->getQuery(true);
+    public function getEmailById($id) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
         if (empty($id)) {
-	        return false;
+            return false;
         }
 
         $query->select('*')
@@ -258,63 +258,67 @@ class EmundusonboardModelemail extends JModelList {
 
         try {
             $db->setQuery($query);
-            $email_Info = $db->loadObject();           /// get email info
+            $email = $db->loadObject();           /// get email info
 
             /// count records of #emundus_setup_emails_repeat_receivers
-            $query->clear()->select('COUNT(*)')->from($db->quoteName('#__emundus_setup_emails_repeat_receivers'))->where($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' = ' . (int)$id);
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__emundus_setup_emails_repeat_receivers'))
+                ->where($db->quoteName('parent_id') . ' = ' . (int)$id);
 
             $db->setQuery($query);
-            $receiver_count = $db->loadResult();
-            $receiver_Info = array();
+            $receivers = $db->loadObjectList();         /// get receivers info (empty or not)
 
-            if($receiver_count > 0) {
-                $query->clear()->select('#__emundus_setup_emails_repeat_receivers.*')->from($db->quoteName('#__emundus_setup_emails_repeat_receivers'))->where($db->quoteName('#__emundus_setup_emails_repeat_receivers.parent_id') . ' = ' . (int)$id);
+            /// count records of #emundus_setup_emails_repeat_recipients
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__emundus_setup_emails_repeat_recipients'))
+                ->where($db->quoteName('parent_id') . ' = ' . (int)$id);
 
-                $db->setQuery($query);
-                $receiver_Info = $db->loadObjectList();         /// get receivers info (empty or not)
-            }
+            $db->setQuery($query);
+            $recipients = $db->loadObjectList();         /// get receivers info (empty or not)
 
             /// get associated email template (jos_emundus_email_template)
             $query->clear()
-                ->select('#__emundus_email_templates.*')
-                ->from($db->quoteName('#__emundus_email_templates'))
-                ->leftJoin($db->quoteName('#__emundus_setup_emails').' ON '.$db->quoteName('#__emundus_email_templates.id').' = '.$db->quoteName('#__emundus_setup_emails.email_tmpl'))
-                ->where($db->quoteName('#__emundus_setup_emails.id') . ' = ' . (int)$id);
+                ->select('*')
+                ->from($db->quoteName('#__emundus_email_templates','et'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails','st').' ON '.$db->quoteName('et.id').' = '.$db->quoteName('st.email_tmpl'))
+                ->where($db->quoteName('st.id') . ' = ' . (int)$id);
 
             $db->setQuery($query);
-            $template_Info = $db->loadObjectList();
+            $template = $db->loadObject();
 
             /// get associated letters
             $query->clear()
-                ->select('#__emundus_setup_attachments.*')
-                ->from($db->quoteName('#__emundus_setup_attachments'))
-                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_attachments.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment'))
-                ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . (int)$id);
+                ->select('sa.*')
+                ->from($db->quoteName('#__emundus_setup_attachments','sa'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','erlt') . ' ON ' . $db->quoteName('sa.id') . ' = ' . $db->quoteName('erlt.letter_attachment'))
+                ->where($db->quoteName('erlt.parent_id') . ' = ' . (int)$id);
 
             $db->setQuery($query);
-            $letter_Info = $db->loadObjectList();         /// get attachment info
+            $letters = $db->loadObjectList();         /// get attachment info
 
             /// get associated candidate attachments
             $query->clear()
-                ->select('#__emundus_setup_attachments.*')
-                ->from($db->quoteName('#__emundus_setup_attachments'))
-                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_attachments.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment.candidate_attachment'))
-                ->where($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment.parent_id') . ' = ' . (int)$id);
+                ->select('sa.*')
+                ->from($db->quoteName('#__emundus_setup_attachments','sa'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','serca') . ' ON ' . $db->quoteName('sa.id') . ' = ' . $db->quoteName('serca.candidate_attachment'))
+                ->where($db->quoteName('serca.parent_id') . ' = ' . (int)$id);
 
             $db->setQuery($query);
-            $attachments_Info = $db->loadObjectList();         /// get attachment info
+            $attachments = $db->loadObjectList();         /// get attachment info
 
             /// get associated tags
             $query->clear()
-                ->select('#__emundus_setup_action_tag.*')
-                ->from($db->quoteName('#__emundus_setup_action_tag'))
-                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags') . ' ON ' . $db->quoteName('#__emundus_setup_action_tag.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_tags.tags'))
-                ->where($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' = ' . (int)$id);
+                ->select('sat.*')
+                ->from($db->quoteName('#__emundus_setup_action_tag','sat'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags','sert') . ' ON ' . $db->quoteName('sat.id') . ' = ' . $db->quoteName('sert.tags'))
+                ->where($db->quoteName('sert.parent_id') . ' = ' . (int)$id);
 
             $db->setQuery($query);
-            $tags_Info = $db->loadObjectList();         /// get attachment info
+            $tags = $db->loadObjectList();         /// get attachment info
 
-            return array('email' => $email_Info, 'receivers' => $receiver_Info, 'template' => $template_Info, 'letter_attachment' => $letter_Info, 'candidate_attachment' => $attachments_Info, 'tags' => $tags_Info);
+            return array('email' => $email, 'receivers' => $receivers, 'template' => $template, 'letter_attachment' => $letters, 'candidate_attachment' => $attachments, 'tags' => $tags, 'recipients' => $recipients);
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/email | Cannot get the email by id ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;

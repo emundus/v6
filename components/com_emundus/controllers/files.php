@@ -798,6 +798,8 @@ class EmundusControllerFiles extends JControllerLegacy
     public function updatestate() {
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'email.php');
+
         $app    = JFactory::getApplication();
         $jinput = $app->input;
         $fnums  = $jinput->getString('fnums', null);
@@ -805,6 +807,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $h_files    = new EmundusHelperFiles();
         $m_messages = new EmundusModelMessages();
+        $m_emails = new EmundusonboardModelemail;
         $m_files = $this->getModel('Files');
 
         $get_candidate_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_candidate_attachment');
@@ -984,6 +987,29 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $mailer->Encoding = 'base64';
                                 $mailer->setBody($body);
                                 $mailer->addAttachment($toAttach);
+
+                                // Check if we have to add recipients
+                                if(!empty($trigger['tmpl']['recipients'])){
+                                    $tag_ids = [];
+
+                                    $new_recipients_emails = [];
+                                    foreach($trigger['tmpl']['recipients'] as $index => $recipient) {
+                                        if($trigger['tmpl']['recipients_type'][$index] == 'recipients_fabrik') {
+                                            $tag_ids[] = reset($m_files->getVariables($recipient));
+                                        } else {
+                                            $new_recipients_emails[] = $recipient;
+                                        }
+                                    }
+
+                                    if(!empty($fnums)) {
+                                        $new_recipients_emails = array_merge($new_recipients_emails, $m_emails->getEmailsFromFabrikIds($tag_ids, $file['fnum']));
+                                    }
+
+                                    foreach ($new_recipients_emails as $new_recipients_email){
+                                        $mailer->addRecipient($new_recipients_email);
+                                    }
+                                }
+                                //
 
                                 $send = $mailer->Send();
                                 if ($send !== true) {
