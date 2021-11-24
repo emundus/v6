@@ -151,7 +151,7 @@
                   </span>
                 </div>
               </div>
-              <a :href="attachmentPath" class="download btn-icon-text" download>
+              <a :href="attachmentPath" class="download btn-icon-text" download v-if="canDownload">
                 <span class="material-icons">
                   file_download
                 </span>
@@ -162,7 +162,7 @@
           </div>
           <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
             <div class="modal-body" v-if="!modalLoading">
-              <AttachmentPreview></AttachmentPreview>
+              <AttachmentPreview @fileNotFound="canDownload = false" @canDownload="canDownload = true"></AttachmentPreview>
               <AttachmentEdit @closeModal="closeModal" @saveChanges="updateAttachment" :fnum="displayedFnum"></AttachmentEdit>
             </div>
           </transition>
@@ -215,6 +215,7 @@ export default {
       },
       canExport: false,
       canDelete: false,
+      canDownload: true,
       modalLoading: false,
       slideTransition: "slide-fade"
     };
