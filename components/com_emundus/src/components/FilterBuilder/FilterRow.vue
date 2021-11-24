@@ -8,32 +8,19 @@
     </select>
 
     <!-- <label for="filter-action">Actions</label> -->
-    <select
-      name="filter-action"
-      v-model="selectedAction"
-    >
+    <select name="filter-action" v-model="selectedAction">
       <option v-for="(action, key) in actions" :key="key" :value="key">
         {{ action }}
       </option>
     </select>
 
     <!-- <label for="filter-value">Valeurs</label> -->
-    <select
-      v-if="type == 'select'"
-      name="filter-value"
-      v-model="selectedValue"
-    >
+    <select v-if="type == 'select'" name="filter-value" v-model="selectedValue">
       <option v-for="(value, key) in values" :key="key" :value="key">
         {{ value }}
       </option>
     </select>
-    <input
-      v-else
-      type="text"
-      name="filter-value"
-      v-model="selectedValue"
-    />
-
+    <input v-else type="text" name="filter-value" v-model="selectedValue"/>
     <span class="material-icons delete" @click="removeFilter">
       clear
     </span>
@@ -65,6 +52,8 @@ export default {
     this.names = this.$store.state.filterBuilder.filters.map((filter, index) => {
       if (index == 0) {
         this.selectedFilter = filter.id;
+        this.selectedAction = Object.keys(filter.actions)[0];
+        this.selectedValue = Object.keys(filter.values)[0];
       }
       return {
         id: filter.id,
