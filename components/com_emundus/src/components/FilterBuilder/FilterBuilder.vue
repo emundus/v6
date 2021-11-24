@@ -49,10 +49,6 @@
       <div class="actions" :class="{'active': open}">
         <div class="btn-primary-vue" @click="addGroup">
           <span class="material-icons"> add </span>
-          Ajouter un groupe
-        </div>
-        <div class="btn-primary-vue" @click="addFilter">
-          <span class="material-icons"> add </span>
           Ajouter un filtre
         </div>
       </div>
@@ -105,7 +101,8 @@ export default {
     },
     async applyFilters() {
       this.open = false;
-      if (Object.entries(this.$store.state.filterBuilder.queryFilters.groups[0].filters).length > 0 || this.$store.state.filterBuilder.queryFilters.groups.length > 1) {
+
+      if (Object.keys(this.$store.state.filterBuilder.queryFilters.groups).length > 1) {
         // build query and send result ? or just send the filters ?
         const response = await filterService.mountQuery(this.id, this.$store.state.filterBuilder.queryFilters);
 
@@ -116,13 +113,6 @@ export default {
     },
     cancel() {
       this.open = false;
-    },
-    addFilter() {
-      this.orderedElements.push({
-        type: "filter",
-        group: 0,
-        id: Math.floor(Math.random() * Date.now()),
-      });
     },
     addGroup() {
       this.orderedElements.push({

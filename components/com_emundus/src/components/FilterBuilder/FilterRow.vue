@@ -1,5 +1,5 @@
 <template>
-  <div class="filter-row">
+  <div class="filter-row" :class="{'filter-delete' : hoverDelete}">
     <!-- <label for="filter-name">Filtres</label> -->
     <select name="filter-name" v-model="selectedFilter">
       <option v-for="name in names" :key="name.id" :value="name.id">
@@ -22,8 +22,8 @@
     </select>
     <input v-else-if="type == 'text'" type="text" name="filter-value" v-model="selectedValue"/>
     <input v-else-if="type == 'number'" type="number" name="filter-value" v-model="selectedValue"/>
-    <span class="material-icons delete" @click="removeFilter">
-      clear
+    <span class="material-icons delete" @click="removeFilter" @mouseover="hoverDelete = true" @mouseleave="hoverDelete = false">
+      remove_circle_outlined
     </span>
   </div>
 </template>
@@ -46,6 +46,7 @@ export default {
       selectedFilter: null,
       selectedAction: null,
       selectedValue: null,
+      hoverDelete: false,
       names: [],
     };
   },
@@ -137,18 +138,23 @@ export default {
   align-items: center;
   justify-content: space-between;
   margin: 8px 0;
-  padding: 8px 16px;
-  background-color: var(--grey-bg-color);
-  border-radius: 4px;
+
+  &.filter-delete {
+    select, input {
+      border: 1px solid var(--error-color);
+    }
+  }
 
   select,
   input {
+    transition: all .3s;
     height: 32px;
     margin: 0 16px 0 0;
   }
 
   .delete {
     cursor: pointer;
+    color: var(--error-color);
   }
 }
 </style>

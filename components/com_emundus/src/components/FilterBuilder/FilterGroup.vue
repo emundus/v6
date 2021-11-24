@@ -3,10 +3,9 @@
     <div class="wrapper">
       <div class="rows">
         <div class="relation">
-          <select name="and_or" v-model="andOr">
-            <option value="AND">ET</option>
-            <option value="OR">OU</option>
-          </select>
+          <button class="and-or" @click="toggleAndOr">
+            {{ andOr == "AND" ? 'ET' : 'OU' }}
+          </button>
         </div>
         <FilterRow
           :group="id"
@@ -17,11 +16,10 @@
           @removeFilter="removeFilter(filter)"
         ></FilterRow>
       </div>
-      <div class="actions">
-        <div class="btn-primary-vue" @click="addFilter">
-          <span class="material-icons"> add </span>
-          Ajouter un filtre
-        </div>
+      <div class="actions add">
+        <span class="material-icons add" @click="addFilter"> 
+          add_circle_outlined
+         </span>
       </div>
     </div>
     <span class="material-icons delete" @click="removeGroup">
@@ -52,6 +50,9 @@ export default {
   },
   mounted() {
     this.filters = this.$store.state.filterBuilder.queryFilters.groups[this.id] ? Object.entries(this.$store.state.filterBuilder.queryFilters.groups[this.id].filters).map(filter => Number(filter[0])) : [];
+    if (this.filters.length < 1) {
+      this.addFilter();
+    }
   },
   methods: {
     addFilter() {
@@ -59,12 +60,19 @@ export default {
     },
     removeFilter(filterId) {
       this.filters = this.filters.filter(filter => filter !== filterId);
+      
+      if (this.filters.length < 1) {
+        this.removeGroup();
+      }
     },
     removeGroup() {
       this.$store.dispatch("filterBuilder/removeGroup", this.id);
 
       this.$emit("removeGroup", this.id);
     },
+    toggleAndOr() {
+      this.andOr = this.andOr === "AND" ? "OR" : "AND";
+    }
   },
   watch: {
     andOr() {
@@ -87,13 +95,35 @@ export default {
 
   .relation {
     margin-bottom: 10px;
+
+    .and-or {
+      transition: all .3s;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 5px;
+      border-radius: 4px;
+    }
   }
 
   .wrapper {
     display: flex;
     flex-direction: column;
-    padding: 16px;
-    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 4px;
+    background-color: var(--grey-bg-color);
+  }
+
+  .actions.add {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    cursor: pointer;
+    margin-top: 8px;
+
+    .material-icons {
+      margin-right: 10px;
+      color: var(--primary-color);
+    }
   }
 }
 </style>
