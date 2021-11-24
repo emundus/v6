@@ -1434,7 +1434,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
-    public function getallfnums() 
+    public function getallfnums()
     {
         $m_files = $this->getModel('Files');
         $fnums = $m_files->getAllFnums();
@@ -4322,6 +4322,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
 
         $fabrikIds = $jinput->post->getRaw('elements', null);
+        $fnums = $jinput->post->getString('fnums', null);
 
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'email.php');
 
@@ -4334,7 +4335,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $tag_ids[] = reset($m_files->getVariables($tag));
         }
 
-        $res = $m_emails->getEmailsFromFabrikIds($tag_ids);
+        $res = $m_emails->getEmailsFromFabrikIds($tag_ids,$fnums);
 
         if($res) {
             echo json_encode((object)(array('status' => true, 'data' => $res)));
@@ -4344,7 +4345,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    public function getattachmentcategories() 
+    public function getattachmentcategories()
     {
         $m_files = $this->getModel('Files');
         $categories = $m_files->getAttachmentCategories();

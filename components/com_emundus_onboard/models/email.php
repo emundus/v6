@@ -938,19 +938,24 @@ class EmundusonboardModelemail extends JModelList {
     }
 
     // get receivers from fabrik tags
-    public function getEmailsFromFabrikIds($ids) {
+    public function getEmailsFromFabrikIds($ids,$fnums = '') {
         $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'files.php');
-
-        $m_files_onboard = new EmundusModelFiles;
+        $m_files = new EmundusModelFiles;
 
         $output = [];
 
-        $fabrik_results = $m_files_onboard->getValueFabrikByIds($ids);
+        $fabrik_results = $m_files->getValueFabrikByIds($ids);
 
-        foreach($fabrik_results as $key => $fabrik) {
-            $query = 'SELECT ' . $fabrik['db_table_name'] . '.' . $fabrik['name'] . ' FROM ' . $fabrik['db_table_name'] . ' WHERE ' . $fabrik['db_table_name'] . '.' . $fabrik['name'] . ' IS NOT NULL';
+        foreach($fabrik_results as $fabrik) {
+            $query->clear()
+                ->select($fabrik['db_table_name'] . '.' . $fabrik['name'])
+                ->from($fabrik['db_table_name'])
+                ->where($fabrik['db_table_name'] . '.' . $fabrik['name'] . ' IS NOT NULL');
+            if(!empty($fnums)){
+                $query->andWhere($db->quoteName('fnum') . ' IN (' . $fnums . ')');
+            }
             $db->setQuery($query);
             $output[] = $db->loadObjectList();
         }

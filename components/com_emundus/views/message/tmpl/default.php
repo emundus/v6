@@ -335,6 +335,7 @@ if ($allowed_attachments !== true) {
 
         var $select_bcc = $(document.getElementById('bcc-mails'));
         var selectize_bcc = $select_bcc[0].selectize;
+        var fnums = document.getElementById('fnums').value;
         selectize_bcc.clear();
 
         $('.cc-bcc-mails .plugin-remove_button').empty();
@@ -428,7 +429,7 @@ if ($allowed_attachments !== true) {
                                 type: 'post',
                                 url: 'index.php?option=com_emundus&controller=files&task=getfabrikvaluebyid',
                                 dataType: 'json',
-                                data: { elements : fabrik_cc },
+                                data: { elements : fabrik_cc, fnums: fnums },
                                 success: function(data) {
                                     let emails = [];
 
@@ -454,7 +455,7 @@ if ($allowed_attachments !== true) {
                                 type: 'post',
                                 url: 'index.php?option=com_emundus&controller=files&task=getfabrikvaluebyid',
                                 dataType: 'json',
-                                data: { elements : fabrik_bcc },
+                                data: { elements : fabrik_bcc, fnums: fnums },
                                 success: function(data) {
                                     let emails = [];
 
