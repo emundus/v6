@@ -4261,22 +4261,35 @@ class EmundusModelApplication extends JModelList
         return $return;
     }
 
+    /**
+     * Find filter type based on element plugin
+     * @param element
+     * @return (string) filter type
+     */
     private function getFilterType($element) 
     {
-        $return = '';
+        $return = 'text';
 
-        switch ($element['plugin']) {
-            case 'field':
-                $params = json_decode($element['params'], true);
-                if (!isset($params['database_join_display_type']) && empty($element['default'])) {
-                    $return = 'text';                
-                } else {
-                    $return = 'select';                
-                }
-            break;   
-            default:
-                $return = 'select';
-                break;      
+        $params = json_decode($element['params'], true);
+        if (!empty($element['filter_type'])) {
+            if ($element['filter_type'] == 'field') {
+                $return = 'text';
+            }
+        } else {
+            switch ($element['plugin']) {
+                case 'field':    
+                    if (!empty($element['default']) && preg_match("/\{jos\_(.+)\_\_\_(.*)\}$/", $element['default'], $matches)) {
+                        $return = 'select';
+                    }
+
+                    if ($params['text_format'] === 'integer') {
+                        $return = 'number';
+                    }
+                break;
+                default:
+                    $return = 'select';
+                break;
+            }
         }
 
         return $return;
@@ -4420,8 +4433,6 @@ class EmundusModelApplication extends JModelList
                     foreach($results as $result) {
                         $values[$result[$key]] = $result[$key];
                     }
-                } elseif ($params['textformat'] == 'text' || $params['text_format'] == 'text') {
-                    $values = 'text-input';
                 }
 
                 break;
@@ -4577,7 +4588,11 @@ class EmundusModelApplication extends JModelList
                 if ($table == $tableAssociatedToElement) {
                     if (!empty($element['default']) && preg_match("/\{(jos\_.+)\_\_\_(.*)\}$/", $element['default'], $matches)) {
                         if ($matches[1] == $table) {
-                            $where[] = $db->quoteName($matches[1]) .".". $db->quoteName($matches[2]) ." ".$filter['action']." ". $filter['value'] ;
+                            if ($filter['action'] == 'contains') {
+                                $where[] = $db->quoteName($matches[1]) .".". $db->quoteName($matches[2]) . " LIKE '%" . $filter['value'] . "%'";
+                            } else {
+                                $where[] = $db->quoteName($matches[1]) .".". $db->quoteName($matches[2]) ." ".$filter['action']." ". $filter['value'] ;
+                            }
                         }
                     } else {
                         if ($filter['action'] == 'contains') {
@@ -4596,11 +4611,14 @@ class EmundusModelApplication extends JModelList
                             $joins[] = $tmpJoin;
                         }
 
-                        
                         // add where condition
                         $filter['action'] = $filter['action'] == 'inferior' ? "<" : ($filter['action'] == "infOrEq" ? "<=" : $filter['action']);
-                        $where[] = $db->quoteName($tableAssociatedToElement) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
-                    }   
+                        if ($filter['action'] == 'contains') {
+                            $where[] = $db->quoteName($tableAssociatedToElement) . "." . $db->quoteName($element['name']) . " LIKE '%" . $filter['value'] . "%'";
+                        } else {
+                            $where[] = $db->quoteName($tableAssociatedToElement) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
+                        }
+                    }
                 }
             break;
             case "internalid":

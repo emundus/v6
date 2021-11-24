@@ -20,7 +20,8 @@
         {{ value }}
       </option>
     </select>
-    <input v-else type="text" name="filter-value" v-model="selectedValue"/>
+    <input v-else-if="type == 'text'" type="text" name="filter-value" v-model="selectedValue"/>
+    <input v-else-if="type == 'number'" type="number" name="filter-value" v-model="selectedValue"/>
     <span class="material-icons delete" @click="removeFilter">
       clear
     </span>
