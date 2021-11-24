@@ -1296,6 +1296,15 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   border-bottom-color: $dark-blue;
 }
 
+// remove 
+.fabrikNav .pagination-list li {
+  margin: 0;
+}
+
+.fabrikNav .list-footer .limit .input-prepend.input-append {
+  display: flex;
+}
+
 /* DOCUMENTS OBLIGATOIRES */
 .need_missing.active a::before {
   color: $base-primary-color;
