@@ -508,6 +508,7 @@ class EmundusModelFiles extends JModelLegacy
                 switch ($key) {
                     case 'elements':
                         if (!empty($value)) {
+                            $index = 0;
                             foreach ($value as $k => $v) {
                                 $tab = explode('.', $k);
 
@@ -533,7 +534,7 @@ class EmundusModelFiles extends JModelLegacy
                                     } else {
                                         $query['q'] .= ' AND ';
                                         // Check if it is a join table
-                                        $sql = 'SELECT join_from_table,table_key,table_join_key FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
+                                        $sql = 'SELECT join_from_table, table_key, table_join_key FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
                                         $db->setQuery($sql);
                                         $join_from_table = $db->loadObject();
 
@@ -547,9 +548,7 @@ class EmundusModelFiles extends JModelLegacy
                                             } else {
                                                 $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
                                             }
-
-                                            $query['join'] .= ' left join '.$table.' on ' .$table.'.'. $join_from_table->table_key .' like '.$table_join.'.'.$join_from_table->table_join_key;
-
+                                            
                                             /*if (!isset($query[$table])) {
                                                 $query[$table] = true;
                                                 if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias)) {
@@ -562,16 +561,16 @@ class EmundusModelFiles extends JModelLegacy
                                                 try {
 
                                                     if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias)) {
-                                                        $query['join'] .= ' left join '.$table_join.' on ' .$table.'.id='.$table_join.'.parent_id';
+                                                        $query['join'] .= ' left join '. $table_join .' on ' . $table . '.id=' . $table_join . '.parent_id';
                                                     }
                                                 } catch(Exception $e) {
                                                     if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias)) {
                                                         $query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like jos_emundus_campaign_candidature.fnum ';
                                                     }
                                                 }
-
                                             }
 
+                                            $query['join'] .= ' left join ' . $table . ' as ' . $table . '_' . $index . ' on ' . $table . '_' . $index  . '.' . $join_from_table->table_key .' like ' . $table_join . '.' . $join_from_table->table_join_key;
                                         } else {
 
                                             $sql = 'SELECT plugin FROM #__fabrik_elements WHERE name like '.$db->Quote($tab[1]);
@@ -592,6 +591,8 @@ class EmundusModelFiles extends JModelLegacy
                                         }
                                     }
                                 }
+
+                                $index++;
                             }
                         }
                         break;
@@ -1171,18 +1172,16 @@ class EmundusModelFiles extends JModelLegacy
 
         if (!empty($this->_elements)) {
             $leftJoin = '';
+            $lastTab = !isset($lastTab) ? array() : $lastTab;
 
             foreach ($this->_elements as $elt) {
-                if (!isset($lastTab)) {
-                    $lastTab = array();
-                }
                 if (!in_array($elt->tab_name, $lastTab)) {
-                    $leftJoin .= 'left join ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jos_emundus_campaign_candidature.fnum ';
+                    $leftJoin .= 'LEFT JOIN ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jos_emundus_campaign_candidature.fnum ';
+                    $lastTab[] = $elt->tab_name;
                 }
-                $lastTab[] = $elt->tab_name;
             }
-
         }
+
         if (!empty($this->_elements_default)) {
             $query .= ', '.implode(',', $this->_elements_default);
         }
@@ -1204,7 +1203,7 @@ class EmundusModelFiles extends JModelLegacy
             $query .= $leftJoin;
         }
         $query .= $q['join'];
-        $query .= " where u.block=0 ".$q['q'];
+        $query .= ' WHERE u.block=0 ' . $q['q'];
 
         $query .= ' GROUP BY jos_emundus_campaign_candidature.fnum';
 
