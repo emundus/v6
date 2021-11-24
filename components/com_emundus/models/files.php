@@ -1845,14 +1845,20 @@ class EmundusModelFiles extends JModelLegacy
 
             $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
             if (!empty($fnums) && !empty($tags)) {
+                $logsParams = array('tags' => []);
                 foreach ($fnums as $fnum) {
-
-                    // Log the tag in the eMundus logging system.
-                    EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_ADD_TAG');
-
                     foreach ($tags as $tag) {
                         $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
+                        // Get the tags for logs
+                        $query1 = 'SELECT label
+                                FROM #__emundus_setup_action_tag
+                                WHERE id =' . $tag;
+                        $db->setQuery($query1);
+                        $log_tag = $db->loadResult();
+                        array_push($logsParams['tags'], $log_tag);
                     }
+                    // Log the tags in the eMundus logging system.
+                    EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_TAGS_ADD', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                 }
             }
 
@@ -2010,8 +2016,16 @@ class EmundusModelFiles extends JModelLegacy
         $db = $this->getDbo();
         foreach ($fnums as $fnum) {
 
-            // Log the update.
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_LOGS_UPDATE_PUBLISH');
+            // Log the update in the eMundus logging system.
+            // Get the old publish status
+            $query = $db->getQuery(true);
+            $query->select($db->quoteName('published'))
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
+                ->where($db->quoteName('fnum').' = '.$fnum);
+                $db->setQuery($query);
+            $old_publish = $db->loadResult();
+            $logsParams = array('old_publish' => $old_publish, 'new_publish' => $publish);
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_LOGS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
             $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
             $dispatcher->trigger('callEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);

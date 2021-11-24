@@ -22,8 +22,8 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
 	.widget li.list-group-item:hover { background-color: rgba(86,61,124,.1); }
 	.widget .mic-info { color: #666666;font-size: 11px; }
 	.widget .action { margin-top:5px; }
-    .widget .log-user { font-size: 16px; font-weight:600;}
-    .widget .log-message { font-size:18px;}
+    .widget .log-message { font-size: 18px; font-weight:600;}
+    .widget .log-user { font-size:16px;}
 	.widget .btn-block { border-top-left-radius:0px;border-top-right-radius:0px; }
     .widget .filter-item { list-style:none; }
 </style>
@@ -55,9 +55,8 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
                         <div class="row">
                             <div class="col-xs-10 col-md-11">
                                 <div class="em-list-status">
-                                    <div class="log-user"><?php echo $log->firstname . ' ' . $log->lastname; ?></div>
-                                    <div class="log-message em-list-status-log"><?php echo $this->messages[$i]; ?></div>
-                                    <div class="log-time">- <?php echo $log->timestamp; ?></div>
+                                    <div class="log-message"><?php echo $this->messages[$i]; ?></div>
+                                    <div class="log-user"><?php echo $log->firstname . ' ' . $log->lastname; ?> - <?php echo $log->timestamp; ?></div>
                                 </div>
                             </div>
                         </div>

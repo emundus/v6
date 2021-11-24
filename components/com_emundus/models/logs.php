@@ -58,13 +58,8 @@ class EmundusModelLogs extends JModelList {
 					$db = JFactory::getDbo();
 					$query = $db->getQuery(true);
 	
-					if ($params) {
-						$columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params'];
-						$values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $params];
-					} else {
-						$columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message'];
-						$values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message)];
-					}
+					$columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params'];
+					$values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params)];
 	
 					$query->insert($db->quoteName('#__emundus_logs'))
 						->columns($db->quoteName($columns))
@@ -281,20 +276,25 @@ class EmundusModelLogs extends JModelList {
 			return false;
 		}
 
+		// Decode the json params string
 		if ($params) {
 			$params = json_decode($params);
 		}
 		$message = '';
 
+		// Check the action type
 		switch ($action) {
+			// Dossier / Formulaire
 			case (1):
 				$message = JText::_('COM_EMUNDUS_LOGS_FORM');
+				// Check the action crud
 				switch ($crud) {
 					case ('r'):
 						$message .= JText::_('COM_EMUNDUS_LOGS_FORM_BACKOFFICE');
 					break;
 				}
 			break;
+			// Documents / Pièces jointes
 			case (4):
 				$message = JText::_('COM_EMUNDUS_LOGS_ATTACHMENTS');
 				switch ($crud) {
@@ -309,6 +309,7 @@ class EmundusModelLogs extends JModelList {
 					break;
 				}
 			break;
+			// Evaluation
 			case (5):
 				$message = JText::_('COM_EMUNDUS_LOGS_EVALUATION');
 				switch ($crud) {
@@ -326,6 +327,7 @@ class EmundusModelLogs extends JModelList {
 					break;
 				}
 			break;
+			// Exportation excel
 			case (6):
 				$message = JText::_('COM_EMUNDUS_LOGS_EXPORT');
 				switch ($crud) {
@@ -334,6 +336,7 @@ class EmundusModelLogs extends JModelList {
 					break;
 				}
 			break;
+			// Exportation Zip
 			case (7):
 				$message = JText::_('COM_EMUNDUS_LOGS_EXPORT');
 				switch ($crud) {
@@ -342,6 +345,7 @@ class EmundusModelLogs extends JModelList {
 					break;
 				}
 			break;
+			// Exportation PDF
 			case (8):
 				$message = JText::_('COM_EMUNDUS_LOGS_EXPORT');
 				switch ($crud) {
@@ -350,59 +354,123 @@ class EmundusModelLogs extends JModelList {
 					break;
 				}
 			break;
+			// Emails
 			case (9):
 				$message = JText::_('COM_EMUNDUS_LOGS_EMAIL');
 				switch ($crud) {
 					case('c'):
-						$message .= JText::_('COM_EMUNDUS_LOGS_EMAIL_SEND');
+						// Email subject was passed in params on logging
+						$message .= JText::_('COM_EMUNDUS_LOGS_EMAIL_SEND') . ' : ' . $params->subject;
 					break;
 					case('r'):
 						$message .= JText::_('COM_EMUNDUS_LOGS_EMAIL_BACKOFFICE');
 					break;
 				}
 			break;
+			// Commentaires
 			case (10):
 				$message = JText::_('COM_EMUNDUS_LOGS_COMMENTS');
 				switch ($crud) {
 					case('c'):
 						$message .= JText::_('COM_EMUNDUS_LOGS_COMMENTS_ADD');
+						// Don't show title if empty
+						if (!empty($params->reason)) {
+							$message .= ' : ' . JText::_('COM_EMUNDUS_LOGS_COMMENTS_TITLE') . $params->reason;
+						}
+						// Body is necessary when writing a comment
+						$message .= ' : ' . JText::_('COM_EMUNDUS_LOGS_COMMENTS_BODY') . $params->body;
 					break;
 					case('r'):
 						$message .= JText::_('COM_EMUNDUS_LOGS_COMMENTS_BACKOFFICE');
 					break;
 					case('u'):
 						$message .= JText::_('COM_EMUNDUS_LOGS_COMMENTS_UPDATE');
+						// If title changed, show the old and new one
+						if (count($params->reason) !== 0) {
+							$message .= ' : ' . JText::_('COM_EMUNDUS_LOGS_COMMENTS_TITLE') . $params->reason->old_reason . ' -> ' . $params->reason->new_reason;
+						}
+						// If body changed, show the old and new one
+						if (count($params->body) !== 0) {
+							$message .= ' : ' . JText::_('COM_EMUNDUS_LOGS_COMMENTS_BODY') . $params->body->old_body . ' -> ' . $params->body->new_body;
+						}
 					break;
 					case('d'):
-						$message .= JText::_('COM_EMUNDUS_LOGS_COMMENTS_DELETE');
+						// Comment reason (title) and body were passed in params on logging
+						$message .= JText::_('COM_EMUNDUS_LOGS_COMMENTS_DELETE') . ' : ' . $params->reason . ' : ' . $params->body;
 					break;
 				}
 			break;
+			// Statut de publication du dossier
 			case (13):
 				$message = JText::_('COM_EMUNDUS_LOGS_PUBLISH');
 				switch ($crud) {
 					case('u'):
-						$message .= JText::_('COM_EMUNDUS_LOGS_PUBLISH_UPDATE');
+						// Publish id don't have associated labels in DB, so we need to write them manually
+						// Old publish status, passed in params on logging
+						switch ($params->old_publish) {
+							case(1):
+								$params->old_publish = JText::_('PUBLISHED');
+							break;
+							case(0):
+								$params->old_publish = JText::_('ARCHIVED');
+							break;
+							case(-1):
+								$params->old_publish = JText::_('TRASHED');
+							break;
+						}
+						// New publish status, passed in params on logging
+						switch ($params->new_publish) {
+							case(1):
+								$params->new_publish = JText::_('PUBLISHED');
+							break;
+							case(0):
+								$params->new_publish = JText::_('ARCHIVED');
+							break;
+							case(-1):
+								$params->new_publish = JText::_('TRASHED');
+							break;
+						}
+						// Now that label is right, show old and new publish status
+						$message .= JText::_('COM_EMUNDUS_LOGS_PUBLISH_UPDATE') . ' : ' . $params->old_publish . ' -> ' . $params->new_publish;
 					break;
 					case('d'):
 						$message .= JText::_('COM_EMUNDUS_LOGS_PUBLISH_DELETE');
 					break;
 				}
 			break;
+			// Etiquettes
 			case (14):
 				$message = JText::_('COM_EMUNDUS_LOGS_TAGS');
 				switch ($crud) {
 					case('c'):
-						$message .= JText::_('COM_EMUNDUS_LOGS_TAGS_ADD');
+						// Tags added were passed in params on logging
+						// If multiple tags were added...
+						if (count($params->tags) > 1) {
+							$message .= JText::_('COM_EMUNDUS_LOGS_TAGS_ADD_MULTIPLE') . ' : ';
+							// ...show them all next to each other
+							for ($i = 0; $i < count($params->tags); $i++) {
+								if ($i === count($params->tags) - 1) {
+									$message .= $params->tags[$i];
+								} else {
+									$message .= $params->tags[$i] . ', ';
+								}
+							}
+						} else {
+							// Else, show the single tag
+							$message .= JText::_('COM_EMUNDUS_LOGS_TAGS_ADD_SINGLE') . ' : ';
+							$message .= $params->tags[0];
+						}
 					break;
 					case('r'):
 						$message .= JText::_('COM_EMUNDUS_LOGS_TAGS_BACKOFFICE');
 					break;
 					case('d'):
-						$message .= JText::_('COM_EMUNDUS_LOGS_TAGS_DELETE');
+						// Deleted tag was passed in params on logging
+						$message .= JText::_('COM_EMUNDUS_LOGS_TAGS_DELETE') . ' : ' . $params->deleted_tag;
 					break;
 				}
 			break;
+			// Utilisateurs
 			case (20):
 				$message = JText::_('COM_EMUNDUS_LOGS_USERS');
 				switch ($crud) {
@@ -420,14 +488,17 @@ class EmundusModelLogs extends JModelList {
 					break;
 				}
 			break;
+			// Statut du dossier
 			case (28):
 				$message = JText::_('COM_EMUNDUS_LOGS_STATUS');
 				switch ($crud) {
 					case('u'):
+						// Old and now status were passed in params on logging
 						$message .= JText::_('COM_EMUNDUS_LOGS_STATUS_UPDATE') . $params->status_from . ' -> ' . $params->status_to;
 					break;
 				}
 			break;
+			// Décision
 			case (29):
 				$message = JText::_('COM_EMUNDUS_LOGS_DECISION');
 				switch ($crud) {
@@ -445,6 +516,7 @@ class EmundusModelLogs extends JModelList {
 					break;
 				}
 			break;
+			// Logs
 			case (37):
 				$message = JText::_('COM_EMUNDUS_LOGS_LOGS');
 				switch ($crud) {
@@ -454,7 +526,7 @@ class EmundusModelLogs extends JModelList {
 				}
 			break;
 			default:
-				$message = 'Action sur le dossier';
+				$message = JText::_('COM_EMUNDUS_LOGS_DEFAULT');
 			break;
 		}
 

@@ -315,7 +315,7 @@ class EmundusViewApplication extends JViewLegacy {
 
                     } elseif (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum)) {
 
-                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 10, 'c', 'COM_EMUNDUS_LOGS_COMMENTS_BACKOFFICE');
+                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 10, 'c', 'COM_EMUNDUS_LOGS_COMMENTS_ADD');
 
                         $userComments = $m_application->getFileOwnComments($fnum,$this->_user->id);
 
