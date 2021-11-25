@@ -1301,7 +1301,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   border-bottom-color: $dark-blue;
 }
 
-// remove 
+// remove
 .fabrikNav .pagination-list li {
   margin: 0;
 }
@@ -1620,6 +1620,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
     #g-container-main {
       padding: 0 10px;
+      height: 100%;
+      margin: auto;
     }
   }
 
