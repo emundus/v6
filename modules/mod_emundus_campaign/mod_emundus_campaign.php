@@ -81,13 +81,6 @@ if ($params->get('mod_em_campaign_layout') == "institut_fr") {
     $programs = $m_progs->getProgrammes(1, $program_array);
 }
 
-if ($params->get('mod_em_campaign_layout') == "celsa") {
-    $formations = $helper->getFormationsWithType();
-    $formationTypes = $helper->getFormationTypes();
-    $formationLevels = $helper->getFormationLevels();
-    $voiesDAcces = $helper->getVoiesDAcces();
-}
-
 if (isset($searchword) && !empty($searchword)) {
     $condition = ' AND (pr.code LIKE "%"'.$db->Quote($searchword).'"%" OR ca.label LIKE "%"'.$db->Quote($searchword).'"%" OR ca.description LIKE "%"'.$db->Quote($searchword).'"%" OR ca.short_description LIKE "%"'.$db->Quote($searchword).'"%") ';
 }
@@ -124,16 +117,28 @@ switch ($ordertime) {
 }
 
 $mod_em_campaign_get_admission_date = ($mod_em_campaign_show_admission_start_date||$mod_em_campaign_show_admission_end_date);
-$currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity);
-$pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity);
-$futurCampaign      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity);
-$allCampaign        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity);
+$currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
+$pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
+$futurCampaign      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
+$allCampaign        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
 
 // FAQ
 $faq_articles                = $helper->getFaq();
 
 $dropfiles_helper = new modEmundusCampaignDropfilesHelper;
 $files = $dropfiles_helper->getFiles();
+
+if ($params->get('mod_em_campaign_layout') == "celsa") {
+    $formations = $helper->getFormationsWithType();
+    $formationTypes = $helper->getFormationTypes();
+    $formationLevels = $helper->getFormationLevels();
+    $voiesDAcces = $helper->getVoiesDAcces();
+
+    $currentCampaign = $helper->addClassToData($currentCampaign, $formations);
+    $pastCampaign = $helper->addClassToData($pastCampaign, $formations);
+    $futurCampaign = $helper->addClassToData($futurCampaign, $formations);
+    $allCampaign = $helper->addClassToData($allCampaign, $formations);
+}
 
 $now = $helper->now;
 

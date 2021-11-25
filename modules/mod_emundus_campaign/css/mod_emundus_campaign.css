@@ -171,12 +171,16 @@
 }
 
 #navfilter {
-
     display: flex;
     align-items: center;
     margin-bottom: 0;
     height: auto;
     justify-content: space-between;
+}
+
+#navfilter p {
+    margin-right: 5px;
+    width: fit-content;
 }
 
 #navfilter.navsearch .navsearch-content .input-group-btn button {
