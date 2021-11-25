@@ -11,7 +11,7 @@
       <div class="section-sub-menu sub-form" v-if="campaign == ''">
         <div class="container-2 w-container" style="max-width: unset">
           <div class="d-flex">
-            <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
+            <img src="/images/emundus/menus/megaphone.svg" srcset="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
             <h1 class="tchooz-section-titles">{{translations.AddCampaign}}</h1>
           </div>
         </div>
@@ -770,11 +770,15 @@ export default {
      * ** Methods for notify
      */
     tip(){
-      this.show(
-          "foo-velocity",
-          Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATETIP") + '<em class="translate-icon"></em>',
-          Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
-      );
+
+      if(this.manyLanguages !=0) {
+
+        this.show(
+            "foo-velocity",
+            Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATETIP") + '<em class="translate-icon"></em>',
+            Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
+        );
+      }
     },
 
     show(group, text = "", title = "Information") {

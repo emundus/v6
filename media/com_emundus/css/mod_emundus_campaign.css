@@ -1,4 +1,11 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+
 /************ HOME ***************/
+body{
+    font-family: 'Material Icons';
+}
+
 @media (min-width: 768px) {
     .position-me {
         position: absolute;
@@ -186,6 +193,9 @@
 .campaigntext.blue {
     background-color: #FFFFFF;
     border-color: #002F6B;
+    border: none !important;
+    padding: 10px;
+    min-height: unset !important;
 }
 
 .campaigntext.orange {
@@ -614,6 +624,7 @@ button.btn.btn-default.sch {
 
 .left-side {
     width: 60%;
+    border-top-left-radius: 8px;
 }
 
 .right-side {

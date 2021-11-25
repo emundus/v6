@@ -51,165 +51,192 @@
         </div>
         </draggable>
         <button @click.prevent="add" type="button" v-if="databasejoin != 1" class="bouton-sauvergarder-et-continuer-3 button-add-option" style="margin-bottom: 2em">{{translations.AddOption}}</button>
-        <select v-if="databasejoin == 1" class="dropdown-toggle" v-model="databasejoin_data" style="margin: 20px 0 30px 0;">
+        <select v-if="databasejoin == 1" class="dropdown-toggle" v-model="databasejoin_data" style="margin: 20px 0 30px 0;" @change="retrieveDataBaseJoinColumns()">
           <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
         </select>
-<!--        <div v-if="databasejoin_data">
+       <div v-if="databasejoin == 1">
           <label>{{translations.OrderBy}}</label>
           <select class="dropdown-toggle" v-model="databasejoin_data_order" style="margin: 20px 0 30px 0;">
-            <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
+            <option v-for="val in databases_colums" :value="val.COLUMN_NAME">{{val.COLUMN_NAME}}</option>
           </select>
-        </div>-->
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import _ from "lodash";
-import axios from "axios";
-import Swal from "sweetalert2";
-import draggable from "vuedraggable";
-const qs = require("qs");
+import _ from 'lodash';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import draggable from 'vuedraggable';
+
+const qs = require('qs');
 
 export default {
-  name: "dropdownF",
+  name: 'dropdownF',
   components: {
-    draggable
+    draggable,
   },
   props: { element: Object, databases: Array },
   data() {
     return {
       arraySubValues: [],
-      databasejoin: "0",
+      databases_colums: [],
+      databasejoin: '0',
       no_default_value: false,
       display_first_option: null,
       databasejoin_data: 0,
-      databasejoin_data_order: 'id',
+      databasejoin_data_order: '',
       translations: {
-        helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
-        suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
-        AddOption: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS"),
-        DataTables: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN"),
-        No_Default_Value: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_NO_DEFAULT_VALUE"),
-        OrderBy: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ORDER_BY"),
-      }
+        helptext: Joomla.JText._('COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT'),
+        suboptions: Joomla.JText._('COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS'),
+        AddOption: Joomla.JText._('COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS'),
+        DataTables: Joomla.JText._('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN'),
+        No_Default_Value: Joomla.JText._('COM_EMUNDUS_ONBOARD_BUILDER_NO_DEFAULT_VALUE'),
+        OrderBy: Joomla.JText._('COM_EMUNDUS_ONBOARD_BUILDER_ORDER_BY'),
+      },
     };
   },
   methods: {
-    add: _.debounce(function() {
-      let size = Object.keys(this.arraySubValues).length;
-      this.$set(this.arraySubValues, size, "");
+    add: _.debounce(function () {
+      const size = Object.keys(this.arraySubValues).length;
+      this.$set(this.arraySubValues, size, '');
       this.needtoemit();
-      let id = 'suboption_' + size.toString();
+      const id = `suboption_${size.toString()}`;
       setTimeout(() => {
         document.getElementById(id).focus();
       }, 100);
-    },150),
-    leave: function(index) {
+    }, 150),
+    leave(index) {
       this.$delete(this.arraySubValues, index);
       this.needtoemit();
     },
-    initialised: function() {
-      if(this.element.plugin === 'databasejoin'){
+    initialised() {
+      if (this.element.plugin === 'databasejoin') {
         this.databasejoin = 1;
-        this.databases.forEach((db,index) => {
-          if(db.database_name == this.element.params.join_db_name){
+
+
+        this.databases.forEach((db, index) => {
+          if (db.database_name == this.element.params.join_db_name) {
             this.databasejoin_data = index;
+            this.retrieveDataBaseJoinColumns();
+            const order = this.element.params.database_join_where_sql;
+            this.databasejoin_data_order = order.replace(/order by /g, '');
           }
-        })
-      } else  {
+        });
+      } else {
         this.element.params.default_value = false;
         this.no_default_value = false;
-        if(typeof this.element.params.sub_options !== 'undefined') {
-          if(typeof this.element.params.sub_options.sub_initial_selection !== 'undefined') {
-            this.element.params.sub_options.sub_values.forEach((value,i) => {
-              if(value == this.element.params.sub_options.sub_initial_selection[0]){
+        this.retrieveDataBaseJoinColumns();
+        if (typeof this.element.params.sub_options !== 'undefined') {
+          if (typeof this.element.params.sub_options.sub_initial_selection !== 'undefined') {
+            this.element.params.sub_options.sub_values.forEach((value, i) => {
+              if (value == this.element.params.sub_options.sub_initial_selection[0]) {
                 this.display_first_option = i;
               }
-            })
-            if(this.display_first_option != null) {
+            });
+            if (this.display_first_option != null) {
               this.element.params.default_value = true;
               this.no_default_value = true;
             }
           }
           axios({
-            method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXTA",
+            method: 'post',
+            url: 'index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXTA',
             headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
+              'Content-Type': 'application/x-www-form-urlencoded',
             },
             data: qs.stringify({
-              toJTEXT: this.element.params.sub_options.sub_labels
-            })
-          }).then(response => {
-            Object.values(response.data).forEach(rep => {
+              toJTEXT: this.element.params.sub_options.sub_labels,
+            }),
+          }).then((response) => {
+            Object.values(response.data).forEach((rep) => {
               this.arraySubValues.push(rep);
             });
             this.needtoemit();
-          }).catch(e => {
+          }).catch((e) => {
             console.log(e);
           });
         } else {
           this.element.params.sub_options = {
-            'sub_values': [],
-            'sub_labels': [],
-          }
+            sub_values: [],
+            sub_labels: [],
+          };
           this.arraySubValues = this.element.params.sub_options.sub_labels;
         }
       }
     },
-    needtoemit: _.debounce(function() {
-      this.$emit("subOptions", this.arraySubValues);
+
+    retrieveDataBaseJoinColumns() {
+      axios({
+        method: 'post',
+        url:
+            'index.php?option=com_emundus_onboard&controller=formbuilder&task=getdatabasesjoinOrdonancementColomns',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        data: qs.stringify({
+          database_name: (this.databases[this.databasejoin_data]).database_name,
+        }),
+      }).then((response) => {
+        this.databases_colums = response.data.data;
+      }).catch((e) => {
+        console.log(e);
+      });
+    },
+    needtoemit: _.debounce(function () {
+      this.$emit('subOptions', this.arraySubValues);
     }),
 
-    checkOnboarding(){
+    checkOnboarding() {
       axios({
-        method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=checkfirstdatabasejoin",
-      }).then(response => {
-        if(response.data.status) {
+        method: 'get',
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=checkfirstdatabasejoin',
+      }).then((response) => {
+        if (response.data.status) {
           Swal.fire({
-            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN"),
-            text: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN_TEXT"),
-            type: "info",
+            title: Joomla.JText._('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN'),
+            text: Joomla.JText._('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN_TEXT'),
+            type: 'info',
             showCancelButton: false,
             showCloseButton: true,
             allowOutsideClick: false,
             confirmButtonColor: '#de6339',
-            confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-          }).then(result => {
+            confirmButtonText: Joomla.JText._('COM_EMUNDUS_ONBOARD_OK'),
+          }).then((result) => {
             if (result.value) {
               axios({
-                method: "post",
-                url: "index.php?option=com_emundus_onboard&controller=settings&task=removeparam",
+                method: 'post',
+                url: 'index.php?option=com_emundus_onboard&controller=settings&task=removeparam',
                 headers: {
-                  "Content-Type": "application/x-www-form-urlencoded"
+                  'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 data: qs.stringify({
                   param: 'first_databasejoin',
-                })
+                }),
               });
             }
           });
         }
       });
-    }
+    },
   },
-  created: function() {
+  created() {
     this.initialised();
   },
   watch: {
-    databasejoin: function(value){
-      if(value == 1) {
+    databasejoin(value) {
+      if (value == 1) {
         this.checkOnboarding();
+
         this.element.plugin = 'databasejoin';
         this.element.params.join_db_name = this.databases[this.databasejoin_data].database_name;
         this.element.params.database_join_display_type = 'dropdown';
         this.element.params.join_key_column = this.databases[this.databasejoin_data].join_column_id;
-        if(this.databases[this.databasejoin_data].translation == '1') {
-          this.element.params.join_val_column = this.databases[this.databasejoin_data].join_column_val + '_fr';
-          this.element.params.join_val_column_concat = '{thistable}.' + this.databases[this.databasejoin_data].join_column_val + '_{shortlang}';
+        if (this.databases[this.databasejoin_data].translation == '1') {
+          this.element.params.join_val_column = `${this.databases[this.databasejoin_data].join_column_val}_fr`;
+          this.element.params.join_val_column_concat = `{thistable}.${this.databases[this.databasejoin_data].join_column_val}_{shortlang}`;
         } else {
           this.element.params.join_val_column = this.databases[this.databasejoin_data].join_column_val;
           this.element.params.join_val_column_concat = '';
@@ -221,32 +248,40 @@ export default {
         delete this.element.params.join_key_column;
         delete this.element.params.join_val_column;
         delete this.element.params.join_val_column_concat;
-        if(typeof this.element.params.sub_options === 'undefined') {
+        delete this.element.params.database_join_where_sql;
+        if (typeof this.element.params.sub_options === 'undefined') {
           this.element.params.sub_options = {
-            'sub_values': [],
-            'sub_labels': [],
-          }
+            sub_values: [],
+            sub_labels: [],
+          };
           this.arraySubValues = this.element.params.sub_options.sub_labels;
         }
       }
     },
-    databasejoin_data: function(value){
-      this.element.params.join_db_name = this.databases[value].database_name;
-      this.element.params.join_key_column = this.databases[value].join_column_id;
-      this.element.params.database_join_display_type = 'dropdown';
-      if(this.databases[value].translation == '1') {
-        this.element.params.join_val_column = this.databases[value].join_column_val + '_fr';
-        this.element.params.join_val_column_concat = '{thistable}.' + this.databases[value].join_column_val + '_{shortlang}';
+
+    databasejoin_data(value) {
+      const db = this.databases[value];
+      this.element.params.join_db_name = db.database_name;
+      this.element.params.join_key_column = db.join_column_id;
+      if (db.translation === '1') {
+        this.element.params.join_val_column = `${db.join_column_val}_fr`;
+        this.element.params.join_val_column_concat = `{thistable}.${db.join_column_val}_{shortlang}`;
       } else {
-        this.element.params.join_val_column = this.databases[value].join_column_val;
+        this.element.params.join_val_column = db.join_column_val;
         this.element.params.join_val_column_concat = '';
       }
     },
 
-    no_default_value: function(value){
+    databasejoin_data_order(value) {
+      if (this.databasejoin == 1) {
+        this.element.params.database_join_where_sql = `order by ${value}`;
+      }
+    },
+
+    no_default_value(value) {
       this.element.params.default_value = value;
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>
