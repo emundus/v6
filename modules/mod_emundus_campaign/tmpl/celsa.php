@@ -76,7 +76,7 @@ $currentCampaign = array_map(function($item) use ($formations) {
                 </ul>
             <?php endif; ?>
             <?php if(!empty($formationTypes) && count($formationTypes) > 1): ?>
-                <div class="g-block size-30 navformation" style="display:flex;flex-direction:row;">
+                <div class="g-block size-30" id="navfilter">
                     <p>
                         <select name="formation_type" id="formation_type" onchange="filterBy('formation_type', this.value)">
                             <option value="all" selected>Tous type de formations</option>

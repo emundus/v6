@@ -299,6 +299,32 @@ class modEmundusCampaignHelper {
             return null;
         }
     }
+
+    public function addClassToData($data, $formations) 
+    {
+        // Add a custom class parameter to data items
+        $data = array_map(function($item) use ($formations) {
+            $item->class = !isset($item->class) ? '' : $item->class;
+        
+            // find formation associated to item inside formations array
+            foreach ($formations as $formation) {
+                if ($formation->id == $item->formation) {
+                    $item->class .= 'formation_type-' . $formation->type;
+                    $item->class .= ' formation_level-' . $formation->level;
+                
+                    foreach ($formation->voies_d_acces as $voie) {
+                        $item->class .= ' voie_d_acces-' . $voie->voie_d_acces;
+                    
+                    }
+                
+                    break;
+                }
+            }
+
+
+        return $item;
+        }, $data);
+
+        return $data;
+    }
 }
-
-
