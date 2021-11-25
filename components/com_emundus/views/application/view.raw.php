@@ -338,14 +338,12 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum);
 
-                        $messages = [];
                         foreach ($fileLogs as $key => $log) {
                             $log->timestamp = EmundusHelperDate::displayDate($log->timestamp);
-                            $messages[] = EmundusModelLogs::setActionMessage($log->fnum_to, $log->user_id_from, $log->action_id, $log->verb, $log->params);
+                            $log->details = EmundusModelLogs::setActionDetails($log->fnum_to, $log->user_id_from, $log->action_id, $log->verb, $log->params);
                         }
 
                         $this->assignRef('fileLogs', $fileLogs);
-                        $this->assignRef('messages', $messages);
                         $this->assignRef('fnum', $fnum);
 
                     } else{

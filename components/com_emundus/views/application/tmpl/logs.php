@@ -24,8 +24,8 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
 	.widget .action { margin-top:5px; }
     .widget .log-message { font-size: 18px; font-weight:600;}
     .widget .log-user { font-size:16px;}
+    .widget .no-log { margin: 1.5rem;}
 	.widget .btn-block { border-top-left-radius:0px;border-top-right-radius:0px; }
-    .widget .filter-item { list-style:none; }
 </style>
 
 <div class="logs">
@@ -46,27 +46,34 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
 
             </div>
             <div class="panel-body em-container-comment-body">
-                <ul class="list-group">
                 <?php
-				if (count($this->fileLogs) > 0) {
-					$i = 0;
-					foreach ($this->fileLogs as $log) { ?>
-                    <li class="list-group-item" id="<?php echo $log->id; ?>">
-                        <div class="row">
-                            <div class="col-xs-10 col-md-11">
-                                <div class="em-list-status">
-                                    <div class="log-message"><?php echo $this->messages[$i]; ?></div>
-                                    <div class="log-user"><?php echo $log->firstname . ' ' . $log->lastname; ?> - <?php echo $log->timestamp; ?></div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                 <?php
-						$i++;
-					}
-				} else echo JText::_('NO_LOGS');
-				?>
-                </ul>
+                if (count($this->fileLogs) > 0) { ?>
+                <table class="table table-hover logs_table">
+                    <thead>
+                        <tr>
+                            <th><?= JText::_('DATE'); ?></th>
+                            <th><?= JText::_('USER'); ?></th>
+                            <th><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_CATEGORY'); ?></th>
+                            <th><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION'); ?></th>
+                            <th><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_DETAILS'); ?></th>
+                        </tr>       
+                    </thead>
+                    <tbody>
+                        <?php
+                        foreach ($this->fileLogs as $log) { ?>
+                        <tr>
+                            <td><?= $log->timestamp; ?></td>
+                            <td><?= $log->firstname . ' ' . $log->lastname; ?></td>
+                            <td><?= $log->details['action_category']; ?></td>
+                            <td><?= $log->details['action_name']; ?></td>
+                            <td><?php if(!empty($log->details['action_details'])): echo $log->details['action_details']; endif; ?></td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+                <?php } else { ?>
+                    <div class="no-log"><?= JText::_('NO_LOGS'); ?></ul>
+                <?php } ?>
 			</div>
         </div>
     </div>
