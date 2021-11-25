@@ -22,24 +22,24 @@ $showdownloadcate  = (int) $this->componentParams->get('download_category', 0);
 
 ?>
 <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showsubcategories', 1) === 1) : ?>
-    <script type="text/x-handlebars-template" id="dropfiles-template-table-categories">
+    <script type="text/x-handlebars-template" id="dropfiles-template-table-categories-<?php echo $this->category->id; ?>">
         <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showcategorytitle', 1) === 1 &&
-                   (int) DropfilesBase::loadValue($this->params, 'table_showcategoriesposition', 0) === 0) : ?>
+            (int) DropfilesBase::loadValue($this->params, 'table_showcategoriesposition', 0) === 0) : ?>
             <div class="categories-head ">
                 {{#with category}}
                 <h2>{{title}}</h2>
                 {{/with}}
             </div>
         <?php endif; ?>
-            {{#with category}}
-            {{#if parent_id}}
+        {{#with category}}
+        {{#if parent_id}}
         <div class="backcategory-section">
             <a class="catlink  dropfilescategory backcategory" href="#" data-idcat="{{parent_id}}">
                 <i class="zmdi zmdi-chevron-left"></i><?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_BACK'); ?>
             </a>
         </div>
-            {{/if}}
-            {{/with}}
+        {{/if}}
+        {{/with}}
         {{#each categories}}
         <a class="dropfilescategory catlink" href="#" data-idcat="{{id}}"><span>{{title}}</span>
             <i class="zmdi zmdi-folder dropfiles-folder"></i>
@@ -54,112 +54,112 @@ $showdownloadcate  = (int) $this->componentParams->get('download_category', 0);
         <div class="dropfilescategory_placeholder" style="margin-top: 0 !important; margin-bottom: 0 !important;"></div>
         <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showcategorytitle', 1) === 1 &&
             (int) DropfilesBase::loadValue($this->params, 'table_showcategoriesposition', 0) === 1) : ?>
-        <div class="categories-head categories-before-title">
-            {{#with category}}
-            <h2>{{title}}</h2>
-            {{/with}}
-        </div>
+            <div class="categories-head categories-before-title">
+                {{#with category}}
+                <h2>{{title}}</h2>
+                {{/with}}
+            </div>
         <?php endif; ?>
     </script>
 <?php endif;?>
 
-    <script type="text/x-handlebars-template" id="dropfiles-template-table">
-        {{#if files}}
-        {{#each files}}{{#if ext}}
-        <tr class="file">
-            <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showtitle', 1) === 1) : ?>
-                <td class="extcol file_title">
-                    <?php if ($showdownloadcate === 1) : ?>
-                        <label class="dropfiles_checkbox"><input class="cbox_file_download" type="checkbox" data-id="{{id}}" /><span></span></label>
-                    <?php endif;?>
-                    {{#if custom_icon}}
-                    <div class="custom-icon {{ext}}"><img src="{{custom_icon_thumb}}" alt=""></div>
+<script type="text/x-handlebars-template" id="dropfiles-template-table-<?php echo $this->category->id; ?>">
+    {{#if files}}
+    {{#each files}}{{#if ext}}
+    <tr class="file">
+        <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showtitle', 1) === 1) : ?>
+            <td class="extcol file_title">
+                <?php if ($showdownloadcate === 1) : ?>
+                    <label class="dropfiles_checkbox"><input class="cbox_file_download" type="checkbox" data-id="{{id}}" /><span></span></label>
+                <?php endif;?>
+                {{#if custom_icon}}
+                <div class="custom-icon {{ext}}"><img src="{{custom_icon_thumb}}" alt=""></div>
+                {{else}}
+                <span class="ext {{ext}}"></span>
+                {{/if}}
+                <a class="title" href='{{link}}'>{{title}}</a>
+            </td>
+        <?php endif; ?>
+
+        <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showversion', 1) === 1) : ?>
+            <td>
+                {{versionNumber}}
+            </td>
+        <?php endif; ?>
+
+        <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showdescription', 1) === 1) : ?>
+            <td>
+                {{{description}}}
+            </td>
+        <?php endif; ?>
+
+        <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showsize', 1) === 1) : ?>
+            <td>
+                {{bytesToSize size}}
+            </td>
+        <?php endif; ?>
+
+        <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showhits', 1) === 1) : ?>
+            <td>
+                {{hits}}
+            </td>
+        <?php endif; ?>
+
+        <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showdateadd', 0) === 1) : ?>
+            <td>
+                {{created_time}}
+            </td>
+        <?php endif; ?>
+
+        <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showdatemodified', 0) === 1) : ?>
+            <td>
+                {{modified_time}}
+            </td>
+        <?php endif; ?>
+        <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showdownload', 1) === 1) : ?>
+            <td>
+                <?php if ($this->viewfileanddowload) : ?>
+                    <a class="downloadlink" href='{{link}}'>
+                        <?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_DOWNLOAD'); ?>
+                        <i class="zmdi zmdi-cloud-download dropfiles-download"></i>
+                    </a>
+                <?php endif; ?>
+                <?php if ((int) $this->componentParams->get('usegoogleviewer', 1) > 0) : ?>
+                    {{#if openpdflink}}
+                    <a href='{{openpdflink}}' class="openlink" target="_blank">
+                        <?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_OPEN'); ?>
+                        <i class="zmdi zmdi-filter-center-focus dropfiles-preview"></i>
+                    </a>
                     {{else}}
-                    <span class="ext {{ext}}"></span>
+                    {{#if viewerlink}}
+                    <a data-id="{{id}}" data-catid="{{catid}}" data-file-type="{{ext}}"
+                       class="openlink <?php echo $dropfileslightbox; ?>" <?php echo $target; ?>
+                       href='{{viewerlink}}'>
+                        <?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_PREVIEW'); ?>
+                        <i class="zmdi zmdi-filter-center-focus dropfiles-preview"></i></a>
                     {{/if}}
-                    <a class="title" href='{{link}}'>{{title}}</a>
-                </td>
-            <?php endif; ?>
+                    {{/if}}
 
-            <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showversion', 1) === 1) : ?>
-                <td>
-                    {{versionNumber}}
-                </td>
-            <?php endif; ?>
-
-            <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showdescription', 1) === 1) : ?>
-                <td>
-                    {{{description}}}
-                </td>
-            <?php endif; ?>
-
-            <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showsize', 1) === 1) : ?>
-                <td>
-                    {{bytesToSize size}}
-                </td>
-            <?php endif; ?>
-
-            <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showhits', 1) === 1) : ?>
-                <td>
-                    {{hits}}
-                </td>
-            <?php endif; ?>
-
-            <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showdateadd', 0) === 1) : ?>
-                <td>
-                    {{created_time}}
-                </td>
-            <?php endif; ?>
-
-            <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showdatemodified', 0) === 1) : ?>
-                <td>
-                    {{modified_time}}
-                </td>
-            <?php endif; ?>
-            <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showdownload', 1) === 1) : ?>
-                <td>
-                    <?php if ($this->viewfileanddowload) : ?>
-                        <a class="downloadlink" href='{{link}}'>
-                            <?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_DOWNLOAD'); ?>
-                            <i class="zmdi zmdi-cloud-download dropfiles-download"></i>
-                        </a>
-                    <?php endif; ?>
-                    <?php if ((int) $this->componentParams->get('usegoogleviewer', 1) > 0) : ?>
-                        {{#if openpdflink}}
-                        <a href='{{openpdflink}}' class="openlink" target="_blank">
-                            <?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_OPEN'); ?>
-                            <i class="zmdi zmdi-filter-center-focus dropfiles-preview"></i>
-                        </a>
-                        {{else}}
-                        {{#if viewerlink}}
-                        <a data-id="{{id}}" data-catid="{{catid}}" data-file-type="{{ext}}"
-                           class="openlink <?php echo $dropfileslightbox; ?>" <?php echo $target; ?>
-                           href='{{viewerlink}}'>
-                            <?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_PREVIEW'); ?>
-                            <i class="zmdi zmdi-filter-center-focus dropfiles-preview"></i></a>
-                        {{/if}}
-                        {{/if}}
-
-                    <?php endif; ?>
-                </td>
-            <?php endif; ?>
-        </tr>
-        {{/if}}{{/each}}
-        {{/if}}
+                <?php endif; ?>
+            </td>
+        <?php endif; ?>
+    </tr>
+    {{/if}}{{/each}}
+    {{/if}}
 
 
-    </script>
+</script>
 
-    <script type="text/x-handlebars-template" id="dropfiles-current-category">
-        {{#if category}}
-            {{#if category.type}}
-                <input type="hidden" id="current-category-type" class="type {{category.type}}" data-category-type="{{category.type}}"/>
-            {{/if}}
-            {{#if category.linkdownload_cat}}
-            <input type="hidden" id="current-category-link" class="link" value="{{category.linkdownload_cat}}"/>
-            {{/if}}
-        {{/if}}
-    </script>
+<script type="text/x-handlebars-template" id="dropfiles-current-category-<?php echo $this->category->id; ?>">
+    {{#if category}}
+    {{#if category.type}}
+    <input type="hidden" id="current-category-type" class="type {{category.type}}" data-category-type="{{category.type}}"/>
+    {{/if}}
+    {{#if category.linkdownload_cat}}
+    <input type="hidden" id="current-category-link" class="link" value="{{category.linkdownload_cat}}"/>
+    {{/if}}
+    {{/if}}
+</script>
 
 <?php if (!empty($this->files) || !empty($this->categories)) : ?>
     <div class="dropfiles-content dropfiles-content-table dropfiles-content-multi dropfiles-files
@@ -185,13 +185,13 @@ $showdownloadcate  = (int) $this->componentParams->get('download_category', 0);
             </ul>
         <?php else : ?>
             <?php if ($this->user_id) : ?>
-            <div class="dropfiles-manage-files">
-                <a data-id="" data-catid="" data-file-type="" class="openlink-manage-files " target="_blank"
-                   href="<?php echo $this->urlmanage ?>" data-urlmanage="<?php echo $this->urlmanage ?>">
-                    <?php echo JText::_('COM_DROPFILES_MANAGE_FILES'); ?>
-                    <i class="zmdi zmdi-edit dropfiles-preview"></i>
-                </a>
-            </div>
+                <div class="dropfiles-manage-files">
+                    <a data-id="" data-catid="" data-file-type="" class="openlink-manage-files " target="_blank"
+                       href="<?php echo $this->urlmanage ?>" data-urlmanage="<?php echo $this->urlmanage ?>">
+                        <?php echo JText::_('COM_DROPFILES_MANAGE_FILES'); ?>
+                        <i class="zmdi zmdi-edit dropfiles-preview"></i>
+                    </a>
+                </div>
             <?php endif; ?>
             <?php if ($showdownloadcate === 1 && isset($this->category->linkdownload_cat) && !empty($this->files)) : ?>
                 <a data-catid="" class="table-download-category download-all" href="<?php echo $this->category->linkdownload_cat; ?>"><?php echo JText::_('COM_DROPFILES_DOWNLOAD_ALL'); ?><i class="zmdi zmdi-check-all"></i></a>
@@ -214,12 +214,12 @@ $showdownloadcate  = (int) $this->componentParams->get('download_category', 0);
                 <div class="dropfiles-categories">
                     <div class="categories-head ">
                         <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showcategorytitle', 1) === 1 &&
-                                   (int) DropfilesBase::loadValue($this->params, 'table_showcategoriesposition', 0) === 0) : ?>
+                            (int) DropfilesBase::loadValue($this->params, 'table_showcategoriesposition', 0) === 0) : ?>
                             <h2><?php echo $this->category->title; ?></h2>
                         <?php endif; ?>
                     </div>
                     <?php if (is_array($this->categories) && count($this->categories) &&
-                              (int) DropfilesBase::loadValue($this->params, 'table_showsubcategories', 1) === 1) : ?>
+                        (int) DropfilesBase::loadValue($this->params, 'table_showsubcategories', 1) === 1) : ?>
                         <?php foreach ($this->categories as $category) : ?>
                             <a class="dropfilescategory catlink" href="#"
                                data-idcat="<?php echo $category->id; ?>"> <span><?php echo $category->title; ?>

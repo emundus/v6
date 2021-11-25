@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config addfieldpath="/libraries/regularlabs/fields">
+	<fieldset name="code">
+		<field name="@code" type="rl_note" class="alert alert-info" description="SRC_CODE_DESC" />
+		<field name="@code_a" type="rl_block" start="1" label="SRC_CODE" />
+		<field name="code" type="rl_codeeditor" label="" />
+		<field name="@code_b" type="rl_block" end="1" />
+	</fieldset>
+
+	<fieldset name="settings">
+		<field name="trim" type="radio" class="btn-group" default="0"
+			   label="SRC_TRIM"
+			   description="SRC_TRIM_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="raw" type="radio" class="btn-group" default="0"
+			   label="SRC_RAW"
+			   description="SRC_RAW_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+	</fieldset>
+
+	<fieldset name="css">
+		<field name="@css_file_a" type="rl_block" start="1" label="SRC_FILE" />
+		<field name="@css" type="rl_note" description="SRC_CSS_FILE_DESC" />
+		<field name="@notice_css_file" type="rl_onlypro" label="" />
+		<field name="@css_file_b" type="rl_block" end="1" />
+
+		<field name="@css_code_a" type="rl_block" start="1" label="SRC_CODE" />
+		<field name="@css" type="rl_note" description="SRC_CSS_CODE_DESC" />
+		<field name="@notice_css_code" type="rl_onlypro" label="" />
+		<field name="@css_code_b" type="rl_block" end="1" />
+	</fieldset>
+
+	<fieldset name="js">
+		<field name="@js_file_a" type="rl_block" start="1" label="SRC_FILE" />
+		<field name="@js" type="rl_note" description="SRC_JS_FILE_DESC" />
+		<field name="@notice_js_file" type="rl_onlypro" label="" />
+		<field name="@js_file_b" type="rl_block" end="1" />
+
+		<field name="@js_code_a" type="rl_block" start="1" label="SRC_CODE" />
+		<field name="@notice_js_code" type="rl_onlypro" label="" />
+		<field name="@js_code_b" type="rl_block" end="1" />
+	</fieldset>
+
+	<fieldset name="php">
+		<field name="@php_file_a" type="rl_block" start="1" label="SRC_FILE" />
+		<field name="@notice_php_file" type="rl_onlypro"
+			   label="" />
+		<field name="@notice_php_include_method" type="rl_onlypro"
+			   label="SRC_PHP_INCLUDE_METHOD"
+			   description="SRC_PHP_INCLUDE_METHOD_DESC" />
+		<field name="@php_file_b" type="rl_block" end="1" />
+
+		<field name="@php_code_a" type="rl_block" start="1" label="SRC_CODE" />
+		<field name="@php" type="rl_note" description="SRC_PHP_CODE_DESC" />
+		<field name="@notice_php_code" type="rl_onlypro" label="" />
+		<field name="@php_code_b" type="rl_block" end="1" />
+	</fieldset>
+</config>

@@ -337,6 +337,8 @@ if ($allowed_attachments !== true) {
         var selectize_bcc = $select_bcc[0].selectize;
         selectize_bcc.clear();
 
+        $('.cc-bcc-mails .plugin-remove_button').empty();
+
         // clear CC and BCC placeholder
         $("label[for='cc-emails']").empty();
         $("label[for='bcc-emails']").empty();
@@ -499,6 +501,26 @@ if ($allowed_attachments !== true) {
                             $('#em-select_setup_letters option[value="' + letter.id + '"]').css('font-style', 'italic');
                         })
                     }
+
+                    /// get candidat attachments block * check in the user permission *
+                    <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
+                        if(data.data.candidate_attachment !== null) {
+                            let attachments = data.data.candidate_attachment;
+                            attachments.forEach(attachment => {
+                                $('#em-attachment-list').append('' +
+                                    '<li class="list-group-item candidate_file" style="padding: 6px 12px; display: flex; align-content: center; justify-content: space-between">' +
+                                        '<div class="value hidden">' + attachment.id + '</div>' + attachment.value +
+                                        '<div>' +
+                                            '<span class="badge">' + '<span class="glyphicon glyphicon-paperclip">' + '</span>' + '</span>' +
+                                            '<span class="badge btn-danger" onClick="removeAttachment(this);">' + '<span class="glyphicon glyphicon-remove"></span>' + '</span>' +
+                                        '</div>' +
+                                    '</li>');
+                                /// set selected letter
+                                $('#em-select_candidate_file option[value="' + attachment.id + '"]').prop('disabled', true);
+                                $('#em-select_candidate_file option[value="' + attachment.id + '"]').css('font-style', 'italic');
+                            })
+                        }
+                    <?php endif; ?>
                 } else {
                     /// lock send button
                     $('#can-val').css('cursor', 'not-allowed');
@@ -714,16 +736,17 @@ if ($allowed_attachments !== true) {
         element = $(element);
 
         if (element.parent().parent().hasClass('candidate_file')) {
-
             // Remove 'disabled' attr from select options.
             $('#em-select_candidate_file option[value="'+element.parent().parent().find('.value').text()+'"]').prop('disabled', false);
 
+            // reset css style
+            $('#em-select_candidate_file option[value="'+element.parent().parent().find('.value').text()+'"]').removeAttr('style');
         } else if (element.parent().parent().hasClass('setup_letters')) {
-            console.log('setup letters');
-
             // Remove 'disabled' attr from select options.
             $('#em-select_setup_letters option[value="'+element.parent().parent().find('.value').text()+'"]').prop('disabled', false);
 
+            // reset css style
+            $('#em-select_setup_letters option[value="'+element.parent().parent().find('.value').text()+'"]').removeAttr('style');
         }
 
         $(element).parent().parent().remove();

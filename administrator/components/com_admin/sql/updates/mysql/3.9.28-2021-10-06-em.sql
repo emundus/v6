@@ -52,7 +52,7 @@ SET @group_2 := LAST_INSERT_ID();
 INSERT INTO jos_fabrik_joins (list_id, element_id, join_from_table, table_join, table_key, table_join_key, join_type, group_id, params)
 VALUES (37, 0, 'jos_emundus_setup_emails', 'jos_emundus_setup_emails_repeat_candidate_attachment', 'id', 'parent_id', 'left', @group_2, '{"type":"group","pk":"`jos_emundus_setup_emails_repeat_candidate_attachment`.`id`"}');
 
-INSERT INTO jos_fabrik_formgroup (form_id, group_id, ordering) VALUES (35, 687, 2);
+INSERT INTO jos_fabrik_formgroup (form_id, group_id, ordering) VALUES (35, @group_2, 2);        -- fix group_id by @group_2
 
 --
 --

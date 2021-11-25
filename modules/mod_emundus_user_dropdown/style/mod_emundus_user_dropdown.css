@@ -133,8 +133,8 @@ li>a:hover {
 }
 
 .logout-button-user{
-    padding: 5px !important;
-    border-radius: 25px;
+    padding: 8px 12px !important;
+    border-radius: 4px;
     text-align: center;
     background-color: #E5283B;
     color: white !important;
@@ -146,20 +146,20 @@ li>a:hover {
 .logout-button-user:focus{
     background: #c60a0a !important;
 }
-.edit-button-user{
-    padding: 5px !important;
-    border-radius: 25px;
+#header-c #userDropdownMenu a.edit-button-user {
+    text-shadow: none;
+    text-transform: initial;
+    border-radius: 4px !important;
+    color: #fff;
+    padding: 8px 12px;
     text-align: center;
-    background-color: #16AFE1;
-    color: white !important;
-    margin-top: 10px;
 }
-.edit-button-user:hover{
-    background: #26CAEA !important;
-}
-.edit-button-user:focus{
-    background: #16AFE1 !important;
-}
+
+#header-c #userDropdownMenu a.edit-button-user:hover,
+#header-c #userDropdownMenu a.edit-button-user:focus,
+#header-c #userDropdownMenu a.edit-button-user:active {
+     background: transparent !important;
+ }
 
 @media all and (max-width: 767px) {
     .header-right {

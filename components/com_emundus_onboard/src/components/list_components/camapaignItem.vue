@@ -40,7 +40,7 @@
                  class="bouton-ajouter pointer add-button-div"
                  :title="AdvancedSettings">
                 <em class="fas fa-pen"></em>
-                <span>Editer</span>
+                <span>{{Modify}}</span>
               </a>
               <v-popover :popoverArrowClass="'custom-popover-arraow'">
                 <button class="tooltip-target b3 card-button"></button>

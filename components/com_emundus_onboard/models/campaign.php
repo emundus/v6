@@ -557,8 +557,6 @@ class EmundusonboardModelcampaign extends JModelList
         $lang = JFactory::getLanguage();
         $actualLanguage = substr($lang->getTag(), 0 , 2);
 
-        $label_fr = '';
-        $label_en = '';
         $limit_status = [];
 
         if (!empty($data)) {
@@ -572,14 +570,12 @@ class EmundusonboardModelcampaign extends JModelList
             foreach ($data as $key => $val) {
                 if ($key == 'label') {
                     $labels = $data['label'];
-                    $label_fr = $data['label']['fr'];
-                    $label_en = $data['label']['en'];
                     $data['label'] = $data['label'][$actualLanguage];
                     $fields[] = $db->quoteName($key) . ' = ' . $db->quote($data['label']);
                 } else if ($key == 'limit_status') {
                     $limit_status = $data['limit_status'];
                 }
-                else if ($key !== 'profileLabel' && $key !== 'progid') {
+                else if ($key !== 'profileLabel' && $key !== 'progid' && $key !== 'status') {
                     $insert = $db->quoteName($key) . ' = ' . $db->quote($val);
                     $fields[] = $insert;
                 }
@@ -1059,7 +1055,7 @@ class EmundusonboardModelcampaign extends JModelList
             $query->select('id,params')
                 ->from($db->quoteName('#__categories'))
                 ->where('json_extract(`params`, "$.idCampaign") LIKE ' . $db->quote('"'.$cid.'"'))
-                ->andWhere($db->quoteName('extension') . ' LIKE ' . $db->quote('com_dropfiles'));
+                ->andWhere($db->quoteName('extension') . ' = ' . $db->quote('com_dropfiles'));
             $db->setQuery($query);
             $campaign_dropfile_cat = $db->loadResult();
 

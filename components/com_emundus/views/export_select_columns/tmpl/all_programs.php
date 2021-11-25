@@ -65,6 +65,9 @@ $comments = $session->get('comments');
         <hr>
         <div class="em-program-title">
             <h1><?= JText::_('TAG_TABLE_TITLE'); ?></h1>
+            <div class="alert alert-warning em-alert warning">
+                <?= JText::_('COM_EMUNDUS_TAG_TABLE_WARNING'); ?>
+            </div>
         </div>
         <div id="emundus_elements">
             <div class="panel panel-primary excel" id="emundus_tag_table">

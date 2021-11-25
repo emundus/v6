@@ -54,7 +54,7 @@ class PlgDropfilesthemesTree extends DropfilesPluginBase
         JHtml::_('jquery.framework');
         $this->addScriptTagLoading();
 
-        $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/handlebars-v4.1.0.js');
+        $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/handlebars-v4.7.7.js');
         $doc->addScript(JURI::base('true') . '/plugins/dropfilesthemes/tree/js/script.js');
         $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/colorbox.init.js');
         $iconic_font = JURI::base('true') . '/components/com_dropfiles/assets/css/material-design-iconic-font.min.css';
