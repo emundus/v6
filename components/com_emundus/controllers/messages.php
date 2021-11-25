@@ -1700,7 +1700,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             sleep(15);
         }
 
-        echo json_encode(['status' => true]);
+        echo json_encode(['status' => true, 'email' => $fnum_info['email']]);
         exit;
     }
 

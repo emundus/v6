@@ -5166,7 +5166,7 @@ $(document).ready(function() {
                                 selector: '#message-body',
                                 menubar: false,
                                 font_formats: "Sans Serif = arial, helvetica, sans-serif;Serif = times new roman, serif;Fixed Width = monospace;Wide = arial black, sans-serif;Narrow = arial narrow, sans-serif;Comic Sans MS = comic sans ms, sans-serif;Garamond = garamond, serif;Georgia = georgia, serif;Tahoma = tahoma, sans-serif;Trebuchet MS = trebuchet ms, sans-serif;Verdana = verdana, sans-serif",
-                                toolbar: "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | outdent indent",
+                                toolbar: "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | outdent indent | removeformat",
                                 fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
                                 height: 350
                             });
@@ -5212,6 +5212,7 @@ $(document).ready(function() {
                                 dataType: 'JSON',
                                 data: { fnum: fnum, raw: raw },
                                 success: function(result) {
+                                    var dest = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent" style="overflow-y: unset"><i>' + result.email + '</i></ul>';
                                     $.ajax({
                                         type: 'POST',
                                         url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnum',
@@ -5232,6 +5233,7 @@ $(document).ready(function() {
                                                 Swal.fire({
                                                     type: 'success',
                                                     title: Joomla.JText._('EMAILS_SENT'),
+                                                    html: dest
                                                 });
                                             } else {
                                                 $('#em-modal-sending-emails').css('display', 'none');
@@ -5266,6 +5268,7 @@ $(document).ready(function() {
                                                 Swal.fire({
                                                     type: 'success',
                                                     title: Joomla.JText._('EMAILS_SENT'),
+                                                    html: dest
                                                 });
                                             } else {
                                                 $('#em-modal-sending-emails').css('display', 'none');
