@@ -31,7 +31,7 @@
               <span class="material-icons">search</span>
             </div>
             <div class="actions">
-              <select name="category" @change="filterByCategory">
+              <select v-if="Object.entries(categories).length > 1" name="category" @change="filterByCategory">
                 <option value="all">{{ translate('SELECT_CATEGORY') }}</option>
                 <option v-for="(category, key) in categories" :key="key" :value="key">{{ category }} </option>
               </select>
@@ -151,7 +151,7 @@
                   </span>
                 </div>
               </div>
-              <a :href="attachmentPath" class="download btn-icon-text" download>
+              <a :href="attachmentPath" class="download btn-icon-text" download v-if="canDownload">
                 <span class="material-icons">
                   file_download
                 </span>
@@ -162,7 +162,7 @@
           </div>
           <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
             <div class="modal-body" v-if="!modalLoading">
-              <AttachmentPreview></AttachmentPreview>
+              <AttachmentPreview @fileNotFound="canDownload = false" @canDownload="canDownload = true"></AttachmentPreview>
               <AttachmentEdit @closeModal="closeModal" @saveChanges="updateAttachment" :fnum="displayedFnum"></AttachmentEdit>
             </div>
           </transition>
@@ -215,6 +215,7 @@ export default {
       },
       canExport: false,
       canDelete: false,
+      canDownload: true,
       modalLoading: false,
       slideTransition: "slide-fade"
     };
@@ -239,8 +240,22 @@ export default {
     },
     async setDisplayedUser() {
       const response = await fileService.getFnumInfos(this.displayedFnum);
-      this.displayedUser = this.users.find(user => user.id == response.fnumInfos.applicant_id);
-      this.$store.dispatch('user/setDisplayedUser', this.displayedUser.id);
+      const foundUser = this.users.find(user => user.id == response.fnumInfos.applicant_id);
+
+      if (!foundUser) {
+        const resp = await userService.getUserById(response.fnumInfos.applicant_id);
+
+        if (resp.status) {
+          this.users.push(resp.user[0]);
+          this.displayedUser = resp.user[0];
+          this.$store.dispatch('user/setDisplayedUser', this.displayedUser.id);
+        } else {
+          this.displayErrorMessage(this.translate('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND'));
+        }
+      } else {
+        this.displayedUser = foundUser;
+        this.$store.dispatch('user/setDisplayedUser', this.displayedUser.id);
+      }
     },
     async getCategories() {
       const response = await attachmentService.getAttachmentCategories();
@@ -315,6 +330,8 @@ export default {
         attachmentService.exportAttachments(this.displayedUser.id, this.displayedFnum, this.checkedAttachments).then((response) => {
           if (response.data.status == true) {
             window.open(response.data.link, '_blank');
+          } else {
+            this.displayErrorMessage(response.data.msg);
           }
         })
       }
@@ -355,15 +372,7 @@ export default {
           }
         });
       } else {
-        Swal.fire(
-          {
-            title: this.translate('ERROR'),
-            text: this.translate('YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS'),
-            type: 'error',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: this.translate('JCLOSE')
-          }
-        );
+        this.displayErrorMessage(this.translate('YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS'));
       }
     },
     async deleteAttachments() {
@@ -377,15 +386,7 @@ export default {
           // Display tooltip deleted succesfully  
         }
       } else {
-        Swal.fire(
-          {
-            title: this.translate('ERROR'),
-            text: this.translate('YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS'),
-            type: 'error',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: this.translate('JCLOSE')
-          }
-        );
+        this.displayErrorMessage(this.translate('YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS'));
       }
     },
 
@@ -492,6 +493,17 @@ export default {
       this.$modal.hide('edit');
       this.selectedAttachment = {};
       this.$store.dispatch('attachment/setSelectedAttachment', {});
+    },
+    displayErrorMessage(msg) {
+      Swal.fire(
+          {
+            title: this.translate('ERROR'),
+            text: msg,
+            type: 'error',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: this.translate('COM_EMUNDUS_ATTACHMENTS_CLOSE')
+          }
+        );
     },
 
     // Transition hooks
