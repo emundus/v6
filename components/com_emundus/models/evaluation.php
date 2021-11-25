@@ -3239,6 +3239,22 @@ class EmundusModelEvaluation extends JModelList {
                     if(!file_exists($mergeZipAllPath)) { mkdir($mergeZipAllPath, 0755, true); }
 
                     if(sizeof($_isEmptyTmpFolder) > 0) {
+                        if($replace_document == 0) {
+                            $keepFiles = [];
+                            foreach($res->files as $_f) {
+                                $keepFiles[] = $_tmpFolder . DS . $_f['filename'];
+                                if(!file_exists($_tmpFolder . DS . $_f['filename'])) {
+                                    $index = array_search($_tmpFolder . DS . $_f['filename'], $keepFiles);
+                                    unset($keepFiles[$index]);
+
+                                    unlink($_tmpFolder . DS . $_f['filename']);     // remove fake files
+                                }
+                            }
+
+                            $diffFiles = array_diff($_isEmptyTmpFolder,$keepFiles);
+                            foreach($diffFiles as $df) { unlink($df); }
+                        }
+
                         $this->ZipLetter($_tmpFolder, $tmp_path . $_zipName, 'true');
                         $this->copy_directory($_tmpFolder . DS, $mergeZipAllPath . DS . str_replace('_tmp' , '', end(explode('/', $_tmpFolder))));
                     }
@@ -3268,6 +3284,22 @@ class EmundusModelEvaluation extends JModelList {
                     $_tmpFolder = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->name . '_' . $user_info[0]->id;
 
                     $fileList = glob($_tmpFolder . DS . '*');
+
+                    if(sizeof($fileList) > 0 and $replace_document == 0) {
+                        $keepFiles = [];
+                        foreach($res->files as $_f) {
+                            $keepFiles[] = $_tmpFolder . DS . $_f['filename'];
+                            if(!file_exists($_tmpFolder . DS . $_f['filename'])) {
+                                $index = array_search($_tmpFolder . DS . $_f['filename'], $keepFiles);
+                                unset($keepFiles[$index]);
+                                unlink($_tmpFolder . DS . $_f['filename']);     // remove fake files
+                            }
+                        }
+                        $diffFiles = array_diff($fileList,$keepFiles);
+                        foreach($diffFiles as $df) { unlink($df); }
+                        // re-update $fileList
+                        $fileList = glob($_tmpFolder . DS . '*');
+                    }
 
                     foreach ($fileList as $filename) {
                         // if extension is pdf --> push into the array $pdf_files
@@ -3324,6 +3356,11 @@ class EmundusModelEvaluation extends JModelList {
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
         elseif ($showMode == 1) {
+
+            /* get real files */
+            $raw = [];
+            foreach($res->files as $rf) { $raw[] = $rf['filename']; }
+
             unset($res->zip_data_by_candidat);
             unset($res->zip_all_data_by_candidat);
 
@@ -3362,8 +3399,13 @@ class EmundusModelEvaluation extends JModelList {
 
                     //$source = EMUNDUS_PATH_ABS . $file->user_id . '--letters' . DS . $file->filename;
                     $source = EMUNDUS_PATH_ABS . 'tmp' . DS . $_uName[0]->name . '_' . $_uName[0]->id . DS . $file->filename;
-                    copy($source, $dir_Name_Path . DS . $file->filename);                                       /// copy file
 
+                    if(!in_array($file->filename, $raw)) {
+                        unlink($source);
+                    } else {
+                        copy($source, $dir_Name_Path . DS . $file->filename);                                       /// copy file
+                    }
+                    
                     /// copy into /tmp/
                     $_zipName = $dir_Name . '_' . date("Y-m-d") . '.zip';                                   // zip file name (e.g: "Convention de financement")
                     $this->ZipLetter($dir_Name_Path, $tmp_path . $_zipName, 'true');
