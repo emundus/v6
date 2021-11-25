@@ -1852,7 +1852,7 @@ class EmundusModelApplication extends JModelList
                             }
                             $forms .= '</table>';
                             // TABLEAU DE PLUSIEURS LIGNES avec moins de 7 colonnes
-                        } elseif (((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) && count($elements) < 6 && !$asTextArea) {
+                        } elseif (((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) && count($elements) < 4 && !$asTextArea) {
                             //-- Entrée du tableau -- */
                             $t_elt = array();
                             foreach ($elements as &$element) {
@@ -3935,7 +3935,7 @@ class EmundusModelApplication extends JModelList
 
     /// get count uploaded files
     public function getCountUploadedFile($fnum,$user_id) {
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
         $m_application = new EmundusModelApplication;
 
         $html = '';
@@ -3955,7 +3955,7 @@ class EmundusModelApplication extends JModelList
 
     /// get list uploaded files
     public function getListUploadedFile($fnum, $user_id) {
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
         $m_application = new EmundusModelApplication;
 
         $html = '';
@@ -3986,18 +3986,18 @@ class EmundusModelApplication extends JModelList
 
     /**
      * Update attachment file, description, is_validated values
-     * 
+     *
      * @param fnum file number
      * @param user the user updating the file
      * @param attachment values to update
-     * 
-     * @return (array) containing status of update and file content update  
+     *
+     * @return (array) containing status of update and file content update
      */
     public function updateAttachment($data) {
         $return = [
             "update" => false
         ];
-        
+
         require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
 
 
@@ -4007,7 +4007,7 @@ class EmundusModelApplication extends JModelList
             $content = file_get_contents($data['file']['tmp_name']);
             $attachment = $this->getUploadByID($data['id']);
             $updated = file_put_contents(EMUNDUS_PATH_REL . $attachment['user_id'] . "/" . $attachment['filename'], $content);
-            
+
             $return['file_update'] = $updated ? true : false;
         }
 
@@ -4040,10 +4040,10 @@ class EmundusModelApplication extends JModelList
      * Generate preview based on file types
      * @param user id of the applicant
      * @param filename
-     * 
+     *
      * @return preview html tags
      */
-    public function getAttachmentPreview($user, $fileName) 
+    public function getAttachmentPreview($user, $fileName)
     {
         $preview = [
             'status' => true,
@@ -4051,10 +4051,11 @@ class EmundusModelApplication extends JModelList
             'overflowX' => false,
             'overflowY' => false,
             'style' => '',
-            'msg' => ''
+            'msg' => '',
+            'error' => ''
         ];
         $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-        
+
         $filePath = EMUNDUS_PATH_REL . $user . "/" . $fileName;
         $fileExists = File::exists($filePath);
 
@@ -4065,7 +4066,7 @@ class EmundusModelApplication extends JModelList
                 $preview['content'] = '<iframe src="' . JURI::base() . $filePath . '" width="100%" height="100%" style="border:none;"></iframe>';
             } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
                 $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="' . JURI::base() . $filePath . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
-            } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {   
+            } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
                 switch($extension) {
@@ -4077,11 +4078,11 @@ class EmundusModelApplication extends JModelList
                         break;
                     case 'doc':
                     case 'docx':
-                    default: 
+                    default:
                         $class = 'Word2007';
                 }
-             
-                // ? Check if render as pdf would be a better solution 
+
+                // ? Check if render as pdf would be a better solution
                 // $rendererName = \PhpOffice\PhpWord\Settings::PDF_RENDERER_TCPDF;
                 // \PhpOffice\PhpWord\Settings::setPdfRenderer($rendererName, JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf');
                 // $pdf = new \PhpOffice\PhpWord\Writer\PDF($phpWord);
@@ -4090,14 +4091,22 @@ class EmundusModelApplication extends JModelList
 
                 $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . $filePath, $class);
                 $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
-                $preview['content'] = '<div class="wrapper">' . $htmlWriter->getContent() . '</div>';
-                $preview['overflowY'] = true;
-                $preview['style'] = 'word';
-                $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
-
+                $content = $htmlWriter->getContent();
+                
+                $contentWithoutSpaces = preg_replace('/\s+/', '', $content);
+                if (strpos($contentWithoutSpaces, '<body></') !== false) {
+                    $preview['status'] = false;
+                    $preview['error'] = 'unavailable';
+                    $preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_UNAVAILABLE') . '</p></div>';
+                } else {
+                    $preview['content'] = '<div class="wrapper">' . $content . '</div>';
+                    $preview['overflowY'] = true;
+                    $preview['style'] = 'word';
+                    $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');                
+                }
             } else if (in_array($extension, ['xls', 'xlsx', 'ods', 'csv'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-             
+
                 $phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_BASE . DS . $filePath);
                 $htmlWriter = new \PhpOffice\PhpSpreadsheet\Writer\HTML($phpSpreadsheet);
                 $htmlWriter->setGenerateSheetNavigationBlock(true);
@@ -4109,7 +4118,7 @@ class EmundusModelApplication extends JModelList
 
                 $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
             } else if (in_array($extension, ['ppt', 'pptx', 'odp'])) {
-                // ? PHPPresentation is not giving html support... need to create it manually ? 
+                // ? PHPPresentation is not giving html support... need to create it manually ?
                 $preview['content'] = $this->convertPowerPointToHTML($filePath);
                 $preview['overflowY'] = true;
                 $preview['style'] = 'presentation';
@@ -4121,23 +4130,25 @@ class EmundusModelApplication extends JModelList
                 $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><video controls  style="max-width: 100%;"><source src="'. JURI::base() . $filePath . '" type="video/' . $extension . '"></video></div>';
             } else {
                 $preview['status'] = false;
+                $preview['error'] = 'unsupported';
                 $preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('FILE_TYPE_NOT_SUPPORTED') . '</p></div>';
-            } 
+            }
         } else {
             $preview['status'] = false;
+            $preview['error'] = 'file_not_found';
             $preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('FILE_NOT_FOUND') . '</p></div>';
         }
 
         return $preview;
     }
 
-    private function convertPowerPointToHTML($filePath) 
+    private function convertPowerPointToHTML($filePath)
     {
         $content = '';
 
         // create a ziparchive
         $zip = new ZipArchive;
-        
+
         if ($zip->open($filePath)) {
             // get xml content of all slides
             $slides = [];
@@ -4158,7 +4169,7 @@ class EmundusModelApplication extends JModelList
             }
 
             $zip->close();
-            
+
             // create html content from slides and style
             $content = '<div class="wrapper" style="display: flex;flex-direction:column;justify-content: flex-start;align-items: center;">';
             foreach ($slides as $key => $slide) {
@@ -4174,7 +4185,7 @@ class EmundusModelApplication extends JModelList
 
                 foreach($entries as $e_key => $entry) {
                     $content .= "<p>";
-                    
+
                     // use . for relative query
                     $query = './/a:t';
                     $text_entries = $xpath->query($query, $entry);
@@ -4182,7 +4193,7 @@ class EmundusModelApplication extends JModelList
                     foreach($text_entries as $text) {
                         $content .= $text->nodeValue;
                     }
-                
+
                     $content .= "</p>";
                 }
 
@@ -4200,7 +4211,7 @@ class EmundusModelApplication extends JModelList
      * @param type (string) list only for now
      * @param id (int) id of the element
      * */
-    public function getFilters($type, $id) 
+    public function getFilters($type, $id)
     {
         $return = [];
 
@@ -4213,7 +4224,7 @@ class EmundusModelApplication extends JModelList
         ->join('LEFT', $db->quoteName('#__fabrik_formgroup', 'fg') . ' ON ' . $db->quoteName('list.form_id') . ' = ' . $db->quoteName('fg.form_id'))
         ->join('LEFT', $db->quoteName('#__fabrik_elements', 'el') . ' ON ' . $db->quoteName('el.group_id') . ' = ' . $db->quoteName('fg.group_id'))
         ->where($db->quoteName('list.id') .'='. $db->quote($id) . ' AND ' . $db->quoteName('el.published') . ' = 1');
-        
+
         $db->setQuery($query);
 
         $results = $db->loadAssocList();
@@ -4241,7 +4252,7 @@ class EmundusModelApplication extends JModelList
         return $return;
     }
 
-    private function getFilterType($element) 
+    private function getFilterType($element)
     {
         $return = '';
 
@@ -4249,24 +4260,24 @@ class EmundusModelApplication extends JModelList
             case 'field':
                 $params = json_decode($element['params'], true);
                 if (!isset($params['database_join_display_type']) && empty($element['default'])) {
-                    $return = 'text';                
+                    $return = 'text';
                 } else {
-                    $return = 'select';                
+                    $return = 'select';
                 }
-            break;   
+            break;
             default:
                 $return = 'select';
-                break;      
+                break;
         }
 
         return $return;
     }
 
-    private function getActionsByElementPlugin($plugin, $params) 
+    private function getActionsByElementPlugin($plugin, $params)
     {
         $actions = [];
         switch ($plugin) {
-            case 'field': 
+            case 'field':
                 $params = json_decode($params, true);
 
                 if (isset($params['database_join_display_type'])) {
@@ -4293,8 +4304,8 @@ class EmundusModelApplication extends JModelList
             case 'databasejoin':
             case 'dropdown':
             case 'user':
-            case 'date': 
-            case 'jdate': 
+            case 'date':
+            case 'jdate':
             case 'radiobutton':
                 $actions = [
                     '=' => 'est égal à',
@@ -4309,28 +4320,28 @@ class EmundusModelApplication extends JModelList
         return $actions;
     }
 
-    private function getValuesByElement($element) 
+    private function getValuesByElement($element)
     {
         $values = [];
 
         switch($element['plugin']) {
-            case 'databasejoin': 
+            case 'databasejoin':
                 $params = json_decode($element['params'], true);
 
                 $table  = $params['join_db_name'];
                 $key = $params['join_key_column'];
                 $value = $params['join_val_column'];
-    
+
                 $db = $this->getDbo();
                 $query = $db->getQuery(true);
-    
+
                 $query->select(array("el.$key", "el.$value"))
                 ->from($db->quoteName($table, 'el'));
-    
+
                 $db->setQuery($query);
-    
+
                 $results = $db->loadAssocList();
-    
+
                 foreach($results as $result) {
                     $values[$result[$key]] = $result[$value];
                 }
@@ -4338,14 +4349,14 @@ class EmundusModelApplication extends JModelList
             case 'user':
                 $db = $this->getDbo();
                 $query = $db->getQuery(true);
-    
+
                 $query->select(array('el.id', 'el.name'))
                 ->from($db->quoteName('#__users', 'el'));
-    
+
                 $db->setQuery($query);
-    
+
                 $results = $db->loadAssocList();
-    
+
                 foreach($results as $result) {
                     $values[$result['id']] = $result['name'];
                 }
@@ -4378,12 +4389,12 @@ class EmundusModelApplication extends JModelList
 
                     $table = '#__' . $matches[1];
                     $key = $matches[2];
-        
+
                     $query->select("DISTINCT $key")
                     ->from($db->quoteName($table));
-        
+
                     $db->setQuery($query);
-        
+
                     $results = $db->loadAssocList();
 
                     foreach($results as $result) {
@@ -4408,7 +4419,7 @@ class EmundusModelApplication extends JModelList
      * @param array $data
      * @return string
      */
-    public function mountQuery($listId, $data) 
+    public function mountQuery($listId, $data)
     {
         $return = "";
 
@@ -4424,7 +4435,7 @@ class EmundusModelApplication extends JModelList
             if ($key == 0) {
                 // parent group
                 foreach($group['filters'] as $filter) {
-                    
+
                 }
             } else {
                 // sub groups
@@ -4435,10 +4446,10 @@ class EmundusModelApplication extends JModelList
                     if ($fkey == 0) {
                         $tmp .= " (";
                     }
-                    
+
                     // filter id
                     // Handle element type
-                    $element = $this->getFabrikElementById($filter['element_id']); 
+                    $element = $this->getFabrikElementById($filter['element_id']);
 
                     // filter action filter value
                     $tmp .= $filter['id'] . " ";
@@ -4469,7 +4480,7 @@ class EmundusModelApplication extends JModelList
      * @param int $listId
      * @return string
      */
-    private function getTableFromFabrikList($listId) 
+    private function getTableFromFabrikList($listId)
     {
         $db = $this->getDbo();
         $query = $db->getQuery(true);

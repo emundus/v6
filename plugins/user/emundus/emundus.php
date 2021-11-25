@@ -444,6 +444,7 @@ class plgUserEmundus extends JPlugin
 
                             $body = preg_replace(["/\[USER_EMAIL\]/", "/\[SITE_URL\]/"], [$user->email, $site_url], $body);
 
+                            // TODO: Set as eMConfig
                             $commercial_emails = 'brice.hubinet@emundus.io,yousra.nmiss@emundus.fr,nicolas.thomas@emundus.fr';
 
                             $emails = explode(',', $commercial_emails);
