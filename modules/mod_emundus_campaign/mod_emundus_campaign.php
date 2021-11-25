@@ -124,10 +124,10 @@ switch ($ordertime) {
 }
 
 $mod_em_campaign_get_admission_date = ($mod_em_campaign_show_admission_start_date||$mod_em_campaign_show_admission_end_date);
-$currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
-$pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
-$futurCampaign      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
-$allCampaign        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
+$currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity);
+$pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity);
+$futurCampaign      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity);
+$allCampaign        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity);
 
 // FAQ
 $faq_articles                = $helper->getFaq();
@@ -137,11 +137,8 @@ $files = $dropfiles_helper->getFiles();
 
 $now = $helper->now;
 
-
 jimport('joomla.html.pagination');
 $session = JFactory::getSession();
-
-$user = JFactory::getUser();
 
 $paginationCurrent  = new JPagination($helper->getTotalCurrent(), $session->get('limitstartCurrent'), $session->get('limit'));
 $paginationPast     = new JPagination($helper->getTotalPast(), $session->get('limitstartPast'), $session->get('limit'));

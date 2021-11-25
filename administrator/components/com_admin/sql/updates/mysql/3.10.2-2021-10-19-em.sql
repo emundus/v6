@@ -30,8 +30,11 @@ CREATE TABLE IF NOT EXISTS `jos_externallogin_logs` (
     INDEX (`message`(255))
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
-ALTER TABLE `jos_users` ADD INDEX IF NOT EXISTS `idx_externallogin` (`password`);
+ALTER TABLE `jos_users` CHANGE `registerDate` `registerDate` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Register date';
+ALTER TABLE `jos_users` CHANGE `lastResetTime` `lastResetTime` TIMESTAMP NULL DEFAULT NULL COMMENT 'Date of last password reset';
+ALTER TABLE `jos_users` CHANGE `lastvisitDate` `lastvisitDate` TIMESTAMP NULL DEFAULT NULL;
 
+ALTER TABLE `jos_users` ADD INDEX `idx_externallogin_2` (`password`);
 
 -- INSERT INTO jos_assets
 INSERT INTO jos_assets (parent_id, level, name, title, rules) VALUES (1, 1, 'com_externallogin', 'COM_EXTERNALLOGIN', '{}');
