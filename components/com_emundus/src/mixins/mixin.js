@@ -4,7 +4,7 @@ import userService from '../services/user.js';
 var mixin = {
     methods: {
         formattedDate: function (date) {
-            return moment(date).format('L');
+            return moment(date).format('LLLL');
         },
         getUserNameById: function (id) {
             let completeName = '';

@@ -1518,7 +1518,7 @@ class EmundusModelEvaluation extends JModelList {
                 $limit = $session->get('limit');
 
                 $limitStart = $session->get('limitstart');
-                if ($limitStart > 0) {
+                if ($limit > 0) {
                     $query .= " limit $limitStart, $limit ";
                 }
             }

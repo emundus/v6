@@ -18,7 +18,7 @@
                     </select>
                 </div>
                 <div class="input-group" v-if="canUpdate">
-                    <label for="replace"> {{ translate('replace') }}</label>
+                    <label for="replace"> {{ translate('COM_EMUNDUS_ATTACHMENTS_REPLACE') }}</label>
                     <input type="file" name="replace" @change="updateFile" :accept="allowedType">
                 </div>
             </div>

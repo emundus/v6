@@ -177,7 +177,10 @@ switch ($order) {
             <?php endif; ?>
 
             <?php if (in_array('documents', $modules_tabs)) : ?>
-                document.getElementById('documents').appendChild(document.getElementsByClassName('campaign-documents')[0].parentElement);
+                document.getElementById('documents').style.display = 'none';
+                if(typeof document.getElementsByClassName('campaign-documents')[0] != 'undefined') {
+                    document.getElementsByClassName('campaign-documents')[0].parentElement.style.display = 'none';
+                }
             <?php endif; ?>
         }
 

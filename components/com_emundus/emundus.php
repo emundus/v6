@@ -412,7 +412,7 @@ JText::script('SEARCH');
 JText::script('NAME');
 JText::script('DESCRIPTION');
 JText::script('STATUS');
-JText::script('REPLACE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_REPLACE');
 JText::script('EXPORT');
 JText::script('DELETE_SELECTED_ATTACHMENTS');
 JText::script('CONFIRM_DELETE_SELETED_ATTACHMENTS');
@@ -435,6 +435,7 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_WAITING');
 JText::script('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE');
 JText::script('COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE');
 JText::script('COM_EMUNDUS_ATTACHMENTS_CLOSE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');

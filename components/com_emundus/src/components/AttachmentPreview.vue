@@ -38,6 +38,7 @@ export default {
                 data = this.$store.state.attachment.previews[this.attachment.aid];
             }
 
+            this.$emit('canDownload');
             if (data.status) {
                 this.preview = data.content;
                 this.overflowX = data.overflowX; 
@@ -53,6 +54,10 @@ export default {
                     }, 3000);
                 }
             } else {
+                if (data.error === "file_not_found") {
+                    this.$emit('fileNotFound');
+                }
+
                 this.overflowX = false; 
                 this.overflowY = false;
                 this.preview = data.content;
