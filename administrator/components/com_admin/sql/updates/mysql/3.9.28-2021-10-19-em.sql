@@ -1,6 +1,6 @@
 ALTER TABLE jos_emundus_setup_letters ENGINE=InnoDB;
 
-create table jos_emundus_setup_letters_repeat_campaign_id
+create table jos_emundus_setup_letters_repeat_campaign
 (
     id int auto_increment
         primary key,
