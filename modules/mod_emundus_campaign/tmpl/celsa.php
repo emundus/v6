@@ -31,6 +31,25 @@ usort($futurCampaign, function($a, $b) {
     return $a->label <=> $b->label;
 });
 
+// Add a custom class parameter to currentCampaign items
+$currentCampaign = array_map(function($item) use ($formations) {
+    $item->class = '';
+
+    foreach ($formations as $formation) {
+        if ($formation->id == $item->formation) {
+            $item->class .= 'formation_type-' . $formation->type;
+            $item->class .= ' formation_level-' . $formation->level;
+
+            foreach ($formation->voies_d_acces as $voie) {
+                $item->class .= ' voie_d_acces-' . $voie->voie_d_acces;
+            }
+            break;
+        }
+    }
+
+    return $item;
+}, $currentCampaign);
+
 ?>
 
 <?= $mod_em_campaign_intro; ?>
@@ -57,16 +76,32 @@ usort($futurCampaign, function($a, $b) {
                 </ul>
             <?php endif; ?>
             <?php if(!empty($formationTypes) && count($formationTypes) > 1): ?>
-                <div class="g-block size-30 navformation">
+                <div class="g-block size-30 navformation" style="display:flex;flex-direction:row;">
                     <p>
-                        <select name="formation_type" id="formation_type" onchange="filterByFormation(this.value)">
+                        <select name="formation_type" id="formation_type" onchange="filterBy('formation_type', this.value)">
                             <option value="all" selected>Tous type de formations</option>
                             <?php foreach ($formationTypes as $type): ?>
                                 <option value="<?php echo $type->id; ?>"><?php echo $type->type; ?></option>
                             <?php endforeach; ?>
                         </select>
                     </p>
-                </div>    
+                    <p>
+                        <select name="formation_level" id="formation_level" onchange="filterBy('formation_level', this.value)">
+                            <option value="all" selected>Tous les niveaux de formation</option>
+                            <?php foreach ($formationLevels as $level): ?>
+                                <option value="<?php echo $level->id; ?>"><?php echo $level->label; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </p>
+                    <p>
+                        <select name="voie_d_acces" id="voie_d_acces" onchange="filterBy('voie_d_acces', this.value)">
+                            <option value="all" selected>Toutes les voies d'acces</option>
+                            <?php foreach ($voiesDAcces as $acces): ?>
+                                <option value="<?php echo $acces->id; ?>"><?php echo $acces->libelle_fr; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </p>
+                </div>
             <?php endif; ?>
         </div>
         <?php if ($mod_em_campaign_show_nav_order): ?>
@@ -192,16 +227,7 @@ usort($futurCampaign, function($a, $b) {
     </div>
     <div class="campaign-month-campaigns"><!-- rt12 toclose -->
     <?php } ?>
-    <?php $formation_class = "";
-        // find formation type from campaign formation id
-        foreach ($formations as $formation) {
-            if ($formation->id == $result->formation) {
-                $formation_class = 'formation_type-' . $formation->type;
-            }
-        }
-
-    ?>
-    <div class="campaign-content <?php echo $formation_class ?>">
+    <div class="campaign-content <?php echo $result->class ?>">
         <div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
             <h4>
                 <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
@@ -303,16 +329,7 @@ usort($futurCampaign, function($a, $b) {
                     </div>
                     <div class="campaign-month-campaigns"><!-- rt12 toclose -->
                 <?php } ?>
-                <?php $formation_class = "";
-                    // find formation type from campaign formation id
-                    foreach ($formations as $formation) {
-                        if ($formation->id == $result->formation) {
-                            $formation_class = 'formation_type-' . $formation->type;
-                        }
-                    }
-                
-                ?>
-                <div class="campaign-content <?php echo $formation_class ?>">
+                <div class="campaign-content <?php echo $result->class ?>">
                     <div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
                         <h4>
                             <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
@@ -391,16 +408,7 @@ usort($futurCampaign, function($a, $b) {
                     </div>
                     <div class="campaign-month-campaigns"><!-- rt12 toclose -->
                 <?php } ?>
-                <?php $formation_class = "";
-                    // find formation type from campaign formation id
-                    foreach ($formations as $formation) {
-                        if ($formation->id == $result->formation) {
-                            $formation_class = 'formation_type-' . $formation->type;
-                        }
-                    }
-                
-                ?>
-                <div class="campaign-content <?php echo $formation_class ?>">
+                <div class="campaign-content <?php echo $result->class ?>">
                     <div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
                         <h4>
                             <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
@@ -448,18 +456,30 @@ usort($futurCampaign, function($a, $b) {
     </div><!-- Close tab-content -->
 </form>
 <script type="text/javascript">
-    function filterByFormation(value) {
-        const campaigns = document.querySelectorAll('.campaign-content');
+    const campaigns = document.querySelectorAll('.campaign-content');
+    let filters = {};
+
+    function filterBy(type, value) {
         campaigns.forEach(function(campaign) {
+            let display = true;
+
             if (value == "all") {
                 campaign.style.display = "block";
+                delete filters[type];
             } else {
-                if (campaign.classList.contains('formation_type-' + value)) {
-                    campaign.style.display = 'block';
-                } else {
-                    campaign.style.display = 'none';
-                }
+                filters[type] = value;
             }
+
+            // Loop through each filter
+            Object.keys(filters).forEach(function(filter) {
+                const filterClass = filter + "-" + filters[filter];
+
+                if (!campaign.classList.contains(filterClass)) {
+                    display = false;
+                }
+            });
+
+            campaign.style.display = display ? "block" : "none";
         });
     }
     

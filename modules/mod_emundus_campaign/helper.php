@@ -230,7 +230,23 @@ class modEmundusCampaignHelper {
 
         try {
             $db->setQuery($query);
-            return $db->loadObjectList();
+
+            $formations = $db->loadObjectList();
+
+            foreach ($formations as $formation) {
+                
+                $query  = $db->getQuery(true);
+                
+                $query
+                    ->select('repeat.voie_d_acces')
+                    ->from($db->quoteName('data_acces_formation_repeat_voie_d_acces', 'repeat'))
+                    ->leftJoin($db->quoteName('data_acces_formation', 'daf') . ' ON ' . $db->quoteName('repeat.parent_id') . ' = '. $db->quoteName('daf.id'))
+                    ->where($db->quoteName('daf.id') . ' = ' . $formation->id);
+
+                $formation->voies_d_acces = $db->setQuery($query)->loadObjectList();
+            }
+
+            return $formations;
         } catch (Exception $e) {
             return null;
         }
@@ -243,6 +259,38 @@ class modEmundusCampaignHelper {
         $query
             ->select('*')
             ->from($db->quoteName('data_formation_type'));
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    public function getFormationLevels() {
+        $db = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+
+        $query
+            ->select('*')
+            ->from($db->quoteName('data_formation_level'));
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    public function getVoiesDAcces() {
+        $db = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+
+        $query
+            ->select('*')
+            ->from($db->quoteName('data_voies_d_acces'));
 
         try {
             $db->setQuery($query);
