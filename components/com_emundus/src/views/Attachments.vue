@@ -33,7 +33,7 @@
             <div class="actions">
               <select v-if="Object.entries(categories).length > 1" name="category" @change="filterByCategory">
                 <option value="all">{{ translate('SELECT_CATEGORY') }}</option>
-                <option v-for="(category, key) in categories" :key="key" :value="key">{{ category }} </option>
+                <option v-for="(category, key) in categories" :key="key" :value="key"> {{ category != null && category != "" ? translate(category) : category }} </option>
               </select>
               <div v-if="canExport" class="btn-icon-text" @click="exportAttachments" :class="{'disabled': checkedAttachments.length < 1}">
                 <span class="material-icons export">
@@ -267,7 +267,7 @@ export default {
 
         // Add attachment categories if not already given by the server
         this.attachments.forEach(attachment => {
-          if (!response.categories[attachment.category] && attachment.category != "") {
+          if (!response.categories[attachment.category] && attachment.category != "" && attachment.category != null) {
             response.categories[attachment.category] = this.translate(attachment.category);
           }
         });
