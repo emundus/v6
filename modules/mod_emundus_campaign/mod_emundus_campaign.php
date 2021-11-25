@@ -48,6 +48,7 @@ $program_code=$params->get('mod_em_program_code');
 $modules_tabs = $params->get('mod_em_campaign_modules_tab');
 $offset = JFactory::getConfig()->get('offset');
 $sef = JFactory::getConfig()->get('sef');
+$helper = new modEmundusCampaignHelper;
 
 $condition ='';
 
@@ -81,10 +82,10 @@ if ($params->get('mod_em_campaign_layout') == "institut_fr") {
 }
 
 if ($params->get('mod_em_campaign_layout') == "celsa") {
-    $helper = new modEmundusCampaignHelper;
-
     $formations = $helper->getFormationsWithType();
     $formationTypes = $helper->getFormationTypes();
+    $formationLevels = $helper->getFormationLevels();
+    $voiesDAcces = $helper->getVoiesDAcces();
 }
 
 if (isset($searchword) && !empty($searchword)) {
@@ -122,7 +123,6 @@ switch ($ordertime) {
         break;
 }
 
-$helper = new modEmundusCampaignHelper;
 $mod_em_campaign_get_admission_date = ($mod_em_campaign_show_admission_start_date||$mod_em_campaign_show_admission_end_date);
 $currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity);
 $pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity);
