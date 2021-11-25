@@ -1187,7 +1187,7 @@ class EmundusModelMessages extends JModelList {
                     $letter = $_mEval->generateLetters($fnum, [$attach], 0,0,0);
 
                     $upload_id = current(json_decode($letter)->files)->upload;
-                    $upload_filename = JURI::base() . EMUNDUS_PATH_REL . current(json_decode($letter)->files)->user_id . DS . current(json_decode($letter)->files)->filename;
+                    $upload_filename = current(json_decode($letter)->files)->url . current(json_decode($letter)->files)->filename;
 
                     $attachment_raw = $_mFile->getSetupAttachmentsById([$attach]);
 
