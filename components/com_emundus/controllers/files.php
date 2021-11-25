@@ -864,7 +864,7 @@ class EmundusControllerFiles extends JControllerLegacy
             // Get triggered email
             include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
             $m_email = new EmundusModelEmails;
-            $trigger_emails = $m_email->getEmailTrigger($state, $code, '0,1');
+            $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
             $toAttach = [];
 
             if (count($trigger_emails) > 0) {
@@ -1431,6 +1431,22 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $result = array('status' => true, 'totalfile'=> $totalfile, 'ids'=> $ids);
         echo json_encode((object) $result);
+        exit();
+    }
+
+    public function getallfnums() 
+    {
+        $m_files = $this->getModel('Files');
+        $fnums = $m_files->getAllFnums();
+
+        $validFnums = array();
+        foreach ($fnums as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum) && $fnum != 'em-check-all-all' && $fnum != 'em-check-all') {
+                $validFnums[] = $fnum;
+            }
+        }
+
+        echo json_encode($validFnums);
         exit();
     }
 
@@ -4327,8 +4343,13 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         exit;
     }
+
+    public function getattachmentcategories() 
+    {
+        $m_files = $this->getModel('Files');
+        $categories = $m_files->getAttachmentCategories();
+
+        echo json_encode((array('status' => true, 'categories' => $categories)));
+        exit;
+    }
 }
-
-
-
-

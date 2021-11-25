@@ -41,6 +41,13 @@ if (isset($user->menutype)) {
     $user_menutype = 'mainmenu';
 }
 
+/*
+ * TCHOOZ PARAMETERS
+ */
+$profiles = $params->get('profiles');
+$title = $params->get('title', '');
+$desc_text = $params->get('desc_text', '');
+
 $folder = $params->get('folder', '');
 $show_profile_link = $params->get('show_profile_link', 1);
 $show_start_link = $params->get('show_start_link', 1);
@@ -204,7 +211,13 @@ if (!empty($fnum)) {
 	$app->redirect( $link );
 }
 
-if (!empty(@$user->fnums) || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-	require JModuleHelper::getLayoutPath('mod_emunduspanel', $params->get('panel_style', 'default'));
+if($params->get('panel_style', 'default') != 'tchooz_dashboard') {
+    if (!empty(@$user->fnums) || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+        require JModuleHelper::getLayoutPath('mod_emunduspanel', $params->get('panel_style', 'default'));
+    }
+} else {
+    if ((!empty(@$user->fnums) || EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && in_array(JFactory::getSession()->get('emundusUser')->profile,$profiles)) {
+        require JModuleHelper::getLayoutPath('mod_emunduspanel', 'tchooz_dashboard');
+    }
 }
 

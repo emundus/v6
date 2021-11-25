@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_installer
  *
- * @copyright   (C) 2014 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -331,7 +331,7 @@ class InstallerModelUpdatesites extends InstallerModel
 
 					if (!is_null($manifest))
 					{
-						// Search if the extension exists in the extensions table. Excluding joomla core extensions and discovered but not yet installed extensions.
+						// Search if the extension exists in the extensions table. Excluding joomla core extensions (id < 10000) and discovered extensions.
 						$query = $db->getQuery(true)
 							->select($db->quoteName('extension_id'))
 							->from($db->quoteName('#__extensions'))

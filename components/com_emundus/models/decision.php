@@ -1435,11 +1435,11 @@ class EmundusModelDecision extends JModelList
 			$res = $dbo->loadAssocList();
 			$this->_applicants = $res;
 
-			$limit = $session->get('limitstart');
+			$limit = $session->get('limit');
 
-			$limitStart = $session->get('limit');
-			if ($limitStart > 0) {
-				$query .= " limit $limit, $limitStart ";
+			$limitStart = $session->get('limitstart');
+			if ($limit > 0) {
+				$query .= " limit $limitStart, $limit ";
 			}
 
 			$dbo->setQuery($query);

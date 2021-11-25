@@ -542,7 +542,7 @@ class EmundusHelperFiles
             }
 
             // get profiles for selected programmes or campaigns
-            $plist = $m_profile->getProfileIDByCampaign((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
+            $plist = $m_profile->getProfilesIDByCampaign((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
 
         } else {
             $plist = $m_profile->getProfileIDByCourse($code, $camps);
@@ -935,7 +935,7 @@ class EmundusHelperFiles
             } elseif ($element_name=='training_id') {
                 $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$join_val.' AS elt_val FROM '.$params->join_db_name.' ORDER BY '.str_replace('{thistable}', $params->join_db_name, $params->join_db_name.'.date_start ');
             } else {
-                $params->database_join_where_sql = (strpos($params->database_join_where_sql, '{rowid}') === false) ? $params->database_join_where_sql : '';
+                $params->database_join_where_sql =  (strpos($params->database_join_where_sql, '{rowid}') === false && strpos($params->database_join_where_sql, 'raw') === false ) ? $params->database_join_where_sql : '';
                 $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$join_val.' AS elt_val FROM '.$params->join_db_name.' '.str_replace('{thistable}', $params->join_db_name, preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $params->database_join_where_sql));
             }
             $db->setQuery($query);

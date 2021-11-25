@@ -47,6 +47,44 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         exit;
     }
 
+    public function getpalettecolors(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $app    = JFactory::getApplication();
+            $menu   = $app->getMenu();
+            $active = $menu->getActive();
+            if(empty($active)){
+                $menuid = 1079;
+            } else {
+                $menuid = $active->id;
+            }
+
+            $query->select('m.params')
+                ->from($db->quoteName('#__modules','m'))
+                ->leftJoin($db->quoteName('#__modules_menu','mm').' ON '.$db->quoteName('mm.moduleid').' = '.$db->quoteName('m.id'))
+                ->where($db->quoteName('m.module') . ' LIKE ' . $db->quote('mod_emundus_dashboard_vue'))
+                ->andWhere($db->quoteName('mm.menuid') . ' = ' . $menuid);
+
+            $db->setQuery($query);
+            $modules = $db->loadColumn();
+
+            foreach ($modules as $module) {
+                $params = json_decode($module, true);
+                if (in_array(JFactory::getSession()->get('emundusUser')->profile,$params['profile'])) {
+                    $colors = $params['colors'];
+                }
+            }
+
+            $tab = array('status' => 0, 'msg' => 'success', 'data' => $colors);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function getwidgets(){
         try {
             $widgets = $this->model->getwidgets();
@@ -116,6 +154,84 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
             }
 
             $tab = array('msg' => 'success', 'data' => $register_at);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getfilescountbystatusgroupbydate(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+
+            $program = $jinput->getString('program');
+
+            $results = $this->model->getfilescountbystatusgroupbydate($program);
+
+            $tab = array('msg' => 'success', 'dataset' => $results['dataset'], 'category' => $results['category']);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getfilescountbystatusandsession(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+
+            $program = $jinput->getString('program');
+
+            $results = $this->model->getfilescountbystatusandsession($program);
+
+            $tab = array('msg' => 'success', 'dataset' => $results['dataset'], 'category' => $results['category']);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getfilescountbystatusandcourses(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+            $program = $jinput->getString('program');
+            $session = $jinput->getString('session');
+
+            $results = $this->model->getfilescountbystatusandcourses($program,$session);
+
+            $tab = array('msg' => 'success', 'dataset' => $results['dataset'], 'category' => $results['category']);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getfilescountbystatusandcoursesprecollege(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+            $session = $jinput->getString('session');
+
+            $results = $this->model->getfilescountbystatusandcoursesprecollege($session);
+
+            $tab = array('msg' => 'success', 'dataset' => $results['dataset'], 'category' => $results['category']);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getfilescountbynationalities(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+            $program = $jinput->getString('program');
+
+            $results = $this->model->getfilescountbynationalities($program);
+
+            $tab = array('msg' => 'success', 'dataset' => $results['dataset'], 'category' => $results['category']);
         } catch (Exception $e) {
             $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
         }
