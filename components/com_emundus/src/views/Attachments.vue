@@ -67,15 +67,15 @@
                       <span v-if="sort.orderBy == 'timedate' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
                       <span v-if="sort.orderBy == 'timedate' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
                     </th>
-                    <th class='category' @click="orderBy('category')"> 
-                      {{ translate('COM_EMUNDUS_ATTACHMENTS_CATEGORY') }}
-                      <span v-if="sort.orderBy == 'category' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
-                      <span v-if="sort.orderBy == 'category' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
-                    </th>
                     <th class='desc' @click="orderBy('description')"> 
                       {{ translate('DESCRIPTION') }}
                       <span v-if="sort.orderBy == 'description' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
                       <span v-if="sort.orderBy == 'description' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
+                    <th class='category' @click="orderBy('category')"> 
+                      {{ translate('COM_EMUNDUS_ATTACHMENTS_CATEGORY') }}
+                      <span v-if="sort.orderBy == 'category' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'category' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
                     </th>
                     <th class='status' @click="orderBy('is_validated')"> 
                       {{ translate('STATUS') }}
@@ -104,16 +104,16 @@
                     </td>
                     <td class="td-document" @click="openModal(attachment)">{{ attachment.value }}</td>
                     <td class='date'>{{ formattedDate(attachment.timedate) }}</td>
-                    <td class='category'>{{ categories[attachment.category] ? translate(categories[attachment.category]) : attachment.category }}</td>
                     <td class="desc">{{ attachment.description }}</td>
+                    <td class='category'>{{ categories[attachment.category] ? translate(categories[attachment.category]) : attachment.category }}</td>
                     <td class="status valid-state" :class="{
                       'success': attachment.is_validated == 1, 
                       'error': attachment.is_validated == -2
                       }">
                       <select @change="e => updateStatus(e, attachment)">
-                        <option value="1" :selected="attachment.is_validated === 1">{{ translate('VALID') }}</option>
-                        <option value="-2" :selected="attachment.is_validated === -2">{{ translate('INVALID') }}</option>
-                        <option value="" :selected="attachment.is_validated !== 1 &&  attachment.is_validated !== -2">{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}</option>
+                        <option value="1" :selected="attachment.is_validated == 1">{{ translate('VALID') }}</option>
+                        <option value="-2" :selected="attachment.is_validated == -2">{{ translate('INVALID') }}</option>
+                        <option value="" :selected="attachment.is_validated != 1 &&  attachment.is_validated != -2">{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}</option>
                       </select>
                     </td>
                     <td>{{ getUserNameById(attachment.modified_by) }}</td>
