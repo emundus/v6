@@ -10,11 +10,12 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="status">{{ translate('STATUS') }}</label>
+                    <label for="status">{{ translate('COM_EMUNDUS_ATTACHMENTS_CHECK') }}</label>
                     <select name="status" v-model="attachment.is_validated" :disabled="!canUpdate">
-                        <option value=0> {{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }} </option>
+                        <option value=-2> {{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }} </option>
+                        <option value=2> {{ translate('COM_EMUNDUS_ATTACHMENTS_WARNING') }}</option>
                         <option value=1> {{ translate('VALID') }} </option>
-                        <option value=-2> {{ translate('INVALID') }} </option>
+                        <option value=0> {{ translate('INVALID') }} </option>
                     </select>
                 </div>
                 <div class="input-group" v-if="canUpdate">
@@ -26,6 +27,14 @@
                 <div>
                     <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_SEND_DATE') }}</span>
                     <span>{{ formattedDate(attachment.timedate) }}</span>
+                </div>
+                <div v-if="attachment.user_id">
+                    <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY') }}</span>
+                    <span>{{ getUserNameById(attachment.user_id) }}</span>
+                </div>
+                <div v-if="attachment.category">
+                    <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_CATEGORY') }}</span>
+                    <span>{{ translate(attachment.category) }}</span>
                 </div>
                 <div v-if="attachment.modified_by">
                     <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY') }}</span>
@@ -75,6 +84,7 @@ export default {
     mounted() {
         this.canUpdate = this.$store.state.user.rights[this.fnum] ? this.$store.state.user.rights[this.fnum].canUpdate : false;
         this.attachment = this.$store.state.attachment.selectedAttachment;
+        console.log('here');
     },
     methods: {
         async saveChanges() {
