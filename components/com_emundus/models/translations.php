@@ -30,6 +30,43 @@ class EmundusModelTranslations extends JModelList
         JLog::addLogger(['text_file' => 'com_emundus.translations.php'], JLog::ERROR);
     }
 
+    public function getTranslationsObject(){
+        $dir = JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'contentelements';
+
+        $objects = array();
+
+        if (file_exists($dir) && is_dir($dir) ) {
+            $scan_arr = scandir($dir);
+            $files_arr = array_diff($scan_arr, array('.','..') );
+            foreach ($files_arr as $file) {
+                $string_datas = '';
+                $fp = fopen($dir . '/' . $file, "r");
+                while ( $ligneXML = fgets($fp, 1024)) {
+                    // Affichage "brut" de la ligne convertie en HTML
+                    $string_datas .= $ligneXML;
+                }
+                $data = simplexml_load_string($string_datas);
+                $object = new stdClass;
+                $object->name = $data->name;
+                $object->description = JText::_($data->description);
+                $object->table = $data->reference->table->name;
+            }
+        }
+        return [];
+
+        // Ouverture du fichier
+        /*$fp = fopen($fichier, "r");
+        if (!$fp) die("Impossible d'ouvrir le fichier XML");
+
+        // Lecture ligne par ligne
+        while ( $ligneXML = fgets($fp, 1024)) {
+            // Affichage "brut" de la ligne convertie en HTML
+            echo htmlEntities($ligneXML)."<br />";
+        }
+
+        fclose($fp);*/
+    }
+
     public function getTranslations($type = 'override',$lang_code = '*',$search = '',$location = '',$reference_table = '',$reference_id = 0,$tag = ''){
         $query = $this->_db->getQuery(true);
 
