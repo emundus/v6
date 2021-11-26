@@ -10,7 +10,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="status">{{ translate('STATUS') }}</label>
+                    <label for="status">{{ translate('COM_EMUNDUS_ATTACHMENTS_CHECK') }}</label>
                     <select name="status" v-model="attachment.is_validated" :disabled="!canUpdate">
                         <option value=-2> {{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }} </option>
                         <option value=1> {{ translate('VALID') }} </option>

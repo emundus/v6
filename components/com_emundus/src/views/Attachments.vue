@@ -79,7 +79,7 @@
                       <span v-if="sort.orderBy == 'category' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
                     </th>
                     <th class='status' @click="orderBy('is_validated')"> 
-                      {{ translate('STATUS') }}
+                      {{ translate('COM_EMUNDUS_ATTACHMENTS_CHECK') }}
                       <span v-if="sort.orderBy == 'is_validated' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
                       <span v-if="sort.orderBy == 'is_validated' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
                     </th>
@@ -234,6 +234,7 @@ export default {
     this.getUsers();
     this.getAttachments();
     this.setAccessRights();
+    console.log('here');
   },
   methods: {
     // Getters and setters
