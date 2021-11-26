@@ -30,7 +30,7 @@ class EmundusModelTranslations extends JModelList
         JLog::addLogger(['text_file' => 'com_emundus.translations.php'], JLog::ERROR);
     }
 
-    public function getTranslations($type = 'fabrik',$lang_code = '*',$search = '',$location = '',$reference_table = '',$reference_id = 0){
+    public function getTranslations($type = 'override',$lang_code = '*',$search = '',$location = '',$reference_table = '',$reference_id = 0,$tag = ''){
         $query = $this->_db->getQuery(true);
 
         $query->select('*')
@@ -52,6 +52,9 @@ class EmundusModelTranslations extends JModelList
         }
         if(!empty($reference_id)){
             $query->where($this->_db->quoteName('reference_id') . ' LIKE ' . $this->_db->quote($reference_id));
+        }
+        if(!empty($tag)){
+            $query->where($this->_db->quoteName('tag') . ' LIKE ' . $this->_db->quote($tag));
         }
 
         $this->_db->setQuery($query);
@@ -99,7 +102,7 @@ class EmundusModelTranslations extends JModelList
                     return JLanguageHelper::saveToIniFile($override_file, $parsed_file);
                 }
             } else {
-                return $this->updateTranslation();
+                return false;
             }
         } catch(Exception $e){
             JLog::add('Problem when try to insert translation into file ' . $location . ' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
@@ -107,7 +110,42 @@ class EmundusModelTranslations extends JModelList
         }
     }
 
-    public function updateTranslation(){
-        return true;
+    public function updateTranslation($tag,$override,$lang_code,$type = 'override'){
+        $query = $this->_db->getQuery(true);
+        $user = JFactory::getUser();
+
+        $location = $lang_code . '.override.ini';
+
+        try {
+            if($type === 'override') {
+                $query->update('#__emundus_setup_languages')
+                    ->set($this->_db->quoteName('override') . ' = ' . $this->_db->quote($override))
+                    ->set($this->_db->quoteName('override_md5') . ' = ' . $this->_db->quote(md5($override)))
+                    ->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user->id))
+                    ->set($this->_db->quoteName('modified_date') . ' = ' . time())
+                    ->where($this->_db->quoteName('tag') . ' = ' . $this->_db->quote($tag))
+                    ->andWhere($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code))
+                    ->andWhere($this->_db->quoteName('type') . ' = ' . $this->_db->quote($type));
+                $this->_db->setQuery($query);
+
+                if($this->_db->execute()){
+                    $override_file = JPATH_BASE . '/language/overrides/' . $location;
+                    if (file_exists($override_file)) {
+                        $parsed_file = JLanguageHelper::parseIniFile($override_file);
+                        $parsed_file[$tag] = $override;
+                        return JLanguageHelper::saveToIniFile($override_file, $parsed_file);
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return $this->insertTranslation($tag,$override,$lang_code);
+            }
+        } catch(Exception $e){
+            JLog::add('Problem when try to update translation ' . $tag . ' into file ' . $location . ' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
     }
 }

@@ -57,26 +57,53 @@ class EmundusModelTranslationTest extends TestCase
         $this->assertEmpty($this->m_translations->getTranslations(1));
 
         // TEST 4 - GET FABRIK TRANSLATIONS IN FRENCH
-        $this->assertNotEmpty($this->m_translations->getTranslations('fabrik','fr-FR'));
+        $this->assertNotEmpty($this->m_translations->getTranslations('override','fr-FR'));
 
         // TEST 5 - GET FABRIK TRANSLATIONS IN ENGLISH
-        $this->assertNotEmpty($this->m_translations->getTranslations('fabrik','en-GB'));
+        $this->assertNotEmpty($this->m_translations->getTranslations('override','en-GB'));
 
         // TEST 6 - GET FABRIK TRANSLATIONS IN LANGUAGE NOT EXISTING
-        $this->assertEmpty($this->m_translations->getTranslations('fabrik','pt-PT'));
+        $this->assertEmpty($this->m_translations->getTranslations('override','pt-PT'));
 
         // TEST 7 - GET FABRIK OPTIONS of the element 7777
-        $this->assertNotEmpty($this->m_translations->getTranslations('fabrik_options','*','','','',7777));
+        $this->assertNotEmpty($this->m_translations->getTranslations('override','*','','','',7777));
 
         // TEST 8 - GET FABRIK ELEMENTS on lang fr-FR
-        $this->assertNotEmpty($this->m_translations->getTranslations('fabrik','fr-FR','','','fabrik_elements'));
+        $this->assertNotEmpty($this->m_translations->getTranslations('override','fr-FR','','','fabrik_elements'));
 
         // TEST 9 - GET FABRIK ELEMENTS on lang en-GB
-        $this->assertNotEmpty($this->m_translations->getTranslations('fabrik','en-GB','','','fabrik_elements'));
+        $this->assertNotEmpty($this->m_translations->getTranslations('override','en-GB','','','fabrik_elements'));
+
+        // TEST 10 - GET TRANSLATIONS WITH SEARCH
+        $this->assertNotEmpty($this->m_translations->getTranslations('override','*','Mon élément'));
     }
 
     public function testInsertTranslation(){
-        // TEST 1 - Insert a basic translation of a fabrik_element
-        $this->assertSame(true, $this->m_translations->insertTranslation('ELEMENT_TEST','Mon élément de test','fr-FR','','fabrik','fabrik_elements',9999));
+        if(empty($this->m_translations->getTranslations('override','fr-FR','','','',0,'ELEMENT_TEST'))) {
+            // TEST 1 - Insert a basic translation of a fabrik_element
+            $this->assertSame(true, $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999));
+        } else {
+            // TEST 2 - Failed waiting - Insert a basic translation of a fabrik_element
+            $this->assertSame(false, $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999));
+        }
+
+        if(empty($this->m_translations->getTranslations('override','en-GB','','','',0,'ELEMENT_TEST'))) {
+            // TEST 1 - Insert a basic translation of a fabrik_element in english file
+            $this->assertSame(true, $this->m_translations->insertTranslation('ELEMENT_TEST', 'My element', 'en-GB', '', 'override', 'fabrik_elements', 9999));
+        } else {
+            // TEST 2 - Failed waiting - Insert a basic translation of a fabrik_element in english file
+            $this->assertSame(false, $this->m_translations->insertTranslation('ELEMENT_TEST', 'My element', 'en-GB', '', 'override', 'fabrik_elements', 9999));
+        }
+    }
+
+    public function testUpdateTranslations() {
+        // TEST 1 - Update the translations created before in french
+        $this->assertSame(true,$this->m_translations->updateTranslation('ELEMENT_TEST','Mon élement modifié','fr-FR'));
+
+        // TEST 2 - Update the translations created before in english
+        $this->assertSame(true,$this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','en-GB'));
+
+        // TEST 3 - Failed waiting - Update the translations created before in portuguesh
+        $this->assertSame(false,$this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','pt-PT'));
     }
 }
