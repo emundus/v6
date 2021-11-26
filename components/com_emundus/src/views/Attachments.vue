@@ -82,6 +82,11 @@
                       <span v-if="sort.orderBy == 'is_validated' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
                       <span v-if="sort.orderBy == 'is_validated' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
                     </th>
+                    <th @click="orderBy('user_id')"> 
+                      {{ translate('COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY') }}
+                      <span v-if="sort.orderBy == 'user_id' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'user_id' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
                     <th @click="orderBy('modified_by')"> 
                       {{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY') }}
                       <span v-if="sort.orderBy == 'modified_by' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
@@ -116,6 +121,7 @@
                         <option value="" :selected="attachment.is_validated != 1 &&  attachment.is_validated != -2">{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}</option>
                       </select>
                     </td>
+                    <td>{{ getUserNameById(attachment.user_id) }}</td>
                     <td>{{ getUserNameById(attachment.modified_by) }}</td>
                     <td class='date'>{{ formattedDate(attachment.modified) }}</td>
                 </tr>
