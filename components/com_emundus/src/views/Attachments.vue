@@ -321,6 +321,7 @@ export default {
     updateStatus($event, selectedAttachment) {
       this.attachments.forEach((attachment, key) => {
         if (attachment.aid == selectedAttachment.aid) {
+          this.resetOrder();
           this.attachments[key].is_validated = $event.target.value;
 
           let formData = new FormData();
