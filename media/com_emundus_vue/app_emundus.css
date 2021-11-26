@@ -287,10 +287,16 @@
 #em-attachments #filters .searchbar-wrapper[data-v-30bae934] {
   position: relative;
 }
-#em-attachments #filters .searchbar-wrapper .material-icons[data-v-30bae934] {
+#em-attachments #filters .searchbar-wrapper .material-icons.search[data-v-30bae934] {
   position: absolute;
   top: 11px;
   left: 18px;
+}
+#em-attachments #filters .searchbar-wrapper .material-icons.clear[data-v-30bae934] {
+  position: absolute;
+  top: 11px;
+  right: 10px;
+  cursor: pointer;
 }
 #em-attachments #filters .searchbar-wrapper #searchbar[data-v-30bae934] {
   padding-left: 40px;

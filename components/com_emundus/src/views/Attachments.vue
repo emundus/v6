@@ -28,7 +28,8 @@
           <div id="filters">
             <div class="searchbar-wrapper">
               <input id="searchbar" type="text" ref="searchbar" :placeholder="translate('SEARCH')" @input="searchInFiles">
-              <span class="material-icons">search</span>
+              <span class="material-icons search">search</span>
+              <span class="material-icons clear" @click="resetSearch">clear</span>
             </div>
             <div class="actions">
               <select v-if="Object.entries(categories).length > 1" name="category" @change="filterByCategory">
@@ -450,6 +451,12 @@ export default {
         }
       });
     },
+    resetSearch() {
+      this.attachments.forEach((attachment, index) => {
+        this.attachments[index].show = true;
+      });
+      this.$refs["searchbar"].value = '';
+    },
     resetOrder() {
       this.sort = {
         last: "",
@@ -708,10 +715,17 @@ export default {
 
     .searchbar-wrapper {
       position: relative;
-      .material-icons {
+      .material-icons.search {
         position: absolute;
         top: 11px;
         left: 18px;
+      }
+
+      .material-icons.clear {
+        position: absolute;
+        top: 11px;
+        right: 10px;
+        cursor: pointer;
       }
 
       #searchbar {
