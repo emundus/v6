@@ -110,9 +110,11 @@
                       'success': attachment.is_validated == 1, 
                       'error': attachment.is_validated == -2
                       }">
-                      <span v-if="attachment.is_validated == 1">{{ translate('VALID') }}</span>
-                      <span v-else-if="attachment.is_validated == -2">{{ translate('INVALID') }}</span>
-                      <span v-else>{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}</span>
+                      <select @change="e => updateStatus(e, attachment)">
+                        <option value="1" :selected="attachment.is_validated === 1">{{ translate('VALID') }}</option>
+                        <option value="-2" :selected="attachment.is_validated === -2">{{ translate('INVALID') }}</option>
+                        <option value="" :selected="attachment.is_validated !== 1 &&  attachment.is_validated !== -2">{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}</option>
+                      </select>
                     </td>
                     <td>{{ getUserNameById(attachment.modified_by) }}</td>
                     <td class='date'>{{ formattedDate(attachment.modified) }}</td>
@@ -308,6 +310,27 @@ export default {
       this.getAttachments();
       this.$modal.hide('edit');
       this.selectedAttachment = {};
+    },
+    updateStatus($event, selectedAttachment) {
+      this.attachments.forEach((attachment, key) => {
+        if (attachment.aid == selectedAttachment.aid) {
+          this.attachments[key].is_validated = $event.target.value;
+
+          let formData = new FormData();
+          formData.append('fnum', this.displayedFnum);
+          formData.append('user', this.currentUser);
+          formData.append('id', this.attachments[key].aid);
+          formData.append('is_validated', this.attachments[key].is_validated);
+          
+          attachmentService.updateAttachment(formData).then(response => {
+            if (!response.status) {
+              this.displayErrorMessage(response.msg);
+            }
+          });
+
+          return;
+        }
+      });
     },
     async setAccessRights() {
       if (!this.$store.state.user.rights[this.displayedFnum]) {
@@ -829,23 +852,28 @@ export default {
       }
 
       .valid-state {
-        span {
+        select {
           padding: 4px 8px;
           border-radius: 4px;
-
           color: var(--warning-color);
           background-color:  var(--warning-bg-color);
+          border: none;
+          width: max-content;
+        }
+
+        select::-ms-expand {
+          display: none !important;
         }
 
         &.success {
-          span {
+          select {
             color: var(--success-color);
             background-color: var(--success-bg-color); 
           }
         }
 
         &.error {
-          span {
+          select {
             color: var(--error-color);
             background-color:  var(--error-bg-color); 
           }

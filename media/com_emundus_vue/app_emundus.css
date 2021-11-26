@@ -419,17 +419,24 @@
 #em-attachments table tbody tr.checked[data-v-30bae934] {
   background-color: #F0F6FD;
 }
-#em-attachments table tbody .valid-state span[data-v-30bae934] {
+#em-attachments table tbody .valid-state select[data-v-30bae934] {
   padding: 4px 8px;
   border-radius: 4px;
   color: var(--warning-color);
   background-color: var(--warning-bg-color);
+  border: none;
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
 }
-#em-attachments table tbody .valid-state.success span[data-v-30bae934] {
+#em-attachments table tbody .valid-state select[data-v-30bae934]::-ms-expand {
+  display: none !important;
+}
+#em-attachments table tbody .valid-state.success select[data-v-30bae934] {
   color: var(--success-color);
   background-color: var(--success-bg-color);
 }
-#em-attachments table tbody .valid-state.error span[data-v-30bae934] {
+#em-attachments table tbody .valid-state.error select[data-v-30bae934] {
   color: var(--error-color);
   background-color: var(--error-bg-color);
 }
