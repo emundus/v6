@@ -113,12 +113,12 @@
                     <td class='category'>{{ categories[attachment.category] ? translate(categories[attachment.category]) : attachment.category }}</td>
                     <td class="status valid-state" :class="{
                       'success': attachment.is_validated == 1, 
-                      'error': attachment.is_validated == -2
+                      'error': attachment.is_validated != -2  && attachment.is_validated != 1 && attachment.is_validated !== null
                       }">
                       <select @change="e => updateStatus(e, attachment)">
                         <option value="1" :selected="attachment.is_validated == 1">{{ translate('VALID') }}</option>
-                        <option value="-2" :selected="attachment.is_validated == -2">{{ translate('INVALID') }}</option>
-                        <option value="" :selected="attachment.is_validated != 1 &&  attachment.is_validated != -2">{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}</option>
+                        <option value="0" :selected="attachment.is_validated != -2  && attachment.is_validated != 1 && attachment.is_validated !== null">{{ translate('INVALID') }}</option>
+                        <option value="-2" :selected="attachment.is_validated == -2 || attachment.is_validated === null">{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}</option>
                       </select>
                     </td>
                     <td>{{ getUserNameById(attachment.user_id) }}</td>
@@ -233,6 +233,7 @@ export default {
     this.getUsers();
     this.getAttachments();
     this.setAccessRights();
+    console.log('here');
   },
   methods: {
     // Getters and setters
@@ -302,7 +303,6 @@ export default {
         this.checkedAttachments = [];
         this.$refs['searchbar'].value = "";
         this.attachments = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
-
         this.$store.dispatch('attachment/setAttachmentsOfFnum', {
           fnum: [this.displayedFnum],
           attachments: this.attachments
