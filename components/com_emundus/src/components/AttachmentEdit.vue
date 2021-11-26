@@ -12,9 +12,9 @@
                 <div class="input-group">
                     <label for="status">{{ translate('STATUS') }}</label>
                     <select name="status" v-model="attachment.is_validated" :disabled="!canUpdate">
-                        <option value=0> {{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }} </option>
+                        <option value=-2> {{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }} </option>
                         <option value=1> {{ translate('VALID') }} </option>
-                        <option value=-2> {{ translate('INVALID') }} </option>
+                        <option value=0> {{ translate('INVALID') }} </option>
                     </select>
                 </div>
                 <div class="input-group" v-if="canUpdate">
