@@ -1391,18 +1391,18 @@ class EmundusController extends JControllerLegacy {
 
             } else {
 	            header('Content-type: '.$mime_type);
-	            header('Content-Disposition: inline; filename='.basename($file));
-	            header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
-	            header('Cache-Control: no-store, no-cache, must-revalidate');
-	            header('Cache-Control: pre-check=0, post-check=0, max-age=0');
-	            header('Pragma: anytextexeptno-cache', true);
-	            header('Cache-control: private');
-	            header('Expires: 0');
+                header('Content-Disposition: inline; filename='.basename($file));
+                header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+                header('Cache-Control: no-store, no-cache, must-revalidate');
+                header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+                header('Pragma: anytextexeptno-cache', true);
+                header('Cache-control: private');
+                header('Expires: 0');
 
-	            ob_clean();
-	            flush();
-	            readfile($file);
-	            exit;
+                ob_clean();
+                ob_end_flush();
+                readfile($file);
+                exit;
             }
         } else {
             JError::raiseWarning(500, JText::_( 'FILE_NOT_FOUND' ).' '.$url);
