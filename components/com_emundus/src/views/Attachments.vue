@@ -28,12 +28,13 @@
           <div id="filters">
             <div class="searchbar-wrapper">
               <input id="searchbar" type="text" ref="searchbar" :placeholder="translate('SEARCH')" @input="searchInFiles">
-              <span class="material-icons">search</span>
+              <span class="material-icons search">search</span>
+              <span class="material-icons clear" @click="resetSearch">clear</span>
             </div>
             <div class="actions">
-              <select v-if="Object.entries(categories).length > 1" name="category" @change="filterByCategory">
+              <select v-if="Object.entries(categories).length > 1" name="category" ref="categoryFilter" @change="filterByCategory">
                 <option value="all">{{ translate('SELECT_CATEGORY') }}</option>
-                <option v-for="(category, key) in categories" :key="key" :value="key">{{ category }} </option>
+                <option v-for="(category, key) in categories" :key="key" :value="key"> {{ category }} </option>
               </select>
               <div v-if="canExport" class="btn-icon-text" @click="exportAttachments" :class="{'disabled': checkedAttachments.length < 1}">
                 <span class="material-icons export">
@@ -51,7 +52,8 @@
               </span>
             </div>
           </div>
-          <table v-if="attachments.length" :class="{'loading': loading}">
+          <div v-if="attachments.length" class="table-wrapper">
+          <table :class="{'loading': loading}">
             <thead>
                 <tr>
                     <th>
@@ -67,20 +69,25 @@
                       <span v-if="sort.orderBy == 'timedate' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
                       <span v-if="sort.orderBy == 'timedate' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
                     </th>
-                    <th class='category' @click="orderBy('category')"> 
-                      {{ translate('COM_EMUNDUS_ATTACHMENTS_CATEGORY') }}
-                      <span v-if="sort.orderBy == 'category' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
-                      <span v-if="sort.orderBy == 'category' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
-                    </th>
                     <th class='desc' @click="orderBy('description')"> 
                       {{ translate('DESCRIPTION') }}
                       <span v-if="sort.orderBy == 'description' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
                       <span v-if="sort.orderBy == 'description' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
                     </th>
+                    <th class='category' @click="orderBy('category')"> 
+                      {{ translate('COM_EMUNDUS_ATTACHMENTS_CATEGORY') }}
+                      <span v-if="sort.orderBy == 'category' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'category' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
                     <th class='status' @click="orderBy('is_validated')"> 
-                      {{ translate('STATUS') }}
+                      {{ translate('COM_EMUNDUS_ATTACHMENTS_CHECK') }}
                       <span v-if="sort.orderBy == 'is_validated' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
                       <span v-if="sort.orderBy == 'is_validated' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                    </th>
+                    <th @click="orderBy('user_id')"> 
+                      {{ translate('COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY') }}
+                      <span v-if="sort.orderBy == 'user_id' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+                      <span v-if="sort.orderBy == 'user_id' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
                     </th>
                     <th @click="orderBy('modified_by')"> 
                       {{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY') }}
@@ -104,21 +111,27 @@
                     </td>
                     <td class="td-document" @click="openModal(attachment)">{{ attachment.value }}</td>
                     <td class='date'>{{ formattedDate(attachment.timedate) }}</td>
-                    <td class='category'>{{ categories[attachment.category] ? translate(categories[attachment.category]) : attachment.category }}</td>
                     <td class="desc">{{ attachment.description }}</td>
+                    <td class='category'>{{ categories[attachment.category] ? translate(categories[attachment.category]) : attachment.category }}</td>
                     <td class="status valid-state" :class="{
                       'success': attachment.is_validated == 1, 
-                      'error': attachment.is_validated == -2
+                      'warning': attachment.is_validated == 2,
+                      'error': attachment.is_validated == 0
                       }">
-                      <span v-if="attachment.is_validated == 1">{{ translate('VALID') }}</span>
-                      <span v-else-if="attachment.is_validated == -2">{{ translate('INVALID') }}</span>
-                      <span v-else>{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}</span>
+                      <select @change="e => updateStatus(e, attachment)">
+                        <option value="1" :selected="attachment.is_validated == 1">{{ translate('VALID') }}</option>
+                        <option value="0" :selected="attachment.is_validated == 0">{{ translate('INVALID') }}</option>
+                        <option value="2" :selected="attachment.is_validated == 2">{{ translate('COM_EMUNDUS_ATTACHMENTS_WARNING') }}</option>
+                        <option value="-2" :selected="attachment.is_validated == -2 || attachment.is_validated === null">{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}</option>
+                      </select>
                     </td>
+                    <td>{{ getUserNameById(attachment.user_id) }}</td>
                     <td>{{ getUserNameById(attachment.modified_by) }}</td>
                     <td class='date'>{{ formattedDate(attachment.modified) }}</td>
                 </tr>
             </tbody>
           </table>
+          </div>
           <p v-else>{{ translate('COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND') }}</p>
         </div>
         
@@ -294,7 +307,6 @@ export default {
         this.checkedAttachments = [];
         this.$refs['searchbar'].value = "";
         this.attachments = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
-
         this.$store.dispatch('attachment/setAttachmentsOfFnum', {
           fnum: [this.displayedFnum],
           attachments: this.attachments
@@ -308,6 +320,28 @@ export default {
       this.getAttachments();
       this.$modal.hide('edit');
       this.selectedAttachment = {};
+    },
+    updateStatus($event, selectedAttachment) {
+      this.attachments.forEach((attachment, key) => {
+        if (attachment.aid == selectedAttachment.aid) {
+          this.resetOrder();
+          this.attachments[key].is_validated = $event.target.value;
+
+          let formData = new FormData();
+          formData.append('fnum', this.displayedFnum);
+          formData.append('user', this.currentUser);
+          formData.append('id', this.attachments[key].aid);
+          formData.append('is_validated', this.attachments[key].is_validated);
+          
+          attachmentService.updateAttachment(formData).then(response => {
+            if (!response.status) {
+              this.displayErrorMessage(response.msg);
+            }
+          });
+
+          return;
+        }
+      });
     },
     async setAccessRights() {
       if (!this.$store.state.user.rights[this.displayedFnum]) {
@@ -395,6 +429,12 @@ export default {
       this.setDisplayedUser();
       this.getAttachments();
       this.setAccessRights();
+      this.resetOrder();
+      this.resetSearch();
+      this.resetCategoryFilters();
+      this.attachments.forEach(attachment => {
+        attachment.show = true;
+      });
     },
     changeAttachment(position, reverse = false) {
       this.slideTransition = reverse ? "slide-fade-reverse" : "slide-fade";
@@ -421,11 +461,22 @@ export default {
         }
       });
     },
+    resetSearch() {
+      this.attachments.forEach((attachment, index) => {
+        this.attachments[index].show = true;
+      });
+      this.$refs["searchbar"].value = '';
+    },
     resetOrder() {
       this.sort = {
         last: "",
         order: "",
         orderBy: ""
+      }
+    },
+    resetCategoryFilters() {
+      if (this.$refs['categoryFilter']) {
+        this.$refs['categoryFilter'].value = 'all';
       }
     },
     orderBy(key) {
@@ -679,10 +730,17 @@ export default {
 
     .searchbar-wrapper {
       position: relative;
-      .material-icons {
+      .material-icons.search {
         position: absolute;
         top: 11px;
         left: 18px;
+      }
+
+      .material-icons.clear {
+        position: absolute;
+        top: 11px;
+        right: 10px;
+        cursor: pointer;
       }
 
       #searchbar {
@@ -763,7 +821,14 @@ export default {
     }
   }
 
+  .table-wrapper {
+    width: 100%;
+    overflow-x: scroll;
+    transform: rotateX(180deg);
+  }
+
   table {
+    transform: rotateX(180deg);
     &.loading {
       visibility: hidden;
     }
@@ -829,23 +894,35 @@ export default {
       }
 
       .valid-state {
-        span {
+        select {
           padding: 4px 8px;
           border-radius: 4px;
+          background-color: var(--grey-bg-color);
+          color: var(--grey-color);
+          border: none;
+          width: max-content;
+        }
 
-          color: var(--warning-color);
-          background-color:  var(--warning-bg-color);
+        select::-ms-expand {
+          display: none !important;
+        }
+
+        &.warning {
+          select {
+            color: var(--warning-color);
+            background-color:  var(--warning-bg-color);
+          }
         }
 
         &.success {
-          span {
+          select {
             color: var(--success-color);
             background-color: var(--success-bg-color); 
           }
         }
 
         &.error {
-          span {
+          select {
             color: var(--error-color);
             background-color:  var(--error-bg-color); 
           }
