@@ -240,21 +240,20 @@ export default {
     },
     async setDisplayedUser() {
       const response = await fileService.getFnumInfos(this.displayedFnum);
-      const foundUser = this.users.find(user => user.id == response.fnumInfos.applicant_id);
+      const foundUser = this.users.find(user => user.user_id == response.fnumInfos.applicant_id);
 
       if (!foundUser) {
         const resp = await userService.getUserById(response.fnumInfos.applicant_id);
-
         if (resp.status) {
           this.users.push(resp.user[0]);
           this.displayedUser = resp.user[0];
-          this.$store.dispatch('user/setDisplayedUser', this.displayedUser.id);
+          this.$store.dispatch('user/setDisplayedUser', this.displayedUser.user_id);
         } else {
           this.displayErrorMessage(this.translate('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND'));
         }
       } else {
         this.displayedUser = foundUser;
-        this.$store.dispatch('user/setDisplayedUser', this.displayedUser.id);
+        this.$store.dispatch('user/setDisplayedUser', this.displayedUser.user_id);
       }
     },
     async getCategories() {
