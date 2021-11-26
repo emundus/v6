@@ -32,9 +32,9 @@
               <span class="material-icons clear" @click="resetSearch">clear</span>
             </div>
             <div class="actions">
-              <select v-if="Object.entries(categories).length > 1" name="category" @change="filterByCategory">
+              <select v-if="Object.entries(categories).length > 1" name="category" ref="categoryFilter" @change="filterByCategory">
                 <option value="all">{{ translate('SELECT_CATEGORY') }}</option>
-                <option v-for="(category, key) in categories" :key="key" :value="key">{{ category }} </option>
+                <option v-for="(category, key) in categories" :key="key" :value="key"> {{ category }} </option>
               </select>
               <div v-if="canExport" class="btn-icon-text" @click="exportAttachments" :class="{'disabled': checkedAttachments.length < 1}">
                 <span class="material-icons export">
@@ -234,7 +234,6 @@ export default {
     this.getUsers();
     this.getAttachments();
     this.setAccessRights();
-    console.log('here');
   },
   methods: {
     // Getters and setters
@@ -426,6 +425,12 @@ export default {
       this.setDisplayedUser();
       this.getAttachments();
       this.setAccessRights();
+      this.resetOrder();
+      this.resetSearch();
+      this.resetCategoryFilters();
+      this.attachments.forEach(attachment => {
+        attachment.show = true;
+      });
     },
     changeAttachment(position, reverse = false) {
       this.slideTransition = reverse ? "slide-fade-reverse" : "slide-fade";
@@ -463,6 +468,11 @@ export default {
         last: "",
         order: "",
         orderBy: ""
+      }
+    },
+    resetCategoryFilters() {
+      if (this.$refs['categoryFilter']) {
+        this.$refs['categoryFilter'].value = 'all';
       }
     },
     orderBy(key) {
