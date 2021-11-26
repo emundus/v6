@@ -45,4 +45,38 @@ class EmundusModelTranslationTest extends TestCase
         $foo = true;
         $this->assertSame(true, $foo);
     }
+
+    public function testGetTranslations() {
+        // TEST 1 - GET ALL FABRIK TRANSLATIONS BY DEFAULT
+        $this->assertNotEmpty($this->m_translations->getTranslations());
+
+        // TEST 2 - GET TYPE NOT EXISTING, EMPTY ARRAY HAS TO BE RETURNED
+        $this->assertEmpty($this->m_translations->getTranslations('mon_type'));
+
+        // TEST 3 - PASS TYPE NOT STRING, EMPTY ARRAY HAS TO BE RETURNED
+        $this->assertEmpty($this->m_translations->getTranslations(1));
+
+        // TEST 4 - GET FABRIK TRANSLATIONS IN FRENCH
+        $this->assertNotEmpty($this->m_translations->getTranslations('fabrik','fr-FR'));
+
+        // TEST 5 - GET FABRIK TRANSLATIONS IN ENGLISH
+        $this->assertNotEmpty($this->m_translations->getTranslations('fabrik','en-GB'));
+
+        // TEST 6 - GET FABRIK TRANSLATIONS IN LANGUAGE NOT EXISTING
+        $this->assertEmpty($this->m_translations->getTranslations('fabrik','pt-PT'));
+
+        // TEST 7 - GET FABRIK OPTIONS of the element 7777
+        $this->assertNotEmpty($this->m_translations->getTranslations('fabrik_options','*','','','',7777));
+
+        // TEST 8 - GET FABRIK ELEMENTS on lang fr-FR
+        $this->assertNotEmpty($this->m_translations->getTranslations('fabrik','fr-FR','','','fabrik_elements'));
+
+        // TEST 9 - GET FABRIK ELEMENTS on lang en-GB
+        $this->assertNotEmpty($this->m_translations->getTranslations('fabrik','en-GB','','','fabrik_elements'));
+    }
+
+    public function testInsertTranslation(){
+        // TEST 1 - Insert a basic translation of a fabrik_element
+        $this->assertSame(true, $this->m_translations->insertTranslation('ELEMENT_TEST','Mon élément de test','fr-FR','','fabrik','fabrik_elements',9999));
+    }
 }
