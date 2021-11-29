@@ -261,33 +261,51 @@ class EmundusModelLogs extends JModelList {
 	 * Writes the details that will be shown in the logs menu.
 	 * @param int $action
 	 * @param string $crud
+	 * @param string $params
 	 * @since 3.8.8
 	 * @return Mixed Returns false on error and an array of strings on success.
 	 */
-	public function setActionDetails($action = null, $crud = null, $params = '') {
+	public function setActionDetails($action = null, $crud = null, $params = null) {
+		// Get the action label
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
-
 		$query->select('label')
 			->from($db->quoteName('#__emundus_setup_actions'))
 			->where($db->quoteName('id').' = '.$db->quote($action));
-
 		$db->setQuery($query);
 
 		$action_category = $db->loadResult();
 
+		// Decode the json params string
+		if ($params) {
+			$params = json_decode($params);
+		}
+
+		// Define action_details
+		$action_details = '';
+
+		// Complete action name with crud
 		switch ($crud) {
 			case ('c'):
 				$action_name = $action_category . '_CREATE';
+				foreach ($params->created as $value) {
+					$action_details .= '<p>"' . $value . '"</p>';
+				}
 			break;
 			case ('r'):
 				$action_name = $action_category . '_READ';
 			break;
 			case ('u'):
 				$action_name = $action_category . '_UPDATE';
+				foreach ($params->updated as $value) {
+					$action_details .= '<p>"' . $value->old . '" -> "' . $value->new . '"</p>';
+				}
 			break;
 			case ('d'):
 				$action_name = $action_category . '_DELETE';
+				foreach ($params->deleted as $value) {
+					$action_details .= '<p>"' . $value . '"</p>';
+				}
 			break;
 			default:
 				$action_name = $action_category . '_READ';
@@ -302,7 +320,7 @@ class EmundusModelLogs extends JModelList {
 		$details = [];
 		$details['action_category'] = $action_category;
 		$details['action_name'] = $action_name;
-		$details['action_details'] = $params;
+		$details['action_details'] = $action_details;
 
 		return $details;
 	}

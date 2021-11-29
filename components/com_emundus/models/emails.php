@@ -1342,7 +1342,7 @@ class EmundusModelEmails extends JModelList {
             ];
             $this->logEmail($log);
             // Log the email in the eMundus logging system.
-            $logsParams = array('subject' => $subject);
+            $logsParams = array('created' => [$subject]);
             EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
     }

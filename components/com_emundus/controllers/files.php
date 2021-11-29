@@ -849,7 +849,9 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
 
-                $logsParams = array('status_from' => $fnum['value'], 'status_to' => $status[$state]['value']);
+                // Log the update
+                $logsParams = array('updated' => []);
+                array_push($logsParams['updated'], ['old' => $fnum['value'], 'new' => $status[$state]['value']]);
                 EmundusModelLogs::log($this->_user->id, (int)substr($fnum['fnum'], -7), $fnum['fnum'], 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
             }
 

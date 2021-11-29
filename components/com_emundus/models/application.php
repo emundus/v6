@@ -278,16 +278,14 @@ class EmundusModelApplication extends JModelList
                 $fnum = $this->_db->loadResult();
 
                 // Log the comment in the eMundus logging system.
-                $logsParams = array('reason' => [], 'body' => []);
+                $logsParams = array('updated' => []);
                 if ($old_comment->reason !== $title) {
-                    $logsParams['reason']['old_reason'] = $old_comment->reason;
-                    $logsParams['reason']['new_reason'] = $title;
+                    array_push($logsParams['updated'], ['old' => $old_comment->reason, 'new' => $title]);
                 }
                 if ($old_comment->comment_body !== $text) {
-                    $logsParams['body']['old_body'] = $old_comment->comment_body;
-                    $logsParams['body']['new_body'] = $text;
+                    array_push($logsParams['updated'], ['old' => $old_comment->comment_body, 'new' => $text]);
                 }
-                if (count($logsParams['reason']) !== 0 || count($logsParams['body']) !== 0) {
+                if (!empty($logsParams['updated'])) {
                     EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'u', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                 }
             }
@@ -339,7 +337,13 @@ class EmundusModelApplication extends JModelList
 
         if ($res && !empty($fnum)) {
             // Log the comment in the eMundus logging system
-            $logsParams = array('reason' => $deleted_comment->reason, 'body' => $deleted_comment->comment_body);
+            $logsParams = array('deleted' => []);
+            // Log only the body if the comment had no title
+            if (empty($deleted_comment->reason)) {
+                $logsParams['deleted'] = [$deleted_comment->comment_body];
+            } else {
+                $logsParams['deleted'] = [$deleted_comment->reason, $deleted_comment->comment_body];
+            }
             EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'd', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
 
@@ -363,7 +367,7 @@ class EmundusModelApplication extends JModelList
 
         // Log the action in the eMundus logging system.
         if ($res) {
-            $logsParams = array('deleted_tag' => $deleted_tag);
+            $logsParams = array('deleted' => [$deleted_tag]);
             EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 14, 'd', 'COM_EMUNDUS_ACCESS_TAGS_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
 
@@ -372,9 +376,14 @@ class EmundusModelApplication extends JModelList
 
     public function addComment($row)
     {
-
         // Log the comment in the eMundus logging system.
-        $logsParams = array('reason' => $row['reason'], 'body' => $row['comment_body']);
+        $logsParams = array('created' => []);
+        // Log only the body if there is no title
+        if (empty($row['reason'])) {
+            $logsParams['created'] = [$row['comment_body']];
+        } else {
+            $logsParams['created'] = [$row['reason'], $row['comment_body']];
+        }
         EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
         $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)

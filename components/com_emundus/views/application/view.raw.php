@@ -334,7 +334,7 @@ class EmundusViewApplication extends JViewLegacy {
                 case 'logs':
                     if (EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $fnum)) {
 
-                        EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 37, 'r', 'COM_EMUNDUS_ACCESS_LOGS_READ');
+                        //EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 37, 'r', 'COM_EMUNDUS_ACCESS_LOGS_READ');
 
                         $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum);
 
