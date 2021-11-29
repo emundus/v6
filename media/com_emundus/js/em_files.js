@@ -6523,48 +6523,48 @@ $(document).ready(function() {
                     dataType:'json',
                     data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee, showMode: showMode, mergeMode: mergeMode},
                     success: function(result) {
-                        $('.modal-body').empty();
+                        if (result.status) {
+                            $('.modal-body').empty();
 
-                        /// render recapitulatif
-                        let recal = result.recapitulatif_count;
-                        var recal_table =
-                            "<h4 style='color:#16afe1 !important'>" +
-                            Joomla.JText._('AFFECTED_CANDIDATS') + result.affected_users +
-                            "</h4>" +
-                            "<table class='table table-striped' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
-                            "<thead>" +
-                            "<th>"+Joomla.JText._('GENERATED_DOCUMENTS_LABEL') + "</th>" +
-                            "<th>"+Joomla.JText._('GENERATED_DOCUMENTS_COUNT') + "</th>" +
-                            "</thead>" +
-                            "<tbody>";
+                            /// render recapitulatif
+                            let recal = result.data.recapitulatif_count;
+                            var recal_table =
+                                "<h4 style='color:#16afe1 !important'>" +
+                                Joomla.JText._('AFFECTED_CANDIDATS') + result.data.affected_users +
+                                "</h4>" +
+                                "<table class='table table-striped' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
+                                "<thead>" +
+                                "<th>" + Joomla.JText._('GENERATED_DOCUMENTS_LABEL') + "</th>" +
+                                "<th>" + Joomla.JText._('GENERATED_DOCUMENTS_COUNT') + "</th>" +
+                                "</thead>" +
+                                "<tbody>";
 
-                        recal.forEach(data => {
-                            recal_table +=
-                                "<tr style='background: #c1c7d0'>" +
-                                "<td>" + data.document + "</td>" +
-                                "<td>" + data.count + "</td>" +
-                                "</tr>"
-                        })
+                            recal.forEach(data => {
+                                recal_table +=
+                                    "<tr style='background: #c1c7d0'>" +
+                                    "<td>" + data.document + "</td>" +
+                                    "<td>" + data.count + "</td>" +
+                                    "</tr>"
+                            })
 
-                        recal_table += "</tbody></table>";
-                        $('.modal-body').append(recal_table);
+                            recal_table += "</tbody></table>";
+                            $('.modal-body').append(recal_table);
 
-                        if(result.status) {
-                            if(showMode == 0) {
-                                var zip = result.zip_data_by_candidat;
+                            if (showMode == 0) {
+                                var zip = result.data.zip_data_by_candidat;
 
                                 var table = "<h3>" +
-                                    Joomla.JText._('CANDIDAT_GENERATED')+
+                                    Joomla.JText._('CANDIDAT_GENERATED') +
                                     "</h3>" +
                                     "<table class='table table-striped' id='em-generated-docs'>" +
                                     "<thead>" +
                                     "<tr>" +
-                                    "<th>"+Joomla.JText._('CANDIDATE_NAME') + "</th>" +
+                                    "<th>" + Joomla.JText._('CANDIDATE_NAME') + "</th>" +
                                     "</tr>" +
                                     "</thead>" +
                                     "<tbody>";
 
-                                if(mergeMode == 0) {
+                                if (mergeMode == 0) {
                                     zip.forEach(file => {
                                         table += "<tr>" +
                                             "<td>" + file.applicant_name +
@@ -6574,6 +6574,7 @@ $(document).ready(function() {
                                             "</td>" +
                                             "</tr>";
                                     })
+
                                 } else {
                                     zip.forEach(file => {
                                         table += "<tr>" +
@@ -6588,25 +6589,23 @@ $(document).ready(function() {
 
                                 table += "</tbody></table>";
                                 $('.modal-body').append(table);
-                                $('#em-download-all').attr('href', result.zip_all_data_by_candidat);
-                            }
-
-                            else if (showMode == 1){
-                                let letters = result.letter_dir;
+                                $('#em-download-all').attr('href', result.data.zip_all_data_by_candidat);
+                            } else if (showMode == 1) {
+                                let letters = result.data.letter_dir;
 
                                 var table =
                                     "<h3>" +
-                                    Joomla.JText._('DOCUMENT_GENERATED')+
+                                    Joomla.JText._('DOCUMENT_GENERATED') +
                                     "</h3>" +
                                     "<table class='table table-striped' id='em-generated-docs'>" +
                                     "<thead>" +
                                     "<tr>" +
-                                    "<th>"+Joomla.JText._('DOCUMENT_NAME') + "</th>" +
+                                    "<th>" + Joomla.JText._('DOCUMENT_NAME') + "</th>" +
                                     "</tr>" +
                                     "</thead>" +
                                     "<tbody>";
 
-                                if(mergeMode == 0) {
+                                if (mergeMode == 0) {
                                     letters.forEach(letter => {
                                         table +=
                                             "<tr>" +
@@ -6632,20 +6631,18 @@ $(document).ready(function() {
 
                                 table += "</tbody></table>";
                                 $('.modal-body').append(table);
-                                $('#em-download-all').attr('href', result.zip_all_data_by_document);
-                            }
-
-                            else {
+                                $('#em-download-all').attr('href', result.data.zip_all_data_by_document);
+                            } else {
                                 /// showMode == 2 (classic way)
-                                var files = result.files;
+                                var files = result.data.files;
                                 var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
                                 var table = "<h3>" +
-                                    Joomla.JText._('FILES_GENERATED')+
+                                    Joomla.JText._('FILES_GENERATED') +
                                     "</h3>" +
                                     "<table class='table table-striped' id='em-generated-docs'>" +
                                     "<thead>" +
                                     "<tr>" +
-                                    "<th>"+Joomla.JText._('FILE_NAME') + "</th>" +
+                                    "<th>" + Joomla.JText._('FILE_NAME') + "</th>" +
                                     "</tr>" +
                                     "</thead>" +
                                     "<tbody>";
@@ -6654,25 +6651,12 @@ $(document).ready(function() {
                                     table +=
                                         "<tr id='" + file.upload + "'>" +
                                         "<td>" + file.filename +
-                                        " <a id='" + 'em_download_doc_' + file.upload + "' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='"+ file.url + file.filename +"'>" +
+                                        " <a id='" + 'em_download_doc_' + file.upload + "' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.url + file.filename + "'>" +
                                         "<span class='glyphicon glyphicon-save'></span>" +
                                         "</a>" +
                                         "</td>" +
                                         "</tr>";
                                 })
-
-                                // for(let key in files) {
-                                //     if(files[key]['filename'] !== undefined) {
-                                //         table +=
-                                //             "<tr id='" + files[key]['upload'] + "'>" +
-                                //             "<td>" + files[key]['filename'] +
-                                //             " <a id='" + 'em_download_doc_' + files[key]['upload'] + "' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + files[key]['url'] + files[key]['filename'] + "'>" +
-                                //             "<span class='glyphicon glyphicon-save'></span>" +
-                                //             "</a>" +
-                                //             "</td>" +
-                                //             "</tr>";
-                                //     }
-                                // }
 
                                 table += "</tbody></table>";
                                 $('.modal-body').append(table);
@@ -6686,7 +6670,8 @@ $(document).ready(function() {
 
                                 $('#em-download-all').attr('href', zipUrl + urls.toString());
                             }
-
+                        } else {
+                            /* show export error */
                         }
                     },
                     error: function (jqXHR) {

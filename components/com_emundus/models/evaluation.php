@@ -3406,13 +3406,16 @@ class EmundusModelEvaluation extends JModelList {
                     if($mergeMode == 1) { if (!file_exists($dir_Merge_Path)) { mkdir($dir_Merge_Path, 0755, true); } }
                 }
                 
-                $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                       /// get uploaded file by fnums
+                $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                    // get uploaded file by fnums
 
                 foreach ($uploaded_Files as $key => $file) {
-                    $_uName = $_mUser->getUsersById($file->user_id);
+                    $_uRaw = $_mFile->getFnumInfos($file->fnum);                                                // get applicant id (not evaluator id)
+
+                    $_uId = $_uRaw['applicant_id'];
+                    $_uName = $_uRaw['name'];
 
                     //$source = EMUNDUS_PATH_ABS . $file->user_id . '--letters' . DS . $file->filename;
-                    $source = EMUNDUS_PATH_ABS . 'tmp' . DS . $_uName[0]->name . '_' . $_uName[0]->id . DS . $file->filename;
+                    $source = EMUNDUS_PATH_ABS . 'tmp' . DS . $_uName . '_' . $_uId . DS . $file->filename;
 
                     if(!in_array($file->filename, $raw)) {
                         unlink($source);
@@ -3540,7 +3543,7 @@ class EmundusModelEvaluation extends JModelList {
            }
         }
 
-        return json_encode($res);
+        return $res;
     }
 
     public function ZipLetter($source, $destination, $include_dir = false) {
