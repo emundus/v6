@@ -437,6 +437,9 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE');
 JText::script('COM_EMUNDUS_ATTACHMENTS_CLOSE');
 JText::script('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND');
 
+// GOTENBERG EXPORT FAILED
+JText::script('COM_EMUNDUS_EXPORT_FAILED');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
 JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );

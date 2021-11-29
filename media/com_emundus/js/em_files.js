@@ -6497,10 +6497,7 @@ $(document).ready(function() {
                 // $('#can-val').append('<button id="em-generate" style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOCUMENT')+'</button>');
 
                 $('#can-val').empty();
-                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
-                    '<button style="margin-left:5px;background: #16afe1; border: 2px solid #16afe1; border-radius: 25px !important; color: #fff" type="button" class="btn btn-danger">' +
-                    '<a style="color:#fff" id="em-download-all" href="">'+ Joomla.JText._('DOWNLOAD_DOCUMENT') + '</a>' +
-                    '</button>');
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>');
                 $('#can-val').show();
 
                 var fnums = $('input:hidden[name="em-doc-fnums"]').val();
@@ -6515,6 +6512,7 @@ $(document).ready(function() {
                 if($('#em-doc-pdf-merge').is(':checked')) { mergeMode = 1; }
 
                 $('.modal-body').empty();
+                // $('#em-download-btn').remove();
                 $('.modal-body').append('<div>' + '<img src="'+loadingLine+'" alt="loading"/>' + '</div>');
 
                 $.ajax({
@@ -6525,6 +6523,11 @@ $(document).ready(function() {
                     success: function(result) {
                         if (result.status) {
                             $('.modal-body').empty();
+
+                            $('#can-val').append(
+                                '<button id="em-download-btn" style="margin-left:5px;background: #16afe1; border: 2px solid #16afe1; border-radius: 25px !important; color: #fff" type="button" class="btn btn-danger">' +
+                                '<a style="color:#fff" id="em-download-all" href="">'+ Joomla.JText._('DOWNLOAD_DOCUMENT') + '</a>' +
+                                '</button>');
 
                             /// render recapitulatif
                             let recal = result.data.recapitulatif_count;
@@ -6672,6 +6675,9 @@ $(document).ready(function() {
                             }
                         } else {
                             /* show export error */
+                            $('#em-download-btn').remove();
+                            $('.modal-body').empty();
+                            $('.modal-body').append('<div id="model-err" style="color: red">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FAILED') + '</div>');
                         }
                     },
                     error: function (jqXHR) {
