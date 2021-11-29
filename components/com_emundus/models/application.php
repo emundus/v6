@@ -288,7 +288,7 @@ class EmundusModelApplication extends JModelList
                     $logsParams['body']['new_body'] = $text;
                 }
                 if (count($logsParams['reason']) !== 0 || count($logsParams['body']) !== 0) {
-                    EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'u', 'COM_EMUNDUS_LOGS_COMMENTS_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                    EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'u', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                 }
             }
 
@@ -340,7 +340,7 @@ class EmundusModelApplication extends JModelList
         if ($res && !empty($fnum)) {
             // Log the comment in the eMundus logging system
             $logsParams = array('reason' => $deleted_comment->reason, 'body' => $deleted_comment->comment_body);
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'd', 'COM_EMUNDUS_LOGS_COMMENTS_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'd', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
 
         return $res;
@@ -364,7 +364,7 @@ class EmundusModelApplication extends JModelList
         // Log the action in the eMundus logging system.
         if ($res) {
             $logsParams = array('deleted_tag' => $deleted_tag);
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 14, 'd', 'COM_EMUNDUS_LOGS_TAGS_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 14, 'd', 'COM_EMUNDUS_ACCESS_TAGS_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
 
         return $res;
@@ -375,7 +375,7 @@ class EmundusModelApplication extends JModelList
 
         // Log the comment in the eMundus logging system.
         $logsParams = array('reason' => $row['reason'], 'body' => $row['comment_body']);
-        EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_LOGS_ADD_COMMENT', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+        EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
         $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
                 VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).')';

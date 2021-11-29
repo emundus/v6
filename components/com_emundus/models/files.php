@@ -1858,7 +1858,7 @@ class EmundusModelFiles extends JModelLegacy
                         array_push($logsParams['tags'], $log_tag);
                     }
                     // Log the tags in the eMundus logging system.
-                    EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_TAGS_ADD', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                    EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                 }
             }
 
@@ -2025,7 +2025,7 @@ class EmundusModelFiles extends JModelLegacy
                 $db->setQuery($query);
             $old_publish = $db->loadResult();
             $logsParams = array('old_publish' => $old_publish, 'new_publish' => $publish);
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_LOGS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
             $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
             $dispatcher->trigger('callEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
