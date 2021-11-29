@@ -2910,7 +2910,12 @@ class EmundusModelEvaluation extends JModelList {
                                     //convert to PDF
                                     $dest = str_replace('.docx', '.pdf', $original_name);
                                     $filename = str_replace('.docx', '.pdf', $filename);
-                                    $m_Export->toPdf($original_name, $dest, $fnum);
+                                    try {
+                                        $m_Export->toPdf($original_name, $dest, $fnum);
+                                    } catch(Exception $e) {
+                                        JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                                        return false;
+                                    }
 
                                     copy($original_path . DS . $filename, $path . DS . $filename);
 
