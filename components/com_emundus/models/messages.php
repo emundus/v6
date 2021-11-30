@@ -1186,8 +1186,8 @@ class EmundusModelMessages extends JModelList {
                     /* generate letters each time get instant message */
                     $letter = $_mEval->generateLetters($fnum, [$attach], 0,0,0);
 
-                    $upload_id = current(json_decode($letter)->files)->upload;
-                    $upload_filename = current(json_decode($letter)->files)->url . current(json_decode($letter)->files)->filename;
+                    $upload_id = current($letter->files)['upload'];
+                    $upload_filename = current($letter->files)['url'] . current($letter->files)['filename'];
 
                     $attachment_raw = $_mFile->getSetupAttachmentsById([$attach]);
 

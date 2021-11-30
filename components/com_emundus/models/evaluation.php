@@ -3173,7 +3173,8 @@ class EmundusModelEvaluation extends JModelList {
             $_upAttachments = $this->_db->loadObjectList();
 
             foreach ($_upAttachments as $_upload) {
-                $res->files[] = array('filename' => $_upload->filename, 'upload' => $_upload->id, 'url' => JURI::base() . EMUNDUS_PATH_REL . $_upload->user_id . DS);
+                $folder_id = current($_mFile->getFnumsInfos(array($_upload->fnum)))['applicant_id'];
+                $res->files[] = array('filename' => $_upload->filename, 'upload' => $_upload->id, 'url' => JURI::base() . EMUNDUS_PATH_REL . $folder_id . DS);
                 $availableFilesName[] = $_upload->filename;
             }
 

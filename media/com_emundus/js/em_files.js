@@ -5182,7 +5182,7 @@ $(document).ready(function() {
                             letter_recap.forEach(letter => {
                                 $('#candidat-letters').append(
                                     "<li>" +
-                                    "<a id='em_letter_preview' target='_blank' href='" + letter.dest + "'>" +
+                                    "<a id='em_letter_preview' value='" + letter.value + "' target='_blank' href='" + letter.dest + "'>" +
                                     "<span style='font-size: medium; padding: 10px 0px; color:" + color + "'>" +
                                     "<span class='glyphicon glyphicon-paperclip' style='padding-right: 10px;'></span>" + letter.value +
                                     "</span>" +
@@ -5206,10 +5206,22 @@ $(document).ready(function() {
                             $('#em-modal-sending-emails').css('display', 'block');
                             let tmpl = email_recap;
 
+                            let files_tbl = $('#candidat-letters').find('[id^=em_letter_preview]');
+                            let files = [];
+                            let types = [];
+
+                            files_tbl.each(function() {
+                                let href = $(this).attr('href').split('/');
+                                files.push(href[href.length - 1]);
+                                types.push($(this).attr('value'));
+                            })
+
                             let raw = {
                                 title : $('#email-preview-label').val(),
                                 content : tinyMCE.activeEditor.getContent(),
                                 template: email_recap.email_tmpl,
+                                files : files,
+                                types: types,
                             };
 
                             $.ajax({

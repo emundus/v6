@@ -1579,10 +1579,10 @@ class EmundusControllerMessages extends JControllerLegacy {
         $candidat_email = $fnum_info['email'];
 
         /// get message recap by fnum --> reuse the function models/messages.php/getMessageRecapByFnum($fnum)
-        $message = $m_messages->getMessageRecapByFnum($fnum);
-
-        $email_recap = $message['message_recap'];                   /// length = 1
-        $letter_recap = $message['attached_letter'];                /// length >= 1
+//        $message = $m_messages->getMessageRecapByFnum($fnum);
+//
+//        $email_recap = $message['message_recap'];                   /// length = 1
+//        $letter_recap = $message['attached_letter'];                /// length >= 1
 
         // get programme info
         $programme = $m_campaign->getProgrammeByTraining($fnum_info['training']);
@@ -1608,6 +1608,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         /* get email template */
         $template_id = $raw['template'];
+        $letters = $raw['files'];
+        $types = $raw['types'];
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -1668,11 +1670,14 @@ class EmundusControllerMessages extends JControllerLegacy {
         /// get attachment letters by fnum
         $files = '<ul>';
         $file_path = [];
-        foreach($attachment_ids as $key => $value) {
-            $attached_letters = $_meval->getFilesByAttachmentFnums($value, [$fnum]);
-            $file_path[] = EMUNDUS_PATH_ABS . $attached_letters[0]->user_id . DS . $attached_letters[0]->filename;
-            $files .= '<li>' . $attached_letters[0]->value . '</li>';
+
+        foreach($letters as $letter) {
+            $folder_id = current($m_files->getFnumsInfos(array($fnum)))['applicant_id'];
+
+            $file_path[] = EMUNDUS_PATH_ABS . $folder_id . DS . $letter;
         }
+        
+        foreach($types as $type) { $files .= '<li>' . $type . '</li>'; }
 
         $mailer->addAttachment($file_path);
         $send = $mailer->Send();
