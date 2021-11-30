@@ -159,7 +159,7 @@
   /**
   * New Header Style, keep for later
   */
-  /** 
+  /**
   * Old Header Style
   * todo: remove this later
   */
@@ -325,17 +325,14 @@
   height: 37px;
   border: 1px solid var(--border-color);
 }
-#em-attachments #filters .actions > div[data-v-30bae934],
-#em-attachments #filters .actions > select[data-v-30bae934] {
+#em-attachments #filters .actions > div[data-v-30bae934], #em-attachments #filters .actions > select[data-v-30bae934] {
   margin-right: 8px;
 }
-#em-attachments #filters .actions > div.disabled[data-v-30bae934],
-#em-attachments #filters .actions > select.disabled[data-v-30bae934] {
+#em-attachments #filters .actions > div.disabled[data-v-30bae934], #em-attachments #filters .actions > select.disabled[data-v-30bae934] {
   color: var(--disabled-color);
   pointer-events: none;
 }
-#em-attachments #filters .actions > div.disabled .material-icons[data-v-30bae934],
-#em-attachments #filters .actions > select.disabled .material-icons[data-v-30bae934] {
+#em-attachments #filters .actions > div.disabled .material-icons[data-v-30bae934], #em-attachments #filters .actions > select.disabled .material-icons[data-v-30bae934] {
   color: var(--disabled-color);
 }
 #em-attachments #filters .refresh[data-v-30bae934] {
@@ -397,28 +394,24 @@
 #em-attachments table tr th:first-of-type input[data-v-30bae934] {
   margin-right: 0px;
 }
-#em-attachments table tr[data-v-30bae934],
-#em-attachments table th[data-v-30bae934] {
+#em-attachments table tr[data-v-30bae934], #em-attachments table th[data-v-30bae934] {
   height: 49px;
   background: transparent;
   background-color: transparent;
 }
-#em-attachments table td[data-v-30bae934],
-#em-attachments table th[data-v-30bae934] {
+#em-attachments table td[data-v-30bae934], #em-attachments table th[data-v-30bae934] {
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
 }
-#em-attachments table th.desc[data-v-30bae934],
-#em-attachments table td.desc[data-v-30bae934] {
+#em-attachments table th.desc[data-v-30bae934], #em-attachments table td.desc[data-v-30bae934] {
   max-width: 250px;
   width: initial;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-#em-attachments table th.status[data-v-30bae934],
-#em-attachments table td.status[data-v-30bae934] {
+#em-attachments table th.status[data-v-30bae934], #em-attachments table td.status[data-v-30bae934] {
   min-width: 100px;
   white-space: nowrap;
 }
@@ -435,10 +428,10 @@
   border-bottom: 1px solid #e0e0e0;
 }
 #em-attachments table tbody tr[data-v-30bae934]:hover:not(.checked) {
-  background-color: #f2f2f3;
+  background-color: #F2F2F3;
 }
 #em-attachments table tbody tr.checked[data-v-30bae934] {
-  background-color: #f0f6fd;
+  background-color: #F0F6FD;
 }
 #em-attachments table tbody .valid-state select[data-v-30bae934] {
   padding: 4px 8px;
@@ -566,8 +559,7 @@
   margin-left: 4px;
   border-radius: 0px 4px 4px 0px;
 }
-#em-attachments .modal-head .flex-end .prev-next-attachments .prev[data-v-30bae934],
-#em-attachments .modal-head .flex-end .prev-next-attachments .next[data-v-30bae934] {
+#em-attachments .modal-head .flex-end .prev-next-attachments .prev[data-v-30bae934], #em-attachments .modal-head .flex-end .prev-next-attachments .next[data-v-30bae934] {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -586,12 +578,10 @@
   width: 32px;
   background-color: var(--grey-bg-color);
 }
-#em-attachments .modal-head .flex-end .prev-next-attachments .prev span[data-v-30bae934],
-#em-attachments .modal-head .flex-end .prev-next-attachments .next span[data-v-30bae934] {
+#em-attachments .modal-head .flex-end .prev-next-attachments .prev span[data-v-30bae934], #em-attachments .modal-head .flex-end .prev-next-attachments .next span[data-v-30bae934] {
   color: initial;
 }
-#em-attachments .modal-head .flex-end .prev-next-attachments .prev.active[data-v-30bae934],
-#em-attachments .modal-head .flex-end .prev-next-attachments .next.active[data-v-30bae934] {
+#em-attachments .modal-head .flex-end .prev-next-attachments .prev.active[data-v-30bae934], #em-attachments .modal-head .flex-end .prev-next-attachments .next.active[data-v-30bae934] {
   pointer-events: auto;
   cursor: pointer;
 }
