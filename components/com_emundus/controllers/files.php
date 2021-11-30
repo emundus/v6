@@ -1234,6 +1234,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $jinput = JFactory::getApplication()->input;
         $forms      = $jinput->getInt('forms', 0);
+        $nom        = $jinput->getVar('nom', null);
         $attachment = $jinput->getInt('attachment', 0);
         $assessment = $jinput->getInt('assessment', 0);
         $decision   = $jinput->getInt('decision', 0);
@@ -1262,9 +1263,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 $validFnums[] = $fnum;
         }
 
-
         if (extension_loaded('zip'))
-            $name = $this->export_zip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options);
+            $name = $this->export_zip($validFnums, $nom, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options);
         else
             $name = $this->export_zip_pcl($validFnums);
 
@@ -2806,7 +2806,7 @@ class EmundusControllerFiles extends JControllerLegacy
      * @param array $fnums
      * @return string
      */
-    function export_zip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false) {
+    function export_zip($fnums, $nom = null, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
         $view = JRequest::getCmd( 'view' );
@@ -2822,16 +2822,15 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_emails = new EmundusModelEmails;
 
         $zip = new ZipArchive();
-        $nom = date("Y-m-d").'_'.rand(1000,9999).'_x'.(count($fnums)-1).'.zip';
+
+        if(!$nom){
+            $nom = date("Y-m-d").'_'.rand(1000,9999).'_x'.(count($fnums)-1).'.zip';
+        }
 
         $path = JPATH_BASE.DS.'tmp'.DS.$nom;
         $m_files = $this->getModel('Files');
 
         $fnumsInfo = $m_files->getFnumsInfos($fnums);
-
-        if (file_exists($path)) {
-	        unlink($path);
-        }
 
         $users = array();
 

@@ -5219,13 +5219,18 @@ $(document).ready(function() {
         var url = $(this).attr('href');
 
         var forms = 0;
-        var attachment  = 0;
         var assessment  = 0;
         var decision    = 0;
         var admission   = 0;
         var form_checked = [];
         var attach_checked = [];
         var options = [];
+
+        var fnums = JSON.parse(getUserCheck());
+        $.each(fnums,function(findex,fnum){
+            if(fnum === 'em-check-all')
+                delete fnums[findex];
+        });
 
         $('#felts input:checked').each(function() {
             form_checked.push($(this).val());
@@ -5234,13 +5239,15 @@ $(document).ready(function() {
 
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
-            attachment = 0;
         });
 
         if ($('#em-ex-forms').is(":checked"))
             forms = 1;
-        if ($('#em-ex-attachment').is(":checked"))
-            attachment = 1;
+        if ($('#em-ex-attachment').is(":checked")){
+            $('#aelts input').each(function() {
+                attach_checked.push($(this).val());
+            });
+        }
         if ($('#em-ex-assessment').is(":checked"))
             assessment = 1;
         if ($('#em-ex-decision').is(":checked"))
@@ -5266,39 +5273,81 @@ $(document).ready(function() {
 
         $('#can-val').hide();
 
+        //Call to zip controller in 2 parts to get response from the server during the process and reduce the risks of timeout
+        //First call to create the zip file with everything except all documents (still send the first one in case only one document is checked) 
         url = 'index.php?option=com_emundus&controller=files&task=zip&Itemid='+itemId;
-        $.ajax({
+        var post = $.ajax({
             type:'get',
             url:url,
             data: {
-                fnums: getUserCheck(),
+                fnums: JSON.stringify(fnums),
                 forms: forms,
-                attachment: attachment,
                 assessment: assessment,
                 decision: decision,
                 admission: admission,
                 formids: form_checked,
-                attachids:attach_checked,
+                attachids: 0 in attach_checked ? [attach_checked[0]] : [],
                 options:options
             },
             dataType:'json',
-            success: function(result) {
-                if (result.status && result.name != 0) {
-                    $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+'</p></div>');
-                    $('#loadingimg').empty();
-                    $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
-                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
-                    $('#chargement').append('<a class="btn btn-link" title="'+Joomla.JText._('COM_EMUNDUS_DOWNLOAD_ZIP')+'" href="index.php?option=com_emundus&controller='+$('#view').val()+'&task=download&format=zip&name='+result.name+'"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.JText._('COM_EMUNDUS_DOWNLOAD_ZIP')+'</span></a>');
-                } else {
-                    $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+'</p></div>');
-                    $('#loadingimg').empty();
-                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
-                    $('#chargement').append('<div class="alert alert-danger"><!-- Joomla.JText._(\'NO_ATTACHMENT_ZIP\')+-->'+result.msg+' </div>');
-                }
+            success: function() {
+                attach_checked.splice(0,1);
             },
             error: function (jqXHR) {
                 console.log(jqXHR.responseText);
+                $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+'</p></div>');
+                $('#loadingimg').empty();
+                $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
+                $('#chargement').append('<span class="label alert-danger" role="alert">'+Joomla.JText._('FILES_EXPORTED_TO_EXTERNAL_ERROR')+' </span>');
             }
+        });
+        i = 0;
+        post.done(function(result){
+            nom = result.name;
+
+            var totalDossier = Object.keys(fnums).length;
+            var totalDocuments = (attach_checked.length + 1)*(totalDossier);
+            $.each(fnums,function(fnum){
+                //Second part of zip call, one call for each document and for each candidacy, added to the zip file created above
+                $.each(attach_checked,function(index, value){
+                    var currentDocument = ((index + 1)+((attach_checked.length)*i)+1);
+                    var complete = parseInt( currentDocument / totalDocuments * 100);
+                    $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+' -- '+ complete +' %</p></div>');
+                    $.ajax({
+                        type:'get',
+                        async: false,
+                        url:url,
+                        data: {
+                            fnums: JSON.stringify({"0": fnums[fnum]}),
+                            attachids:[value],
+                            nom: nom,
+                        },
+                        dataType:'json',
+                        success: function(result) {
+                                if (result.status && result.name != 0) {
+                                    
+                                } else {
+                                    $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+'</p></div>');
+                                    $('#loadingimg').empty();
+                                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
+                                    $('#chargement').append('<div class="alert alert-danger"><!-- Joomla.JText._(\'NO_ATTACHMENT_ZIP\')+-->'+result.msg+' </div>');
+                                }
+                        },
+                        error: function (jqXHR) {
+                            console.log(jqXHR.responseText);
+                            $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+'</p></div>');
+                            $('#loadingimg').empty();
+                            $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
+                            $('#chargement').append('<div class="alert alert-danger"><!-- Joomla.JText._(\'NO_ATTACHMENT_ZIP\')+-->'+Joomla.JText._('FILES_EXPORTED_TO_EXTERNAL_ERROR')+' </div>');
+                        }
+                    });
+                });
+                i++;
+            });
+            $('#loadingimg').empty();
+            $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
+            $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
+            $('#chargement').append('<a class="btn btn-link" title="'+Joomla.JText._('COM_EMUNDUS_DOWNLOAD_ZIP')+'" href="index.php?option=com_emundus&controller='+$('#view').val()+'&task=download&format=zip&name='+result.name+'"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.JText._('COM_EMUNDUS_DOWNLOAD_ZIP')+'</span></a>');
         });
     });
 

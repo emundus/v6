@@ -89,7 +89,7 @@ class plgEmundusSend_file_archive extends JPlugin {
 		$c_files = new EmundusControllerFiles();
 		$c_messages = new EmundusControllerMessages();
 
-		$zip_name = $c_files->export_zip([$fnum], 1, 1, 1, 1, 1, null, null, null, true);
+		$zip_name = $c_files->export_zip([$fnum], null, 1, 1, 1, 1, 1, null, null, null, true);
 		$file = JPATH_BASE.DS.'tmp'.DS.$zip_name;
 
 		$c_messages->sendEmail($fnum, $email, null, $file);
