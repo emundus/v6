@@ -2551,12 +2551,12 @@ class EmundusModelEvaluation extends JModelList {
 
                                 /// reupdate in database
 //                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
                                 $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                             } else {
                                 if (copy($file, $path_name) and copy($file, $original_name)) {
 //                                    $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                    $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                    $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
 
                                     $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                                 }
@@ -2690,7 +2690,7 @@ class EmundusModelEvaluation extends JModelList {
                             }
                             /// copy generated letter to --letters folder
 //                            $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         ////
-                            $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         ////
+                            $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);         ////
 
                             $pdf->Output($path_name, 'F');
                             $pdf->Output($original_name, 'F');
@@ -2934,7 +2934,7 @@ class EmundusModelEvaluation extends JModelList {
                                 }
 
 //                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
                                 $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                             }
                         } catch (Exception $e) {
@@ -3113,12 +3113,12 @@ class EmundusModelEvaluation extends JModelList {
                                 copy($original_name, $path_name);
 
 //                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
                                 $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
 
                             } else {
 //                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
 
                                 $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
                                 $writer->setIncludeCharts(true);
