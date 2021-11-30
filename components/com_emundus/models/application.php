@@ -4091,7 +4091,7 @@ class EmundusModelApplication extends JModelList
                 $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . $filePath, $class);
                 $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
                 $content = $htmlWriter->getContent();
-                
+
                 $contentWithoutSpaces = preg_replace('/\s+/', '', $content);
                 if (strpos($contentWithoutSpaces, '<body></') !== false) {
                     $preview['status'] = false;
@@ -4101,7 +4101,7 @@ class EmundusModelApplication extends JModelList
                     $preview['content'] = '<div class="wrapper">' . $content . '</div>';
                     $preview['overflowY'] = true;
                     $preview['style'] = 'word';
-                    $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');                
+                    $preview['msg'] = JText::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
                 }
             } else if (in_array($extension, ['xls', 'xlsx', 'ods', 'csv'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');

@@ -84,7 +84,6 @@ export default {
     mounted() {
         this.canUpdate = this.$store.state.user.rights[this.fnum] ? this.$store.state.user.rights[this.fnum].canUpdate : false;
         this.attachment = this.$store.state.attachment.selectedAttachment;
-        console.log('here');
     },
     methods: {
         async saveChanges() {
