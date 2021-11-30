@@ -54,6 +54,7 @@ class EmundusModelExport extends JModelList {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
         $gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
+        $gotenberg_ssl = (bool)$eMConfig->get('gotenberg_ssl', 1);        // using SSL certificate or not
 
         $res = new stdClass();
 
@@ -75,7 +76,8 @@ class EmundusModelExport extends JModelList {
             $dest = $file_dest;
 
             //TODO: parse URL to make it cleaner
-            $client = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client());
+            $ssl = new \GuzzleHttp\Client(['verify' => $gotenberg_ssl]);
+            $client = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client($ssl));
             $files = [
                 DocumentFactory::makeFromPath($file, $src),
             ];

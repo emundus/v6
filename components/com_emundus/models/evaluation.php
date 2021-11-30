@@ -2467,7 +2467,7 @@ class EmundusModelEvaluation extends JModelList {
                 if($replace_document == 1) {
                     $refreshQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.attachment_id = ' . $attachInfo['id'] .
                         ' AND DATE(#__emundus_uploads.timedate) = current_date() ' .
-                        ' AND #__emundus_uploads.fnum = ' . $fnum;
+                        ' AND #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum);
 
                     $this->_db->setQuery($refreshQuery);
                     $this->_db->execute();
@@ -2538,7 +2538,7 @@ class EmundusModelEvaluation extends JModelList {
                                 /// remove it in database
 
                                 $query = 'DELETE FROM #__emundus_uploads 
-                                                WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                     ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
                                                         ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -2681,7 +2681,7 @@ class EmundusModelEvaluation extends JModelList {
                                 unlink($path_name);
 
                                 $query = 'DELETE FROM #__emundus_uploads 
-                                                WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                     ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
                                                         ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -2894,7 +2894,7 @@ class EmundusModelEvaluation extends JModelList {
                                 /// check if file exists or not
                                 if (file_exists($path_name) or file_exists($original_path)) {
                                     $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                         ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
                                                             ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -2911,7 +2911,7 @@ class EmundusModelEvaluation extends JModelList {
                                     $dest = str_replace('.docx', '.pdf', $original_name);
                                     $filename = str_replace('.docx', '.pdf', $filename);
                                     try {
-                                        $m_Export->toPdf($original_name, $dest, $fnum);
+                                        $m_Export->toPdf($original_name, $dest, null, $fnum);
                                     } catch(Exception $e) {
                                         JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                                         return false;
@@ -2923,7 +2923,7 @@ class EmundusModelEvaluation extends JModelList {
                                     unlink($original_path . DS . $original_name);
 
                                     $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                         ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
                                                             ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -3099,7 +3099,7 @@ class EmundusModelEvaluation extends JModelList {
                                 unlink($path_name);
 
                                 $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                         ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
                                                             ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -3134,7 +3134,7 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             $_ids = array();
-            $getLastUploadIdQuery = "SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum = " . $fnum . " GROUP BY #__emundus_uploads.attachment_id ORDER BY attachment_id DESC";
+            $getLastUploadIdQuery = "SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum LIKE " . $this->_db->quote($fnum) . " GROUP BY #__emundus_uploads.attachment_id ORDER BY attachment_id DESC";
 
             $this->_db->setQuery($getLastUploadIdQuery);
             $availableUploads = $this->_db->loadObjectList();
@@ -3144,14 +3144,14 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             /// remove all duplicate attachments (just keep the last) -- unlink
-            $getDuplicateAttachmentQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum = ' . $fnum;
+            $getDuplicateAttachmentQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum);
 
             $this->_db->setQuery($getDuplicateAttachmentQuery);
             $duplicateAttachments = $this->_db->loadObjectList();
 
             /// remove unnecessary records for same attachment id in database
             if($replace_document == 1) {
-                $deleteDuplicateAttachmentsQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum = ' . $fnum;
+                $deleteDuplicateAttachmentsQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum);
                 $this->_db->setQuery($deleteDuplicateAttachmentsQuery);
                 $this->_db->execute();
             }
