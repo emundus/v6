@@ -106,10 +106,6 @@ export default {
     this.attachment = this.$store.state.attachment.selectedAttachment;
   },
   methods: {
-    mounted() {
-      this.canUpdate = this.$store.state.user.rights[this.fnum] ? this.$store.state.user.rights[this.fnum].canUpdate : false;
-      this.attachment = this.$store.state.attachment.selectedAttachment;
-    },
     async saveChanges() {
       let formData = new FormData();
       formData.append("fnum", this.fnum);
