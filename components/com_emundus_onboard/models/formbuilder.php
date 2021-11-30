@@ -816,7 +816,10 @@ class EmundusonboardModelformbuilder extends JModelList {
         unset($params['sub_options']);
 
         $params['join_conn_id'] = '1';
-        $params['database_join_where_sql'] = 'order by ' . $params['join_key_column'];
+        if($params['database_join_where_sql']==''){
+            $params['database_join_where_sql'] = 'order by ' . $params['join_key_column'];
+        }
+
         $params['database_join_where_access'] = '1';
         $params['database_join_where_when'] = '3';
         $params['databasejoin_where_ajax'] = '0';
@@ -3125,6 +3128,19 @@ this.set(words.join(&quot; &quot;));
             return $db->loadObjectList();
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/formbuilder | Error at getting databases references : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+    function getDatabasesJoinOrdonancementColumns($database_name) {
+
+        $db = $this->getDbo();
+        $query = "SELECT DISTINCT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'$database_name'";
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/formbuilder | Error at getting databases references columns : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }

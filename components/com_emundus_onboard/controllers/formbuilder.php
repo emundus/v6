@@ -676,6 +676,23 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+    public function getdatabasesjoinOrdonancementColomns() {
+        $user = JFactory::getUser();
+
+        $m_form = $this->model;
+        $jinput = JFactory::getApplication()->input;
+        $data_base_name = $jinput->getString('database_name');
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $database_name_columns = $m_form->getDatabasesJoinOrdonancementColumns($data_base_name);
+
+            $tab = array('status' => 1, 'msg' => 'worked', 'data' => $database_name_columns);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 
     public function enablegrouprepeat() {
         $user = JFactory::getUser();

@@ -572,7 +572,8 @@ class EmundusController extends JControllerLegacy {
         include_once (JPATH_SITE.'/components/com_emundus/models/users.php');
 
         $jinput = JFactory::getApplication()->input;
-        $profile_fnum = $jinput->post->get('profnum', null);
+        $profile_fnum = $jinput->get('profnum', null);
+        $redirect = $jinput->get('redirect', null);
 
         $ids = explode('.', $profile_fnum);
         $profile = $ids[0];
@@ -656,6 +657,9 @@ class EmundusController extends JControllerLegacy {
         }
         $session->set('emundusUser', $aid);
 
+        if(!empty($redirect)){
+            JFactory::getApplication()->redirect($redirect);
+        }
         echo json_encode((object)(array('status' => true)));
         exit;
     }
@@ -1387,18 +1391,18 @@ class EmundusController extends JControllerLegacy {
 
             } else {
 	            header('Content-type: '.$mime_type);
-	            header('Content-Disposition: inline; filename='.basename($file));
-	            header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
-	            header('Cache-Control: no-store, no-cache, must-revalidate');
-	            header('Cache-Control: pre-check=0, post-check=0, max-age=0');
-	            header('Pragma: anytextexeptno-cache', true);
-	            header('Cache-control: private');
-	            header('Expires: 0');
+                header('Content-Disposition: inline; filename='.basename($file));
+                header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+                header('Cache-Control: no-store, no-cache, must-revalidate');
+                header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+                header('Pragma: anytextexeptno-cache', true);
+                header('Cache-control: private');
+                header('Expires: 0');
 
-	            ob_clean();
-	            flush();
-	            readfile($file);
-	            exit;
+                ob_clean();
+                ob_end_flush();
+                readfile($file);
+                exit;
             }
         } else {
             JError::raiseWarning(500, JText::_( 'FILE_NOT_FOUND' ).' '.$url);
@@ -1671,7 +1675,7 @@ class EmundusController extends JControllerLegacy {
         echo json_encode((object) $result);
         exit();
     }
-    
+
     /**
      * unregisterevent
      *
