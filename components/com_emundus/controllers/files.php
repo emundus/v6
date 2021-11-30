@@ -4322,6 +4322,40 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         exit;
     }
+
+    // Get actions on fnum with offset
+    public function getactionsonfnum() {
+        $jinput = JFactory::getApplication()->input;
+
+        $user = JFactory::getUser()->id;
+        $fnum = $jinput->post->getRaw('fnum');
+        $offset = $jinput->post->getRaw('offset');
+
+        $fnumErrorList = [];
+        $m_logs = $this->getModel('Logs');
+
+        if (EmundusHelperAccess::asAccessAction(37, 'r', $user, $fnum)) {
+            $res = $m_logs->getActionsOnFnum($fnum, null, null, null, $offset);
+            $details = [];
+
+            if (empty($res)) {
+                $fnumErrorList[] = $fnum;
+            } else {
+                foreach ($res as $log) {
+                    array_push($details, $m_logs->setActionDetails($log->action_id, $log->verb, $log->params));
+                }
+            }
+        } else {
+            $fnumErrorList[] = $fnum;
+        }
+
+        if(empty($fnumErrorList)) {
+            echo json_encode((object)(array('status' => true, 'res' => $res, 'details' => $details)));
+        } else {
+            echo json_encode((object)(array('status' => false, 'msg' => JText::_('ERROR'). implode(', ', $fnumErrorList))));
+        }
+    exit;
+    }
 }
 
 

@@ -172,10 +172,11 @@ class EmundusModelLogs extends JModelList {
 	 * @param int $user_from
 	 * @param int $action
 	 * @param string $crud
+	 * @param int $offset
 	 * @since 3.8.8
 	 * @return Mixed Returns false on error and an array of objects on success.
 	 */
-	public function getActionsOnFnum($fnum, $user_from = null, $action = null, $crud = null) {
+	public function getActionsOnFnum($fnum, $user_from = null, $action = null, $crud = null, $offset = null) {
 
 		// If the user ID from is not a number, something is wrong.
 		if (!empty($user_from) && !is_numeric($user_from)) {
@@ -199,7 +200,8 @@ class EmundusModelLogs extends JModelList {
 			->from($db->quoteName('#__emundus_logs', 'lg'))
 			->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.id').' = '.$db->QuoteName('lg.user_id_from'))
 			->where($where)
-			->order($db->QuoteName('lg.id') . ' DESC');
+			->order($db->QuoteName('lg.id') . ' DESC')
+			->setLimit(100, $offset);
 
 		$db->setQuery($query);
 

@@ -24,7 +24,7 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
 	.widget .action { margin-top:5px; }
     .widget .log-message { font-size: 18px; font-weight:600;}
     .widget .log-user { font-size:16px;}
-    .widget .no-log { margin: 1.5rem;}
+    .widget .log-info { margin: 1.5rem;}
 	.widget .btn-block { border-top-left-radius:0px;border-top-right-radius:0px; }
 </style>
 
@@ -58,7 +58,7 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
                             <th><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_DETAILS'); ?></th>
                         </tr>       
                     </thead>
-                    <tbody>
+                    <tbody id="logs_list">
                         <?php
                         foreach ($this->fileLogs as $log) { ?>
                         <tr>
@@ -66,15 +66,62 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
                             <td><?= $log->firstname . ' ' . $log->lastname; ?></td>
                             <td><?= $log->details['action_category']; ?></td>
                             <td><?= $log->details['action_name']; ?></td>
-                            <td><?php if(!empty($log->details['action_details'])): echo $log->details['action_details']; endif; ?></td>
+                            <td><?= $log->details['action_details']; ?></td>
                         </tr>
                         <?php } ?>
                     </tbody>
                 </table>
+                <?php 
+                if (count($this->fileLogs) >= 100) { ?>
+                <div class="log-info show-more"><button type="button" class="btn btn-info btn-xs" id="show-more">Afficher plus</button></div>
+                <?php } ?> 
                 <?php } else { ?>
-                    <div class="no-log"><?= JText::_('NO_LOGS'); ?></ul>
+                <div class="log-info"><?= JText::_('NO_LOGS'); ?></div>
                 <?php } ?>
 			</div>
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    var offset = 100;
+$(document).on('click', '#show-more', function(e)
+    {
+        if(e.handle === true) {
+            e.handle = false;
+            var fnum = "<?php echo $this->fnum; ?>";
+        
+            url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getactionsonfnum';
+            $.ajax(
+                {
+                    type:'POST',
+                    url:url,
+                    dataType:'json',
+                    data:({fnum: fnum, offset: offset}),
+                    success: function(result) {
+                        if (result.status) {
+                            var tr = ''
+                            var timestamp = Date();
+                            if (result.res.length < 100) {
+                                $('.show-more').hide();
+                            }
+                            for (let i = 0; i < result.res.length; i++) {
+                                timestamp = new Date(result.res[i].timestamp);
+                                tr = '<tr>' +
+                                    '<td>'+ timestamp.toLocaleString() + '</td>' +
+                                    '<td>'+ result.res[i].firstname + ' ' + result.res[i].lastname + '</td>' +
+                                    '<td>'+ result.details[i].action_category + '</td>' +
+                                    '<td>'+ result.details[i].action_name + '</td>' +
+                                    '<td>'+ result.details[i].action_details + '</td>' +
+                                '</tr>'
+                                $('#logs_list').append(tr);
+                            }
+                            offset += 100;
+                        } 
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+            }
+    });
