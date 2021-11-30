@@ -13,7 +13,7 @@
                     <label for="status">{{ translate('COM_EMUNDUS_ATTACHMENTS_CHECK') }}</label>
                     <select name="status" v-model="attachment.is_validated" :disabled="!canUpdate">
                         <option value=-2> {{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }} </option>
-                        <option value=2> {{ translate('COM_EMUNDUS_ATTACHMENTS_WARNING') }}</option>
+                        <option value="2"> {{ translate('COM_EMUNDUS_ATTACHMENTS_WARNING') }}</option>
                         <option value=1> {{ translate('VALID') }} </option>
                         <option value=0> {{ translate('INVALID') }} </option>
                     </select>
@@ -84,7 +84,6 @@ export default {
     mounted() {
         this.canUpdate = this.$store.state.user.rights[this.fnum] ? this.$store.state.user.rights[this.fnum].canUpdate : false;
         this.attachment = this.$store.state.attachment.selectedAttachment;
-        console.log('here');
     },
     methods: {
         async saveChanges() {
