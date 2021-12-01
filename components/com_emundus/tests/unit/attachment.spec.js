@@ -15,15 +15,18 @@ localVue.use(VModal);
 describe('Attachments.vue', () => {
   const wrapper = shallowMount(Attachments, {
     propsData: {
-      user: "95",
-      fnum: "123456789"
+      user: "123",
+      fnum: "2021061714501700000010000123"
     },
     store: store,
     localVue
   });
 
   // set attachments data
+  wrapper.vm.users = mockAttachment.users;
+  wrapper.vm.displayedUser = mockAttachment.users.find(user => user.id === "123");
   wrapper.vm.attachments = mockAttachment.attachments;
+  wrapper.vm.fnums = mockAttachment.fnums;
 
   it('Expect table wrapper to exists if not empty attachments', () => {
     const table = wrapper.find('.table-wrapper');
@@ -35,7 +38,25 @@ describe('Attachments.vue', () => {
     expect(tbody.findAll('tr').length).toBe(wrapper.vm.attachments.length);
   });
 
-  // test sort elements
+  /**
+   * displayed-user should match the user firstname and lastname
+   */
+  it('Expect p.name content to be the user firstname and lastname', () => {
+    const name = wrapper.find('.displayed-user .name');
+    expect(name.text()).toBe(mockAttachment.users[0].firstname + ' ' + mockAttachment.users[0].lastname);
+  });
+
+  /**
+   * if more than one fnums, next button should be displayed
+   */
+  it('Expect navigateButtons to be displayed if more than one fnums', () => {
+    const navigateButtons = wrapper.find('.prev-next-files');
+    expect(navigateButtons.exists()).toBe(true);
+  });
+
+  /**
+   * test sort elements
+   */
   it('By default sort last should be empty', () => {
     expect(wrapper.vm.sort.last).toBe('');
   });
@@ -63,7 +84,9 @@ describe('Attachments.vue', () => {
   //   expect(wrapper.vm.sort.order).toBe('');
   // })
 
-  // test searchInFiles
+  /**
+   * test searchInFiles
+   */
   it('Expect searchInFiles to set attachment.show to false if attachment.value do not contains value', () => {
     wrapper.vm.$refs.searchbar.value = wrapper.vm.attachments[0].value;
     wrapper.vm.searchInFiles();
@@ -81,13 +104,17 @@ describe('Attachments.vue', () => {
     });
   });
 
-  // assert that delete button is not displayed if canDelete is false
+  /**
+   * assert that delete button is not displayed if canDelete is false
+   */
   it('Expect delete button to not be displayed if canDelete is false', () => {
     const deleteButton = wrapper.find('.material-icons.delete');
     expect(deleteButton.exists()).toBe(false);
   });
 
-  // assert that export button is not displayed if canExport is false
+  /**
+   * assert that export button is not displayed if canExport is false
+   */
   it('Expect export button to not be displayed if canExport is false', () => {
     const exportButton = wrapper.find('.material-icons.export');
     expect(exportButton.exists()).toBe(false);

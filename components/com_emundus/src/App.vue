@@ -1,6 +1,6 @@
 <template>
   <div class="com_emundus_vue">
-    <Attachements :fnum="data.fnum" :user="data.user"></Attachements>
+    <Attachements v-if="componentName === 'attachments'" :fnum="data.fnum" :user="data.user"></Attachements>
   </div>
 </template>
 

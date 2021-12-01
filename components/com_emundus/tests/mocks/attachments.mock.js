@@ -2,7 +2,7 @@ export default {
     "attachments": [
         {
             "aid": "4",
-            "user_id": "95",
+            "user_id": "123",
             "id": "27",
             "lbl": "_letter",
             "value": "Courrier",
@@ -33,7 +33,7 @@ export default {
         },
         {
             "aid": "3",
-            "user_id": "95",
+            "user_id": "123",
             "id": "38",
             "lbl": "_zip-data",
             "value": "ZIP",
@@ -62,5 +62,36 @@ export default {
             "training": "prog",
             "show": true
         }
+    ],
+    "users": [
+        {
+            "id": "123",
+            "lastname": "Whitehead",
+            "firstname": "Jeanette",
+            "email": "qsdffdsfsdfsdft@yopmail.com",
+            "username": "qsdffdsfsdfsdft@yopmail.com",
+            "profile": "Formulaire de base candidat",
+            "registerDate": "2021-12-01 10:54:39",
+            "lastvisitDate": "2021-12-01 11:21:43",
+            "groupe": null,
+            "active": "0"
+        },
+        {
+            "id": "95",
+            "lastname": "COORDINATOR",
+            "firstname": "Program",
+            "email": "coord@emundus.fr",
+            "username": "coordinator",
+            "profile": "Central administrator",
+            "registerDate": "2021-06-01 10:38:08",
+            "lastvisitDate": "2021-12-01 11:21:50",
+            "groupe": "Tous les droits",
+            "active": "0"
+        }
+    ], 
+    "fnums": [
+        "2021061714501700000010000123",
+        "2021061715003400000010000095",
+        "2021120110544200000010000096"
     ]
 }
