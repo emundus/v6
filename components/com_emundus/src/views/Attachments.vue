@@ -279,7 +279,7 @@ export default {
 
         // Add attachment categories if not already given by the server
         this.attachments.forEach(attachment => {
-          if (!response.categories[attachment.category] && attachment.category != "") {
+          if (!response.categories[attachment.category] && attachment.category != "" && attachment.category != null) {
             response.categories[attachment.category] = this.translate(attachment.category);
           }
         });
