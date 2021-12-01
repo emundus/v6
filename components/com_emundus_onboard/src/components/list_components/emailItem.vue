@@ -41,7 +41,7 @@
                   <button class="cta-block" style="height: unset" type="button" :title="Visualize" @click="$modal.show('modalEmailPreview_' + data.id)">
                     <em class="fas fa-eye"></em>
                   </button>
-                  <v-popover :popoverArrowClass="'custom-popover-arraow'" v-if="data.lbl.startsWith('custom_')">
+                  <v-popover :popoverArrowClass="'custom-popover-arraow'" v-if="data.lbl.startsWith('custom_') || data.lbl.startsWith('email_')">
                     <button class="tooltip-target b3 card-button"></button>
 
                     <template slot="popover">
