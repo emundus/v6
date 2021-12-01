@@ -1264,11 +1264,11 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         if (extension_loaded('zip'))
-            $name = $this->export_zip($validFnums, $nom, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options);
+            $name = $this->export_zip(array($validFnums[0]), $nom, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options);
         else
             $name = $this->export_zip_pcl($validFnums);
 
-        echo json_encode((object) array('status' => true, 'name' => $name));
+        echo json_encode((object) array('status' => true, 'name' => $name, 'fnums'=> $validFnums));
         exit();
     }
 
@@ -2844,7 +2844,6 @@ class EmundusControllerFiles extends JControllerLegacy
             }
 
             if ($zip->open($path, ZipArchive::CREATE) == TRUE) {
-
                 $dossier = EMUNDUS_PATH_ABS.$users[$fnum]->id.DS;
 
                 /// Build filename from tags, we are using helper functions found in the email model, not sending emails ;)

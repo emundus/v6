@@ -5225,12 +5225,16 @@ $(document).ready(function() {
         var form_checked = [];
         var attach_checked = [];
         var options = [];
-
-        var fnums = JSON.parse(getUserCheck());
-        $.each(fnums,function(findex,fnum){
-            if(fnum === 'em-check-all')
-                delete fnums[findex];
-        });
+    
+        var fnums = getUserCheck();
+        if (fnums !== "all") {
+            fnums = JSON.parse(fnums);
+            $.each(fnums,function(findex,fnum){
+                if(fnum === 'em-check-all')
+                    delete fnums[findex];
+            });
+        }
+        
 
         $('#felts input:checked').each(function() {
             form_checked.push($(this).val());
@@ -5280,18 +5284,18 @@ $(document).ready(function() {
             type:'get',
             url:url,
             data: {
-                fnums: JSON.stringify(fnums),
+                fnums: fnums == "all" ? "all" : JSON.stringify(fnums),
                 forms: forms,
                 assessment: assessment,
                 decision: decision,
                 admission: admission,
                 formids: form_checked,
-                attachids: 0 in attach_checked ? [attach_checked[0]] : [],
+                attachids: attach_checked,
                 options:options
             },
             dataType:'json',
             success: function() {
-                attach_checked.splice(0,1);
+                
             },
             error: function (jqXHR) {
                 console.log(jqXHR.responseText);
@@ -5301,48 +5305,52 @@ $(document).ready(function() {
                 $('#chargement').append('<span class="label alert-danger" role="alert">'+Joomla.JText._('FILES_EXPORTED_TO_EXTERNAL_ERROR')+' </span>');
             }
         });
-        i = 0;
+
         post.done(function(result){
             nom = result.name;
+            var totalDossier = result.fnums.length;
+            fnums = result.fnums.slice(1);
 
-            var totalDossier = Object.keys(fnums).length;
-            var totalDocuments = (attach_checked.length + 1)*(totalDossier);
             $.each(fnums,function(fnum){
-                //Second part of zip call, one call for each document and for each candidacy, added to the zip file created above
-                $.each(attach_checked,function(index, value){
-                    var currentDocument = ((index + 1)+((attach_checked.length)*i)+1);
-                    var complete = parseInt( currentDocument / totalDocuments * 100);
-                    $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+' -- '+ complete +' %</p></div>');
-                    $.ajax({
-                        type:'get',
-                        async: false,
-                        url:url,
-                        data: {
-                            fnums: JSON.stringify({"0": fnums[fnum]}),
-                            attachids:[value],
-                            nom: nom,
-                        },
-                        dataType:'json',
-                        success: function(result) {
-                                if (result.status && result.name != 0) {
-                                    
-                                } else {
-                                    $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+'</p></div>');
-                                    $('#loadingimg').empty();
-                                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
-                                    $('#chargement').append('<div class="alert alert-danger"><!-- Joomla.JText._(\'NO_ATTACHMENT_ZIP\')+-->'+result.msg+' </div>');
-                                }
-                        },
-                        error: function (jqXHR) {
-                            console.log(jqXHR.responseText);
-                            $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+'</p></div>');
-                            $('#loadingimg').empty();
-                            $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
-                            $('#chargement').append('<div class="alert alert-danger"><!-- Joomla.JText._(\'NO_ATTACHMENT_ZIP\')+-->'+Joomla.JText._('FILES_EXPORTED_TO_EXTERNAL_ERROR')+' </div>');
-                        }
-                    });
+                //Second part of zip call, one call for each candidacy, added to the zip file created above
+                
+                var currentCandidacy = (fnum + 1);
+                var complete = parseInt( (currentCandidacy / totalDossier) * 100);
+                $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+' -- '+ complete +' %</p></div>');
+                $.ajax({
+                    type:'get',
+                    async: false,
+                    url:url,
+                    data: {
+                        fnums: JSON.stringify({"0": fnums[fnum]}),
+                        forms: forms,
+                        assessment: assessment,
+                        decision: decision,
+                        admission: admission,
+                        formids: form_checked,
+                        options:options,
+                        attachids:attach_checked,
+                        nom: nom,
+                    },
+                    dataType:'json',
+                    success: function(result) {
+                            if (result.status && result.name != 0) {
+                                
+                            } else {
+                                $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+'</p></div>');
+                                $('#loadingimg').empty();
+                                $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
+                                $('#chargement').append('<div class="alert alert-danger"><!-- Joomla.JText._(\'NO_ATTACHMENT_ZIP\')+-->'+result.msg+' </div>');
+                            }
+                    },
+                    error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
+                        $('#extractstep').replaceWith('<div id="extractstep"><p>'+Joomla.JText._('COM_EMUNDUS_ZIP_GENERATION')+'</p></div>');
+                        $('#loadingimg').empty();
+                        $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
+                        $('#chargement').append('<div class="alert alert-danger"><!-- Joomla.JText._(\'NO_ATTACHMENT_ZIP\')+-->'+Joomla.JText._('FILES_EXPORTED_TO_EXTERNAL_ERROR')+' </div>');
+                    }
                 });
-                i++;
             });
             $('#loadingimg').empty();
             $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
