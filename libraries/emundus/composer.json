@@ -6,6 +6,15 @@
             "email": "benjamin.rivalland@emundus.fr"
         }
     ],
+    "config": {
+        "platform-check": false
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://www.setasign.com/downloads/"
+        }
+    ],
     "require": {
         "php-http/guzzle6-adapter": "^2.0",
         "thecodingmachine/gotenberg-php-client": "^6.2",
@@ -15,5 +24,8 @@
         "setasign/fpdi": "^2.3",
         "tecnickcom/tcpdf": "6.2.*",
         "setasign/fpdi_pdf-parser": "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "9.5.7"
     }
 }
