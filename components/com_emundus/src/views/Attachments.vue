@@ -306,14 +306,18 @@ export default {
       this.resetOrder();
       this.checkedAttachments = [];
       this.$refs['searchbar'].value = "";
-      this.attachments = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
-      this.$store.dispatch('attachment/setAttachmentsOfFnum', {
-        fnum: [this.displayedFnum],
-        attachments: this.attachments
-      });
+      const response = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
 
-      this.getCategories();
-      this.loading = false;
+      if (response.status) {
+        this.attachments = response.attachments;
+        this.$store.dispatch('attachment/setAttachmentsOfFnum', {
+          fnum: [this.displayedFnum],
+          attachments: this.attachments
+        });
+
+        this.getCategories();
+        this.loading = false;
+      }
     },
     updateAttachment() {
       this.resetOrder();
@@ -322,6 +326,10 @@ export default {
       this.selectedAttachment = {};
     },
     updateStatus($event, selectedAttachment) {
+      if (this.attachments.length < 1) {
+        return;
+      }
+
       this.attachments.forEach((attachment, key) => {
         if (attachment.aid == selectedAttachment.aid) {
           this.resetOrder();
@@ -334,9 +342,11 @@ export default {
           formData.append('is_validated', this.attachments[key].is_validated);
 
           attachmentService.updateAttachment(formData).then(response => {
-            if (!response.status) {
+            if (response && response.status === false) {
               this.displayErrorMessage(response.msg);
             }
+          }).catch(error => {
+            this.displayErrorMessage(error);
           });
 
           return;

@@ -650,7 +650,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
 
-        echo json_encode($attachments);
+        echo json_encode(['status' => sizeof($attachments), 'attachments' => $attachments]);
         exit;
     }
 

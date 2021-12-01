@@ -11,7 +11,10 @@ export default {
 
       return response.data;
     } catch (e) {
-      throw e;
+      return {
+        status: false,
+        msg: e.message
+      }
     }
   },
 
@@ -23,14 +26,20 @@ export default {
         }
       });
 
-      // add show attribute to true to all attchments in response data
-      response.data.forEach(attachment => {
-        attachment.show = true;
-      });
+
+      if (response.data.status) {
+        // add show attribute to true to all attchments in response data
+        response.data.attachments.forEach(attachment => {
+          attachment.show = true;
+        });
+      }
 
       return response.data;
     } catch (e) {
-      throw e;
+      return {
+        status: false,
+        msg: e.message
+      }
     }
   },
 
@@ -40,7 +49,10 @@ export default {
 
       return response.data;
     } catch (e) {
-      throw e;
+      return {
+        status: false,
+        msg: e.message
+      }
     }
   },
 
@@ -58,7 +70,10 @@ export default {
 
       return response;
     } catch (e) {
-      throw e;
+      return {
+        status: false,
+        msg: e.message
+      }
     }
   },
   
@@ -73,7 +88,10 @@ export default {
 
       return response.data;
     } catch (e) {
-      throw e;
+      return {
+        status: false,
+        msg: e.message
+      }
     }
   },
 
@@ -88,7 +106,10 @@ export default {
 
       return response.data;
     } catch (e) {
-      throw e;
+      return {
+        status: false,
+        msg: e.message
+      }
     }
   },
   exportAttachments(student, fnum, attachment_ids) {
