@@ -44,22 +44,18 @@ $gantry = Gantry::instance();
 
 // Prevent direct access without menu item.
 if (!$menuItem) {
-    if (isset($gantry['errors'])) {
-        /** @var \Whoops\Run $errors */
-        $errors = $gantry['errors'];
-        $errors->unregister();
-    }
+    /** @var \Whoops\Run $errors */
+    $errors = $gantry['errors'];
+    $errors->unregister();
 
     throw new Exception(Text::_('JLIB_APPLICATION_ERROR_COMPONENT_NOT_FOUND'), 404);
 }
 
 // Handle non-html formats and error page.
 if ($input->getCmd('view') === 'error' || $input->getInt('g5_not_found') || strtolower($input->getCmd('format', 'html')) !== 'html') {
-    if (isset($gantry['errors'])) {
-        /** @var \Whoops\Run $errors */
-        $errors = $gantry['errors'];
-        $errors->unregister();
-    }
+    /** @var \Whoops\Run $errors */
+    $errors = $gantry['errors'];
+    $errors->unregister();
 
     throw new Exception(Text::_('JERROR_PAGE_NOT_FOUND'), 404);
 }
