@@ -4065,6 +4065,7 @@ class EmundusModelApplication extends JModelList
                 $preview['content'] = '<object width="100%" height="100%" style="border:none;"><embed width="100%" height="100%" src="data:application/pdf;base64,' . $content . '" type="application/pdf"></object>';
             } else if ($extension == 'txt') {
                 $content = file_get_contents($filePath);
+                $preview['overflowY'] = true;
                 $preview['content'] = '<div class="wrapper" style="max-width: 100%;margin: 5px;padding: 20px;background-color: white;"><pre style="white-space: break-spaces;width: calc(100% - 40px);">' . $content . '</pre></div>';
             } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
                 $mimeType = mime_content_type($extension);
