@@ -24,7 +24,7 @@
               <div class="nb-dossier" :class="'type-color-' + data.type">
                 <div>{{ type[langue][data.type - 1] }}</div>
               </div>
-              <div class="nb-dossier" v-if="data.category !== ''">
+              <div class="nb-dossier" v-if="data.category !== '' && data.category !== null">
                 {{ data.category }}
               </div>
             </div>
