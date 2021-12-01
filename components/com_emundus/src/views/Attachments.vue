@@ -109,7 +109,12 @@
             <td>
               <input class="attachment-check" type="checkbox" @change="updateCheckedAttachments(attachment.aid)" :checked="checkedAttachments.includes(attachment.aid)">
             </td>
-            <td class="td-document" @click="openModal(attachment)">{{ attachment.value }}</td>
+            <td class="td-document" @click="openModal(attachment)">
+              <span>{{ attachment.value }}</span>
+              <span v-if="!attachment.existsOnServer" class="material-icons warning file-not-found" :title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')">
+                warning
+              </span>
+            </td>
             <td class='date'>{{ formattedDate(attachment.timedate) }}</td>
             <td class="desc">{{ attachment.description }}</td>
             <td class='category'>{{ categories[attachment.category] ? translate(categories[attachment.category]) : attachment.category }}</td>
@@ -941,12 +946,16 @@ export default {
       }
 
       .td-document {
-        width: 250px;
         max-width: 250px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         cursor: pointer;
+
+        .warning.file-not-found {
+          color: var(--error-color);
+          transform: translate(10px, 3px);
+        }
       }
     }
 
