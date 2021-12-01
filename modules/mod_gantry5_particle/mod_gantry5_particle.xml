@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension version="3.9" type="module" client="site" method="upgrade">
     <name>mod_gantry5_particle</name>
-    <version>5.5.5</version>
-    <creationDate>November 22, 2021</creationDate>
+    <version>5.5.3</version>
+    <creationDate>October 29, 2021</creationDate>
     <author>RocketTheme, LLC</author>
     <authorEmail>support@rockettheme.com</authorEmail>
     <authorUrl>http://www.rockettheme.com</authorUrl>
@@ -30,12 +30,14 @@
                 <field
                     name="moduleclass_sfx"
                     type="text"
-                    label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL" />
+                    label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+                    description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC" />
 
                 <field
                         name="owncache"
                         type="list"
                         label="COM_MODULES_FIELD_CACHING_LABEL"
+                        description="COM_MODULES_FIELD_CACHING_DESC"
                         default="0"
                 >
                     <option value="1">JGLOBAL_USE_GLOBAL</option>
@@ -46,7 +48,8 @@
                         name="cache_time"
                         type="text"
                         default="900"
-                        label="COM_MODULES_FIELD_CACHE_TIME_LABEL" />
+                        label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+                        description="COM_MODULES_FIELD_CACHE_TIME_DESC" />
             </fieldset>
         </fields>
     </config>
