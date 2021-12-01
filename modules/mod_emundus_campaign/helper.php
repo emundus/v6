@@ -233,11 +233,9 @@ class modEmundusCampaignHelper {
 
             $formations = $db->loadObjectList();
 
-            foreach ($formations as $formation) {
-                
-                $query  = $db->getQuery(true);
-                
+            foreach ($formations as $formation) {                
                 $query
+                    ->clear()
                     ->select('repeat.voie_d_acces')
                     ->from($db->quoteName('data_acces_formation_repeat_voie_d_acces', 'repeat'))
                     ->leftJoin($db->quoteName('data_acces_formation', 'daf') . ' ON ' . $db->quoteName('repeat.parent_id') . ' = '. $db->quoteName('daf.id'))
