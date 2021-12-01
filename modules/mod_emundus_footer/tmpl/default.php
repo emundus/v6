@@ -30,7 +30,7 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             </div>
 
            <div class="em-col-3-footer">
-                    <a href="/index.php" data-bcup-haslogintext="no">
+                    <a target="_blank" href="https://www.tchooz.io/" data-bcup-haslogintext="no">
                         <img class="logo" src="/images/emundus/tchooz_black.png" alt="Logo">
                     </a>
 

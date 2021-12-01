@@ -15,7 +15,7 @@ var mixin = {
                     completeName = user.firstname + ' ' + user.lastname;
                 } else {
                     userService.getUserById(id).then(data => {
-                        if (data.status) {
+                        if (data.status && data.user[0]) {
                             completeName = data.user[0].firstname + ' ' + data.user[0].lastname;
                             data.user[0].id = id;
                             this.$store.dispatch('user/setUsers', data.user);
