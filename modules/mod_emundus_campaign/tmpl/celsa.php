@@ -14,6 +14,17 @@ if ($locallang == "fr-FR") {
     setlocale (LC_ALL, 'en_GB');
 }
 
+// Check if user don't already have an opened fnum
+$user = JFactory::getSession()->get('emundusUser');
+$hasOpenedFnum = false;
+
+foreach($user->fnums as $fnum) {
+    if ($fnum->published == '1') {
+        $hasOpenedFnum = true;
+        break;
+    }
+}
+
 // sort arrays by label and not by date
 usort($currentCampaign, function($a, $b) {
     return $a->label <=> $b->label;
@@ -50,7 +61,11 @@ $currentCampaign = array_map(function($item) use ($formations) {
     return $item;
 }, $currentCampaign);
 
+
+
 ?>
+
+<?php if(!$hasOpenedFnum):?>
 
 <?= $mod_em_campaign_intro; ?>
 
@@ -531,3 +546,5 @@ $currentCampaign = array_map(function($item) use ($formations) {
         }
     });
 </script>
+
+<?php endif; ?>
