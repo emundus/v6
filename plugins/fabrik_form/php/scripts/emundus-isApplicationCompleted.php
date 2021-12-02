@@ -65,6 +65,13 @@ if ($jinput->get('view') == 'form') {
 
 		if (empty($uploaded_document)) {
 			$scholarship_document_id = null;
+		} else {
+			if (!empty($pay_scholarship)) {
+				$return_url = $m_application->getHikashopCheckoutUrl($user->profile);
+				$return_url = preg_replace('/&product_id=[0-9]+/', "&product_id=$pay_scholarship", $return_url);
+				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($return_url));
+				$mainframe->redirect($checkout_url);
+			}
 		}
 
 	}
