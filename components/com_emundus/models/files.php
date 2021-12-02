@@ -2372,6 +2372,14 @@ class EmundusModelFiles extends JModelLegacy
                 }
 
                 if ($params_group->repeat_group_button == 1) {
+                    $repeat_join_table_query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id=' . $elt->group_id . ' AND table_join_key like "parent_id"';
+                    try {
+                        $this->_db->setQuery($repeat_join_table_query);
+                        $repeat_join_table = $this->_db->loadResult();
+                    } catch (Exception $e) {
+                        JLog::add('Line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+                        throw $e;
+                    }
                     if ($methode == 1) {
                         if ($elt->element_plugin == 'databasejoin') {
                             $element_attribs = json_decode($elt->element_attribs);
@@ -2422,8 +2430,8 @@ class EmundusModelFiles extends JModelLegacy
                                 }
 
                                 $select .= 'FROM '.$tableAlias[$elt->tab_name].'
-                                    LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
-                                    LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$elt->table_join.'.'.$elt->element_name.'
+                                    LEFT JOIN '.$repeat_join_table.' ON '.$repeat_join_table.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
+                                    LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$repeat_join_table.'.'.$elt->element_name.'
                                     WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
                             }
 
@@ -2465,10 +2473,9 @@ class EmundusModelFiles extends JModelLegacy
                             $query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
                         } else {
                             $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
-                        }
-
-                        if (!in_array($elt->table_join, $lastTab)) {
-                            $leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
+                            if (!in_array($elt->table_join, $lastTab)) {
+                                $leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
+                            }
                         }
                         $lastTab[] = $elt->table_join;
                     } else {
@@ -2533,7 +2540,7 @@ class EmundusModelFiles extends JModelLegacy
 
                             $element_attribs = json_decode($elt->element_attribs);
                             $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
-                            $where = explode('___', $element_attribs->cascadingdropdown_id)[1].'='.$elt->table_join.'.'.$elt->element_name;
+                            $where = explode('___', $element_attribs->cascadingdropdown_id)[1].'='.$repeat_join_table.'.'.$elt->element_name;
                             $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->cascadingdropdown_label_concat)).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
 
                             $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ")
