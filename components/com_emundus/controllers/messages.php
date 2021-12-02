@@ -698,10 +698,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                     if(!empty($_letter)) {
                         $res = $m_eval->generateLetters($_fnum, [$setup_letter], 0, 0, 0);          /// canSee = 0 // showMode = 0 // mergeMode = 0
-                        $_files = json_decode($res)->files;
 
-                        foreach ($_files as $k => $f) {
-                            $path = EMUNDUS_PATH_ABS . $fnum->applicant_id . DS . $f->filename;
+                        $folder_id = current($m_files->getFnumsInfos(array($_fnum)))['applicant_id'];
+                        
+                        foreach ($res->files as $f) {
+                            $path = EMUNDUS_PATH_ABS . $folder_id . DS . $f['filename'];
                             $toAttach[] = $path;
                             break;
                         }
