@@ -2803,7 +2803,7 @@ this.set(words.join(&quot; &quot;));
             $newformid = $db->insertid();
 
             // Set emundus plugin in params
-            if($formid == 258) {
+            /*if($formid == 258) {
                 $query->clear();
                 $query->select('params')
                     ->from($db->quoteName('#__fabrik_forms'))
@@ -2820,7 +2820,7 @@ this.set(words.join(&quot; &quot;));
                 $db->setQuery($query);
                 $params = json_decode($db->loadResult(), true);
                 $params = $this->prepareFormPlugin($params);
-            }
+            }*/
             //
 
             // Update translation files
@@ -2833,7 +2833,7 @@ this.set(words.join(&quot; &quot;));
 
             $query->set('label = ' . $db->quote('FORM_' . $prid . '_' . $newformid));
             $query->set('intro = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $newformid . '</p>'));
-            $query->set('params = ' . $db->quote(json_encode($params)));
+            //$query->set('params = ' . $db->quote(json_encode($params)));
             $query->where('id =' . $newformid);
             $db->setQuery($query);
             $db->execute();
