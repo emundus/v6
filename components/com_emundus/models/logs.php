@@ -23,6 +23,7 @@ class EmundusModelLogs extends JModelList {
 	 */
 	public function __construct() {
 		parent::__construct();
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
 
 		// Assign values to class variables.
 		$this->user = JFactory::getUser();
@@ -204,9 +205,15 @@ class EmundusModelLogs extends JModelList {
 			->setLimit(100, $offset);
 
 		$db->setQuery($query);
+		$results = $db->loadObjectList();
+		
+		// Create a new element to store the correct date display
+		foreach ($results as $result) {
+			$result->date = EmundusHelperDate::displayDate($result->timestamp);
+		}
 
 		try {
-			return $db->loadObjectList();
+			return $results;
 		} catch (Exception $e) {
 			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
