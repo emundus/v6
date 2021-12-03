@@ -102,33 +102,16 @@
           </tr>
           </thead>
           <tbody>
-          <tr
-              v-for="attachment in displayedAttachments"
-              :key="attachment.aid"
-              :class="{'checked': checkedAttachments.includes(attachment.aid)}">
-            <td>
-              <input class="attachment-check" type="checkbox" @change="updateCheckedAttachments(attachment.aid)" :checked="checkedAttachments.includes(attachment.aid)">
-            </td>
-            <td class="td-document" @click="openModal(attachment)">{{ attachment.value }}</td>
-            <td class='date'>{{ formattedDate(attachment.timedate) }}</td>
-            <td class="desc">{{ attachment.description }}</td>
-            <td class='category'>{{ categories[attachment.category] ? translate(categories[attachment.category]) : attachment.category }}</td>
-            <td class="status valid-state" :class="{
-                      'success': attachment.is_validated == 1,
-                      'warning': attachment.is_validated == 2,
-                      'error': attachment.is_validated == 0
-                      }">
-              <select @change="e => updateStatus(e, attachment)">
-                <option value="1" :selected="attachment.is_validated == 1">{{ translate('VALID') }}</option>
-                <option value="0" :selected="attachment.is_validated == 0">{{ translate('INVALID') }}</option>
-                <option value="2" :selected="attachment.is_validated == 2">{{ translate('COM_EMUNDUS_ATTACHMENTS_WARNING') }}</option>
-                <option value="-2" :selected="attachment.is_validated == -2 || attachment.is_validated === null">{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}</option>
-              </select>
-            </td>
-            <td>{{ getUserNameById(attachment.user_id) }}</td>
-            <td>{{ getUserNameById(attachment.modified_by) }}</td>
-            <td class='date'>{{ formattedDate(attachment.modified) }}</td>
-          </tr>
+            <AttachmentRow v-for="attachment in displayedAttachments" 
+              :key="attachment.aid" 
+              :class="{'checked': checkedAttachments.includes(attachment.aid)}"
+              :attachment="attachment"
+              :checkedAttachmentsProp="checkedAttachments"
+              @open-modal="openModal(attachment)"
+              @update-checked-attachments="updateCheckedAttachments"
+              @update-status="updateStatus"
+            >
+            </AttachmentRow>
           </tbody>
         </table>
       </div>
@@ -187,6 +170,7 @@
 <script>
 import AttachmentPreview from '../components/AttachmentPreview.vue'
 import AttachmentEdit from '../components/AttachmentEdit.vue'
+import AttachmentRow from '../components/AttachmentRow.vue';
 import attachmentService from '../services/attachment.js';
 import userService from '../services/user.js';
 import fileService from '../services/file.js';
@@ -197,7 +181,8 @@ export default {
   name: 'Attachments',
   components: {
     AttachmentPreview,
-    AttachmentEdit
+    AttachmentEdit,
+    AttachmentRow
   },
   props: {
     user: {
@@ -900,42 +885,6 @@ export default {
 
         &.checked {
           background-color: #F0F6FD;
-        }
-      }
-
-      .valid-state {
-        select {
-          padding: 4px 8px;
-          border-radius: 4px;
-          background-color: var(--grey-bg-color);
-          color: var(--grey-color);
-          border: none;
-          width: max-content;
-        }
-
-        select::-ms-expand {
-          display: none !important;
-        }
-
-        &.warning {
-          select {
-            color: var(--warning-color);
-            background-color:  var(--warning-bg-color);
-          }
-        }
-
-        &.success {
-          select {
-            color: var(--success-color);
-            background-color: var(--success-bg-color);
-          }
-        }
-
-        &.error {
-          select {
-            color: var(--error-color);
-            background-color:  var(--error-bg-color);
-          }
         }
       }
 
