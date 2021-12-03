@@ -53,6 +53,14 @@ if (!$handle) {
     return false;
 }
 
+
+JPluginHelper::importPlugin('emundus');
+$dispatcher = JEventDispatcher::getInstance();
+$dispatcher->trigger('callEventHandler', ['onBeforeImportCSV', ['data' => array(
+    'csv' => $csv,
+    'create_new_fnum' => $create_new_fnum
+)]]);
+
 // Prepare data structure for parsing.
 $database_elements = [];
 $bad_columns = [];
@@ -840,6 +848,9 @@ foreach ($parsed_data as $row_id => $insert_row) {
             JLog::add('ERROR: Could not send email to user : '.$user->id, JLog::ERROR, 'com_emundus.csvimport');
         }
     }
+
+    $parsed_data[$row_id]['user_id'] = $user->id;
+    $parsed_data[$row_id]['fnum'] = $fnum;
 }
 
 
@@ -870,5 +881,18 @@ if (!empty($totals)) {
     }
     $app->enqueueMessage($summary, 'info');
 }
+
+$data = array(
+    'csv' => $csv,
+    'rows' => $parsed_data,
+    'bad_columns' => $bad_columns,
+    'checked_tables' => $checked_tables,
+    'repeat_tables' => $repeat_tables,
+    'database_elements' => $database_elements,
+);
+
+JPluginHelper::importPlugin('emundus');
+$dispatcher = JEventDispatcher::getInstance();
+$dispatcher->trigger('callEventHandler', ['onAfterImportCSV', $data]);
 
 return true;
