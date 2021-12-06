@@ -2171,17 +2171,24 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
     #em-prev-file.btn.btn-info.btn-xxl,
     #em-next-file.btn.btn-info.btn-xxl {
-      background-color: $dark-blue;
+      background-color: $night-blue;
       color: #fff;
-      border-color: $dark-blue;
-      margin-top: -5px;
+      border-color: $night-blue;
+      margin-top: -6px;
+      height: 35px;
+
+      i {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
       &:hover,
       &:active,
       &:focus {
         background: #fff;
-        border: 1px solid $dark-blue;
-        color: $dark-blue;
+        border: 1px solid $night-blue;
+        color: $night-blue;
       }
     }
   }
@@ -2796,9 +2803,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   div#em-appli-block {
     .panel-heading {
-      background: $dark-blue;
+      background: $night-blue;
       border-radius: 0;
       margin-top: 2px;
+      height: 35px;
     }
 
     button.btn.btn-default {
