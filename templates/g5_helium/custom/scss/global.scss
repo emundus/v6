@@ -2081,14 +2081,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .btn-group.pull-right #em-close-file.btn.btn-danger.btn-xxl {
-    background: transparent;
+    background: $dark-grey;
     border: none;
-    color: white;
+    color: $white;
 
     &:hover,
     &:focus &:active {
-      background-color: #fff;
-      color: $night-blue;
+      background-color: $grey;
+      color: $white;
       outline: none;
     }
   }
@@ -2176,6 +2176,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       border-color:  $dark-grey;
       margin-top: -6px;
       height: 35px;
+      margin-right: 3px;
 
       i {
         display: flex;
@@ -2620,6 +2621,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .g-back-office-emundus-tableau .side-panel .panel-info > .panel-heading {
     background: #353544;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
   }
 
   #em_filters fieldset.em_filters_filedset > p,
@@ -2766,13 +2770,13 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   /* EDITER ET AJOUTER */
 
-  .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
-  .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
+  .gantry.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
+  .gantry.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
     height: 36px;
     background-color: $dark-grey;
-    border: 2px solid $dark-grey !important;
-    border-radius: 25px !important;
-    padding: 5px 30px !important;
+    border: 2px solid $dark-grey;
+    border-radius: 25px;
+    padding: 5px 30px;
 
     &:hover,
     &:active,
@@ -2807,6 +2811,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       border-radius: 0;
       margin-top: 2px;
       height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     button.btn.btn-default {
