@@ -312,17 +312,17 @@ ul {
 
 .contentpane.modal {
   h1, h2, h3, h4, h5, h6 {
-    color: $dark-blue !important;
+    color: $night-blue !important;
   }
 
   form legend {
-    color: $dark-blue !important;
+    color: $night-blue !important;
   }
 }
 
 .modal-dialog .modal-body {
   h1, h2, h3, h4, h5, h6 {
-    color: $dark-blue !important;
+    color: $night-blue !important;
   }
 }
 
@@ -2201,6 +2201,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
         }
       }
     }
+
+    button.btn.btn-danger.btn-xs.btn-attach {
+      margin-top: 15px !important;
+    }
   }
 
 
@@ -2644,6 +2648,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  div {
+    display: flex;
+  }
 }
 
   #em_filters fieldset.em_filters_filedset > p,
