@@ -2087,8 +2087,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
     &:hover,
     &:focus &:active {
-      background-color: darken($base-primary-color, 10%);
-      color: #fff;
+      background-color: #fff;
+      color: $night-blue;
       outline: none;
     }
   }
@@ -2171,9 +2171,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
     #em-prev-file.btn.btn-info.btn-xxl,
     #em-next-file.btn.btn-info.btn-xxl {
-      background-color: $night-blue;
+      background-color: $dark-grey;
       color: #fff;
-      border-color: $night-blue;
+      border-color:  $dark-grey;
       margin-top: -6px;
       height: 35px;
 
@@ -2186,9 +2186,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       &:hover,
       &:active,
       &:focus {
-        background: #fff;
-        border: 1px solid $night-blue;
-        color: $night-blue;
+        background: $grey;
+        border: 1px solid $grey;
+        color: $white;
       }
     }
   }
@@ -2258,7 +2258,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
       &:hover {
         border-radius: 4px;
-        background: $dark-blue !important;
+        background: $night-blue !important;
       }
     }
   }
@@ -2717,14 +2717,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .g-back-office-emundus-tableau #em-hide-filters {
-    border: 0 solid $dark-blue;
-    background-color: $dark-blue;
+    border: 0 solid $dark-grey;
+    background-color: $dark-grey;
 
     &:hover,
     &:focus,
     &:active {
-      border: darken($dark-blue, 10%);
-      background-color: darken($dark-blue, 10%);
+      border: $grey;
+      background-color: $grey;
     }
   }
 
@@ -2769,17 +2769,17 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
   .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
     height: 36px;
-    background-color: $dark-blue;
-    border: 2px solid $dark-blue !important;
+    background-color: $dark-grey;
+    border: 2px solid $dark-grey !important;
     border-radius: 25px !important;
     padding: 5px 30px !important;
 
     &:hover,
     &:active,
     &:focus {
-      background-color: transparent !important;
-      color: $dark-blue;
-      border: 2px solid darken($dark-blue, 10%);
+      background-color: $grey !important;
+      color: $white;
+      border: 2px solid $grey;
     }
 
     i {
@@ -2810,11 +2810,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
 
     button.btn.btn-default {
-      background-color: $dark-blue;
+      background-color: $dark-grey;
       border: none;
 
       &:hover {
-        background-color: darken($dark-blue, 10%);
+        background-color: $grey;
       }
     }
 
