@@ -328,18 +328,18 @@ ul {
 
 
 .contentpane.modal form .fabrikActions.form-actions button.btn {
-  background: $dark-blue !important;
-  background-color: $dark-blue !important;
-  border: 2px solid $dark-blue !important;
-  border-radius: 25px !important;
+  background: $dark-grey !important;
+  background-color: $dark-grey !important;
+  border: 2px solid $dark-grey !important;
+  border-radius: 4px !important;
   color: #fff;
 
   &:active, &:focus, &:hover {
-    background: transparent!important;
-    background-color: transparent!important;
-    border: 2px solid $dark-blue !important;
-    border-radius: 25px !important;
-    color: $dark-blue !important;
+    background: $dark-grey!important;
+    background-color: $dark-grey!important;
+    border: 2px solid $dark-grey !important;
+    border-radius: 4px !important;
+    color: $white !important;
   }
 }
 
@@ -2127,7 +2127,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .files-board .panel.panel-default.em-data span.em_list_text {
-    color: $dark-blue;
+    color: $night-blue;
   }
 
   #filters #quick.form-group input#search.btn.btn-sm.btn-info {
@@ -2590,14 +2590,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .form.em-decision-form .btn.btn-success {
     padding: 5px 30px;
-    border: 2px solid $dark-blue;
-    background: $dark-blue;
-    border-radius: 25px !important;
+    border: 2px solid $night-blue;
+    background: $night-blue;
+    border-radius: 4px !important;
 
     &:hover, &:active, &:focus {
-      border: 2px solid $dark-blue;
-      background: transparent;
-      color: $dark-blue;
+      border: 2px solid $dark-grey;
+      background: $dark-grey;
+      color: $white;
     }
   }
 
@@ -2649,6 +2649,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   justify-content: space-between;
   align-items: center;
 
+  label[for="clear-search"] {
+    margin-bottom: 0px !important;
+  }
+
   div {
     display: flex;
   }
@@ -2656,7 +2660,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   #em_filters fieldset.em_filters_filedset > p,
   #em-user-filters fieldset.em_filters_filedset > p {
-    color: #12DB42;
+    color: $dark-grey;
   }
 
   .chosen-container .chosen-results li.highlighted {
@@ -2869,7 +2873,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     span.label.label-info {
       background: #ffffff !important;
       text-shadow: none;
-      color: $base-primary-color !important;
+      color: $night-blue !important;
+      margin-left: 10px;
     }
   }
 
