@@ -340,7 +340,7 @@ export default {
 
           let formData = new FormData();
           formData.append('fnum', this.displayedFnum);
-          formData.append('user', this.currentUser);
+          formData.append('user', this.$store.state.user.currentUser);
           formData.append('id', this.attachments[key].aid);
           formData.append('is_validated', this.attachments[key].is_validated);
 
