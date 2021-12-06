@@ -27,6 +27,7 @@
 						<option value="old">LIST_OLD</option>
 						<option value="single_campaign">Single Campaign</option>
 						<option value="tchooz_single_campaign">Tchooz Single Campaign</option>
+						<option value="celsa">Celsa</option>
 					</field>
 
 					<field type="text" name="mod_em_campaign_itemid" label="MOD_EM_CAMPAIGN_ITEMID" description="MOD_EM_CAMPAIGN_ITEMID_DESC" />

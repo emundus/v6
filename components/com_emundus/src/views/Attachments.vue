@@ -44,7 +44,7 @@
                   {{ translate('EXPORT') }}
                 </span>
           </div>
-          <span class="material-icons refresh" @click="refreshAttachments" :title="translate('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE')">
+          <span class="material-icons refresh" @click="refreshAttachments(true)" :title="translate('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE')">
                 autorenew
               </span>
           <span v-if="canDelete" class="material-icons delete" :class="{'disabled': checkedAttachments.length < 1}" @click="confirmDeleteAttachments" :title="translate('COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE')">
@@ -218,9 +218,12 @@ export default {
       slideTransition: "slide-fade"
     };
   },
-  mounted() {
+  created() {
     this.getFnums();
     this.getUsers();
+  },
+  mounted() {
+    this.loading = true;
     this.getAttachments();
     this.setAccessRights();
   },
@@ -280,14 +283,14 @@ export default {
       if (!this.$store.state.attachment.attachments[this.displayedFnum]) {
         this.refreshAttachments();
       } else {
-        this.loading = true;
         this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
         this.categories = this.$store.state.attachment.categories;
-        this.loading = false;
       }
     },
-    async refreshAttachments() {
-      this.loading = true;
+    async refreshAttachments(addLoading = false) {
+      if (addLoading) {
+        this.loading = true;
+      }
       this.resetOrder();
       this.checkedAttachments = [];
       this.$refs['searchbar'].value = "";
@@ -301,7 +304,10 @@ export default {
         });
 
         this.getCategories();
-        this.loading = false;
+      
+        if (addLoading) {
+          this.loading = false;
+        }
       }
     },
     updateAttachment() {
@@ -322,7 +328,7 @@ export default {
 
           let formData = new FormData();
           formData.append('fnum', this.displayedFnum);
-          formData.append('user', this.currentUser);
+          formData.append('user', this.$store.state.user.currentUser);
           formData.append('id', this.attachments[key].aid);
           formData.append('is_validated', this.attachments[key].is_validated);
 
@@ -352,6 +358,7 @@ export default {
 
       this.canExport = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canExport : false;
       this.canDelete = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canDelete : false;
+      this.loading = false;
     },
     async exportAttachments() {
       if (this.canExport) {
@@ -420,6 +427,8 @@ export default {
 
     // navigation functions
     changeFile(position) {
+      this.loading = true;
+      
       this.displayedFnum = this.fnums[position];
       this.setDisplayedUser();
       this.getAttachments();
@@ -430,6 +439,8 @@ export default {
       this.attachments.forEach(attachment => {
         attachment.show = true;
       });
+
+      this.loading = false;
     },
     changeAttachment(position, reverse = false) {
       this.slideTransition = reverse ? "slide-fade-reverse" : "slide-fade";
@@ -889,12 +900,16 @@ export default {
       }
 
       .td-document {
-        width: 250px;
         max-width: 250px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         cursor: pointer;
+
+        .warning.file-not-found {
+          color: var(--error-color);
+          transform: translate(10px, 3px);
+        }
       }
     }
 

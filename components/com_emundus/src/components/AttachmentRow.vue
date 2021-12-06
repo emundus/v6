@@ -9,7 +9,10 @@
       />
     </td>
     <td class="td-document" @click="openModal">
-      {{ attachment.value }}
+      <span>{{ attachment.value }}</span>
+      <span v-if="!attachment.existsOnServer" class="material-icons warning file-not-found" :title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')">
+        warning
+      </span>    
     </td>
     <td class="date">{{ formattedDate(attachment.timedate) }}</td>
     <td class="desc">{{ attachment.description }}</td>
