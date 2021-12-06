@@ -3,6 +3,7 @@
 defined('_JEXEC') or die('Access Deny');
 require_once(dirname(__FILE__).DS.'helper.php');
 include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+include_once (JPATH_BASE.DS.'modules'.DS.'mod_emundus_campaign_dropfiles'.DS.'helper.php');
 
 JHtml::stylesheet('media/com_emundus/css/mod_emundus_campaign.css');
 JHtml::script('media/com_emundus/js/jquery.cookie.js');
@@ -47,6 +48,7 @@ $program_code=$params->get('mod_em_program_code');
 $modules_tabs = $params->get('mod_em_campaign_modules_tab');
 $offset = JFactory::getConfig()->get('offset');
 $sef = JFactory::getConfig()->get('sef');
+$helper = new modEmundusCampaignHelper;
 
 $condition ='';
 
@@ -114,16 +116,31 @@ switch ($ordertime) {
         break;
 }
 
-$helper = new modEmundusCampaignHelper;
 $mod_em_campaign_get_admission_date = ($mod_em_campaign_show_admission_start_date||$mod_em_campaign_show_admission_end_date);
-$currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
-$pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
-$futurCampaign      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
-$allCampaign        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity,$mod_em_campaign_get_admission_date);
+$currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity);
+$pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity);
+$futurCampaign      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity);
+$allCampaign        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity);
+
+// FAQ
 $faq_articles                = $helper->getFaq();
 
-$now = $helper->now;
+$dropfiles_helper = new modEmundusCampaignDropfilesHelper;
+$files = $dropfiles_helper->getFiles();
 
+if ($params->get('mod_em_campaign_layout') == "celsa") {
+    $formations = $helper->getFormationsWithType();
+    $formationTypes = $helper->getFormationTypes();
+    $formationLevels = $helper->getFormationLevels();
+    $voiesDAcces = $helper->getVoiesDAcces();
+
+    $currentCampaign = $helper->addClassToData($currentCampaign, $formations);
+    $pastCampaign = $helper->addClassToData($pastCampaign, $formations);
+    $futurCampaign = $helper->addClassToData($futurCampaign, $formations);
+    $allCampaign = $helper->addClassToData($allCampaign, $formations);
+}
+
+$now = $helper->now;
 
 jimport('joomla.html.pagination');
 $session = JFactory::getSession();

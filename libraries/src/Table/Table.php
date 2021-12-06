@@ -2,7 +2,7 @@
 /**
  * Joomla! Content Management System
  *
- * @copyright  (C) 2005 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -117,14 +117,6 @@ abstract class Table extends \JObject implements \JObservableInterface, \JTableI
 	 * @since  3.3
 	 */
 	protected $_jsonEncode = array();
-
-	/**
-	 * Indicates that columns fully support the NULL value in the database
-	 *
-	 * @var    boolean
-	 * @since  3.10.0
-	 */
-	protected $_supportNullValue = false;
 
 	/**
 	 * Object constructor to set table and key fields.  In most cases this will
@@ -1138,14 +1130,11 @@ abstract class Table extends \JObject implements \JObservableInterface, \JTableI
 			}
 		}
 
-		$nullDate = $this->_supportNullValue ? 'NULL' : $this->_db->quote($this->_db->getNullDate());
-		$nullID   = $this->_supportNullValue ? 'NULL' : '0';
-
 		// Check the row in by primary key.
 		$query = $this->_db->getQuery(true)
 			->update($this->_tbl)
-			->set($this->_db->quoteName($checkedOutField) . ' = ' . $nullID)
-			->set($this->_db->quoteName($checkedOutTimeField) . ' = ' . $nullDate);
+			->set($this->_db->quoteName($checkedOutField) . ' = 0')
+			->set($this->_db->quoteName($checkedOutTimeField) . ' = ' . $this->_db->quote($this->_db->getNullDate()));
 		$this->appendPrimaryKeys($query, $pk);
 		$this->_db->setQuery($query);
 
@@ -1153,8 +1142,8 @@ abstract class Table extends \JObject implements \JObservableInterface, \JTableI
 		$this->_db->execute();
 
 		// Set table values in the object.
-		$this->$checkedOutField     = $this->_supportNullValue ? null : 0;
-		$this->$checkedOutTimeField = $this->_supportNullValue ? null : '';
+		$this->$checkedOutField      = 0;
+		$this->$checkedOutTimeField = '';
 
 		$dispatcher = \JEventDispatcher::getInstance();
 		$dispatcher->trigger('onAfterCheckin', array($this->_tbl));

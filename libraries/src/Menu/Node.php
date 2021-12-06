@@ -2,7 +2,7 @@
 /**
  * Joomla! Content Management System
  *
- * @copyright  (C) 2017 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 namespace Joomla\CMS\Menu;
@@ -14,9 +14,9 @@ use Joomla\Registry\Registry;
 /**
  * A Node for MenuTree
  *
- * @see         Tree
- * @since       3.8.0
- * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
+ * @see    Tree
+ *
+ * @since  3.8.0
  */
 class Node
 {
@@ -78,8 +78,6 @@ class Node
 	 * Constructor
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function __construct()
 	{
@@ -96,8 +94,6 @@ class Node
 	 * @return  Node  The new added child
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function addChild(Node $child)
 	{
@@ -124,8 +120,6 @@ class Node
 	 * @return  void
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function removeChild(Node $child)
 	{
@@ -145,8 +139,6 @@ class Node
 	 * @return  boolean  True if there is a parent
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function hasParent()
 	{
@@ -159,8 +151,6 @@ class Node
 	 * @return  Node  The Node object's parent or null for no parent
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function getParent()
 	{
@@ -173,8 +163,6 @@ class Node
 	 * @return  boolean
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function hasChildren()
 	{
@@ -187,8 +175,6 @@ class Node
 	 * @return  Node[]  The children
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function getChildren()
 	{
@@ -201,8 +187,6 @@ class Node
 	 * @return  integer  The node level in the hierarchy, where ROOT == 0, First level menu item == 1, and so on.
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function getLevel()
 	{
@@ -215,8 +199,6 @@ class Node
 	 * @return  boolean
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function isRoot()
 	{
@@ -231,8 +213,6 @@ class Node
 	 * @return  void
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function setActive($active)
 	{
@@ -247,8 +227,6 @@ class Node
 	 * @return  void
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function setParams(Registry $params)
 	{
@@ -263,8 +241,6 @@ class Node
 	 * @return  mixed
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function getParam($key)
 	{
@@ -279,8 +255,6 @@ class Node
 	 * @return  mixed
 	 *
 	 * @since   3.8.0
-	 *
-	 * @deprecated  4.0  Use Joomla\CMS\Menu\MenuItem
 	 */
 	public function get($name)
 	{
