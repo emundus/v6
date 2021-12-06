@@ -2081,7 +2081,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .btn-group.pull-right #em-close-file.btn.btn-danger.btn-xxl {
-    background: $dark-grey;
+    background: $night-blue;
     border: none;
     color: $white;
 
@@ -2144,10 +2144,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .files-board .em-container-tags .em-container-tags-heading #add-tags {
-    color: #fff;
+    color: $white;
+    background: $dark-grey;
+    border-color: $dark-grey;
 
     &:hover, &:active, &:focus {
-      color: darken($base-secondary-color, 10%);
+      color: $white;
+      background: $grey;
+      border-color: $grey;
     }
   }
 
@@ -2169,27 +2173,31 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   .panel-heading.em-container-form-heading, .panel-heading.em-container-evaluation-heading, .panel-heading.em-container-decision-heading, .panel-heading.em-container-comment-heading, .panel-heading.em-container-tags-heading, .panel-heading.em-container-share-heading, .panel-heading.em-container-mail-heading {
     padding: 6px !important;
 
-    #em-prev-file.btn.btn-info.btn-xxl,
-    #em-next-file.btn.btn-info.btn-xxl {
-      background-color: $dark-grey;
-      color: #fff;
-      border-color:  $dark-grey;
-      margin-top: -6px;
-      height: 35px;
-      margin-right: 3px;
+    .btn-group pull-right {
+      position: absolute;
+      right: 0px;
 
-      i {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+      #em-prev-file.btn.btn-info.btn-xxl,
+      #em-next-file.btn.btn-info.btn-xxl {
+        background-color: $dark-grey;
+        color: #fff;
+        border-color:  $dark-grey;
+        height: 35px;
+        margin-right: 3px;
 
-      &:hover,
-      &:active,
-      &:focus {
-        background: $grey;
-        border: 1px solid $grey;
-        color: $white;
+        i {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        &:hover,
+        &:active,
+        &:focus {
+          background: $grey;
+          border: 1px solid $grey;
+          color: $white;
+        }
       }
     }
   }
