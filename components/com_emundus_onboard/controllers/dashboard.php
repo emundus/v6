@@ -161,6 +161,22 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         exit;
     }
 
+    public function renderchartbytag(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+            $tag = $jinput->getString('params');
+
+            $results = $this->model->renderchartbytag($tag);
+
+            $tab = array('msg' => 'success', 'dataset' => $results['dataset']);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    /** Sciences PO */
     public function getfilescountbystatusgroupbydate(){
         try {
             $jinput = JFactory::getApplication()->input;
@@ -238,4 +254,5 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         echo json_encode((object)$tab);
         exit;
     }
+    /** END **/
 }

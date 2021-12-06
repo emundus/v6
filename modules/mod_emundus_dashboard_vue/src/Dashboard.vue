@@ -23,6 +23,7 @@
         <UsersByMonth v-if="widget.name === 'users_by_month'" :colors="colors"/>
         <Tips v-if="widget.name === 'tips'"/>
         <DemoCounter v-if="widget.name === 'demo_counter'"/>
+        <Custom v-if="widget.name === 'custom'" :widget="widget"/>
 
         <!-- Sciences Po widgets -->
         <KeyFigures v-if="widget.name === 'key_figures'" :program="selectedProgramme" :colors="colors"/>
@@ -54,6 +55,7 @@ import FilesBySessionPrecollege from "@/components/sciencespo/FilesBySessionPrec
 import FilesByCourses from "@/components/sciencespo/FilesByCourses";
 import FilesByCoursesPrecollege from "@/components/sciencespo/FilesByCoursesPrecollege";
 import FilesByNationalities from "@/components/sciencespo/FilesByNationalities";
+import Custom from "@/components/Custom";
 
 export default {
   name: 'App',
@@ -61,6 +63,7 @@ export default {
     programmeFilter: Number
   },
   components: {
+    Custom,
     DemoCounter,
     UsersByMonth,
     Tips,
@@ -104,27 +107,7 @@ export default {
         method: "get",
         url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getwidgets",
       }).then(response => {
-        response.data.data.forEach((data) => {
-          switch (data) {
-            case 'last_campaign_active':
-              if(this.campaigns.length == 0) {
-                this.getLastCampaignsActive();
-              }
-              this.widgets.push({
-                name: data,
-                cindex: this.lastCampaigns
-              });
-              this.lastCampaigns++;
-              break;
-            default:
-              this.widgets.push({
-                name: data,
-              });
-          }
-        });
-        if(response.data.data.indexOf('last_campaign_active') !== -1){
-          this.getLastCampaignsActive();
-        }
+        this.widgets = response.data.data;
       });
     },
 

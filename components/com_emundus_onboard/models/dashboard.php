@@ -79,7 +79,12 @@ class EmundusonboardModeldashboard extends JModelList
                 }
             }
 
-            return $widgets;
+            $query->clear()
+                ->select('id,name,params')
+                ->from($this->_db->quoteName('#__emundus_widgets'))
+                ->where($this->_db->quoteName('name') . ' IN (' . implode(',',$this->_db->quote($widgets)) . ')');
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get widgets : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
@@ -268,6 +273,27 @@ class EmundusonboardModeldashboard extends JModelList
         }
     }
 
+    public function renderchartbytag($tag){
+        try {
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+            $m_emails = new EmundusModelEmails();
+
+            $user = JFactory::getUser()->id;
+
+            $tags = $m_emails->setTags($user, null, null, '', '[' . $tag . ']');
+            $index = array_search('/\['.$tag.'\]/',$tags['patterns']);
+            if(!empty($index)){
+                return $tags['replacements'][$index];
+            } else {
+                return array('dataset' => '');
+            }
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try datas by tag : ' . preg_replace("/[\r\n]/"," ",$tag.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return array('dataset' => '');
+        }
+    }
+
+    /** Sciences PO */
     public function getfilescountbystatusandsession($program){
         $query = $this->_db->getQuery(true);
 
@@ -629,4 +655,5 @@ class EmundusonboardModeldashboard extends JModelList
             return array('dataset' => '', 'category' => '');
         }
     }
+    /** END **/
 }
