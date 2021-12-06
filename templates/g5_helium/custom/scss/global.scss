@@ -2173,7 +2173,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   .panel-heading.em-container-form-heading, .panel-heading.em-container-evaluation-heading, .panel-heading.em-container-decision-heading, .panel-heading.em-container-comment-heading, .panel-heading.em-container-tags-heading, .panel-heading.em-container-share-heading, .panel-heading.em-container-mail-heading {
     padding: 6px !important;
 
-    .btn-group pull-right {
+    .btn-group.pull-right {
       position: absolute;
       right: 0px;
 
@@ -2628,11 +2628,18 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .g-back-office-emundus-tableau .side-panel .panel-info > .panel-heading {
-    background: #353544;
+    background: $night-blue;
     display: flex;
     justify-content: flex-start;
     align-items: center;
   }
+
+.g-back-office-emundus-tableau .side-panel .panel-info > .panel-heading.em-containerFilter-heading {
+  background: $night-blue;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
   #em_filters fieldset.em_filters_filedset > p,
   #em-user-filters fieldset.em_filters_filedset > p {
@@ -2821,7 +2828,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       height: 35px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
+      gap: 10px;
     }
 
     button.btn.btn-default {
@@ -2834,14 +2842,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
 
     #add-tags {
-      background: #fff;
-      border: 1px solid #fff;
-      color: $dark-blue;
+      color: $white;
+      background: $dark-grey;
+      border-color: $dark-grey;
 
       &:hover, &:active, &:focus {
-        background: $dark-blue;
-        border: 1px solid #fff;
-        color: #fff;
+        color: $white;
+        background: $grey;
+        border-color: $grey;
       }
     }
 

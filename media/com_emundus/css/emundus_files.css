@@ -19,7 +19,6 @@
 
 .files-page .em-containerFilter-heading div.buttons {
     display: flex;
-    margin-top: -4px !important;
 }
 
 .em-containerFilter-heading div.buttons {
@@ -729,7 +728,6 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 .g-back-office-emundus-tableau div#em-files-filters .panel-heading h3, .view-users #em-user-filters .panel-heading h3 {
     font-size: 1rem;
-    margin-top: 5px;
 }
 
 #filters #quick .selectize-control  {
