@@ -1140,11 +1140,24 @@ class EmundusModelProfile extends JModelList {
                 ->andWhere($this->_db->quoteName('eswssr.type') . ' = 1');
 
             $db->setQuery($query);
-            $res =  $db->loadAssoc();
+            $ins =  $db->loadAssoc();
 
-            $inputs = explode(',', $res['inputs']);
+            $inputs = explode(',', $ins['inputs']);
 
-            if(!in_array($fnum_status, $inputs)) { unset($raw[$k]); }
+            //////
+            $query->clear()
+                ->select('group_concat(eswssr.status) as outputs')
+                ->from($db->quoteName('#__emundus_setup_workflow_step_status_repeat', 'eswssr'))
+                ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') .  ' ON ' . $db->quoteName('eswssr.parent_id') . ' = ' . $db->quoteName('esws.id'))
+                ->where($this->_db->quoteName('eswssr.parent_id') . ' = ' . $db->quote($v['step']))
+                ->andWhere($this->_db->quoteName('eswssr.type') . ' = 2');
+
+            $db->setQuery($query);
+            $outs =  $db->loadAssoc();
+
+            $outputs = explode(',', $outs['outputs']);
+
+            if(!in_array($fnum_status, $inputs) and !in_array($fnum_status, $outputs)) { unset($raw[$k]); }
         }
 
         return current($raw);
