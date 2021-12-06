@@ -1951,7 +1951,6 @@ this.set(words.join(&quot; &quot;));
      */
     function updateOrder($elements, $group_id, $user, $moved_el = null)
     {
-
         if ($moved_el != null) {
 
             if ($moved_el['group_id'] == $group_id) {
@@ -2005,7 +2004,7 @@ this.set(words.join(&quot; &quot;));
 
                     // on crée maintenant la colonne donc;
 
-                    $query = "ALTER TABLE " . $table_join_name->table_join . " ADD e_" . $form_id . "_" . $moved_el['id'] . " " . $dbtype . " NULL";
+                    $query = "ALTER TABLE " . $table_join_name->table_join . " ADD " . $moved_el['name'] . " " . $dbtype . " NULL";
 
                     $db->setQuery($query);
 
@@ -2499,6 +2498,7 @@ this.set(words.join(&quot; &quot;));
                 $labelsAbove = $content_element->labels;
 
                 ${"element".$o_element->id}->id = $o_element->id;
+                ${"element".$o_element->id}->name = $o_element->name;
                 ${"element".$o_element->id}->group_id = $gid;
 
                 ${"element".$o_element->id}->hidden = $content_element->hidden;
