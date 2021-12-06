@@ -2084,6 +2084,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background: $night-blue;
     border: none;
     color: $white;
+    width: 43px;
 
     &:hover,
     &:focus &:active {
@@ -2265,9 +2266,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       padding: 5px !important;
       color: #fff;
 
-      &:hover {
+      &:hover, &:focus, &:active {
         border-radius: 4px;
-        background: $night-blue !important;
+        background: $dark-grey !important;
       }
     }
   }
@@ -2625,6 +2626,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .g-back-office-emundus-tableau.experts-page .panel-info > .panel-heading h3.panel-title {
     color: $dark-blue !important;
+  }
+
+  .panel-default .panel-heading.em-container-form-heading h3.panel-title {
+    margin-left: 0px;
   }
 
   .g-back-office-emundus-tableau .side-panel .panel-info > .panel-heading {
