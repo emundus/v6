@@ -273,20 +273,19 @@ class EmundusonboardModeldashboard extends JModelList
         }
     }
 
-    public function renderchartbytag($tag){
+    public function renderchartbytag($id){
         try {
-            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
-            $m_emails = new EmundusModelEmails();
+            $query = $this->_db->getQuery();
+            $query->clear()
+                ->select('eval')
+                ->from($this->_db->quoteName('#__emundus_widgets'))
+                ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($id));
+            $this->_db->setQuery($query);
+            $value = $this->_db->loadResult();
 
-            $user = JFactory::getUser()->id;
-
-            $tags = $m_emails->setTags($user, null, null, '', '[' . $tag . ']');
-            $index = array_search('/\['.$tag.'\]/',$tags['patterns']);
-            if(!empty($index)){
-                return $tags['replacements'][$index];
-            } else {
-                return array('dataset' => '');
-            }
+            $request = explode('|', $value);
+            $result = eval("$request[1]");
+            return $result;
         } catch (Exception $e){
             JLog::add('component/com_emundus_onboard/models/dashboard | Error when try datas by tag : ' . preg_replace("/[\r\n]/"," ",$tag.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return array('dataset' => '');

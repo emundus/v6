@@ -35,11 +35,12 @@ export default {
     datas: {},
     status: [],
     label: 'Total',
-    type: "column2d",
+    type: 'column2d',
     renderAt: "chart-container",
     dataFormat: "json",
     chartData: [],
     dataSource: {},
+    params: []
   }),
 
   methods: {
@@ -48,7 +49,7 @@ export default {
         method: "get",
         url: "index.php?option=com_emundus_onboard&controller=dashboard&task=renderchartbytag",
         params: {
-          params: JSON.parse(this.widget.params).emundus_setup_tag,
+          widget: this.widget.id,
         },
         paramsSerializer: params => {
           return qs.stringify(params);
@@ -76,6 +77,8 @@ export default {
   },
 
   created() {
+    this.params = JSON.parse(this.widget.params);
+    this.type = this.params.type;
     this.renderChart();
   },
 }

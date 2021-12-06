@@ -164,9 +164,9 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
     public function renderchartbytag(){
         try {
             $jinput = JFactory::getApplication()->input;
-            $tag = $jinput->getString('params');
+            $widget = $jinput->getInt('widget');
 
-            $results = $this->model->renderchartbytag($tag);
+            $results = $this->model->renderchartbytag($widget);
 
             $tab = array('msg' => 'success', 'dataset' => $results['dataset']);
         } catch (Exception $e) {
