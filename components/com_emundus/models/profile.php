@@ -1093,7 +1093,7 @@ class EmundusModelProfile extends JModelList {
     }
 
     public function getProfileByWorkflow($fnum) {
-        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'helpers' . DS . 'files.php');
+        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'models' . DS . 'files.php');
         $mFile = new EmundusModelFiles();
         
         $db = JFactory::getDbo();
@@ -1135,7 +1135,7 @@ class EmundusModelProfile extends JModelList {
             if(!in_array($fnum_status, $inputs)) { unset($raw[$k]); }
         }
 
-        return end($raw);
+       return $res;
     }
 
     /* get last page (id) of selected form */
@@ -1199,22 +1199,22 @@ class EmundusModelProfile extends JModelList {
 
         /* get workflow id by campaign */
         $query->clear()
-            ->select('ecw.*')
-            ->from($db->quoteName('#__emundus_campaign_workflow', 'ecw'))
-            ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecw.campaign') . ' = ' . $db->quoteName('ecc.campaign_id'))
+            ->select('esw.*')
+            ->from($db->quoteName('#__emundus_setup_workflow', 'esw'))
+            ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esw.id') . ' = ' . $db->quoteName('esc.workflow'))
+            ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
             ->where($db->quoteName('ecc.fnum') . ' = ' . $db->quote($fnum));
 
         $db->setQuery($query);
         $workflow = $db->loadObject();
 
-        /* find all steps by $workflow */
+        $all_status = $this->getStatusByWorkflow($workflow->id);
+        /* find all steps by the last $workflow */
         $query->clear()
-            ->select('ewsr.parent_id as step, group_concat(ewsr.input_status) as input_status, ewsr.output_status, ews.start_date, ews.end_date')
-            ->from($db->quoteName('#__emundus_workflow_step', 'ews'))
-            ->leftJoin($db->quoteName('#__emundus_campaign_workflow', 'ecw') . ' ON ' . $db->quoteName('ecw.id') . ' = ' . $db->quoteName('ews.workflow'))
-            ->leftJoin($db->quoteName('#__emundus_workflow_step_repeat', 'ewsr') . ' ON ' . $db->quoteName('ews.id') . ' = ' . $db->quoteName('ewsr.parent_id'))
-            ->where($db->quoteName('ews.workflow') . ' = ' . $db->quote($workflow->id))
-            ->group($db->quoteName('parent_id'));
+            ->select('esws.id as step, esws.start_date, esws.end_date')
+            ->from($db->quoteName('#__emundus_setup_workflow_step', 'esws'))
+            ->leftJoin($db->quoteName('#__emundus_setup_workflow', 'esw') . ' ON ' . $db->quoteName('esw.id') . ' = ' . $db->quoteName('esws.workflow'))
+            ->where($db->quoteName('esws.workflow') . ' = ' . $db->quote($workflow->id));
 
         $db->setQuery($query);
         $steps = $db->loadObjectList();
@@ -1223,43 +1223,82 @@ class EmundusModelProfile extends JModelList {
         $res = new stdClass();
 
         foreach ($steps as $step) {
-            $input_status = explode(',', $step->input_status);
-            $output_status = explode(',', $step->output_status);
+            $input_status = array();
+            $output_status = array();
 
-            if (in_array($fnum_status, $input_status)) {
-                /* editable mode */
-                $res->step = $step->step;
-                $res->editable_status = $input_status;
-                $res->output_status = $output_status;
-                $res->start_date = $step->start_date;
-                $res->end_date = $step->end_date;
-                $res->msg = '*** Edition ***';
+            $status_list = $this->getStatusByStep($step->step);
+
+            /* extract input, output status */
+            foreach($status_list as $status) {
+                if($status->type == '1') { $input_status[] = $status->status; }
+                else { $output_status[] = $status->status; }
             }
-            else {
+            
+            if(!in_array($fnum_status, explode(',', $all_status->allstatus))) {
                 $res->msg = '*** Read-only ***';
-                /* read-only mode */
-                if (in_array($fnum_status, $output_status)) {
+                $res->_step = null;
+                $res->_editable_status = [];
+                $res->_output_status = [];
+
+                if(!is_null($this->getProfileByStatus($fnum)['profile'])) {
+                    $res->start_date = $this->getProfileByStatus($fnum)['start_date'];
+                    $res->end_date = $this->getProfileByStatus($fnum)['end_date'];
+                } else {
+                    $res->start_date = $this->getFullProfileByFnum($fnum)['start_date'];
+                    $res->end_date = $this->getFullProfileByFnum($fnum)['end_date'];
+                }
+            } else {
+                if (in_array($fnum_status, $input_status)) {
                     $res->step = $step->step;
-                    $res->editable_status = [];
-                    $res->output_status = [];
+                    $res->editable_status = $input_status;
+                    $res->output_status = $output_status;
                     $res->start_date = $step->start_date;
                     $res->end_date = $step->end_date;
-                }
-                else {
-                    $res->_step = null;
-                    $res->_editable_status = [];
-                    $res->_output_status = [];
-
-                    if(!is_null($this->getProfileByStatus($fnum)['profile'])) {
-                        $res->start_date = $this->getProfileByStatus($fnum)['start_date'];
-                        $res->end_date = $this->getProfileByStatus($fnum)['end_date'];
-                    } else {
-                        $res->start_date = $this->getFullProfileByFnum($fnum)['start_date'];
-                        $res->end_date = $this->getFullProfileByFnum($fnum)['end_date'];
+                    $res->msg = '*** Edition ***';
+                    break;
+                } else {
+                    $res->msg = '*** Read-only ***';
+                    if (in_array($fnum_status, $output_status)) {
+                        $res->step = $step->step;
+                        $res->editable_status = [];
+                        $res->output_status = [];
+                        $res->start_date = $step->start_date;
+                        $res->end_date = $step->end_date;
+                        break;
                     }
                 }
             }
-            return $res;
         }
+        return $res;
+    }
+
+    /* get status (2 types) by step */
+    public function getStatusByStep($step) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+            ->select('eswssr.*')
+            ->from($db->quoteName('#__emundus_setup_workflow_step_status_repeat', 'eswssr'))
+            ->where($db->quoteName('eswssr.parent_id') . ' = ' . $db->quote($step));
+
+        $db->setQuery($query);
+        return $db->loadObjectList();
+    }
+
+    /* get all status by workflow */
+    public function getStatusByWorkflow($wid) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+            ->select('eswssr.*, group_concat(eswssr.status) as allstatus')
+            ->from($db->quoteName('#__emundus_setup_workflow_step_status_repeat', 'eswssr'))
+            ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') . ' ON ' . $db->quoteName('eswssr.parent_id') . ' = ' . $db->quoteName('esws.id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_workflow', 'esw') . ' ON ' . $db->quoteName('esw.id') . ' = ' . $db->quoteName('esws.workflow'))
+            ->where($db->quoteName('esw.id') . ' = ' . $db->quote($wid));
+
+        $db->setQuery($query);
+        return $db->loadObject();       // set key is status
     }
 }
