@@ -287,7 +287,7 @@ class EmundusonboardModeldashboard extends JModelList
             $result = eval("$request[1]");
             return $result;
         } catch (Exception $e){
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try datas by tag : ' . preg_replace("/[\r\n]/"," ",$tag.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try datas by tag : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
             return array('dataset' => '');
         }
     }
