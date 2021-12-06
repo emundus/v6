@@ -41,12 +41,31 @@ try {
     echo $e->getMessage() . '<br />';
 }
 
-$this->is_dead_line_passed = !empty($this->is_admission) ? strtotime(date($now)) > strtotime(@$this->user->fnums[$this->user->fnum]->admission_end_date) : strtotime(date($now)) > strtotime(@$this->user->end_date);
+/* $this->is_dead_line_passed = !empty($this->is_admission) ? strtotime(date($now)) > strtotime(@$this->user->fnums[$this->user->fnum]->admission_end_date) : strtotime(date($now)) > strtotime(@$this->user->end_date);
 
 $is_app_sent = !in_array($this->user->status, $status_for_send);
 
 $block_upload = true;
 if ($can_edit_after_deadline || (!$is_app_sent && (!$this->is_dead_line_passed || $this->isLimitObtained !== true)) || in_array($this->user->id, $applicants) || ($is_app_sent && !$this->is_dead_line_passed && $can_edit_until_deadline && $this->isLimitObtained !== true)) {
+    $block_upload = false;
+} */
+
+$block_upload = true;
+
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+$m_profile = new EmundusModelProfile;
+
+$res = $m_profile->getStepByFnum($this->user->fnum);
+
+$start_date = $res->start_date;
+$end_date = $res->end_date;
+
+$editable_status = $res->editable_status;
+
+$this->can_edit_form = !in_array($this->user->status, $editable_status);
+
+$this->is_dead_line_passed = ($now > $end_date || $now < $start_date) ? true : false;
+if ($can_edit_after_deadline || (!$this->can_edit_form && (!$this->is_dead_line_passed || $this->isLimitObtained !== true)) || in_array($this->user->id, $applicants) || ($this->can_edit_form && !$this->is_dead_line_passed && $can_edit_until_deadline && $this->isLimitObtained !== true)) {
     $block_upload = false;
 }
 

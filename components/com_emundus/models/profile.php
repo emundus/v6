@@ -1247,7 +1247,7 @@ class EmundusModelProfile extends JModelList {
             }
 
             if(!in_array($fnum_status, explode(',', $all_status->allstatus))) {
-                $res->msg = '*** Read-only ***';
+                $res->msg = '*** Always Read-only ***';
                 $res->_step = null;
                 $res->_editable_status = [];
                 $res->_output_status = [];
@@ -1266,10 +1266,10 @@ class EmundusModelProfile extends JModelList {
                     $res->output_status = $output_status;
                     $res->start_date = $step->start_date;
                     $res->end_date = $step->end_date;
-                    $res->msg = '*** Edition ***';
+                    $res->msg = '*** Potentially Edit ***';
                     break;
                 } else {
-                    $res->msg = '*** Read-only ***';
+                    $res->msg = '*** Always Read-only ***';
                     if (in_array($fnum_status, $output_status)) {
                         $res->step = $step->step;
                         $res->editable_status = [];
