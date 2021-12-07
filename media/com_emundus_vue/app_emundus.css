@@ -458,6 +458,14 @@
   color: var(--error-color);
   background-color: var(--error-bg-color);
 }
+#em-attachments table tbody .permissions .material-icons[data-v-30bae934] {
+  margin: 0 10px;
+  cursor: pointer;
+  opacity: 0.3;
+}
+#em-attachments table tbody .permissions .material-icons.active[data-v-30bae934] {
+  opacity: 1;
+}
 #em-attachments table tbody .td-document[data-v-30bae934] {
   max-width: 250px;
   overflow: hidden;

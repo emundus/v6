@@ -99,6 +99,9 @@
               <span v-if="sort.orderBy == 'modified' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
               <span v-if="sort.orderBy == 'modified' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
             </th>
+            <th class="permissions"> 
+              {{ translate('COM_EMUNDUS_ATTACHMENTS_PERMISSIONS') }}
+            </th>
           </tr>
           </thead>
           <tbody>
@@ -133,6 +136,10 @@
             <td>{{ getUserNameById(attachment.user_id) }}</td>
             <td>{{ getUserNameById(attachment.modified_by) }}</td>
             <td class='date'>{{ formattedDate(attachment.modified) }}</td>
+            <td class='permissions'>
+              <span class='material-icons' :class="{active: attachment.can_be_viewed == '1'}" @click="changePermission('can_be_viewed', attachment)">visibility</span>
+              <span class='material-icons' :class="{active: attachment.can_be_deleted == '1'}" @click="changePermission('can_be_deleted', attachment)">delete_outlined</span>
+            </td>
           </tr>
           </tbody>
         </table>
@@ -241,6 +248,7 @@ export default {
   created() {
     this.getFnums();
     this.getUsers();
+    console.log('mounted');
   },
   mounted() {
     this.loading = true;
@@ -354,6 +362,29 @@ export default {
         }
       });
     },
+    changePermission(permission, selectedAttachment) {
+      this.attachments.forEach((attachment, key) => {
+        if (attachment.aid == selectedAttachment.aid) {
+          this.resetOrder();
+          this.attachments[key][permission] = this.attachments[key][permission] === "1" ? "0" : "1";
+
+          let formData = new FormData();
+          formData.append('fnum', this.displayedFnum);
+          formData.append('user', this.$store.state.user.currentUser);
+          formData.append('id', this.attachments[key].aid);
+          formData.append(permission, this.attachments[key][permission]);
+
+          attachmentService.updateAttachment(formData).then(response => {
+            if (!response.status) {
+              this.displayErrorMessage(response.msg);
+            }
+          });
+
+          return;
+        }
+      });
+    },
+
     async setAccessRights() {
       if (!this.$store.state.user.rights[this.displayedFnum]) {
         const response = await userService.getAccessRights(this.$store.state.user.currentUser, this.displayedFnum);
@@ -941,6 +972,18 @@ export default {
           select {
             color: var(--error-color);
             background-color:  var(--error-bg-color);
+          }
+        }
+      }
+
+      .permissions {
+        .material-icons {
+          margin: 0 10px;
+          cursor: pointer;
+          opacity: 0.3;
+
+          &.active {
+            opacity: 1;
           }
         }
       }
