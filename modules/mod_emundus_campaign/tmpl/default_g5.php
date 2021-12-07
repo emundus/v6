@@ -402,7 +402,8 @@ $site_offset = $config->get('offset');
                                 <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br/>
                             <?php endif; ?>
-
+                            <hr>
+                            <?= (!empty($mod_em_campaign_show_timezone)) ? JText::_('TIMEZONE') . $offset : ''; ?>
                         </div>
                     </div>
                     <div class="below-content">
@@ -524,6 +525,8 @@ $site_offset = $config->get('offset');
                                 <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br/>
                             <?php endif; ?>
+                            <hr>
+                            <?= (!empty($mod_em_campaign_show_timezone)) ? JText::_('TIMEZONE') . $offset : ''; ?>
                         </div>
                     </div>
                     <div class="below-content">
