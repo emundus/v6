@@ -912,7 +912,7 @@ class EmundusController extends JControllerLegacy {
                 }
 
                 // Check if pdf and if a max or min number of pages is defined
-                if($attachment['min_pages_pdf'] > 0 || $attachment['max_pages_pdf'] > 0){
+                if(($attachment['min_pages_pdf'] > 0 || $attachment['max_pages_pdf'] > 0) && strtoupper($file_ext) === "PDF"){
                     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
 
                     $pdf = new Fpdi();
