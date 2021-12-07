@@ -80,7 +80,7 @@ class EmundusonboardModeldashboard extends JModelList
             }
 
             $query->clear()
-                ->select('id,name,params')
+                ->select('id,name,params,size,size_small')
                 ->from($this->_db->quoteName('#__emundus_widgets'))
                 ->where($this->_db->quoteName('name') . ' IN (' . implode(',',$this->_db->quote($widgets)) . ')');
             $this->_db->setQuery($query);

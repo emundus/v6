@@ -6,3 +6,70 @@
   width: 100%;
 }
 
+/** POPOVER MENU **/
+.actions-dropdown{
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: left;
+}
+.action-submenu {
+  padding: 7px !important;
+  background-color: transparent;
+  -webkit-transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  font-size: 12px;
+  color: black;
+  font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
+  cursor: pointer;
+}
+.action-submenu:hover {
+  color: #16AFE1;
+  text-decoration: none;
+}
+.card-button{
+  background: url("/components/com_emundus_onboard/src/assets/images/icons/options.svg") no-repeat;
+  width: 30px;
+  height: 30px;
+}
+.tooltip {
+  display: block !important;
+  z-index: 10000;
+}
+.tooltip[x-placement^="bottom"] {
+  margin-top: 5px;
+  left: -6em !important;
+}
+.tooltip[aria-hidden='true'] {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .15s, visibility .15s;
+}
+.tooltip[aria-hidden='false'] {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity .15s;
+}
+.v-popover .trigger{
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.popover-inner {
+  background: #f9f9f9 !important;
+  color: black !important;
+  padding: 16px 16px 16px 8px !important;
+  border-radius: 5px !important;
+  box-shadow: 0 5px 30px rgba(black, .1) !important;
+}
+.popover-arrow {
+  border-color: #f9f9f9 !important;
+}
+.container-2 {
+  height: 100% !important;
+}
+.w-container {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  max-width: 940px !important;
+}

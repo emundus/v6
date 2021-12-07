@@ -1,5 +1,5 @@
 <template>
-  <div class='col-md-5 col-sm-6 tchooz-widget'>
+  <div class='tchooz-widget' :class="['col-md-' + widget.size,'col-sm-' + widget.size_small]">
     <div class='section-sub-menu' style='margin-bottom: 10px'>
       <div id="chart-container">
         <fusioncharts
@@ -10,6 +10,23 @@
             :dataSource="dataSource"
         >
         </fusioncharts>
+        <v-popover :popoverArrowClass="'custom-popover-arraow'">
+          <button class="tooltip-target b3 card-button"></button>
+
+          <template slot="popover">
+            <div style="max-width: unset">
+              <transition :name="'slide-down'" type="transition">
+                <div class="container-2 w-container">
+                  <nav aria-label="action" class="actions-dropdown">
+                    <a class="action-submenu">
+                      Modifier mon graphique
+                    </a>
+                  </nav>
+                </div>
+              </transition>
+            </div>
+          </template>
+        </v-popover>
       </div>
     </div>
   </div>
@@ -61,11 +78,11 @@ export default {
         this.dataSource = {
           chart: {
             animation: 1,
-            paletteColors: this.colors,
-            caption: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS"),
+            paletteColors: typeof this.params.colors === 'undefined' ? this.colors : this.params.colors,
+            caption: Joomla.JText._(this.params.caption) === '' ? this.params.caption : Joomla.JText._(this.params.caption),
             subcaption: "",
-            xaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_STATUS"),
-            yaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER"),
+            xaxisname: Joomla.JText._(this.params.xaxisname) === '' ? this.params.xaxisname : Joomla.JText._(this.params.xaxisname),
+            yaxisname: Joomla.JText._(this.params.yaxisname) === '' ? this.params.yaxisname : Joomla.JText._(this.params.yaxisname),
             numbersuffix: "",
             theme: "fusion"
           },
