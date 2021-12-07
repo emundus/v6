@@ -46,7 +46,7 @@ class SecuritycheckprosViewFirewallConfig extends SecuritycheckproView
 
         //  Parámetros del plugin
         $items= $model->getConfig();
-		
+				
 		// Lista negra
 		$blacklist_elements = $model->getTableData("blacklist");        
         $pagination_blacklist = null;
@@ -54,8 +54,14 @@ class SecuritycheckprosViewFirewallConfig extends SecuritycheckproView
         if ( !is_null($blacklist_elements) ) {            
             $blacklist_elements = $model->filter_data($blacklist_elements, $pagination_blacklist);
         }
-
-        $dynamic_blacklist_elements= $model->get_dynamic_blacklist_ips();
+		
+		// Lista negra dinámica
+		$dynamic_blacklist_elements = $model->getTableData("dynamic_blacklist");        
+        $pagination_dynamic_blacklist = null;
+		
+        if ( !is_null($dynamic_blacklist_elements) ) {            
+            $dynamic_blacklist_elements = $model->filter_data($dynamic_blacklist_elements, $pagination_dynamic_blacklist);
+        }
 
         // Lista blanca
 		$whitelist_elements = $model->getTableData("whitelist");		
@@ -73,8 +79,8 @@ class SecuritycheckprosViewFirewallConfig extends SecuritycheckproView
 
         $this->blacklist_elements = $blacklist_elements;
         $this->dynamic_blacklist_elements = $dynamic_blacklist_elements;
-        $this->whitelist_elements = $whitelist_elements;
-        $this->dynamic_blacklist = $items['dynamic_blacklist'];
+        $this->whitelist_elements = $whitelist_elements; 
+		$this->dynamic_blacklist = $items['dynamic_blacklist'];
         $this->dynamic_blacklist_time = $items['dynamic_blacklist_time'];
         $this->dynamic_blacklist_counter = $items['dynamic_blacklist_counter'];
         $this->blacklist_email = $items['blacklist_email'];
@@ -306,6 +312,10 @@ class SecuritycheckprosViewFirewallConfig extends SecuritycheckproView
 
         if (!is_null($items['tags_to_filter'])) {
             $tags_to_filter = $items['tags_to_filter'];    
+        }
+		
+		if (!is_null($items['exclude_exceptions_if_vulnerable'])) {
+            $exclude_exceptions_if_vulnerable = $items['exclude_exceptions_if_vulnerable'];    
         }
                 
         $this->check_header_referer = $check_header_referer;
