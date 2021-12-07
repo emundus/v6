@@ -12,6 +12,7 @@ include_once (__DIR__ . '/../models/profile.php');
 include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
 include_once (JPATH_SITE . '/components/com_emundus_onboard/models/formbuilder.php');
 include_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
+include_once (JPATH_SITE . '/components/com_emundus/models/files.php');
 
 jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
@@ -33,6 +34,7 @@ class EmundusModelProfileTest extends TestCase
     private $m_profile;
     private $m_formbuilder;
     private $s_helper;
+    private $m_file;
 
     private $db;
 
@@ -41,6 +43,7 @@ class EmundusModelProfileTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_profile = new EmundusModelProfile;
         $this->m_formbuilder = new EmundusonboardModelformbuilder;
+        $this->m_file = new EmundusModelFiles;
         $this->db = JFactory::getDbo();
     }
 
@@ -53,22 +56,59 @@ class EmundusModelProfileTest extends TestCase
     public function testGetProfileByStatus() {
         // TEST 1 - SUCCESS WAITING
         $user = @EmundusUnittestHelperSamples::createSampleUser();
+        $fnum = @EmundusUnittestHelperSamples::createSampleFile(2,$user->id);
 
-        $fnum = @EmundusUnittestHelperSamples::createSampleFile(1,$user->id);
+        $this->m_file->updateState(array($fnum), 0);
 
-        $output_data = array(
-                'firstname' => 'Test',
-                'lastname' => 'USER',
-                'profile' => '9',
-                'university_id' => '0',
-                'label' => 'Formulaire de base candidat',
-                'menutype' => 'menu-profile9',
-                'published' => '1',
-                'campaign_id' => '1',
-        );
+        $actual_result = $this->m_profile->getProfileByStatus($fnum);
+        $expected_result = array('firstname' => 'Test', 'lastname' => 'USER', 'profile' => '1004', 'university_id' => '0', 'label' => 'Formulaire alpha', 'menutype' => 'menu-profile1004', 'published' => '1', 'campaign_id' => '2',);
 
-        $this->assertSame($output_data, $this->m_profile->getProfileByStatus($fnum));
-        //
+        $this->assertSame($expected_result, $actual_result);
+
+        $u = JUser::getInstance($user->id);
+        $u->delete();
+    }
+
+    public function testGetStepByFnumEditMode() {
+        $user = @EmundusUnittestHelperSamples::createSampleUser();
+        $fnum = @EmundusUnittestHelperSamples::createSampleFile(2,$user->id);
+
+        $this->m_file->updateState(array($fnum), 0);
+
+        $actual_result = get_object_vars($this->m_profile->getStepByFnum($fnum));
+        $expected_result = array('step' =>  '1', 'editable_status' => ['0','6'], 'output_status' => ['1'], 'start_date' => '2021-12-04 23:00:00', 'end_date' => '2021-12-30 23:00:00', 'msg' => '*** Potentially Edit ***');
+
+        $this->assertSame($expected_result, $actual_result);
+
+        $u = JUser::getInstance($user->id);
+        $u->delete();
+    }
+
+    public function testGetStepByFnumReadModeWithProfile() {
+        $user = @EmundusUnittestHelperSamples::createSampleUser();
+        $fnum = @EmundusUnittestHelperSamples::createSampleFile(2,$user->id);
+
+        $this->m_file->updateState(array($fnum), 4);
+
+        $actual_result = get_object_vars($this->m_profile->getStepByFnum($fnum));
+        $expected_result = array('step' => '2', 'editable_status' => [], 'output_status' => [], 'start_date' => '2022-01-02 23:00:00', 'end_date' => '2022-12-30 23:00:00', 'msg' => '*** Always Read-only ***');
+
+        $this->assertSame($expected_result, $actual_result);
+
+        $u = JUser::getInstance($user->id);
+        $u->delete();
+    }
+
+    public function testGetStepByFnumReadModeWithoutProfile() {
+        $user = @EmundusUnittestHelperSamples::createSampleUser();
+        $fnum = @EmundusUnittestHelperSamples::createSampleFile(2,$user->id);
+
+        $this->m_file->updateState(array($fnum), 0);
+
+        $actual_result = get_object_vars($this->m_profile->getStepByFnum($fnum));
+        $expected_result = array('step' => '1', 'editable_status' => ['0','6'], 'output_status' => ['1'], 'start_date' => '2021-12-04 23:00:00', 'end_date' => '2021-12-30 23:00:00', 'msg' => '*** Potentially Edit ***');
+
+        $this->assertSame($expected_result, $actual_result);
 
         $u = JUser::getInstance($user->id);
         $u->delete();

@@ -393,6 +393,9 @@ class EmundusModelProfile extends JModelList {
         try {
             /* get profiles by workflow -- based on actual status */
             $res = $this->getProfileByWorkflow($fnum);
+            
+            unset($res['step']);
+            unset($res['type']);
 
             if(empty($res['profile'])) {
                 $query->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id')
@@ -1112,7 +1115,7 @@ class EmundusModelProfile extends JModelList {
         $query = $db->getQuery(true);
 
         $query->clear()
-            ->select('eu.firstname, eu.lastname, eswspr.profile AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id, esws.id as step')
+            ->select('eu.firstname, eu.lastname, eswspr.profile AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id, esws.id as step, eswspr.type')
 
             ->from($db->quoteName('#__emundus_setup_workflow_step_profiles_repeat', 'eswspr'))
             ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') .  ' ON ' . $db->quoteName('eswspr.parent_id') . ' = ' . $db->quoteName('esws.id'))
@@ -1157,7 +1160,7 @@ class EmundusModelProfile extends JModelList {
 
             $outputs = explode(',', $outs['outputs']);
 
-            if(!in_array($fnum_status, $inputs) and !in_array($fnum_status, $outputs)) { unset($raw[$k]); }
+            if($v['type'] == '2' or (!in_array($fnum_status, $inputs) and !in_array($fnum_status, $outputs))) { unset($raw[$k]); }
         }
 
         return current($raw);
@@ -1210,17 +1213,25 @@ class EmundusModelProfile extends JModelList {
 
     /* get step by fnum */
     public function getStepByFnum($fnum) {
+        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'models' . DS . 'files.php');
+        $mFile = new EmundusModelFiles();
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $session = JFactory::getSession();;
-        $aid = $session->get('emundusUser');
+//        $session = JFactory::getSession();;
+//        $aid = $session->get('emundusUser');
+//
+//        /* get fnum status from session */
+//        $fnum_status = ($aid->fnums)[$fnum]->status;
+//
+//        /* get fnum campaign from session */
+//        $fnum_campaign = ($aid->fnums)[$fnum]->campaign_id;
 
-        /* get fnum status from session */
-        $fnum_status = ($aid->fnums)[$fnum]->status;
-
-        /* get fnum campaign from session */
-        $fnum_campaign = ($aid->fnums)[$fnum]->campaign_id;
+        /* avoid to use session in unit test */
+        $fnum_raw = $mFile::getFnumInfos($fnum);
+        $fnum_status = $fnum_raw['status'];
+        $fnum_campaign = $fnum_raw['campaign_id'];
 
         /* get workflow id by campaign */
         $query->clear()
@@ -1260,10 +1271,9 @@ class EmundusModelProfile extends JModelList {
             }
 
             if(!in_array($fnum_status, explode(',', $all_status->allstatus))) {
-                $res->msg = '*** Always Read-only ***';
-                $res->_step = null;
-                $res->_editable_status = [];
-                $res->_output_status = [];
+                $res->step = null;
+                $res->editable_status = [];
+                $res->output_status = [];
 
                 if(!is_null($this->getProfileByStatus($fnum)['profile'])) {
                     $res->start_date = $this->getProfileByStatus($fnum)['start_date'];
@@ -1272,6 +1282,7 @@ class EmundusModelProfile extends JModelList {
                     $res->start_date = $this->getFullProfileByFnum($fnum)['start_date'];
                     $res->end_date = $this->getFullProfileByFnum($fnum)['end_date'];
                 }
+                $res->msg = '*** Always Read-only ***';
             } else {
                 if (in_array($fnum_status, $input_status)) {
                     $res->step = $step->step;
@@ -1282,13 +1293,13 @@ class EmundusModelProfile extends JModelList {
                     $res->msg = '*** Potentially Edit ***';
                     break;
                 } else {
-                    $res->msg = '*** Always Read-only ***';
                     if (in_array($fnum_status, $output_status)) {
                         $res->step = $step->step;
                         $res->editable_status = [];
                         $res->output_status = [];
                         $res->start_date = $step->start_date;
                         $res->end_date = $step->end_date;
+                        $res->msg = '*** Always Read-only ***';
                         break;
                     }
                 }
