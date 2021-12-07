@@ -109,6 +109,22 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         exit;
     }
 
+    public function updatemydashboard(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+
+            $widget = $jinput->getInt('widget');
+
+            $result = $this->model->updatemydashboard($widget);
+
+            $tab = array('status' => 0, 'msg' => 'success', 'data' => $result);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function getfilescountbystatus(){
         try {
             $results = $this->model->getfilescountbystatus();

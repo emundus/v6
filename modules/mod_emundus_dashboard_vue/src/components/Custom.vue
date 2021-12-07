@@ -24,6 +24,7 @@
             :close-on-select="true"
             :clear-on-select="false"
             :searchable="false"
+            @select="updateDashboard"
         ></multiselect>
       </div>
     </div>
@@ -102,6 +103,23 @@ export default {
         url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getallwidgets",
       }).then(response => {
         this.widgets = response.data.data;
+      });
+    },
+
+    updateDashboard(){
+      console.log(this.selectedWidget);
+      axios({
+        method: "post",
+        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=updatemydashboard",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          widget: this.selectedWidget.id,
+          row: 2
+        })
+      }).then(response => {
+
       });
     }
   },

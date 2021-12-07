@@ -23,7 +23,7 @@
         <UsersByMonth v-if="widget.name === 'users_by_month'" :colors="colors"/>
         <Tips v-if="widget.name === 'tips'"/>
         <DemoCounter v-if="widget.name === 'demo_counter'"/>
-        <Custom v-if="widget.name === 'custom'" :widget="widget"/>
+        <Custom v-if="widget.name === 'custom'" :widget="widget" @forceUpdate="$forceUpdate"/>
 
         <!-- Sciences Po widgets -->
         <KeyFigures v-if="widget.name === 'key_figures'" :program="selectedProgramme" :colors="colors"/>

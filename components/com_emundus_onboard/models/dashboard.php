@@ -65,7 +65,8 @@ class EmundusonboardModeldashboard extends JModelList
         try {
             $query->clear()
                 ->select('id,name,label,params,size,size_small')
-                ->from($this->_db->quoteName('#__emundus_widgets'));
+                ->from($this->_db->quoteName('#__emundus_widgets'))
+                ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote('custom'));
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
         } catch (Exception $e) {
@@ -104,6 +105,41 @@ class EmundusonboardModeldashboard extends JModelList
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get widgets : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
+        }
+    }
+
+    public function updatemydashboard($widget){
+        $this->_db = JFactory::getDbo();
+        $query = $this->_db->getQuery(true);
+
+        $user = JFactory::getUser()->id;
+
+        try{
+            $query->select('id')
+                ->from($this->_db->quoteName('#__emundus_setup_dashboard'))
+                ->where($this->_db->quoteName('user') . ' = ' . $user);
+            $this->_db->setQuery($query);
+            $dashboard = $this->_db->loadResult();
+
+            if(empty($dashboard)){
+                $query->clear()
+                    ->insert($this->_db->quoteName('#__emundus_setup_dashboard'))
+                    ->set($this->_db->quoteName('user') . ' = ' . $user)
+                    ->set($this->_db->quoteName('updated_by') . ' = ' . $user);
+                $this->_db->setQuery($query);
+                $this->_db->execute();
+                $dashboard = $this->_db->insertid();
+
+                $query->clear()
+                    ->insert($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets'))
+                    ->set($this->_db->quoteName('parent_id') . ' = ' . $user)
+                    ->set($this->_db->quoteName('widget') . ' = ' . $widget);
+                $this->_db->setQuery($query);
+                return $this->_db->execute();
+            }
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try update my dashboard : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 
