@@ -441,6 +441,7 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_WARNING');
 JText::script('COM_EMUNDUS_ATTACHMENTS_PERMISSIONS');
 JText::script('COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED');
 JText::script('COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED');
+JText::script('COM_EMUNDUS_ATTACHMENTS_UNAUTHORIZED_ACTION');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');

@@ -126,7 +126,7 @@
                       'warning': attachment.is_validated == 2,
                       'error': attachment.is_validated == 0
                       }">
-              <select @change="e => updateStatus(e, attachment)">
+              <select @change="e => updateStatus(e, attachment)" :disabled="canUpdate == false">
                 <option value="1" :selected="attachment.is_validated == 1">{{ translate('VALID') }}</option>
                 <option value="0" :selected="attachment.is_validated == 0">{{ translate('INVALID') }}</option>
                 <option value="2" :selected="attachment.is_validated == 2">{{ translate('COM_EMUNDUS_ATTACHMENTS_WARNING') }}</option>
@@ -241,6 +241,7 @@ export default {
       canExport: false,
       canDelete: false,
       canDownload: true,
+      canUpdate: false,
       modalLoading: false,
       slideTransition: "slide-fade"
     };
@@ -340,48 +341,54 @@ export default {
       this.selectedAttachment = {};
     },
     updateStatus($event, selectedAttachment) {
-      this.attachments.forEach((attachment, key) => {
-        if (attachment.aid == selectedAttachment.aid) {
-          this.resetOrder();
-          this.attachments[key].is_validated = $event.target.value;
+      if (this.canUpdate) {
+        this.attachments.forEach((attachment, key) => {
+          if (attachment.aid == selectedAttachment.aid) {
+            this.resetOrder();
+            this.attachments[key].is_validated = $event.target.value;
 
-          let formData = new FormData();
-          formData.append('fnum', this.displayedFnum);
-          formData.append('user', this.$store.state.user.currentUser);
-          formData.append('id', this.attachments[key].aid);
-          formData.append('is_validated', this.attachments[key].is_validated);
+            let formData = new FormData();
+            formData.append('fnum', this.displayedFnum);
+            formData.append('user', this.$store.state.user.currentUser);
+            formData.append('id', this.attachments[key].aid);
+            formData.append('is_validated', this.attachments[key].is_validated);
 
-          attachmentService.updateAttachment(formData).then(response => {
-            if (!response.status) {
-              this.displayErrorMessage(response.msg);
-            }
-          });
+            attachmentService.updateAttachment(formData).then(response => {
+              if (!response.status) {
+                this.displayErrorMessage(response.msg);
+              }
+            });
 
-          return;
-        }
-      });
+            return;
+          }
+        });
+      }
     },
     changePermission(permission, selectedAttachment) {
-      this.attachments.forEach((attachment, key) => {
-        if (attachment.aid == selectedAttachment.aid) {
-          this.resetOrder();
-          this.attachments[key][permission] = this.attachments[key][permission] === "1" ? "0" : "1";
+      if (this.canUpdate) {
+        this.attachments.forEach((attachment, key) => {
+          if (attachment.aid == selectedAttachment.aid) {
+            this.resetOrder();
+            this.attachments[key][permission] = this.attachments[key][permission] === "1" ? "0" : "1";
 
-          let formData = new FormData();
-          formData.append('fnum', this.displayedFnum);
-          formData.append('user', this.$store.state.user.currentUser);
-          formData.append('id', this.attachments[key].aid);
-          formData.append(permission, this.attachments[key][permission]);
+            let formData = new FormData();
+            formData.append('fnum', this.displayedFnum);
+            formData.append('user', this.$store.state.user.currentUser);
+            formData.append('id', this.attachments[key].aid);
+            formData.append(permission, this.attachments[key][permission]);
 
-          attachmentService.updateAttachment(formData).then(response => {
-            if (!response.status) {
-              this.displayErrorMessage(response.msg);
-            }
-          });
+            attachmentService.updateAttachment(formData).then(response => {
+              if (!response.status) {
+                this.displayErrorMessage(response.msg);
+              }
+            });
 
-          return;
-        }
-      });
+            return;
+          }
+        });
+      } else {
+        this.displayErrorMessage(this.translate('COM_EMUNDUS_ATTACHMENTS_UNAUTHORIZED_ACTION'));
+      }
     },
 
     async setAccessRights() {
@@ -398,6 +405,7 @@ export default {
 
       this.canExport = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canExport : false;
       this.canDelete = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canDelete : false;
+      this.canUpdate = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canUpdate : false;
       this.loading = false;
     },
     async exportAttachments() {
