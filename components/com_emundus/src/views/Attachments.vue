@@ -248,7 +248,6 @@ export default {
   created() {
     this.getFnums();
     this.getUsers();
-    console.log('mounted');
   },
   mounted() {
     this.loading = true;
