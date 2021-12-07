@@ -8,6 +8,7 @@ JHtml::script('media/jui/js/bootstrap.min.js');
 $document 	= JFactory::getDocument();
 $document->addStyleSheet("components/com_emundus_onboard/src/assets/css/bootstrap.css" );
 $document->addStyleSheet("modules/mod_emundus_dashboard_vue/src/assets/mod_emundus_dashbord_vue.css" );
+$document->addStyleSheet("modules/mod_emundus_dashboard_vue/src/assets/vue-multiselect.min.css" );
 $document->addScript('media/mod_emundus_dashboard_vue/chunk-vendors.js');
 $document->addStyleSheet('media/mod_emundus_dashboard_vue/app.css');
 

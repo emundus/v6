@@ -47,6 +47,18 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         exit;
     }
 
+    public function getallwidgets(){
+        try {
+            $widgets = $this->model->getallwidgets();
+
+            $tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function getpalettecolors(){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);

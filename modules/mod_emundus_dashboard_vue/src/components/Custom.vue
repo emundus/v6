@@ -10,23 +10,21 @@
             :dataSource="dataSource"
         >
         </fusioncharts>
-        <v-popover :popoverArrowClass="'custom-popover-arraow'">
-          <button class="tooltip-target b3 card-button"></button>
-
-          <template slot="popover">
-            <div style="max-width: unset">
-              <transition :name="'slide-down'" type="transition">
-                <div class="container-2 w-container">
-                  <nav aria-label="action" class="actions-dropdown">
-                    <a class="action-submenu">
-                      Modifier mon graphique
-                    </a>
-                  </nav>
-                </div>
-              </transition>
-            </div>
-          </template>
-        </v-popover>
+        <multiselect
+            v-model="selectedWidget"
+            :class="'tchooz-widget__select'"
+            label="label"
+            track-by="id"
+            :options="widgets"
+            :multiple="false"
+            :taggable="false"
+            select-label=""
+            selected-label=""
+            deselect-label=""
+            :close-on-select="true"
+            :clear-on-select="false"
+            :searchable="false"
+        ></multiselect>
       </div>
     </div>
   </div>
@@ -34,6 +32,7 @@
 
 <script>
 import axios from "axios";
+import Multiselect from 'vue-multiselect';
 
 const qs = require("qs");
 
@@ -41,7 +40,9 @@ const qs = require("qs");
 export default {
   name: "Custom",
 
-  components: {},
+  components: {
+    Multiselect
+  },
 
   props: {
     widget: Object,
@@ -49,6 +50,9 @@ export default {
   },
 
   data: () => ({
+    widgets: [],
+    selectedWidget: null,
+    // Fusion charts variables
     datas: {},
     status: [],
     label: 'Total',
@@ -91,12 +95,23 @@ export default {
         //
       });
     },
+
+    getWidgets(){
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getallwidgets",
+      }).then(response => {
+        this.widgets = response.data.data;
+      });
+    }
   },
 
   created() {
+    this.selectedWidget = this.widget;
     this.params = JSON.parse(this.widget.params);
     this.type = this.params.type;
     this.renderChart();
+    this.getWidgets();
   },
 }
 </script>

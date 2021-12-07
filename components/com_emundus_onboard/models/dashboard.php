@@ -58,6 +58,22 @@ class EmundusonboardModeldashboard extends JModelList
         }
     }
 
+    public function getallwidgets(){
+        $this->_db = JFactory::getDbo();
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('id,name,label,params,size,size_small')
+                ->from($this->_db->quoteName('#__emundus_widgets'));
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get all widgets : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return [];
+        }
+    }
+
     public function getwidgets(){
         $this->_db = JFactory::getDbo();
         $query = $this->_db->getQuery(true);
@@ -80,7 +96,7 @@ class EmundusonboardModeldashboard extends JModelList
             }
 
             $query->clear()
-                ->select('id,name,params,size,size_small')
+                ->select('id,name,label,params,size,size_small')
                 ->from($this->_db->quoteName('#__emundus_widgets'))
                 ->where($this->_db->quoteName('name') . ' IN (' . implode(',',$this->_db->quote($widgets)) . ')');
             $this->_db->setQuery($query);
