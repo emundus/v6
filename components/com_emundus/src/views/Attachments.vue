@@ -241,20 +241,25 @@ export default {
     },
     async setDisplayedUser() {
       const response = await fileService.getFnumInfos(this.displayedFnum);
-      const foundUser = this.users && this.users.length ? this.users.find(user => user.user_id == response.fnumInfos.applicant_id) : false;
 
-      if (!foundUser) {
-        const resp = await userService.getUserById(response.fnumInfos.applicant_id);
-        if (resp.status) {
-          this.users.push(resp.user[0]);
-          this.displayedUser = resp.user[0];
-          this.$store.dispatch('user/setDisplayedUser', this.displayedUser.user_id);
+      if (response && response.fnumInfos) {
+        const foundUser = this.users && this.users.length ? this.users.find(user => user.user_id == response.fnumInfos.applicant_id) : false;
+
+        if (!foundUser) {
+          const resp = await userService.getUserById(response.fnumInfos.applicant_id);
+          if (resp.status) {
+            this.users.push(resp.user[0]);
+            this.displayedUser = resp.user[0];
+            this.$store.dispatch('user/setDisplayedUser', this.displayedUser.user_id);
+          } else {
+            this.displayErrorMessage(this.translate('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND'));
+          }
         } else {
-          this.displayErrorMessage(this.translate('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND'));
+          this.displayedUser = foundUser;
+          this.$store.dispatch('user/setDisplayedUser', this.displayedUser.user_id);
         }
       } else {
-        this.displayedUser = foundUser;
-        this.$store.dispatch('user/setDisplayedUser', this.displayedUser.user_id);
+        this.displayErrorMessage(this.translate('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND'));
       }
     },
     async getAttachments() {
@@ -408,6 +413,8 @@ export default {
     changeFile(position) {
       this.loading = true;
       this.displayedFnum = this.fnums[position];
+      this.attachments = [];
+
       this.setDisplayedUser()
       .then(() => {
         this.getAttachments()

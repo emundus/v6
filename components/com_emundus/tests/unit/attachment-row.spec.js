@@ -1,9 +1,9 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import mockAttachment from '../mocks/attachments.mock';
-import AttachmentRow from '@/components/AttachmentRow.vue';
+import AttachmentRow from '../../src/components/AttachmentRow.vue';
 import Vuex from 'vuex';
 import VModal from 'vue-js-modal';
-import store from '@/store';
+import store from '../../src/store';
 import translate from '../mocks/mixins/translate';
 
 const localVue = createLocalVue();
