@@ -70,14 +70,13 @@ describe('Attachments.vue', () => {
     expect(wrapper.vm.sort.order).toBe('desc');
   });
 
-  // ?? Test returns true but async warning ??
-  // it('Expect sort to return to default values on refresh click', () => {
-  //   const refresh = wrapper.find('.refresh');
-  //   refresh.trigger('click');
-  //   expect(wrapper.vm.sort.last).toBe('');
-  //   expect(wrapper.vm.sort.orderBy).toBe('');
-  //   expect(wrapper.vm.sort.order).toBe('');
-  // })
+  it('Expect sort to return to default values on refresh click', () => {
+    const refresh = wrapper.find('.refresh');
+    refresh.trigger('click');
+    expect(wrapper.vm.sort.last).toBe('');
+    expect(wrapper.vm.sort.orderBy).toBe('');
+    expect(wrapper.vm.sort.order).toBe('');
+  });
 
   /**
    * test searchInFiles
