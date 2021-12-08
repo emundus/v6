@@ -16,8 +16,8 @@
     </td>
     <td class="date">{{ formattedDate(attachment.timedate) }}</td>
     <td class="desc">{{ attachment.description }}</td>
-    <td class="category" v-if="categories !== null">
-      {{ categories[attachment.category] }}
+    <td class="category">
+      {{ attachment.category !== null && attachment.category !== "" ? categories[attachment.category] : "" }}
     </td>
     <td
       class="status valid-state"
@@ -78,14 +78,20 @@ export default {
   mounted() {
     this.categories = this.$store.state.attachment.categories;
     if (Object.entries(this.categories).length < 1) {
-      this.categories = this.getCategories();
+      this.getCategories()
+      .then((response) => {
+        this.categories = response.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     }
 
     this.checkedAttachments = this.checkedAttachmentsProp;
   },
   methods: {
     async getCategories() {
-      this.categories = await this.getAttachmentCategories();
+      return await this.getAttachmentCategories();
     },
     updateCheckedAttachments(aid) {
       if (this.checkedAttachments.includes(aid)) {
@@ -115,7 +121,7 @@ export default {
     &:hover:not(.checked) {
       background-color: #F2F2F3;
     }
-    
+
     &.checked {
       background-color: #F0F6FD;
     }

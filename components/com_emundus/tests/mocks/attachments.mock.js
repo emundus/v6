@@ -29,7 +29,8 @@ export default {
             "campaign_label": "Campagne de candidature de base ",
             "year": "2019-2021",
             "training": "prog",
-            "show": true
+            "show": true,
+            "existsOnServer": true,
         },
         {
             "aid": "3",
@@ -60,7 +61,8 @@ export default {
             "campaign_label": "Campagne de candidature de base ",
             "year": "2019-2021",
             "training": "prog",
-            "show": true
+            "show": true,
+            "existsOnServer": false,
         }
     ],
     "users": [
