@@ -691,10 +691,12 @@ div#em-modal-actions #savePDFfilter, div#em-modal-actions #savefilter{
     margin-top: 10px;
     background: #5a5a72;
     border: solid 1px #5a5a72;
+    color: #fff;
 }
 div#em-modal-actions #savePDFfilter:hover, div#em-modal-actions #savefilter:hover{
    background: #b0b0bf;
     color: #fff;
+    border: solid 1px #b0b0bf;
 }
 
 div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
