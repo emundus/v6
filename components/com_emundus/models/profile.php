@@ -396,6 +396,8 @@ class EmundusModelProfile extends JModelList {
             
             unset($res['step']);
             unset($res['type']);
+            
+//            echo '<pre>'; var_dump($res); echo '</pre>'; die;
 
             if(empty($res['profile'])) {
                 $query->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id')
@@ -1128,7 +1130,7 @@ class EmundusModelProfile extends JModelList {
 
         $db->setQuery($query);
         $raw = $db->loadAssocList();        /* many rowa */
-        
+
         /* get fnum info */
         $fnum_raw = $mFile->getFnumsInfos([$fnum]);
         $fnum_status = $fnum_raw[$fnum]['step'];
@@ -1153,14 +1155,14 @@ class EmundusModelProfile extends JModelList {
                 ->from($db->quoteName('#__emundus_setup_workflow_step_status_repeat', 'eswssr'))
                 ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') .  ' ON ' . $db->quoteName('eswssr.parent_id') . ' = ' . $db->quoteName('esws.id'))
                 ->where($this->_db->quoteName('eswssr.parent_id') . ' = ' . $db->quote($v['step']))
-                ->andWhere($this->_db->quoteName('eswssr.type') . ' = 2');
+                ->andWhere($this->_db->quoteName('eswssr.type') . ' = 0');
 
             $db->setQuery($query);
             $outs =  $db->loadAssoc();
 
             $outputs = explode(',', $outs['outputs']);
 
-            if($v['type'] == '2' or (!in_array($fnum_status, $inputs) and !in_array($fnum_status, $outputs))) { unset($raw[$k]); }
+            if(in_array($fnum_status, $outputs) or $v['type'] == '0' or (!in_array($fnum_status, $inputs) and !in_array($fnum_status, $outputs))) { unset($raw[$k]); }
         }
 
         return current($raw);
