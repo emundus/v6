@@ -1733,10 +1733,13 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
 .modal-body .panel-heading .btn-xs.btn.btn-elements-success {
-    background-color: $dark-green !important;
+    background-color: $grey !important;
     color: #fff;
-  }
+}
 
+.modal-body .panel-body  .panel-primary>.panel-heading {
+  background: $dark-grey;
+}
 
   .btn-warning.active.focus,
   .btn-warning.active:focus,
@@ -2591,13 +2594,13 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .form.em-decision-form .btn.btn-success {
     padding: 5px 30px;
-    border: 2px solid $night-blue;
-    background: $night-blue;
+    border: 2px solid $dark-grey;
+    background: $dark-grey;
     border-radius: 4px !important;
 
     &:hover, &:active, &:focus {
-      border: 2px solid $dark-grey;
-      background: $dark-grey;
+      border: 2px solid $grey;
+      background: $grey;
       color: $white;
     }
   }
