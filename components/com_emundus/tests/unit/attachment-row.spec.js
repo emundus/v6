@@ -30,17 +30,17 @@ describe('AttachmentRow.vue', () => {
 		expect(wrapper.vm.formattedDate("2021-12-01 08:04:32")).toBe('Wednesday, December 1, 2021 8:04 AM');
 	});
 
-	it('click on .td-document should emit open-modal', () => {
+	it('onClick .td-document should emit open-modal', () => {
 		wrapper.find('.td-document').trigger('click');
 		expect(wrapper.emitted('open-modal')).toBeTruthy();		
 	});
 
-	it('click on .td-document should emit open-modal', () => {
-		wrapper.find('.td-document').trigger('click');
-		expect(wrapper.emitted('open-modal')).toBeTruthy();		
+	it('onChange attachment-check should emit update-checked-attachments', () => {
+		wrapper.find('.attachment-check').trigger('change');
+		expect(wrapper.emitted('update-checked-attachments')).toBeTruthy();		
 	});
 
-	it('.status select should emit update-status on change', () => {
+	it('onChange .status select should emit update-status', () => {
 		wrapper.find('.status select').trigger('change');
 		expect(wrapper.emitted('update-status')).toBeTruthy();
 	});
