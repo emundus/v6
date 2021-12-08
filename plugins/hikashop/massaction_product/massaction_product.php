@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1292,7 +1292,7 @@ class plgHikashopMassaction_product extends JPlugin
 	function onBeforeProductUpdate(&$element,&$do){
 		$getProduct = $this->productClass->get($element->product_id);
 
-		$product = clone $element;
+		$product = hikashop_copy($element);
 		if(!empty($getProduct) && is_object($getProduct)){
 			foreach(get_object_vars($getProduct) as $key => $value){
 				if(!isset($product->$key) || $product->$key != $value)
@@ -1312,7 +1312,7 @@ class plgHikashopMassaction_product extends JPlugin
 	function onAfterProductUpdate(&$element){
 		$getProduct = $this->productClass->get($element->product_id);
 
-		$product = clone $element;
+		$product = hikashop_copy($element);
 		if(!empty($getProduct) && is_object($getProduct)){
 			foreach(get_object_vars($getProduct) as $key => $value){
 				if(!isset($product->$key) || $product->$key != $value)

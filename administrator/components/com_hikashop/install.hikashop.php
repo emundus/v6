@@ -30,7 +30,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Business';
-	var $version = '4.3.0';
+	var $version = '4.4.0';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
@@ -810,6 +810,36 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 		if(version_compare($this->fromVersion, '4.3.0', '<')) {
 			$this->databaseHelper->addColumns("orderstatus", "`orderstatus_color` varchar(255) NOT NULL DEFAULT ''");
 		}
+
+		if(version_compare($this->fromVersion, '4.4.0', '<')) {
+			$query = 'UPDATE `#__hikashop_config` SET config_value = 0 '.
+					' WHERE config_namekey = \'add_to_cart_legacy\'';
+			$this->db->setQuery($query);
+			try{$this->db->execute();}catch(Exception $e){}
+			$query = 'UPDATE `#__hikashop_config` SET config_value = 0 '.
+					' WHERE config_namekey = \'checkout_legacy\'';
+			$this->db->setQuery($query);
+			try{$this->db->execute();}catch(Exception $e){}
+			$query = 'UPDATE `#__hikashop_config` SET config_value = \'vex\' '.
+					' WHERE config_namekey = \'popup_mode\'';
+			$this->db->setQuery($query);
+			try{$this->db->execute();}catch(Exception $e){}
+
+			$this->databaseHelper->addColumns("order", array(
+				"`order_weight` decimal(12,3) unsigned NULL",
+				"`order_weight_unit` varchar(255) NULL",
+				"`order_volume` decimal(12,3) unsigned NULL",
+				"`order_dimension_unit` varchar(255) NULL",
+			));
+			$this->databaseHelper->addColumns("order_product", array(
+				"`order_product_weight` decimal(12,3) unsigned NULL",
+				"`order_product_weight_unit` varchar(255) NULL",
+				"`order_product_width` decimal(12,3) unsigned NULL",
+				"`order_product_length` decimal(12,3) unsigned NULL",
+				"`order_product_height` decimal(12,3) unsigned NULL",
+				"`order_product_dimension_unit` varchar(255) NULL",
+			));
+		}
 	}
 
 	public function addPref() {
@@ -1065,7 +1095,11 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 		$modulesClass = hikashop_get('class.modules');
 		$params = array();
 		foreach($elements as $k => $element){
-			$elements[$k]->position = 'position-7';
+			if(version_compare(JVERSION,'4.0', '>=')) {
+				$elements[$k]->position = 'sidebar-right';
+			} else {
+				$elements[$k]->position = 'position-7';
+			}
 			$elements[$k]->language = '*';
 			$elements[$k]->access = 1;
 			$elements[$k]->published = 0;
