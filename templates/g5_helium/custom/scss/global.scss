@@ -2159,14 +2159,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   #em-see-files.btn.btn-info.btn-xs.pull-right {
     background-color: transparent;
-    color: $dark-blue;
+    color: $dark-grey;
     border-color: transparent;
 
     &:hover,
     &:active,
     &:focus {
       background-color: transparent;
-      color: $dark-blue;
+      color: $dark-grey;
       border-color: transparent;
     }
   }
@@ -2703,20 +2703,20 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       &#search,
       &#clear-search,
       &#add-filter {
-        background: $dark-green none;
+        background: $dark-grey none;
 
         &:hover,
         &:focus,
         &:active {
-          background: darken($dark-green, 10%) none;
+          background: darken($dark-grey, 10%) none;
         }
       }
 
       &#showhide {
-        background-color: $dark-green;
+        background-color: $dark-grey;
 
         &:hover {
-          background-color: darken($dark-green, 10%);
+          background-color: darken($dark-grey, 10%);
         }
       }
     }
