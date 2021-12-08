@@ -306,7 +306,7 @@ ul {
 
 .modal-body {
   a {
-    color: $dark-blue !important;
+    color: $dark-grey !important;
   }
 }
 
@@ -335,27 +335,27 @@ ul {
   color: #fff;
 
   &:active, &:focus, &:hover {
-    background: $dark-grey!important;
-    background-color: $dark-grey!important;
-    border: 2px solid $dark-grey !important;
+    background: $grey!important;
+    background-color: $grey!important;
+    border: 2px solid $grey !important;
     border-radius: 4px !important;
     color: $white !important;
   }
 }
 
 .files-board form.em-form-message .toggle-editor .btn-group a.btn, .modal-body form .em_email_block input.btn.btn-success[name="expert"]  {
-  background: $dark-blue !important;
-  background-color: $dark-blue !important;
-  border: 2px solid $dark-blue !important;
+  background: $dark-grey !important;
+  background-color: $dark-grey !important;
+  border: 2px solid $dark-grey !important;
   border-radius: 25px !important;
   color: #fff !important;
 
   &:active, &:focus, &:hover {
-    background: transparent !important;
-    background-color: transparent !important;
-    border: 2px solid $dark-blue !important;
+    background: $grey !important;
+    background-color: $grey !important;
+    border: 2px solid $grey !important;
     border-radius: 25px !important;
-    color: $dark-blue !important;
+    color: $white !important;
   }
 }
 
@@ -1371,16 +1371,16 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active, .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.active.btn-success {
-    background-color: $dark-blue;
+    background-color: $dark-grey;
     color: #fff;
-    border-color: $dark-blue;
+    border-color: $dark-grey;
 
     &:hover,
     &:active,
     :focus {
       background-color: transparent;
-      color: $dark-blue;
-      border-color: $dark-blue;
+      color: $grey;
+      border-color: $grey;
     }
   }
 
@@ -1727,7 +1727,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .modal-body .panel-heading button.btn.btn-info.btn-xs {
-    background: $dark-blue;
+    background: $dark-grey;
     color: #fff;
   }
 
@@ -1830,9 +1830,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   .modal-header #can-val {
     button.btn.btn-danger {
       background: transparent;
-      border: 2px solid grey;
-      border-radius: 25px !important;
-      color: grey;
+      border: 2px solid $dark-grey;
+      border-radius: 4px !important;
+      color: $dark-grey;
       margin-right: 10px;
       font-weight: normal;
       padding: 7px 30px !important;
@@ -1840,26 +1840,26 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       &:hover,
       &:active,
       :focus {
-        background: grey;
-        border: 2px solid grey;
-        color: #fff;
+        background: $dark-grey;
+        border: 2px solid $dark-grey;
+        color: $white;
       }
     }
 
     button.btn.btn-success,
     a.btn-success {
-      background: $dark-blue;
-      border: 2px solid $dark-blue;
-      border-radius: 25px !important;
-      color: #fff;
+      background: $dark-grey;
+      border: 2px solid $dark-grey;
+      border-radius: 4px !important;
+      color: $white;
       padding: 7px 30px;
 
       &:hover,
       &:active,
       :focus {
         background: transparent;
-        border: 2px solid $dark-blue;
-        color: $dark-blue;
+        border: 2px solid $grey;
+        color: $grey;
       }
     }
   }
@@ -2132,7 +2132,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   #filters #quick.form-group input#search.btn.btn-sm.btn-info {
     background-color: transparent;
-    color: $dark-blue;
+    color: $dark-grey;
     border: none;
     font-size: 19px !important;
 
@@ -2560,7 +2560,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   /************************ GESTIONNAIRE - COORDINATOR *********************/
 
   .files-board .dropdown-menu > li > a:focus, .files-board .dropdown-submenu:hover > a, .files-board .dropdown-submenu:focus > a {
-    background: $dark-blue !important;
+    background: $grey !important;
   }
 
   .edit-comment-container button.edit-comment {
@@ -2625,7 +2625,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .g-back-office-emundus-tableau.files-page .panel-info > .panel-heading {
-    background: $dark-blue;
+    background: $grey;
   }
 
   .g-back-office-emundus-tableau.experts-page .panel-info > .panel-heading h3.panel-title {
@@ -2703,20 +2703,20 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       &#search,
       &#clear-search,
       &#add-filter {
-        background: $dark-grey none;
+        background: $dark-green none;
 
         &:hover,
         &:focus,
         &:active {
-          background: darken($dark-grey, 10%) none;
+          background: darken($dark-green, 10%) none;
         }
       }
 
       &#showhide {
-        background-color: $dark-grey;
+        background-color: $dark-green;
 
         &:hover {
-          background-color: darken($dark-grey, 10%);
+          background-color: darken($dark-green, 10%);
         }
       }
     }
