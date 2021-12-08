@@ -159,19 +159,21 @@ $currentCampaign = array_map(function($item) use ($formations) {
             <?php endif; ?>
             <?php if(!empty($formationTypes) && count($formationTypes) > 1): ?>
                 <div class="g-block size-30" id="navfilter">
-                    <p>
+                    <!-- <p>
                         <select name="formation_type" id="formation_type" onchange="filterBy('formation_type', this.value)">
                             <option value="all" selected>Tous type de formations</option>
                             <?php foreach ($formationTypes as $type): ?>
                                 <option value="<?php echo $type->id; ?>"><?php echo $type->type; ?></option>
                             <?php endforeach; ?>
                         </select>
-                    </p>
+                    </p> -->
                     <p>
                         <select name="formation_level" id="formation_level" onchange="filterBy('formation_level', this.value)">
                             <option value="all" selected>Tous les niveaux de formation</option>
                             <?php foreach ($formationLevels as $level): ?>
-                                <option value="<?php echo $level->id; ?>"><?php echo $level->label; ?></option>
+                                <?php if (in_array($level->id, $allowedFormationLevels)): ?>
+                                    <option value="<?php echo $level->id; ?>"><?php echo $level->label; ?></option>
+                                <?php endif; ?>
                             <?php endforeach; ?>
                         </select>
                     </p>
