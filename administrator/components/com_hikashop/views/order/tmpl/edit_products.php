@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -55,6 +55,27 @@ defined('_JEXEC') or die('Restricted access');
 				$tax = reset($this->orderProduct->order_product_tax_info)->tax_namekey;
 			}
 			echo $this->ratesType->display( "data[order][product][tax_namekey]" , $tax); ?>
+		</dd>
+		<dt class="hikashop_order_product_weight"><label><?php echo JText::_('PRODUCT_WEIGHT'); ?></label></dt>
+		<dd class="hikashop_order_product_weight">
+			<input type="text" id="hikashop_order_product_weight_input" style="width:120px;" name="data[order][product][order_product_weight]" value="<?php echo @$this->orderProduct->order_product_weight; ?>" />
+			<?php echo $this->weightType->display( "data[order][product][order_product_weight_unit]" , @$this->orderProduct->order_product_weight_unit, '', 'style="width:80px; margin-bottom:9px"'); ?>
+		</dd>
+		<dt class="hikashop_order_product_width"><label><?php echo JText::_('PRODUCT_WIDTH'); ?></label></dt>
+		<dd class="hikashop_order_product_width">
+			<input type="text" id="hikashop_order_product_width_input" name="data[order][product][order_product_width]" value="<?php echo @$this->orderProduct->order_product_width; ?>" />
+		</dd>
+		<dt class="hikashop_order_product_length"><label><?php echo JText::_('PRODUCT_LENGTH'); ?></label></dt>
+		<dd class="hikashop_order_product_length">
+			<input type="text" id="hikashop_order_product_length_input" name="data[order][product][order_product_length]" value="<?php echo @$this->orderProduct->order_product_length; ?>" />
+		</dd>
+		<dt class="hikashop_order_product_height"><label><?php echo JText::_('PRODUCT_HEIGHT'); ?></label></dt>
+		<dd class="hikashop_order_product_height">
+			<input type="text" id="hikashop_order_product_height_input" name="data[order][product][order_product_height]" value="<?php echo @$this->orderProduct->order_product_height; ?>" />
+		</dd>
+		<dt class="hikashop_order_product_dimension_unit"><label><?php echo JText::_('DIMENSIONS_UNIT'); ?></label></dt>
+		<dd class="hikashop_order_product_dimension_unit">
+			<?php echo $this->volumeType->display( "data[order][product][order_product_dimension_unit]" , @$this->orderProduct->order_product_dimension_unit); ?>
 		</dd>
 
 
@@ -130,6 +151,13 @@ window.orderMgr.orderproduct_history_changed = function(el) {
 	<input type="hidden" name="data[order][product][order_product_id]" value="<?php echo @$this->orderProduct->order_product_id;?>" />
 	<input type="hidden" name="data[order][product][product_id]" value="<?php echo @$this->orderProduct->product_id;?>" />
 	<input type="hidden" name="data[order][product][order_id]" value="<?php echo @$this->orderProduct->order_id;?>" />
+<?php
+	if(!empty($this->afterParams->parent_id)) {
+?>
+	<input type="hidden" name="data[order][product][order_product_option_parent_id]" value="<?php echo $this->afterParams->parent_id;?>" />
+<?php
+	}
+?>
 	<input type="hidden" name="data[products]" value="1" />
 	<input type="hidden" name="cid[]" value="<?php echo @$this->orderProduct->order_id; ?>" />
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
