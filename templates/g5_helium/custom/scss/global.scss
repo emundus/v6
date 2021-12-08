@@ -347,14 +347,14 @@ ul {
   background: $dark-grey !important;
   background-color: $dark-grey !important;
   border: 2px solid $dark-grey !important;
-  border-radius: 25px !important;
+  border-radius: 4px !important;
   color: #fff !important;
 
   &:active, &:focus, &:hover {
     background: $grey !important;
     background-color: $grey !important;
     border: 2px solid $grey !important;
-    border-radius: 25px !important;
+    border-radius: 4px !important;
     color: $white !important;
   }
 }
@@ -1830,7 +1830,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   .modal-header #can-val {
     button.btn.btn-danger {
       background: transparent;
-      border: 2px solid $dark-grey;
+      border: 1px solid $dark-grey;
       border-radius: 4px !important;
       color: $dark-grey;
       margin-right: 10px;
@@ -1841,7 +1841,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       &:active,
       :focus {
         background: $dark-grey;
-        border: 2px solid $dark-grey;
+        border: 1px solid $dark-grey;
         color: $white;
       }
     }
@@ -1849,7 +1849,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     button.btn.btn-success,
     a.btn-success {
       background: $dark-grey;
-      border: 2px solid $dark-grey;
+      border: 1px solid $dark-grey;
       border-radius: 4px !important;
       color: $white;
       padding: 7px 30px;
@@ -1857,9 +1857,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       &:hover,
       &:active,
       :focus {
-        background: transparent;
-        border: 2px solid $grey;
-        color: $grey;
+        background: $grey;
+        border: 1px solid $grey;
+        color: $white;
       }
     }
   }
@@ -2140,7 +2140,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     &:active,
     &:focus {
       background: transparent;
-      color: $dark-blue;
+      color: $grey;
     }
   }
 
