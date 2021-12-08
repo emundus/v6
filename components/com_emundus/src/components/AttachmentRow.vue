@@ -17,7 +17,7 @@
     <td class="date">{{ formattedDate(attachment.timedate) }}</td>
     <td class="desc">{{ attachment.description }}</td>
     <td class="category">
-      {{ attachment.category !== null && attachment.category !== "" ? categories[attachment.category] : "" }}
+      {{ attachmentCategory }}
     </td>
     <td
       class="status valid-state"
@@ -94,10 +94,8 @@ export default {
       return await this.getAttachmentCategories();
     },
     updateCheckedAttachments(aid) {
-      if (this.checkedAttachments.includes(aid)) {
-        this.checkedAttachments = this.checkedAttachments.filter(
-          (attachment) => attachment !== aid
-        );
+      if (this.checkedAttachments.contains(aid)) {
+        this.checkedAttachments.splice(this.checkedAttachments.indexOf(aid), 1);
       } else {
         this.checkedAttachments.push(aid);
       }
@@ -111,6 +109,16 @@ export default {
       this.$emit("update-status", e, this.attachment);
     },
   },
+  computed: {
+    attachmentCategory() {
+      return this.categories && this.categories[this.attachment.category] ? this.categories[this.attachment.category] : "";
+    }
+  },
+  watch: {
+    "$store.state.attachment.checkedAttachments": function () {
+      this.checkedAttachments = this.$store.state.attachment.checkedAttachments;
+    },
+  }
 };
 </script>
 

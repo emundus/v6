@@ -414,6 +414,7 @@ export default {
       this.loading = true;
       this.displayedFnum = this.fnums[position];
       this.attachments = [];
+      this.$store.dispatch('attachment/setCheckedAttachments', []);
 
       this.setDisplayedUser()
       .then(() => {
@@ -526,13 +527,11 @@ export default {
       } else {
         this.checkedAttachments = [];
       }
+
+      this.$store.dispatch('attachment/setCheckedAttachments', this.checkedAttachments);
     },
-    updateCheckedAttachments(aid) {
-      if (this.checkedAttachments.contains(aid)) {
-        this.checkedAttachments.splice(this.checkedAttachments.indexOf(aid), 1);
-      } else {
-        this.checkedAttachments.push(aid);
-      }
+    updateCheckedAttachments(attachments) {
+      this.checkedAttachments = attachments;
     },
 
     // Modal methods
@@ -582,7 +581,7 @@ export default {
     attachmentPath() {
       return this.$store.state.attachment.attachmentPath + this.displayedUser.id + '/' + this.selectedAttachment.filename;
     }
-  }
+  },
 };
 </script>
 
