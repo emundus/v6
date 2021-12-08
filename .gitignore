@@ -48,8 +48,10 @@ media/com_hikashop/b/*
 media/com_hikashop/l/*
 media/com_hikashop/pathfile
 media/com_hikashop/pc.*
-paybox*.php
+paybox_*.php
 stripeconnect_*.php
+atos.php
+success.php
 php.ini
 /favicon.ico
 emundus_bdd*
