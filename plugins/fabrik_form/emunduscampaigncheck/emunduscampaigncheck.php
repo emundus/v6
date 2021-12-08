@@ -162,6 +162,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
                         JLog::add('User: '.$user->id.' already has a file for campaign id: '.$campaign_id, JLog::ERROR, 'com_emundus.campaign-check');
                         $this->getModel()->formErrorMsg = '';
                         $this->getModel()->getForm()->error = JText::_('USER_HAS_FILE_FOR_CAMPAIGN');
+                        $app->redirect('index.php', JText::_('USER_HAS_FILE_FOR_CAMPAIGN'));
                     }
 
                 } catch (Exception $e) {

@@ -71,7 +71,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
                     ->from($db->quoteName('#__emundus_hikashop'))
                     ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR ' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
                 break;
-            
+
             case 'status':
                 $query
                     ->clear()
@@ -93,7 +93,8 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         try {
             $db->setQuery($query);
 
-            $em_hika = $db->loadObject();
+            $em_hikas = $db->loadObjectList();
+            $em_hika = $em_hikas[sizeof($em_hikas)-1];
 
             if(empty($em_hika)) {
 
@@ -108,14 +109,15 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
 
                 $db->setQuery($query);
 
-            }
-            else {
+            } else {
+                JLog::add('Updating Order '. $order_id .' update -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::INFO, 'com_emundus');
+
                 $fields = array(
                     $db->quoteName('order_id') . ' = ' . $db->quote($order_id)
                 );
 
                 $update_conditions = array(
-                    $db->quoteName('order_id') . ' = ' . $em_hika->order_id
+                    $db->quoteName('id') . ' = ' . $em_hika->id
                 );
 
                 // Prepare the insert query.
@@ -149,9 +151,15 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         if ($order_id > 0) {
             $query = 'SELECT * FROM #__emundus_hikashop WHERE order_id='.$order_id;
             $db->setQuery($query);
-            
+
             try {
                 $em_order = $db->loadObject();
+                if(empty($em_order)){
+                    $this->onAfterOrderCreate($order);
+                    $query = 'SELECT * FROM #__emundus_hikashop WHERE order_id='.$order_id;
+                    $db->setQuery($query);
+                    $em_order = $db->loadObject();
+                }
                 $user = $em_order->user;
                 $fnum = $em_order->fnum;
                 $cid = $em_order->campaign_id;
@@ -185,6 +193,23 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             JLog::add('Application file status updated to -> '.$status_after_payment[$key], JLog::ERROR, 'com_emundus');
         }
         else {
+            $query = 'SELECT * FROM #__hikashop_order WHERE order_id='.$order_id;
+            $db->setQuery($query);
+            $hika_order = $db->loadObject();
+
+            if(empty($hika_order->order_payment_method)){
+                $user = JFactory::getSession()->get('emundusUser');
+                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+
+                $app = JFactory::getApplication();
+                $app->enqueueMessage( JText::_('THANK_YOU_FOR_PURCHASE') );
+
+                $m_application 	= new EmundusModelApplication;
+                $redirect = $m_application->getConfirmUrl();
+
+                $app->redirect($redirect);
+            }
+
             JLog::add('Could not set application file status on order ID -> '. $order_id, JLog::ERROR, 'com_emundus');
             return false;
         }

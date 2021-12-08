@@ -225,7 +225,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 					if ($send !== true) {
 
 						JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT').' : '.$recipient['email'], 'error');
-						JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                        JLog::add($send, JLog::ERROR, 'com_emundus');
 
 					} else {
 

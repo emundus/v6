@@ -47,6 +47,7 @@ if (!empty($user->fnum)) {
         $fnumInfos = $m_files->getFnumInfos($user->fnum);
 
         $order = $m_application->getHikashopOrder($fnumInfos);
+        $cart = $m_application->getHikashopCartUrl($user->profile);
         $paid = !empty($order);
     }
 
