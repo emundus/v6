@@ -257,28 +257,6 @@ export default {
         this.$store.dispatch('user/setDisplayedUser', this.displayedUser.user_id);
       }
     },
-    async getCategories() {
-      const response = await attachmentService.getAttachmentCategories();
-      if (response.status) {
-        // translate categories values
-        Object.entries(response.categories).forEach(([key, value]) => {
-          response.categories[key] = this.translate(value);
-        });
-
-        // Add attachment categories if not already given by the server
-        this.attachments.forEach(attachment => {
-          if (!response.categories[attachment.category] && attachment.category != "" && attachment.category != null) {
-            response.categories[attachment.category] = this.translate(attachment.category);
-          }
-        });
-
-        // remove empty categories
-        delete response.categories[""];
-
-        this.$store.dispatch('attachment/setCategories', response.categories);
-        this.categories = this.$store.state.attachment.categories;
-      }
-    },
     async getAttachments() {
       if (!this.$store.state.attachment.attachments[this.displayedFnum]) {
         this.refreshAttachments();
@@ -288,9 +266,10 @@ export default {
       }
     },
     async refreshAttachments(addLoading = false) {
-      if (addLoading) {
+      if (addLoading === true) {
         this.loading = true;
       }
+
       this.resetOrder();
       this.checkedAttachments = [];
       this.$refs['searchbar'].value = "";
@@ -303,11 +282,11 @@ export default {
           attachments: this.attachments
         });
 
-        this.getCategories();
-      
-        if (addLoading) {
-          this.loading = false;
-        }
+        this.categories = await this.getAttachmentCategories();
+      }
+
+      if (addLoading === true) {
+        this.loading = false;
       }
     },
     updateAttachment() {
@@ -428,19 +407,29 @@ export default {
     // navigation functions
     changeFile(position) {
       this.loading = true;
-      
       this.displayedFnum = this.fnums[position];
-      this.setDisplayedUser();
-      this.getAttachments();
-      this.setAccessRights();
-      this.resetOrder();
-      this.resetSearch();
-      this.resetCategoryFilters();
-      this.attachments.forEach(attachment => {
-        attachment.show = true;
+      this.setDisplayedUser()
+      .then(() => {
+        this.getAttachments()
+        .then(() => {
+          this.loading = false;
+          this.setAccessRights();
+          this.resetOrder();
+          this.resetSearch();
+          this.resetCategoryFilters();
+          this.attachments.forEach(attachment => {
+            attachment.show = true;
+          });
+        })
+        .catch(error => {
+          this.displayErrorMessage(error);
+          this.loading = false;
+        });
+      })
+      .catch(error => {
+        this.displayErrorMessage(error);
+        this.loading = false;
       });
-
-      this.loading = false;
     },
     changeAttachment(position, reverse = false) {
       this.slideTransition = reverse ? "slide-fade-reverse" : "slide-fade";
@@ -883,32 +872,6 @@ export default {
           .material-icons {
             transform: translateY(3px);
           }
-        }
-      }
-    }
-
-    tbody {
-      tr {
-        border-bottom: 1px solid #e0e0e0;
-        &:hover:not(.checked) {
-          background-color: #F2F2F3;
-        }
-
-        &.checked {
-          background-color: #F0F6FD;
-        }
-      }
-
-      .td-document {
-        max-width: 250px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        cursor: pointer;
-
-        .warning.file-not-found {
-          color: var(--error-color);
-          transform: translate(10px, 3px);
         }
       }
     }

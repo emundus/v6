@@ -50,7 +50,7 @@
         </div>
         <div v-if="attachment.category">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}</span>
-          <span>{{ translate(attachment.category) }}</span>
+          <span>{{ this.categories[attachment.category] }}</span>
         </div>
         <div v-if="attachment.modified_by">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}</span>
@@ -95,6 +95,7 @@ export default {
   data() {
     return {
       attachment: {},
+      categories: {},
       file: null,
       canUpdate: false,
       error: false,
@@ -104,6 +105,7 @@ export default {
   mounted() {
     this.canUpdate = this.$store.state.user.rights[this.fnum] ? this.$store.state.user.rights[this.fnum].canUpdate : false;
     this.attachment = this.$store.state.attachment.selectedAttachment;
+    this.categories = this.$store.state.attachment.categories;
   },
   methods: {
     async saveChanges() {

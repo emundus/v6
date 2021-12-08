@@ -152,7 +152,16 @@
       -ms-flex-direction: column;
           flex-direction: column;
 }
-.valid-state select {
+.attachment-row {
+  border-bottom: 1px solid #e0e0e0;
+}
+.attachment-row:hover:not(.checked) {
+  background-color: #F2F2F3;
+}
+.attachment-row.checked {
+  background-color: #F0F6FD;
+}
+.attachment-row .valid-state select {
   padding: 4px 8px;
   border-radius: 4px;
   background-color: var(--grey-bg-color);
@@ -162,20 +171,32 @@
   width: -moz-max-content;
   width: max-content;
 }
-.valid-state select::-ms-expand {
+.attachment-row .valid-state select::-ms-expand {
   display: none !important;
 }
-.valid-state.warning select {
+.attachment-row .valid-state.warning select {
   color: var(--warning-color);
   background-color: var(--warning-bg-color);
 }
-.valid-state.success select {
+.attachment-row .valid-state.success select {
   color: var(--success-color);
   background-color: var(--success-bg-color);
 }
-.valid-state.error select {
+.attachment-row .valid-state.error select {
   color: var(--error-color);
   background-color: var(--error-bg-color);
+}
+.attachment-row .td-document {
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.attachment-row .td-document .warning.file-not-found {
+  color: var(--error-color);
+  -webkit-transform: translate(10px, 3px);
+          transform: translate(10px, 3px);
 }
 #em-attachments[data-v-30bae934] {
   font-size: 14px;
@@ -448,27 +469,6 @@
 #em-attachments table thead tr th .material-icons[data-v-30bae934] {
   -webkit-transform: translateY(3px);
           transform: translateY(3px);
-}
-#em-attachments table tbody tr[data-v-30bae934] {
-  border-bottom: 1px solid #e0e0e0;
-}
-#em-attachments table tbody tr[data-v-30bae934]:hover:not(.checked) {
-  background-color: #F2F2F3;
-}
-#em-attachments table tbody tr.checked[data-v-30bae934] {
-  background-color: #F0F6FD;
-}
-#em-attachments table tbody .td-document[data-v-30bae934] {
-  max-width: 250px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  cursor: pointer;
-}
-#em-attachments table tbody .td-document .warning.file-not-found[data-v-30bae934] {
-  color: var(--error-color);
-  -webkit-transform: translate(10px, 3px);
-          transform: translate(10px, 3px);
 }
 #em-attachments table .attachment-check[data-v-30bae934] {
   width: 15px;

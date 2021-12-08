@@ -1,5 +1,5 @@
 <template>
-  <tr :key="attachment.aid">
+  <tr class="attachment-row" :key="attachment.aid">
     <td>
       <input
         class="attachment-check"
@@ -17,11 +17,7 @@
     <td class="date">{{ formattedDate(attachment.timedate) }}</td>
     <td class="desc">{{ attachment.description }}</td>
     <td class="category" v-if="categories !== null">
-      {{
-        categories[attachment.category]
-          ? translate(categories[attachment.category])
-          : attachment.category
-      }}
+      {{ categories[attachment.category] }}
     </td>
     <td
       class="status valid-state"
@@ -75,15 +71,22 @@ export default {
   mixins: [mixin],
   data() {
     return {
-      categories: null,
+      categories: {},
       checkedAttachments: [],
     };
   },
   mounted() {
     this.categories = this.$store.state.attachment.categories;
+    if (Object.entries(this.categories).length < 1) {
+      this.categories = this.getCategories();
+    }
+
     this.checkedAttachments = this.checkedAttachmentsProp;
   },
   methods: {
+    async getCategories() {
+      this.categories = await this.getAttachmentCategories();
+    },
     updateCheckedAttachments(aid) {
       if (this.checkedAttachments.includes(aid)) {
         this.checkedAttachments = this.checkedAttachments.filter(
@@ -106,39 +109,65 @@ export default {
 </script>
 
 <style lang="scss">
-.valid-state {
-  select {
-    padding: 4px 8px;
-    border-radius: 4px;
-    background-color: var(--grey-bg-color);
-    color: var(--grey-color);
-    border: none;
-    width: max-content;
-  }
+.attachment-row {
+    border-bottom: 1px solid #e0e0e0;
 
-  select::-ms-expand {
-    display: none !important;
-  }
+    &:hover:not(.checked) {
+      background-color: #F2F2F3;
+    }
+    
+    &.checked {
+      background-color: #F0F6FD;
+    }
 
-  &.warning {
+  .valid-state {
     select {
-      color: var(--warning-color);
-      background-color: var(--warning-bg-color);
+      padding: 4px 8px;
+      border-radius: 4px;
+      background-color: var(--grey-bg-color);
+      color: var(--grey-color);
+      border: none;
+      width: max-content;
+    }
+
+    select::-ms-expand {
+      display: none !important;
+    }
+
+    &.warning {
+      select {
+        color: var(--warning-color);
+        background-color: var(--warning-bg-color);
+      }
+    }
+
+    &.success {
+      select {
+        color: var(--success-color);
+        background-color: var(--success-bg-color);
+      }
+    }
+
+    &.error {
+      select {
+        color: var(--error-color);
+        background-color: var(--error-bg-color);
+      }
     }
   }
 
-  &.success {
-    select {
-      color: var(--success-color);
-      background-color: var(--success-bg-color);
-    }
-  }
+  .td-document {
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
 
-  &.error {
-    select {
+    .warning.file-not-found {
       color: var(--error-color);
-      background-color: var(--error-bg-color);
+      transform: translate(10px, 3px);
     }
   }
 }
+
 </style>
