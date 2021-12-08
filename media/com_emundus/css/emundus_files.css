@@ -827,6 +827,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 .g-back-office-emundus-tableau .em_filters_adv_filter .em_filters.em-filter .em_filters_adv_filter_addColumn{
     margin-top: 5px;
     height: 35px;
+    margin-bottom: 8px;
 }
 
 .g-back-office-emundus-tableau div#filters .selectize-control.input-tags.demo-default.multi.plugin-remove_button .selectize-input.items.not-full {
@@ -969,8 +970,13 @@ div#em-synthesis .panel-heading h3 {
 }
 
 .list-group-item {
-    padding: 6px 20px;
+    padding: 8px 20px;
 }
+
+.list-group-ite strong {
+    font-weight: 500;
+}
+
 
 .list-item-notifications{
     display: flex;
