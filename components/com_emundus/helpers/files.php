@@ -1109,7 +1109,8 @@ class EmundusHelperFiles
                  <p>'.JText::_('RAPID_SEARCH').'</p>
                     <div id="quick" class="form-group">
                         <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'" placeholder="'.JText::_('SEARCH').' ...">
-                       <input value="&#xf002" type="button" class="btn btn-sm btn-info" id="search" style="font-family: \'FontAwesome\';" title="'.JText::_('SEARCH_BTN').'"/>'.
+                        <img src="'.JURI::base().'media/com_emundus/images/icones/search_1.png"/>'.
+
 		        '</div>
 	        </div>';
         $filters .= '<script type="text/javascript">
