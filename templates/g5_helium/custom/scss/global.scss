@@ -2673,7 +2673,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   #em-files-filters #em_filters fieldset input#save-filter,
-  #em_adv_filters .em_filters_adv_filter_addColumn fieldset button#add-filter{
+  #em_adv_filters .em_filters_adv_filter_addColumn button#add-filter{
     margin-top: 10px;
     background: $white;
     border: 1px solid $dark-grey !important;
@@ -2688,7 +2688,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     &:hover,
     &:active {
       background: $dark-grey;
-      border-color: $dark-blue !important;
+      border-color: $dark-grey !important;
       color: $white !important;
     }
   }
