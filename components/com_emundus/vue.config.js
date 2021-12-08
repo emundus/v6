@@ -5,7 +5,7 @@ module.exports = {
   outputDir: path.resolve(__dirname, '../../media/com_emundus_vue'),
   assetsDir: '../com_emundus_vue',
   css: {
-    modules: false,
+    requireModuleExtension: false,
     extract: {
       filename: '[name]_emundus.css',
       chunkFilename: '[name]_emundus.css',

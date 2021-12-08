@@ -33,11 +33,6 @@ describe('Attachments.vue', () => {
     expect(table.exists()).toBe(true);
   });
 
-  it('Expect table to have number of rows equals to attachments length', () => {
-    const tbody = wrapper.find('.table-wrapper tbody');
-    expect(tbody.findAll('tr').length).toBe(wrapper.vm.attachments.length);
-  });
-
   /**
    * displayed-user should match the user firstname and lastname
    */

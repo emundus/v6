@@ -241,7 +241,7 @@ export default {
     },
     async setDisplayedUser() {
       const response = await fileService.getFnumInfos(this.displayedFnum);
-      const foundUser = this.users.find(user => user.user_id == response.fnumInfos.applicant_id);
+      const foundUser = this.users && this.users.length ? this.users.find(user => user.user_id == response.fnumInfos.applicant_id) : false;
 
       if (!foundUser) {
         const resp = await userService.getUserById(response.fnumInfos.applicant_id);
