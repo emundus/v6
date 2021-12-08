@@ -261,7 +261,8 @@ VALUES ('parent_id', @group_5, 'field', 'parent_id', 0, '2021-12-02 13:51:28', '
 alter table jos_emundus_setup_campaigns
     add workflow int null;
 
--- alter table jos_emundus_setup_campaigns
---     add constraint jos_emundus_setup_campaigns_ibfk_3
---         foreign key (workflow) references jos_emundus_setup_workflow (id)
---             on update cascade on delete cascade
+SET sql_mode = ALLOW_INVALID_DATES;
+alter table jos_emundus_setup_campaigns
+    add constraint jos_emundus_setup_campaigns_ibfk3
+        foreign key (workflow) references jos_emundus_setup_workflow (id)
+            on update cascade on delete cascade;
