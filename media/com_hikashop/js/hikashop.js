@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.3.0
+ * @version    4.4.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -292,18 +292,26 @@ var Oby = {
 		return ret;
 	},
 	updateElem: function(elem, data) {
-		var d = document, scripts = '';
+		var d = document, scripts = '', json = '';
 		if( typeof(elem) == 'string' )
 			elem = d.getElementById(elem);
 		var text = data.replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, function(all, code){
-			if(all.indexOf('type="application/json"') != -1)
+			if(all.indexOf('type="application/json"') != -1) {
+				json += code + '\n';
 				return '';
+			}
 			if(all.indexOf('type="application/ld+json"') != -1)
 				return '';
-			scripts += code + '\n';
+			scripts += code.replace('document.addEventListener(\'DOMContentLoaded\',', 'window.hikashop.ready(') + '\n';
 			return '';
 		});
 		elem.innerHTML = text;
+		if( json != '' && Joomla) {
+			var option = JSON.parse(json);
+			if (option) {
+				Joomla.loadOptions(option);
+			}
+		}
 		if( scripts != '' ) {
 			var script = d.createElement('script');
 			script.setAttribute('type', 'text/javascript');
@@ -1426,6 +1434,36 @@ var hikashop = {
 		if(triggers !== false && triggers.length > 0)
 			return false;
 		return false;
+	},
+	toggleOptions: function() {
+		var d = document, btnText = d.getElementById('openSearch_btn'),
+		tagsDiv = d.getElementById('hikashop_listing_filters_id');
+		if(tagsDiv.classList.contains("hidden-features") ) {
+			tagsDiv.classList.remove("hidden-features");
+			tagsDiv.classList.add("show-features");
+			btnText.innerHTML = "<i class='fas fa-chevron-up'></i>";
+		} else {
+			tagsDiv.classList.remove("show-features");
+			tagsDiv.classList.add("hidden-features");
+			btnText.innerHTML = "<i class='fas fa-chevron-down'></i>";
+		}
+		return false;
+	},
+	clearOptions: function(options, defaults) {
+		var d = document, btnText = d.getElementById('openSearch_btn'),
+		tagsDiv = d.getElementById('hikashop_listing_filters_id');
+		if(!options)
+			return false;
+		for(var i = options.length - 1; i >= 0; i--) {
+			var name = 'filter_' + options[i];
+			var el = d.getElementById(name);
+			if(!el) {
+				console.log('Filter option '+name+' not found');
+				continue;
+			}
+			el.value = defaults[i];
+		}
+		return true;
 	},
 	clearSearch: function(el, id, all) {
 		if(el.form.limitstart)

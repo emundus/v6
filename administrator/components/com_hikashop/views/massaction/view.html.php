@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -46,8 +46,11 @@ class MassactionViewMassaction extends hikashopView{
 		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest( $this->paramBase.".filter_order_Dir", 'filter_order_Dir',	'desc',	'word' );
 		$pageInfo->limit->value = $app->getUserStateFromRequest( $this->paramBase.'.list_limit', 'limit', $app->getCfg('list_limit'), 'int' );
 		$pageInfo->limit->start = $app->getUserStateFromRequest( $this->paramBase.'.limitstart', 'limitstart', 0, 'int' );
-		$selectedType = $app->getUserStateFromRequest( $this->paramBase.".massaction_table",'massaction_table','','string');
+		$pageInfo->filter->massaction_table = $selectedType = $app->getUserStateFromRequest( $this->paramBase.".filter_massaction_table",'filter_massaction_table','','string');
 		$database	= JFactory::getDBO();
+
+		$this->searchOptions = array('massaction_table'=> '');
+		$this->openfeatures_class = "hidden-features";
 
 		$filters = array();
 		if(!empty($selectedType)){
@@ -358,7 +361,6 @@ var actionId = {};
 		}
 		$this->assignRef('html_results',$html_results);
 		$doc->addScriptDeclaration( $js );
-		hikashop_loadJslib('mootools');
 
 	}
 
