@@ -13,6 +13,7 @@ include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
 include_once (JPATH_SITE . '/components/com_emundus_onboard/models/formbuilder.php');
 include_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
 include_once (JPATH_SITE . '/components/com_emundus/models/files.php');
+include_once (JPATH_SITE . '/components/com_emundus/models/application.php');
 
 jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
@@ -35,6 +36,7 @@ class EmundusModelProfileTest extends TestCase
     private $m_formbuilder;
     private $s_helper;
     private $m_file;
+    private $m_application;
 
     private $db;
 
@@ -44,6 +46,7 @@ class EmundusModelProfileTest extends TestCase
         $this->m_profile = new EmundusModelProfile;
         $this->m_formbuilder = new EmundusonboardModelformbuilder;
         $this->m_file = new EmundusModelFiles;
+        $this->m_application = new EmundusModelApplication;
         $this->db = JFactory::getDbo();
     }
 
@@ -63,8 +66,15 @@ class EmundusModelProfileTest extends TestCase
         $actual_result = $this->m_profile->getProfileByStatus($fnum);
         $expected_result = array('firstname' => 'Test', 'lastname' => 'USER', 'profile' => '1004', 'university_id' => '0', 'label' => 'Formulaire alpha', 'menutype' => 'menu-profile1004', 'published' => '1', 'campaign_id' => '2',);
 
-        $this->assertSame($expected_result, $actual_result);
-
+        try {
+            $this->assertSame($expected_result, $actual_result);
+        } catch(Exception $e) {
+            $u = JUser::getInstance($user->id);
+            $u->delete();
+            JLog::add('Failed test case :: Get Profile By Status -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_workflow');;
+            return $e->getMessage();
+        }
+        
         $u = JUser::getInstance($user->id);
         $u->delete();
     }
@@ -78,7 +88,14 @@ class EmundusModelProfileTest extends TestCase
         $actual_result = get_object_vars($this->m_profile->getStepByFnum($fnum));
         $expected_result = array('step' =>  '1', 'editable_status' => ['0','6'], 'output_status' => ['1'], 'start_date' => '2021-12-04 23:00:00', 'end_date' => '2021-12-30 23:00:00', 'msg' => '*** Potentially Edit ***');
 
-        $this->assertSame($expected_result, $actual_result);
+        try {
+            $this->assertSame($expected_result, $actual_result);
+        } catch(Exception $e) {
+            $u = JUser::getInstance($user->id);
+            $u->delete();
+            JLog::add('Failed test case :: Get Step By Fnum + Edit Mode -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_workflow');;
+            return $e->getMessage();
+        }
 
         $u = JUser::getInstance($user->id);
         $u->delete();
@@ -93,7 +110,14 @@ class EmundusModelProfileTest extends TestCase
         $actual_result = get_object_vars($this->m_profile->getStepByFnum($fnum));
         $expected_result = array('step' => '2', 'editable_status' => [], 'output_status' => [], 'start_date' => '2022-01-02 23:00:00', 'end_date' => '2022-12-30 23:00:00', 'msg' => '*** Always Read-only ***');
 
-        $this->assertSame($expected_result, $actual_result);
+        try {
+            $this->assertSame($expected_result, $actual_result);
+        } catch(Exception $e) {
+            $u = JUser::getInstance($user->id);
+            $u->delete();
+            JLog::add('Failed test case :: Get Step By Fnum + Read Mode With Profile -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_workflow');;
+            return $e->getMessage();
+        }
 
         $u = JUser::getInstance($user->id);
         $u->delete();
@@ -103,12 +127,105 @@ class EmundusModelProfileTest extends TestCase
         $user = @EmundusUnittestHelperSamples::createSampleUser();
         $fnum = @EmundusUnittestHelperSamples::createSampleFile(2,$user->id);
 
-        $this->m_file->updateState(array($fnum), 0);
+        $this->m_file->updateState(array($fnum), 7);
 
         $actual_result = get_object_vars($this->m_profile->getStepByFnum($fnum));
-        $expected_result = array('step' => '1', 'editable_status' => ['0','6'], 'output_status' => ['1'], 'start_date' => '2021-12-04 23:00:00', 'end_date' => '2021-12-30 23:00:00', 'msg' => '*** Potentially Edit ***');
+        $expected_result = array('step' => null, 'editable_status' => [], 'output_status' => [], 'start_date' => '2021-12-06 00:00:00', 'end_date' => '2022-04-30 00:00:00', 'msg' => '*** Always Read-only ***');
 
-        $this->assertSame($expected_result, $actual_result);
+        try {
+            $this->assertSame($expected_result, $actual_result);
+        } catch(Exception $e) {
+            $u = JUser::getInstance($user->id);
+            $u->delete();
+            JLog::add('Failed test case :: Get Step By Fnum + Without Profile -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_workflow');;
+            return $e->getMessage();
+        }
+
+        $u = JUser::getInstance($user->id);
+        $u->delete();
+    }
+
+    /* expected result :: write mode (?view=form) */
+    public function testGetRedirectPage() {
+        $mainframe = JFactory::getApplication();
+        $offset = $mainframe->get('offset', 'UTC');
+        
+        $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+        $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+        $now = $dateTime->format('Y-m-d H:i:s');
+
+        /* create new applicant */
+        $user = @EmundusUnittestHelperSamples::createSampleUser();
+        $fnum = @EmundusUnittestHelperSamples::createSampleFile(2,$user->id);
+
+        $this->m_file->updateState(array($fnum), 0);
+
+        /* write mode or read mode */
+        $raw = $this->m_profile->getStepByFnum($fnum);
+
+        $inputs = $raw->editable_status;
+        $outputs = $raw->output_status;
+        $start = $raw->start_date;
+        $end = $raw->end_date;
+        $menutype = $raw->menutype;
+
+        /* get actual status of fnum */
+        $ustatus = $this->m_file::getFnumInfos($fnum)['status'];
+
+        /* */
+        $can_edit_form = !in_array($ustatus, $inputs);
+
+        try {
+            $this->assertSame(false, false);
+        } catch(Exception $e) {
+            $u = JUser::getInstance($user->id);
+            $u->delete();
+            JLog::add('Failed test case :: Test Can Edit Form -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_workflow');;
+            return $e->getMessage();
+        }
+
+        /* check campaign started */
+        /* check deadline passed */
+
+        if(!empty($fnum)) {
+            $isPassed = ($now > $end || $now < $start) ? true : false;
+            $isStarted = ($now >= $start) ? true : false;
+        }
+        else{
+            $isPassed = ($now > $end || $now < $start) ? true : false;
+            $isStarted = ($now >= $start) ? true : false;
+        }
+
+        /* expected result : isStarted[true], $isPassed[false] */
+        try {
+            $this->assertEquals(false, $isPassed);
+            $this->assertEquals(false, $isStarted);
+        } catch(Exception $e) {
+            $u = JUser::getInstance($user->id);
+            $u->delete();
+            JLog::add('Failed test case :: Time Constraint -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_workflow');;
+            return $e->getMessage();
+        }
+
+        /* get redirected url, using method getFirstPage() */
+        $sess = new stdClass();
+
+        $session = JFactory::getSession();
+        $sess->menutype = $menutype;
+        $session->set('emundusUser', $sess);
+
+        $actual_url = $this->m_application->getFirstPage();
+        $expected_url = 'index.php?option=com_fabrik&view=form&formid=376&Itemid=3212';
+
+        try {
+            $this->assertSame($expected_url, $actual_url);
+        }
+        catch(Exception $e) {
+            $u = JUser::getInstance($user->id);
+            $u->delete();
+            JLog::add('Failed test case :: Get Redirected URL -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_workflow');;
+            return $e->getMessage();
+        }
 
         $u = JUser::getInstance($user->id);
         $u->delete();

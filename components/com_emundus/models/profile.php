@@ -1219,15 +1219,6 @@ class EmundusModelProfile extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-//        $session = JFactory::getSession();;
-//        $aid = $session->get('emundusUser');
-//
-//        /* get fnum status from session */
-//        $fnum_status = ($aid->fnums)[$fnum]->status;
-//
-//        /* get fnum campaign from session */
-//        $fnum_campaign = ($aid->fnums)[$fnum]->campaign_id;
-
         /* avoid to use session in unit test */
         $fnum_raw = $mFile::getFnumInfos($fnum);
         $fnum_status = $fnum_raw['status'];
@@ -1276,18 +1267,33 @@ class EmundusModelProfile extends JModelList {
                 $res->output_status = [];
 
                 if(!is_null($this->getProfileByStatus($fnum)['profile'])) {
-                    $res->start_date = $this->getProfileByStatus($fnum)['start_date'];
-                    $res->end_date = $this->getProfileByStatus($fnum)['end_date'];
+                    $query->clear()
+                        ->select('esc.*')
+                        ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+                        ->where($db->quoteName('esc.profile_id') . '=' . $db->quote($this->getProfileByStatus($fnum)['profile']));
+
+                    $db->setQuery($query);
+                    $raw_camp = $db->loadAssoc();
+
+                    $res->profile = $this->getProfileByStatus($fnum)['profile'];
+                    $res->menutype = $this->getProfileById($res->profile)['menutype'];
+                    
+                    $res->start_date = $raw_camp['start_date'];
+                    $res->end_date = $raw_camp['end_date'];
                 } else {
-                    $res->start_date = $this->getFullProfileByFnum($fnum)['start_date'];
-                    $res->end_date = $this->getFullProfileByFnum($fnum)['end_date'];
+                    return false;
                 }
                 $res->msg = '*** Always Read-only ***';
             } else {
+                $profile = $this->getProfileByStatus($fnum)['profile'];
                 if (in_array($fnum_status, $input_status)) {
                     $res->step = $step->step;
                     $res->editable_status = $input_status;
                     $res->output_status = $output_status;
+
+                    $res->profile = $profile;
+                    $res->menutype = $this->getProfileById($profile)['menutype'];
+
                     $res->start_date = $step->start_date;
                     $res->end_date = $step->end_date;
                     $res->msg = '*** Potentially Edit ***';
@@ -1297,6 +1303,10 @@ class EmundusModelProfile extends JModelList {
                         $res->step = $step->step;
                         $res->editable_status = [];
                         $res->output_status = [];
+
+                        $res->profile = $profile;
+                        $res->menutype = $this->getProfileById($profile)['menutype'];
+
                         $res->start_date = $step->start_date;
                         $res->end_date = $step->end_date;
                         $res->msg = '*** Always Read-only ***';
