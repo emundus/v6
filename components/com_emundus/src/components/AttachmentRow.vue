@@ -94,7 +94,7 @@ export default {
       return await this.getAttachmentCategories();
     },
     updateCheckedAttachments(aid) {
-      if (this.checkedAttachments.contains(aid)) {
+      if (this.checkedAttachments.includes(aid)) {
         this.checkedAttachments.splice(this.checkedAttachments.indexOf(aid), 1);
       } else {
         this.checkedAttachments.push(aid);
