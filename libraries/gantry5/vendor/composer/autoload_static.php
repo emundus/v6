@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit23ee5f57b10f1f4fd7a0df379191ce50
+class ComposerStaticInit40118f68691b0129adb29c62f97ac549
 {
     public static $files = array (
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
@@ -24,6 +24,7 @@ class ComposerStaticInit23ee5f57b10f1f4fd7a0df379191ce50
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\Yaml\\' => 23,
             'Symfony\\Component\\EventDispatcher\\' => 34,
+            'ScssPhp\\ScssPhp\\' => 16,
         ),
         'R' => 
         array (
@@ -41,10 +42,6 @@ class ComposerStaticInit23ee5f57b10f1f4fd7a0df379191ce50
         array (
             'Psr\\Log\\' => 8,
             'Psr\\Container\\' => 14,
-        ),
-        'L' => 
-        array (
-            'Leafo\\ScssPhp\\' => 14,
         ),
         'G' => 
         array (
@@ -72,6 +69,10 @@ class ComposerStaticInit23ee5f57b10f1f4fd7a0df379191ce50
         'Symfony\\Component\\EventDispatcher\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
+        ),
+        'ScssPhp\\ScssPhp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/scssphp/scssphp/src',
         ),
         'RocketTheme\\Toolbox\\StreamWrapper\\' => 
         array (
@@ -117,13 +118,9 @@ class ComposerStaticInit23ee5f57b10f1f4fd7a0df379191ce50
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'Leafo\\ScssPhp\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/leafo/scssphp/src',
-        ),
         'Gantry\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/classes/Gantry',
+            0 => __DIR__ . '/../..' . '/src/classes/Gantry',
         ),
     );
 
@@ -152,12 +149,17 @@ class ComposerStaticInit23ee5f57b10f1f4fd7a0df379191ce50
         ),
     );
 
+    public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit23ee5f57b10f1f4fd7a0df379191ce50::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit23ee5f57b10f1f4fd7a0df379191ce50::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit23ee5f57b10f1f4fd7a0df379191ce50::$prefixesPsr0;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit40118f68691b0129adb29c62f97ac549::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit40118f68691b0129adb29c62f97ac549::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit40118f68691b0129adb29c62f97ac549::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit40118f68691b0129adb29c62f97ac549::$classMap;
 
         }, null, ClassLoader::class);
     }
