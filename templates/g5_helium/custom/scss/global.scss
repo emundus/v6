@@ -1732,13 +1732,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     color: #fff;
   }
 
-.modal-body .panel-heading .btn-xs.btn.btn-elements-success {
+.modal-body #form-element button.btn-xs.btn.btn-elements-success ,
+.modal-body .panel-heading button.btn-xs.btn.btn-elements-success {
     background-color: $grey !important;
     color: #fff;
 }
 
 .modal-body .panel-body  .panel-primary>.panel-heading {
-  background: $dark-grey;
+  background: #a5a5ad;
 }
 
   .btn-warning.active.focus,
