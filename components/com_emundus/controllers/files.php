@@ -1436,17 +1436,30 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function getallfnums()
     {
+        $return = array(
+            'status' => false,
+            'msg' => '',
+            'fnumsSize' => 0,
+            'fnums' => array()
+        );
+
         $m_files = $this->getModel('Files');
         $fnums = $m_files->getAllFnums();
 
-        $validFnums = array();
-        foreach ($fnums as $fnum) {
-            if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum) && $fnum != 'em-check-all-all' && $fnum != 'em-check-all') {
-                $validFnums[] = $fnum;
-            }
-        }
+        if ($fnums) {
+            $return['status'] = true;
+            $return['fnumsSize'] = count($fnums);
 
-        echo json_encode($validFnums);
+            foreach ($fnums as $key => $fnum) {
+                if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum) && $fnum != 'em-check-all-all' && $fnum != 'em-check-all') {
+                    $return['fnums'][] = $fnum;
+                }
+            }
+        } else {
+            $return['msg'] = JText::_('NO_FNUM_FOUND');
+        } 
+
+        echo json_encode($return);
         exit();
     }
 

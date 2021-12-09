@@ -404,24 +404,51 @@ export default {
   methods: {
     // Getters and setters
     async getFnums() {
-      this.fnums = await fileService.getFnums(this.user);
+      const response = await fileService.getFnums(this.user);
+
+      if (response !== false ) {
+        this.fnums = response.fnums;
+      } else {
+        this.fnums = [];
+        this.displayErrorMessage("COM_EMUNDUS_ATTACHMENTS_ERROR_GETTING_FNUMS");
+      }
     },
     async getUsers() {
       this.users = await userService.getUsers();
       this.$store.dispatch("user/setUsers", this.users);
       this.$store.dispatch("user/setCurrentUser", this.user);
 
-      this.setDisplayedUser();
+      this.getFnumInfos();
     },
-    async setDisplayedUser() {
-      const response = await fileService.getFnumInfos(this.displayedFnum);
+    async getFnumInfos() {
+      if (this.$store.state.file.fnums[this.displayedFnum]) {
+        this.setDisplayedUserFromfnumInfos(this.$store.state.file.fnums[this.displayedFnum]);
+      } else {
+        const response = await fileService.getFnumInfos(this.displayedFnum);
+
+        if (response && response.fnumInfos) {
+          this.setDisplayedUserFromfnumInfos(response.fnumInfos);
+          this.$store.dispatch('file/setFnumsInfos', {
+            fnum: this.displayedFnum,
+            fnumInfos: response.fnumInfos,
+          });
+
+        } else {
+          this.displayErrorMessage(
+            this.translate("COM_EMUNDUS_ATTACHMENTS_UNABLE_TO_GET_FNUMS_INFOS")
+          );
+        } 
+      }
+    },
+    async setDisplayedUserFromfnumInfos(fnumInfos) 
+    {
       const foundUser = this.users.find(
-        (user) => user.user_id == response.fnumInfos.applicant_id
+        (user) => user.user_id == fnumInfos.applicant_id
       );
 
       if (!foundUser) {
         const resp = await userService.getUserById(
-          response.fnumInfos.applicant_id
+          fnumInfos.applicant_id
         );
         if (resp.status) {
           this.users.push(resp.user[0]);
@@ -632,7 +659,7 @@ export default {
     // navigation functions
     changeFile(position) {
       this.displayedFnum = this.fnums[position];
-      this.setDisplayedUser();
+      this.getFnumInfos();
       this.getAttachments();
       this.setAccessRights();
       this.resetOrder();

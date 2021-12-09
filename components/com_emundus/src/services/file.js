@@ -8,6 +8,7 @@ export default {
             return response.data;
         } catch (e) {
             console.error(e);
+            return false;
         }
     },
 
