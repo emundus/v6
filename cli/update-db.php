@@ -153,7 +153,7 @@ class UpdateDb extends JApplicationCli
             ->from('#__' . $table);
         $this->db->setQuery($query);
         return $this->db->loadAssocList('extension_id');
-        }
+    }
 
     private function getComponentsId($table) {
         $query = $this->db->getQuery(true);
@@ -204,19 +204,20 @@ class UpdateDb extends JApplicationCli
         if ($id = $this->input->get('i', $this->input->get('id'))) {
             $component_isset = isset($this->com_components[$id]) || isset($this->com_schemas[$id]);
             if ($component_isset) {
-                    $this->doUpdate($this->com_components[$id], $id);
-                } else {
-                    echo "-> Id doesn't exists !";
-                    return;
-                }
+                $this->doUpdate($this->com_components[$id], $id);
+            } else {
+                echo "-> Id doesn't exists !";
+                return;
             }
+        }
 
         if ($this->input->get('c', $this->input->get('core'))) {
-            $component_core = array($this->com_extensions[700], $this->com_components[3]);
-            foreach ($component_core as $component) {
-                $component_id = $component['extension_id'];
-                $this->doUpdate($component, $component_id);
-            }
+//            $component_core = array($this->com_extensions[700], $this->com_components[3]);
+//            foreach ($component_core as $component) {
+//                $component_id = $component['extension_id'];
+//                $this->doUpdate($component, $component_id);
+//            }
+            $this->finaliseUpgrade();
         }
     }
 
@@ -324,7 +325,7 @@ class UpdateDb extends JApplicationCli
                 echo $emundus_array[$i] . "\n";
             }
         }
-         $this->sqlExec($position_update, $sql_update_path, $emundus_array, $arr_len, $emundus_versions, $component_id);
+        $this->sqlExec($position_update, $sql_update_path, $emundus_array, $arr_len, $emundus_versions, $component_id);
     }
 
     public function sqlExec($position_update,$sql_update_path,$emundus_array, $arr_len, $emundus_versions, $component_id)
@@ -418,6 +419,207 @@ class UpdateDb extends JApplicationCli
             
             EOHELP;
     }
+
+    public function finaliseUpgrade()
+    {
+        $installer = JInstaller::getInstance();
+
+        $manifest = $installer->isManifest(JPATH_MANIFESTS . '/files/joomla.xml');
+
+        if ($manifest === false)
+        {
+            $installer->abort(JText::_('JLIB_INSTALLER_ABORT_DETECTMANIFEST'));
+
+            return false;
+        }
+
+        $installer->manifest = $manifest;
+
+        $installer->setUpgrade(true);
+        $installer->setOverwrite(true);
+
+        $installer->extension = JTable::getInstance('extension');
+        $installer->extension->load(700);
+
+        $installer->setAdapter($installer->extension->type);
+
+        $installer->setPath('manifest', JPATH_MANIFESTS . '/files/joomla.xml');
+        $installer->setPath('source', JPATH_MANIFESTS . '/files');
+        $installer->setPath('extension_root', JPATH_ROOT);
+
+        // Run the script file.
+        JLoader::register('JoomlaInstallerScript', JPATH_ADMINISTRATOR . '/components/com_admin/script.php');
+
+        $manifestClass = new JoomlaInstallerScript;
+
+        ob_start();
+        ob_implicit_flush(false);
+
+        if ($manifestClass && method_exists($manifestClass, 'preflight'))
+        {
+            if ($manifestClass->preflight('update', $installer) === false)
+            {
+                $installer->abort(JText::_('JLIB_INSTALLER_ABORT_FILE_INSTALL_CUSTOM_INSTALL_FAILURE'));
+
+                return false;
+            }
+        }
+
+        // Create msg object; first use here.
+        $msg = ob_get_contents();
+        ob_end_clean();
+
+        // Get a database connector object.
+        //$db = $this->getDbo();
+
+        /*
+         * Check to see if a file extension by the same name is already installed.
+         * If it is, then update the table because if the files aren't there
+         * we can assume that it was (badly) uninstalled.
+         * If it isn't, add an entry to extensions.
+         */
+        $query = $this->db->getQuery(true)
+            ->select($this->db->quoteName('extension_id'))
+            ->from($this->db->quoteName('#__extensions'))
+            ->where($this->db->quoteName('type') . ' = ' . $this->db->quote('file'))
+            ->where($this->db->quoteName('element') . ' = ' . $this->db->quote('joomla'));
+        $this->db->setQuery($query);
+
+        try
+        {
+            $this->db->execute();
+        }
+        catch (RuntimeException $e)
+        {
+            // Install failed, roll back changes.
+            $installer->abort(
+                JText::sprintf('JLIB_INSTALLER_ABORT_FILE_ROLLBACK', JText::_('JLIB_INSTALLER_UPDATE'), $e->getMessage())
+            );
+
+            return false;
+        }
+
+        $id = $this->db->loadResult();
+        $row = JTable::getInstance('extension');
+
+        if ($id)
+        {
+            // Load the entry and update the manifest_cache.
+            $row->load($id);
+
+            // Update name.
+            $row->set('name', 'files_joomla');
+
+            // Update manifest.
+            $row->manifest_cache = $installer->generateManifestCache();
+
+            if (!$row->store())
+            {
+                // Install failed, roll back changes.
+                $installer->abort(
+                    JText::sprintf('JLIB_INSTALLER_ABORT_FILE_ROLLBACK', JText::_('JLIB_INSTALLER_UPDATE'), $row->getError())
+                );
+
+                return false;
+            }
+        }
+        else
+        {
+            // Add an entry to the extension table with a whole heap of defaults.
+            $row->set('name', 'files_joomla');
+            $row->set('type', 'file');
+            $row->set('element', 'joomla');
+
+            // There is no folder for files so leave it blank.
+            $row->set('folder', '');
+            $row->set('enabled', 1);
+            $row->set('protected', 0);
+            $row->set('access', 0);
+            $row->set('client_id', 0);
+            $row->set('params', '');
+            $row->set('system_data', '');
+            $row->set('manifest_cache', $installer->generateManifestCache());
+
+            if (!$row->store())
+            {
+                // Install failed, roll back changes.
+                $installer->abort(JText::sprintf('JLIB_INSTALLER_ABORT_FILE_INSTALL_ROLLBACK', $row->getError()));
+
+                return false;
+            }
+
+            // Set the insert id.
+            $row->set('extension_id', $this->db->insertid());
+
+            // Since we have created a module item, we add it to the installation step stack
+            // so that if we have to rollback the changes we can undo it.
+            $installer->pushStep(array('type' => 'extension', 'extension_id' => $row->extension_id));
+        }
+
+        $result = $installer->parseSchemaUpdates($manifest->update->schemas, $row->extension_id);
+
+        if ($result === false)
+        {
+            // Install failed, rollback changes.
+            $installer->abort(JText::sprintf('JLIB_INSTALLER_ABORT_FILE_UPDATE_SQL_ERROR', $this->db->stderr(true)));
+
+            return false;
+        }
+
+        // Start Joomla! 1.6.
+        ob_start();
+        ob_implicit_flush(false);
+
+        if ($manifestClass && method_exists($manifestClass, 'update'))
+        {
+            if ($manifestClass->update($installer) === false)
+            {
+                // Install failed, rollback changes.
+                $installer->abort(JText::_('JLIB_INSTALLER_ABORT_FILE_INSTALL_CUSTOM_INSTALL_FAILURE'));
+
+                return false;
+            }
+        }
+
+        // Append messages.
+        $msg .= ob_get_contents();
+        ob_end_clean();
+
+        // Clobber any possible pending updates.
+        $update = JTable::getInstance('update');
+        $uid = $update->find(
+            array('element' => 'joomla', 'type' => 'file', 'client_id' => '0', 'folder' => '')
+        );
+
+        if ($uid)
+        {
+            $update->delete($uid);
+        }
+
+        // And now we run the postflight.
+        ob_start();
+        ob_implicit_flush(false);
+
+        if ($manifestClass && method_exists($manifestClass, 'postflight'))
+        {
+            $manifestClass->postflight('update', $installer);
+        }
+
+        // Append messages.
+        $msg .= ob_get_contents();
+        ob_end_clean();
+
+        if ($msg != '')
+        {
+            $installer->set('extension_message', $msg);
+        }
+
+        // Refresh versionable assets cache.
+        JFactory::getApplication()->flushAssets();
+
+        return true;
+    }
+
 
     public function doExecute()
     {
