@@ -396,6 +396,7 @@ export default {
     };
   },
   mounted() {
+    // this.getFnumsAroundMine();
     this.getFnums();
     this.getUsers();
     this.getAttachments();
@@ -403,6 +404,11 @@ export default {
   },
   methods: {
     // Getters and setters
+    getFnumsAroundMine() {
+      fileService.getCurrentFnumPosition(this.fnum).then((response) => {
+        console.log(response);
+      });
+    },
     async getFnums() {
       const response = await fileService.getFnums(this.user);
 

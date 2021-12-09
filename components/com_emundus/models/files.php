@@ -2318,6 +2318,36 @@ class EmundusModelFiles extends JModelLegacy
         return $fnums;
     }
 
+    /**
+     * Find position of fnum
+     * @param $fnum
+     * @return bool|mixed
+     */
+    public function getCurrentFnumPos($fnum) 
+    {
+        include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
+        $m_users = new EmundusModelUsers;
+
+        $current_user = JFactory::getUser();
+
+        $this->code = $m_users->getUserGroupsProgrammeAssoc($current_user->id);
+
+        $groups = $m_users->getUserGroups($current_user->id, 'Column');
+        $fnum_assoc_to_groups = $m_users->getApplicationsAssocToGroups($groups);
+        $fnum_assoc_to_user = $m_users->getApplicantsAssoc($current_user->id);
+        $this->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc_to_user);
+
+        $files = $this->getAllUsers(0, 0);
+
+        foreach($files as $position => $file){
+            if ($file['fnum'] == $fnum) {
+                return $position;
+            }
+        }
+
+        return false;
+    }
+
     /*
     *   Get values of elements by list of files numbers
     *   @param fnums    List of application files numbers

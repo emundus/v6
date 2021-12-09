@@ -22,7 +22,21 @@ export default {
 
             return response.data;
         } catch (e) {
-            console.log(e);
+            return false;
+        }
+    },
+
+    async getCurrentFnumPosition(fnum) {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=files&task=getcurrentfnumposition',  {
+                params: {
+                    fnum
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            return false;
         }
     }
 }

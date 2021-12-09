@@ -1463,6 +1463,31 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
+    public function getcurrentfnumposition() 
+    {
+        $return = array(
+            'status' => false,
+            'msg' => '',
+            'fnumPos' => 0
+        );
+
+        $jinput     = JFactory::getApplication()->input;
+        $myFnum = $jinput->get('fnum', null, 'STRING');
+
+        $m_files = $this->getModel('Files');
+        $pos = $m_files->getCurrentFnumPos($myFnum);
+
+        if ($pos !== false) {
+            $return['status'] = true;
+            $return['fnumPos'] = $pos;
+        } else {
+            $return['msg'] = JText::_('NO_FNUM_FOUND');
+        }
+
+        echo json_encode($return);
+        exit();
+    }
+
     public function getcolumn($elts) {
         return(array) json_decode(stripcslashes($elts));
     }
