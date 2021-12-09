@@ -4118,6 +4118,11 @@ $(document).ready(function() {
                                 code: code,
                             },
                             success: function(result) {
+                                if (result.scalar !== undefined && result.scalar === false) {
+                                    $('#loadingimg-campaign').remove();
+                                    return;
+                                }
+
                                 let profile_labels = Array.prototype.slice.call(result.profile_label);
                                 let profile_ids = Array.prototype.slice.call(result.profile_id);
                                 let profile_menus = Array.prototype.slice.call(result.profile_menu_type);
