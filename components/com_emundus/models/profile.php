@@ -393,11 +393,9 @@ class EmundusModelProfile extends JModelList {
         try {
             /* get profiles by workflow -- based on actual status */
             $res = $this->getProfileByWorkflow($fnum);
-            
+
             unset($res['step']);
             unset($res['type']);
-            
-//            echo '<pre>'; var_dump($res); echo '</pre>'; die;
 
             if(empty($res['profile'])) {
                 $query->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id')
@@ -1162,7 +1160,11 @@ class EmundusModelProfile extends JModelList {
 
             $outputs = explode(',', $outs['outputs']);
 
-            if(in_array($fnum_status, $outputs) or $v['type'] == '0' or (!in_array($fnum_status, $inputs) and !in_array($fnum_status, $outputs))) { unset($raw[$k]); }
+            /* if:
+                1. profile type not 1 (not default)) --> skip
+                2. actual status doesn't exist in workflow --> skip
+            */
+            if($v['type'] != '1' or (!in_array($fnum_status, $inputs) and !in_array($fnum_status, $outputs))) { unset($raw[$k]); }
         }
 
         return current($raw);
@@ -1272,7 +1274,7 @@ class EmundusModelProfile extends JModelList {
                     $query->clear()
                         ->select('esc.*')
                         ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
-                        ->where($db->quoteName('esc.profile_id') . '=' . $db->quote($this->getProfileByStatus($fnum)['profile']));
+                        ->where($db->quoteName('esc.id') . '=' . $db->quote($this->getProfileByStatus($fnum)['campaign_id']));
 
                     $db->setQuery($query);
                     $raw_camp = $db->loadAssoc();
