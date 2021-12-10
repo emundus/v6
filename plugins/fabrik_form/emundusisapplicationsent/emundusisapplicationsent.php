@@ -86,7 +86,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
         if (!$mainframe->isAdmin()) {
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
             jimport('joomla.log.log');
             JLog::addLogger(['text_file' => 'com_emundus.isApplicationSent.php'], JLog::ALL, ['com_emundus']);
@@ -137,11 +137,11 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             }
             else {
                 if(!empty($fnum)) {
-                    $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$fnum]->end_date)) ? true : false;
+                    $is_dead_line_passed = (strtotime(date($now)) > (!empty(@$user->fnums[$fnum]->end_date) ? strtotime(@$user->fnums[$fnum]->end_date) : strtotime(@$user->end_date))) ? true : false;
                     $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$fnum]->start_date)) ? true : false;
                 }
                 else{
-                    $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$user->fnum]->end_date)) ? true : false;
+                    $is_dead_line_passed = (strtotime(date($now)) > (!empty(@$user->fnums[$user->fnum]->end_date) ? strtotime(@$user->fnums[$user->fnum]->end_date) : strtotime(@$user->end_date))) ? true : false;
                     $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$user->fnum]->start_date)) ? true : false;
                 }
             }
@@ -158,6 +158,8 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
                 // Check campaign limit, if the limit is obtained, then we set the deadline to true
                 $m_campaign = new EmundusModelCampaign;
+                $m_profile = new EmundusModelProfile;
+                $fnumDetail = $m_profile->getFnumDetails($fnum);
 
                 $isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id);
 
@@ -172,6 +174,8 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     else {
                         if(!$can_edit && $is_app_sent){
                             $mainframe->enqueueMessage(JText::_('APPLICATION_READ_ONLY'), 'error');
+                        } elseif ($fnumDetail['published'] = -1){
+                            $mainframe->enqueueMessage(JText::_('DELETED_FILE'), 'error');
                         } elseif ($is_dead_line_passed){
                             $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
                         } elseif (!$is_campaign_started){
