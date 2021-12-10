@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -65,6 +65,9 @@ class ProductViewProduct extends hikashopView
 		$pageInfo->filter->filter_published = $app->getUserStateFromRequest( $this->paramBase.".filter_published", 'filter_published', 0, 'int');
 		$pageInfo->filter->filter_manufacturer = $app->getUserStateFromRequest( $this->paramBase.".filter_manufacturer", 'filter_manufacturer', '', 'string');
 
+		$this->searchOptions = array('product_type' => 'main', 'published' => 0, 'manufacturer' => '');
+		$this->openfeatures_class = "hidden-features";
+
 		$database = JFactory::getDBO();
 		$filters = array('product_type' => 'b.product_type != '.$database->Quote('trash'));
 
@@ -105,7 +108,7 @@ class ProductViewProduct extends hikashopView
 			$this->noOrderingMessage = JText::_('CHANGE_PRODUCT_TYPE_FILTER_TO_REORDER_ELEMENTS');
 		} elseif(!$doOrdering && is_numeric($pageInfo->filter->filter_id)) {
 			$category = $categoryClass->get($pageInfo->filter->filter_id);
-			if($category->category_left + 1 == $category->category_right) {
+			if(!empty($category) && $category->category_left + 1 == $category->category_right) {
 				$doOrdering = true;
 			}
 		}
@@ -585,7 +588,6 @@ class ProductViewProduct extends hikashopView
 
 		$this->assignRef('element',$element);
 
-		JHTML::_('behavior.modal');
 		$type = 'tabs';
 		if($config->get('multilang_display','tabs')!='popups'){
 			$type = $config->get('multilang_display','tabs');
@@ -1477,10 +1479,13 @@ class ProductViewProduct extends hikashopView
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName().'.edit';
 		$task = 'add';
 
-		if(HIKASHOP_J30)
+		if(HIKASHOP_J30 && !HIKASHOP_J40)
 			JHtml::_('jquery.ui');
 
-		JHTML::_('behavior.tooltip');
+		if(HIKASHOP_J40)
+			JHtml::_('bootstrap.tooltip', '.hasTooltip', array('placement' => 'left'));
+		else
+			JHTML::_('behavior.tooltip');
 		hikashop_loadJsLib('tooltip');
 
 		$config = hikashop_config();
@@ -2027,8 +2032,6 @@ class ProductViewProduct extends hikashopView
 		$db = JFactory::getDBO();
 		$ctrl = '';
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName().'.edit';
-
-		JHTML::_('behavior.tooltip');
 
 		$config = hikashop_config();
 		$this->assignRef('config', $config);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -79,7 +79,9 @@ defined('_JEXEC') or die('Restricted access');
 		<legend><?php echo JText::_( 'DATA' ); ?></legend>
 <?php
 		if(!empty($this->tables)) {
-			if(HIKASHOP_J30){
+			if(HIKASHOP_J40){
+				echo JHTML::_('hikaselect.radiolist', $this->tables, 'data[massaction][massaction_table]', 'size="1" onclick="updateData(this.value);"', 'value', 'text',$this->element->massaction_table,false,false);
+			}elseif(HIKASHOP_J30){
 				echo JHTML::_('hikaselect.radiolist', $this->tables, 'data[massaction][massaction_table]', 'class="custom-select" size="1" onclick="updateData(this.value);"', 'value', 'text',$this->element->massaction_table,false,false);
 			}else{
 				echo JHTML::_('hikaselect.radiolist', $this->tables, 'data[massaction][massaction_table]', 'class="custom-select" size="1" onclick="updateData(this.value);"', 'value', 'text',$this->element->massaction_table);

@@ -2423,8 +2423,10 @@ class EmundusModelFiles extends JModelLegacy
 
                                 $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.$element_attribs->join_val_column;
 
-                                $select = '(SELECT ' . $join_val_column . ' FROM ' . $element_attribs->join_db_name.' AS t 
-                                    WHERE t.' . $element_attribs->join_key_column . ' = ' . $repeat_join_table . '.' . $elt->element_name . ')';
+                                $select .= 'FROM '.$tableAlias[$elt->tab_name].'
+                                    LEFT JOIN '.$repeat_join_table.' ON '.$repeat_join_table.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
+                                    LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$repeat_join_table.'.'.$elt->element_name.'
+                                    WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
                             }
 
                             $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
@@ -2465,10 +2467,9 @@ class EmundusModelFiles extends JModelLegacy
                             $query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
                         } else {
                             $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
-                        }
-
-                        if (!in_array($elt->table_join, $lastTab)) {
-                            $leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
+                            if (!in_array($elt->table_join, $lastTab)) {
+                                $leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
+                            }
                         }
                         $lastTab[] = $elt->table_join;
                     } else {

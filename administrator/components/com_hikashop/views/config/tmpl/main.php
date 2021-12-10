@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,7 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('version');?>><?php echo JText::_('VERSION');?></td>
 		<td>
-			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [2008102218]
+			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [2011091120]
 		</td>
 	</tr>
 	<tr>
@@ -51,7 +51,7 @@ echo $this->leftmenu(
 		<td class="hk_tbl_key"<?php echo $this->docTip('main_currency');?>><?php echo JText::_('MAIN_CURRENCY'); ?></td>
 		<td>
 			<?php echo $this->currency->display('config[main_currency]',$this->config->get('main_currency')); ?>
-			<a href="<?php echo hikashop_completeLink('currency');?>" class="btn btn-primary" <?php echo $this->docTip('access_currency_manager');?>>
+			<a target="_blank" href="<?php echo hikashop_completeLink('currency');?>" class="btn btn-primary" <?php echo $this->docTip('access_currency_manager');?>>
 				<i class="fa fa-chevron-right" aria-hidden="true"></i>
 			</a>
 		</td>
@@ -482,16 +482,18 @@ echo $this->leftmenu(
 		<td class="hk_tbl_key"<?php echo $this->docTip('thumbnail_xy');?>><?php echo JText::_('THUMBNAIL_XY'); ?></td>
 		<td>
 			<input class="inputbox" type="text" name="config[thumbnail_x]" value="<?php echo $this->config->get('thumbnail_x'); ?>" />
-			x
+			px <i class="fas fa-times fa-2x"></i>
 			<input class="inputbox" type="text" name="config[thumbnail_y]" value="<?php echo $this->config->get('thumbnail_y'); ?>" />
+			px
 		</td>
 	</tr>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('product_image_xy');?>><?php echo JText::_('PRODUCT_PAGE_IMAGE_XY'); ?></td>
 		<td>
 			<input class="inputbox" type="text" name="config[product_image_x]" value="<?php echo $this->config->get('product_image_x'); ?>" />
-			x
+			px <i class="fas fa-times fa-2x"></i>
 			<input class="inputbox" type="text" name="config[product_image_y]" value="<?php echo $this->config->get('product_image_y'); ?>" />
+			px
 		</td>
 	</tr>
 	<tr>
@@ -514,8 +516,9 @@ echo $this->leftmenu(
 		<td class="hk_tbl_key"<?php echo $this->docTip('image_xy');?>><?php echo JText::_('IMAGE_XY'); ?></td>
 		<td>
 			<input class="inputbox" type="text" name="config[image_x]" value="<?php echo $this->config->get('image_x'); ?>" />
-			x
+			px <i class="fas fa-times fa-2x"></i>
 			<input class="inputbox" type="text" name="config[image_y]" value="<?php echo $this->config->get('image_y'); ?>" />
+			px
 		</td>
 	</tr>
 	<tr>
@@ -626,6 +629,12 @@ echo $this->leftmenu(
 		<td class="hk_tbl_key"<?php echo $this->docTip('order_creation_notification_email');?>><?php echo JText::_('ORDER_CREATION_NOTIFICATION_EMAIL_ADDRESS'); ?></td>
 		<td>
 			<input class="inputbox" type="text" name="config[order_creation_notification_email]" size="40" value="<?php echo $this->escape($this->config->get('order_creation_notification_email')); ?>">
+		</td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('contact_request_email');?>><?php echo JText::_('CONTACT_REQUEST_EMAIL_ADDRESS'); ?></td>
+		<td>
+			<input class="inputbox" type="text" placeholder="<?php echo $this->escape($this->config->get('from_email')); ?>" name="config[contact_request_email]" size="40" value="<?php echo $this->escape($this->config->get('contact_request_email')); ?>">
 		</td>
 	</tr>
 	<tr>

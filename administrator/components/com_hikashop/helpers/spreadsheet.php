@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,9 +20,14 @@ class hikashopSpreadsheetHelper {
 	var $progressive;
 	var $headerSent;
 	var $excelSecurity;
+	var $types;
 
 	function __construct() {
 		$this->init();
+	}
+
+	function setTypes($types) {
+		$this->types = $types;
 	}
 
 	function init($format = 'csv', $filename = 'export', $sep = ';', $forceQuote = false, $decimal_separator = '.', $forceText = false) {
@@ -176,6 +181,16 @@ class hikashopSpreadsheetHelper {
 				$lastOne = true;
 			if(is_array($value))
 				continue;
+
+			if(isset($this->types[$i]) && in_array($this->types[$i], array('text', 'number'))) {
+				$type = $this->types[$i];
+				if($type == 'number' && $value === '')
+					$type = 'text';
+
+				$fct = 'write'.ucfirst($type);
+				$this->$fct($this->currLine, $i++, $value, $lastOne);
+				continue;
+			}
 
 			if(
 				!$this->forceText &&

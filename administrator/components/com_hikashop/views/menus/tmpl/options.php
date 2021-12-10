@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,6 +10,30 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 if(!isset($this->element['layout_type']))
 	$this->element['layout_type'] = 'inherit';
+if (HIKASHOP_J40) {
+?>
+<style>
+	legend,
+	fieldset#fieldset-basic small.form-text.text-muted,
+	section#attrib-products small.form-text.text-muted {
+		display: none;
+	}
+	fieldset#fieldset-basic,
+	fieldset#fieldset-products {
+		border: none;
+		padding: 0px;
+		margin: 0px;
+	}
+	section#attrib-basic,
+	section#attrib-products {
+		padding: 0px;
+	}
+	main form div.row.title-alias.form-vertical.mb-3 {
+		margin: 0px !important;
+	}
+</style>
+<?php
+}
 
 ?>
 <div id="hikashop_main_content_<?php echo $this->type; ?>" class="hikashop_main_content hk-container-fluid item-menu-interface hika_j<?php echo (int)HIKASHOP_JVERSION; ?>">
@@ -371,5 +395,19 @@ window.hikashop.ready(function(){
 	window.hikashop.dlTitle('hikashop_main_content_" . $this->type . "');
 });
 ";
+if(HIKASHOP_J40) {
+	$hkMenusJs .= "
+window.hikashop.ready(function(){
+	var mainDiv = document.getElementById('hikashop_main_content_category');
+	if(mainDiv) {
+		mainDiv.parentNode.classList.remove('column-count-md-2');
+		mainDiv.parentNode.classList.remove('column-count-lg-3');
+	}
+	mainDiv = document.getElementById('hikashop_main_content_product');
+	mainDiv.parentNode.classList.remove('column-count-md-2');
+	mainDiv.parentNode.classList.remove('column-count-lg-3');
+});
+";
+}
 $doc = JFactory::getDocument();
 $doc->addScriptDeclaration($hkMenusJs);

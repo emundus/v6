@@ -756,7 +756,7 @@ class SecuritycheckprosModelProtection extends \Joomla\CMS\MVC\Model\BaseDatabas
         }
     
         /* Comprobamos si hay que redirigir las peticiones no www a www */
-        if ($this->getValue("redirect_to_www")) {        
+        if ( ($this->getValue("redirect_to_www")) && (!$this->ConfigApplied['redirect_to_www']) ){        
             $isSecure = false;
             if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
                 $isSecure = true;
@@ -781,7 +781,7 @@ class SecuritycheckprosModelProtection extends \Joomla\CMS\MVC\Model\BaseDatabas
         }
     
         /* Comprobamos si hay que redirigir las peticiones no www a www */
-        if ($this->getValue("redirect_to_non_www")) {        
+        if ( ($this->getValue("redirect_to_non_www")) && (!$this->ConfigApplied['redirect_to_non_www']) ){        
             $isSecure = false;
             if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
                 $isSecure = true;
