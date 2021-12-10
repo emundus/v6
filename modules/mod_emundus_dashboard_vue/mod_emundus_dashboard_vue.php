@@ -12,20 +12,17 @@ $document->addStyleSheet("modules/mod_emundus_dashboard_vue/src/assets/vue-multi
 $document->addScript('media/mod_emundus_dashboard_vue/chunk-vendors.js');
 $document->addStyleSheet('media/mod_emundus_dashboard_vue/app.css');
 
-
 $profiles = $params->get('profile');
 $programme_filter = $params->get('filter_programmes');
 
 if(in_array(JFactory::getSession()->get('emundusUser')->profile,$profiles)) {
+    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus_onboard' . DS . 'models' . DS . 'dashboard.php');
 
-    $widgets[] = $params->get('widget1');
-    $widgets[] = $params->get('widget2');
-    $widgets[] = $params->get('widget3');
-    $widgets[] = $params->get('widget4');
-    $widgets[] = $params->get('widget5');
-    $widgets[] = $params->get('widget6');
-    $widgets[] = $params->get('widget7');
-    $widgets[] = $params->get('widget8');
+    $m_dashboard = new EmundusonboardModeldashboard;
+    $dashboard = $m_dashboard->getDashboard();
+    if (empty($dashboard)) {
+        $m_dashboard->createDashboard();
+    }
 
     require(JModuleHelper::getLayoutPath('mod_emundus_dashboard_vue'));
 }

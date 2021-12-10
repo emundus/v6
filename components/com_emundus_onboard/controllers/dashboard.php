@@ -209,6 +209,21 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         exit;
     }
 
+    public function geteval(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+            $widget = $jinput->getInt('widget');
+
+            $results = $this->model->renderchartbytag($widget);
+
+            $tab = array('msg' => 'success', 'data' => $results);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
 
     /** Sciences PO */
     public function getfilescountbystatusgroupbydate(){

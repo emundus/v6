@@ -1,7 +1,7 @@
 <template>
   <div class='tchooz-widget' :class="['col-md-' + selectedWidget.size,'col-sm-' + selectedWidget.size_small]">
-    <div class='section-sub-menu' style='margin-bottom: 10px' :class="params.type === 'article' ? 'tchooz-widget__article-overflow' : ''">
-      <div id="chart-container" v-if="params.type === 'chart'">
+    <div class='section-sub-menu' style='margin-bottom: 10px' :class="selectedWidget.type === 'article' ? 'tchooz-widget__article-overflow' : ''">
+      <div id="chart-container" v-if="selectedWidget.type === 'chart'">
         <fusioncharts
             :key="chart_render"
             :type="chart_type"
@@ -60,14 +60,12 @@ export default {
     chart_render: 0,
     position: null,
     selectedWidget: null,
-    type: 'chart',
     // Fusion charts variables
     datas: {},
     chart_type: 'column2d',
     renderAt: "chart-container",
     dataFormat: "json",
     dataSource: {},
-    params: []
   }),
 
   methods: {
@@ -82,8 +80,7 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        this.params = JSON.parse(this.selectedWidget.params);
-        this.chart_type = this.params.chart_type;
+        this.chart_type = this.selectedWidget.chart_type;
         this.dataSource = response.data.dataset;
 
         this.chart_render++;
@@ -97,7 +94,22 @@ export default {
         url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getarticle",
         params: {
           widget: this.selectedWidget.id,
-          article: this.params.id
+          article: this.selectedWidget.article_id
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        this.datas = response.data.data;
+      });
+    },
+
+    getEval(){
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=geteval",
+        params: {
+          widget: this.selectedWidget.id,
         },
         paramsSerializer: params => {
           return qs.stringify(params);
@@ -141,15 +153,17 @@ export default {
 
   created() {
     this.selectedWidget = this.widget;
-    this.params = JSON.parse(this.selectedWidget.params);
     this.position = this.selectedWidget.position;
-    this.type = this.params.type;
-    switch (this.type){
+    switch (this.selectedWidget.type){
       case 'article':
         this.getArticle();
         break;
+      case 'other':
+        this.getEval();
+        break;
       case 'chart':
         this.renderChart();
+        break;
     }
     this.getWidgets();
   },

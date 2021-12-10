@@ -36,16 +36,77 @@ class EmundusonboardModeldashboard extends JModelList
         }
     }
 
+    public function getDashboard(){
+        $user = JFactory::getUser()->id;
+        $this->_db = JFactory::getDbo();
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->select('id')
+                ->from($this->_db->quoteName('#__emundus_setup_dashboard'))
+                ->where($this->_db->quoteName('user') . ' = ' . $user);
+            $this->_db->setQuery($query);
+            return $this->_db->loadResult();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/controllers/dashboard | Error at defining the offset datetime : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+    }
+
+    public function createDashboard(){
+        $user = JFactory::getUser()->id;
+        $this->_db = JFactory::getDbo();
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('profile')
+                ->from($this->_db->quoteName('#__emundus_users'))
+                ->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user));
+            $this->_db->setQuery($query);
+            $profile = $this->_db->loadResult();
+
+            $query->clear()
+                ->insert($this->_db->quoteName('#__emundus_setup_dashboard'))
+                ->set($this->_db->quoteName('user') . ' = ' . $user)
+                ->set($this->_db->quoteName('updated_by') . ' = ' . $user);
+            $this->_db->setQuery($query);
+            $this->_db->execute();
+            $dashboard = $this->_db->insertid();
+
+            $query->clear()
+                ->select('parent_id,position')
+                ->from($this->_db->quoteName('#__emundus_widgets_repeat_access'))
+                ->where($this->_db->quoteName('default') . ' = 1')
+                ->andWhere($this->_db->quoteName('profile') . ' = ' . $profile);
+            $this->_db->setQuery($query);
+            $default_widgets = $this->_db->loadObjectList();
+
+            foreach ($default_widgets as $default_widget) {
+                $query->clear()
+                    ->insert($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets'))
+                    ->set($this->_db->quoteName('parent_id') . ' = ' . $dashboard)
+                    ->set($this->_db->quoteName('widget') . ' = ' . $default_widget->parent_id)
+                    ->set($this->_db->quoteName('position') . ' = ' . $default_widget->position);
+                $this->_db->setQuery($query);
+                $this->_db->execute();
+            }
+            return true;
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/controllers/dashboard | Error at defining the offset datetime : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+    }
+
     public function getallwidgetsbysize($size){
         $this->_db = JFactory::getDbo();
         $query = $this->_db->getQuery(true);
 
         try {
             $query->clear()
-                ->select('id,name,label,params,size,size_small')
+                ->select('id,name,label,size,size_small,type,chart_type,article_id,params')
                 ->from($this->_db->quoteName('#__emundus_widgets'))
                 ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote('custom'))
-                ->andWhere($this->_db->quoteName('size') . ' = ' . $this->_db->quote($size));
+                ->andWhere($this->_db->quoteName('size') . ' = ' . $this->_db->quote($size))
+                ->andWhere($this->_db->quoteName('published') . ' = 1');
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
         } catch (Exception $e) {
@@ -61,7 +122,7 @@ class EmundusonboardModeldashboard extends JModelList
         $user_id = JFactory::getUser()->id;
 
         try {
-            $query->select('ew.id,ew.name,ew.label,ew.params,ew.size,ew.size_small,ew.class,esdr.position')
+            $query->select('ew.id,ew.name,ew.label,ew.params,ew.size,ew.size_small,ew.type,ew.class,esdr.position,ew.chart_type,ew.article_id')
                 ->from($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets','esdr'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_dashboard','esd').' ON '.$this->_db->quoteName('esd.id').' = '.$this->_db->quoteName('esdr.parent_id'))
                 ->leftJoin($this->_db->quoteName('#__emundus_widgets','ew').' ON '.$this->_db->quoteName('ew.id').' = '.$this->_db->quoteName('esdr.widget'))
@@ -89,7 +150,7 @@ class EmundusonboardModeldashboard extends JModelList
                 }
 
                 $query->clear()
-                    ->select('id,name,label,params,size,size_small,class')
+                    ->select('id,name,label,params,size,size_small,class,type,chart_type,article_id')
                     ->from($this->_db->quoteName('#__emundus_widgets'))
                     ->where($this->_db->quoteName('name') . ' IN (' . implode(',', $this->_db->quote($widgets)) . ')');
                 $this->_db->setQuery($query);
@@ -106,43 +167,16 @@ class EmundusonboardModeldashboard extends JModelList
         $this->_db = JFactory::getDbo();
         $query = $this->_db->getQuery(true);
 
-        $user = JFactory::getUser()->id;
-
         try{
-            $query->select('id')
-                ->from($this->_db->quoteName('#__emundus_setup_dashboard'))
-                ->where($this->_db->quoteName('user') . ' = ' . $user);
+            $dashboard = $this->getDashboard();
+
+            $query->clear()
+                ->update($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets'))
+                ->set($this->_db->quoteName('widget') . ' = ' . $this->_db->quote($widget))
+                ->where($this->_db->quoteName('position') . ' = ' . $this->_db->quote($position))
+                ->andWhere($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($dashboard));
             $this->_db->setQuery($query);
-            $dashboard = $this->_db->loadResult();
-
-            if(empty($dashboard)){
-                $query->clear()
-                    ->insert($this->_db->quoteName('#__emundus_setup_dashboard'))
-                    ->set($this->_db->quoteName('user') . ' = ' . $user)
-                    ->set($this->_db->quoteName('updated_by') . ' = ' . $user);
-                $this->_db->setQuery($query);
-                $this->_db->execute();
-                $dashboard = $this->_db->insertid();
-
-                $default_widgets = $this->getwidgets();
-                foreach ($default_widgets as $default_widget) {
-                    $query->clear()
-                        ->insert($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets'))
-                        ->set($this->_db->quoteName('parent_id') . ' = ' . $dashboard)
-                        ->set($this->_db->quoteName('widget') . ' = ' . $default_widget->id);
-                    $this->_db->setQuery($query);
-                    $this->_db->execute();
-                }
-                return true;
-            } else {
-                $query->clear()
-                    ->update($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets'))
-                    ->set($this->_db->quoteName('widget') . ' = ' . $this->_db->quote($widget))
-                    ->where($this->_db->quoteName('position') . ' = ' . $this->_db->quote($position))
-                    ->andWhere($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($dashboard));
-                $this->_db->setQuery($query);
-                return $this->_db->execute();
-            }
+            return $this->_db->execute();
         } catch (Exception $e){
             JLog::add('component/com_emundus_onboard/models/dashboard | Error when try update my dashboard : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
