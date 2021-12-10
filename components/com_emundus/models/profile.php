@@ -1008,6 +1008,8 @@ class EmundusModelProfile extends JModelList {
 
         $session->set('emundusUser', $emundusSession);
 
+        $this->updateUserProfile($fnum, $emundusSession->profile);
+
         if (isset($admissionInfo)) {
             $app->redirect("index.php?option=com_fabrik&view=form&formid=".$admissionInfo->form_id."&Itemid='.$admissionInfo->item_id.'&usekey=fnum&rowid=".$campaign['fnum']);
         }
@@ -1395,4 +1397,55 @@ class EmundusModelProfile extends JModelList {
         $db->setQuery($query);
         return $db->loadObject();       // set key is status
     }
+
+    /* update user profile ("jos_emundus_users" + "jos_emundus_user_profile") when user opens file */
+    public function updateUserProfile($fnum,$profile) {
+        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'models' . DS . 'files.php');
+        $mFile = new EmundusModelFiles();
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        
+        if(!empty($fnum) and !empty($profile)) {
+            try {
+                /* first :: get user_id by fnum */
+                $fnum_raw = $mFile::getFnumInfos($fnum);
+                $fnum_user = $fnum_raw['applicant_id'];
+
+                /* update "jos_emundus_users" */
+                $query->clear()
+                    ->update('#__emundus_users')
+                    ->set($db->quoteName('#__emundus_users.profile') . '=' . $db->quote($profile))
+                    ->where($db->quoteName('#__emundus_users.user_id') . '=' . $db->quote($fnum_user));
+
+                $db->setQuery($query);
+                $db->execute();
+
+                /* create new record of table "jos_emundus_user_profile */
+                $raw = array(
+                    'date_time' => date('Y-m-d H:i:s'),
+                    'user_id' => $fnum_user,
+                    'profile_id' => $profile,
+                    'start_date' => null,
+                    'end_date' => null,
+                );
+                
+                $query->clear()
+                    ->insert($db->quoteName('#__emundus_users_profiles'))
+                    ->columns($db->quoteName(array_keys($raw)))
+                    ->values(implode(',', $db->quote(array_values($raw))));
+
+                $db->setQuery($query);
+                $db->execute();
+            }
+            catch(Exception $e) {
+                JLog::add('Could not update the user profile -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
+                return $e->getMessage();
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
 }
