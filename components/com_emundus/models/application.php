@@ -3494,7 +3494,7 @@ class EmundusModelApplication extends JModelList
                         foreach ($stored as $key => $row) {
                             $src = $row['filename'];
                             $ext = explode('.', $src);
-                            $ext = $ext[count($ext) - 1];;
+                            $ext = $ext[count($ext) - 1];
                             $cpt = 0 - (int)(strlen($ext) + 1);
                             $dest = substr($row['filename'], 0, $cpt) . '-' . $row['id'] . '.' . $ext;
                             $nbmax = $row['nbmax'];
