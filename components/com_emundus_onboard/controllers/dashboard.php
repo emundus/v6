@@ -32,24 +32,12 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         $this->model = $this->getModel('dashboard');
     }
 
-    /**
-     * Get the last active campaign
-     */
-    public function getLastCampaignActive(){
+    public function getallwidgetsbysize(){
         try {
-            $campaigns = $this->model->getLastCampaignActive();
+            $jinput = JFactory::getApplication()->input;
+            $size = $jinput->getInt('size');
 
-            $tab = array('status' => 0, 'msg' => 'success', 'data' => $campaigns);
-        } catch (Exception $e) {
-            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-
-    public function getallwidgets(){
-        try {
-            $widgets = $this->model->getallwidgets();
+            $widgets = $this->model->getallwidgetsbysize($size);
 
             $tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
         } catch (Exception $e) {
@@ -114,8 +102,9 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
             $jinput = JFactory::getApplication()->input;
 
             $widget = $jinput->getInt('widget');
+            $position = $jinput->getInt('position');
 
-            $result = $this->model->updatemydashboard($widget);
+            $result = $this->model->updatemydashboard($widget,$position);
 
             $tab = array('status' => 0, 'msg' => 'success', 'data' => $result);
         } catch (Exception $e) {
@@ -196,13 +185,30 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
 
             $results = $this->model->renderchartbytag($widget);
 
-            $tab = array('msg' => 'success', 'dataset' => $results['dataset']);
+            $tab = array('msg' => 'success', 'dataset' => $results);
         } catch (Exception $e) {
             $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
         }
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function getarticle(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+            $widget = $jinput->getInt('widget');
+            $article = $jinput->getInt('article');
+
+            $results = $this->model->getarticle($widget,$article);
+
+            $tab = array('msg' => 'success', 'data' => $results);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
 
     /** Sciences PO */
     public function getfilescountbystatusgroupbydate(){

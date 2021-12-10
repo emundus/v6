@@ -1,31 +1,36 @@
 <template>
-  <div class='tchooz-widget' :class="['col-md-' + widget.size,'col-sm-' + widget.size_small]">
-    <div class='section-sub-menu' style='margin-bottom: 10px'>
-      <div id="chart-container">
+  <div class='tchooz-widget' :class="['col-md-' + selectedWidget.size,'col-sm-' + selectedWidget.size_small]">
+    <div class='section-sub-menu' style='margin-bottom: 10px' :class="params.type === 'article' ? 'tchooz-widget__article-overflow' : ''">
+      <div id="chart-container" v-if="params.type === 'chart'">
         <fusioncharts
-            :type="type"
+            :key="chart_render"
+            :type="chart_type"
             :width="'100%'"
             :height="'300'"
-            :dataformat="dataFormat"
+            :dataFormat="dataFormat"
             :dataSource="dataSource"
         >
         </fusioncharts>
-        <multiselect
-            v-model="selectedWidget"
-            :class="'tchooz-widget__select'"
-            label="label"
-            track-by="id"
-            :options="widgets"
-            :multiple="false"
-            :taggable="false"
-            select-label=""
-            selected-label=""
-            deselect-label=""
-            :close-on-select="true"
-            :clear-on-select="false"
-            :searchable="false"
-            @select="updateDashboard"
-        ></multiselect>
+        <div>
+          <multiselect
+              v-model="selectedWidget"
+              :class="'tchooz-widget__select'"
+              label="label"
+              track-by="id"
+              :options="widgets"
+              :multiple="false"
+              :taggable="false"
+              select-label=""
+              selected-label=""
+              deselect-label=""
+              :close-on-select="true"
+              :clear-on-select="false"
+              :searchable="false"
+          ></multiselect>
+        </div>
+      </div>
+      <div v-else :class="selectedWidget.class">
+        <div v-html="datas"></div>
       </div>
     </div>
   </div>
@@ -52,15 +57,15 @@ export default {
 
   data: () => ({
     widgets: [],
+    chart_render: 0,
+    position: null,
     selectedWidget: null,
+    type: 'chart',
     // Fusion charts variables
     datas: {},
-    status: [],
-    label: 'Total',
-    type: 'column2d',
+    chart_type: 'column2d',
     renderAt: "chart-container",
     dataFormat: "json",
-    chartData: [],
     dataSource: {},
     params: []
   }),
@@ -71,43 +76,53 @@ export default {
         method: "get",
         url: "index.php?option=com_emundus_onboard&controller=dashboard&task=renderchartbytag",
         params: {
-          widget: this.widget.id,
+          widget: this.selectedWidget.id,
         },
         paramsSerializer: params => {
           return qs.stringify(params);
         }
       }).then(response => {
-        this.datas = response.data.dataset;
+        this.params = JSON.parse(this.selectedWidget.params);
+        this.chart_type = this.params.chart_type;
+        this.dataSource = response.data.dataset;
 
-        // Render chart
-        this.dataSource = {
-          chart: {
-            animation: 1,
-            paletteColors: typeof this.params.colors === 'undefined' ? this.colors : this.params.colors,
-            caption: Joomla.JText._(this.params.caption) === '' ? this.params.caption : Joomla.JText._(this.params.caption),
-            subcaption: "",
-            xaxisname: Joomla.JText._(this.params.xaxisname) === '' ? this.params.xaxisname : Joomla.JText._(this.params.xaxisname),
-            yaxisname: Joomla.JText._(this.params.yaxisname) === '' ? this.params.yaxisname : Joomla.JText._(this.params.yaxisname),
-            numbersuffix: "",
-            theme: "fusion"
-          },
-          data: this.datas
-        };
+        this.chart_render++;
         //
+      });
+    },
+
+    getArticle(){
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getarticle",
+        params: {
+          widget: this.selectedWidget.id,
+          article: this.params.id
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        this.datas = response.data.data;
       });
     },
 
     getWidgets(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getallwidgets",
+        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getallwidgetsbysize",
+        params: {
+          size: this.selectedWidget.size
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
       }).then(response => {
         this.widgets = response.data.data;
       });
     },
 
     updateDashboard(){
-      console.log(this.selectedWidget);
       axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=dashboard&task=updatemydashboard",
@@ -116,24 +131,47 @@ export default {
         },
         data: qs.stringify({
           widget: this.selectedWidget.id,
-          row: 2
+          position: this.position
         })
       }).then(response => {
-
+        this.renderChart();
       });
     }
   },
 
   created() {
     this.selectedWidget = this.widget;
-    this.params = JSON.parse(this.widget.params);
+    this.params = JSON.parse(this.selectedWidget.params);
+    this.position = this.selectedWidget.position;
     this.type = this.params.type;
-    this.renderChart();
+    switch (this.type){
+      case 'article':
+        this.getArticle();
+        break;
+      case 'chart':
+        this.renderChart();
+    }
     this.getWidgets();
   },
+
+  watch: {
+    selectedWidget: function(value){
+      this.updateDashboard();
+    }
+  }
 }
 </script>
 
 <style scoped>
-
+.section-sub-menu{
+  display: block;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #1f1f1f;
+  box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);
+  padding: 30px;
+}
 </style>

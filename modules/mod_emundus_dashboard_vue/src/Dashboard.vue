@@ -17,25 +17,25 @@
           <option v-for="programme in programmes" :value="programme.code">{{programme.label}}</option>
         </select>
       </div>
-      <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index" :class="enableDrag ? 'jello-horizontal handle' : ''" :key="widget.name + '_' + index">
-        <Faq v-if="widget.name === 'faq'"/>
-        <FilesNumberByStatus v-if="widget.name === 'files_number_by_status'" :colors="colors"/>
-        <UsersByMonth v-if="widget.name === 'users_by_month'" :colors="colors"/>
-        <Tips v-if="widget.name === 'tips'"/>
-        <DemoCounter v-if="widget.name === 'demo_counter'"/>
-        <Custom v-if="widget.name === 'custom'" :widget="widget" @forceUpdate="$forceUpdate"/>
+      <template v-if="widgets.length > 0">
+        <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index" :class="enableDrag ? 'jello-horizontal handle' : ''" :key="widget.name + '_' + index">
+          <Faq v-if="widget.name === 'faq'"/>
+          <FilesNumberByStatus v-if="widget.name === 'files_number_by_status'" :widget="widget" :colors="colors"/>
+          <UsersByMonth v-if="widget.name === 'users_by_month'" :widget="widget" :colors="colors"/>
+          <Custom v-if="widget.name === 'custom'" :widget="widget" @forceUpdate="$forceUpdate"/>
 
-        <!-- Sciences Po widgets -->
-        <KeyFigures v-if="widget.name === 'key_figures'" :program="selectedProgramme" :colors="colors"/>
-        <FilesNumberByDate v-if="widget.name === 'files_number_by_status_and_date'" :program="selectedProgramme" :colors="colors"/>
-        <FilesBySession v-if="widget.name === 'files_by_session'" :colors="colors"/>
-        <FilesBySessionPrecollege v-if="widget.name === 'files_by_session_precollege'" :colors="colors"/>
-        <FilesByCourses v-if="widget.name === 'files_by_courses'" :colors="colors" :session="1"/>
-        <FilesByCourses v-if="widget.name === 'files_by_courses'" :colors="colors" :session="2"/>
-        <FilesByCoursesPrecollege v-if="widget.name === 'files_by_courses_precollege'" :colors="colors" :session="1"/>
-        <FilesByCoursesPrecollege v-if="widget.name === 'files_by_courses_precollege'" :colors="colors" :session="2"/>
-        <FilesByNationalities v-if="widget.name === 'files_by_nationalities'" :program="selectedProgramme" :colors="colors"/>
-      </div>
+          <!-- Sciences Po widgets -->
+          <KeyFigures v-if="widget.name === 'key_figures'" :program="selectedProgramme" :colors="colors"/>
+          <FilesNumberByDate v-if="widget.name === 'files_number_by_status_and_date'" :program="selectedProgramme" :colors="colors"/>
+          <FilesBySession v-if="widget.name === 'files_by_session'" :colors="colors"/>
+          <FilesBySessionPrecollege v-if="widget.name === 'files_by_session_precollege'" :colors="colors"/>
+          <FilesByCourses v-if="widget.name === 'files_by_courses'" :colors="colors" :session="1"/>
+          <FilesByCourses v-if="widget.name === 'files_by_courses'" :colors="colors" :session="2"/>
+          <FilesByCoursesPrecollege v-if="widget.name === 'files_by_courses_precollege'" :colors="colors" :session="1"/>
+          <FilesByCoursesPrecollege v-if="widget.name === 'files_by_courses_precollege'" :colors="colors" :session="2"/>
+          <FilesByNationalities v-if="widget.name === 'files_by_nationalities'" :program="selectedProgramme" :colors="colors"/>
+        </div>
+      </template>
     </draggable>
   </div>
 </template>
@@ -43,11 +43,6 @@
 <script>
 import draggable from "vuedraggable";
 import axios from "axios";
-import Faq from "@/components/Faq";
-import FilesNumberByStatus from "@/components/FilesNumberByStatus";
-import Tips from "@/components/Tips";
-import UsersByMonth from "@/components/UsersByMonth";
-import DemoCounter from "@/components/DemoCounter";
 import KeyFigures from "@/components/sciencespo/KeyFigures";
 import FilesNumberByDate from "@/components/sciencespo/FilesNumberByStatusAndDate";
 import FilesBySession from "@/components/sciencespo/FilesBySession";
@@ -64,11 +59,6 @@ export default {
   },
   components: {
     Custom,
-    DemoCounter,
-    UsersByMonth,
-    Tips,
-    FilesNumberByStatus,
-    Faq,
     draggable,
     KeyFigures,
     FilesNumberByDate,
@@ -80,7 +70,6 @@ export default {
   },
   data() {
     return {
-      campaigns: [],
       programmes: [],
       selectedProgramme: null,
       widgets: [],
@@ -90,7 +79,6 @@ export default {
         filterByProgram: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FILTER_BY_PROGRAMMES"),
       },
       status: null,
-      lastCampaigns: 0,
       enableDrag: false
     }
   },
@@ -128,23 +116,13 @@ export default {
         this.programmes = response.data.data;
       });
     },
-
-    getLastCampaignsActive(){
-      axios.get(
-          'index.php?option=com_emundus_onboard&controller=dashboard&task=getLastCampaignActive'
-      ).then(response => {
-        this.campaigns = response.data.data;
-      }).catch(e => {
-        console.log(e);
-      });
-    }
   }
 }
 </script>
 
 <style scoped>
 .tchooz-widget{
-  height: 25vh;
+  height: 400px;
   margin-bottom: 30px !important;
   margin-left: 0px !important;
   padding-left: 30px !important;

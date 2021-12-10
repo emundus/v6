@@ -197,6 +197,7 @@ fieldset[disabled] .multiselect {
     background: #fff;
     font-size: 14px;
     white-space: nowrap;
+    overflow: hidden;
 }
 
 .multiselect__tag {
