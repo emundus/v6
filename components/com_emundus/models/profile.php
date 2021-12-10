@@ -1114,57 +1114,101 @@ class EmundusModelProfile extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->clear()
-            ->select('eu.firstname, eu.lastname, eswspr.profile AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id, esws.id as step, eswspr.type')
+        $res = $this->getSecondaryProfileByFnum($fnum);
 
-            ->from($db->quoteName('#__emundus_setup_workflow_step_profiles_repeat', 'eswspr'))
-            ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') .  ' ON ' . $db->quoteName('eswspr.parent_id') . ' = ' . $db->quoteName('esws.id'))
+        if(!empty($res['profile'])) {
+            unset($res['astatus']);
+            return $res;
+        } else {
+
+            $query->clear()
+                ->select('eu.firstname, eu.lastname, eswspr.profile AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id, esws.id as step, eswspr.type')
+                ->from($db->quoteName('#__emundus_setup_workflow_step_profiles_repeat', 'eswspr'))
+                ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') . ' ON ' . $db->quoteName('eswspr.parent_id') . ' = ' . $db->quoteName('esws.id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_workflow', 'esw') . ' ON ' . $db->quoteName('esw.id') . ' = ' . $db->quoteName('esws.workflow'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.workflow') . ' = ' . $db->quoteName('esw.id'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('cc.campaign_id'))
+                ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp') . ' ON ' . $this->_db->quoteName('esp.id') . ' = ' . $this->_db->quoteName('eswspr.profile'))
+                ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('cc.applicant_id'))
+                ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum));
+
+            $db->setQuery($query);
+            $raw = $db->loadAssocList();        /* many rowa */
+
+            /* get fnum info */
+            $fnum_raw = $mFile->getFnumsInfos([$fnum]);
+            $fnum_status = $fnum_raw[$fnum]['step'];
+
+            foreach ($raw as $k => $v) {
+                /* find profile for this step */
+                $query->clear()
+                    ->select('group_concat(eswssr.status) as inputs')
+                    ->from($db->quoteName('#__emundus_setup_workflow_step_status_repeat', 'eswssr'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') . ' ON ' . $db->quoteName('eswssr.parent_id') . ' = ' . $db->quoteName('esws.id'))
+                    ->where($this->_db->quoteName('eswssr.parent_id') . ' = ' . $db->quote($v['step']))
+                    ->andWhere($this->_db->quoteName('eswssr.type') . ' = 1');
+
+                $db->setQuery($query);
+                $ins = $db->loadAssoc();
+
+                $inputs = explode(',', $ins['inputs']);
+
+                //////
+                $query->clear()
+                    ->select('group_concat(eswssr.status) as outputs')
+                    ->from($db->quoteName('#__emundus_setup_workflow_step_status_repeat', 'eswssr'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') . ' ON ' . $db->quoteName('eswssr.parent_id') . ' = ' . $db->quoteName('esws.id'))
+                    ->where($this->_db->quoteName('eswssr.parent_id') . ' = ' . $db->quote($v['step']))
+                    ->andWhere($this->_db->quoteName('eswssr.type') . ' = 0');
+
+                $db->setQuery($query);
+                $outs = $db->loadAssoc();
+
+                $outputs = explode(',', $outs['outputs']);
+
+                /* if:
+                    1. profile type not 1 (not default)) --> skip
+                    2. actual status doesn't exist in workflow --> skip
+                */
+                if ($v['type'] != '1' or (!in_array($fnum_status, $inputs) and !in_array($fnum_status, $outputs))) {
+                    unset($raw[$k]);
+                }
+            }
+
+            return current($raw);
+        }
+    }
+
+    /* get secondary profiles */
+    public function getSecondaryProfileByFnum($fnum) {
+        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'models' . DS . 'files.php');
+        $mFile = new EmundusModelFiles();
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        /* when candidat opens the dossier --> find exact profile by his/her status */
+        $query->clear()
+            ->select('eu.firstname, eu.lastname, eswsrr.profile AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id, esws.id as step, eswsrr.status as astatus')
+
+            ->from($db->quoteName('#__emundus_setup_workflow_step_rules_repeat', 'eswsrr'))
+            ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') .  ' ON ' . $db->quoteName('eswsrr.parent_id') . ' = ' . $db->quoteName('esws.id'))
             ->leftJoin($db->quoteName('#__emundus_setup_workflow', 'esw') . ' ON ' . $db->quoteName('esw.id') . ' = ' . $db->quoteName('esws.workflow'))
             ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.workflow') . ' = ' . $db->quoteName('esw.id'))
             ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('cc.campaign_id'))
-            ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('eswspr.profile'))
+            ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('eswsrr.profile'))
             ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
             ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum));
 
         $db->setQuery($query);
-        $raw = $db->loadAssocList();        /* many rowa */
+        $raw = $db->loadAssocList();
 
         /* get fnum info */
         $fnum_raw = $mFile->getFnumsInfos([$fnum]);
         $fnum_status = $fnum_raw[$fnum]['step'];
-
+        
         foreach($raw as $k=>$v) {
-            /* find profile for this step */
-            $query->clear()
-                ->select('group_concat(eswssr.status) as inputs')
-                ->from($db->quoteName('#__emundus_setup_workflow_step_status_repeat', 'eswssr'))
-                ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') .  ' ON ' . $db->quoteName('eswssr.parent_id') . ' = ' . $db->quoteName('esws.id'))
-                ->where($this->_db->quoteName('eswssr.parent_id') . ' = ' . $db->quote($v['step']))
-                ->andWhere($this->_db->quoteName('eswssr.type') . ' = 1');
-
-            $db->setQuery($query);
-            $ins =  $db->loadAssoc();
-
-            $inputs = explode(',', $ins['inputs']);
-
-            //////
-            $query->clear()
-                ->select('group_concat(eswssr.status) as outputs')
-                ->from($db->quoteName('#__emundus_setup_workflow_step_status_repeat', 'eswssr'))
-                ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') .  ' ON ' . $db->quoteName('eswssr.parent_id') . ' = ' . $db->quoteName('esws.id'))
-                ->where($this->_db->quoteName('eswssr.parent_id') . ' = ' . $db->quote($v['step']))
-                ->andWhere($this->_db->quoteName('eswssr.type') . ' = 0');
-
-            $db->setQuery($query);
-            $outs =  $db->loadAssoc();
-
-            $outputs = explode(',', $outs['outputs']);
-
-            /* if:
-                1. profile type not 1 (not default)) --> skip
-                2. actual status doesn't exist in workflow --> skip
-            */
-            if($v['type'] != '1' or (!in_array($fnum_status, $inputs) and !in_array($fnum_status, $outputs))) { unset($raw[$k]); }
+            if($fnum_status !== $v['astatus']) { unset($raw[$k]); }
         }
 
         return current($raw);
