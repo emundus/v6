@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,8 +12,15 @@ $id_field = $type.'_id';
 $plugin_type = $type.'_type';
 if($this->config->get('multilang_display')=='popups'&&!empty($this->element->$id_field)) {
 	echo '<div class="hikashop_multilang_buttons" id="hikashop_multilang_buttons">';
+	$popupHelper = hikashop_get('helper.popup');
 	foreach($this->element->translations as $language_id => $translation){
-		echo '<a class="modal" rel="{handler: \'iframe\', size: {x: 760, y: 480}}" href="'.hikashop_completeLink("plugins&task=edit_translation&".$id_field."=".$this->element->$id_field."&type=".$type.'&language_id='.$language_id,true ).'"><div class="hikashop_multilang_button">'.$this->transHelper->getFlag($language_id).'</div></a>';
+		echo $popupHelper->display(
+			'<div class="hikashop_multilang_button">'.$this->transHelper->getFlag($language_id).'</div>',
+			$this->transHelper->getFlag($language_id),
+			'\''."index.php?option=com_hikashop&ctrl=plugins&task=edit_translation&".$id_field."=".$this->element->$id_field."&type=".$type.'&language_id='.$language_id.'&tmpl=component\'',
+			'hikashop_edit_'.$language_id.'_translations',
+			760,480, '', '', 'link',true
+		);
 	}
 	echo '</div>';
 }

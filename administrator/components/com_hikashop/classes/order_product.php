@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -47,7 +47,13 @@ class hikashopOrder_productClass extends hikashopClass {
 			'order_product_shipping_method',
 			'order_product_shipping_price',
 			'order_product_shipping_tax',
-			'order_product_shipping_params'
+			'order_product_shipping_params',
+			'order_product_weight',
+			'order_product_weight_unit',
+			'order_product_width',
+			'order_product_length',
+			'order_product_height',
+			'order_product_dimension_unit',
 		);
 
 		if(hikashop_level(2)) {
@@ -104,7 +110,13 @@ class hikashopOrder_productClass extends hikashopClass {
 				$this->database->Quote(@$product->order_product_shipping_method),
 				(float)@$product->order_product_shipping_price,
 				(float)@$product->order_product_shipping_tax,
-				$this->database->Quote(@$product->order_product_shipping_params)
+				$this->database->Quote(@$product->order_product_shipping_params),
+				(float)@$product->order_product_weight,
+				$this->database->Quote(@$product->order_product_weight_unit),
+				(float)@$product->order_product_width,
+				(float)@$product->order_product_length,
+				(float)@$product->order_product_height,
+				$this->database->Quote(@$product->order_product_dimension_unit),
 			);
 			if(!empty($itemFields)) {
 				foreach($itemFields as $field) {
@@ -454,6 +466,7 @@ class hikashopOrder_productClass extends hikashopClass {
 			}
 			$tax->tax_namekey = $product->tax_namekey;
 			$tax->tax_amount = $product->order_product_tax;
+			$tax->amount = $product->order_product_price;
 			$product->order_product_tax_info = array($tax);
 		}
 

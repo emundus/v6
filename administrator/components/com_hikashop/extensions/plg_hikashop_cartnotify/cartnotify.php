@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -71,27 +71,40 @@ class plgHikashopCartnotify extends JPlugin
 			$menusClass = hikashop_get('class.menus');
 			$url = $menusClass->getCheckoutURL();
 		}
+		$cartNotifyParams = array(
+			'reference' => $reference,
+			'img_url' => HIKASHOP_IMAGES.'icons/icon-32-newproduct.png',
+			'redirect_url' => $url,
+			'redirect_delay' => $this->params->get('auto_redirect_delay', 4000),
+			'title' => JText::_('PRODUCT_ADDED_TO_CART'),
+			'text' => JText::_('PRODUCT_SUCCESSFULLY_ADDED_TO_CART'),
+			'wishlist_title' => JText::_('PRODUCT_ADDED_TO_WISHLIST'),
+			'wishlist_text' => JText::_('PRODUCT_SUCCESSFULLY_ADDED_TO_WISHLIST'),
+			'list_title' => JText::_('PRODUCTS_ADDED_TO_CART'),
+			'list_text' => JText::_('PRODUCTS_SUCCESSFULLY_ADDED_TO_CART'),
+			'list_wishlist_title' => JText::_('PRODUCTS_ADDED_TO_WISHLIST'),
+			'list_wishlist_text' => JText::_('PRODUCTS_SUCCESSFULLY_ADDED_TO_WISHLIST'),
+			'err_title' => JText::_('PRODUCT_NOT_ADDED_TO_CART'),
+			'err_text' => JText::_('PRODUCT_UNSUCCESSFULLY_ADDED_TO_CART'),
+			'err_wishlist_title' =>  JText::_('PRODUCT_NOT_ADDED_TO_WISHLIST'),
+			'err_wishlist_text' => JText::_('PRODUCT_UNSUCCESSFULLY_ADDED_TO_WISHLIST')
+		);
+
+		if($this->params->get('guest_wishlist_redirect', '0') == '1') {
+			$user = JFactory::getUser();
+			if($user->guest) {
+				global $Itemid;
+				$url = '';
+				if(!empty($Itemid))
+					$url = '&Itemid='.$Itemid;
+				$url = 'index.php?option=com_users&view=login'.$url;
+				$cartNotifyParams['err_wishlist_guest'] = JRoute::_($url.'&return='.urlencode(base64_encode(hikashop_currentUrl('', false))));
+			}
+		}
 
 		$js = '
 jQuery.notify.defaults('.json_encode($params).');
-window.cartNotifyParams = '.json_encode(array(
-		'reference' => $reference,
-		'img_url' => HIKASHOP_IMAGES.'icons/icon-32-newproduct.png',
-		'redirect_url' => $url,
-		'redirect_delay' => $this->params->get('auto_redirect_delay', 4000),
-		'title' => JText::_('PRODUCT_ADDED_TO_CART'),
-		'text' => JText::_('PRODUCT_SUCCESSFULLY_ADDED_TO_CART'),
-		'wishlist_title' => JText::_('PRODUCT_ADDED_TO_WISHLIST'),
-		'wishlist_text' => JText::_('PRODUCT_SUCCESSFULLY_ADDED_TO_WISHLIST'),
-		'list_title' => JText::_('PRODUCTS_ADDED_TO_CART'),
-		'list_text' => JText::_('PRODUCTS_SUCCESSFULLY_ADDED_TO_CART'),
-		'list_wishlist_title' => JText::_('PRODUCTS_ADDED_TO_WISHLIST'),
-		'list_wishlist_text' => JText::_('PRODUCTS_SUCCESSFULLY_ADDED_TO_WISHLIST'),
-		'err_title' => JText::_('PRODUCT_NOT_ADDED_TO_CART'),
-		'err_text' => JText::_('PRODUCT_UNSUCCESSFULLY_ADDED_TO_CART'),
-		'err_wishlist_title' =>  JText::_('PRODUCT_NOT_ADDED_TO_WISHLIST'),
-		'err_wishlist_text' => JText::_('PRODUCT_UNSUCCESSFULLY_ADDED_TO_WISHLIST')
-	)).';
+window.cartNotifyParams = '.json_encode($cartNotifyParams).';
 ';
 		$doc->addScriptDeclaration($js);
 	}
@@ -126,25 +139,39 @@ window.cartNotifyParams.cart_params = {buttons:[
 ]};';
 		}
 
+		$cartNotifyParams = array(
+			'img_url' => HIKASHOP_IMAGES.'icons/icon-32-newproduct.png',
+			'title' => JText::_('PRODUCT_ADDED_TO_CART'),
+			'text' => JText::_('PRODUCT_SUCCESSFULLY_ADDED_TO_CART'),
+			'wishlist_title' => JText::_('PRODUCT_ADDED_TO_WISHLIST'),
+			'wishlist_text' => JText::_('PRODUCT_SUCCESSFULLY_ADDED_TO_WISHLIST'),
+			'list_title' => JText::_('PRODUCTS_ADDED_TO_CART'),
+			'list_text' => JText::_('PRODUCTS_SUCCESSFULLY_ADDED_TO_CART'),
+			'list_wishlist_title' => JText::_('PRODUCTS_ADDED_TO_WISHLIST'),
+			'list_wishlist_text' => JText::_('PRODUCTS_SUCCESSFULLY_ADDED_TO_WISHLIST'),
+			'err_title' => JText::_('PRODUCT_NOT_ADDED_TO_CART'),
+			'err_text' => JText::_('PRODUCT_UNSUCCESSFULLY_ADDED_TO_CART'),
+			'err_wishlist_title' => JText::_('PRODUCT_NOT_ADDED_TO_WISHLIST'),
+			'err_wishlist_text' => JText::_('PRODUCT_UNSUCCESSFULLY_ADDED_TO_WISHLIST')
+		);
+
+		if($this->params->get('guest_wishlist_redirect', '0') == '1') {
+			$user = JFactory::getUser();
+			if($user->guest) {
+				global $Itemid;
+				$url = '';
+				if(!empty($Itemid))
+					$url = '&Itemid='.$Itemid;
+				$url = 'index.php?option=com_users&view=login'.$url;
+				$cartNotifyParams['err_wishlist_guest'] = JRoute::_($url.'&return='.urlencode(base64_encode(hikashop_currentUrl('', false))));
+			}
+		}
+
 		$js = '
 if(window.Oby) {
 vex.defaultOptions.className = "vex-theme-default";
 vex.dialog.buttons.YES.text = "'.JText::_('HIKA_OK', true).'";
-window.cartNotifyParams = '.json_encode(array(
-	'img_url' => HIKASHOP_IMAGES.'icons/icon-32-newproduct.png',
-	'title' => JText::_('PRODUCT_ADDED_TO_CART'),
-	'text' => JText::_('PRODUCT_SUCCESSFULLY_ADDED_TO_CART'),
-	'wishlist_title' => JText::_('PRODUCT_ADDED_TO_WISHLIST'),
-	'wishlist_text' => JText::_('PRODUCT_SUCCESSFULLY_ADDED_TO_WISHLIST'),
-	'list_title' => JText::_('PRODUCTS_ADDED_TO_CART'),
-	'list_text' => JText::_('PRODUCTS_SUCCESSFULLY_ADDED_TO_CART'),
-	'list_wishlist_title' => JText::_('PRODUCTS_ADDED_TO_WISHLIST'),
-	'list_wishlist_text' => JText::_('PRODUCTS_SUCCESSFULLY_ADDED_TO_WISHLIST'),
-	'err_title' => JText::_('PRODUCT_NOT_ADDED_TO_CART'),
-	'err_text' => JText::_('PRODUCT_UNSUCCESSFULLY_ADDED_TO_CART'),
-	'err_wishlist_title' => JText::_('PRODUCT_NOT_ADDED_TO_WISHLIST'),
-	'err_wishlist_text' => JText::_('PRODUCT_UNSUCCESSFULLY_ADDED_TO_WISHLIST')
-)).';'.implode('',$extra_data).'
+window.cartNotifyParams = '.json_encode($cartNotifyParams).';'.implode('',$extra_data).'
 }
 ';
 		$doc->addScriptDeclaration($js);
