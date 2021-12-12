@@ -478,8 +478,8 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
         $username = (!empty($insert_row['jos_emundus_users']['username'])) ? $insert_row['jos_emundus_users']['username'] : strtolower($insert_row['jos_emundus_users']['email']);
         $email = $insert_row['jos_emundus_users']['email'];
-        $firstname = $insert_row['jos_emundus_personal_detail']['first_name'];
-        $lastname = $insert_row['jos_emundus_personal_detail']['last_name'];
+        $firstname = $insert_row['jos_emundus_users']['firstname'];
+        $lastname = $insert_row['jos_emundus_users']['lastname'];
         $ldap_user = false;
 
         // No user could be found either by id, username, email, or fnum: so we need to make a new one.
