@@ -1,4 +1,7 @@
 <?php
+
+use Joomla\Utilities\ArrayHelper;
+
 const _JEXEC = 1;
 
 error_reporting(E_ALL | E_NOTICE);
@@ -11,24 +14,43 @@ require_once JPATH_BASE . '/includes/framework.php';
 
 require_once JPATH_LIBRARIES . '/import.legacy.php';
 require_once JPATH_LIBRARIES . '/cms.php';
-
+require_once JPATH_LIBRARIES . '/src/Updater/Updater.php';
 // Load the configuration
 require_once JPATH_CONFIGURATION . '/configuration.php';
 
-define('JPATH_COMPONENT_ADMINISTRATOR', JPATH_ADMINISTRATOR . '/components/com_joomlaupdate');
+//define('JPATH_COMPONENT_ADMINISTRATOR', JPATH_ADMINISTRATOR . '/components/com_joomlaupdate');
+define('JPATH_COMPONENT_ADMINISTRATOR', JPATH_ADMINISTRATOR . '/components/');
 
-require_once JPATH_COMPONENT_ADMINISTRATOR . '/models/default.php';
+require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_joomlaupdate/models/default.php';
+require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/update.php';
 
 class Upgradejoomla extends JApplicationCli
 {
-    public function doExecute() {
+
+    private function getExtensionsId($table) {
+        $query = $this->db->getQuery(true);
+        $query->select('*')
+            ->from('#__' . $table);
+        $this->db->setQuery($query);
+        return $this->db->loadAssocList('extension_id');
+    }
+
+    public function updateExtensions() {
+        $model = JModelLegacy::getInstance('InstallerModelUpdate');
+
+        $uid = array(112,123);
+        $uid = ArrayHelper::toInteger($uid, array());
+
+        $component     = JComponentHelper::getComponent('com_installer');
+        $params        = $component->params;
+        $minimum_stability = (int) $params->get('minimum_stability', JUpdater::STABILITY_STABLE);
+
+        $model->update($uid, $minimum_stability);
+    }
+
+    public function updateJoomla() {
 
         // Get a Joomla-instance so createResorationFile() doesn't complain too much.
-        $app = JFactory::getApplication('site');
-        $app->initialise();
-
-        // Set direct download mode
-        $app->input->set('method', 'direct');
 
         // com_joomlaupdate's model
         $updater = JModelLegacy::getInstance('JoomlaupdateModelDefault');
@@ -57,11 +79,11 @@ class Upgradejoomla extends JApplicationCli
         //TODO: Complete restoration process
 
         // Extract files to core directory
-//        $zip = new ZipArchive;
-//            if ($zip->open(JPATH_ROOT . '/tmp/Joomla_3.10.3-Stable-Update_Package.zip') === TRUE) {
-//                $zip->extractTo(JPATH_ROOT);
-//                $zip->close();
-//            }
+        $zip = new ZipArchive;
+            if ($zip->open(JPATH_ROOT . '/tmp/Joomla_3.10.3-Stable-Update_Package.zip') === TRUE) {
+                $zip->extractTo(JPATH_ROOT);
+                $zip->close();
+            }
         $this->out('Sucess...');
 
         // Update SQL etc based on the manifest file we got with the update
@@ -70,7 +92,67 @@ class Upgradejoomla extends JApplicationCli
 
         $updater->cleanUp();
         $this->out('Cleanup...');
+    }
 
+    public function doEchoHelp()
+    {
+        echo <<<EOHELP
+            Joomla! CLI Update DB
+            
+            Operations
+              -u, --update                Run Update
+              -l, --list                  List Components
+              -h, --help                  Help
+              
+            Update Filters
+              -i, --id ID                 Update component/extension by ID
+              -a, --all                   All Components
+              -c, --core                  Composants Joomla
+            
+            
+            EOHELP;
+    }
+
+    public function doExecute()
+    {
+        $app = JFactory::getApplication('site');
+        $app->initialise();
+
+        // Set direct download mode
+        $app->input->set('method', 'direct');
+
+        $executionStartTime = microtime(true);
+
+//
+        $this->db = JFactory::getDbo();
+//        # List extensions from schema table
+//        $this->com_schemas = $this->getExtensionsId('schemas');
+//        # List extensions from extensions table
+//        $this->com_extensions = $this->getExtensionsId('extensions');
+//        # List components type from extensions table
+//        $this->com_components = $this->getComponentsId('extensions');
+        echo "Emundus SQL Update Tool \n\n";
+
+        # List components available for update
+        if ($this->input->get('l', $this->input->get('list'))) {
+            $this->getInfo();
+        }
+
+        if ($this->input->get('e', $this->input->get('extensions'))) {
+            $this->updateExtensions();
+        }
+
+        if ($this->input->get('c', $this->input->get('core'))) {
+            $this->updateJoomla();
+        }
+
+        if ($this->input->get('h', $this->input->get('help'))) {
+            $this->doEchoHelp();
+        }
+
+        $executionEndTime = microtime(true);
+        $seconds = $executionEndTime - $executionStartTime;
+        echo "\n" . "This script took $seconds to execute.";
     }
 }
 
