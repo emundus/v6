@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,7 +18,7 @@ if(!empty($this->tmpl_ajax) && empty($this->rows)) {
 
 $mainDivName = $this->params->get('main_div_name', '');
 $enableCarousel = (int)$this->params->get('enable_carousel', 0) && $this->module;
-$infinite_scroll = !$enableCarousel && ((int)$this->params->get('infinite_scroll', 0) == 1) && ((int)$this->params->get('random', 0) == 0);
+$infinite_scroll = !$enableCarousel && ((int)$this->params->get('infinite_scroll', 0) == 1) && ((int)$this->params->get('random', 0) == 0) && !hikashop_isAmpPage();
 $switchMode = !$enableCarousel && (int)$this->params->get('enable_switcher', 0) && (!$this->module || hikaInput::get()->getVar('hikashop_front_end_main', 0));
 
 $this->align = (((int)$this->params->get('text_center') == 0) ? 'left' : 'center');

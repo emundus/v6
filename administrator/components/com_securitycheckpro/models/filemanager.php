@@ -282,8 +282,9 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
         }
     
         // Obtenemos las excepciones establecidas por el usuario para la opción 'File Manager' 
+			
         $exceptions_malwarescan = $params->get('malwarescan_path_exceptions', null);
-    
+		    
         // Creamos un array que contendrá rutas de archivos o directorios exentos del chequeo de permisos
         $exceptions_malwarescan_array= null;
         if (!is_null($exceptions_malwarescan)) {
@@ -402,7 +403,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
     }
 
     /* Función que obtiene todos los archivos del sitio */
-    public function getFiles(string $root, $include_exceptions, $recursive, $opcion)
+    public function getFiles($root, $include_exceptions, $recursive, $opcion)
     {
         /* Cargamos el lenguaje del sitio */
         $lang = JFactory::getLanguage();
@@ -430,18 +431,34 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
             $excludedExtensions = array('\.aif','\.iff','\.conf','\.m3u','\.m4a','\.mid','\.mp3','\.mpa','\.wav','\.wma','\.3g2','\.3gp','\.asf','\.asx','\.avi','\.flv','\.m4v','\.mov','\.mp4','\.mpg','\.rm','\.srt','\.swf','\.vob','\.wmv','\.bmp','\.dds','\.gif','\.jpg','\.png','\.psd','\.pspimage','\.tga','\.thm','\.tif','\.tiff','\.yuv','\.eps','\.svg','\.txt','\.tar','\.zip','\.jpa','\.pdf');        
             $excludedExtensions = array_merge($excludedExtensions, array_map('strtoupper', $excludedExtensions));
         
+			if (!$include_exceptions) {
+				$text_for_log_exceptions = "Excluded files - WILL NOT BE STORED IN DATABASE";		
+			} else {
+				$text_for_log_exceptions = "Excluded files - WILL BE STORED IN DATABASE";
+			}
+			
+			$this->write_log("****** " . $text_for_log_exceptions . " ******");
+					
+			
             /* Añadimos las excepciones de integridad para excluirlas del escaneo inicial */
             if ($opcion == "permissions") {
-                foreach($this->skipDirsPermissions as $file)
-                {
-                    $last_part = explode(DIRECTORY_SEPARATOR, $file);
-                    $excludedFiles[] = end($last_part);
+				foreach($this->skipDirsPermissions as $file)
+                {					
+					$this->write_log($file);
+					if (!$include_exceptions) {
+						$last_part = explode(DIRECTORY_SEPARATOR, $file);
+						$excludedFiles[] = end($last_part);							
+					}
+                    
                 }
-            } else if ($opcion == "integrity") {
+            } else if ($opcion == "integrity") {				
                 foreach($this->skipDirsIntegrity as $file)
                 {
-                     $last_part = explode(DIRECTORY_SEPARATOR, $file);
-                     $excludedFiles[] = end($last_part);
+                    $this->write_log($file);
+					if (!$include_exceptions) {
+						$last_part = explode(DIRECTORY_SEPARATOR, $file);
+						$excludedFiles[] = end($last_part);							
+					}
                 }
             } else if ($opcion == "malwarescan") {
                 $exceptions = $this->skipDirsIntegrity;
@@ -450,17 +467,28 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                 } 
                 foreach($exceptions as $file)
                 {					
-                    $last_part = explode(DIRECTORY_SEPARATOR, $file);
-                    $excludedFiles[] = end($last_part);
+                    $this->write_log($file);
+					if (!$include_exceptions) {
+						$last_part = explode(DIRECTORY_SEPARATOR, $file);
+						$excludedFiles[] = end($last_part);							
+					}
                 }
             }
+			
+			$this->write_log("****** End Excluded files ******");
+			
+			// This is needed to avoid an error in the JFolder procedure
+			if ( is_null($excludedFiles) ) {
+				$excludedFiles = array();
+			}
         
             /* Comprobamos si tenemos que escanear todos los archivos o sólo los ejecutables */
             if ($scan_executables_only) {
                 $files_name = JFolder::files($root, '.', true, true, $excludedFiles, $excludedExtensions);            
             } else
             {
-                $files_name = JFolder::files($root, '', true, true, $excludedFiles);
+				$files_name = JFolder::files($root, '.', true, true, $excludedFiles);
+								
                 // Buscamos si existe el archivo .htaccess o .htpasswd en la ruta a escanear (sólo lo buscamos en la ruta base, no en subdirectorios)
                 if (file_exists($root . DIRECTORY_SEPARATOR . ".htaccess")) {
                     $files_name[] = $root . DIRECTORY_SEPARATOR . ".htaccess";
@@ -473,10 +501,10 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
     
         /* Reemplazamos los caracteres distintos del usado como DIRECTORY_SEPARATOR. Esto pasa, por ejemplo, en un servidor IIS:  */
         $files_name = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $files_name);
-            
+			            
         if ($opcion == "permissions") {
-        
-            $this->files_scanned += count($files_name);
+			
+			$this->files_scanned += count($files_name);
         
             $files = array();
             if (!empty($files_name)) {
@@ -534,6 +562,8 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                                 }
                             }
                         }
+						
+						
                         // Si el archivo se encuentra entre las excepciones y la opción 'añadir excepciones a la bbdd' está activada guardamos el archivo. 
                         if ((($safe == 2) && ($include_exceptions)) || ($safe!=2)) {
                                       $permissions = $this->file_perms($file);
@@ -1005,7 +1035,8 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                     )
                 );    
             }
-        
+			
+			        
             // Añadimos los ficheros almacenados en la carpeta 'quarantine' al array de resultados
             if (!empty($filtered_array)) {
                 $this->Stack = array_merge($this->Stack, $filtered_array);
@@ -1046,6 +1077,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                                 foreach ($exceptions as $excep)
                                          {
                                     if (strstr($file . DIRECTORY_SEPARATOR, $excep . DIRECTORY_SEPARATOR)) {  // Añadimos una barra invertida a la comparación por si la excepción es un directorio
+								
                                                $safe_malwarescan = (int) 2;
                                     }
                                     $i++;
@@ -1055,7 +1087,8 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                         } else 
                         {  // Comprobamos que si el archivo está explícitamente en la lista de excepciones
                             if ((!is_null($exceptions)) && (in_array($file, $exceptions))) {
-                                       $safe_malwarescan = (int) 2;
+								
+                                $safe_malwarescan = (int) 2;
                             } else
                             {
                                 // Comprobamos si el archivo pertenece a un directorio que está incluido en la lista de excepciones
@@ -1064,13 +1097,14 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                                     foreach ($exceptions as $excep)
                                     {
                                         if (strstr($file . DIRECTORY_SEPARATOR, $excep . DIRECTORY_SEPARATOR)) {  // Añadimos una barra invertida a la comparación por si la excepción es un directorio
+											
                                             $safe_malwarescan = (int) 2;
                                         }
                                         $i++;
                                     }
                                 }
                             }
-                        }
+                        }					
 						                                    
                         // Días desde que el fichero fue modificado
                         $days_since_last_mod = intval(abs((filemtime($file) - time())/86400));
@@ -1248,7 +1282,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
     }
 
     /* Función que obtiene todos los directorios del sitio */
-    public function getDirectories(string $root, $include_exceptions, $recursive, $opcion)
+    public function getDirectories($root, $include_exceptions, $recursive, $opcion)
     {
         /* Cargamos el lenguaje del sitio */
         $lang = JFactory::getLanguage();
@@ -1722,6 +1756,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
         }
     
         $stack = json_decode($stack, true);
+		
     
         /* Obtenemos el número de registros del array que hemos de mostrar. Si el límite superior es '0', entonces devolvemos todo el array */
         $upper_limit = $this->getState('limitstart');
@@ -1796,6 +1831,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
         case "malwarescan":
             /* Obtenemos los valores de los filtros */
             $filter_malwarescan_status = $this->state->get('filter.malwarescan_status');
+				
             $search = htmlentities($this->state->get('filter.malwarescan_search'));
             if (!is_null($stack['files_folders'])) {            
                 $filtered_array = array();
@@ -1886,11 +1922,12 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
     function scan($opcion)
     {
 
-        $include_exceptions = 1;
+        $include_exceptions = 0;
         $folder_exceptions = 0;
         
         // Obtenemos la ruta sobre la que vamos a hacer el chequeo
         $params = JComponentHelper::getParams('com_securitycheckpro');
+				
         $file_check_path = $params->get('file_manager_path', JPATH_ROOT);
     
         if (($file_check_path == "JPATH_ROOT") || ($file_check_path == JPATH_ROOT)) {
@@ -1911,21 +1948,21 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
             break;
         case "integrity":
             // Obtenemos si debemos guardar las excepciones
-            $include_exceptions = $params->get('file_integrity_include_exceptions_in_database', 1);    
+            $include_exceptions = $params->get('file_manager_include_exceptions_in_database', 1);    
             // ¿El escaneo ha de ser recursivo?
-            $folder_exceptions = $params->get('file_integrity_recursive_folder_exceptions', 0);
+            $folder_exceptions = $params->get('file_manager_recursive_folder_exceptions', 0);
             break;
         case "malwarescan":
             // Obtenemos si debemos guardar las excepciones
-            $include_exceptions = $params->get('file_integrity_include_exceptions_in_database', 1);    
+            $include_exceptions = $params->get('file_manager_include_exceptions_in_database', 1);  
             // ¿El escaneo ha de ser recursivo?
-            $folder_exceptions = $params->get('file_integrity_recursive_folder_exceptions', 0);
+            $folder_exceptions = $params->get('file_manager_recursive_folder_exceptions', 0);
             break;
         case "malwarescan_modified":
             // Obtenemos si debemos guardar las excepciones
-            $include_exceptions = $params->get('file_integrity_include_exceptions_in_database', 1);    
+            $include_exceptions = $params->get('file_manager_include_exceptions_in_database', 1);    
             // El escaneo ha de ser recursivo?
-            $folder_exceptions = $params->get('file_integrity_recursive_folder_exceptions', 0);
+            $folder_exceptions = $params->get('file_manager_recursive_folder_exceptions', 0);
             break;
         }
     
@@ -2180,11 +2217,11 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
     /* Función que chequea si hay código inyectado al principio de un archivo */
     function code_at_start($content,$path)
     {
-        // Check if there is allowed content between 'php' string and '/*' string (for instance, // namespace administrator\components\com_gdpr\controllers;
+        // Check if there is allowed content between 'php' string and '/*' string (for instance, namespace administrator\components\com_gdpr\controllers;
 		$allowed_content = false;
         $ini = strpos($content, "<?php");
         $end = strpos($content, "/*");
-		$allowed_content_pos = strpos($content, "//");
+		$allowed_content_pos = strpos($content, "namespace");
 		
 		$length = strlen($content);
         $number_of_spaces = substr_count($content, ' ', 0, $end-$ini);
@@ -2317,8 +2354,8 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                 $results_count = count($all_results); // count the number of results
                 $total_results += $results_count; // total results of all fingerprints                
                                 
-                if ((!empty($all_results)) && ($results_count>50)) {                    
-                    // Update the variable to stop looking for more malware patterns
+                if ( (!empty($all_results)) && ($results_count>50) && ( substr_count(strtolower($content), strtolower("global"))) ) {   
+				    // Update the variable to stop looking for more malware patterns
                     $malware_found = true;
                     // Let's see if this seems a Joomla file, which usually forbids direct access using the JEXEC feature
                     $content_without_spaces = $this->clean_espaces($content);
@@ -2339,9 +2376,12 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                            $length = strlen($content);
                            $number_of_spaces = substr_count($content, ' ');
                            $number_of_new_lines = substr_count($content, PHP_EOL);
+						   // Count the number of apostrophes ('). This is done to avoid false positives in J4 /libraries/vendor/voku/portable-ascii/src/voku/helper/data/
+						   $number_of_apostrophes = substr_count($content, "'");
                            // Check if we are on IIS. For some reason PHP_EOL doesn't return the number of new lines...
-                           $iis = $this->on_iis();
-                        if (((($number_of_spaces/$length) < 0.001) && (($number_of_spaces/$length) > 0)) || ((($number_of_new_lines/$length) < 0.001) && (($number_of_new_lines/$length) > 0)) || (($number_of_new_lines == 0) && (!$iis)) || ($number_of_spaces == 0)) {
+                           $iis = $this->on_iis();					   
+							
+                        if (((($number_of_spaces/$length) < 0.001) && (($number_of_spaces/$length) > 0)) || ((($number_of_new_lines/$length) < 0.001) && (($number_of_new_lines/$length) > 0) && (($number_of_apostrophes) < 400)) || (($number_of_new_lines == 0) && (!$iis)) || ($number_of_spaces == 0)) {
                             // Update the variable to stop looking for more malware patterns
                             $malware_found = true;
                             $pattern[1] = "Obfuscated file";

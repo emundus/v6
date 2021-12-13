@@ -131,7 +131,7 @@ class EmundusControllerApplication extends JControllerLegacy
             }
         }
         else {
-                echo JText::_('ACCESS_DENIED').' : '.$attachment['value'].' : '.$upload['filename'];
+            echo JText::_('ACCESS_DENIED').' : '.$attachment['value'].' : '.$upload['filename'];
         }
 
     }
@@ -622,5 +622,116 @@ class EmundusControllerApplication extends JControllerLegacy
             $res->msg = JText::_('YOU_ARE_NOT_ALLOWED_TO_DO_THAT');
             exit();
         }
+    }
+
+    /////////////////////////////////////////////////////////////
+    // used by VueJS com_emundus Attachments component
+
+    public function getuserattachments()
+    {
+        $m_application = $this->getModel('Application');
+
+        $jinput = JFactory::getApplication()->input;
+
+        $user_id = $jinput->getInt('user_id', null);
+
+        $attachments = $m_application->getUserAttachments($user_id);
+
+        echo json_encode($attachments);
+        exit;
+    }
+
+    public function getattachmentsbyfnum()
+    {
+        $m_application = $this->getModel('Application');
+
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getVar('fnum', null);
+
+        $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
+
+        foreach($attachments as $attachment)
+        {
+            // check if file is in server
+            if (!file_exists(EMUNDUS_PATH_ABS.$attachment->user_id.DS.$attachment->filename)) {
+                $attachment->existsOnServer = false;
+            } else {
+                $attachment->existsOnServer = true;
+            }
+        }
+
+        echo json_encode($attachments);
+        exit;
+    }
+
+    public function updateattachment()
+    {
+        $update = false;
+        $msg = '';
+
+        // get post data
+        $jinput = JFactory::getApplication()->input;
+        $data = $jinput->post->getArray();
+
+        if (EmundusHelperAccess::asAccessAction(4, 'u', JFactory::getUser()->id, $data['fnum'])) {
+            $m_application = $this->getModel('Application');
+    
+            if ($jinput->files->get('file')) {
+                $data['file'] = $jinput->files->get('file');
+            }
+    
+            if ($data['fnum'] && $data['user']) {
+                $update = $m_application->updateAttachment($data);
+            } else {
+                $msg = JText::_('INVALID_PARAMETERS');
+            }
+        } else {
+           $msg = JText::_('ACCESS_DENIED');
+        }
+
+        echo json_encode(array('status' => $update, 'msg' => $msg));
+        exit;
+    }
+
+    public function getattachmentpreview()
+    {
+        $m_application = $this->getModel('Application');
+
+        $jinput = JFactory::getApplication()->input;
+        $user = $jinput->getVar('user', null);
+        $filename = $jinput->getVar('filename', null);
+
+        $preview = $m_application->getAttachmentPreview($user, $filename);
+
+        echo json_encode($preview);
+        exit;
+    }
+
+    public function getfilters() 
+    {
+        $filters = [];
+        $jinput = JFactory::getApplication()->input;
+        $type = $jinput->getS('type', null);
+        $id = $jinput->getVar('id', null);
+        
+        $m_application = $this->getModel('Application');
+        $filters = $m_application->getFilters($type, $id);
+
+        echo json_encode(array('status' => true, 'filters' => $filters));
+        exit;
+    }
+
+    public function mountquery() 
+    {
+        $jinput = JFactory::getApplication()->input;
+        $filters = $jinput->getVar('filters', null);
+        $listId = $jinput->getVar('id', null);
+        $filters = json_decode($filters, true);
+        
+        $m_application = $this->getModel('Application');
+        $res = $m_application->mountQuery($listId, $filters);
+
+        echo json_encode($res);
+        exit;
     }
 }

@@ -779,6 +779,7 @@ class EmundusonboardModelsettings extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+
         $name = strtolower($this->clean($form['label']));
 
         // Check if a table already get the same name and increment them
@@ -828,10 +829,18 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($table_query);
             $db->execute();
 
-            foreach ($columns as $key => $column) {
+            foreach ($columns as  $column) {
+
                 $query = "ALTER TABLE " . $table_name . " ADD " . $column . " VARCHAR(255) NULL";
                 $db->setQuery($query);
-                $db->execute();
+                try {
+                    $db->execute();
+                } catch(Exception $e) {
+
+                    JLog::add('component/com_emundus_onboard/models/settings | Failed to add new column imported from csv to referentail database  : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+
+                }
+
             }
             //
 

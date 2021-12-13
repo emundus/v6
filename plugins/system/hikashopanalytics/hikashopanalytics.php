@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -56,6 +56,7 @@ class plgSystemHikashopanalytics extends JPlugin
 
 		return $this->checkOrder($order, false);
 	}
+
 
 	public function afterInitialise() {
 		return $this->onAfterInitialise();
@@ -215,7 +216,7 @@ class plgSystemHikashopanalytics extends JPlugin
 			$data[$key] = $value;
 		}
 		jimport('joomla.filter.filterinput');
-		$filter = JFilterInput::getInstance(null, null, 1, 1);
+		$filter = JFilterInput::getInstance(array(), array(), 1, 1);
 		foreach($vars as $key => $value) {
 			if(!empty($data[$value]) && !is_null($filter)) {
 				$_SESSION['hikashop_analytics_ga_'.$key] = $filter->clean($data[$value], 'string');
@@ -343,8 +344,24 @@ window.hikashop.ready(function(){
 
 		$app = JFactory::getApplication();
 
+		$to_currency = '';
+		$main_currency = '';
 		foreach($accounts as $acc) {
-			if($acc->currency == $currencyInfo->currency_code && !empty($acc->account_id)) {
+			$currencies = explode(':', $acc->currency, 2);
+			$main_currency = reset($currencies);
+
+			if($main_currency != $currencyInfo->currency_code) {
+				if( count($currencies) > 1 ) {
+					$from_currencies = explode(',', $currencies[1]);
+					if(!in_array($currencyInfo->currency_code, $from_currencies))
+						continue;
+					$to_currency = $main_currency;
+				} else {
+					continue;
+				}
+			}
+
+			if(!empty($acc->account_id)) {
 				$account = $acc->account_id;
 				$found = true;
 				if(!preg_match('/UA-[0-9]{2,12}-[0-9]{1,3}/',$account)) {
@@ -358,6 +375,9 @@ window.hikashop.ready(function(){
 				break;
 			}
 		}
+
+		if(empty($to_currency))
+			$to_currency = $main_currency;
 
 		if(!$found) {
 			if(!$app->getUserState(HIKASHOP_COMPONENT.'.error_display_ga')) {
@@ -405,10 +425,10 @@ ga("require", "ecommerce", "ecommerce.js");
 ga("ecommerce:addTransaction", {
 	"id": "' . $order->order_id.'",
 	"affiliation": "' . str_replace(array('\\','"'), array('\\\\', '\\\"'), $siteName) . '",
-	"revenue": "' . round($order->order_full_price, 2) . '",
-	"shipping": "' . round($order->order_shipping_price, 2) . '",
-	"tax": "' . round($tax, 2) . '",
-	"currency": "'.$currencyInfo->currency_code.'"
+	"revenue": "' . round($this->convertPrices($order->order_full_price, $main_currency, $to_currency), 2) . '",
+	"shipping": "' . round($this->convertPrices($order->order_shipping_price, $main_currency, $to_currency), 2) . '",
+	"tax": "' . round($this->convertPrices($tax, $main_currency, $to_currency), 2) . '",
+	"currency": "'.$to_currency.'"
 });
 ';
 
@@ -419,7 +439,7 @@ ga("ecommerce:addItem", {
 	"name": "' . str_replace(array('\\','"'), array('\\\\', '\\\"'), strip_tags($product->order_product_name)) . '",
 	"sku": "' . str_replace(array('\\','"'), array('\\\\', '\\\"'), $product->order_product_code) . '",
 	"category": "",
-	"price": "' . ($product->order_product_price + $product->order_product_tax) . '",
+	"price": "' . round($this->convertPrices($product->order_product_price + $product->order_product_tax, $main_currency, $to_currency), 2). '",
 	"quantity": "' . (int)$product->order_product_quantity . '"
 });
 ';
@@ -455,9 +475,9 @@ _gaq.push(["_trackPageview"]);
 _gaq.push(["_addTrans",
 	"' . $order->order_id . '",
 	"' . str_replace(array('\\','"'), array('\\\\', '\\\"'), $siteName) . '",
-	"' . round($order->order_full_price, 2) . '",
-	"' . $tax . '",
-	"' . round($order->order_shipping_price, 2) . '",
+	"' . round($this->convertPrices($order->order_full_price, $main_currency, $to_currency), 2) . '",
+	"' . round($this->convertPrices($tax, $main_currency, $to_currency), 2) . '",
+	"' . round($this->convertPrices($order->order_shipping_price, $main_currency, $to_currency), 2) . '",
 	"' . str_replace(array('\\','"'), array('\\\\', '\\\"'), @$order->billing_address->address_city) . '",
 	"' . str_replace(array('\\','"'), array('\\\\', '\\\"'), @$order->billing_address->address_state) . '",
 	"' . str_replace(array('\\','"'), array('\\\\', '\\\"'), @$order->billing_address->address_country) . '",
@@ -470,7 +490,7 @@ _gaq.push(["_addItem",
 	"' . str_replace(array('\\','"'), array('\\\\', '\\\"'), $product->order_product_code) . '",
 	"' . str_replace(array('\\','"'), array('\\\\', '\\\"'), strip_tags($product->order_product_name)) . '",
 	"",
-	"' . ($product->order_product_price + $product->order_product_tax) . '",
+	"' . round($this->convertPrices($product->order_product_price + $product->order_product_tax, $main_currency, $to_currency), 2) . '",
 	"' . $product->order_product_quantity . '"
 ]);
 ';
@@ -494,11 +514,36 @@ _gaq.push(["_trackTrans"]);
 		return $js;
 	}
 
+	protected function convertPrices($price, $src, $dst) {
+		$class = hikashop_get('class.currency');
+		static $currencies = array();
+		if(!isset($currencies[$src]))
+			$currencies[$src] = $class->get($src);
+		if(!isset($currencies[$dst]))
+			$currencies[$dst] = $class->get($dst);
+		return $class->convertUniquePrice($price, $currencies[$src]->currency_id, $currencies[$dst]->currency_id);
+	}
+
 	protected function googleDirectCall($accounts, &$order, $currencyInfo) {
 		$found = false;
-		foreach($accounts as $a) {
-			if($a->currency == $currencyInfo->currency_code && !empty($a->account_id)) {
-				$account = $a->account_id;
+		$to_currency = '';
+		$main_currency = '';
+		foreach($accounts as $acc) {
+			$currencies = explode(':', $acc->currency, 2);
+			$main_currency = reset($currencies);
+
+			if($main_currency != $currencyInfo->currency_code) {
+				if( count($currencies) > 1 ) {
+					$from_currencies = explode(',', $currencies[1]);
+					if(!in_array($currencyInfo->currency_code, $from_currencies))
+						continue;
+					$to_currency = $main_currency;
+				} else {
+					continue;
+				}
+			}
+			if(!empty($acc->account_id)) {
+				$account = $acc->account_id;
 				if(!preg_match('/UA-[0-9]{2,12}-[0-9]{1}/', $account))
 					continue;
 				$found = true;
@@ -507,6 +552,10 @@ _gaq.push(["_trackTrans"]);
 		}
 		if(!$found)
 			return false;
+
+
+		if(empty($to_currency))
+			$to_currency = $main_currency;
 
 		$params = array( 'uuid' => round((rand() / getrandmax()) * 0x7fffffff));
 
@@ -525,6 +574,7 @@ _gaq.push(["_trackTrans"]);
 		else
 			$siteName = $jconf->getValue('config.sitename');
 
+
 		$data = array(
 			'v' => 1,
 			'tid' => $account,
@@ -542,10 +592,10 @@ _gaq.push(["_trackTrans"]);
 			't' => 'transaction',
 			'ti' => $order->order_id, // order_id
 			'ta' => $siteName,
-			'tr' => round($order->order_full_price, 2),
-			'tt' => round(($order->order_subtotal - $order->order_subtotal_no_vat) + $order->order_shipping_tax + $order->order_discount_tax, 2),
-			'ts' => round($order->order_shipping_price, 2),
-			'cu' => $currencyInfo->currency_code
+			'tr' => round($this->convertPrices($order->order_full_price, $main_currency, $to_currency), 2),
+			'tt' => round($this->convertPrices(($order->order_subtotal - $order->order_subtotal_no_vat) + $order->order_shipping_tax + $order->order_discount_tax, $main_currency, $to_currency), 2),
+			'ts' => round($this->convertPrices($order->order_shipping_price, $main_currency, $to_currency), 2),
+			'cu' => $to_currency
 		);
 		$this->googleDirectCallHit($data);
 
@@ -558,11 +608,11 @@ _gaq.push(["_trackTrans"]);
 				't' => 'item',
 				'ti' => $order->order_id, // order_id
 				'in' => strip_tags($product->order_product_name), // name
-				'ip' => ($product->order_product_price + $product->order_product_tax), // price
+				'ip' => round($this->convertPrices($product->order_product_price + $product->order_product_tax, $main_currency, $to_currency), 2), // price
 				'iq' => $product->order_product_quantity, // qty
 				'ic' => $product->order_product_code, // code
 				'iv' => '',
-				'cu' => $currencyInfo->currency_code
+				'cu' => $to_currency
 			);
 			$this->googleDirectCallHit($data);
 		}
