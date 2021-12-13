@@ -595,6 +595,26 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+    public function updateColumnDataFromImportedCSVDatas() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $database_name = $jinput->getRaw('database_name');
+            $datas = $jinput->getRaw('datas');
+            $base_comparing_column=$jinput->getRaw('base_comparing_column');
+
+
+            $state = $m_settings->updateColumnDataFromImportedCSVDatas($base_comparing_column,$database_name,$datas);
+            $response = array('status' => $state, 'msg' => 'SUCCESS');
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
 
     public function unlockuser() {
         $user = JFactory::getUser();

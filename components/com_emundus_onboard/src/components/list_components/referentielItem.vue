@@ -34,6 +34,7 @@
                   </tr>
                 </template>
 
+
                 <template slot="next" slot-scope="{load}">
                   <button class="bouton-sauvergarder-et-continuer" style="float: right" @click.prevent="load">{{Load}}</button>
                 </template>
@@ -42,7 +43,17 @@
                   <button @click.prevent="submit">send!</button>
                 </template>
               </vue-csv-import>
-              <button @click="validateColumnMappingAndImportData()">Enregistrer</button>
+              <table class="custom-csv-table">
+                <tr>
+                  <td>Colonne de comparaison </td>
+                  <td>
+                    <select  class="dropdown-toggle" v-model="comparing_column_in_existing_data_columns">
+                    <option :value="data" v-for="(data,i) in datas.columns" >{{data}}</option>
+                  </select>
+                  </td>
+                </tr>
+              </table>
+              <button @click="validateColumnMappingAndImportData(database)">Enregistrer</button>
             </div>
 
             <!---- End import csv side --->
@@ -109,56 +120,58 @@
 
 <script>
 
-import moment from "moment";
-import axios from "axios";
-import qs from "qs";
+import moment from 'moment';
+import axios from 'axios';
+import qs from 'qs';
 import { VueCsvImport } from 'vue-csv-import';
+
 export default {
-  name: "referentielItem",
-  components: {VueCsvImport},
+  name: 'referentielItem',
+  components: { VueCsvImport },
   props: {
     data: Object,
     selectItem: Function,
     actions: Object,
-    databases:Object,
+    databases: Object,
   },
   data() {
     return {
       selectedData: [],
-      newColumns:[],
-      columnTobeUpdateFromCSV:[],
+      newColumns: [],
+      columnTobeUpdateFromCSV: [],
       indexTobeUpdateFromCSV: -1,
       datas: {
         columns: [],
         datas: [],
       },
       indexOpened: -1,
-      indexHighlight: "",
+      indexHighlight: '',
       loading: false,
-      clickUpdatingLabel:false,
-      new_columnname_value:"",
+      clickUpdatingLabel: false,
+      new_columnname_value: '',
+      comparing_column_in_existing_data_columns: '',
       addingNewColumn: false,
-      data_value:"",
-      current_referentiel_db_name:"",
+      data_value: '',
+      current_referentiel_db_name: '',
       csv: null,
       csv_comp: 0,
       importCSV: false,
-      publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-      unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
-      passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
-      Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-      Visualize: Joomla.JText._("COM_EMUNDUS_ONBOARD_VISUALIZE"),
-      From: Joomla.JText._("COM_EMUNDUS_ONBOARD_FROM"),
-      To: Joomla.JText._("COM_EMUNDUS_ONBOARD_TO"),
-      Since: Joomla.JText._("COM_EMUNDUS_ONBOARD_SINCE"),
-      AdvancedSettings: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADVANCED_SETTINGS"),
-      Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOSSIERS_PROGRAM"),
-      Files: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES"),
-      File: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE"),
-      MyColumns: Joomla.JText._("COM_EMUNDUS_ONBOARD_MY_COLUMNS"),
-      CSVColumns: Joomla.JText._("COM_EMUNDUS_ONBOARD_CSV_COLUMNS"),
-      CSVAssociate: Joomla.JText._("COM_EMUNDUS_ONBOARD_CSV_ASSOCIATION"),
-      Load: Joomla.JText._("COM_EMUNDUS_ONBOARD_LOAD_FILE"),
+      publishedTag: Joomla.JText._('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH'),
+      unpublishedTag: Joomla.JText._('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
+      passeeTag: Joomla.JText._('COM_EMUNDUS_ONBOARD_FILTER_CLOSE'),
+      Modify: Joomla.JText._('COM_EMUNDUS_ONBOARD_MODIFY'),
+      Visualize: Joomla.JText._('COM_EMUNDUS_ONBOARD_VISUALIZE'),
+      From: Joomla.JText._('COM_EMUNDUS_ONBOARD_FROM'),
+      To: Joomla.JText._('COM_EMUNDUS_ONBOARD_TO'),
+      Since: Joomla.JText._('COM_EMUNDUS_ONBOARD_SINCE'),
+      AdvancedSettings: Joomla.JText._('COM_EMUNDUS_ONBOARD_PROGRAM_ADVANCED_SETTINGS'),
+      Program: Joomla.JText._('COM_EMUNDUS_ONBOARD_DOSSIERS_PROGRAM'),
+      Files: Joomla.JText._('COM_EMUNDUS_ONBOARD_FILES'),
+      File: Joomla.JText._('COM_EMUNDUS_ONBOARD_FILE'),
+      MyColumns: Joomla.JText._('COM_EMUNDUS_ONBOARD_MY_COLUMNS'),
+      CSVColumns: Joomla.JText._('COM_EMUNDUS_ONBOARD_CSV_COLUMNS'),
+      CSVAssociate: Joomla.JText._('COM_EMUNDUS_ONBOARD_CSV_ASSOCIATION'),
+      Load: Joomla.JText._('COM_EMUNDUS_ONBOARD_LOAD_FILE'),
     };
   },
 
@@ -166,37 +179,50 @@ export default {
     updateLoading(value) {
       this.$emit('updateLoading', value);
     },
-    importColumDataFormCSV(column_name,indexTobeUpdateFromCSV){
-      this.importCSV=true;
-      this.indexTobeUpdateFromCSV=indexTobeUpdateFromCSV;
-      this.columnTobeUpdateFromCSV.push("colonne_de_reference");
+    importColumDataFormCSV(column_name, indexTobeUpdateFromCSV) {
+      this.importCSV = true;
+      this.indexTobeUpdateFromCSV = indexTobeUpdateFromCSV;
+      this.columnTobeUpdateFromCSV.push('colonne_de_reference');
       this.columnTobeUpdateFromCSV.push(column_name);
     },
-    validateColumnMappingAndImportData(){
-      let colonne_reference=this.csv[0]["colonne_de_reference"];
-      let column_to_be_update_name=this.columnTobeUpdateFromCSV[1];
-      console.log("column to be update  "+column_to_be_update_name);
-      this.csv.forEach(csv_el=>{
-        this.datas.datas.forEach(data_el=>{
-          console.log(data_el);
-          console.log(csv_el);
-          if(data_el[this.datas.columns[0]]==csv_el.colonne_de_reference){
-            console.log(" data el id "+data_el.id);
-            console.log(" csv el el id "+csv_el.colonne_de_reference);
-            console.log('ok');
-            console.log(" csv " +csv_el[column_to_be_update_name]);
+    validateColumnMappingAndImportData(database) {
 
-            data_el[column_to_be_update_name]=csv_el[column_to_be_update_name];
+      const column_to_be_update_name = this.columnTobeUpdateFromCSV[1];
+
+      // eslint-disable-next-line camelcase
+      this.csv.forEach((csv_el) => {
+        // eslint-disable-next-line camelcase
+        this.datas.datas.forEach((data_el) => {
+          // console.log(data_el);
+          // console.log(csv_el);
+          // eslint-disable-next-line max-len
+          if (data_el[this.datas.columns[this.datas.columns.indexOf(this.comparing_column_in_existing_data_columns)]] == csv_el.colonne_de_reference) {
+
+            // eslint-disable-next-line no-param-reassign
+            data_el[column_to_be_update_name] = csv_el[column_to_be_update_name];
           }
-        })
-      })
+        });
+      });
 
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updateColumnDataFromImportedCSVDatas',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        data: qs.stringify({
+          database_name: database.database_name,
+          datas: this.csv,
+          base_comparing_column: this.comparing_column_in_existing_data_columns,
+
+        }),
+      }).then((resp) => {
+        console.log(resp);
+      });
     },
-    getData(database,index){
-      if(this.indexOpened === index){
-
+    getData(database, index) {
+      if (this.indexOpened === index) {
         this.indexOpened = -1;
-
       } else {
         this.loading = true;
 
@@ -204,120 +230,105 @@ export default {
 
         this.datas = {
           columns: [],
-          datas: []
+          datas: [],
         };
         axios({
-          method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=settings&task=getdatasfromtable",
+          method: 'get',
+          url: 'index.php?option=com_emundus_onboard&controller=settings&task=getdatasfromtable',
           params: {
             db: database.database_name,
           },
-          paramsSerializer: params => {
-            return qs.stringify(params);
-          }
-        }).then(response => {
+          paramsSerializer: params => qs.stringify(params),
+        }).then((response) => {
           this.loading = false;
           this.datas.datas = response.data.data;
           this.datas.columns = Object.keys(this.datas.datas[0]);
           this.current_referentiel_db_name = database.database_name;
-
         });
       }
     },
-    updateDataValue(value,i,j){
-      this.datas.datas[i][j]=this.data_value;
-      this.indexHighlight="";
+    updateDataValue(value, i, j) {
+      this.datas.datas[i][j] = this.data_value;
+      this.indexHighlight = '';
       this.clickUpdatingLabel = false;
       axios({
-        method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=updateDataColumnValue",
+        method: 'get',
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updateDataColumnValue',
         params: {
           db: this.current_referentiel_db_name,
           column: j,
           value: this.data_value,
           primary_key_column: this.datas.columns[0],
-          primary_key_column_value:this.datas.datas[i][this.datas.columns[0]],
+          primary_key_column_value: this.datas.datas[i][this.datas.columns[0]],
         },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(resp=>{
-
+        paramsSerializer: params => qs.stringify(params),
+      }).then((resp) => {
         this.tip();
-      })
-
+      });
     },
-    enableDataValueInput(value,i,j){
-
+    enableDataValueInput(value, i, j) {
       this.clickUpdatingLabel = true;
-      this.indexHighlight=i+'_'+j+'_'+value;
+      this.indexHighlight = `${i}_${j}_${value}`;
 
-      this.data_value=value;
+      this.data_value = value;
 
       setTimeout(() => {
-        document.getElementById('data_value_'+value+'_'+ i).focus();
-
+        document.getElementById(`data_value_${value}_${i}`).focus();
       }, 100);
     },
-    addColum(){
-      this.addingNewColumn=true;
-      //this.new_columnname_value="";
-      this.newColumns.push("");
-      let last_index=this.newColumns.length-1;
+    addColum() {
+      this.addingNewColumn = true;
+      // this.new_columnname_value="";
+      this.newColumns.push('');
+      const last_index = this.newColumns.length - 1;
       setTimeout(() => {
-        document.getElementById('column_new_'+last_index).focus();
-
+        document.getElementById(`column_new_${last_index}`).focus();
       }, 100);
     },
 
     saveColumn(column_name, i) {
       // eslint-disable-next-line camelcase
-      let new_column_name="";
-      if(column_name==""){
-        new_column_name="new_column_"+i;
-
-      } else{
+      let new_column_name = '';
+      if (column_name == '') {
+        new_column_name = `new_column_${i}`;
+      } else {
         new_column_name = column_name.replace(/ /g, '_');
       }
-      if(this.datas.columns.indexOf(new_column_name)==-1){
-
+      if (this.datas.columns.indexOf(new_column_name) == -1) {
         axios({
-          method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=settings&task=addNewDataColunmn",
+          method: 'get',
+          url: 'index.php?option=com_emundus_onboard&controller=settings&task=addNewDataColunmn',
           params: {
             db: this.current_referentiel_db_name,
             column: new_column_name,
           },
-          paramsSerializer: params => {
-            return qs.stringify(params);
-          }
-        }).then(resp=>{
-
+          paramsSerializer: params => qs.stringify(params),
+        }).then((resp) => {
           this.datas.columns.push(new_column_name);
 
-          this.datas.datas.forEach( el => {
+          this.datas.datas.forEach((el) => {
             el[new_column_name] = null;
           });
 
           this.tip();
-        })
+        });
       }
-      //suppresion du table temporaire des new columns
+      // suppresion du table temporaire des new columns
       this.newColumns.splice(i, 1);
     },
     tip() {
       this.show(
-          "foo-velocity",
-          Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
-          Joomla.JText._("COM_EMUNDUS_ONBOARD_COLOR_SUCCESS"),
+        'foo-velocity',
+        Joomla.JText._('COM_EMUNDUS_ONBOARD_BUILDER_UPDATE'),
+        Joomla.JText._('COM_EMUNDUS_ONBOARD_COLOR_SUCCESS'),
       );
     },
-    show(group, text = "", title = "Information") {
+    show(group, text = '', title = 'Information') {
       this.$notify({
         group,
         title: `${title}`,
-        text: text,
-        duration: 3000
+        text,
+        duration: 3000,
       });
     },
     moment(date) {
@@ -326,28 +337,26 @@ export default {
 
     redirectJRoute(link) {
       axios({
-        method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        method: 'get',
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute',
         params: {
-          link: link,
+          link,
         },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
+        paramsSerializer: params => qs.stringify(params),
+      }).then((response) => {
         window.location.href = window.location.pathname + response.data.data;
       });
-    }
+    },
   },
 
   computed: {
     isPublished() {
       return (
-          this.data.published == 1 &&
-          moment(this.data.start_date) <= moment() &&
-          (moment(this.data.end_date) >= moment() ||
-              this.data.end_date == null ||
-              this.data.end_date == "0000-00-00 00:00:00")
+        this.data.published == 1
+          && moment(this.data.start_date) <= moment()
+          && (moment(this.data.end_date) >= moment()
+              || this.data.end_date == null
+              || this.data.end_date == '0000-00-00 00:00:00')
       );
     },
 
@@ -359,14 +368,14 @@ export default {
       return list.getters.isSelected(this.data.id);
     },
   },
-  watch:{
-    csv: function(value){
-      console.log("*********** CSV VALUE ********")
+  /*watch: {
+    csv(value) {
+      console.log('*********** CSV VALUE ********');
       console.log(value);
       console.log(this.columnTobeUpdateFromCSV);
-    }
-  }
-}
+    },
+  },*/
+};
 </script>
 
 <style lang="scss" scoped>

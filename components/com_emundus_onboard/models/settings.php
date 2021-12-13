@@ -662,7 +662,7 @@ class EmundusonboardModelsettings extends JModelList {
         try {
             $db->execute();
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/formbuilder | Failed to add new column to referentail database  : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/settings | Failed to add new column to referentail database  : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -676,7 +676,45 @@ class EmundusonboardModelsettings extends JModelList {
             ->set($db->quoteName($column) . ' = ' . $db->quote($value))
             ->where($db->quoteName($table_primary_key_column) . ' = ' . $db->quote($table_primary_key_column_value));
         $db->setQuery($query);
-        $db->execute();
+
+        try{
+            $db->execute();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/settings | Failed to update  referentiel database column content : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            echo $e->getMessage();
+            return false;
+        }
+        return true;
+
+    }
+
+    function updateColumnDataFromImportedCSVDatas($base_comparing_column,$table,$datas){
+
+        $columns = array_keys($datas[0]);
+        unset($datas[0]);
+        foreach ($columns as $key => $column) {
+            $columns[$key] = strtolower($this->clean($column));
+        }
+        $column_to_be_update=$columns[1];
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        foreach($datas as $value) {
+            $query->clear()
+                ->update($db->quoteName($table));
+                $query->set($db->quoteName(strtolower($this->clean($column_to_be_update))) . ' = ' . $db->quote($value[$column_to_be_update]))
+                      ->where($db->quoteName($base_comparing_column) . ' = ' . $db->quote($value[array_keys($value)[0]]));
+            $db->setQuery($query);
+            try{
+                $db->execute();
+            } catch (Exception $e){
+                JLog::add('component/com_emundus_onboard/models/settings | Failed to update  referentiel database column imported from csv : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                echo $e->getMessage();
+                return false;
+            }
+
+        }
+        return true;
 
     }
     function getDatasFromTable($table){
