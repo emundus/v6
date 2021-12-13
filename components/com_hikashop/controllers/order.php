@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -140,8 +140,16 @@ class orderController extends hikashopController {
 
 		$order = $orderClass->get($order_id);
 
-		if(!$connected && !empty($order->order_user_id))
-			return false;
+		if(!$connected && !empty($order->order_user_id)) {
+			$token = hikaInput::get()->getVar('order_token');
+			if(empty($token))
+				$token = $app->getUserState('com_hikashop.order_token');
+			if(empty($order->order_token) || $token != $order->order_token) {
+				return false;
+			}
+
+		}
+
 
 		$checkout = explode(',', $config->get('checkout'));
 		$step = hikaInput::get()->getInt('step', 0);
@@ -328,6 +336,7 @@ class orderController extends hikashopController {
 		$paymentPlugin = hikashop_import('hikashoppayment', $order->order_payment_method);
 
 		if(empty($paymentPlugin)) {
+			$app->enqueueMessage(JText::sprintf('PAYMENT_METHOD_NOT_FOUND_FOR_ORDER', $order->order_number), 'error');
 			return false;
 		}
 

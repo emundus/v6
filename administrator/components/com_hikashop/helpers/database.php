@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -748,5 +748,66 @@ class hikashopDatabaseHelper {
 
 	public function getCheckResults() {
 		return self::$check_results;
+	}
+
+
+	public function &getNameboxData($typeConfig, &$fullLoad, $mode, $value, $search, $options) {
+		$ret = array(
+			0 => array(),
+			1 => array()
+		);
+
+		$fullLoad = false;
+		$displayFormat = !empty($options['displayFormat']) ? $options['displayFormat'] : @$typeConfig['displayFormat'];
+
+		$start = (int)@$options['start']; // TODO
+		$limit = (int)@$options['limit'];
+		$page = (int)@$options['page'];
+		if($limit <= 0)
+			$limit = 50;
+
+		$table = @$options['table'];
+
+		$db = JFactory::getDBO();
+		if(!HIKASHOP_J30){
+			$columnsTable = $db->getTableFields(hikashop_table($table));
+			$columnsArray = reset($columnsTable);
+		} else {
+			$columnsArray = $db->getTableColumns(hikashop_table($table));
+		}
+
+		ksort($columnsArray);
+
+		if(!empty($search)) {
+			$results = array();
+			foreach($columnsArray as $k => $t) {
+				if(strpos($k, $search)!==false)
+					$results[$k] = $t;
+			}
+			$columnsArray = $results;
+		}
+
+		foreach($columnsArray as $k => $t) {
+			$obj = new stdClass();
+			$obj->column_name = $k;
+			$obj->column_type = $t;
+			$ret[0][$k] = $obj;
+		}
+
+		if(count($ret[0]) < $limit)
+			$fullLoad = true;
+
+		if(!empty($value)) {
+			if($mode == hikashopNameboxType::NAMEBOX_SINGLE && isset($ret[0][$value])) {
+				$ret[1][$value] = $ret[0][$value];
+			} elseif($mode == hikashopNameboxType::NAMEBOX_MULTIPLE && is_array($value)) {
+				foreach($value as $v) {
+					if(isset($ret[0][$v])) {
+						$ret[1][$v] = $ret[0][$v];
+					}
+				}
+			}
+		}
+		return $ret;
 	}
 }

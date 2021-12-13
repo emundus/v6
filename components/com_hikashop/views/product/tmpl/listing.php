@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,7 +12,7 @@ if(!$this->module && isset($this->element->category_canonical) && !empty($this->
 	$canonicalUrl = hikashop_cleanURL($this->element->category_canonical);
 
 	$doc = JFactory::getDocument();
-	$doc->addCustomTag( '<link rel="canonical" href="'.$canonicalUrl.'" />' );
+	$doc->addHeadLink($canonicalUrl, 'canonical');
 }
 
 if(!empty($this->tmpl_ajax)) {

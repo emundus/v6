@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -64,7 +64,6 @@ class ProductController extends hikashopController {
 	public function form_price_edit(){
 		hikaInput::get()->set('layout', 'form_price_edit');
 		parent::display();
-		exit;
 	}
 
 	public function edit_translation(){
@@ -174,8 +173,6 @@ class ProductController extends hikashopController {
 
 		if(hikaInput::get()->getCmd('tmpl', '') == 'component') {
 			ob_end_clean();
-			parent::display();
-			exit;
 		}
 		return parent::display();
 	}
@@ -246,8 +243,6 @@ class ProductController extends hikashopController {
 
 		if(hikaInput::get()->getCmd('tmpl', '') == 'component') {
 			ob_end_clean();
-			parent::display();
-			exit;
 		}
 		return parent::display();
 	}

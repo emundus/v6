@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,10 +32,17 @@ class hikashopCategoryClass extends hikashopClass {
 		if($withimage) {
 			$query = 'SELECT a.*,b.* FROM '.hikashop_table(end($this->tables)).' AS a LEFT JOIN '.hikashop_table('file').' AS b ON a.category_id = b.file_ref_id AND b.file_type = \'category\' WHERE a.category_id = '.(int)$element.' LIMIT 1';
 			$this->database->setQuery($query);
-			return $this->database->loadObject();
+			$category = $this->database->loadObject();
+		} else {
+			$category = parent::get($element);
 		}
 
-		return parent::get($element);
+		if(!empty($category->category_name))
+			$category->category_name = hikashop_translate($category->category_name);
+		if(!empty($category->category_description))
+			$category->category_description = hikashop_translate($category->category_description);
+
+		return $category;
 	}
 
 	function getCategories($ids, $columns = '*') {
@@ -1164,7 +1171,7 @@ class hikashopCategoryClass extends hikashopClass {
 
 				$orderedList = array();
 				foreach($value as $v){
-					if(empty($v))
+					if(empty($v) || !isset($categories[$v]))
 						continue;
 					$orderedList[$v] = $categories[$v];
 				}

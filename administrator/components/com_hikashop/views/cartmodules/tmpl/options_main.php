@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,7 +15,7 @@ $name_style = (empty($this->element['show_cart_product_name']) || (int)$this->el
 <div class="hkc-xl-6 hkc-md-6 hikashop_module_subblock hikashop_module_edit_general_part1">
 	<div class="hikashop_module_subblock_content">
 		<div class="hikashop_menu_subblock_title hikashop_module_edit_display_settings_div_title"><?php echo JText::_('HIKA_DATA_DISPLAY'); ?></div>
-		<dl class="hika_options">
+		<dl class="hika_options hikashop_mini_cart">
 			<dt class="hikashop_option_name"><?php
 				echo hikashop_hktooltip(JText::sprintf('HIKA_MINI_CART_DESC',$this->type), '', JText::sprintf('MINI_CART', $this->type), '', 0);
 			?></dt>

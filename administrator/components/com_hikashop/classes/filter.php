@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -25,7 +25,7 @@ class hikashopFilterClass extends hikashopClass {
 
 		$formData = hikaInput::get()->get('data', array(), 'array');
 		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 		foreach($formData['filter'] as $column => $value) {
 			hikashop_secureField($column);
 			if(is_array($value))
@@ -475,6 +475,63 @@ class hikashopFilterClass extends hikashopClass {
 		return true;
 	}
 
+
+	public function &getNameboxData($typeConfig, &$fullLoad, $mode, $value, $search, $options) {
+		$ret = array(
+			0 => array(),
+			1 => array()
+		);
+
+		$fullLoad = false;
+		$displayFormat = !empty($options['displayFormat']) ? $options['displayFormat'] : @$typeConfig['displayFormat'];
+
+		$start = (int)@$options['start']; // TODO
+		$limit = (int)@$options['limit'];
+		$page = (int)@$options['page'];
+		if($limit <= 0)
+			$limit = 50;
+
+		$select = array('f.*');
+		$where = array();
+
+		if(!empty($search)) {
+			$searchMap = array('f.filter_id', 'f.filter_name', 'f.filter_type');
+			if(!HIKASHOP_J30)
+				$searchVal = '\'%' . $this->db->getEscaped(HikaStringHelper::strtolower($search), true) . '%\'';
+			else
+				$searchVal = '\'%' . $this->db->escape(HikaStringHelper::strtolower($search), true) . '%\'';
+			$where['search'] = '('.implode(' LIKE '.$searchVal.' OR ', $searchMap).' LIKE '.$searchVal.')';
+		}
+
+		$order = ' ORDER BY f.filter_id DESC';
+
+		if(count($where))
+			$where = ' WHERE ' . implode(' AND ', $where);
+		else
+			$where = '';
+
+		$query = 'SELECT '.implode(', ', $select) . ' FROM ' . hikashop_table('filter').' AS f' . $where . $order;
+		$this->db->setQuery($query, $page, $limit);
+
+		$ret[0] = $this->db->loadObjectList('filter_namekey');
+
+		if(count($ret[0]) < $limit)
+			$fullLoad = true;
+
+		if(!empty($value)) {
+			if($mode == hikashopNameboxType::NAMEBOX_SINGLE && isset($ret[0][$value])) {
+				$ret[1][$value] = $ret[0][$value];
+			} elseif($mode == hikashopNameboxType::NAMEBOX_MULTIPLE && is_array($value)) {
+				foreach($value as $v) {
+					if(isset($ret[0][$v])) {
+						$ret[1][$v] = $ret[0][$v];
+					}
+				}
+			}
+		}
+		return $ret;
+	}
+
 }
 
 class hikashopFilterTypeClass extends hikashopClass {
@@ -623,18 +680,42 @@ class hikashopFilterTypeClass extends hikashopClass {
 			if(isset($filter->filter_options['searchProcessing']))
 				$searchProcessing=$filter->filter_options['searchProcessing'];
 
+			$translationHelper = hikashop_get('helper.translation');
+			$multi = $translationHelper->isMulti(true);
+			if($multi && !$translationHelper->falang) {
+				jimport('joomla.filesystem.folder');
+				$path = hikashop_getLanguagePath(JPATH_ROOT);
+				$lg = JFactory::getLanguage();
+				$language_code = $lg->getTag();
+				$override_file_path = $path . '/overrides/'.$language_code.'.override.ini';
+				$overrides = array();
+				if(file_exists($override_file_path)) {
+					$overrides = parse_ini_file($override_file_path);
+				}
+			}
 
 			$terms=$infoGet[0];
 			if($searchProcessing=='exact'){
-
 				if(!empty($terms) || strlen($terms)){
 					foreach($searchField as $column){
 						$list[]=' b.'.$column.' LIKE \''.hikashop_getEscaped($terms, true).'\'';
 						$fields[] = ' reference_field = \''.$column.'\' ';
 					}
-					$translationList[] = 'value LIKE \''.hikashop_getEscaped($terms, true).'\'';
+					if($multi) {
+						if($translationHelper->falang) {
+							$translationList[] = 'value LIKE \''.hikashop_getEscaped($terms, true).'\'';
+							$translationFilters =  '('.implode(' OR ', $translationList).')';
+						} else {
+							foreach($overrides as $k => $v) {
+								if(strpos($v, $terms) !== false) {
+									foreach($searchField as $column){
+										$list[] =' b.'.$column.' = '.$database->Quote($k);
+									}
+								}
+							}
+						}
+					}
 					$filters[]='('.implode(' OR ', $list).')';
-					$translationFilters =  '('.implode(' OR ', $translationList).')';
 				}
 			}else{
 				if(!isset($filter->filter_options['searchProcessing'])) $filter->filter_options['searchProcessing']='any';
@@ -658,21 +739,48 @@ class hikashopFilterTypeClass extends hikashopClass {
 				}else{
 					$terms = explode(' ',$terms);
 				}
-
 				if(@$searchProcessing != 'any'){
-					foreach($terms as $term){
-						if(empty($term) && !strlen($term))
-							continue;
-						$array =array();
-						foreach($searchField as $column){
-							$array[]=' b.'.$column.' LIKE \'%'.hikashop_getEscaped($term, true).'%\' ';
-							$fields[] = ' reference_field = \''.$column.'\' ';
+					if($multi && !$translationHelper->falang) {
+						foreach($overrides as $k => $v) {
+							$found_all = true;
+							foreach($terms as $term){
+								if(empty($term) && !strlen($term))
+									continue;
+								if(strpos($v, $term) === false)
+									$found_all = false;
+							}
+							if($found_all) {
+								foreach($searchField as $column){
+									$list[] =' b.'.$column.' = '.$database->Quote($k);
+								}
+							}
 						}
-						$list[]='('.implode(' OR ', $array).')';
-						$translationList[] = 'value LIKE \'%'.hikashop_getEscaped($term, true).'%\'';
 					}
-					$filters[]='('.implode(' AND ', $list).')';
-					$translationFilters =  '('.implode(' AND ', $translationList).')';
+					foreach($searchField as $column){
+						$array =array();
+						foreach($terms as $term){
+							if(empty($term) && !strlen($term))
+								continue;
+							$array[]=' b.'.$column.' LIKE \'%'.hikashop_getEscaped($term, true).'%\' ';
+							if($multi) {
+								if($translationHelper->falang) {
+									$translationList[] = 'value LIKE \'%'.hikashop_getEscaped($term, true).'%\'';
+								}
+							}
+						}
+						$list[]='('.implode(' AND ', $array).')';
+						if($multi) {
+							if($translationHelper->falang) {
+								$fields[] = ' reference_field = \''.$column.'\' ';
+							}
+						}
+					}
+					$filters[]='('.implode(' OR ', $list).')';
+					if($multi) {
+						if($translationHelper->falang) {
+							$translationFilters =  '('.implode(' AND ', $translationList).')';
+						}
+					}
 				}else{
 					foreach($terms as $term){
 						if(empty($term) && !strlen($term))
@@ -681,23 +789,36 @@ class hikashopFilterTypeClass extends hikashopClass {
 							$list[]=' b.'.$column.' LIKE \'%'.hikashop_getEscaped($term, true).'%\' ';
 							$fields[] = ' reference_field = \''.$column.'\' ';
 						}
-						$translationList[] = 'value LIKE \'%'.hikashop_getEscaped($term, true).'%\'';
+
+						if($multi) {
+							if($translationHelper->falang) {
+								$translationList[] = 'value LIKE \'%'.hikashop_getEscaped($term, true).'%\'';
+							}
+						} else {
+							foreach($overrides as $k => $v) {
+								if(strpos($v, $term) !== false) {
+									foreach($searchField as $column){
+										$list[] =' b.'.$column.' = '.$database->Quote($k);
+									}
+								}
+							}
+						}
 					}
 					$filters[]='('.implode(' OR ', $list).')';
 					$translationFilters =  '('.implode(' OR ', $translationList).')';
 				}
 			}
 
+			if($multi) {
+				if($translationHelper->falang) {
+					$trans_table = 'falang_content';
+					$query = 'SELECT DISTINCT reference_id FROM '.hikashop_table($trans_table,false).' WHERE reference_table=\'hikashop_product\' AND '.$translationFilters.' AND ('.implode(' OR ', $fields).') AND published=1 ORDER BY reference_id ASC';
+					$this->database->setQuery($query);
+					$translatedProducts = $database->loadColumn();
 
-			$translationHelper = hikashop_get('helper.translation');
-			if($translationHelper->isMulti(true) && $translationHelper->falang){
-				$trans_table = 'falang_content';
-				$query = 'SELECT DISTINCT reference_id FROM '.hikashop_table($trans_table,false).' WHERE reference_table=\'hikashop_product\' AND '.$translationFilters.' AND ('.implode(' OR ', $fields).') AND published=1 ORDER BY reference_id ASC';
-				$this->database->setQuery($query);
-				$translatedProducts = $database->loadColumn();
-
-				if(!empty($translatedProducts)){
-					$filters[] = '('.array_pop($filters).' OR b.product_id IN ('.implode(',', $translatedProducts).'))';
+					if(!empty($translatedProducts)){
+						$filters[] = '('.array_pop($filters).' OR b.product_id IN ('.implode(',', $translatedProducts).'))';
+					}
 				}
 			}
 

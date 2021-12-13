@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 <form action="<?php echo hikashop_completeLink('badge'); ?>" method="post"  name="adminForm" id="adminForm">
 
 <div class="hk-row">
-	<div class="hkc-md-5"><?php echo $this->loadHkLayout('search', array()); ?></div>
+	<div class="hkc-md-5 hika_j4_search"><?php echo $this->loadHkLayout('search', array()); ?></div>
 	<div class="hkc-md-7"></div>
 </div>
 
@@ -73,7 +73,11 @@ defined('_JEXEC') or die('Restricted access');
 					echo JHTML::_('grid.id', $i, $row->badge_id);
 				?></td>
 				<td><?php
-					echo $this->image->display(@$row->badge_image, true, '', '', '', 100, 100);
+					$image_options = array('default' => true,'forcesize'=>true,'scale'=>$this->config->get('image_scale_mode','inside'));
+					$img = $this->image->getThumbnail(@$row->badge_image, array('width' => 100, 'height' => 100), $image_options);
+					if($img->success) {
+						echo '<img class="hikashop_category_listing_image" title="'.$this->escape(@$row->badge_name).'" alt="'.$this->escape(@$row->badge_name).'" src="'.$img->url.'"/>';
+					}
 				?></td>
 				<td>
 <?php if($this->manage) { ?>
