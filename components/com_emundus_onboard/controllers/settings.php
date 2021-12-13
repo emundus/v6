@@ -577,6 +577,24 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         exit;
     }
 
+    public function checkIfTableAlreadyExistWithSameLabel() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $label = $jinput->getRaw('label');
+
+            $state = $m_settings->checkIfTableAlreadyExistWithSameLabel($label);
+            $response = array('status' => $state, 'msg' => 'SUCCESS');
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
+
     public function saveimporteddatas() {
         $user = JFactory::getUser();
 

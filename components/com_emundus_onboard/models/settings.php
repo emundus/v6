@@ -749,6 +749,28 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
+    function checkIfTableAlreadyExistWithSameLabel($label){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $name = strtolower($this->clean($label));
+
+        $query->clear()
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__emundus_datas_library'))
+            ->where($db->quoteName('label') . ' LIKE ' . $db->quote($name));
+        $db->setQuery($query);
+        $result = $db->loadResult();
+
+        if($result==0){
+            return false;
+        } else{
+            return true;
+        }
+    }
+
+
+
     function saveDatas($form){
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -762,7 +784,6 @@ class EmundusonboardModelsettings extends JModelList {
             ->where($db->quoteName('table_name') . ' LIKE ' . $db->quote('%data_' . $name . '%'));
         $db->setQuery($query);
         $result = $db->loadResult();
-
         $increment = '00';
         if ($result < 10) {
             $increment = '0' . strval($result);

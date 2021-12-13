@@ -29,7 +29,8 @@
       <div class="modalC-content">
         <div class="form-group">
           <label>{{Name}} :</label>
-          <input v-model="form.label" type="text" maxlength="40" class="form__input field-general w-input" style="margin: 0" :class="{ 'is-invalid': errors.label}"/>
+          <input v-model="form.label" type="text" maxlength="40" class="form__input field-general w-input" style="margin: 0" :class="{ 'is-invalid': errors.label}" v-on:keyup="checkIfDatabaseAlreadyExistsWithSameName"/>
+          <p v-if="errors.label" style="color:red">{{errors.message}}</p>
         </div>
         <div class="form-group">
           <label>{{Description}} :</label>
@@ -89,6 +90,7 @@
         },
         errors: {
           label: false,
+          message:'',
         },
         Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_LASTNAME"),
         Translate: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
@@ -121,10 +123,10 @@
 
       // Ajax methods
       saveDatas() {
-        this.errors = {
+       /* this.errors = {
           label: false,
-        };
-        if(this.form.label == ''){
+        };*/
+        if(this.form.label == '' || this.errors.label==true){
           this.errors.label = true;
           return false;
         }
@@ -147,6 +149,28 @@
           this.$modal.hide('modalAddDatas');
         });
       },
+      checkIfDatabaseAlreadyExistsWithSameName:function(event){
+
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=settings&task=checkIfTableAlreadyExistWithSameLabel",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            label: this.form.label,
+          })
+        }).then((response) => {
+         console.log(response);
+         if(response.data.status==true){
+           this.errors.label = true;
+
+         } else{
+           this.errors.label = false;
+           this.errors.message= 'Un référentiel porte déjà le même nom / A repository already has the same name ';
+         }
+        });
+      }
       //
 
     }
