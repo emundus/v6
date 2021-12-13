@@ -99,14 +99,24 @@ class EmundusonboardModeldashboard extends JModelList
     public function getallwidgetsbysize($size){
         $this->_db = JFactory::getDbo();
         $query = $this->_db->getQuery(true);
+        $user = JFactory::getUser()->id;
 
         try {
             $query->clear()
-                ->select('id,name,label,size,size_small,type,chart_type,article_id,params')
-                ->from($this->_db->quoteName('#__emundus_widgets'))
-                ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote('custom'))
-                ->andWhere($this->_db->quoteName('size') . ' = ' . $this->_db->quote($size))
-                ->andWhere($this->_db->quoteName('published') . ' = 1');
+                ->select('profile')
+                ->from($this->_db->quoteName('#__emundus_users'))
+                ->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user));
+            $this->_db->setQuery($query);
+            $profile = $this->_db->loadResult();
+
+            $query->clear()
+                ->select('ew.id,ew.name,ew.label,ew.size,ew.size_small,ew.type,ew.chart_type,ew.article_id,ew.params')
+                ->from($this->_db->quoteName('#__emundus_widgets','ew'))
+                ->leftJoin($this->_db->quoteName('#__emundus_widgets_repeat_access','ewra').' ON '.$this->_db->quoteName('ewra.parent_id').' = '.$this->_db->quoteName('ew.id'))
+                ->where($this->_db->quoteName('ew.name') . ' = ' . $this->_db->quote('custom'))
+                ->andWhere($this->_db->quoteName('ew.size') . ' = ' . $this->_db->quote($size))
+                ->andWhere($this->_db->quoteName('ewra.profile') . ' = ' . $this->_db->quote($profile))
+                ->andWhere($this->_db->quoteName('ew.published') . ' = 1');
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
         } catch (Exception $e) {

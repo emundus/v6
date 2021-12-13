@@ -1,8 +1,9 @@
 <template>
-  <div class='tchooz-widget' :class="['col-md-' + selectedWidget.size,'col-sm-' + selectedWidget.size_small]">
+  <div class='tchooz-widget' :class="['col-md-' + selectedWidget.size,'col-sm-' + selectedWidget.size_small,selectedWidget.class]">
     <div class='section-sub-menu' style='margin-bottom: 10px' :class="selectedWidget.type === 'article' ? 'tchooz-widget__article-overflow' : ''">
       <div id="chart-container" v-if="selectedWidget.type === 'chart'">
         <fusioncharts
+            v-if="chart_render !== 0"
             :key="chart_render"
             :type="chart_type"
             :width="'100%'"
@@ -170,7 +171,9 @@ export default {
 
   watch: {
     selectedWidget: function(value){
-      this.updateDashboard();
+      if(this.chart_render !== 0) {
+        this.updateDashboard();
+      }
     }
   }
 }
