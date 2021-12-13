@@ -31,6 +31,7 @@ class Upgradejoomla extends JApplicationCli
         $query = $this->db->getQuery(true);
         $query->select('*')
             ->from('#__' . $table)
+            //Exclude Joomla & Gantry5
             ->where($this->db->quoteName('extension_id') . ' NOT LIKE 0 AND' . ($this->db->quoteName('extension_id') . ' NOT LIKE 700 AND') . ($this->db->quoteName('extension_id') . ' NOT LIKE 11970'));
         $this->db->setQuery($query);
         return $this->db->loadAssocList('','update_id');
@@ -132,20 +133,11 @@ class Upgradejoomla extends JApplicationCli
     {
         $app = JFactory::getApplication('site');
         $app->initialise();
-
         // Set direct download mode
         $app->input->set('method', 'direct');
-
         $executionStartTime = microtime(true);
-
-//
         $this->db = JFactory::getDbo();
-//        # List extensions from schema table
-//        $this->com_schemas = $this->getExtensionsId('schemas');
-//        # List extensions from extensions table
-//        $this->com_extensions = $this->getExtensionsId('extensions');
-//        # List components type from extensions table
-//        $this->com_components = $this->getComponentsId('extensions');
+
         echo "Emundus SQL Update Tool \n\n";
 
         # List components available for update
@@ -163,6 +155,16 @@ class Upgradejoomla extends JApplicationCli
 
         if ($this->input->get('h', $this->input->get('help'))) {
             $this->doEchoHelp();
+        }
+
+        //Delete all files in tmp folder
+        $path = JPATH_ROOT . '/tmp/';
+        if(file_exists($path)) {
+            $dir = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
+            $files = new RecursiveIteratorIterator($dir, RecursiveIteratorIterator::CHILD_FIRST);
+            foreach ($files as $file) {
+                $file->isDir() ? rmdir($file) : unlink($file);
+            }
         }
 
         $executionEndTime = microtime(true);
