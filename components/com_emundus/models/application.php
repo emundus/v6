@@ -3895,7 +3895,7 @@ class EmundusModelApplication extends JModelList
         $elements = array_map(function($obj) {return $obj->name;}, $elements);
 
         $query
-            ->select(implode(',', $elements))
+            ->select(implode(',', $db->quoteName($elements)))
             ->from($db->quoteName($parent_table))
             ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 
@@ -4061,7 +4061,7 @@ class EmundusModelApplication extends JModelList
         if ($fileExists) {
 
             // create preview based on filetype
-            if ($extension == 'pdf') {                
+            if ($extension == 'pdf') {
                 $content = base64_encode(file_get_contents($filePath));
                 $preview['content'] = '<object width="100%" height="100%" style="border:none;"><embed width="100%" height="100%" src="data:application/pdf;base64,' . $content . '" type="application/pdf"></object>';
             } else if ($extension == 'txt') {
