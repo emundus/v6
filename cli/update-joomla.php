@@ -63,6 +63,18 @@ class Upgradejoomla extends JApplicationCli
 
     }
 
+    public function updateSQLJoomla(){
+        $updater = JModelLegacy::getInstance('JoomlaupdateModelDefault');
+        $updater->refreshUpdates();
+        $updater->applyUpdateSite();
+        $res = $updater->finaliseUpgrade();
+        if($res==1){
+            echo "SQL Update Success...";
+        } else{
+            echo "SQL Update Failed...";
+        }
+    }
+
     public function updateJoomla() {
         $this->out('UPDATE JOOMLA...');
 
@@ -103,8 +115,13 @@ class Upgradejoomla extends JApplicationCli
         $this->out('Sucess...');
 
         // Update SQL etc based on the manifest file we got with the update
-        $updater->finaliseUpgrade();
         $this->out('Finalize...');
+        $res = $updater->finaliseUpgrade();
+        if($res==1){
+            echo "SQL Update Success...";
+        } else{
+            echo "SQL Update Failed...";
+        }
 
         $updater->cleanUp();
         $this->out('Cleanup...');
@@ -151,6 +168,10 @@ class Upgradejoomla extends JApplicationCli
 
         if ($this->input->get('c', $this->input->get('core'))) {
             $this->updateJoomla();
+        }
+
+        if ($this->input->get('s', $this->input->get('sql'))) {
+            $this->updateSQLJoomla();
         }
 
         if ($this->input->get('h', $this->input->get('help'))) {
