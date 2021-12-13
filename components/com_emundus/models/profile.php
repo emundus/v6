@@ -700,29 +700,68 @@ class EmundusModelProfile extends JModelList {
      * @return array The profile list for the campaigns
      */
     function getProfilesIDByCampaign(array $campaign_id) : array {
-
         $res = [];
 
         if (!empty($campaign_id)) {
+            $jesp_datas = ' jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, 
+                            jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class ';
             if (in_array('%', $campaign_id)) {
                 $where = '';
                 $where_jecw = '';
+                $where_jeswspr = '';
+                $where_jeswsrr = '';
             } else {
                 $where = 'WHERE esc.id IN ('.implode(',', $campaign_id).')';
                 $where_jecw = 'WHERE jecw.campaign IN ('.implode(',', $campaign_id).')';
+                $where_jeswspr = 'WHERE jesc.id IN ('.implode(',', $campaign_id).') AND jeswspr.profile is not null';
+                $where_jeswsrr = 'WHERE jesc.id IN ('.implode(',', $campaign_id).') AND jeswsrr.profile is not null';
             }
 
-            $query = 'SELECT DISTINCT (esc.profile_id)
-                        FROM  #__emundus_setup_campaigns AS esc '
-                . $where .
-                ' union 
-                        SELECT DISTINCT (jecw.profile)
-                        FROM  #__emundus_campaign_workflow AS jecw '
-                . $where_jecw;
+            $query = 'SELECT DISTINCT (esc.profile_id) AS pid,
+                        jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
+                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class
 
+                        FROM  #__emundus_setup_campaigns AS esc 
+                        LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = esc.profile_id
+                     '
+                . $where .
+
+                ' UNION 
+                        SELECT DISTINCT (jecw.profile) AS pid, 
+                        jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
+                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class
+                        
+                        FROM  #__emundus_campaign_workflow AS jecw 
+                        LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = jecw.profile        
+                '
+                . $where_jecw .
+
+                ' UNION
+                    SELECT DISTINCT(jeswspr.profile) as pid,
+                        jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
+                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class
+                        
+                        FROM #__emundus_setup_workflow_step_profiles_repeat AS jeswspr
+                        LEFT JOIN #__emundus_setup_workflow_step AS jesws ON jesws.id = jeswspr.parent_id
+                        LEFT JOIN #__emundus_setup_workflow AS jesw ON jesw.id = jesws.workflow
+                        LEFT JOIN #__emundus_setup_campaigns AS jesc ON jesc.workflow = jesw.id 
+                        LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = jeswspr.profile
+                    ' . $where_jeswspr .
+
+                ' UNION
+                    SELECT DISTINCT(jeswsrr.profile) AS pid,
+                        jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
+                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class
+
+                        FROM #__emundus_setup_workflow_step_rules_repeat AS jeswsrr
+                        LEFT JOIN #__emundus_setup_workflow_step AS jesws ON jesws.id = jeswsrr.parent_id
+                        LEFT JOIN #__emundus_setup_workflow AS jesw ON jesw.id = jesws.workflow
+                        LEFT JOIN #__emundus_setup_campaigns AS jesc ON jesc.workflow = jesw.id
+                        LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = jeswsrr.profile
+                ' . $where_jeswsrr;
             try {
                 $this->_db->setQuery($query);
-                $res = $this->_db->loadColumn();
+                $res = $this->_db->loadObjectList();
             } catch(Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
                 return [];
@@ -1008,7 +1047,6 @@ class EmundusModelProfile extends JModelList {
 
         $session->set('emundusUser', $emundusSession);
 
-        $this->updateUserProfile($fnum, $emundusSession->profile);
 
         if (isset($admissionInfo)) {
             $app->redirect("index.php?option=com_fabrik&view=form&formid=".$admissionInfo->form_id."&Itemid='.$admissionInfo->item_id.'&usekey=fnum&rowid=".$campaign['fnum']);
@@ -1397,55 +1435,4 @@ class EmundusModelProfile extends JModelList {
         $db->setQuery($query);
         return $db->loadObject();       // set key is status
     }
-
-    /* update user profile ("jos_emundus_users" + "jos_emundus_user_profile") when user opens file */
-    public function updateUserProfile($fnum,$profile) {
-        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'models' . DS . 'files.php');
-        $mFile = new EmundusModelFiles();
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        
-        if(!empty($fnum) and !empty($profile)) {
-            try {
-                /* first :: get user_id by fnum */
-                $fnum_raw = $mFile::getFnumInfos($fnum);
-                $fnum_user = $fnum_raw['applicant_id'];
-
-                /* update "jos_emundus_users" */
-                $query->clear()
-                    ->update('#__emundus_users')
-                    ->set($db->quoteName('#__emundus_users.profile') . '=' . $db->quote($profile))
-                    ->where($db->quoteName('#__emundus_users.user_id') . '=' . $db->quote($fnum_user));
-
-                $db->setQuery($query);
-                $db->execute();
-
-                /* create new record of table "jos_emundus_user_profile */
-                $raw = array(
-                    'date_time' => date('Y-m-d H:i:s'),
-                    'user_id' => $fnum_user,
-                    'profile_id' => $profile,
-                    'start_date' => null,
-                    'end_date' => null,
-                );
-                
-                $query->clear()
-                    ->insert($db->quoteName('#__emundus_users_profiles'))
-                    ->columns($db->quoteName(array_keys($raw)))
-                    ->values(implode(',', $db->quote(array_values($raw))));
-
-                $db->setQuery($query);
-                $db->execute();
-            }
-            catch(Exception $e) {
-                JLog::add('Could not update the user profile -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_setupWorkflow');
-                return $e->getMessage();
-            }
-        }
-        else {
-            return false;
-        }
-    }
-
 }
