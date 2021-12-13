@@ -31,7 +31,7 @@ class Upgradejoomla extends JApplicationCli
         $query = $this->db->getQuery(true);
         $query->select('*')
             ->from('#__' . $table)
-            ->where($this->db->quoteName('extension_id') . ' NOT LIKE 0 AND' . ($this->db->quoteName('extension_id') . ' NOT LIKE 700'));
+            ->where($this->db->quoteName('extension_id') . ' NOT LIKE 0 AND' . ($this->db->quoteName('extension_id') . ' NOT LIKE 700 AND') . ($this->db->quoteName('extension_id') . ' NOT LIKE 11970'));
         $this->db->setQuery($query);
         return $this->db->loadAssocList('','update_id');
     }
