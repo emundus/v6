@@ -50,10 +50,12 @@ JHtml::_('bootstrap.tooltip');
         </div>
 
         <div id="inscription" class="invisible">
-            <div class="container">
-                <p><?= $mod_emundus_cas_url2_desc; ?></p>
-                <p><a href="<?= $mod_emundus_cas_url2; ?>" class="btn btn-primary"><?= $mod_emundus_cas_btn2; ?></a></p><br/>
-            </div>
+            <?php if(!empty($mod_emundus_cas_url2_desc) || !empty($mod_emundus_cas_url2)) :?>
+                <div class="container">
+                    <p><?= $mod_emundus_cas_url2_desc; ?></p>
+                    <p><a href="<?= $mod_emundus_cas_url2; ?>" class="btn btn-primary"><?= $mod_emundus_cas_btn2; ?></a></p><br/>
+                </div>
+            <?php endif; ?>
 
             <div class="formulaire">
                 <p>ou connectez-vous : </p>

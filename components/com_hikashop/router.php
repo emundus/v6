@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -128,7 +128,7 @@ function _HikashopBuildRoute( &$query, $separator = '-' )
 
 	if(!empty($query)){
 		foreach($query as $name => $value){
-			if(!in_array($name,array('option','Itemid','start','format','limitstart','lang'))){
+			if(!in_array($name,array('option','Itemid','start','format','limitstart','lang','cart_id'))){
 					if(is_array($value)) $value = implode('-',$value);
 					$segments[] = $name.$separator.$value;
 				unset($query[$name]);

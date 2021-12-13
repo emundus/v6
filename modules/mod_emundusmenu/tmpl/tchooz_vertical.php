@@ -465,6 +465,10 @@ defined('_JEXEC') or die;
         });
     });
 
+    
+    //Keep original tooltip margin to reposition after mouse out (usefull in case of window resizing)
+    const originalMargin = parseInt(jQuery("[id^=tooltip-]:first").css('margin-top'),10);
+
     function enableTooltip(menu){
         if(jQuery(".image-title").css("display") != 'none') {
             if(typeof jQuery("#sublevel_list_" + menu)[0] != 'undefined'){
@@ -474,11 +478,32 @@ defined('_JEXEC') or die;
         } else {
             jQuery("#tooltip-" + menu).css('margin-left', '0');
             jQuery("#tooltip-" + menu).css('display', 'block');
+
+            //Reposition tooltip if out of viewport or scroll happened
+            var tooltipBox = document.querySelector("#tooltip-" + menu);
+            var tooltipRect = tooltipBox.getBoundingClientRect();
+            const menuBox = document.querySelector("li.g-menu-item-"+menu);
+            const menuRect = menuBox.getBoundingClientRect();
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+            //reposition after scrolling
+            if(tooltipRect.top - menuRect.top > 10){
+                jQuery("#tooltip-" + menu).css('margin-top', -(tooltipRect.top - menuRect.top - originalMargin)+'px');
+                //get new position of tooltip
+                tooltipBox = document.querySelector("#tooltip-" + menu);
+                tooltipRect = tooltipBox.getBoundingClientRect();
+            }
+            
+            //reposition out of viewport
+            if(tooltipRect.bottom > viewportHeight){
+                jQuery("#tooltip-" + menu).css('margin-top', -(tooltipRect.bottom - viewportHeight - parseInt(jQuery("#tooltip-" + menu).css('margin-top'),10))+'px');
+            }
         }
     }
 
     function disableTooltip(menu){
         jQuery("#tooltip-" + menu).css('display', 'none');
+        jQuery("#tooltip-" + menu).css('margin-top', originalMargin);
     }
 
     function enableTitles(state = null){

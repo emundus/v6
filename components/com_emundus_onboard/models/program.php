@@ -71,7 +71,11 @@ class EmundusonboardModelprogram extends JModelList {
             ->order($sortDb.$sort);
 
         try {
-            $db->setQuery($query, $offset, $limit);
+            if(empty($lim)) {
+                $db->setQuery($query, $offset);
+            } else {
+                $db->setQuery($query, $offset, $limit);
+            }
             return $db->loadObjectList();
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/program | Error at getting list of programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
@@ -167,6 +171,10 @@ class EmundusonboardModelprogram extends JModelList {
             $data = null;
         }
 
+        JPluginHelper::importPlugin('emundus');
+        $dispatcher = JEventDispatcher::getInstance();
+        $dispatcher->trigger('callEventHandler', ['onBeforeProgramCreate', ['data' => $data]]);
+
         if (count($data) > 0) {
             $query->insert($db->quoteName('#__emundus_setup_programmes'))
                 ->columns($db->quoteName(array_keys($data)))
@@ -183,7 +191,7 @@ class EmundusonboardModelprogram extends JModelList {
                     ->where($db->quoteName('id') . ' = ' . $db->quote($prog_id));
                 $db->setQuery($query);
                 $programme = $db->loadObject();
-
+                
                 // Create user group
                 $query->clear()
                     ->insert($db->quoteName('#__emundus_setup_groups'))
@@ -227,6 +235,9 @@ class EmundusonboardModelprogram extends JModelList {
                 $this->addGroupToProgram($programme->label,$programme->code,3);
                 //
 
+                // Call plugin triggers
+                $dispatcher->trigger('callEventHandler', ['onAfterProgramCreate', ['programme' => $programme]]);
+
                 return $prog_id;
             } catch(Exception $e) {
                 JLog::add('component/com_emundus_onboard/models/program | Error when creating a program : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
@@ -249,6 +260,10 @@ class EmundusonboardModelprogram extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        JPluginHelper::importPlugin('emundus');
+        $dispatcher = JEventDispatcher::getInstance();
+        $dispatcher->trigger('callEventHandler', ['onBeforeProgramUpdate', ['id' => $id, 'data' => $data]]);
+
         if (count($data) > 0) {
 
             $fields = [];
@@ -264,7 +279,14 @@ class EmundusonboardModelprogram extends JModelList {
 
             try {
                 $db->setQuery($query);
-                return $db->execute();
+                $res = $db->execute();
+
+                if ($res) {
+                    $dispatcher = JEventDispatcher::getInstance();
+                    $dispatcher->trigger('callEventHandler', ['onAfterProgramUpdate', ['id' => $id, 'data' => $data]]);
+                }
+
+                return $res;
             } catch(Exception $e) {
                 JLog::add('component/com_emundus_onboard/models/program | Error when updating the program ' . $id . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return $e->getMessage();
@@ -288,6 +310,12 @@ class EmundusonboardModelprogram extends JModelList {
         $query = $db->getQuery(true);
 
         if (count($data) > 0) {
+
+            // Call plugin event before we delete the programme
+            JPluginHelper::importPlugin('emundus');
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('callEventHandler', ['onBeforeProgramDelete', ['data' => $data]]);
+
             try {
                 $query->select($db->qn('sc.id'))
                     ->from($db->qn('#__emundus_setup_campaigns', 'sc'))
@@ -310,7 +338,16 @@ class EmundusonboardModelprogram extends JModelList {
                     ->where($conditions);
 
                 $db->setQuery($query);
-                return $db->execute();
+                $res = $db->execute();
+
+                if ($res) {
+                    // Call plugin event after we delete the programme
+                    $dispatcher = JEventDispatcher::getInstance();
+                    $dispatcher->trigger('callEventHandler', ['onAfterProgramDelete', ['id' => $id, 'data' => $data]]);
+                }
+
+                return $res;
+
             } catch(Exception $e) {
                 JLog::add('component/com_emundus_onboard/models/program | Error wen delete programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return $e->getMessage();

@@ -30,7 +30,7 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             </div>
 
            <div class="em-col-3-footer">
-                    <a href="/index.php" data-bcup-haslogintext="no">
+                    <a target="_blank" href="https://www.tchooz.io/" data-bcup-haslogintext="no">
                         <img class="logo" src="/images/emundus/tchooz_black.png" alt="Logo">
                     </a>
 
@@ -60,7 +60,7 @@ else
 
     <div class="em-container-footer-gest">
         <div class="em-block-footer">
-            <p><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" target="_blank">eMundus</a></p>
+            <p><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" target="_blank">eMundus<?php if (!empty($file_version)): ?> - <?= $file_version ?> <?php endif ?></a></p>
         </div>
     </div>
 
