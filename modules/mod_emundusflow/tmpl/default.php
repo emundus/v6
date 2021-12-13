@@ -58,9 +58,17 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
     <?php elseif ($paid == false && $orderCancelled): ?>
       <i class="large ban outline icon"></i>
     <?php elseif (isset($scholarship) && $scholarship) :?>
-      <i class="large student icon"></i>
+      <?php if(!empty($scholarship_icon)): ?>
+        <i class="large <?= $scholarship_icon; ?> icon"></i>
+      <?php else: ?>
+        <i class="large student icon"></i>
+      <?php endif; ?>
     <?php else: ?>
-      <i class="large add to cart icon"></i>
+      <?php if (!empty($add_to_cart_icon)): ?>
+        <i class="large <?php echo $add_to_cart_icon?>"></i>
+      <?php else: ?>
+        <i class="large add to cart icon"></i>
+      <?php endif; ?>
     <?php endif; ?>
     <div class="content">
       <?php if (!isset($sentOrder) || $sentOrder->order_payment_method == 'banktransfer' || $sentOrder->order_payment_method == 'check') :?>
