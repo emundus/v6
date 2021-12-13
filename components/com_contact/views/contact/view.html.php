@@ -3,7 +3,7 @@
  * @package     Joomla.Site
  * @subpackage  com_contact
  *
- * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @copyright   (C) 2006 Open Source Matters, Inc. <https://www.joomla.org>
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -347,9 +347,6 @@ class ContactViewContact extends JViewLegacy
 		$this->user        = &$user;
 		$this->contacts    = &$contacts;
 		$this->contactUser = $contactUser;
-
-		$item->tags = new JHelperTags;
-		$item->tags->getItemTags('com_contact.contact', $this->item->id);
 
 		// Override the layout only if this is not the active menu item
 		// If it is the active menu item, then the view and item id will match

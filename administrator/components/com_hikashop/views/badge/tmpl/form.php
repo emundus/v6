@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -156,7 +156,13 @@ defined('_JEXEC') or die('Restricted access');
 								<?php echo JText::_( 'HIKA_IMAGES' ); ?>
 							</td>
 							<td>
-								<?php echo $this->image->display(@$this->element->badge_image,true,$this->escape(@$this->element->badge_image), '' , '' , 100, 100); ?>
+								<?php
+									$image_options = array('default' => true,'forcesize'=>true,'scale'=>$this->config->get('image_scale_mode','inside'));
+									$img = $this->image->getThumbnail(@$this->element->badge_image, array('width' => 100, 'height' => 100), $image_options);
+									if($img->success) {
+										echo '<img class="hikashop_category_listing_image" title="'.$this->escape(@$this->element->badge_name).'" alt="'.$this->escape(@$this->element->badge_name).'" src="'.$img->url.'"/>';
+									}
+								?>
 								<input type="file" name="files" size="30" />
 								<?php echo JText::sprintf('MAX_UPLOAD',(hikashop_bytes(ini_get('upload_max_filesize')) > hikashop_bytes(ini_get('post_max_size'))) ? ini_get('post_max_size') : ini_get('upload_max_filesize')); ?>
 							</td>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -67,6 +67,7 @@ class hikashopOrderClass extends hikashopClass {
 		if(!empty($order->order_type)) $order_type = $order->order_type;
 
 		$recalculate = false;
+		$recalculate_dimensions = false;
 		if(!empty($order->product)) {
 			$do = true;
 			$app->triggerEvent('onBeforeOrderProductsUpdate', array(&$order, &$do) );
@@ -83,6 +84,7 @@ class hikashopOrderClass extends hikashopClass {
 				$orderProductClass->update($order->product);
 			}
 			$recalculate = true;
+			$recalculate_dimensions = true;
 		}
 
 		if(!$new && (isset($order->order_shipping_price) || isset($order->order_payment_price) || isset($order->order_discount_price))) {
@@ -162,6 +164,11 @@ class hikashopOrderClass extends hikashopClass {
 
 		if($recalculate)
 			$this->recalculateFullPrice($order);
+
+		if(!empty($order->cart->products))
+			$this->recalculateDimensions($order, $order->cart->products);
+		elseif($recalculate_dimensions)
+			$this->recalculateDimensions($order);
 
 		$do = true;
 		if($new) {
@@ -302,6 +309,7 @@ class hikashopOrderClass extends hikashopClass {
 		$stock_statuses = explode(',', $stock_statuses);
 
 		if(!empty($order->cart->products)) {
+			$this->recalculateDimensions($order, $order->cart->products);
 			foreach($order->cart->products as $k => $p) {
 				$order->cart->products[$k]->order_id = $order->order_id;
 
@@ -721,6 +729,19 @@ class hikashopOrderClass extends hikashopClass {
 				}
 			}
 
+			if(isset($product->product_weight_orig) && isset($product->product_weight_unit_orig)) {
+				$orderProduct->order_product_weight = $product->product_weight_orig;
+				$orderProduct->order_product_weight_unit = $product->product_weight_unit_orig;
+			} else {
+				$orderProduct->order_product_weight = $product->product_weight;
+				$orderProduct->order_product_weight_unit = $product->product_weight_unit;
+			}
+
+			$orderProduct->order_product_width = $product->product_width;
+			$orderProduct->order_product_length = $product->product_length;
+			$orderProduct->order_product_height = $product->product_height;
+			$orderProduct->order_product_dimension_unit = $product->product_dimension_unit;
+
 			$cart->products[] = $orderProduct;
 		}
 		unset($product);
@@ -925,7 +946,7 @@ class hikashopOrderClass extends hikashopClass {
 		$fieldsClass = hikashop_get('class.field');
 
 		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 
 		$oldOrder = $this->get($order_id);
 		$order = clone($oldOrder);
@@ -1237,6 +1258,59 @@ class hikashopOrderClass extends hikashopClass {
 		return false;
 	}
 
+	public function recalculateDimensions(&$order, $products = null) {
+		if(empty($products)) {
+			$query = 'SELECT * FROM '.hikashop_table('order_product').' WHERE order_id = ' . (int)$order->order_id;
+			$this->database->setQuery($query);
+			$products = $this->database->loadObjectList();
+		}
+
+		if(empty($products) || !count($products))
+			return;
+
+		$volumeHelper = hikashop_get('helper.volume');
+		$weightHelper = hikashop_get('helper.weight');
+
+		$order->order_dimension_unit = null;
+		$order->order_weight_unit = null;
+
+		$order->order_volume = 0.0;
+		$order->order_weight = 0.0;
+
+		if(!empty($order->order_id)) {
+			if(!isset($order->order_dimension_unit)  || !isset($order->order_weight_unit)){
+				$dbOrder = $this->get($order->order_id);
+				if(!isset($order->order_dimension_unit))
+					$order->order_dimension_unit = $dbOrder->order_dimension_unit;
+				if(!isset($order->order_weight_unit))
+					$order->order_weight_unit = $dbOrder->order_weight_unit;
+			}
+		}
+
+		foreach($products as $product) {
+			if(empty($product->order_product_quantity))
+				continue;
+
+			if(!isset($order->order_dimension_unit) || is_null($order->order_dimension_unit))
+				$order->order_dimension_unit = $product->order_product_dimension_unit;
+			if(!isset($order->order_weight_unit) || is_null($order->order_weight_unit))
+				$order->order_weight_unit = $product->order_product_weight_unit;
+
+			if(bccomp(@$product->order_product_length, 0, 5) && bccomp(@$product->order_product_width, 0, 5) && bccomp(@$product->order_product_height, 0, 5)) {
+				$product_volume = $product->order_product_length * $product->order_product_width * $product->order_product_height;
+				$product_total_volume = $product_volume * $product->order_product_quantity;
+				$product_total_volume = $volumeHelper->convert($product_total_volume, $product->order_product_dimension_unit, $order->order_dimension_unit);
+
+				$order->order_volume += $product_total_volume;
+			}
+
+			if(bccomp(@$product->order_product_weight, 0, 5)) {
+				$product_weight = $weightHelper->convert($product->order_product_weight, $product->order_product_weight_unit, $order->order_weight_unit);
+				$order->order_weight += $product_weight * $product->order_product_quantity;
+			}
+		}
+	}
+
 	public function recalculateFullPrice(&$order, $products = null) {
 		if(empty($products)) {
 			$query = 'SELECT * FROM '.hikashop_table('order_product').' WHERE order_id = ' . (int)$order->order_id;
@@ -1245,6 +1319,7 @@ class hikashopOrderClass extends hikashopClass {
 		}
 		$total = 0.0;
 		$taxes = array();
+		$bases = array();
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
 
@@ -1272,11 +1347,15 @@ class hikashopOrderClass extends hikashopClass {
 				foreach($product_taxes as $tax) {
 					if(!isset($taxes[$tax->tax_namekey])) {
 						$taxes[$tax->tax_namekey] = 0;
+						$bases[$tax->tax_namekey] = 0;
 					}
-					if($product->order_product_code == 'order additional')
+					if($product->order_product_code == 'order additional') {
 						$taxes[$tax->tax_namekey] += @$tax->tax_amount;
-					else
+						$bases[$tax->tax_namekey] += @$tax->amount;
+					} else {
 						$taxes[$tax->tax_namekey] += @$tax->tax_amount * $product->order_product_quantity;
+						$bases[$tax->tax_namekey] += @$tax->amount * $product->order_product_quantity;
+					}
 				}
 			}
 		}
@@ -1325,8 +1404,11 @@ class hikashopOrderClass extends hikashopClass {
 					foreach($order->order_tax_info as $k => $tax) {
 						if($tax->tax_namekey == $namekey) {
 							$order->order_tax_info[$k]->tax_amount = $amount + @$tax->tax_amount_for_shipping + @$tax->tax_amount_for_payment - @$tax->tax_amount_for_coupon;
-							if($order->order_full_price == 0)
+							$order->order_tax_info[$k]->amount = $bases[$namekey];
+							if($order->order_full_price == 0) {
 								$order->order_tax_info[$k]->tax_amount = 0;
+								$order->order_tax_info[$k]->amount = 0;
+							}
 							unset($order->order_tax_info[$k]->todo);
 							$found = true;
 							break;
@@ -1336,9 +1418,12 @@ class hikashopOrderClass extends hikashopClass {
 						$obj = new stdClass();
 						$obj->tax_namekey = $namekey;
 						$obj->tax_amount = $amount;
+						$obj->amount = $bases[$namekey];
 
-						if($order->order_full_price == 0)
+						if($order->order_full_price == 0) {
 							$obj->tax_amount = 0;
+							$obj->amount = 0;
+						}
 						$order->order_tax_info[$namekey] = $obj;
 					}
 				}
@@ -1462,6 +1547,25 @@ class hikashopOrderClass extends hikashopClass {
 					$order->override_shipping_address = $override;
 				}
 			}
+		} else {
+			$shipping_ids = explode(';', $order->order_shipping_id);
+			$shippingClass = hikashop_get('class.shipping');
+			$overrides = array();
+			foreach($shipping_ids as $shipping_id) {
+				$e = explode('@', $shipping_id);
+				$shipping_id = reset($e);
+				$shipping = $shippingClass->get($shipping_id);
+				if(!$shipping)
+					continue;
+				$currentShipping = hikashop_import('hikashopshipping', $shipping->shipping_type);
+				if(!method_exists($currentShipping, 'getShippingAddress'))
+					continue;
+				$override = $currentShipping->getShippingAddress($shipping_id, $order);
+				if($override !== false)
+					$overrides[] = $override;
+			}
+			if(count($overrides) == count($shipping_ids))
+				$order->override_shipping_address = reset($overrides);
 		}
 
 		if(!empty($order->order_payment_id)) {
@@ -1497,6 +1601,8 @@ class hikashopOrderClass extends hikashopClass {
 		if($additionalData) {
 			$this->getOrderAdditionalInfo($order);
 		}
+
+		$app->triggerEvent( 'onAfterLoadFullOrder', array( &$order) );
 
 		return $order;
 	}
@@ -2001,7 +2107,7 @@ class hikashopOrderClass extends hikashopClass {
 				$searchVal = '\'%' . $this->db->getEscaped(HikaStringHelper::strtolower($search), true) . '%\'';
 			else
 				$searchVal = '\'%' . $this->db->escape(HikaStringHelper::strtolower($search), true) . '%\'';
-			$where['search'] = '('.implode(' LIKE '.$searchVal.' OR ', $searchMap).' LIKE '.$searchVal.')';
+			$where['search'] = '('.implode(' LIKE '.$searchVal.' OR ', $searchMap).' LIKE '.$searchVal.' OR '.implode(' = '.$thid->db->Quote($search).' OR ', $searchMap).' = '.$thid->db->Quote($search).')';
 		}
 
 		$order = ' ORDER BY o.order_created DESC';

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -217,7 +217,7 @@ window.productMgr.cancelNewCharacteristic = function() {
 	if(el) setTimeout(function() { el.innerHTML = ''; }, 10);
 	return false;
 };
-window.Oby.ready(function() {
+window.hikashop.ready(function() {
 	var w = window, ona = 'hikashop_characteristic_nb_add', onv = 'hikashop_characteristic_nb_def',
 		u = '<?php echo hikashop_completeLink('characteristic&task=findList&characteristic_type=value&characteristic_parent_id={ID}', true, false, true); ?>',
 		a = '<?php echo hikashop_completeLink('characteristic&task=add&characteristic_type=value&characteristic_parent_id={ID}&tmpl=json', true, false, true); ?>';

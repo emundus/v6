@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,9 +17,21 @@ defined('_JEXEC') or die('Restricted access');
 	<div class="hkc-md-10">
 <?php } ?>
 		<?php $count = 6; ?>
+<?php 
+	$extra_class = "";
+	$extra_id = "";
+	$openfeatures_class = "";
+	$css_float = "float:right;";
+	if (HIKASHOP_J40) {
+		$extra_class = "hika_j4_search";
+		$extra_id = "id='hikashop_listing_filters_id'";
+		$openfeatures_class = "hidden-features";
+		$css_float = "";
+	}
+?>
 			<form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=category" method="post"  name="adminForm" id="adminForm">
 				<div class="hk-row-fluid">
-					<div class="hkc-md-6">
+					<div class="hkc-md-6 <?php echo $extra_class; ?>">
 							<?php
 								 if ( !empty( $this->extrafilters)) {
 									 foreach($this->extrafilters as $name => $filterObj) {
@@ -41,8 +53,8 @@ defined('_JEXEC') or die('Restricted access');
 	echo $this->loadHkLayout('search', array());
  ?>
 					</div>
-					<div class="hkc-md-6">
-						<div class="expand-filters" style="width:auto;float:right">
+					<div <?php echo $extra_id; ?> class="hkc-md-6 hikashop_listing_filters <?php echo $openfeatures_class; ?>">
+						<div class="expand-filters" style="width:auto; <?php echo $css_float; ?>">
 							<?php
 								if ( !empty( $this->extrafilters)) {
 									foreach($this->extrafilters as $name => $filterObj) {
@@ -130,7 +142,13 @@ defined('_JEXEC') or die('Restricted access');
 								</td>
 								<?php if($this->category_image){ ?>
 								<td>
-									<?php echo $this->image->display(@$row->file_path,true,"",'','', 100, 100); ?>
+									<?php
+										$image_options = array('default' => true,'forcesize'=>true,'scale'=>$this->config->get('image_scale_mode','inside'));
+										$img = $this->image->getThumbnail(@$row->file_path, array('width' => 100, 'height' => 100), $image_options);
+										if($img->success) {
+											echo '<img class="hikashop_category_listing_image" title="'.$this->escape(@$row->file_description).'" alt="'.$this->escape(@$row->file_name).'" src="'.$img->url.'"/>';
+										}
+									?>
 								</td>
 								<?php } ?>
 								<td>

@@ -559,6 +559,8 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
 			
 			$config = JFactory::getConfig();
 			$dbtype = $config->get('dbtype');
+			$version = '0.0.0';
+			$tipo = 'Notdefined';
 			
 			$registros_map = array_map(function ($element) {
 				$new_array = array();
@@ -567,16 +569,10 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
 				if (is_object($decode)) {
 					if (property_exists($decode, 'version')) {
 						$version = $decode->version;
-					} else 
-					{
-						$version = '0.0.0';
 					}
 					if (property_exists($decode, 'type')) {
 						$tipo = $decode->type;
-					} else 
-					{
-						$tipo = 'Notdefined';
-					}
+					} 
 				
 				}    
 				$new_array['Product'] = $element->element;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -29,6 +29,8 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 			'dpm' => 'DPM')
 		),
 		'ask_ccv' => array('CARD_VALIDATION_CODE', 'boolean','0'),
+		'validation' => array('ENABLE_VALIDATION', 'boolean', 0),
+		'test_payments' => array('Test payments', 'boolean', 0),
 		'debug' => array('DEBUG', 'boolean','0'),
 		'return_url' => array('RETURN_URL', 'input'),
 		'x_logo_url' => array('LOGO', 'input'),
@@ -152,7 +154,7 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 	function onAfterOrderCreate(&$order,&$send_email){
 		$this->loadOrderData($order);
 		$this->loadPaymentParams($order);
-		if($this->app->isAdmin())
+		if(hikashop_isClient('administrator'))
 			return true;
 		if(empty($order->order_payment_method) || $order->order_payment_method != $this->name)
 			return true;
@@ -203,7 +205,7 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 			"x_amount" => round($order->cart->full_total->prices[0]->price_value_with_tax,(int)$this->currency->currency_locale['int_frac_digits']),
 			"x_currency_code" => $this->currency->currency_code,
 			"x_version" => '3.1',
-			"x_test_request" => ($this->payment_params->debug?'TRUE':'FALSE'),
+			"x_test_request" => (@$this->payment_params->test_payments?'TRUE':'FALSE'),
 		);
 		$vars["x_relay_response"] = 'FALSE';
 		$vars["x_customer_ip"] = $order->order_ip;

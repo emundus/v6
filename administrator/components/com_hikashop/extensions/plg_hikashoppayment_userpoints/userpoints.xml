@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashoppayment">
 	<name>Hikashop UserPoints Payment Plugin</name>
-	<creationDate>10 août 2020</creationDate>
-	<version>4.3.0</version>
+	<creationDate>09 novembre 2020</creationDate>
+	<version>4.4.0</version>
 	<author>Obsidev</author>
 	<authorEmail>contact@obsidev.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>

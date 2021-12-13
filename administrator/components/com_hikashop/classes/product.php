@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -78,6 +78,7 @@ class hikashopProductClass extends hikashopClass{
 			$element = $_SESSION['hikashop_product_data'];
 			$status = false;
 		}
+		$new = empty($product_id);
 		if($product_id){
 			$element->product_id = $product_id;
 		}
@@ -161,7 +162,7 @@ class hikashopProductClass extends hikashopClass{
 				}
 			}elseif($column=='price_site_id'){
 				jimport('joomla.filter.filterinput');
-				$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
+				$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 				foreach($value as $k => $v){
 					if(!is_null($safeHtmlFilter)) $value[$k] = str_replace('[unselected]','',$safeHtmlFilter->clean($v, 'string'));
 				}
@@ -281,14 +282,27 @@ class hikashopProductClass extends hikashopClass{
 		}
 
 		if($status){
-			$status = $this->fullSave($element);
+			$status = $this->save($element, false, true);
 		}else{
 			hikaInput::get()->set( 'fail', $element  );
 			return $status;
 		}
 
 		if($status){
+			$this->updateCategories($element,$status);
+			$this->updatePrices($element,$status);
+			$this->updateFiles($element,$status,'files');
+			$this->updateFiles($element,$status,'images',$element->imagesorder);
+			$this->updateRelated($element,$status,'related');
+			$this->updateRelated($element,$status,'options');
+			$this->updateRelated($element,$status,'bundle');
+			$this->updateCharacteristics($element,$status);
 			$translationHelper->handleTranslations('product',$status,$element);
+
+			if($new)
+				$app->triggerEvent( 'onAfterProductCreate', array( & $element ) );
+			else
+				$app->triggerEvent( 'onAfterProductUpdate', array( & $element ) );
 		}else{
 			hikaInput::get()->set( 'fail', $element  );
 			if(empty($element->product_id) && empty($element->product_code) && empty($element->product_name)){
@@ -437,7 +451,7 @@ class hikashopProductClass extends hikashopClass{
 			}
 
 			if((int)$config->get('safe_product_description', 0)) {
-				$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
+				$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 				$product->product_description = $safeHtmlFilter->clean($product->product_description, 'string');
 			}
 		}
@@ -550,7 +564,7 @@ class hikashopProductClass extends hikashopClass{
 
 			if(isset($value['price_site_id'])){
 				jimport('joomla.filter.filterinput');
-				$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
+				$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 				if(!is_null($safeHtmlFilter))
 					$value['price_site_id'] = str_replace('[unselected]','',$safeHtmlFilter->clean($value['price_site_id'], 'string'));
 				$product->prices[$k]->price_site_id = $value['price_site_id'];
@@ -662,12 +676,61 @@ class hikashopProductClass extends hikashopClass{
 
 
 		if($status) {
-			$status = $this->fullSave($product);
+			$status = $this->save($product, false, true);
 		} else {
 			hikaInput::get()->set('fail', $product);
 			return $status;
 		}
+
 		if($status) {
+			if(hikashop_acl('product/edit/category') || $new)
+				$this->updateCategories($product, $status);
+			if(hikashop_acl('product/edit/price'))
+				$this->updatePrices($product, $status);
+			if(hikashop_acl('product/edit/files'))
+				$this->updateFiles($product, $status, 'files', $product->filesorder);
+			if(hikashop_acl('product/edit/images'))
+				$this->updateFiles($product, $status, 'images', $product->imagesorder);
+			if(hikashop_acl('product/edit/related'))
+				$this->updateRelated($product, $status, 'related');
+			if(hikashop_acl('product/edit/options'))
+				$this->updateRelated($product, $status, 'options');
+			if(hikashop_acl('product/edit/bundle') && hikashop_level(1))
+				$this->updateRelated($product, $status, 'bundle');
+
+			if(hikashop_acl('product/edit/characteristics') && !empty($product->characteristics)) {
+				if($new) {
+					$product->product_type = 'main';
+					$this->updateCharacteristics($product, $status, 0);
+				} else {
+					$query = 'UPDATE '. hikashop_table('variant') . ' SET ordering = CASE variant_characteristic_id';
+					foreach($product->characteristics as $key => $val) {
+						$query .= ' WHEN ' . (int)$val . ' THEN ' . ($key + 1);
+					}
+					$query .= ' ELSE ordering END WHERE variant_characteristic_id IN ('.implode(',', $product->characteristics).') AND variant_product_id = '.(int)$status;
+					$this->db->setQuery($query);
+					$this->db->execute();
+
+					if(!empty($product->product_code) && !empty($oldProduct->product_code) && $product->product_code != $oldProduct->product_code) {
+						if(HIKASHOP_J30)
+							$product_code = "'" . $this->db->escape($oldProduct->product_code, true) . "%'";
+						else
+							$product_code = "'" . $this->db->getEscaped($oldProduct->product_code, true) . "%'";
+
+						$query = 'UPDATE '.hikashop_table('product').
+								' SET `product_code` = REPLACE(`product_code`,' . $this->db->Quote($oldProduct->product_code) . ',' . $this->db->Quote($product->product_code) . ')'.
+								' WHERE `product_code` LIKE '.$product_code.' AND product_parent_id = '.(int)$product->product_id.' AND product_type = '.$this->db->Quote('variant');
+						$this->db->setQuery($query);
+						$this->db->execute();
+					}
+				}
+			}
+
+			if($new)
+				$app->triggerEvent( 'onAfterProductCreate', array( & $product ) );
+			else
+				$app->triggerEvent( 'onAfterProductUpdate', array( & $product ) );
+
 			if(hikashop_acl('product/variant') && !empty($formData['variant']))
 				$this->backSaveVariantForm();
 		} else {
@@ -858,7 +921,7 @@ class hikashopProductClass extends hikashopClass{
 			}
 
 			if((int)$config->get('safe_product_description', 0)) {
-				$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
+				$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 				$product->product_description = $safeHtmlFilter->clean($product->product_description, 'string');
 			}
 		}
@@ -927,7 +990,6 @@ class hikashopProductClass extends hikashopClass{
 			unset($product->prices);
 		}
 
-		$this->recalculateSortPrice($product);
 
 		if(hikashop_acl('product/variant/images')) {
 			$product->images = @$formVariant['product_images'];
@@ -982,8 +1044,22 @@ class hikashopProductClass extends hikashopClass{
 			}
 		}
 
-		$status = $this->fullSave($product);
-		if(!$status) {
+		$status = $this->save($product, false, true);
+		if($status) {
+			if(hikashop_acl('product/variant/price'))
+				$this->updatePrices($product, $status);
+			if(hikashop_acl('product/variant/files'))
+				$this->updateFiles($product, $status, 'files', $product->filesorder);
+			if(hikashop_acl('product/variant/images'))
+				$this->updateFiles($product, $status, 'images', $product->imagesorder);
+			if(hikashop_acl('product/variant/characteristics'))
+				$this->updateCharacteristics($product, $status);
+
+			if($new)
+				$app->triggerEvent( 'onAfterProductCreate', array( & $product ) );
+			else
+				$app->triggerEvent( 'onAfterProductUpdate', array( & $product ) );
+		} else {
 			hikaInput::get()->set('fail', $product);
 			if(empty($product->product_id) && empty($product->product_code) && empty($product->product_name)) {
 				$app->enqueueMessage(JText::_('SPECIFY_NAME_AND_CODE'), 'error');
@@ -1074,6 +1150,31 @@ class hikashopProductClass extends hikashopClass{
 			$categoriesArray[$products]=$this->database->loadColumn();
 		}
 		return $categoriesArray[$products];
+	}
+
+	function getRawProducts($ids, $load_parents = false) {
+		if(empty($ids) || !is_array($ids))
+			return false;
+		hikashop_toInteger($ids);
+		$this->database->setQuery('SELECT * FROM #__hikashop_product WHERE product_id IN ('.implode(',',$ids).');');
+		$products = $this->database->loadObjectList('product_id');
+		if($load_parents && count($products)) {
+			$parent_ids = array();
+			foreach($products as $product) {
+				if(!empty($product->product_parent_id))
+					$parent_ids[] = (int)$product->product_parent_id;
+			}
+			if(count($parent_ids)) {
+				$this->database->setQuery('SELECT * FROM #__hikashop_product WHERE product_id IN ('.implode(',',$parent_ids).');');
+				$parents = $this->database->loadObjectList('product_id');
+				if(!empty($parents)) {
+					foreach($parents as $id => $parent) {
+						$products[$id] = $parent;
+					}
+				}
+			}
+		}
+		return $products;
 	}
 
 	function getProducts($ids, $mode = 'id') {
@@ -2538,7 +2639,7 @@ class hikashopProductClass extends hikashopClass{
 		}
 	}
 
-	function fullSave(&$element, $stats = false) {
+	function save(&$element, $stats = false, $noAfterTrigger = false) {
 		if(!$stats)
 			$element->product_modified = time();
 
@@ -2626,59 +2727,6 @@ class hikashopProductClass extends hikashopClass{
 		$this->get('reset_cache');
 		$element->product_id = $status;
 
-		$type = 'product';
-		if($element->product_type == 'variant')
-			$type = 'variant';
-
-		if($type == 'product') {
-			if(hikashop_acl($type.'/edit/category') || $new)
-				$this->updateCategories($element, $status);
-		}
-		if(hikashop_acl($type.'/edit/price'))
-			$this->updatePrices($element, $status);
-		if(hikashop_acl($type.'/edit/files'))
-			$this->updateFiles($element, $status, 'files', $element->filesorder);
-		if(hikashop_acl($type.'/edit/images'))
-			$this->updateFiles($element, $status, 'images', $element->imagesorder);
-		if($type == 'product') {
-			if(hikashop_acl($type.'/edit/related'))
-				$this->updateRelated($element, $status, 'related');
-			if(hikashop_acl($type.'/edit/options'))
-				$this->updateRelated($element, $status, 'options');
-			if(hikashop_acl($type.'/edit/bundle') && hikashop_level(1))
-				$this->updateRelated($element, $status, 'bundle');
-			if(hikashop_acl($type.'/edit/characteristics') && !empty($element->characteristics)) {
-				if($new) {
-					$element->product_type = 'main';
-					$this->updateCharacteristics($element, $status, 0);
-				} else {
-					$query = 'UPDATE '. hikashop_table('variant') . ' SET ordering = CASE variant_characteristic_id';
-					foreach($element->characteristics as $key => $val) {
-						$query .= ' WHEN ' . (int)$val . ' THEN ' . ($key + 1);
-					}
-					$query .= ' ELSE ordering END WHERE variant_characteristic_id IN ('.implode(',', $element->characteristics).') AND variant_product_id = '.(int)$status;
-					$this->db->setQuery($query);
-					$this->db->execute();
-
-					if(!empty($element->product_code) && !empty($element->old->product_code) && $element->product_code != $element->old->product_code) {
-						if(HIKASHOP_J30)
-							$product_code = "'" . $this->db->escape($element->old->product_code, true) . "%'";
-						else
-							$product_code = "'" . $this->db->getEscaped($element->old->product_code, true) . "%'";
-
-						$query = 'UPDATE '.hikashop_table('product').
-								' SET `product_code` = REPLACE(`product_code`,' . $this->db->Quote($element->old->product_code) . ',' . $this->db->Quote($element->product_code) . ')'.
-								' WHERE `product_code` LIKE '.$product_code.' AND product_parent_id = '.(int)$element->product_id.' AND product_type = '.$this->db->Quote('variant');
-						$this->db->setQuery($query);
-						$this->db->execute();
-					}
-				}
-			}
-		} else {
-			if(hikashop_acl('product/variant/characteristics'))
-				$this->updateCharacteristics($element, $status);
-		}
-
 		$translationHelper = hikashop_get('helper.translation');
 		if($translationHelper->isMulti()) {
 			$fieldsClass = hikashop_get('class.field');
@@ -2691,10 +2739,12 @@ class hikashopProductClass extends hikashopClass{
 			$translationHelper->checkTranslations($element, $columns);
 		}
 
-		if($new)
-			$app->triggerEvent( 'onAfterProductCreate', array( & $element ) );
-		else
-			$app->triggerEvent( 'onAfterProductUpdate', array( & $element ) );
+		if(!$noAfterTrigger) {
+			if($new)
+				$app->triggerEvent( 'onAfterProductCreate', array( & $element ) );
+			else
+				$app->triggerEvent( 'onAfterProductUpdate', array( & $element ) );
+		}
 
 		if($tags === null && !empty($element->old)) {
 			$tagsHelper = hikashop_get('helper.tags');
@@ -2731,7 +2781,7 @@ class hikashopProductClass extends hikashopClass{
 		return $status;
 	}
 
-	function save(&$element, $stats = false) {
+	function saveRaw(&$element, $stats = false) {
 		if(!$stats)
 			$element->product_modified = time();
 

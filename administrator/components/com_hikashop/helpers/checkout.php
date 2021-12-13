@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -202,7 +202,10 @@ class hikashopCheckoutHelper {
 		$config = hikashop_config();
 		$defaultParams = $config->get('default_params');
 
-		$pt = (int)$config->get('price_with_tax', 0);
+		if(isset($options['price_with_tax']))
+			$pt = $options['price_with_tax'];
+		else
+			$pt = (int)$config->get('price_with_tax', 0);
 
 		if(empty($this->currencyClass))
 			$this->currencyClass = hikashop_get('class.currency');
@@ -354,12 +357,12 @@ class hikashopCheckoutHelper {
 		return $ret;
 	}
 
-	public function getRedirectUrl() {
-		if(!empty($this->redirect_url))
+	public function getRedirectUrl($override = false) {
+		if(!$override && !empty($this->redirect_url))
 			return $this->redirect_url;
 
 		$this->redirect_url = $this->config->get('redirect_url_when_cart_is_empty', '');
-		if(!empty($this->redirect_url)) {
+		if(!$override && !empty($this->redirect_url)) {
 			$this->redirect_url = hikashop_translate($this->redirect_url);
 			if(!preg_match('#^https?://#', $this->redirect_url))
 				$this->redirect_url = JURI::base() . ltrim($this->redirect_url, '/');
@@ -400,8 +403,18 @@ class hikashopCheckoutHelper {
 		$total = hikashop_copy($cart->full_total);
 		if(!empty($total->prices)) {
 			foreach($total->prices as &$price ) {
-				unset($price->taxes);
-				unset($price->taxes_without_discount);
+				if($price->taxes) {
+					foreach(get_object_vars($price->taxes) as $k => $v) {
+						if($k != 'tax_namekey')
+							unset($price->taxes->$k);
+					}
+				}
+				if($price->taxes_without_discount) {
+					foreach(get_object_vars($price->taxes_without_discount) as $k => $v) {
+						if($k != 'tax_namekey')
+							unset($price->taxes_without_discount->$k);
+					}
+				}
 			}
 		}
 		$fullprice = md5(serialize($total));
@@ -593,7 +606,10 @@ class hikashopCheckoutHelper {
 				continue;
 			}
 			if(!isset($msg['msg'])) {
-				hikashop_display($msg[0], $msg[1]);
+				if(!isset($msg[1]))
+					hikashop_display($msg[0]);
+				else
+					hikashop_display($msg[0], $msg[1]);
 				continue;
 			}
 			if(!isset($msg['type']))
