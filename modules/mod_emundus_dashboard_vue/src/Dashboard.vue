@@ -14,14 +14,11 @@
         <label>{{translations.filterByProgram}}</label>
         <select v-model="selectedProgramme">
           <option :value="null" selected>{{translations.all}}</option>
-          <option v-for="programme in programmes" :value="programme.code">{{programme.label}}</option>
+          <option v-for="programme in programmes" v-bind:key="programme.id" :value="programme.code">{{programme.label}}</option>
         </select>
       </div>
       <template v-if="widgets.length > 0">
         <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index" :class="enableDrag ? 'jello-horizontal handle' : ''" :key="widget.name + '_' + index">
-          <Faq v-if="widget.name === 'faq'"/>
-          <FilesNumberByStatus v-if="widget.name === 'files_number_by_status'" :widget="widget" :colors="colors"/>
-          <UsersByMonth v-if="widget.name === 'users_by_month'" :widget="widget" :colors="colors"/>
           <Custom v-if="widget.name === 'custom'" :widget="widget" @forceUpdate="$forceUpdate"/>
 
           <!-- Sciences Po widgets -->

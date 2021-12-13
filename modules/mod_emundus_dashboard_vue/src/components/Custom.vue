@@ -146,7 +146,7 @@ export default {
           widget: this.selectedWidget.id,
           position: this.position
         })
-      }).then(response => {
+      }).then(() => {
         this.renderChart();
       });
     }
@@ -170,7 +170,7 @@ export default {
   },
 
   watch: {
-    selectedWidget: function(value){
+    selectedWidget: function(){
       if(this.chart_render !== 0) {
         this.updateDashboard();
       }

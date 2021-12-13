@@ -87,7 +87,7 @@ export default {
   },
 
   watch:{
-    program: function (value) {
+    program: function () {
       this.renderFilesByStatus();
     }
   }
