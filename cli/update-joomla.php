@@ -57,12 +57,11 @@ class Upgradejoomla extends JApplicationCli
         //TODO: Complete restoration process
 
         // Extract files to core directory
-        $zip = new ZipArchive;
-            if ($zip->open('/Users/jtroadec/Desktop/Archives/core/tmp/Joomla_3.10.3-Stable-Update_Package.zip') === TRUE) {
-                $zip->extractTo('/Users/jtroadec/Desktop/Archives/core/');
-                $zip->close();
-            }
-
+//        $zip = new ZipArchive;
+//            if ($zip->open(JPATH_ROOT . '/tmp/Joomla_3.10.3-Stable-Update_Package.zip') === TRUE) {
+//                $zip->extractTo(JPATH_ROOT);
+//                $zip->close();
+//            }
         $this->out('Sucess...');
 
         // Update SQL etc based on the manifest file we got with the update
