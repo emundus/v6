@@ -15,13 +15,15 @@ $document->addStyleSheet('media/mod_emundus_dashboard_vue/app.css');
 $profiles = $params->get('profile');
 $programme_filter = $params->get('filter_programmes');
 
+$user = JFactory::getUser();
+
 if(in_array(JFactory::getSession()->get('emundusUser')->profile,$profiles)) {
     require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus_onboard' . DS . 'models' . DS . 'dashboard.php');
 
     $m_dashboard = new EmundusonboardModeldashboard;
-    $dashboard = $m_dashboard->getDashboard();
+    $dashboard = $m_dashboard->getDashboard($user->id);
     if (empty($dashboard)) {
-        $m_dashboard->createDashboard();
+        $m_dashboard->createDashboard($user->id);
     }
 
     require(JModuleHelper::getLayoutPath('mod_emundus_dashboard_vue'));

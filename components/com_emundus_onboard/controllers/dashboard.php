@@ -34,10 +34,11 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
 
     public function getallwidgetsbysize(){
         try {
+            $user = JFactory::getUser();
             $jinput = JFactory::getApplication()->input;
             $size = $jinput->getInt('size');
 
-            $widgets = $this->model->getallwidgetsbysize($size);
+            $widgets = $this->model->getallwidgetsbysize($size,$user->id);
 
             $tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
         } catch (Exception $e) {
@@ -87,7 +88,8 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
 
     public function getwidgets(){
         try {
-            $widgets = $this->model->getwidgets();
+            $user = JFactory::getUser();
+            $widgets = $this->model->getwidgets($user->id);
 
             $tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
         } catch (Exception $e) {
@@ -99,12 +101,14 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
 
     public function updatemydashboard(){
         try {
+            $user = JFactory::getUser();
+
             $jinput = JFactory::getApplication()->input;
 
             $widget = $jinput->getInt('widget');
             $position = $jinput->getInt('position');
 
-            $result = $this->model->updatemydashboard($widget,$position);
+            $result = $this->model->updatemydashboard($widget,$position,$user->id);
 
             $tab = array('status' => 0, 'msg' => 'success', 'data' => $result);
         } catch (Exception $e) {
