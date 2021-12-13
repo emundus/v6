@@ -30,25 +30,40 @@ class Upgradejoomla extends JApplicationCli
     private function getExtensionsId($table) {
         $query = $this->db->getQuery(true);
         $query->select('*')
-            ->from('#__' . $table);
+            ->from('#__' . $table)
+            ->where($this->db->quoteName('extension_id') . ' NOT LIKE 0 AND' . ($this->db->quoteName('extension_id') . ' NOT LIKE 700'));
         $this->db->setQuery($query);
-        return $this->db->loadAssocList('extension_id');
+        return $this->db->loadAssocList('','update_id');
     }
 
     public function updateExtensions() {
-        $model = JModelLegacy::getInstance('InstallerModelUpdate');
+        $this->out('UPDATE EXTENSIONS...');
 
-        $uid = array(112,123);
+        $model = JModelLegacy::getInstance('InstallerModelUpdate');
+        $uid = $this->getExtensionsId('updates');
         $uid = ArrayHelper::toInteger($uid, array());
 
         $component     = JComponentHelper::getComponent('com_installer');
         $params        = $component->params;
+        $cache_timeout = (int) $params->get('cachetimeout', 6);
+        $cache_timeout = 3600 * $cache_timeout;
         $minimum_stability = (int) $params->get('minimum_stability', JUpdater::STABILITY_STABLE);
 
+        $this->out('Update...');
         $model->update($uid, $minimum_stability);
+
+        $this->out('Purge...');
+        $model->purge();
+
+        $this->out('Check update list...');
+        $model->findUpdates(0, $cache_timeout, $minimum_stability);
+
+        $this->out('Sucess...');
+
     }
 
     public function updateJoomla() {
+        $this->out('UPDATE JOOMLA...');
 
         // Get a Joomla-instance so createResorationFile() doesn't complain too much.
 
