@@ -60,9 +60,7 @@ class ApogeeCustom {
         $nodes = $this->xmlTree->getElementsByTagName('codPay');            /// e.g: find(2)
 
         foreach($nodes as $node) {
-            if($node->nodeValue == "" or $node->nodeValue === null) {
-                $node->nodeValue = '100';
-            }
+            if($node->nodeValue == "" or $node->nodeValue === null) { $node->nodeValue = '100'; }
         }
 
         return $this->xmlTree;
@@ -78,9 +76,9 @@ class ApogeeCustom {
         $_aaCodCom = $_aaRoot->getElementsByTagName('codCom')->item(0);
         $_aaLibAde = $_aaRoot->getElementsByTagName('libAde')->item(0);
 
-        if($_aaCodPay->nodeValue == '100') {        /// #france
+        if($_aaCodPay->nodeValue == '100') {        /// # france
             /* set Bdi */
-            $_getAaBdiSql = 'SELECT #__emundus_personal_detail.etu_code_postal FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = ' . $this->fnum;
+            $_getAaBdiSql = "SELECT lpad(#__emundus_personal_detail.etu_code_postal,5,'0') FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = " . $this->fnum;
         } else {                                    /// # not france
             /* set Bdi */
             $_getAaBdiSql = 'SELECT #__emundus_personal_detail.e_287_8117 FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = ' . $this->fnum;
@@ -104,7 +102,7 @@ class ApogeeCustom {
 
         if($_afCodPay->nodeValue == '100') {        /// #france
             /* set Bdi */
-            $_getAfBdiSql = 'SELECT #__emundus_personal_detail.etu_code_postal FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = ' . $this->fnum;
+            $_getAfBdiSql = "SELECT lpad(#__emundus_personal_detail.etu_code_postal,5,'0') FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = " . $this->fnum;
         } else {                                    /// # not france
             /* set Bdi */
             $_getAfBdiSql = 'SELECT #__emundus_personal_detail.e_287_8117 FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = ' . $this->fnum;
@@ -150,7 +148,7 @@ class ApogeeCustom {
             $_codTypDepPayDerDipNode->nodeValue = 'D';
 
             /// set $_codDepPayDerDipNode->nodeValue by France Department
-            $_getDepartmentSql = 'SELECT #__emundus_1001_00.dep_etb_last_dip FROM #__emundus_1001_00 WHERE #__emundus_1001_00.fnum = ' . $this->fnum;
+            $_getDepartmentSql = "SELECT lpad(#__emundus_1001_00.dep_etb_last_dip,3,'0') FROM #__emundus_1001_00 WHERE #__emundus_1001_00.fnum = " . $this->fnum;
             $db->setQuery($_getDepartmentSql);
             $_codDepPayDerDipNode->nodeValue = $db->loadResult();
         } else {
@@ -169,7 +167,7 @@ class ApogeeCustom {
 
         if($_codDepPayAntIaaOpiNode->nodeValue == '100') {
             /// set $_codDepPayDerDipNode->nodeValue by France Department
-            $_getDepartmentSql = 'SELECT #__emundus_1001_00.dep_etb_dernier FROM #__emundus_1001_00 WHERE #__emundus_1001_00.fnum = ' . $this->fnum;
+            $_getDepartmentSql = "SELECT lpad(#__emundus_1001_00.dep_etb_dernier,3,'0') FROM #__emundus_1001_00 WHERE #__emundus_1001_00.fnum = " . $this->fnum;
             $db->setQuery($_getDepartmentSql);
             $_codDepPayAntIaaOpiNode->nodeValue = $db->loadResult();
         }
@@ -200,7 +198,7 @@ class ApogeeCustom {
 
         if($_codSisAnnPreOpiNode->nodeValue == '100') {         # france
             // get France Dep
-            $_getDepartmentSql = 'SELECT #__emundus_1001_00.e_358_7943 FROM #__emundus_1001_00 WHERE #__emundus_1001_00.fnum = ' . $this->fnum;
+            $_getDepartmentSql = "SELECT lpad(#__emundus_1001_00.e_358_7943,3,'0') FROM #__emundus_1001_00 WHERE #__emundus_1001_00.fnum = " . $this->fnum;
             $db->setQuery($_getDepartmentSql);
 
             $_codSisAnnPreOpiNode->nodeValue = $db->loadResult();

@@ -4,7 +4,7 @@
       "default": ""
     },
     "codCom": {
-      "sql": "select #__emundus_personal_detail.e_287_8116 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      "sql": "select lpad(#__emundus_personal_detail.e_287_8116,5,'0') from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     },
     "codPay": {
       "sql": "select #__emundus_personal_detail.country_1 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
@@ -22,7 +22,7 @@
       "default": ""
     },
     "numTel": {
-      "sql": "select trim(#__emundus_personal_detail.etu_telephone) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      "sql": "select trim(replace(#__emundus_personal_detail.etu_telephone,' ','')) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     }
   },
   "adresseFixe": {
@@ -30,7 +30,7 @@
       "default": ""
     },
     "codCom": {
-      "sql": "select #__emundus_personal_detail.e_287_8116 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      "sql": "select lpad(#__emundus_personal_detail.e_287_8116,5,'0') from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     },
     "codPay": {
       "sql": "select #__emundus_personal_detail.country_1 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
@@ -48,7 +48,7 @@
       "default": ""
     },
     "numTel": {
-      "sql": "select trim(#__emundus_personal_detail.etu_telephone) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      "sql": "select trim(replace(#__emundus_personal_detail.etu_telephone,' ','')) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     }
   },
   "bac": {
@@ -56,10 +56,10 @@
       "sql": "select #__emundus_1001_00.e_358_7925 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
     },
     "codDep": {
-      "sql": "select #__emundus_1001_00.e_358_7929 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+      "sql": "select lpad(#__emundus_1001_00.e_358_7929,3,'0') from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
     },
     "codEtb": {
-      "sql": "select #__emundus_1001_00.nom_etb from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+      "sql": "select lpad(#__emundus_1001_00.nom_etb,8,'0') from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
     },
     "codMention": {
       "sql": "select #__emundus_1001_00.e_358_7926 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
@@ -145,7 +145,7 @@
     },
     "dernierDiplObt": {
       "codTdeDerDip": {
-        "sql": "select #__emundus_1001_00.e_358_7933 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+        "sql": "select lpad(#__emundus_1001_00.e_358_7933,3,'0') from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
       },
       "codDepPayDerDip": {
         "sql": "SELECT #__emundus_1001_00.e_358_7937 FROM #__emundus_1001_00 WHERE fnum = "
@@ -154,7 +154,7 @@
         "default": ""
       },
       "codEtbDerDip": {
-        "sql": "select #__emundus_1001_00.e_358_7942 from #__emundus_1001_00 where #__emundus_1001_00.fnum = ",
+        "sql": "select lpad(#__emundus_1001_00.e_358_7942,8,'0') from #__emundus_1001_00 where #__emundus_1001_00.fnum = ",
         "default": ""
       },
       "codTdsOpi": {
@@ -196,7 +196,7 @@
         "sql": "select date_format(#__emundus_personal_detail.birth_date, '%d%m%Y') from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
       },
       "codComNaiEtuOpi": {
-        "sql": "select #__emundus_personal_detail.e_287_8113 from #__emundus_personal_detail where fnum = "
+        "sql": "select lpad(#__emundus_personal_detail.e_287_8113,5,'0') from #__emundus_personal_detail where fnum = "
       },
       "libVilNaiEtuOpi": {
         "sql": "select trim(#__emundus_personal_detail.e_287_8114) from #__emundus_personal_detail where fnum = "
@@ -234,7 +234,7 @@
         "default": ""
       },
       "numTelPorOpi": {
-        "sql": "select #__emundus_personal_detail.etu_telephone from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+        "sql": "select trim(replace(#__emundus_personal_detail.etu_telephone, ' ','')) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
       },
       "codRgi": {
         "default": ""
@@ -279,7 +279,7 @@
     },
     "premiereInscription": {
       "codEtb": {
-        "sql": "select #__emundus_1001_00.e_358_7932 from #__emundus_1001_00 where fnum = "
+        "sql": "select lpad(#__emundus_1001_00.e_358_7932,8,'0') from #__emundus_1001_00 where fnum = "
       },
       "daaEnsSupOpi": {
         "default": ""
@@ -313,7 +313,7 @@
         "default": ""
       },
       "codSisAnnPreOpi": {
-        "sql": "select #__emundus_1001_00.e_358_8119 from #__emundus_1001_00 where #__emundus_1001_00.fnum = ",
+        "sql": "select lpad(#__emundus_1001_00.e_358_8119,3,'0') from #__emundus_1001_00 where #__emundus_1001_00.fnum = ",
         "default": ""
       },
       "codTypDepPayAnnPreOpi": {
