@@ -43,7 +43,7 @@
 						type="textarea"
 						rows="4"
 						columns="2"
-						default="Retrouvez vos statistiques"
+						default=""
 						label="MOD_EMUNDUSPANEL_TCHOOZ_DESC_LABEL"
 						showon="panel_style:tchooz_dashboard"
 						size="60">
