@@ -1,6 +1,6 @@
 <?php
 /**
- * A cron task to email a recall to incomplet applications
+ * A cron task to send data to Apogee server
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.cron.email
@@ -19,7 +19,7 @@ require_once "XmlDataFilling.php";
 require_once "ApogeeCustom.php";
 
 /**
- * A cron task to email records to a give set of users (incomplete application)
+ * A cron task to send data to Apogee server
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.cron.emundusapogee
@@ -64,25 +64,25 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        // get WSDL url
+        # get WSDL url
         $wsdl_url = $params->get('webservice_url');
 
-        // get authentication type (e.g: Basic Auth, Token, Digest, etc)
+        # get authentication type (e.g: Basic Auth, Token, Digest, etc)
         $auth_type = $params->get('webservice_authentication');
 
-        // get user login
+        # get user login
         $login_username = $params->get('webservice_username');
 
-        // get user password
+        # get user password
         $login_password = $params->get('webservice_password');
 
-        // and then, we group all authentication information into CREDENTIAL group (easy to manage)
+        # and then, we group all authentication information into CREDENTIAL group (easy to manage)
         $credentials = new stdClass();
         $credentials->auth_type = $auth_type;
         $credentials->auth_user = $login_username;
         $credentials->auth_pwd = $login_password;
 
-        // (optional) we define the status by which we send request (e.g: "Accepted", "Pre-accepted", etc)
+        # (optional) we define the status by which we send request (e.g: "Accepted", "Pre-accepted", etc)
         $sending_status = $params->get('status_to_send_request');
 
         /*
@@ -108,53 +108,56 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
             ->andWhere($db->quoteName('#__emundus_users.lastname') . " is not null")
             ->andWhere($db->quoteName('#__emundus_users.lastname') . " != ''");
 
-        // if no status is defined, we get all
+        # if no status is defined, we get all
         if(!is_null($sending_status)) { $query->andWhere($db->quoteName('#__emundus_campaign_candidature.status') . ' IN ( ' . $sending_status . ' )'); }
 
         # uncomment this line if you want to limit the records
-        # $query->setLimit(30);
+        $query->setLimit(5);       /* just local test */
 
         $db->setQuery($query);
         $available_fnums = $db->loadColumn();
 
-        // next, we request description (schema) - json file
+        # next, we request description (schema) - json file
         $json_request_schema = $params->get('xml_description_json');
 
-        // and, data description (data mapping schema) - json file
+        # and, data description (data mapping schema) - json file
         $json_request_data = $params->get('xml_data_json');
 
-        // now, it's time to build XML request
-        $_xmlSchemaObject = new XmlSchema($json_request_schema);
-        $_xmlSchemaRequest = $_xmlSchemaObject->buildSoapRequest($json_request_schema);     # return type: XMLDocument
+        # now, it's time to build XML request
+        $xmlSchemaObj = new XmlSchema($json_request_schema);
+        $xmlSchemaRequest = $xmlSchemaObj->buildSoapRequest($json_request_schema);     # return type: XMLDocument
 
         # customize XML schema (uncomment these lines if needed)
         # $_xmlCustomSchema_schema = new ApogeeCustom($_xmlSchemaRequest);
         # $_xmlCustomSchema_schema->buildCustomSchema();
 
-        // now, we fill data into XML request (using data description file)
-        $_xmlDataObject = new XmlDataFilling($json_request_data);
+        # now, we fill data into XML request (using data description file)
+        $xmlDataObj = new XmlDataFilling($json_request_data);
 
         foreach($available_fnums as $fnum) {
-            // filling data for each fnum
-            $_xmlDataRequest = $_xmlDataObject->fillData($_xmlSchemaRequest, $_xmlSchemaObject->getSchemaDescription(), $fnum);
+            # filling data for each fnum
+            $xmlDataRequest = $xmlDataObj->fillData($xmlSchemaRequest, $xmlSchemaObj->getSchemaDescription(), $fnum);
 
             # invoke Apogee Custom
-            $_xmlCustomSchema_data = new ApogeeCustom($_xmlDataRequest,$fnum);
-            $_xmlCustomSchema_data->buildCustomData();
+            $xmlCustomSchema_data = new ApogeeCustom($xmlDataRequest,$fnum);
+            $xmlCustomSchema_data->buildCustomData();
 
-            $_xmlString = $_xmlSchemaObject->exportXMLString($_xmlDataRequest);
+            # prune raw xml tree (remove unnecessary elements)
+            $xmlOutputRawString = $xmlSchemaObj->exportXMLString($xmlDataRequest);
+            $xmlOutputString = $xmlDataObj->pruneXML($xmlOutputRawString);
 
-            // connect to SOAP
-            $_soapConnect = new SoapConnect;
+            # connect to SOAP
+            # $soapConnectObj = new SoapConnect;
 
-            // set HTTP request header
-            $_soapConnect->setSoapHeader($_xmlString,$credentials);
+            # set HTTP request header with last xml output string
+            # $soapConnectObj->setSoapHeader($xmlOutputString->saveXML(),$credentials);
 
-            // send request
-            $_soapConnect->sendRequest($_soapConnect->webServiceConnect($wsdl_url,$_xmlString,$credentials));
+            # send request
+            # $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials));
 
             # uncomment this line if you want to export requests into XML file (** should be deactivate on PROD env **)
-            # $_xmlSchemaObject->exportXMLFile($_xmlDataRequest, EMUNDUS_PATH_ABS . DS . $fnum);
+//            $xmlSchemaObj->exportXMLFile($xmlDataRequest, EMUNDUS_PATH_ABS . DS . $fnum);
+            $xmlSchemaObj->exportXMLFile($xmlOutputString, EMUNDUS_PATH_ABS . DS . $fnum);
         }
     }
 }

@@ -4,7 +4,7 @@
  * XmlDataFilling >> Filling up the predefined XML tree with your own data from Data Mapping file
  * */
 
-ini_set('display_errors','0');                /// turn off Error Displaying
+ini_set('display_errors','1');                /// turn off Error Displaying
 ini_set('soap.wsdl_cache_enabled', 1);
 error_reporting(E_ALL);
 
@@ -428,6 +428,30 @@ class XmlDataFilling {
 
         if($property !== null) { $property->nodeValue = $result; }
     }
+
+    public function pruneXML($xml) {
+        $doc = new DOMDocument;
+        $doc->preserveWhiteSpace = false;
+
+        $doc->loadXML($xml);
+
+        $xpath = new DOMXPath($doc);
+
+        /* prune data body */
+        foreach( $xpath->query('//*[not(node())]') as $node ) {
+            if($node->tagName == 'soapenv:Header' or $node->tagName == 'soapenv:Body') { continue; }
+            else { $node->parentNode->removeChild($node); }
+        }
+
+        /* prune schema body */
+        foreach($doc->getElementsByTagName('*') as $elt) {
+            if(!$elt->hasChildNodes()) { $elt->parentNode->removeChild($elt); }
+        }
+
+        $doc->formatOutput = true;
+        return $doc;
+    }
+
 }
 
 

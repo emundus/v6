@@ -1,0 +1,439 @@
+{
+  "adresseAnnuelle": {
+    "codBdi": {
+      "default": ""
+    },
+    "codCom": {
+      "sql": "select #__emundus_personal_detail.e_287_8116 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+    },
+    "codPay": {
+      "sql": "select #__emundus_personal_detail.country_1 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+    },
+    "lib1": {
+      "sql": "select trim(#__emundus_personal_detail.etu_no_et_rue) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+    },
+    "lib2": {
+      "sql": "select trim(#__emundus_personal_detail.etu_chez) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+    },
+    "lib3": {
+      "default": ""
+    },
+    "libAde": {
+      "default": ""
+    },
+    "numTel": {
+      "sql": "select trim(#__emundus_personal_detail.etu_telephone) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+    }
+  },
+  "adresseFixe": {
+    "codBdi": {
+      "default": ""
+    },
+    "codCom": {
+      "sql": "select #__emundus_personal_detail.e_287_8116 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+    },
+    "codPay": {
+      "sql": "select #__emundus_personal_detail.country_1 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+    },
+    "lib1": {
+      "sql": "select trim(#__emundus_personal_detail.etu_no_et_rue) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+    },
+    "lib2": {
+      "sql": "select trim(#__emundus_personal_detail.etu_chez) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+    },
+    "lib3": {
+      "default": ""
+    },
+    "libAde": {
+      "default": ""
+    },
+    "numTel": {
+      "sql": "select trim(#__emundus_personal_detail.etu_telephone) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+    }
+  },
+  "bac": {
+    "codBac": {
+      "sql": "select #__emundus_1001_00.e_358_7925 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+    },
+    "codDep": {
+      "sql": "select #__emundus_1001_00.e_358_7929 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+    },
+    "codEtb": {
+      "sql": "select #__emundus_1001_00.nom_etb from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+    },
+    "codMention": {
+      "sql": "select #__emundus_1001_00.e_358_7926 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+    },
+    "codTpe": {
+      "sql": "select #__emundus_1001_00.e_358_7927 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+    },
+    "daaObtBacOba": {
+      "sql": "select #__emundus_1001_00.e_358_7924 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+    },
+    "codSpe1BacTer": {
+      "default": ""
+    },
+    "codSpe2BacTer": {
+      "default": ""
+    },
+    "codSpeBacPre": {
+      "default": ""
+    },
+    "codOpt1Bac": {
+      "default": ""
+    },
+    "codOpt2Bac": {
+      "default": ""
+    },
+    "codOpt3Bac": {
+      "default": ""
+    },
+    "codOpt4Bac": {
+      "default": ""
+    }
+  },
+  "dac": {
+    "codCurOpi": {
+      "default": ""
+    },
+    "codDac": {
+      "default": ""
+    },
+    "codDepPay": {
+      "default": ""
+    },
+    "codDipCur": {
+      "default": ""
+    },
+    "codEtb": {
+      "default": ""
+    },
+    "codNif": {
+      "default": ""
+    },
+    "codTpe": {
+      "default": ""
+    },
+    "codTypDepPay": {
+      "default": ""
+    },
+    "daaUniDac": {
+      "default": ""
+    },
+    "dipCur": {
+      "default": ""
+    },
+    "libCmtDac": {
+      "default": ""
+    },
+    "nbrCrdCur": {
+      "default": ""
+    },
+    "temObtCurVae": {
+      "default": ""
+    },
+    "temObtDac": {
+      "default": ""
+    }
+  },
+  "individu": {
+    "codEtuOpi": {
+      "sql": "select #__emundus_personal_detail.e_287_7876 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+    },
+    "codOpiIntEpo": {
+      "sql": "select #__emundus_final_grade.code_opi from #__emundus_final_grade where #__emundus_final_grade.fnum = "
+    },
+    "dernierDiplObt": {
+      "codTdeDerDip": {
+        "sql": "select #__emundus_1001_00.e_358_7933 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+      },
+      "codDepPayDerDip": {
+        "sql": "SELECT #__emundus_1001_00.e_358_7937 FROM #__emundus_1001_00 WHERE fnum = "
+      },
+      "codTypDepPayDerDip": {
+        "default": ""
+      },
+      "codEtbDerDip": {
+        "sql": "select #__emundus_1001_00.e_358_7942 from #__emundus_1001_00 where #__emundus_1001_00.fnum = ",
+        "default": ""
+      },
+      "codTdsOpi": {
+        "default": ""
+      },
+      "daaEtbDerDip": {
+        "sql": "select #__emundus_1001_00.e_358_7950 from #__emundus_1001_00 where #__emundus_1001_00.fnum = ",
+        "default": ""
+      }
+    },
+    "dernierEtbFrequente": {
+      "codDepPayAntIaaOpi": {
+        "sql": "SELECT #__emundus_1001_00.pays_dernier_etb FROM #__emundus_1001_00 WHERE #__emundus_1001_00.fnum = "
+      },
+      "codEtbAntIaa": {
+        "sql": "select #__emundus_1001_00.etb_dernier from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+      },
+      "codTpeAntIaa": {
+        "sql": "select #__emundus_1001_00.type_dernier_etb from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+      },
+      "codTypDepPayAntIaaOpi": {
+        "default": ""
+      },
+      "daaEtbAntIaaOpi": {
+        "sql": "select #__emundus_1001_00.annee_insc_dernier_etb from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+      }
+    },
+    "donneesNaissance": {
+      "codDepPayNai": {
+        "sql": "select #__emundus_personal_detail.birth_place from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      },
+      "codPayNat": {
+        "sql": "select data_pays.cod_pay from data_pays left join #__emundus_personal_detail on #__emundus_personal_detail.nationality = data_pays.lib_nat where #__emundus_personal_detail.fnum = "
+      },
+      "codTypDepPayNai": {
+        "default": ""
+      },
+      "dateNaiIndOpi": {
+        "sql": "select date_format(#__emundus_personal_detail.birth_date, '%d%m%Y') from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      },
+      "codComNaiEtuOpi": {
+        "sql": "select #__emundus_personal_detail.e_287_8113 from #__emundus_personal_detail where fnum = "
+      },
+      "libVilNaiEtuOpi": {
+        "sql": "select trim(#__emundus_personal_detail.e_287_8114) from #__emundus_personal_detail where fnum = "
+      },
+      "temDateNaiRelOpi": {
+        "default": "N"
+      }
+    },
+    "donneesPersonnelles": {
+      "adrMailOpi": {
+        "sql": "select trim(#__emundus_personal_detail.email) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      },
+      "codFam": {
+        "default": ""
+      },
+      "codPcs": {
+        "sql": "select #__emundus_personal_detail.e_287_7877 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      },
+      "codPcsAp": {
+        "sql": "select #__emundus_personal_detail.e_287_7878 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      },
+      "codSim": {
+        "default": ""
+      },
+      "codThbOpi": {
+        "default": ""
+      },
+      "codThpOpi": {
+        "default": "4"
+      },
+      "daaLbtIndOpi": {
+        "default": ""
+      },
+      "dmmLbtIndOpi": {
+        "default": ""
+      },
+      "numTelPorOpi": {
+        "sql": "select #__emundus_personal_detail.etu_telephone from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      },
+      "codRgi": {
+        "default": ""
+      },
+      "codStu": {
+        "default": ""
+      }
+    },
+    "etatCivil": {
+      "codNneIndOpi": {
+        "sql": "select trim(#__emundus_personal_detail.etu_ine) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      },
+      "codSexEtuOpi": {
+        "sql": "select #__emundus_personal_detail.gender from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      },
+      "libNomPatIndOpi": {
+        "sql": "select trim(#__emundus_users.firstname) from #__emundus_users left join #__emundus_final_grade on #__emundus_final_grade.student_id = #__emundus_users.user_id where #__emundus_final_grade.fnum = "
+      },
+      "libNomUsuIndOpi": {
+        "sql": "select trim(#__emundus_personal_detail.etu_nom_marital) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      },
+      "libPr1IndOpi": {
+        "sql": "select trim(#__emundus_users.lastname) from #__emundus_users left join #__emundus_final_grade on #__emundus_final_grade.student_id = #__emundus_users.user_id where #__emundus_final_grade.fnum = "
+      },
+      "libPr2IndOpi": {
+        "sql": "select trim(#__emundus_personal_detail.etu_prenom2) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      },
+      "libPr3IndOpi": {
+        "sql": "select trim(#__emundus_personal_detail.etu_prenom3) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      }
+    },
+    "inscriptionParallele": {
+      "codEtbAnnCrt": {
+        "default": ""
+      },
+      "codTpeAnnCrt": {
+        "default": ""
+      },
+      "temPrlAnnCrt": {
+        "default": ""
+      }
+    },
+    "premiereInscription": {
+      "codEtb": {
+        "sql": "select #__emundus_1001_00.e_358_7932 from #__emundus_1001_00 where fnum = "
+      },
+      "daaEnsSupOpi": {
+        "default": ""
+      },
+      "daaEntEtbOpi": {
+        "default": ""
+      },
+      "daaEtbOpi": {
+        "sql": "select #__emundus_1001_00.e_358_7931 from #__emundus_1001_00 where fnum = "
+      },
+      "daaEtrSup": {
+        "default": ""
+      }
+    },
+    "prgEchange": {
+      "codEtrOpi": {
+        "default": ""
+      },
+      "codPrgOpi": {
+        "default": ""
+      },
+      "temSnsPrgOpi": {
+        "default": ""
+      }
+    },
+    "situationAnnPre": {
+      "codDepPayAnnPreOpi": {
+        "sql": "select #__emundus_1001_00.e_358_7940 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+      },
+      "codEtbAnnPreOpi": {
+        "default": ""
+      },
+      "codSisAnnPreOpi": {
+        "sql": "select #__emundus_1001_00.e_358_8119 from #__emundus_1001_00 where #__emundus_1001_00.fnum = ",
+        "default": ""
+      },
+      "codTypDepPayAnnPreOpi": {
+        "sql": "select #__emundus_1001_00.e_358_7943 from #__emundus_1001_00 where #__emundus_1001_00.fnum = ",
+        "default": ""
+      }
+    }
+  },
+  "voeux": {
+    "item": {
+      "codAttDec": {
+        "default" : ""
+      },
+      "codCge": {
+        "default": ""
+      },
+      "codCmp": {
+        "default": ""
+      },
+      "codDecVeu": {
+        "default": "F"
+      },
+      "codCatOuiSi": {
+        "default": ""
+      },
+      "mtfCat": {
+        "default": ""
+      },
+      "codDemDos": {
+        "default": "C"
+      },
+      "codDip": {
+        "default": ""
+      },
+      "codEtp": {
+        "default": ""
+      },
+      "codMfo": {
+        "sql": "select #__emundus_final_grade.motif_refus from #__emundus_final_grade where #__emundus_final_grade.fnum = "
+      },
+      "codSpe1Opi": {
+        "default": ""
+      },
+      "codSpe2Opi": {
+        "default": ""
+      },
+      "codSpe3Opi": {
+        "default": ""
+      },
+      "codTyd": {
+        "default": ""
+      },
+      "codVrsVdi": {
+        "default": ""
+      },
+      "codVrsVet": {
+        "default": ""
+      },
+      "libCmtJur": {
+        "default": ""
+      },
+      "numCls": {
+        "default": "1"
+      },
+      "temValPsd": {
+        "default": "N"
+      },
+      "ctrAdr": {
+        "default": "N"
+      },
+      "codCatExoExt": {
+        "default": ""
+      },
+      "comExoExt": {
+        "default": ""
+      }
+    }
+  },
+  "donneesThese": {
+    "codDip": {
+      "default": ""
+    },
+    "codVrsVdi": {
+      "default": ""
+    },
+    "codEtp": {
+      "default": ""
+    },
+    "codVrsVet": {
+      "default": ""
+    },
+    "codThsTrv": {
+      "default": ""
+    },
+    "codDis": {
+      "default": ""
+    },
+    "libThs": {
+      "default": ""
+    },
+    "libThsLng": {
+      "default": ""
+    },
+    "codLng": {
+      "default": ""
+    },
+    "codEdo": {
+      "default": ""
+    },
+    "codPerDir": {
+      "default": ""
+    },
+    "codPerCdr": {
+      "default": ""
+    },
+    "codPerCdr2": {
+      "default": ""
+    },
+    "codEqr": {
+      "default": ""
+    }
+  }
+}
