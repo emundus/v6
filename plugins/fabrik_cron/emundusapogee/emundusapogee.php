@@ -112,7 +112,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         if(!is_null($sending_status)) { $query->andWhere($db->quoteName('#__emundus_campaign_candidature.status') . ' IN ( ' . $sending_status . ' )'); }
 
         # uncomment this line if you want to limit the records
-        $query->setLimit(5);       /* just local test */
+        # $query->setLimit(150);       /* just local test */
 
         $db->setQuery($query);
         $available_fnums = $db->loadColumn();
@@ -147,17 +147,16 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
             $xmlOutputString = $xmlDataObj->pruneXML($xmlOutputRawString);
 
             # connect to SOAP
-            # $soapConnectObj = new SoapConnect;
+            $soapConnectObj = new SoapConnect;
 
             # set HTTP request header with last xml output string
-            # $soapConnectObj->setSoapHeader($xmlOutputString->saveXML(),$credentials);
+            $soapConnectObj->setSoapHeader($xmlOutputString->saveXML(),$credentials);
 
             # send request
-            # $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials));
+            $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials));
 
             # uncomment this line if you want to export requests into XML file (** should be deactivate on PROD env **)
-//            $xmlSchemaObj->exportXMLFile($xmlDataRequest, EMUNDUS_PATH_ABS . DS . $fnum);
-            $xmlSchemaObj->exportXMLFile($xmlOutputString, EMUNDUS_PATH_ABS . DS . $fnum);
+            # $xmlSchemaObj->exportXMLFile($xmlOutputString, EMUNDUS_PATH_ABS . DS . $fnum);
         }
     }
 }
