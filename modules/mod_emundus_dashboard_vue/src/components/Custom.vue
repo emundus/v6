@@ -2,17 +2,24 @@
   <div class='tchooz-widget' :class="['col-md-' + selectedWidget.size,'col-sm-' + selectedWidget.size_small,selectedWidget.class]">
     <div class='section-sub-menu' style='margin-bottom: 10px' :class="selectedWidget.type === 'article' ? 'tchooz-widget__article-overflow' : ''">
       <div id="chart-container" v-if="selectedWidget.type === 'chart'">
-        <fusioncharts
-            v-if="chart_render !== 0"
-            :key="chart_render"
-            :type="chart_type"
-            :width="'100%'"
-            :height="'300'"
-            :dataFormat="dataFormat"
-            :dataSource="dataSource"
-        >
-        </fusioncharts>
-        <div>
+        <div class="tchooz-widget__selects">
+          <multiselect
+              v-if="filters.length > 0"
+              v-model="selectedFilters"
+              :class="'tchooz-widget__select'"
+              label="label"
+              track-by="value"
+              :options="filters"
+              :multiple="true"
+              :taggable="false"
+              :placeholder="translations.selectfilter"
+              select-label=""
+              selected-label=""
+              deselect-label=""
+              :close-on-select="true"
+              :clear-on-select="false"
+              :searchable="true"
+          ></multiselect>
           <multiselect
               v-model="selectedWidget"
               :class="'tchooz-widget__select'"
@@ -29,6 +36,17 @@
               :searchable="false"
           ></multiselect>
         </div>
+        <div v-if="loading" class="lds-ring"><div></div><div></div><div></div><div></div></div>
+        <fusioncharts
+            v-if="chart_render !== 0"
+            :key="chart_render"
+            :type="chart_type"
+            :width="'100%'"
+            :height="'300'"
+            :dataFormat="dataFormat"
+            :dataSource="dataSource"
+        >
+        </fusioncharts>
       </div>
       <div v-else :class="selectedWidget.class">
         <div v-html="datas"></div>
@@ -61,30 +79,41 @@ export default {
     chart_render: 0,
     position: null,
     selectedWidget: null,
+    selectedFilters: [],
+    filters: [],
+    translations: {
+      selectfilter: Joomla.JText._("COM_EMUNDUS_DASHBOARD_SELECT_FILTER")
+    },
+    loading: false,
     // Fusion charts variables
     datas: {},
     chart_type: 'column2d',
     renderAt: "chart-container",
     dataFormat: "json",
     dataSource: {},
+    chart_values: [],
   }),
 
   methods: {
     renderChart(){
+      this.dataSource = {};
+      this.loading = true;
       axios({
-        method: "get",
+        method: "post",
         url: "index.php?option=com_emundus_onboard&controller=dashboard&task=renderchartbytag",
-        params: {
+        data: qs.stringify({
           widget: this.selectedWidget.id,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
+          filters: this.selectedFilters
+        })
       }).then(response => {
         this.chart_type = this.selectedWidget.chart_type;
         this.dataSource = response.data.dataset;
+        if(typeof this.dataSource.filters !== 'undefined') {
+          this.filters = this.dataSource.filters;
+        }
 
         this.chart_render++;
+        this.loading = false;
         //
       });
     },
@@ -149,6 +178,18 @@ export default {
       }).then(() => {
         this.renderChart();
       });
+    },
+
+    async getFilters(){
+      return new Promise((resolve,reject) => {
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfilters",
+          }).then(response => {
+            this.selectedFilters = response.data.filters;
+            resolve(true);
+          })
+      });
     }
   },
 
@@ -163,8 +204,12 @@ export default {
         this.getEval();
         break;
       case 'chart':
-        this.renderChart();
+        this.getFilters().then(() => {
+          this.renderChart();
+        })
         break;
+      default:
+        this.getEval();
     }
     this.getWidgets();
   },
@@ -173,6 +218,12 @@ export default {
     selectedWidget: function(){
       if(this.chart_render !== 0) {
         this.updateDashboard();
+      }
+    },
+
+    selectedFilters: function(){
+      if(this.chart_render !== 0) {
+        this.renderChart();
       }
     }
   }

@@ -182,10 +182,24 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         exit;
     }
 
+    public function getfilters(){
+        try {
+            $tab = array('msg' => 'success', 'filters' => JFactory::getSession()->get('filters'));
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function renderchartbytag(){
         try {
             $jinput = JFactory::getApplication()->input;
             $widget = $jinput->getInt('widget');
+            $filters = $jinput->getRaw('filters');
+
+            $session = JFactory::getSession();
+            $session->set('filters', $filters);
 
             $results = $this->model->renderchartbytag($widget);
 
