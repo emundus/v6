@@ -17,4 +17,21 @@
 
 .swal-popup-custom{
     width: auto !important;
+    max-width: 25% !important;
+    padding: 0 !important;
+}
+
+.swal2-actions{
+    justify-content: right !important;
+    margin-top: 32px !important;
+    padding: 16px !important;
+}
+
+.tchooz-player {
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+#swal2-content p{
+    padding: 0 16px;
 }

@@ -61,7 +61,7 @@ if (!empty($articles)) :?>
                                 link = link + cid;
                             <?php endif; ?>
                                 queue.push({
-                                    title: <?= json_encode($article['title']); ?>,
+                                    title: '',
                                     html: <?= json_encode($article['introtext']); ?>,
                                     confirmButtonText: '<a href="' + link + '" class="tutorial-link">' + '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>' + '</a>',
                                     customClass: {
@@ -70,7 +70,7 @@ if (!empty($articles)) :?>
                                 })
                             <?php else :?>
                                 queue.push({
-                                    title: <?= json_encode($article['title']); ?>,
+                                    title: '',
                                     html: <?= json_encode($article['introtext']); ?>,
                                     confirmButtonText: '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>',
                                 })
@@ -80,7 +80,7 @@ if (!empty($articles)) :?>
                         <?php if ($link != 'null') :?>
                             let link = <?= $link; ?>;
                             queue.push({
-                                title: <?= json_encode($article['title']); ?>,
+                                title: '',
                                 html: <?= json_encode($article['introtext']); ?>,
                                 confirmButtonText: '<a href="' + link + '" class="tutorial-link">' + '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>' + '</a>',
                                 customClass: {
@@ -93,6 +93,7 @@ if (!empty($articles)) :?>
                                 html: <?= json_encode($article['introtext']); ?>,
                                 confirmButtonText: '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>',
                             })
+
                         <?php endif; ?>
                         <?php endif; ?>
                     }
@@ -100,18 +101,23 @@ if (!empty($articles)) :?>
                         <?php if ($link != 'null') :?>
                             let link = <?= $link; ?>;
                             queue.push({
-                                title: <?= json_encode($article['title']); ?>,
+                                title: '',
                                 html: <?= json_encode($article['introtext']); ?>,
                                 confirmButtonText: '<a href="' + link + '" class="tutorial-link">' + '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>' + '</a>',
+                                showCancelButton: true,
+                                cancelButtonText: '<?= JText::_(json_decode($article['note'], true)['cancel_text']) ?>',
                                 customClass: {
                                     confirmButton: 'swal-button-link',
+                                    popup: 'swal-popup-custom',
                                 }
                             })
                         <?php else :?>
                             queue.push({
-                                title: <?= json_encode($article['title']); ?>,
+                                title: '',
                                 html: <?= json_encode($article['introtext']); ?>,
                                 confirmButtonText: '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>',
+                                cancelButtonText: '<?= JText::_(json_decode($article['note'], true)['cancel_text']) ?>',
+                                showCancelButton: true,
                             })
                         <?php endif; ?>
                     <?php endif; ?>
@@ -120,6 +126,7 @@ if (!empty($articles)) :?>
             if(queue.length > 0) {
                 Swal.mixin({
                     confirmButtonColor: '#de6339',
+                    reverseButtons: true,
                     showCloseButton: true,
                     allowOutsideClick: false,
                     customClass: {

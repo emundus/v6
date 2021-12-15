@@ -92,7 +92,35 @@ button.swal2-styled{
 }
 
 button.swal2-confirm{
-  background: #12DB42 !important;
+  background: $main-500 !important;
+  border-radius: 4px !important;
+  height: 40px !important;
+  padding: 0 16px !important;
+}
+
+button.swal2-cancel{
+  padding: 0 16px !important;
+  border-radius: 4px !important;
+  border: solid 1px $neutral-300 !important;
+  height: 40px !important;
+  background: transparent !important;
+  color: $neutral-900 !important;
+}
+
+button.swal2-close{
+  display: flex;
+  position: absolute;
+  right: -30px;
+  top: -30px;
+  background: $neutral-300;
+  border-radius: 50%;
+  padding: 10px;
+  font-size: 15px;
+  color: black;
+  &:hover{
+    background: $neutral-300;
+    color: black;
+  }
 }
 
 h2 {
