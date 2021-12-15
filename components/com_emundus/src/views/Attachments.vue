@@ -7,11 +7,6 @@
           :class="{ active: fnumPosition > 0 }"
           @click="changeFile(fnumPosition - 1)"
         >
-          <!--
-                For new header
-                <span class="material-icons">
-                navigate_before
-              </span> -->
           <i class="small arrow left icon"></i>
         </div>
         <div
@@ -19,11 +14,6 @@
           :class="{ active: fnumPosition < fnums.length - 1 }"
           @click="changeFile(fnumPosition + 1)"
         >
-          <!--
-                For new header
-                <span class="material-icons">
-                navigate_next
-              </span> -->
           <i class="small arrow right icon"></i>
         </div>
       </div>
@@ -511,7 +501,7 @@ export default {
 
           let formData = new FormData();
           formData.append("fnum", this.displayedFnum);
-          formData.append("user", this.currentUser);
+          formData.append("user", this.$store.state.user.currentUser);
           formData.append("id", this.attachments[key].aid);
           formData.append("is_validated", this.attachments[key].is_validated);
 
@@ -796,7 +786,7 @@ export default {
     displayedAttachments() {
       return this.attachments.filter((attachment) => {
         return (
-          (attachment.show == true || attachment.show == undefined) &&
+          (attachment.show || attachment.show == undefined) &&
           attachment.can_be_viewed
         );
       });
