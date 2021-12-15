@@ -482,7 +482,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var mome
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony default export */ __webpack_exports__[\"default\"] = ({\n    methods: {\n        translate(key) {\n            return Joomla.JText._(key) ? Joomla.JText._(key) : key;\n        },\n    }\n});\n\n//# sourceURL=webpack:///./src/mixins/translate.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony default export */ __webpack_exports__[\"default\"] = ({\n    methods: {\n        translate(key) {\n            if (typeof key != undefined && key != null) {\n                return Joomla.JText._(key) ? Joomla.JText._(key) : key;\n            } else {\n                return '';\n            }\n        },\n    }\n});\n\n//# sourceURL=webpack:///./src/mixins/translate.js?");
 
 /***/ }),
 
