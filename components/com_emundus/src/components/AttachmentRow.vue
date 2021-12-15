@@ -17,7 +17,7 @@
     <td class="date">{{ formattedDate(attachment.timedate) }}</td>
     <td class="desc">{{ attachment.description }}</td>
     <td class="category">
-      {{ attachmentCategory }}
+      {{ category }}
     </td>
     <td
       class="status valid-state"
@@ -72,27 +72,28 @@ export default {
   data() {
     return {
       categories: {},
+      category: "",
       checkedAttachments: [],
     };
   },
   mounted() {
     this.categories = this.$store.state.attachment.categories;
     if (Object.entries(this.categories).length < 1) {
-      this.getCategories()
+      this.getAttachmentCategories()
       .then((response) => {
-        this.categories = response.data;
+        this.categories = response;
+        this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : ""; 
       })
       .catch((error) => {
         console.log(error);
       });
+    } else {
+      this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : ""; 
     }
 
     this.checkedAttachments = this.checkedAttachmentsProp;
   },
   methods: {
-    async getCategories() {
-      return await this.getAttachmentCategories();
-    },
     updateCheckedAttachments(aid) {
       if (this.checkedAttachments.includes(aid)) {
         this.checkedAttachments.splice(this.checkedAttachments.indexOf(aid), 1);
@@ -108,11 +109,6 @@ export default {
     updateStatus(e) {
       this.$emit("update-status", e, this.attachment);
     },
-  },
-  computed: {
-    attachmentCategory() {
-      return this.categories && this.categories[this.attachment.category] ? this.categories[this.attachment.category] : "";
-    }
   },
   watch: {
     "$store.state.attachment.checkedAttachments": function () {
