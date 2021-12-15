@@ -1720,7 +1720,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 if ($plugin == 'prenom') {
                     $label = array(
                         'fr' => 'Prénom',
-                        'en' => 'Surname',
+                        'en' => 'First name',
                     );
                 }
 
