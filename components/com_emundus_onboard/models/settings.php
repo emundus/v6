@@ -532,9 +532,18 @@ class EmundusonboardModelsettings extends JModelList {
         $query = $db->getQuery(true);
 
         $results = [];
+        $params=array("mod_emundus_footer_texte_col_1"=> $content['col1'],
+            "mod_emundus_footer_texte_col_2"=>"",
+            "module_tag"=>"div",
+            "bootstrap_size"=>"0",
+            "header_tag"=>"h3",
+            "header_class"=>"",
+            "style"=>"0"
+        );
 
         $query->update($db->quoteName('#__modules'))
             ->set($db->quoteName('content') . ' = ' . $db->quote($content['col1']))
+            ->set($db->quoteName('params').' = '.$db->quote(json_encode($params)))
             ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'));
 
         try {
