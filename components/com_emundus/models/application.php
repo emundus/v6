@@ -4060,10 +4060,17 @@ class EmundusModelApplication extends JModelList
         if ($fileExists) {
 
             // create preview based on filetype
-            if (in_array($extension, ['pdf', 'txt'])) {
-                $preview['content'] = '<iframe src="' . JURI::base() . $filePath . '" width="100%" height="100%" style="border:none;"></iframe>';
+            if ($extension == 'pdf') {                
+                $content = base64_encode(file_get_contents($filePath));
+                $preview['content'] = '<object width="100%" height="100%" style="border:none;"><embed width="100%" height="100%" src="data:application/pdf;base64,' . $content . '" type="application/pdf"></object>';
+            } else if ($extension == 'txt') {
+                $content = file_get_contents($filePath);
+                $preview['overflowY'] = true;
+                $preview['content'] = '<div class="wrapper" style="max-width: 100%;margin: 5px;padding: 20px;background-color: white;"><pre style="white-space: break-spaces;">' . $content . '</pre></div>';
             } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="' . JURI::base() . $filePath . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
+                $mimeType = mime_content_type($extension);
+                $content = base64_encode(file_get_contents(JPATH_BASE . DS . $filePath));
+                $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="data:'. $mimeType .';base64,' . $content . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
             } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
@@ -4129,17 +4136,21 @@ class EmundusModelApplication extends JModelList
             } else {
                 $preview['status'] = false;
                 $preview['error'] = 'unsupported';
-                $preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('FILE_TYPE_NOT_SUPPORTED') . '</p></div>';
+                $preview['content'] = '<div style="width:100%;height: 100%;display: flex;flex-direction: column;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('COM_EMUNDUS_ATTACHMENTS_FILE_TYPE_NOT_SUPPORTED') . '</p><p><a href="'. JURI::base() . $filePath . '" target="_blank" download>' . JText::_('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD')  . '</a></p></div>';
             }
         } else {
             $preview['status'] = false;
             $preview['error'] = 'file_not_found';
-            $preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('FILE_NOT_FOUND') . '</p></div>';
+            $preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND') . '</p></div>';
         }
 
         return $preview;
     }
 
+    /**
+     * @param $filePath
+     * @return string (html content)
+     */
     private function convertPowerPointToHTML($filePath)
     {
         $content = '';
