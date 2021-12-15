@@ -25,9 +25,9 @@
       "elements" : ["codAttDec", "codCge", "codCmp", "codDecVeu", "codCatOuiSi",
                   "mtfCat", "codDemDos", "codDip", "codEtp", "codMfo",
                   "codSpe1Opi", "codSpe2Opi", "codSpe3Opi", "codTyd", "codVrsVdi",
-                  "codVrsVet", "convocation", "libCmtJur", "numCls", "temValPsd",
-                  "titreAccesExterne", "ctrAdr", "codCatExoExt", "comExoExt"],
-      "occurrence" : 2
+                  "codVrsVet", "libCmtJur", "numCls", "temValPsd",
+                  "ctrAdr", "codCatExoExt", "comExoExt"],
+      "occurrence" : 4
     }
   },
   "subData": {

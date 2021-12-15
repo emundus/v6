@@ -298,10 +298,10 @@ class XmlDataFilling {
                                                                     if (is_null($jsonDataBody->$js_key->$pr_name->$tagName->sql) or ($jsonDataBody->$js_key->$pr_name->$tagName->sql === "")) {
                                                                         $_scn->nodeValue = $jsonDataBody->$js_key->$pr_name->$tagName->default;
                                                                     } else {
-                                                                        $this->buildSql($xmlDocument, $_scn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql . $fnum, true);
+                                                                        $this->buildSql($xmlDocument, $_scn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql . $fnum, false);
                                                                     }
                                                                 } else {
-                                                                    $this->buildSql($xmlDocument, $_scn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql . $fnum, true);
+                                                                    $this->buildSql($xmlDocument, $_scn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql . $fnum, false);
                                                                 }
                                                             }
                                                         }
@@ -415,15 +415,19 @@ class XmlDataFilling {
         $this->db->setQuery($sql);
         $result = $this->db->loadResult();
 
-        if($isRepeat) {
-            $result = reset(explode('>>> SPLIT <<<', $result));
-        }
+        if(!is_null($result)) {
+            if ($isRepeat) {
+                $result = reset(explode('>>> SPLIT <<<', $result));
+            }
 
-        if($domNode !== null) {
-            /// get node from $domNode
-            $_node = $xmlTree->getElementsByTagName($domNode)->item(0);
-            // bind value to node
-            $_node->nodeValue = $result;
+            if ($domNode !== null) {
+                /// get node from $domNode
+                $_node = $xmlTree->getElementsByTagName($domNode)->item(0);
+                // bind value to node
+                $_node->nodeValue = $result;
+            }
+        } else {
+            $property->nodeValue = '';
         }
 
         if($property !== null) { $property->nodeValue = $result; }

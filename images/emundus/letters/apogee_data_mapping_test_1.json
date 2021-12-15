@@ -328,7 +328,8 @@
         "default" : ""
       },
       "codCge": {
-        "default": ""
+        "sql": "select concat(dra.code_centre, '>>> SPLIT <<<', '','>>> SPLIT <<<', '','>>> SPLIT <<<', '') from data_referentiel_apogee as dra left join #__emundus_setup_campaigns as jesc on jesc.libelle_apogee = dra.id left join #__emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum = ",
+        "default" : ""
       },
       "codCmp": {
         "default": ""
@@ -346,13 +347,16 @@
         "default": "C"
       },
       "codDip": {
+        "sql": "select concat(dra.code_diplome, '>>> SPLIT <<<', '','>>> SPLIT <<<', '','>>> SPLIT <<<', '') from data_referentiel_apogee as dra left join #__emundus_setup_campaigns as jesc on jesc.libelle_apogee = dra.id left join #__emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum = ",
         "default": ""
       },
       "codEtp": {
+        "sql": "select concat(dra.code_etape, '>>> SPLIT <<<', '','>>> SPLIT <<<', '','>>> SPLIT <<<', '') from data_referentiel_apogee as dra left join #__emundus_setup_campaigns as jesc on jesc.libelle_apogee = dra.id left join #__emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum = ",
         "default": ""
       },
       "codMfo": {
-        "sql": "select #__emundus_final_grade.motif_refus from #__emundus_final_grade where #__emundus_final_grade.fnum = "
+        "sql": "select #__emundus_final_grade.motif_refus from #__emundus_final_grade where #__emundus_final_grade.fnum = ",
+        "default": ""
       },
       "codSpe1Opi": {
         "default": ""
@@ -367,9 +371,11 @@
         "default": ""
       },
       "codVrsVdi": {
+        "sql": "select concat(dra.code_version, '>>> SPLIT <<<', '','>>> SPLIT <<<', '','>>> SPLIT <<<', '') from data_referentiel_apogee as dra left join #__emundus_setup_campaigns as jesc on jesc.libelle_apogee = dra.id left join #__emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum = ",
         "default": ""
       },
       "codVrsVet": {
+        "sql": "select concat(dra.code_version_etape, '>>> SPLIT <<<', '','>>> SPLIT <<<', '','>>> SPLIT <<<', '') from data_referentiel_apogee as dra left join #__emundus_setup_campaigns as jesc on jesc.libelle_apogee = dra.id left join #__emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum = ",
         "default": ""
       },
       "libCmtJur": {
