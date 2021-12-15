@@ -14,7 +14,8 @@
     $encrypt = $d->attributes['encrypted'];
 ?>
 
-<div id="div_<?php echo $d->attributes['name']; ?>">
+<div id="div_<?php echo $d->attributes['name']; ?>" class="fabrik_element___emundus_file_upload_parent">
+    <button class="btn-upload"><?php echo JText::_('PLG_ELEMENT_FILEUPLOAD_SELECT_FILE') ?></button>
     <input type="file" id="<?= $d->attributes['name']; ?>" name="<?= $d->attributes['name']; ?>" multiple <?php foreach ($d->attributes as $key => $value) { echo $key . '="' . $value . '" '; } ?>/>
 </div>
 
