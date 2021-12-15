@@ -775,7 +775,7 @@ export default {
     attachmentPath() {
       return (
         this.$store.state.attachment.attachmentPath +
-        this.displayedUser.id +
+        this.displayedUser.user_id +
         "/" +
         this.selectedAttachment.filename
       );
