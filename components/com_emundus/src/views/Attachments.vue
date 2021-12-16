@@ -476,15 +476,19 @@ export default {
       this.resetOrder();
       this.checkedAttachments = [];
       this.$refs["searchbar"].value = "";
-      this.attachments = await attachmentService.getAttachmentsByFnum(
+      const response = await attachmentService.getAttachmentsByFnum(
         this.displayedFnum
       );
-      this.$store.dispatch("attachment/setAttachmentsOfFnum", {
-        fnum: [this.displayedFnum],
-        attachments: this.attachments,
-      });
 
-      this.getCategories();
+      if (response !== false) {
+        this.attachments = response;
+        this.$store.dispatch("attachment/setAttachmentsOfFnum", {
+          fnum: [this.displayedFnum],
+          attachments: this.attachments,
+        });
+
+        this.getCategories();
+      }
       this.loading = false;
     },
     updateAttachment() {
