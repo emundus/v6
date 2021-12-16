@@ -6,6 +6,8 @@
  * Time: 11:23
  */
 JFactory::getSession()->set('application_layout', 'form');
+
+$pids = json_decode($this->pids);
 ?>
 
 <!--<div class="active title" id="em_application_forms"> <i class="dropdown icon"></i> </div>
@@ -28,6 +30,18 @@ JFactory::getSession()->set('application_layout', 'form');
             </div>
         </div>
         <div class="panel-body Marginpanel-body em-container-form-body">
+
+            <div class="em_label">
+                <label class="control-label em-filter-label"><?= JText::_('PROFILE_FORM'); ?></label>
+            </div>
+
+            <select class="chzn-select em-filt-select" id="profiles" style="width: 100%">
+                <option value="%">-- <?= JText::_('COM_EMUNDUS_VIEW_FORM_SELECT_PROFILE'); ?> --</option>
+                <?php foreach($pids as $pid) : ?>
+                    <option value="<?= $pid->pid; ?>"> <?= $pid->label; ?></option>
+                <?php endforeach; ?>
+            </select>
+
             <div class="active content">
                 <?php echo $this->forms; ?>
             </div>

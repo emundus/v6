@@ -384,6 +384,10 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $pids = $m_profiles->getProfilesIDByCampaign($campList);
 
+                        /* serialize $pids to json format with {id: label} */
+                        $json = json_encode($pids);
+                        $this->assignRef('pids', $json);
+
                         if(empty($pids)){
                             $pids = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
                         } else {
