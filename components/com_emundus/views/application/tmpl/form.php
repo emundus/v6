@@ -8,6 +8,7 @@
 JFactory::getSession()->set('application_layout', 'form');
 
 $pids = json_decode($this->pids);
+$user = $this->userid;
 ?>
 
 <!--<div class="active title" id="em_application_forms"> <i class="dropdown icon"></i> </div>
@@ -35,14 +36,17 @@ $pids = json_decode($this->pids);
                 <label class="control-label em-filter-label"><?= JText::_('PROFILE_FORM'); ?></label>
             </div>
 
-            <select class="chzn-select em-filt-select" id="profiles" style="width: 100%">
+            <select class="chzn-select" style="width: 100%" id="select_profile">
                 <option value="%">-- <?= JText::_('COM_EMUNDUS_VIEW_FORM_SELECT_PROFILE'); ?> --</option>
                 <?php foreach($pids as $pid) : ?>
                     <option value="<?= $pid->pid; ?>"> <?= $pid->label; ?></option>
                 <?php endforeach; ?>
             </select>
 
-            <div class="active content">
+            <input type="hidden" id="user_hidden" value="<?php echo $user ?>">
+            <input type="hidden" id="fnum_hidden" value="<?php echo $this->fnum ?>">
+
+            <div class="active content" id="show_profile">
                 <?php echo $this->forms; ?>
             </div>
         </div>
@@ -51,5 +55,29 @@ $pids = json_decode($this->pids);
 <script>
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
+    })
+
+    $('#select_profile').on('change', function() {
+        /* get the selected profile id*/
+        var profile = $(this).children(":selected").attr('value');      /* or just $(this).val() */
+
+        if(profile !== "%") {
+            /* call to ajax */
+            $.ajax({
+                type: 'post',
+                url: 'index.php?option=com_emundus&controller=application&task=getform',
+                dataType: 'json',
+                data: { profile: profile, user: $('#user_hidden').attr('value'), $fnum: $('#fnum_hidden').attr('value') },
+                success: function(result) {
+                    var form = result.data;
+
+                    $('#show_profile').empty();
+                    $('#show_profile').append(form.toString());
+
+                }, error: function(jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            })
+        }
     })
 </script>

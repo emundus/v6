@@ -375,6 +375,8 @@ class EmundusViewApplication extends JViewLegacy {
                         $userRaw = $m_profiles->getFnumDetails($fnum);
                         $userId = $userRaw['applicant_id'];
 
+                        $this->assignRef('userid', $userId);
+
                         /* get all campaigns by user */
                         $campaignsRaw = $m_user->getCampaignsCandidature($userId);
 

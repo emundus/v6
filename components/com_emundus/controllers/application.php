@@ -734,4 +734,24 @@ class EmundusControllerApplication extends JControllerLegacy
         echo json_encode($res);
         exit;
     }
+
+    public function getform() {
+        $jinput = JFactory::getApplication()->input;
+
+        $profile = $jinput->getVar('profile', null);
+        $user = $jinput->getVar('user', null);
+        $fnum = $jinput->getVar('fnum', null);
+
+        $m_application = $this->getModel('Application');
+
+        $form = $m_application->getForms(intval($user), $fnum, $profile);
+        if(!empty($form)) {
+            $tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $form);
+        } else {
+            $tab = array('status' => false, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => null);
+        }
+
+        echo json_encode($tab);
+        exit;
+    }
 }
