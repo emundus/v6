@@ -361,16 +361,39 @@ class EmundusViewApplication extends JViewLegacy {
                 case 'form':
                     if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
 
-                        $step = $jinput->getString('step', 0);
+                        //$step = $jinput->getString('step', 0);
 
                         EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_LOGS_FORM_BACKOFFICE');
 
-                        if($step != 0){
-                            $pid = $m_profiles->getProfileByStep($fnum,$step);
-                        }
+                        $m_user = new EmundusModelUsers;
+
+                        /* detect user_id from fnum */
+                        $userRaw = $m_profiles->getFnumDetails($fnum);
+                        $userId = $userRaw['applicant_id'];
+
+                        $this->assignRef('userid', $userId);
+
+                        /* get all campaigns by user */
+                        $campaignsRaw = $m_user->getCampaignsCandidature($userId);
+
+                        $campList = array();
+
+                        foreach($campaignsRaw as $camp) { $campList[] = $camp->campaign_id; }
+
+                        $pids = $m_profiles->getProfilesIDByCampaign($campList);
+
+                        //if($step != 0){
+                        //    $pid = $m_profiles->getProfileByStep($fnum,$step);
+                        //}
+
+                        /* serialize $pids to json format */
+                        $json = json_encode($pids);
+                        $this->assignRef('pids', $json);
 
                         if(empty($pid)){
                             $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+                        } else {
+                            $pid = reset($pids)->pid;
                         }
 
                         $formsProgress = $m_application->getFormsProgress($fnum);
