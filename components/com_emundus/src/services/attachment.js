@@ -27,6 +27,11 @@ export default {
       if (typeof response.data === "string") {
         response.data = JSON.parse(response.data);
       }
+
+      if (typeof response.data === "object") {
+        // object to array containing only the attachments
+        response.data = Object.values(response.data);
+      }
       
       // add show attribute to true to all attchments in response data
       if (response.data) {
