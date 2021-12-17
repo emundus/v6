@@ -26,6 +26,7 @@ require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'interview.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
+require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
 
 
 class EmundusViewApplication extends JViewLegacy {
@@ -373,14 +374,13 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $this->assignRef('userid', $userId);
 
+                        $m_campaign = new EmundusModelCampaign;
+
                         /* get all campaigns by user */
-                        $campaignsRaw = $m_user->getCampaignsCandidature($userId);
-
-                        $campList = array();
-
-                        foreach($campaignsRaw as $camp) { $campList[] = $camp->campaign_id; }
-
-                        $pids = $m_profiles->getProfilesIDByCampaign($campList);
+//                        $campaignsRaw = $m_user->getCampaignsCandidature($userId);
+                        $campaignsRaw = $m_campaign->getCampaignByFnum($fnum);
+                        
+                        $pids = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id]);
 
                         //if($step != 0){
                         //    $pid = $m_profiles->getProfileByStep($fnum,$step);

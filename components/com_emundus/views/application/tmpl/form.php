@@ -39,7 +39,7 @@ $user = $this->userid;
                 </div>
 
                 <select class="chzn-select" style="width: 100%" id="select_profile">
-                    <option value="<?= $defaultpid->pid; ?>"> <?= $defaultpid->label; ?></option>
+                    <option value="<?= $defaultpid->pid; ?>" selected disabled style="font-style: italic"> <?= $defaultpid->label; ?></option>
                     <?php foreach($pids as $pid) : ?>
                         <option value="<?= $pid->pid; ?>"> <?= $pid->label; ?></option>
                     <?php endforeach; ?>
@@ -58,7 +58,7 @@ $user = $this->userid;
 <script>
     var dpid = $('#dpid_hidden').attr('value');
 
-    $('#select_profile option[value="' + dpid + '"]').first().remove();
+    $('#select_profile option[value="' + dpid + '"]:nth-child(2)').remove();
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
