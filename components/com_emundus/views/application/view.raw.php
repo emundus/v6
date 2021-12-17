@@ -26,7 +26,7 @@ require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'interview.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
-
+require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
 
 class EmundusViewApplication extends JViewLegacy {
     protected $_user = null;
@@ -370,36 +370,53 @@ class EmundusViewApplication extends JViewLegacy {
                         } */
 
                         $m_user = new EmundusModelUsers;
+                        $m_campaign = new EmundusModelCampaign;
 
                         /* detect user_id from fnum */
                         $userRaw = $m_profiles->getFnumDetails($fnum);
                         $userId = $userRaw['applicant_id'];
+                        $userProfile = $userRaw['profile_id'];
 
                         $this->assignRef('userid', $userId);
 
                         /* get all campaigns by user */
-                        $campaignsRaw = $m_user->getCampaignsCandidature($userId);
+                        $campaignsRaw = $m_campaign->getCampaignByFnum($fnum);
 
-                        $campList = array();
+                        /* get all profiles (order by step) by campaign */
+                        $pidsRaw = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id]);
 
-                        foreach($campaignsRaw as $camp) { $campList[] = $camp->campaign_id; }
+                        $noStepPid = array();
 
-                        $pids = $m_profiles->getProfilesIDByCampaign($campList);
+                        foreach($pidsRaw as $key => $pid) {
+                            if($pid->step === null or empty($pid->step)) {
+                                if($pid->pid !== $userProfile) {
+                                    $noStepPid[] = $pid;
+                                }
+                                else {
+                                    $dpid = $pid;
+                                }
+                                unset($pidsRaw[$key]);
+                            }
+                        }
 
-                        /* serialize $pids to json format with {id: label} */
+                        $pids = array_merge([$dpid], $pidsRaw, $noStepPid);
+
+                        /* serialize $pids to json format */
                         $json = json_encode($pids);
                         $this->assignRef('pids', $json);
 
-                        if(empty($pids)){
-                            $pids = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+                        if(empty($pid)){
+                            $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
                         } else {
-                            $pids = reset($pids)->pid;
+                            $pid = $userProfile;
                         }
+
+                        $this->assignRef('defaultpid', $dpid);
 
                         $formsProgress = $m_application->getFormsProgress($fnum);
                         $this->assignRef('formsProgress', $formsProgress);
 
-                        $forms = $m_application->getForms(intval($fnumInfos['applicant_id']), $fnum, $pids);
+                        $forms = $m_application->getForms(intval($fnumInfos['applicant_id']), $fnum, $pid);
                         $this->assignRef('forms', $forms);
 
                     } else {

@@ -719,7 +719,7 @@ class EmundusModelProfile extends JModelList {
 
             $query = 'SELECT DISTINCT (esc.profile_id) AS pid,
                         jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
-                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class
+                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class, null AS step
 
                         FROM  #__emundus_setup_campaigns AS esc 
                         LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = esc.profile_id
@@ -729,7 +729,7 @@ class EmundusModelProfile extends JModelList {
                 ' UNION 
                         SELECT DISTINCT (jecw.profile) AS pid, 
                         jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
-                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class
+                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class, step AS step
                         
                         FROM  #__emundus_campaign_workflow AS jecw 
                         LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = jecw.profile        
@@ -739,7 +739,7 @@ class EmundusModelProfile extends JModelList {
                 ' UNION
                     SELECT DISTINCT(jeswspr.profile) as pid,
                         jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
-                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class
+                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class, null AS step
                         
                         FROM #__emundus_setup_workflow_step_profiles_repeat AS jeswspr
                         LEFT JOIN #__emundus_setup_workflow_step AS jesws ON jesws.id = jeswspr.parent_id
@@ -751,13 +751,14 @@ class EmundusModelProfile extends JModelList {
                 ' UNION
                     SELECT DISTINCT(jeswsrr.profile) AS pid,
                         jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
-                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class
+                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class, null AS step
 
                         FROM #__emundus_setup_workflow_step_rules_repeat AS jeswsrr
                         LEFT JOIN #__emundus_setup_workflow_step AS jesws ON jesws.id = jeswsrr.parent_id
                         LEFT JOIN #__emundus_setup_workflow AS jesw ON jesw.id = jesws.workflow
                         LEFT JOIN #__emundus_setup_campaigns AS jesc ON jesc.workflow = jesw.id
                         LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = jeswsrr.profile
+                        ORDER BY step
                 ' . $where_jeswsrr;
             try {
                 $this->_db->setQuery($query);
