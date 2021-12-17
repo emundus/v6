@@ -71,42 +71,33 @@ $user = $this->userid;
         $('#show_profile').empty();
         $('#show_profile').before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
 
-        if(profile !== "%") {
-            /* call to ajax */
-            $.ajax({
-                type: 'post',
-                url: 'index.php?option=com_emundus&controller=application&task=getform',
-                dataType: 'json',
-                data: { profile: profile, user: $('#user_hidden').attr('value'), $fnum: $('#fnum_hidden').attr('value') },
-                success: function(result) {
-                    var form = result.data;
+        /* all other options will be normal */
+        $('#select_profile option').each(function() {
+            if($(this).attr('value') !== profile) {
+                $(this).prop('disabled', false);
+                $(this).css('font-style', 'unset');
+            }
+        })
 
-                    $('#loading').remove();
-                    $('#show_profile').append(form.toString());
-                    $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value') + '&profile=' + profile);
+        /* call to ajax */
+        $.ajax({
+            type: 'post',
+            url: 'index.php?option=com_emundus&controller=application&task=getform',
+            dataType: 'json',
+            data: { profile: profile, user: $('#user_hidden').attr('value'), $fnum: $('#fnum_hidden').attr('value') },
+            success: function(result) {
+                var form = result.data;
 
-                }, error: function(jqXHR) {
-                    console.log(jqXHR.responseText);
-                }
-            })
-        } else {
-            /* open the default profile */
-            $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value'));
-            $.ajax({
-                type: 'post',
-                url: 'index.php?option=com_emundus&controller=application&task=getform',
-                dataType: 'json',
-                data: { profile: $('#dpid_hidden').attr('value'), user: $('#user_hidden').attr('value'), $fnum: $('#fnum_hidden').attr('value') },
-                success: function(result) {
-                    var form = result.data;
+                $('#loading').remove();
+                $('#show_profile').append(form.toString());
+                $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value') + '&profile=' + profile);
 
-                    $('#loading').remove();
-                    $('#show_profile').append(form.toString());
+                $('#select_profile option[value="' + profile + '"]').prop('disabled', true);
+                $('#select_profile option[value="' + profile + '"]').css('font-style', 'italic');
 
-                }, error: function(jqXHR) {
-                    console.log(jqXHR.responseText);
-                }
-            })
-        }
+            }, error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        })
     })
 </script>
