@@ -371,20 +371,29 @@ class EmundusViewApplication extends JViewLegacy {
                         /* detect user_id from fnum */
                         $userRaw = $m_profiles->getFnumDetails($fnum);
                         $userId = $userRaw['applicant_id'];
+                        $userProfile = $userRaw['profile_id'];
 
                         $this->assignRef('userid', $userId);
 
                         $m_campaign = new EmundusModelCampaign;
 
-                        /* get all campaigns by user */
-//                        $campaignsRaw = $m_user->getCampaignsCandidature($userId);
+                        /* get all campaigns by fnum */
                         $campaignsRaw = $m_campaign->getCampaignByFnum($fnum);
-                        
-                        $pids = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id]);
 
-                        //if($step != 0){
-                        //    $pid = $m_profiles->getProfileByStep($fnum,$step);
-                        //}
+                        /* get all profiles (order by step) by campaign */
+                        $pidsRaw = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id]);
+
+                        $noStepPid = array();
+
+                        foreach($pidsRaw as $key => $pid) {
+                            if($pid->step === null or empty($pid->step)) {
+                                if($pid->pid !== $userProfile) { $noStepPid[] = $pid;}
+                                else { $dpid = $pid; }
+                                unset($pidsRaw[$key]);
+                            }
+                        }
+
+                        $pids = array_merge([$dpid], $pidsRaw, $noStepPid);
 
                         /* serialize $pids to json format */
                         $json = json_encode($pids);
@@ -393,10 +402,10 @@ class EmundusViewApplication extends JViewLegacy {
                         if(empty($pid)){
                             $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
                         } else {
-                            $pid = reset($pids)->pid;
+                            $pid = $userProfile;
                         }
 
-                        $this->assignRef('defaultpid', reset($pids));
+                        $this->assignRef('defaultpid', $dpid);
                         
                         $formsProgress = $m_application->getFormsProgress($fnum);
                         $this->assignRef('formsProgress', $formsProgress);

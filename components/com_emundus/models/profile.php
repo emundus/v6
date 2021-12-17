@@ -701,12 +701,12 @@ class EmundusModelProfile extends JModelList {
                 $where_jecw = '';
             } else {
                 $where = 'WHERE esc.id IN ('.implode(',', $campaign_id).')';
-                $where_jecw = 'WHERE jecw.campaign IN ('.implode(',', $campaign_id).')';
+                $where_jecw = 'WHERE jecw.campaign IN ('.implode(',', $campaign_id).') ORDER BY step';
             }
 
             $query = 'SELECT DISTINCT (esc.profile_id) AS pid,
                         jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
-                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class
+                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class, NULL AS step
 
                         FROM  #__emundus_setup_campaigns AS esc 
                         LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = esc.profile_id
@@ -715,7 +715,7 @@ class EmundusModelProfile extends JModelList {
                 ' union 
                         SELECT DISTINCT (jecw.profile) AS pid, 
                         jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
-                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class
+                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class, step AS step
                         
                         FROM  #__emundus_campaign_workflow AS jecw 
                         LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = jecw.profile
