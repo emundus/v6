@@ -82,7 +82,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 		</div>
 
 		<div class="col-md-9 main-panel">
-			<div id="em-hide-filters" class="em-close-filter" title="<?php echo JText::_('HIDE_FILTERS'); ?>">
+			<div id="em-hide-filters" class="em-close-filter" data-toggle="tooltip" data-placement="right" title=<?php echo JText::_('HIDE_FILTERS'); ?>">
 				<span class="glyphicon glyphicon-chevron-left"></span>
 			</div>
 			<div class="navbar navbar-inverse em-menuaction">
@@ -121,6 +121,10 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
        // search();
         reloadActions();
 	})
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 
 </script>
 
