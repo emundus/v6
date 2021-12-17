@@ -17,7 +17,7 @@ Vue.component('v-popover', VPopover);
 
 Vue.use(VueFusionCharts, FusionCharts, Column2D, FusionTheme);
 Vue.use(VTooltip);
-Vue.mixins(translate);
+Vue.mixin(translate);
 
 if (document.getElementById('em-dashboard-vue')) {
   const vue = new Vue({
