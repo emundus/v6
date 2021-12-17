@@ -32,13 +32,14 @@ $user = $this->userid;
             </div>
         </div>
         <div class="panel-body Marginpanel-body em-container-form-body">
+            <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>">
             <?php if(count($pids) > 1) : ?>
                 <div class="em_label">
                     <label class="control-label em-filter-label"><?= JText::_('PROFILE_FORM'); ?></label>
                 </div>
 
                 <select class="chzn-select" style="width: 100%" id="select_profile">
-                    <option value="%">-- <?= JText::_('COM_EMUNDUS_VIEW_FORM_SELECT_PROFILE'); ?> --</option>
+                    <option value="<?= $defaultpid->pid; ?>"> <?= $defaultpid->label; ?></option>
                     <?php foreach($pids as $pid) : ?>
                         <option value="<?= $pid->pid; ?>"> <?= $pid->label; ?></option>
                     <?php endforeach; ?>
@@ -48,8 +49,6 @@ $user = $this->userid;
                 <input type="hidden" id="fnum_hidden" value="<?php echo $this->fnum ?>">
             <?php endif ?>
 
-            <input type="hidden" id="dpid_hidden" value="<?php echo $this->defaultpid ?>">
-
             <div class="active content" id="show_profile">
                 <?php echo $this->forms; ?>
             </div>
@@ -57,6 +56,10 @@ $user = $this->userid;
     </div>
 </div>
 <script>
+    var dpid = $('#dpid_hidden').attr('value');
+
+    $('#select_profile option[value="' + dpid + '"]').first().remove();
+
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     })
