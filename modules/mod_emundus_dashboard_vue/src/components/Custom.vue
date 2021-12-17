@@ -22,6 +22,7 @@
           ></multiselect>
           <multiselect
               v-model="selectedWidget"
+              @update="updateWidget"
               :class="'tchooz-widget__select'"
               label="label"
               track-by="id"
@@ -82,7 +83,7 @@ export default {
     selectedFilters: [],
     filters: [],
     translations: {
-      selectfilter: Joomla.JText._("COM_EMUNDUS_DASHBOARD_SELECT_FILTER")
+      selectfilter: "",
     },
     loading: false,
     // Fusion charts variables
@@ -93,8 +94,10 @@ export default {
     dataSource: {},
     chart_values: [],
   }),
-
   methods: {
+    getTranslations() {
+      this.translations.selectfilter = this.translate("COM_EMUNDUS_DASHBOARD_SELECT_FILTER")
+    },
     renderChart(){
       this.dataSource = {};
       this.loading = true;
@@ -108,13 +111,16 @@ export default {
       }).then(response => {
         this.chart_type = this.selectedWidget.chart_type;
         this.dataSource = response.data.dataset;
-        if(typeof this.dataSource.filters !== 'undefined') {
+        if (typeof this.dataSource.filters !== 'undefined') {
           this.filters = this.dataSource.filters;
         }
 
         this.chart_render++;
         this.loading = false;
         //
+      }).catch(error => {
+        // TODO: handle error
+        this.loading = false;
       });
     },
 
@@ -131,6 +137,9 @@ export default {
         }
       }).then(response => {
         this.datas = response.data.data;
+      }).catch(error => {
+        // TODO: handle error
+        this.datas = {};
       });
     },
 
@@ -146,6 +155,9 @@ export default {
         }
       }).then(response => {
         this.datas = response.data.data;
+      }).catch(error => {
+        // TODO: handle error
+        this.datas = {};
       });
     },
 
@@ -161,6 +173,9 @@ export default {
         }
       }).then(response => {
         this.widgets = response.data.data;
+      }).catch(error => {
+        // TODO: handle error
+        this.widgets = [];
       });
     },
 
@@ -177,6 +192,9 @@ export default {
         })
       }).then(() => {
         this.renderChart();
+      }).catch(error => {
+        // TODO: handle error
+
       });
     },
 
@@ -185,29 +203,32 @@ export default {
         axios({
           method: "get",
           url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfilters",
-          }).then(response => {
-            this.selectedFilters = response.data.filters;
-            resolve(true);
-          })
+        }).then(response => {
+          this.selectedFilters = response.data.filters;
+          resolve(true);
+        }).catch(error => {
+          reject(error);
+        });
       });
     }
   },
 
   created() {
+    this.getTranslations();
     this.selectedWidget = this.widget;
     this.position = this.selectedWidget.position;
     switch (this.selectedWidget.type){
       case 'article':
         this.getArticle();
-        break;
+      break;
       case 'other':
         this.getEval();
-        break;
+      break;
       case 'chart':
         this.getFilters().then(() => {
           this.renderChart();
-        })
-        break;
+        });
+      break;
       default:
         this.getEval();
     }
@@ -216,13 +237,13 @@ export default {
 
   watch: {
     selectedWidget: function(){
-      if(this.chart_render !== 0) {
+      if (this.chart_render !== 0) {
         this.updateDashboard();
       }
     },
 
     selectedFilters: function(){
-      if(this.chart_render !== 0) {
+      if (this.chart_render !== 0) {
         this.renderChart();
       }
     }

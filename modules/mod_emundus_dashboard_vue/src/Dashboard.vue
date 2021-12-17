@@ -72,14 +72,15 @@ export default {
       widgets: [],
       colors: "",
       translations:{
-        all: Joomla.JText._("COM_EMUNDUS_DASHBOARD_ALL_PROGRAMMES"),
-        filterByProgram: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FILTER_BY_PROGRAMMES"),
+        all: "",
+        filterByProgram: "",
       },
       status: null,
       enableDrag: false
     }
   },
   created() {
+    this.getTranslations();
     this.getWidgets();
     this.getPaletteColors();
     if(this.programmeFilter == 1){
@@ -87,6 +88,12 @@ export default {
     }
   },
   methods: {
+    getTranslations() {
+      this.translations = {
+        all: this.translate("COM_EMUNDUS_DASHBOARD_ALL_PROGRAMMES"),
+        filterByProgram: this.translate("COM_EMUNDUS_DASHBOARD_FILTER_BY_PROGRAMMES"),
+      };
+    },
     getWidgets(){
       axios({
         method: "get",
