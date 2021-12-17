@@ -730,6 +730,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 .g-back-office-emundus-tableau div#em-files-filters .panel-heading h3, .view-users #em-user-filters .panel-heading h3 {
     font-size: 1rem;
+    margin-left: 18px;
 }
 
 #filters #quick .selectize-control  {
@@ -797,6 +798,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 .g-back-office-emundus-tableau .panel-body {
     background-color: #f8f8f8;
+    padding: 20px;
 }
 
 .g-back-office-emundus-tableau.view-export_select_columns .panel-body {
@@ -828,7 +830,8 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 .g-back-office-emundus-tableau div#filters .selectize-control.input-tags.demo-default.multi.plugin-remove_button .selectize-input.items.not-full {
-    padding: 0 1rem;
+    padding: 0px;
+    height: 29px !important;
 }
 
 
@@ -851,9 +854,9 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
     background: #ffffff;
     border: 1px solid #ccc !important;
     box-shadow: none;
-    padding: 10px;
+    padding: 8px;
     margin-top: 1px;
-    height: 31px;
+    height: 29px;
 }
 
 #em-user-filters .chosen-container-single .chosen-single  {
@@ -910,9 +913,12 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 #em_filters .chosen-container-single .chosen-single span {
     margin-top: -3.5px;
-    font-style: italic;
     opacity: 0.4;
     font-size: 15px;
+}
+
+.em_filters_filedset .SumoSelect > .CaptionCont > span.placeholder {
+    font-style: normal !important;
 }
 
 #em-files-filters td,
@@ -2248,6 +2254,7 @@ div#em-assoc-files .panel > .panel-heading {
     font-size: 19px !important;
     border-radius: 4px !important;
     padding-top: 0px;
+    padding-right: 3px !important;
 }
 
 .g-back-office-emundus-tableau button#search:hover ,  .g-back-office-emundus-tableau button#clear-search:hover, .g-back-office-emundus-tableau button#save-filter:hover , .g-back-office-emundus-tableau button#add-filter:hover,  .g-back-office-emundus-tableau input#search:hover ,  .g-back-office-emundus-tableau input#clear-search:hover, .g-back-office-emundus-tableau input#save-filter:hover , .g-back-office-emundus-tableau input#add-filter:hover  {

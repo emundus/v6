@@ -2140,6 +2140,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     color: $dark-grey;
     border: none;
     font-size: 19px !important;
+    padding-right: 3px !important;
 
     &:hover,
     &:active,
@@ -2656,6 +2657,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   label[for="clear-search"] {
     margin-bottom: 0px !important;
+    margin-right: 15px;
   }
 
   div {

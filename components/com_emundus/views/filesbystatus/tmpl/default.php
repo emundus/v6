@@ -77,7 +77,7 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 		</div>
 
 		<div class="col-md-9 main-panel">
-			<div id="em-hide-filters" class="em-close-filter">
+			<div id="em-hide-filters" class="em-close-filter" title="<?php echo JText::_('HIDE_FILTERS'); ?>">
 				<span class="glyphicon glyphicon-chevron-left"></span>
 			</div>
 			<div class="navbar navbar-inverse em-menuaction">
