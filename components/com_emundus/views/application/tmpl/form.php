@@ -8,6 +8,7 @@
 JFactory::getSession()->set('application_layout', 'form');
 
 $pids = json_decode($this->pids);
+$defaultpid = $this->defaultpid;
 $user = $this->userid;
 ?>
 
@@ -31,19 +32,23 @@ $user = $this->userid;
             </div>
         </div>
         <div class="panel-body Marginpanel-body em-container-form-body">
-            <div class="em_label">
-                <label class="control-label em-filter-label"><?= JText::_('PROFILE_FORM'); ?></label>
-            </div>
+            <?php if(count($pids) > 1) : ?>
+                <div class="em_label">
+                    <label class="control-label em-filter-label"><?= JText::_('PROFILE_FORM'); ?></label>
+                </div>
 
-            <select class="chzn-select" style="width: 100%" id="select_profile">
-                <option value="%">-- <?= JText::_('COM_EMUNDUS_VIEW_FORM_SELECT_PROFILE'); ?> --</option>
-                <?php foreach($pids as $pid) : ?>
-                    <option value="<?= $pid->pid; ?>"> <?= $pid->label; ?></option>
-                <?php endforeach; ?>
-            </select>
+                <select class="chzn-select" style="width: 100%" id="select_profile">
+                    <option value="%">-- <?= JText::_('COM_EMUNDUS_VIEW_FORM_SELECT_PROFILE'); ?> --</option>
+                    <?php foreach($pids as $pid) : ?>
+                        <option value="<?= $pid->pid; ?>"> <?= $pid->label; ?></option>
+                    <?php endforeach; ?>
+                </select>
 
-            <input type="hidden" id="user_hidden" value="<?php echo $user ?>">
-            <input type="hidden" id="fnum_hidden" value="<?php echo $this->fnum ?>">
+                <input type="hidden" id="user_hidden" value="<?php echo $user ?>">
+                <input type="hidden" id="fnum_hidden" value="<?php echo $this->fnum ?>">
+            <?php endif ?>
+
+            <input type="hidden" id="dpid_hidden" value="<?php echo $this->defaultpid ?>">
 
             <div class="active content" id="show_profile">
                 <?php echo $this->forms; ?>
@@ -60,8 +65,8 @@ $user = $this->userid;
         /* get the selected profile id*/
         var profile = $(this).children(":selected").attr('value');      /* or just $(this).val() */
 
-        /*http://localhost:8888/index.php?option=com_emundus&task=pdf&user=1883&fnum=2021121312404500000110001883*/
-        /*http://localhost:8888/index.php?option=com_emundus&task=pdf&user=1883&fnum=2021121312404500000110001883&profile=1019 */
+        $('#show_profile').empty();
+        $('#show_profile').before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
 
         if(profile !== "%") {
             /* call to ajax */
@@ -73,10 +78,27 @@ $user = $this->userid;
                 success: function(result) {
                     var form = result.data;
 
-                    $('#show_profile').empty();
+                    $('#loading').remove();
                     $('#show_profile').append(form.toString());
-
                     $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value') + '&profile=' + profile);
+
+                }, error: function(jqXHR) {
+                    console.log(jqXHR.responseText);
+                }
+            })
+        } else {
+            /* open the default profile */
+            $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value'));
+            $.ajax({
+                type: 'post',
+                url: 'index.php?option=com_emundus&controller=application&task=getform',
+                dataType: 'json',
+                data: { profile: $('#dpid_hidden').attr('value'), user: $('#user_hidden').attr('value'), $fnum: $('#fnum_hidden').attr('value') },
+                success: function(result) {
+                    var form = result.data;
+
+                    $('#loading').remove();
+                    $('#show_profile').append(form.toString());
 
                 }, error: function(jqXHR) {
                     console.log(jqXHR.responseText);
