@@ -80,7 +80,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 		</div>
 
 		<div class="col-md-9 main-panel">
-			<div  id="em-hide-filters" class="em-close-filter" title="<?php echo JText::_('HIDE_FILTERS'); ?>">
+			<div  id="em-hide-filters" class="em-close-filter" data-toggle="tooltip" data-placement="top" title=<?php echo JText::_('HIDE_FILTERS'); ?>">
 				<span class="glyphicon glyphicon-chevron-left"></span>
 			</div>
 			<div class="navbar navbar-inverse em-menuaction">
@@ -131,4 +131,9 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 		    $('#basicModal .modal-content').replaceWith('<div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><?php echo JText::_("LOADING");?></h4></div><div class="modal-body"><img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_("CANCEL")?></button></div></div>');
 		});
 	})
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+
 </script>
