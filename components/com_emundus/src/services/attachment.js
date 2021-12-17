@@ -22,7 +22,7 @@ export default {
     try {
       const response = await client().get('index.php?option=com_emundus&controller=application&task=getattachmentsbyfnum', {
         params: {
-          fnum : fnum,
+          fnum: fnum,
         }
       });
 
@@ -60,12 +60,12 @@ export default {
     try {
       const formData = new FormData();
       formData.append('ids', JSON.stringify(attachment_ids));
-      
+
       const response = await client().post(`index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=${fnum}&student_id=${student_id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
+      }
       );
 
       return response;
@@ -76,14 +76,14 @@ export default {
       }
     }
   },
-  
+
   async updateAttachment(formData) {
     try {
       const response = await client().post('index.php?option=com_emundus&controller=application&task=updateattachment', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
+      }
       );
 
       return response.data;

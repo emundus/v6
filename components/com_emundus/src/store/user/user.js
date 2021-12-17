@@ -43,7 +43,7 @@ const mutations = {
     }
 };
 
-export default{
+export default {
     namespaced: true,
     state,
     getters,

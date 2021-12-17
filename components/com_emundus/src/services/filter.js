@@ -26,7 +26,7 @@ export default {
 
             return response.data;
         } catch (e) {
-            return false;        
+            return false;
         }
     }
 }

@@ -13,7 +13,7 @@ export default {
 
     async getFnumInfos(fnum) {
         try {
-            const response = await client().get('index.php?option=com_emundus&controller=files&task=getfnuminfos',  {
+            const response = await client().get('index.php?option=com_emundus&controller=files&task=getfnuminfos', {
                 params: {
                     fnum
                 }
