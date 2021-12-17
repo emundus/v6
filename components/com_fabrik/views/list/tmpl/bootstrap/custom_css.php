@@ -102,4 +102,8 @@ display: inline-block;
 font-size: 16px;
 }
 
+.view-list form.form-search {
+   overflow: auto;  
+}
+
 ";?>
