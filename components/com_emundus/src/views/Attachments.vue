@@ -352,7 +352,14 @@ export default {
 	methods: {
 		// Getters and setters
 		async getFnums() {
-			this.fnums = await fileService.getFnums(this.user);
+			const response = await fileService.getFnums(this.user);
+
+			if (response !== false) {
+				this.fnums = response;
+			} else {
+				this.loading = false;
+				this.displayErrorMessage("COM_EMUNDUS_ATTACHMENTS_ERROR_GETTING_FNUMS");
+			}
 		},
 		async getUsers() {
 			this.users = await userService.getUsers();
@@ -429,7 +436,13 @@ export default {
 					attachments: this.attachments,
 				});
 
-				this.categories = await this.getAttachmentCategories();
+				const categoriesResponse = await this.getAttachmentCategories();
+
+				if (categoriesResponse) {
+					this.categories = categoriesResponse;
+				} else {
+					this.categories = {};
+				}
 			} else {
 				this.displayErrorMessage(
 					this.translate("COM_EMUNDUS_ATTACHMENTS_ERROR_GETTING_ATTACHMENTS")
@@ -484,7 +497,7 @@ export default {
 					this.displayedFnum
 				);
 
-				if (response.status == true) {
+				if (response.status === true) {
 					this.$store.dispatch("user/setAccessRights", {
 						fnum: this.displayedFnum,
 						rights: response.rights,
@@ -509,7 +522,7 @@ export default {
 						this.checkedAttachments
 					)
 					.then((response) => {
-						if (response.data.status == true) {
+						if (response.data.status === true) {
 							window.open(response.data.link, "_blank");
 						} else {
 							this.displayErrorMessage(response.data.msg);

@@ -13,6 +13,12 @@ localVue.mixin(translate);
 localVue.use(VModal);
 
 describe('Attachments.vue', () => {
+  // spy on getFnums and getUsers function to check if they have been called on created
+  const getFnums = jest.spyOn(Attachments.methods, 'getFnums');
+  const getUsers = jest.spyOn(Attachments.methods, 'getUsers');
+  const getAttachments = jest.spyOn(Attachments.methods, 'getAttachments');
+  const setAccessRights = jest.spyOn(Attachments.methods, 'setAccessRights');
+
   const wrapper = shallowMount(Attachments, {
     propsData: {
       user: "123",
@@ -20,6 +26,17 @@ describe('Attachments.vue', () => {
     },
     store: store,
     localVue
+  });
+
+  it('should call getFnums, getUsers, getAttachments and setAccesRights on created', () => {
+    expect(getFnums).toHaveBeenCalled();
+    expect(getUsers).toHaveBeenCalled();
+    expect(getAttachments).toHaveBeenCalled();
+    expect(setAccessRights).toHaveBeenCalled();
+  });
+
+  it('displayedFnum data should be equal to fnum props', () => {
+    expect(wrapper.vm.displayedFnum).toBe(wrapper.props().fnum);
   });
 
   // set attachments data

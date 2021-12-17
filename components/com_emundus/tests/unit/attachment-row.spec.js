@@ -9,7 +9,7 @@ describe('AttachmentRow.vue', () => {
 	const wrapper = mount(AttachmentRow, {
 		propsData: {
 			attachment: mockAttachment.attachments[1],
-			checkedAttachmentsProp: [],
+			checkedAttachmentsProp: [123],
 		},
 		mixins: [translate, mixin],
 		global: {
@@ -26,18 +26,22 @@ describe('AttachmentRow.vue', () => {
 		expect(wrapper.find('.warning.file-not-found').exists()).toBe(true);
 	});
 
+	it('should set checkedAttachments data to equals prop', () => {
+		expect(wrapper.vm.checkedAttachments).toEqual([123]);
+	});
+
 	it('should format date', () => {
 		expect(wrapper.vm.formattedDate("2021-12-01 08:04:32")).toBe('Wednesday, December 1, 2021 8:04 AM');
 	});
 
 	it('onClick .td-document should emit open-modal', () => {
 		wrapper.find('.td-document').trigger('click');
-		expect(wrapper.emitted('open-modal')).toBeTruthy();		
+		expect(wrapper.emitted('open-modal')).toBeTruthy();
 	});
 
 	it('onChange attachment-check should emit update-checked-attachments', () => {
 		wrapper.find('.attachment-check').trigger('change');
-		expect(wrapper.emitted('update-checked-attachments')).toBeTruthy();		
+		expect(wrapper.emitted('update-checked-attachments')).toBeTruthy();
 	});
 
 	it('onChange .status select should emit update-status', () => {
