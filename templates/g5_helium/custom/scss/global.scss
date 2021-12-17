@@ -813,7 +813,7 @@ body>.g-container {
   }
 
   #userDropdownIcon {
-    background-color: white;
+    background: transparent;
     font-size: 1.5em;
     width: 30px !important;
     height: 30px !important;
@@ -980,7 +980,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 }
 
-/* MODULE APPLICATIONS  - COULEUR BTN IMPRIMER*/
+/* MODULE APPLICATIONS */
+.list-group.candidacy-files-list .row .ui.yellow.segment:not(.inverted) {
+  border-top: 2px solid $base-secondary-color !important;
+}
+
+/* MODULE APPLICATIONS COULEUR BTN IMPRIMER*/
 .homepage #g-main-mainbody #content-bottom-a {
   .platform-content .btn.btn-info {
     background: darken($base-secondary-color, 8%);
@@ -1296,6 +1301,15 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   border-bottom-color: $dark-blue;
 }
 
+// remove
+.fabrikNav .pagination-list li {
+  margin: 0;
+}
+
+.fabrikNav .list-footer .limit .input-prepend.input-append {
+  display: flex;
+}
+
 /* DOCUMENTS OBLIGATOIRES */
 .need_missing.active a::before {
   color: $base-primary-color;
@@ -1606,10 +1620,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
     #g-container-main {
       padding: 0 10px;
+      height: 100%;
+      margin: auto;
     }
   }
 
-  body.error-page p {
+  body.error-page .container-404 p {
     padding: 20px 0 !important;
   }
 
@@ -2103,7 +2119,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
     &:hover,
     &:focus &:active {
-      background-color: darken($base-primary-color, 10%);
+      background-color: darken($dark-blue, 20%);
       color: #fff;
       outline: none;
     }
@@ -2897,6 +2913,19 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
           color: $red;
         }
       }
+
+      a.listplugin.btn-default {
+        background: $dark-blue;
+        border-color: $dark-blue;
+
+        &:hover,
+        &:active,
+        &:focus {
+          background: #fff;
+          border-color: $dark-blue;
+          color: $dark-blue;
+        }
+      }
     }
 
     tbody td.fabrik_actions .btn-group {
@@ -2968,9 +2997,22 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .view-list {
 
-    .fabrik___heading  a.fabrikorder, .fabrik___heading  a.fabrikorder-desc {
+    .fabrik___heading  a.fabrikorder,
+    .fabrik___heading  a.fabrikorder-desc,
+    .fabrik___heading a.fabrikorder-asc {
       color: $dark-blue;
     }
+
+    .fabrik_filter_submit.button {
+      background: $dark-blue;
+      border-color: $dark-blue;
+      &:hover, &:active, &:focus {
+        background: #fff;
+        border-color: $dark-blue;
+        color: $dark-blue;
+      }
+    }
+
     .filtertable {
       thead tr.fabrik___heading {
 

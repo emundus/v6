@@ -143,6 +143,20 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 		$sent = $m_checklist->getSent();
 
 		$confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
+
+        $app = JFactory::getApplication();
+        $offset = $app->get('offset', 'UTC');
+        try {
+            $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+            $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+            $now = $dateTime->format('Y-m-d H:i:s');
+        } catch (Exception $e) {
+            echo $e->getMessage() . '<br />';
+        }
+
+        if (!empty($user->end_date)) {
+            $is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))?true:false;
+        }
 	}
 
 	require(JModuleHelper::getLayoutPath('mod_emundusflow', $layout));

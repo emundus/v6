@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -288,8 +288,13 @@ defined('_JEXEC') or die('Restricted access');
 <?php if(!HIKASHOP_J30){ ?>
 		</div>
 <?php } ?>
+<?php
+	$hika_wiz_btn = "";
+	if(HIKASHOP_J40){
+		$hika_wiz_btn = "hikashop_wizard_J40";
+	} ?>
 	</div>
-	<div style="text-align:center;	margin: 40px auto;">
+	<div class="<?php echo $hika_wiz_btn; ?>" style="text-align:center;	margin: 40px auto;">
 		<input class="wizard_button" type="submit" value="<?php echo JText::_('SAVE_AND_CREATE_FIRST_PRODUCT'); ?>"/>
 		<span class="wizard_submit_arrow<?php if(HIKASHOP_J30)echo '_j30'; ?>">
 			<img onclick="document.adminForm.submit();" src="<?php echo HIKASHOP_IMAGES; ?>wizard/arrow.png" alt=""/>

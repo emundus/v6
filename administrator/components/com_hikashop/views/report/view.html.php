@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -223,7 +223,6 @@ class reportViewReport extends hikashopView {
 
 		$nameboxType = hikashop_get('type.namebox');
 		$this->assignRef('nameboxType', $nameboxType);
-		JHTML::_('behavior.modal');
 
 		$script = "
 	function deleteRow(divName,inputName,rowName){
@@ -457,7 +456,6 @@ class reportViewReport extends hikashopView {
 		$paymentMethods->type='payment';
 		$paymentMethods->manualOnly=true;
 		$this->assignRef('paymentMethods',$paymentMethods);
-		JHTML::_('behavior.modal');
 		$nameboxType = hikashop_get('type.namebox');
 		$this->assignRef('nameboxType', $nameboxType);
 		$this->_addUpdateJS();
