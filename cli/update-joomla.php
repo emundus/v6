@@ -12,7 +12,7 @@ define('JPATH_COMPONENT_ADMINISTRATOR', JPATH_ADMINISTRATOR . '/components/');
 require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_joomlaupdate/models/default.php';
 require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/update.php';
 
-class Upgradejoomla extends JApplicationCli
+class UpdateCli extends JApplicationCli
 {
 
     private function getExtensionsId($table) {
@@ -20,7 +20,7 @@ class Upgradejoomla extends JApplicationCli
         $query->select('*')
             ->from('#__' . $table)
             //Exclude Joomla & Gantry5
-            ->where($this->db->quoteName('extension_id') . ' NOT LIKE 0 AND' . ($this->db->quoteName('extension_id') . ' NOT LIKE 700'));
+            ->where($this->db->quoteName('extension_id') . ' NOT LIKE 0 AND' . ($this->db->quoteName('extension_id') . ' NOT LIKE 700 AND') . ($this->db->quoteName('extension_id') . ' NOT LIKE 11970'));
         $this->db->setQuery($query);
         return $this->db->loadAssocList('','update_id');
     }
@@ -113,18 +113,17 @@ class Upgradejoomla extends JApplicationCli
         } else {
             $this->out("Update found");
         }
-        $uid = ArrayHelper::toInteger($uid, array());
-        $model = JModelLegacy::getInstance('InstallerModelUpdate');
-        $component     = JComponentHelper::getComponent('com_installer');
-        $params        = $component->params;
-        $minimum_stability = (int) $params->get('minimum_stability', JUpdater::STABILITY_STABLE);
+
 
         foreach ($uid as $u){
-            echo 'Update extension(s) : ' . $u . "\n";
-            $maj_ok = $model->update($u, $minimum_stability);
-            if($maj_ok){
-                $this->out('Sucess');
-            } else{$this->out('Update failed !');}
+            $model = JModelLegacy::getInstance('InstallerModelUpdate');
+            $component     = JComponentHelper::getComponent('com_installer');
+            $params        = $component->params;
+            $minimum_stability = (int) $params->get('minimum_stability', JUpdater::STABILITY_STABLE);
+
+            echo 'Update : ' . $u . "\n";
+            $u = array($u);
+            $model->update($u, $minimum_stability);
         }
 
 
@@ -141,13 +140,14 @@ class Upgradejoomla extends JApplicationCli
         }
     }
 
-    public function updateJoomla() {
+    public function updateJoomla()
+    {
         $this->out('UPDATE JOOMLA...');
         $updater = JModelLegacy::getInstance('JoomlaupdateModelDefault');
 
         // Make sure we know what the latest version is
         $this->purgeAndFetchUpdates(700);
-            // Return a null-object if this is the case
+        // Return a null-object if this is the case
         $version_check = $updater->getUpdateInformation();
         if (is_null($version_check['object'])) {
             echo 'No new updates available' . "\n";
@@ -155,16 +155,20 @@ class Upgradejoomla extends JApplicationCli
         }
 
         // Grab the update (ends up in /tmp)
+        $this->out("Loading files...");
         $basename = $updater->download();
         $file = $basename['basename'];
-        if ($file==null){
+        if ($file == null) {
             echo "No files found !";
         } else {
+
             //TODO: Complete restoration process
             //Create restoration.php (ends up in /com_joomlaupdate)
             //$updater->createRestorationFile($basename);
             //$this->out('Creating restoration...');
             // Extract files to core director
+            $this->out("Extracting files...");
+
             $path = JPATH_ROOT . '/tmp/' . $basename['basename'];
             $zip = new ZipArchive;
             if ($zip->open($path) !== TRUE) {
@@ -174,8 +178,19 @@ class Upgradejoomla extends JApplicationCli
                 $zip->close();
             }
             $this->out('Install complete !');
+
+            $this->out('Finalize...');
+            $res = $updater->finaliseUpgrade();
+            if ($res == 1) {
+                echo "SQL Update Success...";
+                $updater->cleanUp();
+                $this->out('Cleanup...');
+            } else {
+                echo "SQL Update Failed...";
+                return false;
+            }
+            return true;
         }
-        return true;
     }
 
     public function doExecute() {
@@ -223,4 +238,4 @@ class Upgradejoomla extends JApplicationCli
     }
 }
 
-JApplicationCli::getInstance('Upgradejoomla')->execute();
+JApplicationCli::getInstance('UpdateCli')->execute();
