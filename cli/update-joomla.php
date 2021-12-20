@@ -20,7 +20,7 @@ class Upgradejoomla extends JApplicationCli
         $query->select('*')
             ->from('#__' . $table)
             //Exclude Joomla & Gantry5
-            ->where($this->db->quoteName('extension_id') . ' NOT LIKE 0 AND' . ($this->db->quoteName('extension_id') . ' NOT LIKE 700 AND') . ($this->db->quoteName('extension_id') . ' NOT LIKE 11970'));
+            ->where($this->db->quoteName('extension_id') . ' NOT LIKE 0 AND' . ($this->db->quoteName('extension_id') . ' NOT LIKE 700'));
         $this->db->setQuery($query);
         return $this->db->loadAssocList('','update_id');
     }
@@ -45,6 +45,7 @@ class Upgradejoomla extends JApplicationCli
         // Find all updates
         $this->out('Fetching updates...');
         if($id==700){
+            $model->applyUpdateSite();
             $model->refreshUpdates();
         } else {
             $updater->findUpdates(0,$cache_timeout);
@@ -85,19 +86,24 @@ class Upgradejoomla extends JApplicationCli
             EOHELP;
     }
 
+    public function queryUpdates($uid)
+    {
+        $query = $this->db->getQuery(true);
+        $query->select('*')
+            ->from('#__' . 'updates')
+            //Exclude Joomla & Gantry5
+            ->where($this->db->quoteName('extension_id') . ' LIKE ' . $uid);
+        $this->db->setQuery($query);
+        return $this->db->loadAssocList('', 'update_id');
+    }
+
     public function updateExtensions($uid=null) {
         $this->out('UPDATE EXTENSIONS...');
+        $this->purgeAndFetchUpdates();
 
         # Update by extension id
         if ($uid!=null) {
-            $query = $this->db->getQuery(true);
-            $query->select('*')
-                ->from('#__' . 'updates')
-                //Exclude Joomla & Gantry5
-                ->where($this->db->quoteName('extension_id') . ' LIKE '. $uid);
-            $this->db->setQuery($query);
-            $uid = $this->db->loadAssocList('','update_id');
-
+            $uid = $this->queryUpdates($uid);
         } else {
             $uid = $this->getExtensionsId('updates');
         }
@@ -108,28 +114,25 @@ class Upgradejoomla extends JApplicationCli
             $this->out("Update found");
         }
         $uid = ArrayHelper::toInteger($uid, array());
-
-
         $model = JModelLegacy::getInstance('InstallerModelUpdate');
-
-
         $component     = JComponentHelper::getComponent('com_installer');
         $params        = $component->params;
         $minimum_stability = (int) $params->get('minimum_stability', JUpdater::STABILITY_STABLE);
 
-        $this->out('Update...');
-        $model->update($uid, $minimum_stability);
+        foreach ($uid as $u){
+            echo 'Update extension(s) : ' . $u . "\n";
+            $maj_ok = $model->update($u, $minimum_stability);
+            if($maj_ok){
+                $this->out('Sucess');
+            } else{$this->out('Update failed !');}
+        }
 
-        $this->purgeAndFetchUpdates($uid);
-
-        $this->out('Sucess...');
 
     }
 
     public function updateSQLJoomla(){
         $updater = JModelLegacy::getInstance('JoomlaupdateModelDefault');
-        $updater->refreshUpdates();
-        $updater->applyUpdateSite();
+        $this->purgeAndFetchUpdates(700);
         $res = $updater->finaliseUpgrade();
         if($res==1){
             echo "SQL Update Success...";
@@ -155,7 +158,7 @@ class Upgradejoomla extends JApplicationCli
         $basename = $updater->download();
         $file = $basename['basename'];
         if ($file==null){
-            echo "No files found";
+            echo "No files found !";
         } else {
             //TODO: Complete restoration process
             //Create restoration.php (ends up in /com_joomlaupdate)
@@ -163,29 +166,16 @@ class Upgradejoomla extends JApplicationCli
             //$this->out('Creating restoration...');
             // Extract files to core director
             $path = JPATH_ROOT . '/tmp/' . $basename['basename'];
-            try {
-                $zip = new ZipArchive;
-                if ($zip->open($path) === TRUE) {
-                    $zip->extractTo(JPATH_ROOT);
-                    $zip->close();
-                }
-            } catch (Exception $e) {
-                echo "Files extraction failed\n";
-            }
-            $this->out('Sucess...');
-
-            // Update SQL etc based on the manifest file we got with the update
-            $this->out('Finalize...');
-            $res = $updater->finaliseUpgrade();
-            if ($res == 1) {
-                echo "SQL Update Success...";
+            $zip = new ZipArchive;
+            if ($zip->open($path) !== TRUE) {
+                die("cannot open archive for writing.");
             } else {
-                echo "SQL Update Failed...";
+                $zip->extractTo(JPATH_ROOT);
+                $zip->close();
             }
-
-            $updater->cleanUp();
-            $this->out('Cleanup...');
+            $this->out('Install complete !');
         }
+        return true;
     }
 
     public function doExecute() {
