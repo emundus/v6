@@ -25,28 +25,35 @@ class Upgradejoomla extends JApplicationCli
         return $this->db->loadAssocList('','update_id');
     }
 
-    public function purgeAndFetchUpdates(){
+    public function purgeAndFetchUpdates($id=null){
         // Get the update cache time
         $component = JComponentHelper::getComponent('com_installer');
         $updater = JUpdater::getInstance();
-        $model = JModelLegacy::getInstance('InstallerModelUpdate');
+        $minimumStability = JUpdater::STABILITY_STABLE;
+        if($id==700){
+            $model = JModelLegacy::getInstance('JoomlaupdateModelDefault');
+        } else {
+            $model = JModelLegacy::getInstance('InstallerModelUpdate');
+        }
+
         $params = $component->params;
-        $cache_timeout = $params->get('cachetimeout', 6, 'int');
-        $cache_timeout = 3600 * $cache_timeout;
+        $cache_timeout = 3600 * JComponentHelper::getParams('com_installer')->get('cachetimeout', 6, 'int');
 
         // Purge all updates
         $this->out('Purge updates...');
         $model->purge();
         // Find all updates
         $this->out('Fetching updates...');
-        $updater->findUpdates(0, $cache_timeout);
+        if($id==700){
+            $model->refreshUpdates();
+        } else {
+            $updater->findUpdates(0,$cache_timeout);
+        }
 
     }
 
     public function getInfo() {
         $this->purgeAndFetchUpdates();
-
-        $this->out('Fetching info...');
         $query = $this->db->getQuery(true);
         $query->select('*')
             ->from('#__' . 'updates')
@@ -108,18 +115,12 @@ class Upgradejoomla extends JApplicationCli
 
         $component     = JComponentHelper::getComponent('com_installer');
         $params        = $component->params;
-        $cache_timeout = (int) $params->get('cachetimeout', 6);
-        $cache_timeout = 3600 * $cache_timeout;
         $minimum_stability = (int) $params->get('minimum_stability', JUpdater::STABILITY_STABLE);
 
         $this->out('Update...');
         $model->update($uid, $minimum_stability);
 
-        $this->out('Purge...');
-        $model->purge();
-
-        $this->out('Check update list...');
-        $model->findUpdates(0, $cache_timeout, $minimum_stability);
+        $this->purgeAndFetchUpdates($uid);
 
         $this->out('Sucess...');
 
@@ -142,8 +143,8 @@ class Upgradejoomla extends JApplicationCli
         $updater = JModelLegacy::getInstance('JoomlaupdateModelDefault');
 
         // Make sure we know what the latest version is
-        $this->purgeAndFetchUpdates();
-        // Return a null-object if this is the case
+        $this->purgeAndFetchUpdates(700);
+            // Return a null-object if this is the case
         $version_check = $updater->getUpdateInformation();
         if (is_null($version_check['object'])) {
             echo 'No new updates available' . "\n";
@@ -153,38 +154,38 @@ class Upgradejoomla extends JApplicationCli
         // Grab the update (ends up in /tmp)
         $basename = $updater->download();
         $file = $basename['basename'];
-
-        // Create restoration.php (ends up in /com_joomlaupdate)
-        $updater->createRestorationFile($basename);
-        $this->out('Creating restoration...');
-
-        //TODO: Complete restoration process
-
-        // Extract files to core directory
-        $path = JPATH_ROOT . '/tmp/' . $basename['basename'];
-        try {
-
-            $zip = new ZipArchive;
-            if ($zip->open($path) === TRUE) {
-                $zip->extractTo(JPATH_ROOT);
-                $zip->close();
+        if ($file==null){
+            echo "No files found";
+        } else {
+            //TODO: Complete restoration process
+            //Create restoration.php (ends up in /com_joomlaupdate)
+            //$updater->createRestorationFile($basename);
+            //$this->out('Creating restoration...');
+            // Extract files to core director
+            $path = JPATH_ROOT . '/tmp/' . $basename['basename'];
+            try {
+                $zip = new ZipArchive;
+                if ($zip->open($path) === TRUE) {
+                    $zip->extractTo(JPATH_ROOT);
+                    $zip->close();
+                }
+            } catch (Exception $e) {
+                echo "Files extraction failed\n";
             }
-        } catch (Exception $e) {
-            echo "! Query for setVersion() fail\n";
-        }
-        $this->out('Sucess...');
+            $this->out('Sucess...');
 
-        // Update SQL etc based on the manifest file we got with the update
-        $this->out('Finalize...');
-        $res = $updater->finaliseUpgrade();
-        if($res==1){
-            echo "SQL Update Success...";
-        } else{
-            echo "SQL Update Failed...";
-        }
+            // Update SQL etc based on the manifest file we got with the update
+            $this->out('Finalize...');
+            $res = $updater->finaliseUpgrade();
+            if ($res == 1) {
+                echo "SQL Update Success...";
+            } else {
+                echo "SQL Update Failed...";
+            }
 
-        $updater->cleanUp();
-        $this->out('Cleanup...');
+            $updater->cleanUp();
+            $this->out('Cleanup...');
+        }
     }
 
     public function doExecute() {
