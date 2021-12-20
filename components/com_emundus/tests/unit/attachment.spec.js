@@ -163,3 +163,47 @@ describe('Attachments.vue', () => {
   });
 
 });
+
+
+describe('Attachments.vue delete Methods', () => {
+  const wrapper = shallowMount(Attachments, {
+    propsData: {
+      user: "123",
+      fnum: "2021061714501700000010000123"
+    },
+    store: store,
+    localVue
+  });
+
+  // set attachments data
+  wrapper.vm.users = mockAttachment.users;
+  wrapper.vm.displayedUser = mockAttachment.users.find(user => user.id === "123");
+  wrapper.vm.attachments = mockAttachment.attachments;
+  wrapper.vm.fnums = mockAttachment.fnums;
+  wrapper.vm.canDelete = true;
+
+  it('Expect delete button to be displayed if canDelete is true', () => {
+    const deleteButton = wrapper.find('.material-icons.delete');
+    expect(deleteButton.exists()).toBe(true);
+  });
+
+  // click on .material-icons.delete calls confirmDeleteAttachments
+  wrapper.vm.checkedAttachments = [wrapper.vm.attachments[0]['aid']];
+  const confirmDeleteAttachments = jest.spyOn(wrapper.vm, 'confirmDeleteAttachments');
+  it('Expect confirmDeleteAttachments to be called on click on .material-icons.delete', () => {
+    const deleteButton = wrapper.find('.material-icons.delete');
+    deleteButton.trigger('click');
+    expect(confirmDeleteAttachments).toHaveBeenCalled();
+  });
+
+  it('first click on .delete should not delete the attachment from the list', () => {
+    const deleteButton = wrapper.find('.material-icons.delete');
+    deleteButton.trigger('click');
+    expect(wrapper.vm.attachments.length).toBe(2);
+  });
+
+  it('deleteAttachments should remove checkedAttachments from attachments', () => {
+    wrapper.vm.deleteAttachments();
+    expect(wrapper.vm.attachments.length).toBe(1);
+  });
+});
