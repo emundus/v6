@@ -1,0 +1,1 @@
+UPDATE `jos_menu` SET `title` = "Emails envoyés au déposant", `alias`="emails-envoyes-a-l-utilisateur", `path`="emails-envoyes-a-l-utilisateur" WHERE `jos_menu`.`title`like "Emails envoyés à l'utilisateur";
