@@ -758,8 +758,7 @@ class EmundusModelProfile extends JModelList {
                         LEFT JOIN #__emundus_setup_workflow AS jesw ON jesw.id = jesws.workflow
                         LEFT JOIN #__emundus_setup_campaigns AS jesc ON jesc.workflow = jesw.id
                         LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = jeswsrr.profile
-                        ORDER BY step
-                ' . $where_jeswsrr;
+                ' . $where_jeswsrr . ' ORDER BY step';
             try {
                 $this->_db->setQuery($query);
                 $res = $this->_db->loadObjectList();
