@@ -14,7 +14,7 @@
 					:class="{ active: fnumPosition > 0 }"
 					@click="changeFile(fnumPosition - 1)"
 				>
-					<i class="small arrow left icon"></i>
+					<i class="small arrow left icon" aria-hidden="true"></i>
 				</div>
 				<div
 					v-if="fnums.length > 1"
@@ -22,7 +22,7 @@
 					:class="{ active: fnumPosition < fnums.length - 1 }"
 					@click="changeFile(fnumPosition + 1)"
 				>
-					<i class="small arrow right icon"></i>
+					<i class="small arrow right icon" aria-hidden="true"></i>
 				</div>
 			</div>
 		</div>
@@ -83,7 +83,10 @@
 				</div>
 			</div>
 			<div v-if="attachments.length" class="table-wrapper">
-				<table :class="{ loading: loading }">
+				<table
+					:class="{ loading: loading }"
+					aria-describedby="Table of attachments information"
+				>
 					<thead>
 						<tr>
 							<th id="check-th">
@@ -485,8 +488,6 @@ export default {
 						.catch((error) => {
 							this.displayErrorMessage(error);
 						});
-
-					return;
 				}
 			});
 		},
@@ -585,7 +586,8 @@ export default {
 					this.displayedUser.id,
 					this.checkedAttachments
 				);
-				if (response.status == true) {
+
+				if (response.status === true) {
 					// Display tooltip deleted succesfully
 				}
 			} else {
