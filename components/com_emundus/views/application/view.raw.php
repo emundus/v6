@@ -42,6 +42,8 @@ class EmundusViewApplication extends JViewLegacy {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
+        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'date.php');
+
 
         $this->_user = JFactory::getSession()->get('emundusUser');
         $this->_db = JFactory::getDbo();
@@ -84,15 +86,15 @@ class EmundusViewApplication extends JViewLegacy {
                             'APPLICATION_TAGS' => $fnum,
                             'APPLICATION_PROGRESS' => $fnum
                         );
-    
+
                         $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum);
-                        
+
                         $synthesis->program = $program;
                         $synthesis->camp = $campaignInfo;
                         $synthesis->fnum = $fnum;
                         $synthesis->block = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
                         // replace {fabrik_element_ids} in body
-    
+
                         $element_ids = $m_email->getFabrikElementIDs($synthesis->block);
                         if (count(@$element_ids[0]) > 0) {
                             $element_values = $m_email->getFabrikElementValues($fnum, $element_ids[1]);
@@ -309,7 +311,9 @@ class EmundusViewApplication extends JViewLegacy {
                         $offset = $app->get('offset', 'UTC');
                         foreach ($userComments as $key => $comment) {
                             $dateTime = new DateTime($comment->date, new DateTimeZone($offset));
-                            $userComments[$key]->date = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
+                            //$userComments[$key]->date = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
+                            // = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
+                            $userComments[$key]->date = EmundusHelperDate::displayDate($dateTime->format('Y-m-d H:i:s'));
                         }
 
                         $this->assignRef('userComments', $userComments);
