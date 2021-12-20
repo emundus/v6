@@ -21,11 +21,12 @@ JFactory::getSession()->set('application_layout', 'mail');
 
             </div>
             <div class="panel-body em-container-mail-body">
-
+                <p class="text-center align-middle"> <?= JText::_('EMAIL_HISTORY_DESCRIPTION'); ?></p>
+                <hr>
                 <?php if ($this->messages === false) :?>
-                    <h3> <?= JText::_('ERROR_GETTING_MESSAGES'); ?> </h3>
+                    <h3 class="text-center align-middle"> <?= JText::_('ERROR_GETTING_MESSAGES'); ?> </h3>
                 <?php elseif (count($this->messages) === 0) :?>
-                    <h3> <?= JText::_('NO_MESSAGES_FOUND'); ?> </h3>
+                    <h3 class="text-center align-middle"> <?= JText::_('NO_MESSAGES_FOUND'); ?> </h3>
                 <?php else :?>
                     <?php foreach ($this->messages as $message) :?>
                         <div class='panel panel-default em-container-mail-content'>

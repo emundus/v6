@@ -318,6 +318,7 @@ JText::script('COM_EMUNDUS_TROMBI_DOWNLOAD');
 JText::script('SEND_CUSTOM_EMAIL');
 JText::script('ERROR_GETTING_PREVIEW');
 JText::script('EMAIL_PREVIEW');
+JText::script('EMAIL_HISTORY_DESCRIPTION');
 JText::script('NO_EMAILS_SENT');
 JText::script('EMAILS_SENT');
 JText::script('EMAILS_FAILED');
