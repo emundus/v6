@@ -1210,7 +1210,9 @@ class EmundusModelProfile extends JModelList {
                     1. profile type not 1 (not default)) --> skip
                     2. actual status doesn't exist in workflow --> skip
                 */
-                if ($v['type'] != '1' or (!in_array($fnum_status, $inputs) and !in_array($fnum_status, $outputs))) {
+                if (in_array($fnum_status, $inputs) and $v['type'] === '1') {
+                    return $raw[$k];
+                } else if ($v['type'] != '1' or (!in_array($fnum_status, $inputs) and !in_array($fnum_status, $outputs))) {
                     unset($raw[$k]);
                 }
             }
