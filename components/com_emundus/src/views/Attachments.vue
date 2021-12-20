@@ -43,6 +43,7 @@
 					<select
 						v-if="Object.entries(categories).length > 1"
 						name="category"
+						class="category-select"
 						ref="categoryFilter"
 						@change="filterByCategory"
 					>
@@ -706,7 +707,7 @@ export default {
 			this.sort.last = key;
 		},
 		filterByCategory(e) {
-			this.attachments.forEach((attachment) => {
+			this.attachments.forEach((attachment, key) => {
 				if (e.target.value == "all") {
 					attachment.show = true;
 				} else {

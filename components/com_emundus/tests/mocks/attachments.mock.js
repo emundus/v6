@@ -12,7 +12,7 @@ export default {
             "ordering": "0",
             "published": "1",
             "ocr_keywords": null,
-            "category": "",
+            "category": "1",
             "video_max_length": null,
             "min_width": null,
             "max_width": null,
@@ -44,7 +44,7 @@ export default {
             "ordering": "0",
             "published": "1",
             "ocr_keywords": null,
-            "category": "",
+            "category": "2",
             "video_max_length": "60",
             "min_width": null,
             "max_width": null,
@@ -90,10 +90,10 @@ export default {
             "groupe": "Tous les droits",
             "active": "0"
         }
-    ], 
+    ],
     "fnums": [
         "2021061714501700000010000123",
         "2021061715003400000010000095",
         "2021120110544200000010000096"
-    ]
+    ],
 }

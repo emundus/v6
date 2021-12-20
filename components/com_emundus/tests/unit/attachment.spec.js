@@ -130,4 +130,36 @@ describe('Attachments.vue', () => {
     const exportButton = wrapper.find('.material-icons.export');
     expect(exportButton.exists()).toBe(false);
   });
+
+  /**
+   * category select should be displayed if more than one category
+   */
+  wrapper.vm.categories = {
+    "1": "category1",
+    "2": "category2"
+  }
+  it('Expect category select to be displayed if more than one category', () => {
+    const categorySelect = wrapper.find('.category-select');
+    expect(categorySelect.exists()).toBe(true);
+  });
+
+  /**
+   * Only attachments with category selected should be displayed
+   * If no category selected, all attachments should be displayed
+   * If option value equals all, all attachments should be displayed
+   */
+  it('Expect filterByCategory to show only attachments with selected category', () => {
+    // call  filterByCategory with e
+    wrapper.vm.filterByCategory({
+      target: {
+        value: "2"
+      }
+    });
+
+    // check that only attachments with category 2 are displayed
+    wrapper.vm.attachments.forEach(element => {
+      expect(element.show).toBe(element.category === "2");
+    });
+  });
+
 });

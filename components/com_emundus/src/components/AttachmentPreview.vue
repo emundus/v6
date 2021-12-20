@@ -129,7 +129,7 @@ export default {
 		addPresentationStyles() {
 			const slides =
 				this.$refs["a-preview"].shadowRoot.querySelectorAll(".slide");
-			slides.forEach((slide, key) => {
+			slides.forEach((slide) => {
 				slide.style.padding = "16px";
 				slide.style.margin = "20px";
 				slide.style.width = "calc(100% - 72px)";
