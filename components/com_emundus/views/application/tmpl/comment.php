@@ -53,10 +53,13 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
                         <div class="row">
                             <div class="col-xs-10 col-md-11">
                                 <div class="em-list-status">
-                                    <a href="#" class="comment-name"><?php echo htmlspecialchars($comment->reason, ENT_QUOTES, 'UTF-8'); ?></a>
+                                    <a href="#" class="comment-name"><?= JText::_('COMMENT_TITLE'); ?> : <?php echo htmlspecialchars($comment->reason, ENT_QUOTES, 'UTF-8'); ?> goodady</a>
                                     <input style="display: none;" name="cname" type="text" value="<?php echo htmlspecialchars($comment->reason, ENT_QUOTES, 'UTF-8'); ?>">
                                     <div class="mic-info comment-date em-list-status-date">
-                                        <a href="#"><?php echo $comment->name; ?></a> - <?php echo $comment->date; ?>
+                                        <a href="#"><?= JText::_('COMMENT_AUTHOR'); ?> : <?php echo $comment->name; ?> </a> <br>
+                                        <?= JText::_('COMMENT_ADD_DAY'); ?> :
+                                        <?php echo  $comment->date; ?>
+                                        <br>
                                     </div>
                                 </div>
                                 <div class="comment-text em-list-status-comment"><?php echo str_replace(["\r\n", "\r", "\n"], "<br/>", htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8')); ?></div>

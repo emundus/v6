@@ -319,6 +319,9 @@ JText::script('SEND_CUSTOM_EMAIL');
 JText::script('ERROR_GETTING_PREVIEW');
 JText::script('EMAIL_PREVIEW');
 JText::script('EMAIL_HISTORY_DESCRIPTION');
+JText::script('COMMENT_AUTHOR');
+JText::script('COMMENT_ADD_DAY');
+JText::script('COMMENT_TITLE');
 JText::script('NO_EMAILS_SENT');
 JText::script('EMAILS_SENT');
 JText::script('EMAILS_FAILED');
@@ -326,6 +329,7 @@ JText::script('SEND_FAILED');
 JText::script('SEND_TO');
 JText::script('EMAIL_SENDING');
 JText::script('CANCEL_EMAIL');
+
 
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
