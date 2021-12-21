@@ -15,22 +15,22 @@ require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/update.php';
 class UpdateCli extends JApplicationCli
 {
 
-    private function getExtensionsId($table) {
+    private function getUpdateId($table) {
         $query = $this->db->getQuery(true);
         $query->select('*')
             ->from('#__' . $table)
             //Exclude Joomla & Gantry5
             ->where($this->db->quoteName('extension_id') . ' NOT LIKE 0 AND' . ($this->db->quoteName('extension_id') . ' NOT LIKE 700 AND') . ($this->db->quoteName('extension_id') . ' NOT LIKE 11970'));
         $this->db->setQuery($query);
-        return $this->db->loadAssocList('','update_id');
+        return $this->db->loadAssocList('', 'update_id');
     }
 
-    public function purgeAndFetchUpdates($id=null){
+    public function purgeAndFetchUpdates($id = null) {
         // Get the update cache time
         $component = JComponentHelper::getComponent('com_installer');
         $updater = JUpdater::getInstance();
         $minimumStability = JUpdater::STABILITY_STABLE;
-        if($id==700){
+        if ($id == 700) {
             $model = JModelLegacy::getInstance('JoomlaupdateModelDefault');
         } else {
             $model = JModelLegacy::getInstance('InstallerModelUpdate');
@@ -44,13 +44,12 @@ class UpdateCli extends JApplicationCli
         $model->purge();
         // Find all updates
         $this->out('Fetching updates...');
-        if($id==700){
+        if ($id == 700) {
             $model->applyUpdateSite();
             $model->refreshUpdates();
         } else {
-            $updater->findUpdates(0,$cache_timeout);
+            $updater->findUpdates(0, $cache_timeout);
         }
-
     }
 
     public function getInfo() {
@@ -59,13 +58,13 @@ class UpdateCli extends JApplicationCli
         $query->select('*')
             ->from('#__' . 'updates')
             //Exclude Joomla & Gantry5
-            ->where($this->db->quoteName('extension_id') . ' NOT LIKE 0 AND' . ($this->db->quoteName('extension_id') . ' NOT LIKE 700 AND') . ($this->db->quoteName('extension_id') . ' NOT LIKE 11970'));
+            ->where($this->db->quoteName('extension_id') . ' NOT LIKE 0');
         $this->db->setQuery($query);
         $arr = $this->db->loadAssocList();
 
         $key = array_values($arr);
-        foreach ($key as $k){
-            echo $k['extension_id'] . ' --> ' . $k['name']. ' (version : ' . $k['version'] .')' . "\n";
+        foreach ($key as $k) {
+            echo $k['extension_id'] . ' --> ' . $k['name'] . ' (version : ' . $k['version'] . ')' . "\n";
         }
     }
 
@@ -97,17 +96,17 @@ class UpdateCli extends JApplicationCli
         return $this->db->loadAssocList('', 'update_id');
     }
 
-    public function updateExtensions($uid=null) {
+    public function updateExtensions($uid = null) {
         $this->out('UPDATE EXTENSIONS...');
         $this->purgeAndFetchUpdates();
 
         # Update by extension id
-        if ($uid!=null) {
+        if ($uid != null) {
             $uid = $this->queryUpdates($uid);
         } else {
-            $uid = $this->getExtensionsId('updates');
+            $uid = $this->getUpdateId('updates');
         }
-        if($uid==null){
+        if ($uid == null) {
             $this->out("No update for this extension");
             return false;
         } else {
@@ -115,27 +114,25 @@ class UpdateCli extends JApplicationCli
         }
 
 
-        foreach ($uid as $u){
+        foreach ($uid as $u) {
             $model = JModelLegacy::getInstance('InstallerModelUpdate');
-            $component     = JComponentHelper::getComponent('com_installer');
-            $params        = $component->params;
-            $minimum_stability = (int) $params->get('minimum_stability', JUpdater::STABILITY_STABLE);
+            $component = JComponentHelper::getComponent('com_installer');
+            $params = $component->params;
+            $minimum_stability = (int)$params->get('minimum_stability', JUpdater::STABILITY_STABLE);
 
             echo 'Update : ' . $u . "\n";
             $u = array($u);
             $model->update($u, $minimum_stability);
         }
-
-
     }
 
-    public function updateSQLJoomla(){
+    public function updateSQLJoomla() {
         $updater = JModelLegacy::getInstance('JoomlaupdateModelDefault');
         $this->purgeAndFetchUpdates(700);
         $res = $updater->finaliseUpgrade();
-        if($res==1){
+        if ($res == 1) {
             echo "SQL Update Success...";
-        } else{
+        } else {
             echo "SQL Update Failed...";
         }
     }
@@ -193,7 +190,8 @@ class UpdateCli extends JApplicationCli
         }
     }
 
-    public function doExecute() {
+    public function doExecute()
+    {
         $app = JFactory::getApplication('site');
         $app->initialise();
         // Set direct download mode
@@ -212,7 +210,7 @@ class UpdateCli extends JApplicationCli
             $this->doEchoHelp();
         }
         if ($id = $this->input->get('i', $this->input->get('id'))) {
-            $this->updateExtensions($uid=$id);
+            $this->updateExtensions($uid = $id);
         }
         if ($this->input->get('e', $this->input->get('extensions'))) {
             $this->updateExtensions();
@@ -221,10 +219,9 @@ class UpdateCli extends JApplicationCli
             $this->getInfo();
         }
 
-
         # Delete all files in tmp folder
         $path = JPATH_ROOT . '/tmp/';
-        if(file_exists($path)) {
+        if (file_exists($path)) {
             $dir = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
             $files = new RecursiveIteratorIterator($dir, RecursiveIteratorIterator::CHILD_FIRST);
             foreach ($files as $file) {
