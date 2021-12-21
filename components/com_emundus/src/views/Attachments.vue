@@ -745,7 +745,7 @@ export default {
 				sqlRequest
 			);
 
-			if (response.status == true) {
+			if (response.status === true) {
 				this.attachments.forEach((attachment) => {
 					if (response.data.includes(attachment.aid)) {
 						attachment.show = true;
@@ -757,6 +757,8 @@ export default {
 						attachment.show = false;
 					}
 				});
+			} else {
+				this.displayErrorMessage(response.message);
 			}
 
 			this.loading = false;

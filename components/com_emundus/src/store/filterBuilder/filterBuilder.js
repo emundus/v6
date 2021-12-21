@@ -6,7 +6,7 @@ const state = {
             0: {
                 filters: {},
             }
-        } 
+        }
     },
 };
 
