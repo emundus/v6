@@ -33,16 +33,24 @@ $user = $this->userid;
         </div>
         <div class="panel-body Marginpanel-body em-container-form-body">
             <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>">
-            <?php if(count($pids) > 1) : ?>
+            <?php if(count(get_object_vars($pids)) > 1) : ?>
                 <div class="em_label">
                     <label class="control-label em-filter-label"><?= JText::_('PROFILE_FORM'); ?></label>
                 </div>
 
                 <select class="chzn-select" style="width: 100%" id="select_profile">
-                    <option value="<?= $defaultpid->pid; ?>" selected disabled style="font-style: italic"> <?= $defaultpid->label; ?></option>
                     <?php foreach($pids as $pid) : ?>
-                        <option value="<?= $pid->pid; ?>"> <?= $pid->label; ?></option>
+                        <optgroup label ="<?= $pid->lbl ?>" style="color:#16afe1">
+                            <?php if(is_array($pid->data)) : ?>
+                                <?php foreach($pid->data as $data) : ?>
+                                    <option style="color:black" value="<?= $data->pid; ?>"> <?= $data->label; ?></option>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <option style="color:black" value="<?= $pid->data->pid; ?>"> <?= $pid->data->label; ?></option>
+                            <?php endif;?>
+                        </optgroup>
                     <?php endforeach; ?>
+                    <option value="<?= $defaultpid->pid; ?>" selected disabled style="font-style: italic"> <?= $defaultpid->label; ?></option>
                 </select>
 
                 <input type="hidden" id="user_hidden" value="<?php echo $user ?>">
@@ -66,7 +74,7 @@ $user = $this->userid;
 
     $('#select_profile').on('change', function() {
         /* get the selected profile id*/
-        var profile = $(this).children(":selected").attr('value');      /* or just $(this).val() */
+        var profile = $(this).attr('value');      /* or just $(this).val() */
 
         $('#show_profile').empty();
         $('#show_profile').before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');

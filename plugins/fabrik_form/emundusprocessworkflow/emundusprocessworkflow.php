@@ -470,6 +470,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
         $jinput = JFactory::getApplication()->input;
         $formid = $jinput->get('formid');
         $itemid = $jinput->get('Itemid');
+        $view = $jinput->get('view');
 
         $_reload = $jinput->get('r');
 
@@ -1020,7 +1021,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                     copy(JPATH_BASE . DS . 'tmp' . DS . $application_form_name . ".pdf", JPATH_BASE . DS . "images" . DS . "emundus" . DS . "files" . DS . $student->id . DS . $fnum . "_application_form_pdf.pdf");
                 }
             }
-//            echo '<pre>'; var_dump($this->getParam('emundusprocessworkflow_redirect_jump_page')); echo '</pre>'; die;
+
             $app->redirect($this->getParam('emundusprocessworkflow_redirect_jump_page'), JText::_($this->getParam('emundusprocessworkflow_thanks_message')));
         }
     }

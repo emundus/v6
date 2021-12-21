@@ -384,22 +384,48 @@ class EmundusViewApplication extends JViewLegacy {
 
                         /* get all profiles (order by step) by campaign */
                         $pidsRaw = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id]);
-
-                        $noStepPid = array();
+                        
+                        $noPhasePids = array();
+                        $hasPhasePids = array();
 
                         foreach($pidsRaw as $key => $pid) {
-                            if($pid->step === null or empty($pid->step)) {
-                                if($pid->pid !== $userProfile) {
-                                    $noStepPid[] = $pid;
-                                }
-                                else {
-                                    $dpid = $pid;
-                                }
-                                unset($pidsRaw[$key]);
+                            if($pid->pid === $userProfile) {
+                                $dpid['null_step']['lbl'] = 'Profil par defaut';
+                                $dpid['null_step']['data'] = $pid;
+                            }
+
+                            if($pid->phase === null) {
+                                $noPhasePids['no_step']['lbl'] = 'Autres profils';
+                                $noPhasePids['no_step']['data'] = $pid;
+                            } else {
+                                $hasPhasePids[] = $pid;
                             }
                         }
 
-                        $pids = array_merge([$dpid], $pidsRaw, $noStepPid);
+
+                        $profiles_by_phase = array();
+                        
+                        /* group profiles by phase */
+                        foreach($hasPhasePids as $ppid) {
+                            $profiles_by_phase['step_' . $ppid->phase]['lbl'] = $ppid->lbl;
+                            $profiles_by_phase['step_' . $ppid->phase]['data'][] = $ppid;
+                        }
+
+                        $pids = array_merge($profiles_by_phase, $noPhasePids, $dpid);
+
+//                        $noStepPid = array();
+//
+//                        foreach($pidsRaw as $key => $pid) {
+//                            if($pid->step === null or empty($pid->step)) {
+//                                if($pid->pid !== $userProfile) {
+//                                    $noStepPid[] = $pid;
+//                                }
+//                                else {
+//                                    $dpid = $pid;
+//                                }
+//                                unset($pidsRaw[$key]);
+//                            }
+//                        }
 
                         /* serialize $pids to json format */
                         $json = json_encode($pids);
