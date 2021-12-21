@@ -393,7 +393,7 @@ class EmundusViewApplication extends JViewLegacy {
 
                             if($pid->phase === null) {
                                 if($pid->pid !== $userProfile) {
-                                    $noPhasePids['no_step']['lbl'] = 'Autres profils';
+                                    $noPhasePids['no_step']['lbl'] = JText::_('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
                                     $noPhasePids['no_step']['data'][] = $pid;
                                 }
                             } else {
