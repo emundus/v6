@@ -39,6 +39,7 @@ $user = $this->userid;
                 </div>
 
                 <select class="chzn-select" style="width: 100%" id="select_profile">
+                    <option value="<?= $defaultpid->pid; ?>" selected disabled style="font-style: italic"> <?= $defaultpid->label; ?></option>
                     <?php foreach($pids as $pid) : ?>
                         <optgroup label ="<?= $pid->lbl ?>" style="color:#16afe1">
                             <?php if(is_array($pid->data)) : ?>
@@ -50,7 +51,6 @@ $user = $this->userid;
                             <?php endif;?>
                         </optgroup>
                     <?php endforeach; ?>
-                    <option value="<?= $defaultpid->pid; ?>" selected disabled style="font-style: italic"> <?= $defaultpid->label; ?></option>
                 </select>
 
                 <input type="hidden" id="user_hidden" value="<?php echo $user ?>">

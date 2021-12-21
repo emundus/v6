@@ -389,19 +389,17 @@ class EmundusViewApplication extends JViewLegacy {
                         $hasPhasePids = array();
 
                         foreach($pidsRaw as $key => $pid) {
-                            if($pid->pid === $userProfile) {
-                                $dpid['null_step']['lbl'] = 'Profil par defaut';
-                                $dpid['null_step']['data'] = $pid;
-                            }
+                            if($pid->pid === $userProfile) { $dpid = $pid; }
 
                             if($pid->phase === null) {
-                                $noPhasePids['no_step']['lbl'] = 'Autres profils';
-                                $noPhasePids['no_step']['data'] = $pid;
+                                if($pid->pid !== $userProfile) {
+                                    $noPhasePids['no_step']['lbl'] = 'Autres profils';
+                                    $noPhasePids['no_step']['data'] = $pid;
+                                }
                             } else {
                                 $hasPhasePids[] = $pid;
                             }
                         }
-
 
                         $profiles_by_phase = array();
                         
@@ -411,21 +409,22 @@ class EmundusViewApplication extends JViewLegacy {
                             $profiles_by_phase['step_' . $ppid->phase]['data'][] = $ppid;
                         }
 
-                        $pids = array_merge($profiles_by_phase, $noPhasePids, $dpid);
+                        $pids = array_merge($profiles_by_phase, $noPhasePids);
 
-//                        $noStepPid = array();
-//
-//                        foreach($pidsRaw as $key => $pid) {
-//                            if($pid->step === null or empty($pid->step)) {
-//                                if($pid->pid !== $userProfile) {
-//                                    $noStepPid[] = $pid;
-//                                }
-//                                else {
-//                                    $dpid = $pid;
-//                                }
-//                                unset($pidsRaw[$key]);
-//                            }
-//                        }
+                        /* keep this code block */
+                        /* $noStepPid = array();
+
+                        foreach($pidsRaw as $key => $pid) {
+                            if($pid->step === null or empty($pid->step)) {
+                                if($pid->pid !== $userProfile) {
+                                    $noStepPid[] = $pid;
+                                }
+                                else {
+                                    $dpid = $pid;
+                                }
+                                unset($pidsRaw[$key]);
+                            }
+                        } */
 
                         /* serialize $pids to json format */
                         $json = json_encode($pids);
