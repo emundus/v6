@@ -110,7 +110,7 @@ export default {
       const response = await client().get('index.php?option=com_emundus&controller=application&task=filterattachmentselection', {
         params: {
           fnum: fnum,
-          sqlRequest: sqlRequest,
+          sqlRequest: encodeURI(sqlRequest),
         }
       });
 

@@ -716,6 +716,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $jinput = JFactory::getApplication()->input;
         $sql = $jinput->getString('sqlRequest', "");
+        $sql = urldecode($sql);
         $fnum = $jinput->getVar('fnum', null);
 
         $m_application = $this->getModel('Application');

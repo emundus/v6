@@ -822,7 +822,7 @@ export default {
 		displayedAttachments() {
 			return this.attachments.filter((attachment) => {
 				return (
-					(attachment.show == true || attachment.show == undefined) &&
+					(attachment.show === true || attachment.show == undefined) &&
 					attachment.can_be_viewed
 				);
 			});
