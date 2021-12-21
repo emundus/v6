@@ -991,6 +991,17 @@ div#em-synthesis .panel-heading h3 {
     justify-content: center;
     align-items: center;
 }
+.notifications-counter-black{
+    background: black;
+    padding: 10px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 .list-group-item b {
     font-size: 15px;

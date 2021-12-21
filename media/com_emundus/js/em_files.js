@@ -434,7 +434,12 @@ function openFiles(fnum, page = 0) {
                                 if(typeof menus[m].notifications != 'undefined'){
                                     menuList += '<a href="'+url+'" class="list-group-item list-item-notifications" title="'+menus[m].title+'" id="'+menus[m].id+'">';
                                 } else {
-                                    menuList += '<a href="' + url + '" class="list-group-item" title="' + menus[m].title + '" id="' + menus[m].id + '">';
+                                    if(typeof menus[m].total != 'undefined') {
+                                        menuList += '<a href="' + url + '" class="list-group-item list-item-notifications" title="' + menus[m].title + '" id="' + menus[m].id + '">';
+                                    }else{
+                                        menuList += '<a href="' + url + '" class="list-group-item" title="' + menus[m].title + '" id="' + menus[m].id + '">';
+                                    }
+
                                 }
 
                                 if (menus[m].hasSons) {
@@ -443,8 +448,13 @@ function openFiles(fnum, page = 0) {
 
                                 if(typeof menus[m].notifications != 'undefined'){
                                     menuList +=  '<strong>'+menus[m].title+'</strong><span class="notifications-counter">'+menus[m].notifications+'</span></a>';
-                                } else {
-                                    menuList +=  '<strong>'+menus[m].title+'</strong></a>';
+                                } else  {
+                                    if(typeof menus[m].total != 'undefined'){
+                                        menuList +=  '<strong>'+menus[m].title+'</strong><span class="notifications-counter-black" >'+menus[m].total+'</span></a>';
+                                    }else{
+                                        menuList +=  '<strong>'+menus[m].title+'</strong></a>';
+                                    }
+
                                 }
                             }
                             $('#em-appli-menu .list-group').append(menuList);
