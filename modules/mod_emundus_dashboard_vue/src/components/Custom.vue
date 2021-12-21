@@ -251,6 +251,12 @@ export default {
 				axios({
 					method: "get",
 					url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfilters",
+          params: {
+            widget: this.selectedWidget.id,
+          },
+          paramsSerializer: (params) => {
+            return qs.stringify(params);
+          },
 				})
 					.then((response) => {
 						this.selectedFilters = response.data.filters;

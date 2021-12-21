@@ -184,7 +184,10 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
 
     public function getfilters(){
         try {
-            $tab = array('msg' => 'success', 'filters' => JFactory::getSession()->get('filters'));
+            $jinput = JFactory::getApplication()->input;
+            $widget = $jinput->getInt('widget');
+
+            $tab = array('msg' => 'success', 'filters' => JFactory::getSession()->get('widget_filters_' . $widget));
         } catch (Exception $e) {
             $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
         }
@@ -199,7 +202,7 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
             $filters = $jinput->getRaw('filters');
 
             $session = JFactory::getSession();
-            $session->set('filters', $filters);
+            $session->set('widget_filters_' . $widget, $filters);
 
             $results = $this->model->renderchartbytag($widget);
 
