@@ -1,15 +1,17 @@
 <?php
+
 /**
  * @version     $Id: application.php 750 2012-01-23 22:29:38Z brivalland $
  * @package     Joomla
  * @copyright   (C) 2016 eMundus LLC. All rights reserved.
  * @license     GNU General Public License
  */
+
 use \setasign\Fpdi\Fpdi;
 // ensure this file is being included by a parent file
-defined( '_JEXEC' ) or die( JText::_('RESTRICTED_ACCESS') );
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+defined('_JEXEC') or die(JText::_('RESTRICTED_ACCESS'));
+require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'export.php');
 
 /**
  * Custom report controller
@@ -17,11 +19,12 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
  */
 class EmundusControllerApplication extends JControllerLegacy
 {
-    public function display($cachable = false, $urlparams = false) {
+    public function display($cachable = false, $urlparams = false)
+    {
         // Set a default view if none exists
-        if ( ! JRequest::getCmd( 'view' ) ) {
+        if (!JRequest::getCmd('view')) {
             $default = 'application_form';
-            JRequest::setVar('view', $default );
+            JRequest::setVar('view', $default);
         }
         parent::display();
     }
@@ -29,7 +32,7 @@ class EmundusControllerApplication extends JControllerLegacy
     /**
      * export ZIP
      */
-/*
+    /*
     public function export_zip() {
         require_once('libraries/emundus/zip.php');
         //$db   = JFactory::getDBO();
@@ -47,7 +50,8 @@ class EmundusControllerApplication extends JControllerLegacy
     /**
      * Delete an applicant attachment(s)
      */
-    public function delete_attachments() {
+    public function delete_attachments()
+    {
         $user = JFactory::getUser();
         //$allowed = array("Super Users", "Administrator", "Editor");
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
@@ -59,11 +63,11 @@ class EmundusControllerApplication extends JControllerLegacy
         $view        = JRequest::getVar('view', null, 'POST', 'none', 0);
         $tmpl        = JRequest::getVar('tmpl', null, 'POST', 'none', 0);
 
-        $url = !empty($tmpl)?'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl='.$tmpl.'#attachments':'index.php?option=com_emundus&view='.$view.'&sid='.$user_id.'&tmpl=component#attachments';
+        $url = !empty($tmpl) ? 'index.php?option=com_emundus&view=' . $view . '&sid=' . $user_id . '&tmpl=' . $tmpl . '#attachments' : 'index.php?option=com_emundus&view=' . $view . '&sid=' . $user_id . '&tmpl=component#attachments';
         // die(var_dump($attachments));
         JArrayHelper::toInteger($attachments, 0);
         if (count($attachments) == 0) {
-            JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
+            JError::raiseWarning(500, JText::_('ERROR_NO_ITEMS_SELECTED'));
             //$mainframe->redirect($url);
             exit;
         }
@@ -73,26 +77,25 @@ class EmundusControllerApplication extends JControllerLegacy
         foreach ($attachments as $id) {
             $upload = $m_application->getUploadByID($id);
             $attachment = $m_application->getAttachmentByID($upload['attachment_id']);
-            if (EmundusHelperAccess::asAccessAction(4, 'd', $user->id, $upload['fnum']) ) {
+            if (EmundusHelperAccess::asAccessAction(4, 'd', $user->id, $upload['fnum'])) {
                 $result = $m_application->deleteAttachment($id);
 
                 if ($result != 1) {
-                    echo JText::_('ATTACHMENT_DELETE_ERROR').' : '.$attachment['value'].' : '.$upload['filename'];
+                    echo JText::_('ATTACHMENT_DELETE_ERROR') . ' : ' . $attachment['value'] . ' : ' . $upload['filename'];
                 } else {
-                    $file = EMUNDUS_PATH_ABS.$user_id.DS.$upload['filename'];
+                    $file = EMUNDUS_PATH_ABS . $user_id . DS . $upload['filename'];
                     @unlink($file);
 
                     $row['applicant_id'] = $upload['user_id'];
                     $row['user_id'] = $user->id;
                     $row['reason'] = JText::_('ATTACHMENT_DELETED');
-                    $row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
+                    $row['comment_body'] = $attachment['value'] . ' : ' . $upload['filename'];
                     $m_application->addComment($row);
 
                     echo $result;
                 }
-            }
-            else {
-                echo JText::_('ACCESS_DENIED').' : '.$attachment['value'].' : '.$upload['filename'];
+            } else {
+                echo JText::_('ACCESS_DENIED') . ' : ' . $attachment['value'] . ' : ' . $upload['filename'];
             }
         }
 
@@ -103,143 +106,143 @@ class EmundusControllerApplication extends JControllerLegacy
     /**
      * Delete an applicant attachment (one by one)
      */
-    public function delete_attachment() {
+    public function delete_attachment()
+    {
         $user = JFactory::getUser();
 
-        if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
 
-        $id = JRequest::getVar('id', null, 'GET', 'none',0);
+        $id = JRequest::getVar('id', null, 'GET', 'none', 0);
 
         $m_application = $this->getModel('application');
 
         $upload = $m_application->getUploadByID($id);
         $attachment = $m_application->getAttachmentByID($upload['attachment_id']);
 
-        if( EmundusHelperAccess::asAccessAction(4, 'd', $user->id, $upload['fnum']) ) {
+        if (EmundusHelperAccess::asAccessAction(4, 'd', $user->id, $upload['fnum'])) {
             $result = $m_application->deleteAttachment($id);
 
-            if($result != 1){
+            if ($result != 1) {
                 echo JText::_('ATTACHMENT_DELETE_ERROR');
             } else {
                 $row['applicant_id'] = $upload['user_id'];
                 $row['user_id'] = $user->id;
                 $row['reason'] = JText::_('ATTACHMENT_DELETED');
-                $row['comment_body'] = $attachment['value'].' : '.$upload['filename'];
+                $row['comment_body'] = $attachment['value'] . ' : ' . $upload['filename'];
                 $m_application->addComment($row);
 
                 echo ($result);
             }
+        } else {
+            echo JText::_('ACCESS_DENIED') . ' : ' . $attachment['value'] . ' : ' . $upload['filename'];
         }
-        else {
-            echo JText::_('ACCESS_DENIED').' : '.$attachment['value'].' : '.$upload['filename'];
-        }
-
     }
 
     /**
      * Upload an applicant attachment (one by one)
      */
-    public function upload_attachment() {
+    public function upload_attachment()
+    {
 
         $user = JFactory::getUser();
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-	        die(JText::_("ACCESS_DENIED"));
+            die(JText::_("ACCESS_DENIED"));
         }
 
-        $aid = JRequest::getVar('attachment_id', null, 'POST', 'none',0);
-        $uid = JRequest::getVar('uid', null, 'POST', 'none',0);
-        $filename = JRequest::getVar('filename', null, 'POST', 'none',0);
-        $campaign_id = JRequest::getVar('campaign_id', null, 'POST', 'none',0);
-        $can_be_viewed = JRequest::getVar('can_be_viewed', null, 'POST', 'none',0);
-        $can_be_deleted = JRequest::getVar('can_be_deleted', null, 'POST', 'none',0);
+        $aid = JRequest::getVar('attachment_id', null, 'POST', 'none', 0);
+        $uid = JRequest::getVar('uid', null, 'POST', 'none', 0);
+        $filename = JRequest::getVar('filename', null, 'POST', 'none', 0);
+        $campaign_id = JRequest::getVar('campaign_id', null, 'POST', 'none', 0);
+        $can_be_viewed = JRequest::getVar('can_be_viewed', null, 'POST', 'none', 0);
+        $can_be_deleted = JRequest::getVar('can_be_deleted', null, 'POST', 'none', 0);
 
-        $targetFolder = EMUNDUS_PATH_ABS.$uid;
+        $targetFolder = EMUNDUS_PATH_ABS . $uid;
 
         if (!empty($_FILES)) {
             $msg = "";
             $data = "{";
             switch ($_FILES['filename']['error']) {
 
-            	case 0:
-                	$msg .= JText::_("FILE_UPLOADED");
-                    $data .= '"message":"'.$msg.'",';
+                case 0:
+                    $msg .= JText::_("FILE_UPLOADED");
+                    $data .= '"message":"' . $msg . '",';
                     $tempFile = $_FILES['filename']['tmp_name'];
                     $targetPath = $targetFolder;
 
                     // Validate the file type
-                    $fileTypes = array('jpg','jpeg','gif','png', 'pdf', 'doc', 'docx', 'odt', 'zip'); // File extensions
+                    $fileTypes = array('jpg', 'jpeg', 'gif', 'png', 'pdf', 'doc', 'docx', 'odt', 'zip'); // File extensions
                     $fileParts = pathinfo($_FILES['filename']['name']);
 
                     if (in_array($fileParts['extension'], $fileTypes)) {
                         $m_application = $this->getModel('application');
                         $type_attachment = $m_application->getAttachmentByID($aid);
 
-                        $filename = date('Y-m-d_H-i-s').$type_attachment['lbl'].'_'.$_FILES['filename']['name'];
-                        $fileURL = EMUNDUS_PATH_REL.$uid.'/'.$filename;
-                        $targetFile = rtrim($targetPath,'/') . DS . $filename;
+                        $filename = date('Y-m-d_H-i-s') . $type_attachment['lbl'] . '_' . $_FILES['filename']['name'];
+                        $fileURL = EMUNDUS_PATH_REL . $uid . '/' . $filename;
+                        $targetFile = rtrim($targetPath, '/') . DS . $filename;
 
                         move_uploaded_file($tempFile, $targetFile);
 
                         $filesize = $_FILES['filename']['size'];
 
                         $attachment["key"] = array("user_id", "attachment_id", "filename", "description", "can_be_deleted", "can_be_viewed", "campaign_id");
-                        $attachment["value"] = array($uid, $aid, '"'.$filename.'"', '"'.date('Y-m-d H:i:s').'"', $can_be_deleted, $can_be_viewed, $campaign_id);
+                        $attachment["value"] = array($uid, $aid, '"' . $filename . '"', '"' . date('Y-m-d H:i:s') . '"', $can_be_deleted, $can_be_viewed, $campaign_id);
 
                         $id = $m_application->uploadAttachment($attachment);
                     } else {
                         $msg .= JText::_('COM_EMUNDUS_FILETYPE_INVALIDE');
                     }
 
-                    $data .= '"message":"'.$msg.'",';
-                    $data .= '"url":"'.htmlentities($fileURL).'",';
-                    $data .= '"id":"'.$id.'",';
-                    $data .= '"filesize":"'.$filesize.'",';
-                    $data .= '"name":"'.$type_attachment['value'].'",';
-                    $data .= '"filename":"'.$filename.'",';
-                    $data .= '"path":"'.str_replace("\\", "\\\\", $targetPath).'",';
-                    $data .= '"aid":"'.$aid.'",';
-                    $data .= '"uid":"'.$uid.'"';
+                    $data .= '"message":"' . $msg . '",';
+                    $data .= '"url":"' . htmlentities($fileURL) . '",';
+                    $data .= '"id":"' . $id . '",';
+                    $data .= '"filesize":"' . $filesize . '",';
+                    $data .= '"name":"' . $type_attachment['value'] . '",';
+                    $data .= '"filename":"' . $filename . '",';
+                    $data .= '"path":"' . str_replace("\\", "\\\\", $targetPath) . '",';
+                    $data .= '"aid":"' . $aid . '",';
+                    $data .= '"uid":"' . $uid . '"';
                     break;
 
                 case 1:
-                	$msg .= "The file is bigger than this PHP installation allows";
-                    $data .= '"message":"'.$msg.'"';
+                    $msg .= "The file is bigger than this PHP installation allows";
+                    $data .= '"message":"' . $msg . '"';
                     break;
 
                 case 2:
-                	$msg .= "The file is bigger than this form allows";
-                    $data .= '"message":"'.$msg.'"';
+                    $msg .= "The file is bigger than this form allows";
+                    $data .= '"message":"' . $msg . '"';
                     break;
 
                 case 3:
-                	$msg .= "Only part of the file was uploaded";
-                    $data .= '"message":"'.$msg.'"';
+                    $msg .= "Only part of the file was uploaded";
+                    $data .= '"message":"' . $msg . '"';
                     break;
 
                 case 4:
-                	$msg .= "No file was uploaded";
-                    $data .= '"message":"'.$msg.'"';
+                    $msg .= "No file was uploaded";
+                    $data .= '"message":"' . $msg . '"';
                     break;
 
                 case 6:
-                	$msg .= "Missing a temporary folder";
-                    $data .= '"message":"'.$msg.'"';
+                    $msg .= "Missing a temporary folder";
+                    $data .= '"message":"' . $msg . '"';
                     break;
 
                 case 7:
-                	$msg .= "Failed to write file to disk";
-                    $data .= '"message":"'.$msg.'"';
+                    $msg .= "Failed to write file to disk";
+                    $data .= '"message":"' . $msg . '"';
                     break;
 
                 case 8:
-                	$msg .= "File upload stopped by extension";
-                    $data .= '"message":"'.$msg.'"';
+                    $msg .= "File upload stopped by extension";
+                    $data .= '"message":"' . $msg . '"';
                     break;
 
                 default:
-                	$msg .= "Unknown error ".$_FILES['filename']['error'];
-                    $data .= '"message":"'.$msg.'",';
+                    $msg .= "Unknown error " . $_FILES['filename']['error'];
+                    $data .= '"message":"' . $msg . '",';
                     break;
             }
             $data .= "}";
@@ -248,7 +251,8 @@ class EmundusControllerApplication extends JControllerLegacy
     }
 
 
-    public function editcomment() {
+    public function editcomment()
+    {
 
         $user   = JFactory::getUser();
         $jinput = JFactory::getApplication()->input;
@@ -263,7 +267,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $uid = $comment['user_id'];
 
-        if($uid == $user->id && EmundusHelperAccess::asAccessAction(10, 'c', $user->id, $comment['fnum'])){
+        if ($uid == $user->id && EmundusHelperAccess::asAccessAction(10, 'c', $user->id, $comment['fnum'])) {
             $result = $m_application->editComment($comment_id, $comment_title, $comment_text);
 
             if ($result)
@@ -272,8 +276,7 @@ class EmundusControllerApplication extends JControllerLegacy
                 $msg = JTEXT::_('COMMENT_EDIT_ERROR');
 
             $tab = array('status' => $result, 'msg' => $msg);
-        }
-        else{
+        } else {
             if (EmundusHelperAccess::asAccessAction(10, 'u', $user->id, $comment['fnum'])) {
                 $result = $m_application->editComment($comment_id, $comment_title, $comment_text);
 
@@ -283,8 +286,7 @@ class EmundusControllerApplication extends JControllerLegacy
                     $msg = JTEXT::_('COMMENT_EDIT_ERROR');
 
                 $tab = array('status' => $result, 'msg' => $msg);
-            }
-            else{
+            } else {
                 $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
             }
         }
@@ -295,11 +297,12 @@ class EmundusControllerApplication extends JControllerLegacy
     }
 
 
-    public function deletecomment(){
+    public function deletecomment()
+    {
         $user = JFactory::getUser();
-        $comment_id = JRequest::getVar('comment_id', null, 'GET', 'none',0);
-        $view = JRequest::getVar('view', null, 'GET', 'none',0);
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $comment_id = JRequest::getVar('comment_id', null, 'GET', 'none', 0);
+        $view = JRequest::getVar('view', null, 'GET', 'none', 0);
+        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none', 0);
 
         $m_application = $this->getModel('application');
 
@@ -307,18 +310,15 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $uid = $comment['user_id'];
 
-        if($uid == $user->id && EmundusHelperAccess::asAccessAction(10, 'c', $user->id, $comment['fnum'])){
+        if ($uid == $user->id && EmundusHelperAccess::asAccessAction(10, 'c', $user->id, $comment['fnum'])) {
             $result = $m_application->deleteComment($comment_id, $comment['fnum']);
             $tab = array('status' => $result, 'msg' => JText::_('COMMENT_DELETED'));
-
-        }else{
-            if(EmundusHelperAccess::asAccessAction(10, 'd', $user->id, $comment['fnum'])){
+        } else {
+            if (EmundusHelperAccess::asAccessAction(10, 'd', $user->id, $comment['fnum'])) {
                 $result = $m_application->deleteComment($comment_id, $comment['fnum']);
                 $tab = array('status' => $result, 'msg' => JText::_('COMMENT_DELETED'));
-
-            }else{
+            } else {
                 $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
-
             }
         }
 
@@ -326,30 +326,30 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
-    public function deletetag(){
+    public function deletetag()
+    {
         $user = JFactory::getUser();
-        $id_tag = JRequest::getVar('id_tag', null, 'GET', 'none',0);
-        $fnum = JRequest::getVar('fnum', null, 'GET', 'none',0);
+        $id_tag = JRequest::getVar('id_tag', null, 'GET', 'none', 0);
+        $fnum = JRequest::getVar('fnum', null, 'GET', 'none', 0);
 
         $m_application = $this->getModel('application');
         $m_files = $this->getModel('files');
 
         $tags = $m_files->getTagsByIdFnumUser($id_tag, $fnum, $user->id);
-        if($tags){
+        if ($tags) {
             $result = $m_application->deleteTag($id_tag, $fnum);
-            if($result!=1 && $result!=true)
+            if ($result != 1 && $result != true)
                 $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETE_ERROR'));
             else
                 $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETED'));
-        }else{
-            if(EmundusHelperAccess::asAccessAction(14, 'd', $user->id, $fnum))
-            {
+        } else {
+            if (EmundusHelperAccess::asAccessAction(14, 'd', $user->id, $fnum)) {
                 $result = $m_application->deleteTag($id_tag, $fnum);
-                if($result!=1 && $result!=true)
+                if ($result != 1 && $result != true)
                     $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETE_ERROR'));
                 else
                     $tab = array('status' => $result, 'msg' => JText::_('TAG_DELETED'));
-            } else{
+            } else {
                 $result = 0;
                 $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
             }
@@ -360,17 +360,18 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
-    public function deletetraining(){
+    public function deletetraining()
+    {
         $user = JFactory::getUser();
 
-        if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
 
-        $view = JRequest::getVar('view', null, 'GET', 'none',0);
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+        $view = JRequest::getVar('view', null, 'GET', 'none', 0);
+        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none', 0);
 
-        $id = JRequest::getVar('id', null, 'GET', 'none',0);
-        $sid = JRequest::getVar('sid', null, 'GET', 'none',0);
-        $table = JRequest::getVar('t', null, 'GET', 'none',0);
+        $id = JRequest::getVar('id', null, 'GET', 'none', 0);
+        $sid = JRequest::getVar('sid', null, 'GET', 'none', 0);
+        $table = JRequest::getVar('t', null, 'GET', 'none', 0);
 
         $m_application = $this->getModel('application');
         $result = $m_application->deleteData($id, $table);
@@ -378,7 +379,7 @@ class EmundusControllerApplication extends JControllerLegacy
         $row['applicant_id'] = $sid;
         $row['user_id'] = $user->id;
         $row['reason'] = JText::_('DATA_DELETED');
-        $row['comment_body'] = JText::_('LINE').' '.$id.' '.JText::_('FROM').' '.$table;
+        $row['comment_body'] = JText::_('LINE') . ' ' . $id . ' ' . JText::_('FROM') . ' ' . $table;
         $m_application->addComment($row);
 
         echo $result;
@@ -391,10 +392,11 @@ class EmundusControllerApplication extends JControllerLegacy
     /*
      * Get Menu for application file
      */
-    public function getapplicationmenu() {
+    public function getapplicationmenu()
+    {
 
         $user = JFactory::getUser();
-        if(!EmundusHelperAccess::asPartnerAccessLevel($user->id))
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
             die(JText::_("ACCESS_DENIED"));
 
         $jinput = JFactory::getApplication()->input;
@@ -404,21 +406,21 @@ class EmundusControllerApplication extends JControllerLegacy
         $menus = $m_application->getApplicationMenu();
         $res = false;
 
-        if(EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum)) {
+        if (EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum)) {
             if ($menus !== false) {
                 $res = true;
                 $menu_application = array();
-                $i=0;
+                $i = 0;
 
-                foreach($menus as $k => $menu) {
+                foreach ($menus as $k => $menu) {
                     $action = explode('|', $menu['note']);
                     if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
-                        if($action[0] == 36){
-                            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_messenger'.DS.'models'.DS.'messages.php');
+                        if ($action[0] == 36) {
+                            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus_messenger' . DS . 'models' . DS . 'messages.php');
 
                             $messenger = new EmundusmessengerModelmessages;
                             $notifications = $messenger->getNotificationsByFnum($fnum);
-                            if($notifications > 0) {
+                            if ($notifications > 0) {
                                 $menu['notifications'] = $messenger->getNotificationsByFnum($fnum);
                             }
                         }
@@ -426,17 +428,14 @@ class EmundusControllerApplication extends JControllerLegacy
                         $menu_application[] = $menu;
                         if ((intval($menu['rgt']) - intval($menu['lft'])) == 1) {
                             $menu_application[$i++]['hasSons'] = false;
-                        }
-                        else {
+                        } else {
                             $menu_application[$i++]['hasSons'] = true;
                         }
                     }
-
                 }
             }
             $tab = array('status' => $res, 'menus' => $menu_application);
-        }
-        else {
+        } else {
             $tab = array('status' => false, 'msg' => JText::_('RESTRICTED_ACCESS'));
         }
 
@@ -451,17 +450,13 @@ class EmundusControllerApplication extends JControllerLegacy
         $ids = $jinput->getString('ids', null);
         $ids = json_decode(stripslashes($ids));
         $res = new stdClass();
-        if(EmundusHelperAccess::asAccessAction(4 ,'d', JFactory::getUser()->id, $fnum))
-        {
+        if (EmundusHelperAccess::asAccessAction(4, 'd', JFactory::getUser()->id, $fnum)) {
             $m_application = $this->getModel('application');
-            foreach($ids as $id)
-            {
+            foreach ($ids as $id) {
                 $m_application->deleteAttachment($id);
             }
             $res->status = true;
-        }
-        else
-        {
+        } else {
             $res->status = false;
             $res->msg = JText::_("ACCESS_DENIED");
         }
@@ -477,12 +472,11 @@ class EmundusControllerApplication extends JControllerLegacy
         $sid = $jinput->post->getInt('student_id', null);
         $form_post = $jinput->post->getVar('forms', null);
 
-        if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum)) {
+        if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum)) {
             $exports = array();
             $tmpArray = array();
 
-            if($form_post)
-            {
+            if ($form_post) {
                 $m_Files = $this->getModel('files');
                 $fnumInfos = $m_Files->getFnumInfos($fnum);
 
@@ -494,43 +488,37 @@ class EmundusControllerApplication extends JControllerLegacy
 
             $isNotOnlyApplicantionForms = EmundusHelperExport::getAttachmentPDF($exports, $tmpArray, $files, $sid);
             if (!$isNotOnlyApplicantionForms) {
-	            $res = new stdClass();
-	            $res->status = false;
-	            $res->msg = JText::_('CANNOT_EXPORT_FILETYPE');
-	            echo json_encode($res);
-	            exit();
+                $res = new stdClass();
+                $res->status = false;
+                $res->msg = JText::_('CANNOT_EXPORT_FILETYPE');
+                echo json_encode($res);
+                exit();
             }
 
 
             if (!empty($exports)) {
-                require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
-                require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+                require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+                require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                 $pdf = new ConcatPdf();
                 $pdf->setFiles($exports);
                 $pdf->concat();
-                foreach($tmpArray as $fn)
-                {
+                foreach ($tmpArray as $fn) {
                     unlink($fn);
                 }
-                $pdf->Output(EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_attachments.pdf', 'F');
+                $pdf->Output(EMUNDUS_PATH_ABS . $sid . DS . $fnum . '_attachments.pdf', 'F');
                 $res = new stdClass();
                 $res->status = true;
-                $res->link = JURI::base().EMUNDUS_PATH_REL.$sid.'/'.$fnum.'_attachments.pdf';
+                $res->link = JURI::base() . EMUNDUS_PATH_REL . $sid . '/' . $fnum . '_attachments.pdf';
                 echo json_encode($res);
                 exit();
-
-            }
-            else
-            {
+            } else {
                 $res = new stdClass();
                 $res->status = false;
                 $res->msg = JText::_('FILES_NOT_FOUND_IN_SERVER');
                 echo json_encode($res);
                 exit();
             }
-        }
-        else
-        {
+        } else {
             $res = new stdClass();
             $res->status = false;
             $res->msg = JText::_('ACCESS_DENIED');
@@ -544,26 +532,20 @@ class EmundusControllerApplication extends JControllerLegacy
     {
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
-        if(EmundusHelperAccess::asAccessAction(11, 'u', JFactory::getUser()->id, $fnum))
-        {
+        if (EmundusHelperAccess::asAccessAction(11, 'u', JFactory::getUser()->id, $fnum)) {
             $state = $jinput->getInt('state', null);
             $accessid = explode('-', $jinput->getString('access_id', null));
             $type = $jinput->getString('type', null);
             $m_application = $this->getModel('Application');
             $res = new stdClass();
-            if($type == 'groups')
-            {
+            if ($type == 'groups') {
                 $res->status = $m_application->updateGroupAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
-            }
-            else
-            {
+            } else {
                 $res->status = $m_application->updateUserAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
             }
             echo json_encode($res);
             exit();
-        }
-        else
-        {
+        } else {
             $res = new stdClass();
             $res->status = false;
             $res->msg = JText::_('YOU_ARE_NOT_ALLOWED_TO_DO_THAT');
@@ -576,25 +558,19 @@ class EmundusControllerApplication extends JControllerLegacy
     {
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
-        if(EmundusHelperAccess::asAccessAction(11, 'd', JFactory::getUser()->id, $fnum))
-        {
+        if (EmundusHelperAccess::asAccessAction(11, 'd', JFactory::getUser()->id, $fnum)) {
             $id =  $jinput->getString('id', null);
             $type = $jinput->getString('type', null);
             $m_application = $this->getModel('Application');
             $res = new stdClass();
-            if($type == 'groups')
-            {
+            if ($type == 'groups') {
                 $res->status = $m_application->deleteGroupAccess($fnum, $id);
-            }
-            else
-            {
+            } else {
                 $res->status = $m_application->deleteUserAccess($fnum, $id);
             }
             echo json_encode($res);
             exit();
-        }
-        else
-        {
+        } else {
             $res = new stdClass();
             $res->status = false;
             $res->msg = JText::_('YOU_ARE_NOT_ALLOWED_TO_DO_THAT');
@@ -611,14 +587,11 @@ class EmundusControllerApplication extends JControllerLegacy
         $m_application = $this->getModel('Application');
         $res = new stdClass();
 
-        if(EmundusHelperAccess::asAccessAction(4, 'c', JFactory::getUser()->id, $fnum))
-        {
+        if (EmundusHelperAccess::asAccessAction(4, 'c', JFactory::getUser()->id, $fnum)) {
             $res->status = $m_application->attachment_validation($att_id, $state);
             echo json_encode($res);
             exit();
-        }
-        else
-        {
+        } else {
             $res->msg = JText::_('YOU_ARE_NOT_ALLOWED_TO_DO_THAT');
             exit();
         }
@@ -650,10 +623,9 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
 
-        foreach($attachments as $attachment)
-        {
+        foreach ($attachments as $attachment) {
             // check if file is in server
-            if (!file_exists(EMUNDUS_PATH_ABS.$attachment->user_id.DS.$attachment->filename)) {
+            if (!file_exists(EMUNDUS_PATH_ABS . $attachment->user_id . DS . $attachment->filename)) {
                 $attachment->existsOnServer = false;
             } else {
                 $attachment->existsOnServer = true;
@@ -675,18 +647,18 @@ class EmundusControllerApplication extends JControllerLegacy
 
         if (EmundusHelperAccess::asAccessAction(4, 'u', JFactory::getUser()->id, $data['fnum'])) {
             $m_application = $this->getModel('Application');
-    
+
             if ($jinput->files->get('file')) {
                 $data['file'] = $jinput->files->get('file');
             }
-    
+
             if ($data['fnum'] && $data['user']) {
                 $update = $m_application->updateAttachment($data);
             } else {
                 $msg = JText::_('INVALID_PARAMETERS');
             }
         } else {
-           $msg = JText::_('ACCESS_DENIED');
+            $msg = JText::_('ACCESS_DENIED');
         }
 
         echo json_encode(array('status' => $update, 'msg' => $msg));
@@ -707,14 +679,14 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
-    public function getfilters() 
+    public function getfilters()
     {
         $filters = [];
         $jinput = JFactory::getApplication()->input;
         $type = $jinput->getS('type', null);
         $id = $jinput->getVar('id', null);
         $otherIds = $jinput->getVar('otherids', null);
-        
+
         $m_application = $this->getModel('Application');
         $filters = $m_application->getFilters($type, $id, $otherIds);
 
@@ -722,7 +694,7 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
-    public function mountquery() 
+    public function mountquery()
     {
         $jinput = JFactory::getApplication()->input;
         $filters = $jinput->getVar('filters', null);
@@ -736,16 +708,33 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
-    public function filterattachmentselection() 
+    public function filterattachmentselection()
     {
+        $status = true;
+        $message = '';
+        $data = [];
+
         $jinput = JFactory::getApplication()->input;
-        $sql = $jinput->getVar('sqlRequest', null);
+        $sql = $jinput->getString('sqlRequest', "");
         $fnum = $jinput->getVar('fnum', null);
 
         $m_application = $this->getModel('Application');
         $res = $m_application->filterAttachmentSelection($fnum, $sql);
 
-        echo json_encode(array('status' => true, 'data' => $res));
-        exit;   
+        if ($res['status'] === true) {
+            $data = $res['attachments'];
+        } else {
+            $status = false;
+            $message = $res['msg'];
+        }
+
+        echo json_encode(
+            array(
+                'status' => $status,
+                'msg' => $message,
+                'data' => $data
+            )
+        );
+        exit;
     }
 }
