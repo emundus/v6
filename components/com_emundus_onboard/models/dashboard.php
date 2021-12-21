@@ -129,6 +129,7 @@ class EmundusonboardModeldashboard extends JModelList
                 ->where($this->_db->quoteName('ew.name') . ' = ' . $this->_db->quote('custom'))
                 ->andWhere($this->_db->quoteName('ew.size') . ' = ' . $this->_db->quote($size))
                 ->andWhere($this->_db->quoteName('ewra.profile') . ' = ' . $this->_db->quote($profile))
+                ->andWhere($this->_db->quoteName('ew.type') . ' = ' . $this->_db->quote('chart'))
                 ->andWhere($this->_db->quoteName('ew.published') . ' = 1');
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();

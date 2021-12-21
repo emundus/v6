@@ -118,6 +118,25 @@ export default {
 				"COM_EMUNDUS_DASHBOARD_SELECT_FILTER"
 			);
 		},
+
+    render() {
+      switch (this.selectedWidget.type) {
+        case "article":
+          this.getArticle();
+          break;
+        case "other":
+          this.getEval();
+          break;
+        case "chart":
+          this.getFilters().then(() => {
+            this.renderChart();
+          });
+          break;
+        default:
+          this.getEval();
+      }
+    },
+
 		renderChart() {
 			this.dataSource = {};
 			this.loading = true;
@@ -220,7 +239,7 @@ export default {
 				}),
 			})
 				.then(() => {
-					this.renderChart();
+          this.render();
 				})
 				.catch((error) => {
 					// TODO: handle error
@@ -248,21 +267,7 @@ export default {
 		this.getTranslations();
 		this.selectedWidget = this.widget;
 		this.position = this.selectedWidget.position;
-		switch (this.selectedWidget.type) {
-			case "article":
-				this.getArticle();
-				break;
-			case "other":
-				this.getEval();
-				break;
-			case "chart":
-				this.getFilters().then(() => {
-					this.renderChart();
-				});
-				break;
-			default:
-				this.getEval();
-		}
+    this.render();
 		this.getWidgets();
 	},
 
