@@ -4442,8 +4442,6 @@ class EmundusModelApplication extends JModelList
      */
     public function mountQuery($listId, $data)
     {
-        $return = "";
-
         // get table from fabrik list id
         $table = $this->getTableFromFabrikList($listId);
 
@@ -4558,7 +4556,7 @@ class EmundusModelApplication extends JModelList
                 $query->select(array('el.id', 'el.name'))
                     ->from($db->quoteName('#__users', 'el'));
 
-                $tmpJoin = "LEFT JOIN " . $db->quoteName($params['join_db_name']) . " ON " . $db->quoteName($table) . "." . $tableJoin . " = " . $db->quoteName($params['join_db_name']) . "." . $db->quoteName($params['join_key_column']);
+                $tmpJoin = "LEFT JOIN " . $db->quoteName($params['join_db_name']) . " ON " . $db->quoteName($table) . ".`" . $tableJoin . "` = " . $db->quoteName($params['join_db_name']) . "." . $db->quoteName($params['join_key_column']);
                 if (!in_array($tmpJoin, $joins)) {
                     $joins[] = $tmpJoin;
                 }
@@ -4596,7 +4594,7 @@ class EmundusModelApplication extends JModelList
                     // add left join on tableAssociatedToElement
                     $column = $this->findReferenceInsideTable($table, $tableAssociatedToElement, "id");
                     if (!empty($column)) {
-                        $tmpJoin = "LEFT JOIN " . $db->quoteName($tableAssociatedToElement) . " ON " . $db->quoteName($table) . "." . $db->quoteName($column) . " = " . $db->quoteName($tableAssociatedToElement) . ".id";
+                        $tmpJoin = "LEFT JOIN " . $db->quoteName($tableAssociatedToElement) . " ON " . $db->quoteName($table) . "." . $db->quoteName($column) . " = " . $db->quoteName($tableAssociatedToElement) . ".`id`";
                         if (!in_array($tmpJoin, $joins)) {
                             $joins[] = $tmpJoin;
                         }
