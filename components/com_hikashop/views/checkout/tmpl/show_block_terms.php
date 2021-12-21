@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,7 +18,10 @@ if(empty($this->ajax)) {
 <?php
 	$this->checkoutHelper->displayMessages('terms_' . $this->step . '_' .  $this->module_position);
 	$key = 'terms_checked_' . $this->step . '_' .  $this->module_position;
-	$terms_checked = (!empty($cart->cart_params->$key)) ? 'checked="checked"' : '';
+	if(!isset($cart->cart_params->$key))
+		$terms_checked = (!empty($this->options['pre_checked'])) ? 'checked="checked"' : '';
+	else
+		$terms_checked = (!empty($cart->cart_params->$key)) ? 'checked="checked"' : '';
 ?>
 	<input onclick="window.checkout.submitBlock('terms',<?php echo $this->step; ?>,<?php echo $this->module_position; ?>);" class="hikashop_checkout_terms_checkbox" id="hikashop_checkout_terms_checkbox_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>" type="checkbox" name="checkout[terms_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>]" value="1" <?php echo $terms_checked; ?> />
 <?php

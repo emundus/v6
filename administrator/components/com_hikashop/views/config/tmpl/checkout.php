@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -52,10 +52,11 @@ echo $this->leftmenu(
 		<td class="hk_tbl_key"<?php echo $this->docTip('force_ssl');?>><?php echo JText::_('CHECKOUT_FORCE_SSL'); ?></td>
 		<td><?php
 			$values = array(
-				JHTML::_('select.option', 'url', JText::_('SHARED_SSL')),
 				JHTML::_('select.option', 1, JText::_('HIKASHOP_YES')),
 				JHTML::_('select.option', 0, JText::_('HIKASHOP_NO'))
 			);
+			if($this->config->get('force_ssl', 0) == 'url')
+				$values [] = JHTML::_('select.option', 'url', JText::_('SHARED_SSL'));
 			echo JHTML::_('hikaselect.radiolist', $values, 'config[force_ssl]', 'onchange="displaySslField()"', 'value', 'text', $this->config->get('force_ssl', 0));
 
 			$hidden = ($this->config->get('force_ssl', 0) == 'url') ? '' : 'display:none';
@@ -281,7 +282,7 @@ jQuery(document).ready(function(){
 	if(hikashop_level(1)) {
 		$display = (int)$this->config->get('display_method', 0);
 		$type = ($display == 1) ? 'checkbox' : "radio";
-		$registration = $this->config->get('simplified_registration');
+		$registration = $this->config->get('simplified_registration', 0);
 		$registration = explode(',',$registration);
 ?>
 		<label>

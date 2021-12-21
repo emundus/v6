@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -19,9 +19,9 @@ class hikashopCheckoutCartHelper extends hikashopCheckoutHelperInterface {
 		),
 		'show_cart_image' => array(
 			'name' => 'SHOW_IMAGE',
-			'type' => 'inherit',
+			'type' => 'boolean',
 			'tooltip' => 'show_cart_image',
-			'default' => -1
+			'default' => 1
 		),
 		'link_to_product_page' => array(
 			'name' => 'LINK_TO_PRODUCT_PAGE',

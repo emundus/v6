@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -89,6 +89,7 @@ class CartController extends hikashopController {
 
 		$cartClass = hikashop_get('class.cart');
 		$cart_id = hikashop_getCID('cart_id');
+		$app = JFactory::getApplication();
 
 		if(empty($cart_id)) {
 			$cart_id = 0;
@@ -98,7 +99,6 @@ class CartController extends hikashopController {
 			$menu_item_displaying_the_current_wishlist = false;
 
 			if(empty($cart_type)) {
-				$app = JFactory::getApplication();
 				$menus = $app->getMenu();
 				$menu = $menus->getActive();
 				global $Itemid;
@@ -106,9 +106,15 @@ class CartController extends hikashopController {
 					$menus->setActive($Itemid);
 					$menu = $menus->getItem($Itemid);
 				}
-				if(is_object($menu) && is_object($menu->params)) {
-					$cart_type = $menu->params->get('cart_type');
-					$menu_item_displaying_the_current_wishlist = true;
+				if(is_object($menu)) {
+					if(HIKASHOP_J30)
+						$menuParams = $menu->getParams();
+					elseif(is_object($menu->params))
+						$menuParams = @$menu->params;
+					if($menuParams) {
+						$cart_type = $menuParams->get('cart_type');
+						$menu_item_displaying_the_current_wishlist = true;
+					}
 				}
 			}
 
@@ -122,7 +128,6 @@ class CartController extends hikashopController {
 						$app->enqueueMessage(JText::_('WISHLIST_EMPTY'));
 						return parent::show();
 					}
-					$app = JFactory::getApplication();
 					$app->enqueueMessage(JText::_('PLEASE_LOGIN_FIRST'));
 
 					global $Itemid;
@@ -150,7 +155,6 @@ class CartController extends hikashopController {
 				$cart = $cartClass->get($cart_id, null, array('skip_user_check' => true));
 				$user_id = hikashop_loadUser(false);
 				if(!empty($cart) && empty($user_id)) {
-					$app = JFactory::getApplication();
 					$app->enqueueMessage(JText::_('PLEASE_LOGIN_FIRST'));
 
 					global $Itemid;
@@ -162,7 +166,14 @@ class CartController extends hikashopController {
 			}
 			hikashop_get('helper.checkout');
 			$checkoutHelper = hikashopCheckoutHelper::get();
-			$this->setRedirect($checkoutHelper->getRedirectUrl(), JText::_('CART_EMPTY'));
+			$override = false;
+			if($app->getUserState('com_hikashop.cart_empty_redirect') > time()-1) {
+				$app->setUserState('com_hikashop.cart_empty_redirect', 0);
+				$override = true;
+			} else {
+				$app->setUserState('com_hikashop.cart_empty_redirect', time());
+			}
+			$this->setRedirect($checkoutHelper->getRedirectUrl($override), JText::_('CART_EMPTY'));
 			return true;
 		}
 
@@ -173,11 +184,12 @@ class CartController extends hikashopController {
 		if($cart->cart_type == 'wishlist' && $cart->user_id != $user_id && $cart->cart_share == 'email') {
 			$token = hikaInput::get()->getString('token');
 			if(!empty($cart->cart_params->token) && $token != $cart->cart_params->token) {
-				$app = JFactory::getApplication();
 				$app->enqueueMessage(JText::_('CART_SHARE_INVALID_TOKEN'), 'error');
 				return false;
 			}
 		}
+
+		$app->setUserState('com_hikashop.cart_empty_redirect', 0);
 
 		return parent::show();
 	}
@@ -313,7 +325,8 @@ class CartController extends hikashopController {
 
 				$data = new stdClass();
 				$fieldClass = hikashop_get('class.field');
-				$ok = $fieldClass->checkFieldsData($fields, $fieldData, $data, 'item', $found);
+				$buffer = hikashop_copy($fieldData);
+				$ok = $fieldClass->checkFieldsData($fields, $buffer, $data, 'item', $found);
 				$options['fields_area'] = 'display:cart_edit=1';
 				if(!$ok) {
 					if(!empty($fieldClass->error_fields)) {

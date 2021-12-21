@@ -28,6 +28,10 @@ $twofactormethods = JAuthenticationHelper::getTwoFactorMethods();
 $user             = JFactory::getUser();
 $layout           = $params->get('layout', 'default');
 
+// Get release version
+$file_version = file_get_contents('version.txt');
+//
+
 /*Logged users must load the logout sublayout
 if (!$user->guest)
 {

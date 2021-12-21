@@ -4,8 +4,8 @@ defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 
 $app = JFactory::getApplication();
+$user = JFactory::getUser();
 $searchword = $app->input->getString('searchword', null);
-
 $lang = JFactory::getLanguage();
 $locallang = $lang->getTag();
 if ($locallang == "fr-FR") {
@@ -29,12 +29,16 @@ $site_offset = $config->get('offset');
     <?php endif; ?>
     <div class="g-grid" id="navfilter">
         <div class="g-block size-30 navrowtabs">
-            <?php if ((count($currentCampaign) >= 1 && count($pastCampaign) >= 1 && count($futurCampaign) == 0) || (count($currentCampaign) == 0 && count($pastCampaign) >= 1 && count($futurCampaign) >= 1) || (count($currentCampaign) >= 1 && count($pastCampaign) == 0 && count($futurCampaign) >= 1)) : ?>
-
+            <?php if (!empty($pastCampaign) || !empty($currentCampaign) || !empty($futurCampaign)) : ?>
                 <ul id="tabslist" class="nav nav-tabs">
                     <?php if ($mod_em_campaign_param_tab) : ?>
-                        <?php foreach ($mod_em_campaign_list_tab as $tab) : ?>
 
+                    <?php  // Check if we have the "All" checkbox selected
+                        if (in_array('all', $mod_em_campaign_list_tab)) : ?>
+                            <?php $mod_em_campaign_list_tab = ['current', 'futur', 'past']; ?>
+                    <?php endif; ?>
+
+                        <?php foreach ($mod_em_campaign_list_tab as $tab) : ?>
                             <?php if (($tab == 'current' && !empty($currentCampaign)) || ($tab == 'past' && !empty($pastCampaign)) || ($tab == 'futur' && !empty($futurCampaign))) : ?>
                                 <li role="presentation"><a data-toggle="tab"
                                                            href="#<?php echo $tab; ?>"><?php echo JText::_("MOD_EM_CAMPAIGN_LIST_" . strtoupper($tab)); ?></a>
@@ -44,12 +48,12 @@ $site_offset = $config->get('offset');
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </ul>
-            <?php endif; ?>
 
-            <?php if (!$user->guest): ?>
-                <div class="em-flex-row em-pointer" onclick="history.go(-1)">
-                    <span class="material-icons">arrow_back</span><span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
-                </div>
+                <?php if (!$user->guest): ?>
+                    <div class="em-flex-row em-pointer" onclick="history.go(-1)">
+                        <span class="material-icons">arrow_back</span><span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
         <?php if ($mod_em_campaign_show_nav_order): ?>
@@ -398,7 +402,8 @@ $site_offset = $config->get('offset');
                                 <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br/>
                             <?php endif; ?>
-
+                            <hr>
+                            <?= (!empty($mod_em_campaign_show_timezone)) ? JText::_('TIMEZONE') . $offset : ''; ?>
                         </div>
                     </div>
                     <div class="below-content">
@@ -520,6 +525,8 @@ $site_offset = $config->get('offset');
                                 <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br/>
                             <?php endif; ?>
+                            <hr>
+                            <?= (!empty($mod_em_campaign_show_timezone)) ? JText::_('TIMEZONE') . $offset : ''; ?>
                         </div>
                     </div>
                     <div class="below-content">

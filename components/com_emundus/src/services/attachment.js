@@ -26,7 +26,6 @@ export default {
       // add show attribute to true to all attchments in response data
       response.data.forEach(attachment => {
         attachment.show = true;
-        attachment.is_validated = attachment.is_validated === null ? "0" : attachment.is_validated;
       });
 
       return response.data;
