@@ -24,13 +24,13 @@
 				></FilterRow>
 			</div>
 			<div class="actions add">
-				<span class="material-icons add" @click="addFilter">
-					add_circle_outlined
+				<span class="material-icons add btn-primary-vue" @click="addFilter">
+					add
 				</span>
 			</div>
 		</div>
 		<span
-			class="material-icons delete"
+			class="material-icons delete-group"
 			@mouseover="addDeleteClass"
 			@mouseleave="removeDeleteClass"
 			@click="removeGroup"
@@ -73,6 +73,7 @@ export default {
 	},
 	methods: {
 		addFilter() {
+			// add uniqid
 			this.filters.push(Math.floor(Math.random() * Date.now()));
 		},
 		removeFilter(filterId) {
@@ -138,15 +139,26 @@ export default {
 		justify-content: flex-end;
 		cursor: pointer;
 		margin-top: 8px;
+		opacity: 1 !important;
+		pointer-events: all !important;
 
 		.material-icons {
 			margin-right: 10px;
-			color: var(--primary-color);
+			border-radius: 4px;
+			padding: 0;
+			margin: 0 !important;
 		}
 	}
 
-	.delete {
+	.delete-group {
 		cursor: pointer;
+		transition: all 0.3s;
+		margin-left: 8px;
+
+		&:hover {
+			color: var(--error-color);
+			transform: rotate(90deg);
+		}
 	}
 }
 </style>

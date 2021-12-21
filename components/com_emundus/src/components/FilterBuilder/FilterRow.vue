@@ -35,7 +35,7 @@
 			@mouseover="hoverDelete = true"
 			@mouseleave="hoverDelete = false"
 		>
-			remove_circle_outlined
+			remove
 		</span>
 	</div>
 </template>
@@ -180,6 +180,8 @@ export default {
 	.delete {
 		cursor: pointer;
 		color: var(--error-color);
+		margin-right: 4px;
+		padding: 0 !important;
 	}
 }
 </style>

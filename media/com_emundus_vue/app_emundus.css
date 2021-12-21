@@ -182,6 +182,8 @@
 .filter-row .delete[data-v-78642c16] {
   cursor: pointer;
   color: var(--error-color);
+  margin-right: 4px;
+  padding: 0 !important;
 }
 .group {
   display: -webkit-box;
@@ -230,13 +232,25 @@
           justify-content: flex-end;
   cursor: pointer;
   margin-top: 8px;
+  opacity: 1 !important;
+  pointer-events: all !important;
 }
 .group .actions.add .material-icons {
   margin-right: 10px;
-  color: var(--primary-color);
+  border-radius: 4px;
+  padding: 0;
+  margin: 0 !important;
 }
-.group .delete {
+.group .delete-group {
   cursor: pointer;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  margin-left: 8px;
+}
+.group .delete-group:hover {
+  color: var(--error-color);
+  -webkit-transform: rotate(90deg);
+          transform: rotate(90deg);
 }
 #filter-builder {
   max-width: 300px;
