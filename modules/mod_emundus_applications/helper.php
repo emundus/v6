@@ -321,7 +321,7 @@ class modemundusApplicationsHelper {
         }
 
         $query
-            ->select([$db->quoteName('jhos.orderstatus_namekey'), $db->quoteName('jhos.orderstatus_color')])
+            ->select([$db->quoteName('jhos.orderstatus_namekey'), $db->quoteName('jhos.orderstatus_color'), $db->quoteName('eh.order_id')])
             ->from($db->quoteName('#__emundus_hikashop', 'eh'))
             ->leftJoin($db->quoteName('#__hikashop_order','ho').' ON '.$db->quoteName('ho.order_id').' = '.$db->quoteName('eh.order_id'))
             ->leftJoin($db->quoteName('#__hikashop_orderstatus','jhos').' ON '.$db->quoteName('jhos.orderstatus_namekey').' = '.$db->quoteName('ho.order_status'))

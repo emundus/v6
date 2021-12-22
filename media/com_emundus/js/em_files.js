@@ -6217,6 +6217,7 @@ $(document).ready(function() {
                 var state = $("#em-action-state").val();
                 var sel = document.getElementById("em-action-state");
                 var newState = document.getElementById("em-action-state").options[sel.selectedIndex].text;
+                $("#can-val").css('display','none');
 
                 url = 'index.php?option=com_emundus&controller=files&task=getExistEmailTrigger';
                 $.ajax({
