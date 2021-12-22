@@ -39,7 +39,7 @@ $user = $this->userid;
                 </div>
 
                 <select class="chzn-select" style="width: 100%" id="select_profile">
-                    <option value="<?= $defaultpid->pid; ?>" selected style="font-style: italic"> <?= $defaultpid->label; ?></option>
+                    <option value="<?= $defaultpid->pid; ?>" selected style=""> <?= $defaultpid->label; ?></option>
                     <?php foreach($pids as $pid) : ?>
                         <optgroup label ="<?= strtoupper($pid->lbl) ?>" style="color:#16afe1">
                             <?php if(is_array($pid->data)) : ?>
@@ -47,7 +47,7 @@ $user = $this->userid;
                                     <?php if($data->step !== null) : ?>
                                         <option style="" value="<?= $data->pid; ?>"> <?= $data->label; ?></option>
                                     <?php else: ?>
-                                        <option style="font-weight: bold;" value="<?= $data->pid; ?>">__<?= $data->label; ?>__</option>
+                                        <option style="" value="<?= $data->pid; ?>"><?= $data->label; ?></option>
                                     <?php endif ?>
                                 <?php endforeach; ?>
                             <?php else : ?>
