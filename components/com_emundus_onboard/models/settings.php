@@ -78,8 +78,8 @@ class EmundusonboardModelsettings extends JModelList {
                     $statu->edit = 0;
                 }
             }
-
             return $status;
+
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/settings | Error at getting status : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
@@ -241,10 +241,11 @@ class EmundusonboardModelsettings extends JModelList {
                     ->update('#__emundus_setup_status')
                     ->set($db->quoteName('value') . ' = ' . $db->quote($statu['label'][$actualLanguage]))
                     ->set($db->quoteName('class') . ' = ' . $db->quote($class))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($statu['id']));
+                    ->where($db->quoteName('step') . ' = ' . $db->quote($statu['step']));
                 $db->setQuery($query);
 
                 $results[] = $db->execute();
+
 
             }
 
