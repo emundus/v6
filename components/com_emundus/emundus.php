@@ -319,6 +319,7 @@ JText::script('SEND_CUSTOM_EMAIL');
 JText::script('ERROR_GETTING_PREVIEW');
 JText::script('EMAIL_PREVIEW');
 JText::script('EMAIL_HISTORY_DESCRIPTION');
+JText::script('TAG_DESCRIPTION_MSG');
 JText::script('COMMENT_AUTHOR');
 JText::script('COMMENT_ADD_DAY');
 JText::script('COMMENT_TITLE');
