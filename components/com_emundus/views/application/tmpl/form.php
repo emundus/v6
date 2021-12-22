@@ -39,15 +39,19 @@ $user = $this->userid;
                 </div>
 
                 <select class="chzn-select" style="width: 100%" id="select_profile">
-                    <option style="color:#12DB42" value="<?= $defaultpid->pid; ?>" selected disabled style="font-style: italic"> <?= $defaultpid->label; ?></option>
+                    <option value="<?= $defaultpid->pid; ?>" selected style="font-style: italic"> <?= $defaultpid->label; ?></option>
                     <?php foreach($pids as $pid) : ?>
-                        <optgroup label ="<?= $pid->lbl ?>" style="color:#16afe1">
+                        <optgroup label ="<?= strtoupper($pid->lbl) ?>" style="color:#16afe1">
                             <?php if(is_array($pid->data)) : ?>
                                 <?php foreach($pid->data as $data) : ?>
-                                    <option style="color:black" value="<?= $data->pid; ?>"> <?= $data->label; ?></option>
+                                    <?php if($data->step !== null) : ?>
+                                        <option style="" value="<?= $data->pid; ?>"> <?= $data->label; ?></option>
+                                    <?php else: ?>
+                                        <option style="font-weight: bold;" value="<?= $data->pid; ?>">__<?= $data->label; ?>__</option>
+                                    <?php endif ?>
                                 <?php endforeach; ?>
                             <?php else : ?>
-                                <option style="color:black" value="<?= $pid->data->pid; ?>"> <?= $pid->data->label; ?></option>
+                                <option style="" value="<?= $pid->data->pid; ?>"> <?= $pid->data->label; ?></option>
                             <?php endif;?>
                         </optgroup>
                     <?php endforeach; ?>
@@ -64,6 +68,7 @@ $user = $this->userid;
     </div>
 </div>
 <script>
+    $(".chzn-select").chosen();
     var dpid = $('#dpid_hidden').attr('value');
 
     $('#select_profile option[value="' + dpid + '"]:nth-child(2)').remove();
@@ -100,8 +105,8 @@ $user = $this->userid;
                 $('#show_profile').append(form.toString());
                 $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value') + '&profile=' + profile);
 
-                $('#select_profile option[value="' + profile + '"]').prop('disabled', true);
-                $('#select_profile option[value="' + profile + '"]').css('font-style', 'italic');
+                /* $('#select_profile option[value="' + profile + '"]').prop('disabled', true);
+                $('#select_profile option[value="' + profile + '"]').css('font-style', 'italic'); */
 
             }, error: function(jqXHR) {
                 console.log(jqXHR.responseText);
