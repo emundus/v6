@@ -3303,7 +3303,7 @@ class EmundusModelApplication extends JModelList
             default :
             case 'fnum' :
                 $query
-                    ->andWhere($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
+                    ->andWhere($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
                 break;
 
             case 'user' :
@@ -3324,10 +3324,10 @@ class EmundusModelApplication extends JModelList
                 if (in_array($fnumInfos['status'], $payment_status)) {
                     $query
                         ->andWhere($db->quoteName('eh.status') . ' = ' . $fnumInfos['status'])
-                        ->andWhere($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
+                        ->andWhere($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
                 } else{
                     $query
-                        ->andWhere($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
+                        ->andWhere($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
                 }
                 break;
         }
@@ -3381,7 +3381,7 @@ class EmundusModelApplication extends JModelList
             default :
             case 'fnum' :
                 $query
-                    ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
+                    ->where($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
                 break;
 
             case 'user' :
@@ -3402,10 +3402,10 @@ class EmundusModelApplication extends JModelList
                 if (in_array($fnumInfos['status'], $payment_status)) {
                     $query
                         ->where($db->quoteName('eh.status') . ' = ' . $fnumInfos['status'])
-                        ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
+                        ->where($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
                 } else{
                     $query
-                        ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
+                        ->where($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
                 }
                 break;
         }
@@ -3426,7 +3426,7 @@ class EmundusModelApplication extends JModelList
         $query
             ->select('cart_id')
             ->from($db->quoteName('#__emundus_hikashop'))
-            ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnumInfos['fnum']));
+            ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
 
         try {
             $db->setQuery($query);
