@@ -21,14 +21,7 @@ if (document.getElementById("em-application-attachment")) {
 }
 
 if (mountApp) {
-    // destroy vue instance when changing page
     const items = document.querySelectorAll('#em-appli-menu .list-group-item');
-    items.forEach(function (item) {
-        item.addEventListener('click', function () {
-            vue.$destroy();
-        });
-    });
-
 
     // add eventlistener on changeFile
     function changeFile(e) {
@@ -52,13 +45,7 @@ if (mountApp) {
 
 
         openFiles(e.detail.fnum, "attachment", true);
-        // display em-container-menuaction-nav
-        setTimeout(() => {
-            document.querySelector('.em-container-menuaction-nav').style.display = "block";
-        }, 500);
     }
-
-    window.addEventListener('changeFile', changeFile);
 
     Vue.config.productionTip = false;
     Vue.use(store);
@@ -80,8 +67,5 @@ if (mountApp) {
         },
     });
 
-    // on vue destroy, remove event listener
-    vue.$on('hook:beforeDestroy', function () {
-        window.removeEventListener('changeFile', changeFile);
-    });
+    document.querySelector(".com_emundus_vue").addEventListener('changeFile', changeFile);
 }

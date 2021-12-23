@@ -621,7 +621,9 @@ export default {
 						previous: position < oldFnumPosition ? true : false,
 					};
 
-					window.dispatchEvent(this.changeFileEvent);
+					document
+						.querySelector(".com_emundus_vue")
+						.dispatchEvent(this.changeFileEvent);
 				} else {
 					this.displayErrorMessage(response.msg);
 				}

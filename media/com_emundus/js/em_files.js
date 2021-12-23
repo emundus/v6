@@ -175,7 +175,7 @@ function reloadFilter(view)
 }
 */
 // load Menu action
-function reloadActions(view, fnum, onCheck, async) {
+function reloadActions(view, fnum, onCheck, async, display = 'none') {
 
     view = (typeof view === 'undefined') ? 'files' : view;
     fnum = (typeof fnum === 'undefined') ? 0 : fnum;
@@ -191,7 +191,7 @@ function reloadActions(view, fnum, onCheck, async) {
     $.ajax({
         type: 'GET',
         async: async,
-        url: 'index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=none&fnum=' + fnum + '&multi=' + multi,
+        url: 'index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=' + display + '&fnum=' + fnum + '&multi=' + multi,
         dataType: 'html',
         success: function (data) {
             //$('.em-dimmer').remove();
@@ -331,7 +331,13 @@ function openFiles(fnum, page = 0, vue = false) {
 
     jQuery("html, body").animate({ scrollTop: 0 }, 300);
     // Run the reload actions function without waiting for return.
-    setTimeout(function () { reloadActions(undefined, fnum.fnum, false, true); }, 0);
+    setTimeout(function () {
+        if (vue === true) {
+            reloadActions(undefined, fnum.fnum, false, true, 'block');
+        } else {
+            reloadActions(undefined, fnum.fnum, false, true);
+        }
+    }, 0);
 
     var cid = parseInt(fnum.fnum.substr(14, 7));
     var sid = parseInt(fnum.fnum.substr(21, 7));
@@ -383,11 +389,6 @@ function openFiles(fnum, page = 0, vue = false) {
                 $('#em-synthesis').show();
             } else {
                 $('#em-synthesis').hide();
-            }
-
-            if (vue === true) {
-                // stop here
-                return;
             }
 
             $.ajax({
@@ -453,6 +454,11 @@ function openFiles(fnum, page = 0, vue = false) {
                             $('#em-appli-menu').show();
                         } else {
                             $('#em-appli-menu').hide();
+                        }
+
+                        if (vue === true) {
+                            // stop here
+                            return;
                         }
 
                         $.ajax({
