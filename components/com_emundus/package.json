@@ -5,9 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "watch": "vue-cli-service build --watch --mode production",
+    "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit"
+    "watch": "vue-cli-service build --watch --mode production"
   },
   "devDependencies": {},
   "eslintConfig": {

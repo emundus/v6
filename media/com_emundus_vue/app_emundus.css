@@ -362,23 +362,73 @@
   -webkit-box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
           box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
 }
+.attachment-row[data-v-53b38237] {
+  border-bottom: 1px solid #e0e0e0;
+}
+.attachment-row[data-v-53b38237]:hover:not(.checked) {
+  background-color: #f2f2f3 !important;
+}
+.attachment-row.checked[data-v-53b38237] {
+  background-color: #f0f6fd !important;
+}
+.attachment-row .valid-state select[data-v-53b38237] {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: var(--grey-bg-color);
+  color: var(--grey-color);
+  border: none;
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
+}
+.attachment-row .valid-state select[data-v-53b38237]::-ms-expand {
+  display: none !important;
+}
+.attachment-row .valid-state.warning select[data-v-53b38237] {
+  color: var(--warning-color);
+  background-color: var(--warning-bg-color);
+}
+.attachment-row .valid-state.success select[data-v-53b38237] {
+  color: var(--success-color);
+  background-color: var(--success-bg-color);
+}
+.attachment-row .valid-state.error select[data-v-53b38237] {
+  color: var(--error-color);
+  background-color: var(--error-bg-color);
+}
+.attachment-row .permissions .material-icons[data-v-53b38237] {
+  margin: 0 10px;
+  cursor: pointer;
+  opacity: 0.3;
+}
+.attachment-row .permissions .material-icons.active[data-v-53b38237] {
+  opacity: 1;
+}
+.attachment-row .td-document[data-v-53b38237] {
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.attachment-row .td-document .warning.file-not-found[data-v-53b38237] {
+  color: var(--error-color);
+  -webkit-transform: translate(10px, 3px);
+          transform: translate(10px, 3px);
+}
 @charset "UTF-8";
 #em-attachments[data-v-30bae934] {
   font-size: 14px;
 }
 #em-attachments .head[data-v-30bae934] {
-  /**
-    * Old Header Style
-    * todo: remove this later
-    */
   width: 100%;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-orient: horizontal;
-  -webkit-box-direction: reverse;
-      -ms-flex-direction: row-reverse;
-          flex-direction: row-reverse;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
@@ -639,61 +689,6 @@
 #em-attachments table thead tr th .material-icons[data-v-30bae934] {
   -webkit-transform: translateY(3px);
           transform: translateY(3px);
-}
-#em-attachments table tbody tr[data-v-30bae934] {
-  border-bottom: 1px solid #e0e0e0;
-}
-#em-attachments table tbody tr[data-v-30bae934]:hover:not(.checked) {
-  background-color: #f2f2f3;
-}
-#em-attachments table tbody tr.checked[data-v-30bae934] {
-  background-color: #f0f6fd;
-}
-#em-attachments table tbody .valid-state select[data-v-30bae934] {
-  padding: 4px 8px;
-  border-radius: 4px;
-  background-color: var(--grey-bg-color);
-  color: var(--grey-color);
-  border: none;
-  width: -webkit-max-content;
-  width: -moz-max-content;
-  width: max-content;
-}
-#em-attachments table tbody .valid-state select[data-v-30bae934]::-ms-expand {
-  display: none !important;
-}
-#em-attachments table tbody .valid-state.warning select[data-v-30bae934] {
-  color: var(--warning-color);
-  background-color: var(--warning-bg-color);
-}
-#em-attachments table tbody .valid-state.success select[data-v-30bae934] {
-  color: var(--success-color);
-  background-color: var(--success-bg-color);
-}
-#em-attachments table tbody .valid-state.error select[data-v-30bae934] {
-  color: var(--error-color);
-  background-color: var(--error-bg-color);
-}
-#em-attachments table tbody .td-document[data-v-30bae934] {
-  max-width: 250px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  cursor: pointer;
-}
-#em-attachments table tbody .td-document .warning.file-not-found[data-v-30bae934] {
-  color: var(--error-color);
-  -webkit-transform: translate(10px, 3px);
-          transform: translate(10px, 3px);
-}
-@media (max-width: 1600px) {
-#em-attachments table tbody th[data-v-30bae934],
-#em-attachments table tbody td[data-v-30bae934],
-#em-attachments table tbody th.desc[data-v-30bae934],
-#em-attachments table tbody td.desc[data-v-30bae934],
-#em-attachments table tbody .td-document[data-v-30bae934] {
-    white-space: normal;
-}
 }
 #em-attachments table .attachment-check[data-v-30bae934] {
   width: 15px;

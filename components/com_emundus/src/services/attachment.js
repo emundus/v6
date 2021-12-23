@@ -11,7 +11,10 @@ export default {
 
       return response.data;
     } catch (e) {
-      throw e;
+      return {
+        status: false,
+        msg: e.message
+      }
     }
   },
 
@@ -23,14 +26,30 @@ export default {
         }
       });
 
-      // add show attribute to true to all attchments in response data
-      response.data.forEach(attachment => {
-        attachment.show = true;
-      });
+
+      if (response.data.status) {
+        // add show attribute to true to all attchments in response data
+
+        if (typeof response.data.attachments === 'string') {
+          response.data.attachments = JSON.parse(response.data.attachments);
+        }
+
+        if (typeof response.data.attachments === 'object') {
+          // cast object to array of objects
+          response.data.attachments = Object.values(response.data.attachments);
+        }
+
+        response.data.attachments.forEach(attachment => {
+          attachment.show = true;
+        });
+      }
 
       return response.data;
     } catch (e) {
-      throw e;
+      return {
+        status: false,
+        msg: e.message
+      }
     }
   },
 
@@ -40,7 +59,10 @@ export default {
 
       return response.data;
     } catch (e) {
-      throw e;
+      return {
+        status: false,
+        msg: e.message
+      }
     }
   },
 
@@ -49,16 +71,18 @@ export default {
       const formData = new FormData();
       formData.append('ids', JSON.stringify(attachment_ids));
 
-      const response = await client().post(`index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=${fnum}&student_id=${student_id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }
-      );
-
-      return response;
+      return await client().post(`index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=${fnum}&student_id=${student_id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
     } catch (e) {
-      throw e;
+      return {
+        status: false,
+        msg: e.message
+      }
     }
   },
 
@@ -68,12 +92,14 @@ export default {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
-      }
-      );
+      });
 
       return response.data;
     } catch (e) {
-      throw e;
+      return {
+        status: false,
+        msg: e.message
+      }
     }
   },
 
@@ -88,7 +114,10 @@ export default {
 
       return response.data;
     } catch (e) {
-      throw e;
+      return {
+        status: false,
+        msg: e.message
+      }
     }
   },
   exportAttachments(student, fnum, attachment_ids) {

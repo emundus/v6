@@ -1,27 +1,29 @@
 <template>
 	<div id="em-attachments">
 		<div class="head">
-			<div class="prev-next-files" v-if="fnums.length > 1">
-				<div
-					class="prev"
-					:class="{ active: fnumPosition > 0 }"
-					@click="changeFile(fnumPosition - 1)"
-				>
-					<i class="small arrow left icon"></i>
-				</div>
-				<div
-					class="next"
-					:class="{ active: fnumPosition < fnums.length - 1 }"
-					@click="changeFile(fnumPosition + 1)"
-				>
-					<i class="small arrow right icon"></i>
-				</div>
-			</div>
 			<div class="displayed-user">
 				<p class="name">
 					{{ displayedUser.firstname }} {{ displayedUser.lastname }}
 				</p>
 				<p class="email">{{ displayedUser.email }}</p>
+			</div>
+			<div class="prev-next-files">
+				<div
+					v-if="fnums.length > 1"
+					class="prev"
+					:class="{ active: fnumPosition > 0 }"
+					@click="changeFile(fnumPosition - 1)"
+				>
+					<i class="small arrow left icon" aria-hidden="true"></i>
+				</div>
+				<div
+					v-if="fnums.length > 1"
+					class="next"
+					:class="{ active: fnumPosition < fnums.length - 1 }"
+					@click="changeFile(fnumPosition + 1)"
+				>
+					<i class="small arrow right icon" aria-hidden="true"></i>
+				</div>
 			</div>
 		</div>
 		<div class="wrapper" :class="{ loading: loading }">
@@ -43,16 +45,30 @@
 						otherIds="36"
 						@applyFilters="filterAttachmentSelection"
 					></FilterBuilder>
+					<select
+						v-if="Object.entries(categories).length > 1"
+						name="category"
+						class="category-select"
+						ref="categoryFilter"
+						@change="filterByCategory"
+					>
+						<option value="all">{{ translate("SELECT_CATEGORY") }}</option>
+						<option
+							v-for="(category, key) in categories"
+							:key="key"
+							:value="key"
+						>
+							{{ category }}
+						</option>
+					</select>
 					<div
 						v-if="canExport"
 						class="btn-icon-text"
 						@click="exportAttachments"
 						:class="{ disabled: checkedAttachments.length < 1 }"
 					>
-						<span class="material-icons export"> file_upload </span>
-						<span>
-							{{ translate("EXPORT") }}
-						</span>
+						<span class="material-icons export">file_upload</span>
+						<span>{{ translate("EXPORT") }}</span>
 					</div>
 					<span
 						class="material-icons refresh"
@@ -73,17 +89,20 @@
 				</div>
 			</div>
 			<div v-if="attachments.length" class="table-wrapper">
-				<table :class="{ loading: loading }">
+				<table
+					:class="{ loading: loading }"
+					aria-describedby="Table of attachments information"
+				>
 					<thead>
 						<tr>
-							<th>
+							<th id="check-th">
 								<input
 									class="attachment-check"
 									type="checkbox"
 									@change="updateAllCheckedAttachments"
 								/>
 							</th>
-							<th @click="orderBy('value')">
+							<th id="name" @click="orderBy('value')">
 								{{ translate("NAME") }}
 								<span
 									v-if="sort.orderBy == 'value' && sort.order == 'asc'"
@@ -96,7 +115,7 @@
 									>arrow_downward</span
 								>
 							</th>
-							<th class="date" @click="orderBy('timedate')">
+							<th id="date" class="date" @click="orderBy('timedate')">
 								{{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}
 								<span
 									v-if="sort.orderBy == 'timedate' && sort.order == 'asc'"
@@ -109,7 +128,7 @@
 									>arrow_downward</span
 								>
 							</th>
-							<th class="desc" @click="orderBy('description')">
+							<th id="desc" class="desc" @click="orderBy('description')">
 								{{ translate("DESCRIPTION") }}
 								<span
 									v-if="sort.orderBy == 'description' && sort.order == 'asc'"
@@ -122,7 +141,7 @@
 									>arrow_downward</span
 								>
 							</th>
-							<th class="category" @click="orderBy('category')">
+							<th id="category" class="category" @click="orderBy('category')">
 								{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}
 								<span
 									v-if="sort.orderBy == 'category' && sort.order == 'asc'"
@@ -135,7 +154,7 @@
 									>arrow_downward</span
 								>
 							</th>
-							<th class="status" @click="orderBy('is_validated')">
+							<th id="status" class="status" @click="orderBy('is_validated')">
 								{{ translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}
 								<span
 									v-if="sort.orderBy == 'is_validated' && sort.order == 'asc'"
@@ -148,7 +167,7 @@
 									>arrow_downward</span
 								>
 							</th>
-							<th @click="orderBy('user_id')">
+							<th id="user" @click="orderBy('user_id')">
 								{{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}
 								<span
 									v-if="sort.orderBy == 'user_id' && sort.order == 'asc'"
@@ -161,7 +180,7 @@
 									>arrow_downward</span
 								>
 							</th>
-							<th @click="orderBy('modified_by')">
+							<th id="modified_by" @click="orderBy('modified_by')">
 								{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}
 								<span
 									v-if="sort.orderBy == 'modified_by' && sort.order == 'asc'"
@@ -174,7 +193,7 @@
 									>arrow_downward</span
 								>
 							</th>
-							<th class="date" @click="orderBy('modified')">
+							<th id="modified" class="date" @click="orderBy('modified')">
 								{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}
 								<span
 									v-if="sort.orderBy == 'modified' && sort.order == 'asc'"
@@ -187,74 +206,24 @@
 									>arrow_downward</span
 								>
 							</th>
+							<th id="permissions" class="permissions">
+								{{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}
+							</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr
+						<AttachmentRow
 							v-for="attachment in displayedAttachments"
 							:key="attachment.aid"
-							:class="{ checked: checkedAttachments.includes(attachment.aid) }"
+							:attachment="attachment"
+							:checkedAttachmentsProp="checkedAttachments"
+							:canUpdate="canUpdate"
+							@open-modal="openModal(attachment)"
+							@update-checked-attachments="updateCheckedAttachments"
+							@update-status="updateStatus"
+							@change-permission="changePermission"
 						>
-							<td>
-								<input
-									class="attachment-check"
-									type="checkbox"
-									@change="updateCheckedAttachments(attachment.aid)"
-									:checked="checkedAttachments.includes(attachment.aid)"
-								/>
-							</td>
-							<td class="td-document" @click="openModal(attachment)">
-								<span>{{ attachment.value }}</span>
-								<span
-									v-if="!attachment.existsOnServer"
-									class="material-icons warning file-not-found"
-									:title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')"
-								>
-									warning
-								</span>
-							</td>
-							<td class="date">{{ formattedDate(attachment.timedate) }}</td>
-							<td class="desc">{{ attachment.description }}</td>
-							<td class="category">
-								{{
-									categories[attachment.category]
-										? translate(categories[attachment.category])
-										: attachment.category
-								}}
-							</td>
-							<td
-								class="status valid-state"
-								:class="{
-									success: attachment.is_validated == 1,
-									warning: attachment.is_validated == 2,
-									error: attachment.is_validated == 0,
-								}"
-							>
-								<select @change="(e) => updateStatus(e, attachment)">
-									<option value="1" :selected="attachment.is_validated == 1">
-										{{ translate("VALID") }}
-									</option>
-									<option value="0" :selected="attachment.is_validated == 0">
-										{{ translate("INVALID") }}
-									</option>
-									<option value="2" :selected="attachment.is_validated == 2">
-										{{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}
-									</option>
-									<option
-										value="-2"
-										:selected="
-											attachment.is_validated == -2 ||
-											attachment.is_validated === null
-										"
-									>
-										{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}
-									</option>
-								</select>
-							</td>
-							<td>{{ getUserNameById(attachment.user_id) }}</td>
-							<td>{{ getUserNameById(attachment.modified_by) }}</td>
-							<td class="date">{{ formattedDate(attachment.modified) }}</td>
-						</tr>
+						</AttachmentRow>
 					</tbody>
 				</table>
 			</div>
@@ -337,6 +306,7 @@
 import AttachmentPreview from "../components/AttachmentPreview.vue";
 import AttachmentEdit from "../components/AttachmentEdit.vue";
 import FilterBuilder from "../components/FilterBuilder/FilterBuilder.vue";
+import AttachmentRow from "../components/AttachmentRow.vue";
 import attachmentService from "../services/attachment.js";
 import userService from "../services/user.js";
 import fileService from "../services/file.js";
@@ -349,6 +319,7 @@ export default {
 		AttachmentPreview,
 		AttachmentEdit,
 		FilterBuilder,
+		AttachmentRow,
 	},
 	props: {
 		user: {
@@ -380,23 +351,33 @@ export default {
 			canExport: false,
 			canDelete: false,
 			canDownload: true,
+			canUpdate: false,
 			modalLoading: false,
 			slideTransition: "slide-fade",
+			changeFileEvent: null,
 		};
 	},
 	created() {
-		this.getFnums();
-		this.getUsers();
+		this.changeFileEvent = new Event("changeFile");
 	},
 	mounted() {
 		this.loading = true;
+		this.getFnums();
+		this.getUsers();
 		this.getAttachments();
 		this.setAccessRights();
 	},
 	methods: {
 		// Getters and setters
 		async getFnums() {
-			this.fnums = await fileService.getFnums(this.user);
+			const response = await fileService.getFnums(this.user);
+
+			if (response !== false) {
+				this.fnums = response;
+			} else {
+				this.loading = false;
+				this.displayErrorMessage("COM_EMUNDUS_ATTACHMENTS_ERROR_GETTING_FNUMS");
+			}
 		},
 		async getUsers() {
 			this.users = await userService.getUsers();
@@ -407,60 +388,42 @@ export default {
 		},
 		async setDisplayedUser() {
 			const response = await fileService.getFnumInfos(this.displayedFnum);
-			const foundUser = this.users.find(
-				(user) => user.user_id == response.fnumInfos.applicant_id
-			);
 
-			if (!foundUser) {
-				const resp = await userService.getUserById(
-					response.fnumInfos.applicant_id
-				);
-				if (resp.status) {
-					this.users.push(resp.user[0]);
-					this.displayedUser = resp.user[0];
+			if (response && response.fnumInfos) {
+				const foundUser =
+					this.users && this.users.length
+						? this.users.find(
+								(user) => user.user_id == response.fnumInfos.applicant_id
+						  )
+						: false;
+
+				if (!foundUser) {
+					const resp = await userService.getUserById(
+						response.fnumInfos.applicant_id
+					);
+					if (resp.status) {
+						this.users.push(resp.user[0]);
+						this.displayedUser = resp.user[0];
+						this.$store.dispatch(
+							"user/setDisplayedUser",
+							this.displayedUser.user_id
+						);
+					} else {
+						this.displayErrorMessage(
+							this.translate("COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND")
+						);
+					}
+				} else {
+					this.displayedUser = foundUser;
 					this.$store.dispatch(
 						"user/setDisplayedUser",
 						this.displayedUser.user_id
 					);
-				} else {
-					this.displayErrorMessage(
-						this.translate("COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND")
-					);
 				}
 			} else {
-				this.displayedUser = foundUser;
-				this.$store.dispatch(
-					"user/setDisplayedUser",
-					this.displayedUser.user_id
+				this.displayErrorMessage(
+					this.translate("COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND")
 				);
-			}
-		},
-		async getCategories() {
-			const response = await attachmentService.getAttachmentCategories();
-			if (response.status) {
-				// translate categories values
-				Object.entries(response.categories).forEach(([key, value]) => {
-					response.categories[key] = this.translate(value);
-				});
-
-				// Add attachment categories if not already given by the server
-				this.attachments.forEach((attachment) => {
-					if (
-						!response.categories[attachment.category] &&
-						attachment.category != "" &&
-						attachment.category != null
-					) {
-						response.categories[attachment.category] = this.translate(
-							attachment.category
-						);
-					}
-				});
-
-				// remove empty categories
-				delete response.categories[""];
-
-				this.$store.dispatch("attachment/setCategories", response.categories);
-				this.categories = this.$store.state.attachment.categories;
 			}
 		},
 		async getAttachments() {
@@ -473,23 +436,38 @@ export default {
 			}
 		},
 		async refreshAttachments(addLoading = false) {
-			if (addLoading) {
+			if (addLoading === true) {
 				this.loading = true;
 			}
+
 			this.resetOrder();
 			this.checkedAttachments = [];
 			this.$refs["searchbar"].value = "";
-			this.attachments = await attachmentService.getAttachmentsByFnum(
+			const response = await attachmentService.getAttachmentsByFnum(
 				this.displayedFnum
 			);
-			this.$store.dispatch("attachment/setAttachmentsOfFnum", {
-				fnum: [this.displayedFnum],
-				attachments: this.attachments,
-			});
 
-			this.getCategories();
+			if (response.status) {
+				this.attachments = response.attachments;
+				this.$store.dispatch("attachment/setAttachmentsOfFnum", {
+					fnum: [this.displayedFnum],
+					attachments: this.attachments,
+				});
 
-			if (addLoading) {
+				const categoriesResponse = await this.getAttachmentCategories();
+
+				if (categoriesResponse) {
+					this.categories = categoriesResponse;
+				} else {
+					this.categories = {};
+				}
+			} else {
+				this.displayErrorMessage(
+					this.translate("COM_EMUNDUS_ATTACHMENTS_ERROR_GETTING_ATTACHMENTS")
+				);
+			}
+
+			if (addLoading === true) {
 				this.loading = false;
 			}
 		},
@@ -500,27 +478,64 @@ export default {
 			this.selectedAttachment = {};
 		},
 		updateStatus($event, selectedAttachment) {
-			this.attachments.forEach((attachment, key) => {
-				if (attachment.aid == selectedAttachment.aid) {
-					this.resetOrder();
-					this.attachments[key].is_validated = $event.target.value;
-
-					let formData = new FormData();
-					formData.append("fnum", this.displayedFnum);
-					formData.append("user", this.$store.state.user.currentUser);
-					formData.append("id", this.attachments[key].aid);
-					formData.append("is_validated", this.attachments[key].is_validated);
-
-					attachmentService.updateAttachment(formData).then((response) => {
-						if (!response.status) {
-							this.displayErrorMessage(response.msg);
-						}
-					});
-
+			if (this.canUpdate) {
+				if (this.attachments.length < 1) {
 					return;
 				}
-			});
+
+				this.attachments.forEach((attachment, key) => {
+					if (attachment.aid == selectedAttachment.aid) {
+						this.resetOrder();
+						this.attachments[key].is_validated = $event.target.value;
+
+						let formData = new FormData();
+						formData.append("fnum", this.displayedFnum);
+						formData.append("user", this.$store.state.user.currentUser);
+						formData.append("id", this.attachments[key].aid);
+						formData.append("is_validated", this.attachments[key].is_validated);
+
+						attachmentService
+							.updateAttachment(formData)
+							.then((response) => {
+								if (response && response.status === false) {
+									this.displayErrorMessage(response.msg);
+								}
+							})
+							.catch((error) => {
+								this.displayErrorMessage(error);
+							});
+					}
+				});
+			}
 		},
+		changePermission(permission, selectedAttachment) {
+			if (this.canUpdate) {
+				this.attachments.forEach((attachment, key) => {
+					if (attachment.aid == selectedAttachment.aid) {
+						this.resetOrder();
+						this.attachments[key][permission] =
+							this.attachments[key][permission] === "1" ? "0" : "1";
+
+						let formData = new FormData();
+						formData.append("fnum", this.displayedFnum);
+						formData.append("user", this.$store.state.user.currentUser);
+						formData.append("id", this.attachments[key].aid);
+						formData.append(permission, this.attachments[key][permission]);
+
+						attachmentService.updateAttachment(formData).then((response) => {
+							if (!response.status) {
+								this.displayErrorMessage(response.msg);
+							}
+						});
+					}
+				});
+			} else {
+				this.displayErrorMessage(
+					this.translate("COM_EMUNDUS_ATTACHMENTS_UNAUTHORIZED_ACTION")
+				);
+			}
+		},
+
 		async setAccessRights() {
 			if (!this.$store.state.user.rights[this.displayedFnum]) {
 				const response = await userService.getAccessRights(
@@ -528,7 +543,7 @@ export default {
 					this.displayedFnum
 				);
 
-				if (response.status == true) {
+				if (response.status === true) {
 					this.$store.dispatch("user/setAccessRights", {
 						fnum: this.displayedFnum,
 						rights: response.rights,
@@ -542,6 +557,9 @@ export default {
 			this.canDelete = this.$store.state.user.rights[this.displayedFnum]
 				? this.$store.state.user.rights[this.displayedFnum].canDelete
 				: false;
+			this.canUpdate = this.$store.state.user.rights[this.displayedFnum]
+				? this.$store.state.user.rights[this.displayedFnum].canUpdate
+				: false;
 			this.loading = false;
 		},
 		async exportAttachments() {
@@ -553,7 +571,7 @@ export default {
 						this.checkedAttachments
 					)
 					.then((response) => {
-						if (response.data.status == true) {
+						if (response.data.status === true) {
 							window.open(response.data.link, "_blank");
 						} else {
 							this.displayErrorMessage(response.data.msg);
@@ -616,7 +634,8 @@ export default {
 					this.displayedUser.id,
 					this.checkedAttachments
 				);
-				if (response.status == true) {
+
+				if (response.status === true) {
 					// Display tooltip deleted succesfully
 				}
 			} else {
@@ -630,18 +649,49 @@ export default {
 		changeFile(position) {
 			this.loading = true;
 
+			const oldFnumPosition = this.fnumPosition;
 			this.displayedFnum = this.fnums[position];
-			this.setDisplayedUser();
-			this.getAttachments();
+			this.attachments = [];
+			this.$store.dispatch("attachment/setCheckedAttachments", []);
 			this.setAccessRights();
 			this.resetOrder();
 			this.resetSearch();
 			this.resetCategoryFilters();
-			this.attachments.forEach((attachment) => {
-				attachment.show = true;
+
+			fileService.getFnumInfos(this.displayedFnum).then((response) => {
+				if (response.status === true) {
+					this.changeFileEvent.detail = {
+						fnum: response.fnumInfos,
+						next: position > oldFnumPosition ? true : false,
+						previous: position < oldFnumPosition ? true : false,
+					};
+
+					document
+						.querySelector(".com_emundus_vue")
+						.dispatchEvent(this.changeFileEvent);
+				} else {
+					this.displayErrorMessage(response.msg);
+				}
 			});
 
-			this.loading = false;
+			this.setDisplayedUser()
+				.then(() => {
+					this.getAttachments()
+						.then(() => {
+							this.attachments.forEach((attachment) => {
+								attachment.show = true;
+							});
+							this.loading = false;
+						})
+						.catch((error) => {
+							this.displayErrorMessage(error);
+							this.loading = false;
+						});
+				})
+				.catch((error) => {
+					this.displayErrorMessage(error);
+					this.loading = false;
+				});
 		},
 		changeAttachment(position, reverse = false) {
 			this.slideTransition = reverse ? "slide-fade-reverse" : "slide-fade";
@@ -772,12 +822,23 @@ export default {
 			} else {
 				this.checkedAttachments = [];
 			}
+
+			this.$store.dispatch(
+				"attachment/setCheckedAttachments",
+				this.checkedAttachments
+			);
 		},
-		updateCheckedAttachments(aid) {
-			if (this.checkedAttachments.contains(aid)) {
-				this.checkedAttachments.splice(this.checkedAttachments.indexOf(aid), 1);
+		updateCheckedAttachments(attachments) {
+			// check that attachments is an array
+			if (Array.isArray(attachments)) {
+				this.checkedAttachments = attachments;
 			} else {
-				this.checkedAttachments.push(aid);
+				console.warn("updateCheckedAttachments() expects an array as argument");
+
+				this.displayErrorMessage(
+					"Something went wrong while updating the checked attachments"
+				);
+				this.checkedAttachments = [];
 			}
 		},
 
@@ -836,7 +897,7 @@ export default {
 		attachmentPath() {
 			return (
 				this.$store.state.attachment.attachmentPath +
-				this.displayedUser.id +
+				this.displayedUser.user_id +
 				"/" +
 				this.selectedAttachment.filename
 			);
@@ -850,13 +911,9 @@ export default {
 	font-size: 14px;
 
 	.head {
-		/**
-    * Old Header Style
-    * todo: remove this later
-    */
 		width: 100%;
 		display: flex;
-		flex-direction: row-reverse;
+		flex-direction: row;
 		justify-content: space-between;
 		align-items: center;
 		margin-top: 1px;
@@ -1088,79 +1145,6 @@ export default {
 					.material-icons {
 						transform: translateY(3px);
 					}
-				}
-			}
-		}
-
-		tbody {
-			tr {
-				border-bottom: 1px solid #e0e0e0;
-				&:hover:not(.checked) {
-					background-color: #f2f2f3;
-				}
-
-				&.checked {
-					background-color: #f0f6fd;
-				}
-			}
-
-			.valid-state {
-				select {
-					padding: 4px 8px;
-					border-radius: 4px;
-					background-color: var(--grey-bg-color);
-					color: var(--grey-color);
-					border: none;
-					width: max-content;
-				}
-
-				select::-ms-expand {
-					display: none !important;
-				}
-
-				&.warning {
-					select {
-						color: var(--warning-color);
-						background-color: var(--warning-bg-color);
-					}
-				}
-
-				&.success {
-					select {
-						color: var(--success-color);
-						background-color: var(--success-bg-color);
-					}
-				}
-
-				&.error {
-					select {
-						color: var(--error-color);
-						background-color: var(--error-bg-color);
-					}
-				}
-			}
-
-			.td-document {
-				max-width: 250px;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				white-space: nowrap;
-				cursor: pointer;
-
-				.warning.file-not-found {
-					color: var(--error-color);
-					transform: translate(10px, 3px);
-				}
-			}
-
-			// media width inferior to 1600px
-			@media (max-width: 1600px) {
-				th,
-				td,
-				th.desc,
-				td.desc,
-				.td-document {
-					white-space: normal;
 				}
 			}
 		}

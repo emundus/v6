@@ -632,7 +632,7 @@ class EmundusControllerApplication extends JControllerLegacy
             }
         }
 
-        echo json_encode($attachments);
+        echo json_encode(['status' => $attachments !== false ? true : false, 'attachments' => $attachments]);
         exit;
     }
 

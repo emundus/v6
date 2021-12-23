@@ -13,7 +13,7 @@ export default {
 
             return response.data;
         } catch (e) {
-            throw e;
+            return false;
         }
     },
     async mountQuery(id, filters) {
@@ -27,7 +27,7 @@ export default {
 
             return response.data;
         } catch (e) {
-            throw e;
+            return false;
         }
     }
 }

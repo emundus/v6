@@ -4,6 +4,7 @@ const state = {
     selectedAttachment: {},
     previews: {},
     categories: {},
+    checkedAttachments: [],
 };
 
 const getters = {
@@ -14,10 +15,10 @@ const actions = {
     setAttachments({ commit }, attachments) {
         commit('setAttachments', attachments);
     },
-    setAttachmentsOfFnum({commit}, data) {
+    setAttachmentsOfFnum({ commit }, data) {
         commit('setAttachmentsOfFnum', data);
     },
-    updateAttachmentOfFnum({commit}, data) {
+    updateAttachmentOfFnum({ commit }, data) {
         commit('updateAttachmentOfFnum', data);
     },
     setSelectedAttachment({ commit }, attachment) {
@@ -31,6 +32,9 @@ const actions = {
     },
     setAttachmentPath({ commit }, path) {
         commit('setAttachmentPath', path);
+    },
+    setCheckedAttachments({ commit }, attachments) {
+        commit('setCheckedAttachments', attachments);
     }
 };
 
@@ -57,10 +61,13 @@ const mutations = {
     },
     setAttachmentPath(state, path) {
         state.attachmentPath = path;
+    },
+    setCheckedAttachments(state, attachments) {
+        state.checkedAttachments = attachments;
     }
 };
 
-export default{
+export default {
     namespaced: true,
     state,
     getters,
