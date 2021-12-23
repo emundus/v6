@@ -29,7 +29,6 @@ session_start();
 class EmundusModelTranslationTest extends TestCase
 {
     private $m_translations;
-    private $s_helper;
 
     private $db;
 
@@ -40,10 +39,28 @@ class EmundusModelTranslationTest extends TestCase
         $this->db = JFactory::getDbo();
     }
 
-    // simple test case (example)
+    // simple test case to check if phpunit working
     public function testFoo() {
         $foo = true;
         $this->assertSame(true, $foo);
+    }
+
+    public function testInsertTranslation(){
+        if(empty($this->m_translations->getTranslations('override','fr-FR','','','',0,'ELEMENT_TEST'))) {
+            // TEST 1 - Insert a basic translation of a fabrik_element
+            $this->assertSame(true, $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999));
+        } else {
+            // TEST 2 - Failed waiting - Insert a basic translation of a fabrik_element
+            $this->assertSame(false, $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999));
+        }
+
+        if(empty($this->m_translations->getTranslations('override','en-GB','','','',0,'ELEMENT_TEST'))) {
+            // TEST 1 - Insert a basic translation of a fabrik_element in english file
+            $this->assertSame(true, $this->m_translations->insertTranslation('ELEMENT_TEST', 'My element', 'en-GB', '', 'override', 'fabrik_elements', 9999));
+        } else {
+            // TEST 2 - Failed waiting - Insert a basic translation of a fabrik_element in english file
+            $this->assertSame(false, $this->m_translations->insertTranslation('ELEMENT_TEST', 'My element', 'en-GB', '', 'override', 'fabrik_elements', 9999));
+        }
     }
 
     public function testGetTranslations() {
@@ -66,7 +83,7 @@ class EmundusModelTranslationTest extends TestCase
         $this->assertEmpty($this->m_translations->getTranslations('override','pt-PT'));
 
         // TEST 7 - GET FABRIK OPTIONS of the element 7777
-        $this->assertNotEmpty($this->m_translations->getTranslations('override','*','','','',7777));
+        $this->assertNotEmpty($this->m_translations->getTranslations('override','*','','','',9999));
 
         // TEST 8 - GET FABRIK ELEMENTS on lang fr-FR
         $this->assertNotEmpty($this->m_translations->getTranslations('override','fr-FR','','','fabrik_elements'));
@@ -76,24 +93,6 @@ class EmundusModelTranslationTest extends TestCase
 
         // TEST 10 - GET TRANSLATIONS WITH SEARCH
         $this->assertNotEmpty($this->m_translations->getTranslations('override','*','Mon élément'));
-    }
-
-    public function testInsertTranslation(){
-        if(empty($this->m_translations->getTranslations('override','fr-FR','','','',0,'ELEMENT_TEST'))) {
-            // TEST 1 - Insert a basic translation of a fabrik_element
-            $this->assertSame(true, $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999));
-        } else {
-            // TEST 2 - Failed waiting - Insert a basic translation of a fabrik_element
-            $this->assertSame(false, $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999));
-        }
-
-        if(empty($this->m_translations->getTranslations('override','en-GB','','','',0,'ELEMENT_TEST'))) {
-            // TEST 1 - Insert a basic translation of a fabrik_element in english file
-            $this->assertSame(true, $this->m_translations->insertTranslation('ELEMENT_TEST', 'My element', 'en-GB', '', 'override', 'fabrik_elements', 9999));
-        } else {
-            // TEST 2 - Failed waiting - Insert a basic translation of a fabrik_element in english file
-            $this->assertSame(false, $this->m_translations->insertTranslation('ELEMENT_TEST', 'My element', 'en-GB', '', 'override', 'fabrik_elements', 9999));
-        }
     }
 
     public function testUpdateTranslations() {
@@ -108,6 +107,14 @@ class EmundusModelTranslationTest extends TestCase
 
         // TEST 4 - Succes waiting - Update translations of com_emundus not possible so we insert it in override file
         $this->assertSame(true,$this->m_translations->updateTranslation('COM_EMUNDUS_EMAIL','Un nouvel email','fr-FR','component'));
+    }
+
+    public function testDeleteTranslations() {
+        // TEST 1 - Delete translation that we manage in other tests
+        $this->assertSame(true,$this->m_translations->deleteTranslation('ELEMENT_TEST'));
+
+        // TEST 2 - Try to delete all translation related to fabrik_elements
+        $this->assertSame(true,$this->m_translations->deleteTranslation('','*','fabrik_elements'));
     }
 
     public function testgetTranslationsObject(){

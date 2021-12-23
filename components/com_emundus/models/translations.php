@@ -30,6 +30,13 @@ class EmundusModelTranslations extends JModelList
         JLog::addLogger(['text_file' => 'com_emundus.translations.php'], JLog::ERROR);
     }
 
+    /**
+     * Get our translations definitions
+     *
+     * @return array
+     *
+     * @since version 1.28.0
+     */
     public function getTranslationsObject(){
         $dir = JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'contentelements';
 
@@ -57,6 +64,21 @@ class EmundusModelTranslations extends JModelList
         return $objects;
     }
 
+    /**
+     * Get translations with many filters
+     *
+     * @param $type
+     * @param $lang_code
+     * @param $search
+     * @param $location
+     * @param $reference_table
+     * @param $reference_id
+     * @param $tag
+     *
+     * @return array|mixed
+     *
+     * @since version 1.28.0
+     */
     public function getTranslations($type = 'override',$lang_code = '*',$search = '',$location = '',$reference_table = '',$reference_id = 0,$tag = ''){
         $query = $this->_db->getQuery(true);
 
@@ -88,7 +110,22 @@ class EmundusModelTranslations extends JModelList
         return $this->_db->loadObjectList();
     }
 
-    public function insertTranslation($tag,$override,$lang_code,$location = '',$type='fabrik',$reference_table = '',$reference_id = 0){
+    /**
+     * Create a new translation in base and insert it in override file
+     *
+     * @param $tag
+     * @param $override
+     * @param $lang_code
+     * @param $location
+     * @param $type
+     * @param $reference_table
+     * @param $reference_id
+     *
+     * @return bool|void
+     *
+     * @since version
+     */
+    public function insertTranslation($tag,$override,$lang_code,$location = '',$type='override',$reference_table = '',$reference_id = 0){
         $query = $this->_db->getQuery(true);
         $user = JFactory::getUser();
 
@@ -107,8 +144,8 @@ class EmundusModelTranslations extends JModelList
                 $this->_db->quote(md5($override)),
                 $this->_db->quote($location),
                 $this->_db->quote($type),
-                $this->_db->quote($reference_table),
                 $reference_id,
+                $this->_db->quote($reference_table),
                 1,
                 $user->id,
                 time(),
@@ -137,6 +174,19 @@ class EmundusModelTranslations extends JModelList
         }
     }
 
+    /**
+     * Update a translation
+     * If the translation is not override (ex. com_emundus) we insert it in override file
+     *
+     * @param $tag
+     * @param $override
+     * @param $lang_code
+     * @param $type
+     *
+     * @return bool|void
+     *
+     * @since version
+     */
     public function updateTranslation($tag,$override,$lang_code,$type = 'override'){
         $query = $this->_db->getQuery(true);
         $user = JFactory::getUser();
@@ -168,10 +218,54 @@ class EmundusModelTranslations extends JModelList
                     return false;
                 }
             } else {
-                return $this->insertTranslation($tag,$override,$lang_code);
+                $existing_translation = $this->getTranslations('override',$lang_code,'','','','',$tag);
+                if(empty($existing_translation)) {
+                    return $this->insertTranslation($tag, $override, $lang_code);
+                } else {
+                    return $this->updateTranslation($tag,$override,$lang_code);
+                }
             }
         } catch(Exception $e){
             JLog::add('Problem when try to update translation ' . $tag . ' into file ' . $location . ' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
+    }
+
+    /**
+     * Delete a translation in base and then remove it from overrides files
+     *
+     * @param $tag
+     * @param $lang_code
+     * @param $reference_table
+     * @param $reference_id
+     *
+     * @return false|void
+     *
+     * @since version
+     */
+    public function deleteTranslation($tag = '',$lang_code = '*',$reference_table = '',$reference_id = 0){
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->delete($this->_db->quoteName('#__emundus_setup_languages'))
+                ->where($this->_db->quoteName('type') . ' = ' . $this->_db->quote('override'));
+
+            if(!empty($tag)){
+                $query->where($this->_db->quoteName('tag') . ' = ' . $this->_db->quote($tag));
+            }
+            if($lang_code !== '*' && !empty($lang_code)){
+                $query->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code));
+            }
+            if(!empty($reference_table)){
+                $query->where($this->_db->quoteName('reference_table') . ' LIKE ' . $this->_db->quote($reference_table));
+            }
+            if(!empty($reference_id)){
+                $query->where($this->_db->quoteName('reference_id') . ' LIKE ' . $this->_db->quote($reference_id));
+            }
+            $this->_db->setQuery($query);
+            return $this->_db->execute();
+        } catch (Exception $e) {
+            JLog::add('Problem when try to delete translation ' . $tag . ' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
             return false;
         }
     }

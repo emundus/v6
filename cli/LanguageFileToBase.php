@@ -88,6 +88,7 @@ class LanguageFileToBase extends JApplicationCli {
             $db->quoteName('original_md5'),
             $db->quoteName('override_md5'),
             $db->quoteName('location'),
+            $db->quoteName('type'),
             $db->quoteName('created_by')];
         $db_values = [];
 
@@ -110,13 +111,17 @@ class LanguageFileToBase extends JApplicationCli {
                 $db->setQuery($query);
 
                 if($db->loadResult() == 0) {
-                    $row = [$db->quote($key), $db->quote($language), $db->quote($val), $db->quote($val), $db->quote(md5($val)), $db->quote(md5($val)), $db->quote($file_name), 62];
+                    if(strpos($file_name,'override') !== false) {
+                        $row = [$db->quote($key), $db->quote($language), $db->quote($val), $db->quote($val), $db->quote(md5($val)), $db->quote(md5($val)), $db->quote($file_name),$db->quote('override'), 62];
+                    } else {
+                        $row = [$db->quote($key), $db->quote($language), $db->quote($val), $db->quote($val), $db->quote(md5($val)), $db->quote(md5($val)), $db->quote($file_name),$db->quote(null), 62];
+                    }
                     $db_values[] = implode(',', $row);
                 }
             }
         }
 
-        if(sizeof($db_values) > 0) {
+        if(!empty($db_values)) {
             $query
                 ->clear()
                 ->insert($db->quoteName('jos_emundus_setup_languages'))
@@ -129,7 +134,7 @@ class LanguageFileToBase extends JApplicationCli {
                 $db->execute();
             } catch (Exception $exception) {
                 echo "<pre>";
-                var_dump('error inserting data : ' . $exception->getMessage());
+                var_dump('error inserting data : ' . $exception->getMessage() . ' ' . $query->__toString());
                 echo "</pre>";
                 die();
             }
