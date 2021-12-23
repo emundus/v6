@@ -201,7 +201,7 @@
 									>arrow_downward</span
 								>
 							</th>
-							<th class="permissions">
+							<th id="permissions" class="permissions">
 								{{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}
 							</th>
 						</tr>
@@ -216,6 +216,7 @@
 							@open-modal="openModal(attachment)"
 							@update-checked-attachments="updateCheckedAttachments"
 							@update-status="updateStatus"
+							@change-permission="changePermission"
 						>
 						</AttachmentRow>
 					</tbody>
@@ -519,8 +520,6 @@ export default {
 								this.displayErrorMessage(response.msg);
 							}
 						});
-
-						return;
 					}
 				});
 			} else {
@@ -1107,80 +1106,6 @@ export default {
 					.material-icons {
 						transform: translateY(3px);
 					}
-				}
-			}
-		}
-
-		tbody {
-			tr {
-				border-bottom: 1px solid #e0e0e0;
-				&:hover:not(.checked) {
-					background-color: #f2f2f3;
-				}
-
-				&.checked {
-					background-color: #f0f6fd;
-				}
-			}
-
-			.valid-state {
-				select {
-					padding: 4px 8px;
-					border-radius: 4px;
-					background-color: var(--grey-bg-color);
-					color: var(--grey-color);
-					border: none;
-					width: max-content;
-				}
-
-				select::-ms-expand {
-					display: none !important;
-				}
-
-				&.warning {
-					select {
-						color: var(--warning-color);
-						background-color: var(--warning-bg-color);
-					}
-				}
-
-				&.success {
-					select {
-						color: var(--success-color);
-						background-color: var(--success-bg-color);
-					}
-				}
-
-				&.error {
-					select {
-						color: var(--error-color);
-						background-color: var(--error-bg-color);
-					}
-				}
-			}
-
-			.permissions {
-				.material-icons {
-					margin: 0 10px;
-					cursor: pointer;
-					opacity: 0.3;
-
-					&.active {
-						opacity: 1;
-					}
-				}
-			}
-
-			.td-document {
-				max-width: 250px;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				white-space: nowrap;
-				cursor: pointer;
-
-				.warning.file-not-found {
-					color: var(--error-color);
-					transform: translate(10px, 3px);
 				}
 			}
 		}

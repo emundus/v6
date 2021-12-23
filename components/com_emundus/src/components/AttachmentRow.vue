@@ -131,6 +131,9 @@ export default {
 		updateStatus(e) {
 			this.$emit("update-status", e, this.attachment);
 		},
+		changePermission(permission, attachment) {
+			this.$emit("change-permission", permission, attachment);
+		},
 	},
 	watch: {
 		"$store.state.attachment.checkedAttachments": function () {
@@ -184,6 +187,17 @@ export default {
 			select {
 				color: var(--error-color);
 				background-color: var(--error-bg-color);
+			}
+		}
+	}
+	.permissions {
+		.material-icons {
+			margin: 0 10px;
+			cursor: pointer;
+			opacity: 0.3;
+
+			&.active {
+				opacity: 1;
 			}
 		}
 	}
