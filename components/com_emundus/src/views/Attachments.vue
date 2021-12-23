@@ -797,7 +797,17 @@ export default {
 			);
 		},
 		updateCheckedAttachments(attachments) {
-			this.checkedAttachments = attachments;
+			// check that attachments is an array
+			if (Array.isArray(attachments)) {
+				this.checkedAttachments = attachments;
+			} else {
+				console.warn("updateCheckedAttachments() expects an array as argument");
+
+				this.displayErrorMessage(
+					"Something went wrong while updating the checked attachments"
+				);
+				this.checkedAttachments = [];
+			}
 		},
 
 		// Modal methods

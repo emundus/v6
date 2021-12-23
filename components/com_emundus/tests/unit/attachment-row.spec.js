@@ -44,6 +44,11 @@ describe('AttachmentRow.vue', () => {
 		expect(wrapper.emitted('update-checked-attachments')).toBeTruthy();
 	});
 
+	it('onChange attachment-check should emit update-checked-attachments with an array as parameter', () => {
+		wrapper.find('.attachment-check').trigger('change');
+		expect(wrapper.emitted('update-checked-attachments')[0][0]).toEqual([123]);
+	});
+
 	it('onChange .status select should emit update-status', () => {
 		wrapper.find('.status select').trigger('change');
 		expect(wrapper.emitted('update-status')).toBeTruthy();
