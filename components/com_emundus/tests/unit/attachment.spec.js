@@ -28,7 +28,7 @@ describe('Attachments.vue', () => {
     localVue
   });
 
-  it('should call getFnums, getUsers, getAttachments and setAccesRights on created', () => {
+  it('should call getFnums, getUsers, getAttachments and setAccesRights on mounted', () => {
     expect(getFnums).toHaveBeenCalled();
     expect(getUsers).toHaveBeenCalled();
     expect(getAttachments).toHaveBeenCalled();
@@ -162,6 +162,14 @@ describe('Attachments.vue', () => {
     });
   });
 
+  /**
+   * on click on .next button, displayedFnum should be equal to next fnums
+   */
+  it('Expect displayedFnum to be equal to next fnum on click on .next', () => {
+    const next = wrapper.find('.next');
+    next.trigger('click');
+    expect(wrapper.vm.displayedFnum).toBe(mockAttachment.fnums[1]);
+  });
 });
 
 
