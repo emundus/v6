@@ -245,7 +245,8 @@
           this.element = response.data;
 
           if(this.element.plugin == 'databasejoin'){
-            this.plugin = this.element.params.database_join_display_type;
+            this.element.params.database_join_display_type =='radio'?  this.plugin ='radiobutton':  this.plugin =this.element.params.database_join_display_type;
+
           } else if (this.element.plugin == 'date' || this.element.plugin == 'years') {
             this.plugin = 'birthday';
           } else {
@@ -366,6 +367,13 @@
       plugin: function(value) {
         switch (value){
           case 'dropdown':
+
+            if(this.element.plugin !== 'databasejoin'){
+              this.element.plugin = value;
+            }
+            break;
+          case 'radiobutton':
+
             if(this.element.plugin !== 'databasejoin'){
               this.element.plugin = value;
             }

@@ -221,7 +221,7 @@ export default {
 
         this.element.plugin = 'databasejoin';
         this.element.params.join_db_name = this.databases[this.databasejoin_data].database_name;
-        this.element.params.database_join_display_type = 'dropdown';
+        this.element.params.database_join_display_type = 'radio';
         this.element.params.join_key_column = this.databases[this.databasejoin_data].join_column_id;
         if (this.databases[this.databasejoin_data].translation == '1') {
           this.element.params.join_val_column = `${this.databases[this.databasejoin_data].join_column_val}_fr`;
@@ -232,7 +232,7 @@ export default {
         }
 
       } else {
-        this.element.plugin = 'dropdown';
+        this.element.plugin = 'radiobutton';
         delete this.element.params.join_db_name;
         delete this.element.params.database_join_display_type;
         delete this.element.params.join_key_column;
