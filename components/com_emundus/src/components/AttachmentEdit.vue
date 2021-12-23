@@ -44,6 +44,28 @@
 						:accept="allowedType"
 					/>
 				</div>
+				<div class="input-group">
+					<label for="can_be_viewed">{{
+						translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED")
+					}}</label>
+					<input
+						type="checkbox"
+						name="can_be_viewed"
+						v-model="attachmentCanBeViewed"
+						:disabled="!canUpdate"
+					/>
+				</div>
+				<div class="input-group">
+					<label for="can_be_deleted">{{
+						translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED")
+					}}</label>
+					<input
+						type="checkbox"
+						name="can_be_deleted"
+						v-model="attachmentCanBeDeleted"
+						:disabled="!canUpdate"
+					/>
+				</div>
 			</div>
 			<div class="non-editable-data">
 				<div>
@@ -119,6 +141,8 @@ export default {
 			formData.append("id", this.attachment.aid);
 			formData.append("description", this.attachment.description);
 			formData.append("is_validated", this.attachment.is_validated);
+			formData.append("can_be_viewed", this.attachment.can_be_viewed);
+			formData.append("can_be_deleted", this.attachment.can_be_deleted);
 
 			if (this.file) {
 				formData.append("file", this.file);
@@ -175,6 +199,22 @@ export default {
 			}
 
 			return allowed_type;
+		},
+		attachmentCanBeViewed: {
+			get: function () {
+				return this.attachment.can_be_viewed == "1";
+			},
+			set: function (value) {
+				this.attachment.can_be_viewed = value ? "1" : "0";
+			},
+		},
+		attachmentCanBeDeleted: {
+			get: function () {
+				return this.attachment.can_be_deleted == "1";
+			},
+			set: function (value) {
+				this.attachment.can_be_deleted = value ? "1" : "0";
+			},
 		},
 	},
 	watch: {

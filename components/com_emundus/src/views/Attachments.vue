@@ -201,18 +201,22 @@
 									>arrow_downward</span
 								>
 							</th>
+							<th id="permissions" class="permissions">
+								{{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}
+							</th>
 						</tr>
 					</thead>
 					<tbody>
 						<AttachmentRow
 							v-for="attachment in displayedAttachments"
 							:key="attachment.aid"
-							:class="{ checked: checkedAttachments.includes(attachment.aid) }"
 							:attachment="attachment"
 							:checkedAttachmentsProp="checkedAttachments"
+							:canUpdate="canUpdate"
 							@open-modal="openModal(attachment)"
 							@update-checked-attachments="updateCheckedAttachments"
 							@update-status="updateStatus"
+							@change-permission="changePermission"
 						>
 						</AttachmentRow>
 					</tbody>
@@ -340,6 +344,7 @@ export default {
 			canExport: false,
 			canDelete: false,
 			canDownload: true,
+			canUpdate: false,
 			modalLoading: false,
 			slideTransition: "slide-fade",
 			changeFileEvent: null,
@@ -466,34 +471,64 @@ export default {
 			this.selectedAttachment = {};
 		},
 		updateStatus($event, selectedAttachment) {
-			if (this.attachments.length < 1) {
-				return;
+			if (this.canUpdate) {
+				if (this.attachments.length < 1) {
+					return;
+				}
+
+				this.attachments.forEach((attachment, key) => {
+					if (attachment.aid == selectedAttachment.aid) {
+						this.resetOrder();
+						this.attachments[key].is_validated = $event.target.value;
+
+						let formData = new FormData();
+						formData.append("fnum", this.displayedFnum);
+						formData.append("user", this.$store.state.user.currentUser);
+						formData.append("id", this.attachments[key].aid);
+						formData.append("is_validated", this.attachments[key].is_validated);
+
+						attachmentService
+							.updateAttachment(formData)
+							.then((response) => {
+								if (response && response.status === false) {
+									this.displayErrorMessage(response.msg);
+								}
+							})
+							.catch((error) => {
+								this.displayErrorMessage(error);
+							});
+					}
+				});
 			}
+		},
+		changePermission(permission, selectedAttachment) {
+			if (this.canUpdate) {
+				this.attachments.forEach((attachment, key) => {
+					if (attachment.aid == selectedAttachment.aid) {
+						this.resetOrder();
+						this.attachments[key][permission] =
+							this.attachments[key][permission] === "1" ? "0" : "1";
 
-			this.attachments.forEach((attachment, key) => {
-				if (attachment.aid == selectedAttachment.aid) {
-					this.resetOrder();
-					this.attachments[key].is_validated = $event.target.value;
+						let formData = new FormData();
+						formData.append("fnum", this.displayedFnum);
+						formData.append("user", this.$store.state.user.currentUser);
+						formData.append("id", this.attachments[key].aid);
+						formData.append(permission, this.attachments[key][permission]);
 
-					let formData = new FormData();
-					formData.append("fnum", this.displayedFnum);
-					formData.append("user", this.$store.state.user.currentUser);
-					formData.append("id", this.attachments[key].aid);
-					formData.append("is_validated", this.attachments[key].is_validated);
-
-					attachmentService
-						.updateAttachment(formData)
-						.then((response) => {
-							if (response && response.status === false) {
+						attachmentService.updateAttachment(formData).then((response) => {
+							if (!response.status) {
 								this.displayErrorMessage(response.msg);
 							}
-						})
-						.catch((error) => {
-							this.displayErrorMessage(error);
 						});
-				}
-			});
+					}
+				});
+			} else {
+				this.displayErrorMessage(
+					this.translate("COM_EMUNDUS_ATTACHMENTS_UNAUTHORIZED_ACTION")
+				);
+			}
 		},
+
 		async setAccessRights() {
 			if (!this.$store.state.user.rights[this.displayedFnum]) {
 				const response = await userService.getAccessRights(
@@ -514,6 +549,9 @@ export default {
 				: false;
 			this.canDelete = this.$store.state.user.rights[this.displayedFnum]
 				? this.$store.state.user.rights[this.displayedFnum].canDelete
+				: false;
+			this.canUpdate = this.$store.state.user.rights[this.displayedFnum]
+				? this.$store.state.user.rights[this.displayedFnum].canUpdate
 				: false;
 			this.loading = false;
 		},
@@ -727,7 +765,7 @@ export default {
 			this.sort.last = key;
 		},
 		filterByCategory(e) {
-			this.attachments.forEach((attachment, key) => {
+			this.attachments.forEach((attachment) => {
 				if (e.target.value == "all") {
 					attachment.show = true;
 				} else {
@@ -759,7 +797,17 @@ export default {
 			);
 		},
 		updateCheckedAttachments(attachments) {
-			this.checkedAttachments = attachments;
+			// check that attachments is an array
+			if (Array.isArray(attachments)) {
+				this.checkedAttachments = attachments;
+			} else {
+				console.warn("updateCheckedAttachments() expects an array as argument");
+
+				this.displayErrorMessage(
+					"Something went wrong while updating the checked attachments"
+				);
+				this.checkedAttachments = [];
+			}
 		},
 
 		// Modal methods

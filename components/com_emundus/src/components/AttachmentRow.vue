@@ -1,5 +1,9 @@
 <template>
-	<tr class="attachment-row" :key="attachment.aid">
+	<tr
+		class="attachment-row"
+		:class="{ checked: checkedAttachments.includes(attachment.aid) }"
+		:key="attachment.aid"
+	>
 		<td>
 			<input
 				class="attachment-check"
@@ -31,7 +35,10 @@
 				error: attachment.is_validated == 0,
 			}"
 		>
-			<select @change="(e) => updateStatus(e)">
+			<select
+				@change="(e) => updateStatus(e)"
+				:disabled="canUpdate === false ? true : false"
+			>
 				<option value="1" :selected="attachment.is_validated == 1">
 					{{ translate("VALID") }}
 				</option>
@@ -54,6 +61,20 @@
 		<td>{{ getUserNameById(attachment.user_id) }}</td>
 		<td>{{ getUserNameById(attachment.modified_by) }}</td>
 		<td class="date">{{ formattedDate(attachment.modified) }}</td>
+		<td class="permissions">
+			<span
+				class="material-icons visibility-permission"
+				:class="{ active: attachment.can_be_viewed == '1' }"
+				@click="changePermission('can_be_viewed', attachment)"
+				>visibility</span
+			>
+			<span
+				class="material-icons delete-permission"
+				:class="{ active: attachment.can_be_deleted == '1' }"
+				@click="changePermission('can_be_deleted', attachment)"
+				>delete_outlined</span
+			>
+		</td>
 	</tr>
 </template>
 
@@ -70,6 +91,10 @@ export default {
 		checkedAttachmentsProp: {
 			type: Array,
 			required: true,
+		},
+		canUpdate: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	mixins: [mixin],
@@ -115,7 +140,14 @@ export default {
 			this.$emit("open-modal", this.attachment);
 		},
 		updateStatus(e) {
-			this.$emit("update-status", e, this.attachment);
+			if (this.canUpdate) {
+				this.$emit("update-status", e, this.attachment);
+			}
+		},
+		changePermission(permission, attachment) {
+			if (this.canUpdate) {
+				this.$emit("change-permission", permission, attachment);
+			}
 		},
 	},
 	watch: {
@@ -126,16 +158,16 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .attachment-row {
 	border-bottom: 1px solid #e0e0e0;
 
 	&:hover:not(.checked) {
-		background-color: #f2f2f3;
+		background-color: #f2f2f3 !important;
 	}
 
 	&.checked {
-		background-color: #f0f6fd;
+		background-color: #f0f6fd !important;
 	}
 
 	.valid-state {
@@ -170,6 +202,17 @@ export default {
 			select {
 				color: var(--error-color);
 				background-color: var(--error-bg-color);
+			}
+		}
+	}
+	.permissions {
+		.material-icons {
+			margin: 0 10px;
+			cursor: pointer;
+			opacity: 0.3;
+
+			&.active {
+				opacity: 1;
 			}
 		}
 	}

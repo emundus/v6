@@ -4071,14 +4071,27 @@ class EmundusModelApplication extends JModelList
         // update attachments fields in database
         $db = $this->getDbo();
         $query = $db->getQuery(true);
+        $query->update($db->quoteName('#__emundus_uploads'));
 
-        $query
-            ->update($db->quoteName('#__emundus_uploads'))
-            ->set($db->quoteName('description') . ' = ' . $db->quote($data['description']))
-            ->set($db->quoteName('is_validated') . ' = ' . $db->quote($data['is_validated']))
-            ->set($db->quoteName('modified') . ' = ' . $db->quote(date("Y-m-d H:i:s")))
-            ->set($db->quoteName('modified_by') . ' = ' . $db->quote($data['user']))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($data['id']));
+        if (isset($data['description'])) {
+            $query->set($db->quoteName('description') . ' = ' . $db->quote($data['description']));
+        }
+
+        if (isset($data['is_validated'])) {
+            $query->set($db->quoteName('modified') . ' = ' . $db->quote($data['is_validated']));
+        }
+
+        if (isset($data['can_be_viewed'])){
+            $query->set($db->quoteName('can_be_viewed') . ' = ' . $db->quote($data['can_be_viewed']));
+        }
+
+        if (isset($data['can_be_deleted'])){
+            $query->set($db->quoteName('can_be_deleted') . ' = ' . $db->quote($data['can_be_deleted']));
+        }
+
+        $query->set($db->quoteName('modified') . ' = ' . $db->quote(date("Y-m-d H:i:s")))
+        ->set($db->quoteName('modified_by') . ' = ' . $db->quote($data['user']))
+        ->where($db->quoteName('id') . ' = ' . $db->quote($data['id']));
 
         //execute query
         try {
