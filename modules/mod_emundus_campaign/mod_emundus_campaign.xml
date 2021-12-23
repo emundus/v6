@@ -1,25 +1,25 @@
 <?xml version="1.0"?>
-<extension type="module" version ="2.5.0" method="upgrade">
-	<name>EmundusCampaign</name>
-	<author>Benjamin Rivalland</author>
-	<creationDate>June 2015</creationDate>
-	<copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
-	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>benjamin@emundus.fr</authorEmail>
-	<authorUrl>www.emundus.fr</authorUrl>
-	<version>6.0</version>
-	<description>MOD_EMUNDUS_CAMPAIGN_XML_DESCRIPTION</description>
-	<files>
-		<filename>mod_emundus_campaign.xml</filename>
-		<filename module="mod_emundus_campaign">mod_emundus_campaign.php</filename>
-		<filename>index.html</filename>
-		<folder>tmpl</folder>
-		<folder>language</folder>
-	</files>
-	<config>
-		<fields name="params">
-			<fieldset name="basic" label="Options">
-				<field type="list" name="mod_em_campaign_layout" label="MOD_EM_CAMPAIGN_LAYOUT" description="MOD_EM_CAMPAIGN_LAYOUT_DESC">
+	<extension type="module" version ="2.5.0" method="upgrade">
+		<name>EmundusCampaign</name>
+        <author>Benjamin Rivalland</author>
+        <creationDate>June 2015</creationDate>
+        <copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
+        <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+        <authorEmail>benjamin@emundus.fr</authorEmail>
+        <authorUrl>www.emundus.fr</authorUrl>
+        <version>6.0</version>
+		<description>MOD_EMUNDUS_CAMPAIGN_XML_DESCRIPTION</description>
+		<files>
+			<filename>mod_emundus_campaign.xml</filename>
+			<filename module="mod_emundus_campaign">mod_emundus_campaign.php</filename>
+			<filename>index.html</filename>
+			<folder>tmpl</folder>
+			<folder>language</folder>
+		</files>
+		<config>
+			<fields name="params">
+				<fieldset name="basic" label="Options">
+					<field type="list" name="mod_em_campaign_layout" label="MOD_EM_CAMPAIGN_LAYOUT" description="MOD_EM_CAMPAIGN_LAYOUT_DESC">
 					<option value="default">MOD_EM_CAMPAIGN_LIST_DEFAULT</option>
 					<option value="default_g5">MOD_EM_CAMPAIGN_LIST_DEFAULT_G5</option>
 					<option value="institut_fr">Institut Français</option>
@@ -27,121 +27,122 @@
 					<option value="old">MOD_EM_CAMPAIGN_LIST_OLD</option>
 					<option value="single_campaign">Single Campaign</option>
 					<option value="tchooz_single_campaign">Tchooz Single Campaign</option>
-				</field>
+					<option value="celsa">Celsa</option>
+					</field>
 
-				<field type="text" name="mod_em_campaign_itemid" label="MOD_EM_CAMPAIGN_ITEMID" description="MOD_EM_CAMPAIGN_ITEMID_DESC" />
+					<field type="text" name="mod_em_campaign_itemid" label="MOD_EM_CAMPAIGN_ITEMID" description="MOD_EM_CAMPAIGN_ITEMID_DESC" />
 
-				<field type="text" name="mod_em_campaign_itemid2" label="MOD_EM_CAMPAIGN_ITEMID2" description="MOD_EM_CAMPAIGN_ITEMID2_DESC" />
+					<field type="text" name="mod_em_campaign_itemid2" label="MOD_EM_CAMPAIGN_ITEMID2" description="MOD_EM_CAMPAIGN_ITEMID2_DESC" />
 
-				<field type="text" name="mod_em_campaign_link" default="" label="MOD_EM_CAMPAIGN_LINK" description="MOD_EM_CAMPAIGN_LINK_DESC"/>
+					<field type="text" name="mod_em_campaign_link" default="" label="MOD_EM_CAMPAIGN_LINK" description="MOD_EM_CAMPAIGN_LINK_DESC"/>
 
-				<field type="text" name="mod_em_campaign_date_format" label="MOD_EM_CAMPAIGN_DATE_FORMAT" description="MOD_EM_CAMPAIGN_DATE_FORMAT_DESC" default="d/m/Y H:i" hint="d/m/Y H:i"/>
+					<field type="text" name="mod_em_campaign_date_format" label="MOD_EM_CAMPAIGN_DATE_FORMAT" description="MOD_EM_CAMPAIGN_DATE_FORMAT_DESC" default="d/m/Y H:i" hint="d/m/Y H:i"/>
 
-				<field type="list" name="mod_em_campaign_get_link" label="MOD_EM_CAMPAIGN_GET_LINK" description="MOD_EM_CAMPAIGN_GET_LINK_DESC" default="0">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+					<field type="list" name="mod_em_campaign_get_link" label="MOD_EM_CAMPAIGN_GET_LINK" description="MOD_EM_CAMPAIGN_GET_LINK_DESC" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 
-				<field type="list" name="mod_em_campaign_show_camp_start_date" label="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE_DESC" default="1">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+					<field type="list" name="mod_em_campaign_show_camp_start_date" label="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_CAMP_START_DATE_DESC" default="1">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 
-				<field type="list" name="mod_em_campaign_show_camp_end_date" label="MOD_EM_CAMPAIGN_SHOW_CAMP_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_CAMP_END_DATE_DESC" default="1">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+					<field type="list" name="mod_em_campaign_show_camp_end_date" label="MOD_EM_CAMPAIGN_SHOW_CAMP_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_CAMP_END_DATE_DESC" default="1">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 
-				<field type="list" name="mod_em_campaign_show_formation_start_date" label="MOD_EM_CAMPAIGN_SHOW_FORMATION_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_FORMATION_START_DATE_DESC" default="0">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+					<field type="list" name="mod_em_campaign_show_formation_start_date" label="MOD_EM_CAMPAIGN_SHOW_FORMATION_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_FORMATION_START_DATE_DESC" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 
-				<field type="list" name="mod_em_campaign_show_formation_end_date" label="MOD_EM_CAMPAIGN_SHOW_FORMATION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_FORMATION_END_DATE_DESC" default="0">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+					<field type="list" name="mod_em_campaign_show_formation_end_date" label="MOD_EM_CAMPAIGN_SHOW_FORMATION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_FORMATION_END_DATE_DESC" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 
-				<field type="list" name="mod_em_campaign_show_admission_start_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE_DESC" default="0">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+					<field type="list" name="mod_em_campaign_show_admission_start_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE_DESC" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 
-				<field type="list" name="mod_em_campaign_show_admission_end_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE_DESC" default="0">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+					<field type="list" name="mod_em_campaign_show_admission_end_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE_DESC" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 
-				<field type="list" name="mod_em_campaign_show_timezone" label="MOD_EM_CAMPAIGN_SHOW_TIMEZONE" description="MOD_EM_CAMPAIGN_SHOW_TIMEZONE_DESC" default="1">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
-			</fieldset>
+					<field type="list" name="mod_em_campaign_show_timezone" label="MOD_EM_CAMPAIGN_SHOW_TIMEZONE" description="MOD_EM_CAMPAIGN_SHOW_TIMEZONE_DESC" default="1">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+				</fieldset>
 
-			<fieldset name="list" label="Paramètres de la liste">
-				<field
-						name="mod_em_campaign_intro"
-						type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
-						default=""
-						label="MOD_EM_CAMPAIGN_INTRO"
-						description="MOD_EM_CAMPAIGN_INTRO_DESC"/>
+				<fieldset name="list" label="Paramètres de la liste">
+					<field
+							name="mod_em_campaign_intro"
+							type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+							default=""
+							label="MOD_EM_CAMPAIGN_INTRO"
+							description="MOD_EM_CAMPAIGN_INTRO_DESC"/>
 
-				<field type="checkboxes" name="mod_em_campaign_list_tab" label="MOD_EM_CAMPAIGN_LIST_TAB" description="MOD_EM_CAMPAIGN_LIST_TAB_DESC">
-					<option checked="true" value="current">LIST_CURRENT</option>
-					<option checked="true" value="futur">LIST_FUTUR</option>
-					<option checked="true" value="past">LIST_PAST</option>
-					<option checked="true" value="all">LIST_ALL</option>
-				</field>
+					<field type="checkboxes" name="mod_em_campaign_list_tab" label="MOD_EM_CAMPAIGN_LIST_TAB" description="MOD_EM_CAMPAIGN_LIST_TAB_DESC">
+						<option checked="true" value="current">LIST_CURRENT</option>
+						<option checked="true" value="futur">LIST_FUTUR</option>
+						<option checked="true" value="past">LIST_PAST</option>
+						<option checked="true" value="all">LIST_ALL</option>
+					</field>
 
-				<field name="mod_em_campaign_param_tab" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_TAB" description="MOD_EM_CAMPAIGN_PARAM_TAB_DESC" value="1"/>
+                    <field name="mod_em_campaign_param_tab" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_TAB" description="MOD_EM_CAMPAIGN_PARAM_TAB_DESC" value="1"/>
 
-				<field name="mod_em_campaign_display_groupby" type="checkbox" label="MOD_EM_CAMPAIGN_DISPLAY_GROUPBY" description="MOD_EM_CAMPAIGN_DISPLAY_GROUPBY_DESC" value="1"/>
-				<field type="list" name="mod_em_campaign_groupby" default="" label="MOD_EM_CAMPAIGN_GROUP" description="MOD_EM_CAMPAIGN_GROUP_DESC">
-					<option value="month">LIST_MONTH</option>
-					<option value="program">LIST_PROGRAM</option>
-					<option value="ordering">LIST_ORDERING</option>
-				</field>
-				<field type="list" name="mod_em_campaign_orderby" default="start_date" label="MOD_EM_CAMPAIGN_ORDER" description="MOD_EM_CAMPAIGN_ORDER_DESC">
-					<option value="start_date">LIST_DATE_START</option>
-					<option value="end_date">LIST_DATE_END</option>
-					<option value="formation_start">FORMATION_DATE_START</option>
-					<option value="formation_end">FORMATION_DATE_END</option>
-				</field>
-				<field type="list" name="mod_em_campaign_order_type" default="" label="MOD_EM_CAMPAIGN_ORDER_TYPE" description="MOD_EM_CAMPAIGN_ORDER_TYPE_DESC">
-					<option value="asc">ASC</option>
-					<option value="desc">DESC</option>
-				</field>
+                    <field name="mod_em_campaign_display_groupby" type="checkbox" label="MOD_EM_CAMPAIGN_DISPLAY_GROUPBY" description="MOD_EM_CAMPAIGN_DISPLAY_GROUPBY_DESC" value="1"/>
+                    <field type="list" name="mod_em_campaign_groupby" default="" label="MOD_EM_CAMPAIGN_GROUP" description="MOD_EM_CAMPAIGN_GROUP_DESC">
+                        <option value="month">LIST_MONTH</option>
+                        <option value="program">LIST_PROGRAM</option>
+						<option value="ordering">LIST_ORDERING</option>
+                    </field>
+					<field type="list" name="mod_em_campaign_orderby" default="start_date" label="MOD_EM_CAMPAIGN_ORDER" description="MOD_EM_CAMPAIGN_ORDER_DESC">
+						<option value="start_date">LIST_DATE_START</option>
+						<option value="end_date">LIST_DATE_END</option>
+						<option value="formation_start">FORMATION_DATE_START</option>
+						<option value="formation_end">FORMATION_DATE_END</option>
+					</field>
+					<field type="list" name="mod_em_campaign_order_type" default="" label="MOD_EM_CAMPAIGN_ORDER_TYPE" description="MOD_EM_CAMPAIGN_ORDER_TYPE_DESC">
+						<option value="asc">ASC</option>
+						<option value="desc">DESC</option>
+					</field>
 
-				<field type="list" name="mod_em_campaign_get_teaching_unity" label="MOD_EM_CAMPAIGN_GET_TEACHING_UNITY" description="MOD_EM_CAMPAIGN_GET_TEACHING_UNITY_DESC" default="0">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+					<field type="list" name="mod_em_campaign_get_teaching_unity" label="MOD_EM_CAMPAIGN_GET_TEACHING_UNITY" description="MOD_EM_CAMPAIGN_GET_TEACHING_UNITY_DESC" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 
-				<field type="list" name="mod_em_campaign_show_nav_order" label="MOD_EM_CAMPAIGN_SHOW_NAV_ORDER" description="MOD_EM_CAMPAIGN_SHOW_NAV_ORDER_DESC" default="1">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+					<field type="list" name="mod_em_campaign_show_nav_order" label="MOD_EM_CAMPAIGN_SHOW_NAV_ORDER" description="MOD_EM_CAMPAIGN_SHOW_NAV_ORDER_DESC" default="1">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 
-				<field type="list" name="mod_em_campaign_show_search" label="MOD_EM_CAMPAIGN_SHOW_SEARCH" default="1">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
-				<field type="list" name="mod_em_campaign_show_results" label="MOD_EM_CAMPAIGN_SHOW_RESULTS" default="1">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
+					<field type="list" name="mod_em_campaign_show_search" label="MOD_EM_CAMPAIGN_SHOW_SEARCH" default="1">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+					<field type="list" name="mod_em_campaign_show_results" label="MOD_EM_CAMPAIGN_SHOW_RESULTS" default="1">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
 
-				<field type="text" name="mod_em_program_code" label="MOD_EM_PROGRAM_CODE" description="MOD_EM_PROGRAM_CODE_DESC"/>
-			</fieldset>
-			<fieldset name="single" label="Paramètres des détails">
-				<field type="checkboxes" name="mod_em_campaign_modules_tab" label="MOD_EM_CAMPAIGN_LIST_TAB" description="MOD_EM_CAMPAIGN_LIST_TAB_DESC">
-					<option checked="false" value="faq">FAQ</option>
-					<option checked="false" value="documents">Documents</option>
-				</field>
+					<field type="text" name="mod_em_program_code" label="MOD_EM_PROGRAM_CODE" description="MOD_EM_PROGRAM_CODE_DESC"/>
+				</fieldset>
+				<fieldset name="single" label="Paramètres des détails">
+					<field type="checkboxes" name="mod_em_campaign_modules_tab" label="MOD_EM_CAMPAIGN_LIST_TAB" description="MOD_EM_CAMPAIGN_LIST_TAB_DESC">
+						<option checked="false" value="faq">FAQ</option>
+						<option checked="false" value="documents">Documents</option>
+					</field>
 
-				<field name="mod_em_campaign_param_showprogramme" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_SHOWPROG" description="MOD_EM_CAMPAIGN_PARAM_SHOWPROG_DESC" default="1"/>
-				<field name="mod_em_campaign_param_showcampaign" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_SHOWCAMP" description="MOD_EM_CAMPAIGN_PARAM_SHOWCAMP_DESC" />
-			</fieldset>
+					<field name="mod_em_campaign_param_showprogramme" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_SHOWPROG" description="MOD_EM_CAMPAIGN_PARAM_SHOWPROG_DESC" default="1"/>
+					<field name="mod_em_campaign_param_showcampaign" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_SHOWCAMP" description="MOD_EM_CAMPAIGN_PARAM_SHOWCAMP_DESC" />
+				</fieldset>
 
 			<fieldset name="other" label="Autres (Depreciated)">
 				<field type="list" name="mod_em_campaign_class" label="MOD_EM_CAMPAIGN_CLASS" description="MOD_EM_CAMPAIGN_CLASS_DESC">
@@ -151,13 +152,13 @@
 					<option value="blue">MOD_EM_CAMPAIGN_LIST_BLUE</option>
 					<option value="purple">MOD_EM_CAMPAIGN_LIST_PURPLE</option>
 					<option value="black">MOD_EM_CAMPAIGN_LIST_BLACK</option>
-				</field>
+					</field>
 
-				<field type="list" name="mod_em_campaign_show_localedate" label="MOD_EM_CAMPAIGN_SHOW_LOCALEDATE" description="MOD_EM_CAMPAIGN_SHOW_LOCALEDATE_DESC" default="0">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
-				</field>
-			</fieldset>
-		</fields>
-	</config>
-</extension>
+					<field type="list" name="mod_em_campaign_show_localedate" label="MOD_EM_CAMPAIGN_SHOW_LOCALEDATE" description="MOD_EM_CAMPAIGN_SHOW_LOCALEDATE_DESC" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+				</fieldset>
+			</fields>
+		</config>
+	</extension>

@@ -92,7 +92,7 @@ if($user != null) {
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown' id="userDropdown" style="float: right;">
     <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-        <img src="<?php echo JURI::base()?>images/emundus/menus/user.png" id="userDropdownIcon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
+        <img src="<?php echo JURI::base()?>images/emundus/menus/user.svg" id="userDropdownIcon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
     </div>
     <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
     <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">

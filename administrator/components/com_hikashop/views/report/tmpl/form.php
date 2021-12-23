@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -123,7 +123,10 @@ echo JHTML::_('calendar', $end, 'data[widget][widget_params][end]','period_end',
 			JHTML::_('select.option', 'categories',  JText::_('HIKA_CATEGORIES') ),
 			JHTML::_('select.option', 'discounts',  JText::_('DISCOUNT') ),
 		);
-		echo JHTML::_('hikaselect.radiolist', $arr, "data[widget][widget_params][content]" , 'onClick="updateDisplayType()" class="custom-select"', 'value', 'text', $this->element->widget_params->content);
+		$attribs = 'onClick="updateDisplayType()"';
+		if(!HIKASHOP_J40)
+			$attribs .= ' class="custom-select"';
+		echo JHTML::_('hikaselect.radiolist', $arr, "data[widget][widget_params][content]" , $attribs, 'value', 'text', $this->element->widget_params->content);
 ?>
 							</td>
 						</tr>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -52,13 +52,17 @@ $style = empty($this->element['show_price']) ? 'display:none;' : '';
 <?php
 $js = '
 window.hikashop.ready(function(){
-	hkjQuery("[data-control=\'price\']").change(function(){
-		if(hkjQuery(this).val() == "1" || (hkjQuery(this).val() == "-1" && "'.(int)@$this->default_params['show_price'].'" == "1"))
-			hkjQuery("[data-part=\'price\']").show();
-		else
-			hkjQuery("[data-part=\'price\']").hide();
-	});
+	hkjQuery("[data-control=\'price\']").change(function() { hkPriceToggle(hkjQuery(this).val()); });
+	hkPriceToggle();
 });
+hkPriceToggle = function(val) {
+	if(typeof val === \'undefined\')
+		val = hkjQuery("[data-control=\'price\']").val();
+	if( val == "1" || (val == "-1" && "'.(int)@$this->default_params['show_price'].'" == "1"))
+		hkjQuery("[data-part=\'price\']").show();
+	else
+		hkjQuery("[data-part=\'price\']").hide();
+}
 ';
 $doc = JFactory::getDocument();
 $doc->addScriptDeclaration($js);

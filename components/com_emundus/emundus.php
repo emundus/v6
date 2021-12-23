@@ -435,6 +435,9 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE');
 JText::script('COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE');
 JText::script('COM_EMUNDUS_ATTACHMENTS_CLOSE');
 JText::script('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND');
+JText::script('COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY');
+JText::script('COM_EMUNDUS_ATTACHMENTS_CHECK');
+JText::script('COM_EMUNDUS_ATTACHMENTS_WARNING');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');

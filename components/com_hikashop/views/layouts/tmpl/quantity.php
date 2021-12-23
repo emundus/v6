@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -59,6 +59,11 @@ if(!isset($this->row->all_prices) && isset($this->row->prices))
 if($quantityLayout == 'show_select_price' && !isset($this->row->all_prices)) {
 	$quantityLayout = 'show_select';
 }
+
+$force = $this->params->get('force_input', false);
+
+if($force && $quantityLayout == 'show_none')
+	$quantityLayout = 'show_simple';
 
 switch($quantityLayout) {
 	case 'show_none':

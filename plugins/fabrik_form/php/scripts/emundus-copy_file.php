@@ -38,6 +38,10 @@ $applicant_id 	= $formModel->getElementData('jos_emundus_campaign_candidature___
 $status 		= $formModel->getElementData('jos_emundus_campaign_candidature___status', true);
 $status 		= is_array($status) ? $status[0] : $status;
 $can_delete 	= $formModel->getElementData('jos_emundus_campaign_candidature___can_be_deleted', null);
+$copy_attachment 	    = $formModel->getElementData('jos_emundus_campaign_candidature___copy_attachment', 0);
+$copy_tag 	            = $formModel->getElementData('jos_emundus_campaign_candidature___copy_tag', 0);
+$move_hikashop_command 	= $formModel->getElementData('jos_emundus_campaign_candidature___move_hikashop_command', 0);
+$delete_from_file 	    = $formModel->getElementData('jos_emundus_campaign_candidature___delete_from_file', 0);
 
 // create new fnum
 $fnum_to = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($applicant_id, 7, '0', STR_PAD_LEFT);
@@ -72,14 +76,14 @@ if ($copied == 1) {
 
         $fnumInfos = $profiles->getFnumDetails($fnum_from);
 
-        $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+        //$pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
 
-		$result = $m_application->copyApplication($fnum_from, $fnum_to, $pid);
+        $result = $m_application->copyApplication($fnum_from, $fnum_to, null, $copy_attachment, $fnumInfos['campaign_id'], $copy_tag, $move_hikashop_command, $delete_from_file);
 
-		// 4. Duplicate attachments for new fnum
-		if ($result) {
+        // 4. Duplicate attachments for new fnum
+        /*if ($result) {
             $result = $m_application->copyDocuments($fnum_from, $fnum_to, $pid, $can_delete);
-        }
+        }*/
 
 	// 5. Duplicate evaluation for new fnum
 	// TODO

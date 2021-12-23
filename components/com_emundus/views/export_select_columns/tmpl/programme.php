@@ -42,7 +42,11 @@ if (!empty($s_elements)) {
 		<?php foreach ($this->elements as $t) :?>
 
 			<?php
-                $fabrik_elements[] = $t->fabrik_element;
+                if(!empty($t->table_join)) {
+                    $fabrik_elements[] = $t->table_join.'___'.$t->element_name;
+                } else {
+                    $fabrik_elements[] = $t->fabrik_element;
+                }
 
                 if ($tbl_tmp == '') :?>
                 <?php
@@ -162,6 +166,6 @@ if (!empty($s_elements)) {
     }
     fprintf($csv, chr(0xEF).chr(0xBB).chr(0xBF));
     $res = fputcsv($csv, $fabrik_elements, ",", '"', "\\");
-    echo '<div class="em-link"><a href="index.php?option=com_emundus&controller=files&task=download&name='.$name.'">'.JText::_('COM_EMUNDUS_EXPORTS_EXPORT').'</a></div>';
+    echo '<div class="em-link"><a class="btn btn-info" href="index.php?option=com_emundus&controller=files&task=download&name='.$name.'">'.JText::_('COM_EMUNDUS_EXPORTS_EXPORT').'</a></div>';
 
     ?>

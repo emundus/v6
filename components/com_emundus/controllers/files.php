@@ -1434,7 +1434,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
-    public function getallfnums() 
+    public function getallfnums()
     {
         $m_files = $this->getModel('Files');
         $fnums = $m_files->getAllFnums();
@@ -2793,7 +2793,7 @@ class EmundusControllerFiles extends JControllerLegacy
             //header('Accept-Ranges: bytes');
 
             ob_clean();
-            flush();
+            ob_end_flush();
             readfile($file);
             exit;
         } else {
@@ -4344,7 +4344,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    public function getattachmentcategories() 
+    public function getattachmentcategories()
     {
         $m_files = $this->getModel('Files');
         $categories = $m_files->getAttachmentCategories();

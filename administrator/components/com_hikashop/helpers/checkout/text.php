@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,9 +28,17 @@ class hikashopCheckoutTextHelper extends hikashopCheckoutHelperInterface {
 			$params['text'] = '';
 			return;
 		}
-		$key = strtoupper($params['text']);
-		$trans = JText::_($key);
-		if($trans != $key)
-			$params['text'] = $trans;
+
+		$params['text'] = JHTML::_('content.prepare', hikashop_translate($params['text']));
+	}
+
+	public function haveEmptyContent(&$controller, &$params) {
+		if(empty($params['text']))
+			return true;
+		$text = JHTML::_('content.prepare', hikashop_translate($params['text']));
+		if(empty($text))
+			return true;
+		return false;
+
 	}
 }
