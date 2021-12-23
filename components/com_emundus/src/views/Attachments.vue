@@ -342,14 +342,16 @@ export default {
 			canDownload: true,
 			modalLoading: false,
 			slideTransition: "slide-fade",
+			changeFileEvent: null,
 		};
 	},
 	created() {
-		this.getFnums();
-		this.getUsers();
+		this.changeFileEvent = new Event("changeFile");
 	},
 	mounted() {
 		this.loading = true;
+		this.getFnums();
+		this.getUsers();
 		this.getAttachments();
 		this.setAccessRights();
 	},
@@ -601,22 +603,38 @@ export default {
 		// navigation functions
 		changeFile(position) {
 			this.loading = true;
+
+			const oldFnumPosition = this.fnumPosition;
 			this.displayedFnum = this.fnums[position];
 			this.attachments = [];
 			this.$store.dispatch("attachment/setCheckedAttachments", []);
+			this.setAccessRights();
+			this.resetOrder();
+			this.resetSearch();
+			this.resetCategoryFilters();
+
+			fileService.getFnumInfos(this.displayedFnum).then((response) => {
+				if (response.status === true) {
+					this.changeFileEvent.detail = {
+						fnum: response.fnumInfos,
+						next: position > oldFnumPosition ? true : false,
+						previous: position < oldFnumPosition ? true : false,
+					};
+
+					window.dispatchEvent(this.changeFileEvent);
+				} else {
+					this.displayErrorMessage(response.msg);
+				}
+			});
 
 			this.setDisplayedUser()
 				.then(() => {
 					this.getAttachments()
 						.then(() => {
-							this.loading = false;
-							this.setAccessRights();
-							this.resetOrder();
-							this.resetSearch();
-							this.resetCategoryFilters();
 							this.attachments.forEach((attachment) => {
 								attachment.show = true;
 							});
+							this.loading = false;
 						})
 						.catch((error) => {
 							this.displayErrorMessage(error);
