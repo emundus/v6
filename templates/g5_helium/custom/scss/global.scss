@@ -1859,7 +1859,15 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
-  .modal-header #can-val {
+  #em-modal-actions .modal-footer{
+    position: sticky;
+    bottom: 0;
+  }
+  .modal-footer table{
+    border: unset;
+  }
+  .modal-header #can-val, .modal-footer #can-val {
+    border: unset;
     button.btn.btn-danger {
       background: transparent;
       border: 2px solid grey;
