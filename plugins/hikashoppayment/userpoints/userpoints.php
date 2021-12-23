@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -933,6 +933,8 @@ function setVisible(value){
 		$groups = hikaInput::get()->get('groups', array(), 'array');
 		hikashop_toInteger($groups);
 		$element->payment_params->groups = serialize($groups);
+
+		$element->payment_params->value = hikashop_toFloat($element->payment_params->value);
 
 		if($element->payment_params->virtual_coupon && $element->payment_params->partialpayment == 0) {
 			$app = JFactory::getApplication();

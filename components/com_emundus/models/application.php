@@ -3372,21 +3372,36 @@ class EmundusModelApplication extends JModelList
      * @param $pid Int the profile_id to get list of forms
      * @return bool
      */
-    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0) {
+    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0) {
         $db = JFactory::getDbo();
+        $pids = [];
 
         try {
             $m_profiles = new EmundusModelProfile();
             $fnumInfos = $m_profiles->getFnumDetails($fnum_from);
 
-            if (empty($pid)) {
-                $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+            if(!empty($campaign_id)){
+                $pids = $m_profiles->getProfilesIDByCampaign((array)$campaign_id);
             }
 
-            $forms = @EmundusHelperMenu::buildMenuQuery($pid);
+            if (empty($pid) && empty($campaign_id)) {
+                $pids[] = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+            } elseif (!empty($pid)){
+                $pids[] = $pid;
+            }
+
+            $forms = array();
+            foreach ($pids as $profile){
+                $menus = @EmundusHelperMenu::buildMenuQuery($profile);
+                foreach ($menus as $menu){
+                    $forms[] = $menu;
+                }
+            }
+
+            $tempArray = array_unique(array_column($forms, 'db_table_name'));
+            $forms = array_values(array_intersect_key($forms, $tempArray));
 
             foreach ($forms as $form) {
-
                 $query = 'SELECT * FROM '.$form->db_table_name.' WHERE fnum like '.$db->Quote($fnum_from);
                 $db->setQuery($query);
                 $stored = $db->loadAssoc();
@@ -3411,6 +3426,7 @@ class EmundusModelApplication extends JModelList
                                 LEFT JOIN #__fabrik_elements fe ON fe.group_id=fg.id
                                 LEFT JOIN #__fabrik_joins AS fj ON (fj.group_id = fe.group_id AND fj.list_id != 0 AND fj.element_id = 0)
                                 WHERE ff.form_id = "'.$form->form_id.'"
+                                AND fe.published = 1
                                 ORDER BY ff.ordering';
                     $q=2;
                     $db->setQuery($query);
@@ -3462,55 +3478,97 @@ class EmundusModelApplication extends JModelList
             // sync documents uploaded
             // 1. get list of uploaded documents for previous file defined as duplicated
             if ($copy_attachment) {
-                $query = 'SELECT eu.*, esa.nbmax
+                foreach ($pids as $profile) {
+                    $query = 'SELECT eu.*, esa.nbmax
 											FROM #__emundus_uploads as eu
 											LEFT JOIN #__emundus_setup_attachments as esa on esa.id=eu.attachment_id
-											LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id='.$pid.'
-											WHERE eu.user_id='.$fnumInfos['applicant_id'].'
-											AND eu.fnum like '.$db->Quote($fnum_from).'
+											LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id=' . $profile . '
+											WHERE eu.user_id=' . $fnumInfos['applicant_id'] . '
+											AND eu.fnum like ' . $db->Quote($fnum_from) . '
 											AND esap.duplicate=1';
-                $db->setQuery( $query );
-                $stored = $db->loadAssocList();
+                    $db->setQuery($query);
+                    $stored = $db->loadAssocList();
 
-                if (count($stored) > 0) {
-                    // 2. copy DB définition and duplicate files in applicant directory
-                    foreach ($stored as $key => $row) {
-                        $src = $row['filename'];
-                        $ext = explode('.', $src);
-                        $ext = $ext[count($ext)-1];;
-                        $cpt = 0-(int)(strlen($ext)+1);
-                        $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
-                        $nbmax = $row['nbmax'];
-                        $row['filename'] = $dest;
-                        unset($row['id']);
-                        unset($row['fnum']);
-                        unset($row['nbmax']);
+                    if (count($stored) > 0) {
+                        // 2. copy DB définition and duplicate files in applicant directory
+                        foreach ($stored as $key => $row) {
+                            $src = $row['filename'];
+                            $ext = explode('.', $src);
+                            $ext = $ext[count($ext) - 1];
+                            $cpt = 0 - (int)(strlen($ext) + 1);
+                            $dest = substr($row['filename'], 0, $cpt) . '-' . $row['id'] . '.' . $ext;
+                            $nbmax = $row['nbmax'];
+                            $row['filename'] = $dest;
+                            unset($row['id']);
+                            unset($row['fnum']);
+                            unset($row['nbmax']);
 
-                        try {
-                            $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id='.$fnumInfos['applicant_id'].' AND attachment_id='.$row['attachment_id'].' AND fnum like '.$db->Quote($fnum_to);
-                            $db->setQuery($query);
-                            $cpt = $db->loadResult();
-
-                            if ($cpt < $nbmax) {
-                                $query = 'INSERT INTO #__emundus_uploads (`fnum`, `'.implode('`,`', array_keys($row)).'`) VALUES('.$db->Quote($fnum_to).', '.implode(',', $db->Quote($row)).')';
+                            try {
+                                $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id=' . $fnumInfos['applicant_id'] . ' AND attachment_id=' . $row['attachment_id'] . ' AND fnum like ' . $db->Quote($fnum_to);
                                 $db->setQuery($query);
-                                $db->execute();
-                                $id = $db->insertid();
-                                $path = EMUNDUS_PATH_ABS.$fnumInfos['applicant_id'].DS;
+                                $cpt = $db->loadResult();
 
-                                if (!copy($path.$src, $path.$dest)) {
-                                    $query = 'UPDATE #__emundus_uploads SET filename='.$src.' WHERE id='.$id;
+                                if ($cpt < $nbmax) {
+                                    $query = 'INSERT INTO #__emundus_uploads (`fnum`, `' . implode('`,`', array_keys($row)) . '`) VALUES(' . $db->Quote($fnum_to) . ', ' . implode(',', $db->Quote($row)) . ')';
                                     $db->setQuery($query);
                                     $db->execute();
-                                }
-                            }
+                                    $id = $db->insertid();
+                                    $path = EMUNDUS_PATH_ABS . $fnumInfos['applicant_id'] . DS;
 
-                        } catch (Exception $e) {
-                            $error = JUri::getInstance().' :: USER ID : '.$fnumInfos['applicant_id'].' -> '.$e->getMessage();
-                            JLog::add($error, JLog::ERROR, 'com_emundus');
+                                    if (!copy($path . $src, $path . $dest)) {
+                                        $query = 'UPDATE #__emundus_uploads SET filename=' . $src . ' WHERE id=' . $id;
+                                        $db->setQuery($query);
+                                        $db->execute();
+                                    }
+                                }
+
+                            } catch (Exception $e) {
+                                $error = JUri::getInstance() . ' :: USER ID : ' . $fnumInfos['applicant_id'] . ' -> ' . $e->getMessage();
+                                JLog::add($error, JLog::ERROR, 'com_emundus');
+                            }
                         }
                     }
                 }
+            }
+
+            if ($copy_tag) {
+                $query = $db->getQuery(true);
+                $query->select('*')
+                    ->from($db->quoteName('#__emundus_tag_assoc'))
+                    ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum_from));
+                $db->setQuery($query);
+                $tags_assoc_rows = $db->loadAssocList();
+                if (count($tags_assoc_rows) > 0) {
+                    foreach ($tags_assoc_rows as $key => $row) {
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_tag_assoc'))
+                            ->set($db->quoteName('id_tag') . ' = ' . $row['id_tag'])
+                            ->set($db->quoteName('user_id') . ' = ' . $row['user_id'])
+                            ->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum_to))
+                            ->set($db->quoteName('date_time') . ' = ' . $db->quote($row['date_time']));
+                        $db->setQuery($query);
+                        $db->execute();
+
+                    }
+                }
+            }
+
+            if($move_hikashop_command) {
+                $query = $db->getQuery(true);
+                $query->update($db->quoteName('#__emundus_hikashop'))
+                    ->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum_to))
+                    ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum_from));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            if($delete_from_file) {
+                $query = $db->getQuery(true);
+                $query->update($db->quoteName('#__emundus_campaign_candidature'))
+                    ->set($db->quoteName('published') . ' = -1')
+                    ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum_from));
+                $db->setQuery($query);
+                $db->execute();
             }
         } catch (Exception $e) {
             echo $e->getMessage();
@@ -4074,7 +4132,7 @@ class EmundusModelApplication extends JModelList
         if ($fileExists) {
 
             // create preview based on filetype
-            if ($extension == 'pdf') {                
+            if ($extension == 'pdf') {
                 $content = base64_encode(file_get_contents($filePath));
                 $preview['content'] = '<object width="100%" height="100%" style="border:none;"><embed width="100%" height="100%" src="data:application/pdf;base64,' . $content . '" type="application/pdf"></object>';
             } else if ($extension == 'txt') {

@@ -129,7 +129,7 @@ export default {
 		addPresentationStyles() {
 			const slides =
 				this.$refs["a-preview"].shadowRoot.querySelectorAll(".slide");
-			slides.forEach((slide, key) => {
+			slides.forEach((slide) => {
 				slide.style.padding = "16px";
 				slide.style.margin = "20px";
 				slide.style.width = "calc(100% - 72px)";
@@ -155,10 +155,9 @@ export default {
 	watch: {
 		"$store.state.attachment.selectedAttachment": function () {
 			// check if selected attchment is not an empty object
-			if (
-				Object.keys(this.$store.state.attachment.selectedAttachment).length !==
-				0
-			) {
+			const keys = Object.keys(this.$store.state.attachment.selectedAttachment);
+
+			if (keys.length !== 0) {
 				this.attachment = this.$store.state.attachment.selectedAttachment;
 				this.openMsg = false;
 				this.getPreview();

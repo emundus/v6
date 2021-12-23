@@ -650,8 +650,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
 
-        foreach($attachments as $attachment)
-        {
+        foreach ($attachments as $attachment) {
             // check if file is in server
             if (!file_exists(EMUNDUS_PATH_ABS.$attachment->user_id.DS.$attachment->filename)) {
                 $attachment->existsOnServer = false;
@@ -660,7 +659,7 @@ class EmundusControllerApplication extends JControllerLegacy
             }
         }
 
-        echo json_encode($attachments);
+        echo json_encode(['status' => $attachments !== false ? true : false, 'attachments' => $attachments]);
         exit;
     }
 

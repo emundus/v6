@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -190,6 +190,14 @@ function hika_payment_algorithm(el) {
 					</td>
 					<td>
 						<input type="text" name="data[shipping][shipping_params][shipping_percentage]" value="<?php echo (float)@$this->element->shipping_params->shipping_percentage; ?>" />%
+					</td>
+				</tr>
+				<tr>
+					<td class="key"><?php
+						echo JText::_('HIKA_FORMULA');
+					?></td>
+					<td>
+						<input type="text" name="data[shipping][shipping_params][shipping_formula]" value="<?php echo @$this->element->shipping_params->shipping_formula; ?>" />
 					</td>
 				</tr>
 				<tr>
@@ -618,6 +626,16 @@ function hika_payment_algorithm(el) {
 
 		if($this->plugin_type == 'shipping') {
 ?>
+				<tr>
+					<td class="key">
+						<label for="data[shipping][shipping_params][shipping_zip_regex]"><?php
+							echo JText::_('SHIPPING_ZIP_REGEX');
+						?></label>
+					</td>
+					<td>
+						<input type="text" name="data[shipping][shipping_params][shipping_zip_regex]" value="<?php echo @$this->element->shipping_params->shipping_zip_regex; ?>"/>
+					</td>
+				</tr>
 				<tr>
 					<td class="key">
 						<label for="data[shipping][shipping_params][shipping_zip_prefix]"><?php

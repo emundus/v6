@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -67,9 +67,22 @@ window.orderMgr.selectProduct = function(el) {
 			$usefulFields = array();
 			foreach($productFields as $field){
 				$fieldname = $field->field_namekey;
-				foreach($this->products as $product){
-					if(!empty($product->$fieldname)){
-						$usefulFields[] = $field;
+				foreach($this->order->products as $k => $product) {
+					if(empty($this->products[$product->product_id]))
+						continue;
+
+					if(!empty($this->products[$product->product_id]->$fieldname)){
+						$usefulFields[$fieldname] = $field;
+						break;
+					}
+					if(empty($this->products[$product->product_id]->product_parent_id))
+						continue;
+					$parent_id = $this->products[$product->product_id]->product_parent_id;
+
+					if(empty($this->products[$parent_id]))
+						continue;
+					if(!empty($this->products[$parent_id]->$fieldname)){
+						$usefulFields[$fieldname] = $field;
 						break;
 					}
 				}
@@ -86,6 +99,16 @@ window.orderMgr.selectProduct = function(el) {
 ?>
 			<th class="hikashop_order_item_price_title title"><?php echo JText::_('UNIT_PRICE'); ?></th>
 			<th class="hikashop_order_item_files_title title"><?php echo JText::_('HIKA_FILES'); ?></th>
+<?php
+	$weight_display = false;
+	foreach($this->order->products as $k => $product) {
+		if(bccomp((float)$product->order_product_weight, 0, 3))
+			$weight_display = true;
+	}
+	if($weight_display) {
+?>
+			<th class="hikashop_order_item_weight_title title"><?php echo JText::_('PRODUCT_WEIGHT'); ?></th>
+<?php } ?>
 			<th class="hikashop_order_item_quantity_title title"><?php echo JText::_('PRODUCT_QUANTITY'); ?></th>
 			<th class="hikashop_order_item_total_price_title title"><?php echo JText::_('PRICE'); ?></th>
 <?php
@@ -96,7 +119,7 @@ window.orderMgr.selectProduct = function(el) {
 		}
 	}
 ?>
-			<th colspan="2" class="hikashop_order_item_remove_title title"><?php echo JText::_('HIKASHOP_ACTIONS'); ?></th>
+			<th colspan="3" class="hikashop_order_item_remove_title title"><?php echo JText::_('HIKASHOP_ACTIONS'); ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -163,10 +186,13 @@ foreach($this->order->products as $k => $product) {
 						foreach($productFields as $field){
 							$namekey = $field->field_namekey;
 							$productData = @$this->products[$product->product_id];
+							$value = $productData->$namekey;
+							if(empty($value) && !empty($productData->product_parent_id) && !empty($this->products[$productData->product_parent_id]) && !empty($this->products[$productData->product_parent_id]->$namekey))
+								$value = $this->products[$productData->product_parent_id]->$namekey;
 							?>
-							<td class="hikashop_order_product_name_value<?php echo $td_class; ?>"><?php
-							if(!empty($productData->$namekey))
-								echo '<p class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->show($field,$productData->$namekey).'</p>';
+							<td class="hikashop_order_product_name_value"><?php
+							if(!empty($value))
+								echo '<p class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->show($field, $value).'</p>';
 							?>
 							</td>
 						<?php
@@ -228,6 +254,15 @@ foreach($this->order->products as $k => $product) {
 		echo implode('<br/>',$html);
 	}
 			?></td>
+<?php
+	if($weight_display) {
+?>
+			<td class="hikashop_order_item_weight_value">
+<?php
+		echo rtrim(rtrim($product->order_product_weight,'0'),',.').' '.JText::_($product->order_product_weight_unit);
+?>
+			</td>
+<?php } ?>
 			<td class="hikashop_order_item_quantity_value"><?php echo $product->order_product_quantity;?></td>
 			<td class="hikashop_order_item_total_price_value"><?php echo $this->currencyHelper->format($product->order_product_total_price, $this->order->order_currency_id);?></td>
 <?php
@@ -246,6 +281,13 @@ foreach($this->order->products as $k => $product) {
 					echo hikashop_completeLink('order&task=edit&subtask=products&order_id='.$this->order->order_id.'&order_product_id='.$product->order_product_id, true);
 				?>"><i class="fas fa-pen"></i> <?php echo JText::_('HIKA_EDIT'); ?></a>
 			</td>
+			<td class="hikashop_order_item_add_option_value" style="text-align:center">
+<?php if(empty($product->order_product_option_parent_id)) { ?>
+				<a class="btn btn-primary" onclick="return window.orderMgr.setProduct(this);" href="<?php
+					echo hikashop_completeLink('product&task=selection&single=1&confirm=0&after=order|product_create&afterParams=order_id|'.$this->order->order_id.',parent_id|'.$product->order_product_id, true);
+				?>"><i class="fas fa-plus"></i> <?php echo JText::_('HIKA_ADD_OPTION'); ?></a>
+			</td>
+<?php } ?>
 			<td class="hikashop_order_item_remove_value" style="text-align:center">
 				<a class="btn btn-danger" onclick="return window.orderMgr.delProduct(this, <?php echo $product->order_product_id; ?>);" href="<?php echo hikashop_completeLink('order&task=product_delete&order_id='.$this->order->order_id.'&order_product_id='.$product->order_product_id); ?>">
 					<i class="fas fa-trash"></i> <?php echo JText::_('HIKA_DELETE'); ?>

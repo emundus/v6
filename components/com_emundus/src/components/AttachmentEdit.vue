@@ -23,14 +23,14 @@
 						v-model="attachment.is_validated"
 						:disabled="!canUpdate"
 					>
-						<option value="-2">
-							{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}
-						</option>
+						<option value="1">{{ translate("VALID") }}</option>
+						<option value="0">{{ translate("INVALID") }}</option>
 						<option value="2">
 							{{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}
 						</option>
-						<option value="1">{{ translate("VALID") }}</option>
-						<option value="0">{{ translate("INVALID") }}</option>
+						<option value="-2">
+							{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}
+						</option>
 					</select>
 				</div>
 				<div class="input-group" v-if="canUpdate">
@@ -78,7 +78,7 @@
 				</div>
 				<div v-if="attachment.category">
 					<span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}</span>
-					<span>{{ translate(attachment.category) }}</span>
+					<span>{{ this.categories[attachment.category] }}</span>
 				</div>
 				<div v-if="attachment.modified_by">
 					<span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}</span>
@@ -91,10 +91,6 @@
 					<span>{{ formattedDate(attachment.modified) }}</span>
 				</div>
 				<!-- TODO: add file size -->
-				<!-- <div v-if="attachment.file_size">
-                    <span>{{ translate('FILE_SIZE') }}</span>
-                    <span> ... kb </span>
-                </div> -->
 			</div>
 		</div>
 		<div class="actions">
@@ -123,6 +119,7 @@ export default {
 	data() {
 		return {
 			attachment: {},
+			categories: {},
 			file: null,
 			canUpdate: false,
 			error: false,
@@ -134,6 +131,7 @@ export default {
 			? this.$store.state.user.rights[this.fnum].canUpdate
 			: false;
 		this.attachment = this.$store.state.attachment.selectedAttachment;
+		this.categories = this.$store.state.attachment.categories;
 	},
 	methods: {
 		async saveChanges() {
@@ -222,10 +220,9 @@ export default {
 	watch: {
 		"$store.state.attachment.selectedAttachment": function () {
 			// check if selected attchment is not an empty object
-			if (
-				Object.keys(this.$store.state.attachment.selectedAttachment).length !==
-				0
-			) {
+			const keys = Object.keys(this.$store.state.attachment.selectedAttachment);
+
+			if (keys.length > 0) {
 				this.attachment = this.$store.state.attachment.selectedAttachment;
 			}
 		},
