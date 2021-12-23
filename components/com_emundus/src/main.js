@@ -13,7 +13,7 @@ let componentName = "";
 
 if (document.getElementById("em-application-attachment")) {
     const element = document.getElementById("em-application-attachment");
-    Array.prototype.slice.call(element.attributes).forEach(function(attr) {
+    Array.prototype.slice.call(element.attributes).forEach(function (attr) {
         data[attr.name] = attr.value;
     });
 
@@ -34,11 +34,11 @@ if (mountApp) {
         render(h) {
             return h(
                 App, {
-                    props: {
-                        componentName: componentName,
-                        data: data
-                    },
-                }
+                props: {
+                    componentName: componentName,
+                    data: data
+                },
+            }
             );
         },
     });
