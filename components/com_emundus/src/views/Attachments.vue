@@ -796,12 +796,8 @@ export default {
 				this.checkedAttachments
 			);
 		},
-		updateCheckedAttachments(aid) {
-			if (this.checkedAttachments.contains(aid)) {
-				this.checkedAttachments.splice(this.checkedAttachments.indexOf(aid), 1);
-			} else {
-				this.checkedAttachments.push(aid);
-			}
+		updateCheckedAttachments(attachments) {
+			this.checkedAttachments = attachments;
 		},
 
 		// Modal methods
