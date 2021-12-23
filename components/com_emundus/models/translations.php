@@ -47,24 +47,14 @@ class EmundusModelTranslations extends JModelList
                 }
                 $data = simplexml_load_string($string_datas);
                 $object = new stdClass;
-                $object->name = $data->name;
-                $object->description = JText::_($data->description);
-                $object->table = $data->reference->table->name;
+                $object->name = $data->name->__toString();
+                $object->description = $data->description->__toString();
+                $object->table = $data->reference->table;
+                $objects[] = $object;
             }
         }
-        return [];
 
-        // Ouverture du fichier
-        /*$fp = fopen($fichier, "r");
-        if (!$fp) die("Impossible d'ouvrir le fichier XML");
-
-        // Lecture ligne par ligne
-        while ( $ligneXML = fgets($fp, 1024)) {
-            // Affichage "brut" de la ligne convertie en HTML
-            echo htmlEntities($ligneXML)."<br />";
-        }
-
-        fclose($fp);*/
+        return $objects;
     }
 
     public function getTranslations($type = 'override',$lang_code = '*',$search = '',$location = '',$reference_table = '',$reference_id = 0,$tag = ''){

@@ -1,16 +1,13 @@
 <?xml version="1.0" ?>
 <falang type="contentelement" name="COM_EMUNDUS_EXPORTS_FORMS_PDF">
-  <name>COM_EMUNDUS_EXPORTS_FORMS_PDF</name>
+  <name>COM_EMUNDUS_CONTENTELEMENTS_SETUP_PROFILES</name>
   <author>eMundus - www.emundus.fr</author>
   <version>1.0</version>
-  <description>Description</description>
+  <description>COM_EMUNDUS_CONTENTELEMENTS_SETUP_PROFILES_DESC</description>
   <reference>
   	<table name="emundus_setup_profiles" type="emundus">
   		<field type="referenceid" name="id" translate="0">ID</field>
   		<field type="children" name="fabrik_forms" translate="1">COM_EMUNDUS_PAGES</field>
   	</table>
   </reference>
-  <translationfilters>
-  	  <keyword>label</keyword>
-  </translationfilters>
 </falang>
