@@ -152,16 +152,16 @@
       -ms-flex-direction: column;
           flex-direction: column;
 }
-.attachment-row {
+.attachment-row[data-v-53b38237] {
   border-bottom: 1px solid #e0e0e0;
 }
-.attachment-row:hover:not(.checked) {
-  background-color: #f2f2f3;
+.attachment-row[data-v-53b38237]:hover:not(.checked) {
+  background-color: #f2f2f3 !important;
 }
-.attachment-row.checked {
-  background-color: #f0f6fd;
+.attachment-row.checked[data-v-53b38237] {
+  background-color: #f0f6fd !important;
 }
-.attachment-row .valid-state select {
+.attachment-row .valid-state select[data-v-53b38237] {
   padding: 4px 8px;
   border-radius: 4px;
   background-color: var(--grey-bg-color);
@@ -171,37 +171,37 @@
   width: -moz-max-content;
   width: max-content;
 }
-.attachment-row .valid-state select::-ms-expand {
+.attachment-row .valid-state select[data-v-53b38237]::-ms-expand {
   display: none !important;
 }
-.attachment-row .valid-state.warning select {
+.attachment-row .valid-state.warning select[data-v-53b38237] {
   color: var(--warning-color);
   background-color: var(--warning-bg-color);
 }
-.attachment-row .valid-state.success select {
+.attachment-row .valid-state.success select[data-v-53b38237] {
   color: var(--success-color);
   background-color: var(--success-bg-color);
 }
-.attachment-row .valid-state.error select {
+.attachment-row .valid-state.error select[data-v-53b38237] {
   color: var(--error-color);
   background-color: var(--error-bg-color);
 }
-.attachment-row .permissions .material-icons {
+.attachment-row .permissions .material-icons[data-v-53b38237] {
   margin: 0 10px;
   cursor: pointer;
   opacity: 0.3;
 }
-.attachment-row .permissions .material-icons.active {
+.attachment-row .permissions .material-icons.active[data-v-53b38237] {
   opacity: 1;
 }
-.attachment-row .td-document {
+.attachment-row .td-document[data-v-53b38237] {
   max-width: 250px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
 }
-.attachment-row .td-document .warning.file-not-found {
+.attachment-row .td-document .warning.file-not-found[data-v-53b38237] {
   color: var(--error-color);
   -webkit-transform: translate(10px, 3px);
           transform: translate(10px, 3px);

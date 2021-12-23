@@ -1,5 +1,9 @@
 <template>
-	<tr class="attachment-row" :key="attachment.aid">
+	<tr
+		class="attachment-row"
+		:class="{ checked: checkedAttachments.includes(attachment.aid) }"
+		:key="attachment.aid"
+	>
 		<td>
 			<input
 				class="attachment-check"
@@ -143,16 +147,16 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .attachment-row {
 	border-bottom: 1px solid #e0e0e0;
 
 	&:hover:not(.checked) {
-		background-color: #f2f2f3;
+		background-color: #f2f2f3 !important;
 	}
 
 	&.checked {
-		background-color: #f0f6fd;
+		background-color: #f0f6fd !important;
 	}
 
 	.valid-state {

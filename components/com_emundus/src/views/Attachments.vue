@@ -210,7 +210,6 @@
 						<AttachmentRow
 							v-for="attachment in displayedAttachments"
 							:key="attachment.aid"
-							:class="{ checked: checkedAttachments.includes(attachment.aid) }"
 							:attachment="attachment"
 							:checkedAttachmentsProp="checkedAttachments"
 							@open-modal="openModal(attachment)"

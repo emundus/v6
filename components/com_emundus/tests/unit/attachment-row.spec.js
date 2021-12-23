@@ -9,7 +9,7 @@ describe('AttachmentRow.vue', () => {
 	const wrapper = mount(AttachmentRow, {
 		propsData: {
 			attachment: mockAttachment.attachments[1],
-			checkedAttachmentsProp: [123],
+			checkedAttachmentsProp: [mockAttachment.attachments[1].aid],
 		},
 		mixins: [translate, mixin],
 		global: {
@@ -27,7 +27,11 @@ describe('AttachmentRow.vue', () => {
 	});
 
 	it('should set checkedAttachments data to equals prop', () => {
-		expect(wrapper.vm.checkedAttachments).toEqual([123]);
+		expect(wrapper.vm.checkedAttachments).toEqual([mockAttachment.attachments[1].aid]);
+	});
+
+	it('Expect element to have class checked', () => {
+		expect(wrapper.find('.attachment-row').classes()).toContain('checked');
 	});
 
 	it('should format date', () => {
@@ -46,7 +50,7 @@ describe('AttachmentRow.vue', () => {
 
 	it('onChange attachment-check should emit update-checked-attachments with an array as parameter', () => {
 		wrapper.find('.attachment-check').trigger('change');
-		expect(wrapper.emitted('update-checked-attachments')[0][0]).toEqual([123]);
+		expect(wrapper.emitted('update-checked-attachments')[0][0]).toEqual(["3"]);
 	});
 
 	it('onChange .status select should emit update-status', () => {
