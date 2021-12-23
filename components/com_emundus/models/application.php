@@ -2808,6 +2808,7 @@ class EmundusModelApplication extends JModelList
             }
 
             $query .= " ORDER BY sa.category,sa.ordering,sa.value ASC";
+
             $this->_db->setQuery($query);
             $docs = $this->_db->loadObjectList();
         } catch(Exception $e) {
@@ -4317,8 +4318,7 @@ class EmundusModelApplication extends JModelList
             } else {
                 $preview['status'] = false;
                 $preview['error'] = 'unsupported';
-                $preview['content'] = '<div style="width:100%;height: 100%;display: flex;flex-direction: column;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('COM_EMUNDUS_ATTACHMENTS_FILE_TYPE_NOT_SUPPORTED') . '</p><p><a href="'. JURI::base() . $filePath . '" target="_blank" download>' . JText::_('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD')  . '</a></p>
-                </div>';
+                $preview['content'] = '<div style="width:100%;height: 100%;display: flex;flex-direction: column;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('COM_EMUNDUS_ATTACHMENTS_FILE_TYPE_NOT_SUPPORTED') . '</p><p><a href="'. JURI::base() . $filePath . '" target="_blank" download>' . JText::_('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD')  . '</a></p></div>';
             }
         } else {
             $preview['status'] = false;

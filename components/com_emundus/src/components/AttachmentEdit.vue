@@ -6,10 +6,10 @@
         <div class="input-group">
           <label for="description">{{ translate("DESCRIPTION") }} </label>
           <textarea
-            name="description"
-            type="text"
-            v-model="attachment.description"
-            :disabled="!canUpdate"
+              name="description"
+              type="text"
+              v-model="attachment.description"
+              :disabled="!canUpdate"
           >
           </textarea>
         </div>
@@ -17,9 +17,9 @@
         <div class="input-group">
           <label for="status">{{translate("COM_EMUNDUS_ATTACHMENTS_CHECK")}}</label>
           <select
-            name="status"
-            v-model="attachment.is_validated"
-            :disabled="!canUpdate"
+              name="status"
+              v-model="attachment.is_validated"
+              :disabled="!canUpdate"
           >
             <option value="-2">{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}</option>
             <option value="2">{{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}</option>
@@ -32,10 +32,10 @@
             {{ translate("COM_EMUNDUS_ATTACHMENTS_REPLACE") }}</label
           >
           <input
-            type="file"
-            name="replace"
-            @change="updateFile"
-            :accept="allowedType"
+              type="file"
+              name="replace"
+              @change="updateFile"
+              :accept="allowedType"
           />
         </div>
       </div>
@@ -58,8 +58,8 @@
         </div>
         <div v-if="attachment.modified">
           <span>{{
-            translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE")
-          }}</span>
+              translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE")
+            }}</span>
           <span>{{ formattedDate(attachment.modified) }}</span>
         </div>
         <!-- TODO: add file size -->
@@ -131,8 +131,8 @@ export default {
         if (response.status.file_update) {
           // need to update file preview
           const data = await attachmentService.getPreview(
-            this.$store.state.user.displayedUser,
-            this.attachment.filename
+              this.$store.state.user.displayedUser,
+              this.attachment.filename
           );
 
           // store preview data
