@@ -10,6 +10,7 @@ describe('AttachmentRow.vue', () => {
 		propsData: {
 			attachment: mockAttachment.attachments[1],
 			checkedAttachmentsProp: [mockAttachment.attachments[1].aid],
+			canUpdate: true,
 		},
 		mixins: [translate, mixin],
 		global: {
@@ -56,5 +57,52 @@ describe('AttachmentRow.vue', () => {
 	it('onChange .status select should emit update-status', () => {
 		wrapper.find('.status select').trigger('change');
 		expect(wrapper.emitted('update-status')).toBeTruthy();
+	});
+
+	// .visibility-permission should have class active if can_be_viewed is true
+	it('should have class active if can_be_viewed is true', () => {
+		expect(wrapper.find('.visibility-permission').classes()).toContain('active');
+	});
+
+	// .delete-permission should have class active if can_be_deleted is true
+	it('should have class active if can_be_deleted is true', () => {
+		expect(wrapper.find('.delete-permission').classes()).toContain('active');
+	});
+
+	// click on visibility-permission should emit change-permission with first param equals to can_be_viewed
+	it('onClick .visibility-permission should emit change-permission with correct parameters', () => {
+		wrapper.find('.visibility-permission').trigger('click');
+		expect(wrapper.emitted('change-permission')).toBeTruthy();
+		expect(wrapper.emitted('change-permission')[0][0]).toBe("can_be_viewed");
+		expect(wrapper.emitted('change-permission')[0][1]).toBe(wrapper.vm.attachment);
+	});
+});
+
+describe('AttachmentRow.vue but user can not update', () => {
+	const wrapper = mount(AttachmentRow, {
+		propsData: {
+			attachment: mockAttachment.attachments[1],
+			checkedAttachmentsProp: [mockAttachment.attachments[1].aid],
+			canUpdate: false,
+		},
+		mixins: [translate, mixin],
+		global: {
+			plugins: ['vue-js-modal']
+		},
+		store
+	});
+
+	it('should have disabled attribute to true', () => {
+		expect(wrapper.find('.valid-state select').attributes('disabled')).toBe('disabled');
+	});
+
+	it('onChange select, update-status should not be emitted', () => {
+		wrapper.find('.status select').trigger('change');
+		expect(wrapper.emitted('update-status')).toBeFalsy();
+	});
+
+	it('onClick .visibility-permission should not emit change-permission', () => {
+		wrapper.find('.visibility-permission').trigger('click');
+		expect(wrapper.emitted('change-permission')).toBeFalsy();
 	});
 });

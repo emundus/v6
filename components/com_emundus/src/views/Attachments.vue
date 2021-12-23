@@ -212,6 +212,7 @@
 							:key="attachment.aid"
 							:attachment="attachment"
 							:checkedAttachmentsProp="checkedAttachments"
+							:canUpdate="canUpdate"
 							@open-modal="openModal(attachment)"
 							@update-checked-attachments="updateCheckedAttachments"
 							@update-status="updateStatus"

@@ -35,7 +35,10 @@
 				error: attachment.is_validated == 0,
 			}"
 		>
-			<select @change="(e) => updateStatus(e)">
+			<select
+				@change="(e) => updateStatus(e)"
+				:disabled="canUpdate === false ? true : false"
+			>
 				<option value="1" :selected="attachment.is_validated == 1">
 					{{ translate("VALID") }}
 				</option>
@@ -60,13 +63,13 @@
 		<td class="date">{{ formattedDate(attachment.modified) }}</td>
 		<td class="permissions">
 			<span
-				class="material-icons"
+				class="material-icons visibility-permission"
 				:class="{ active: attachment.can_be_viewed == '1' }"
 				@click="changePermission('can_be_viewed', attachment)"
 				>visibility</span
 			>
 			<span
-				class="material-icons"
+				class="material-icons delete-permission"
 				:class="{ active: attachment.can_be_deleted == '1' }"
 				@click="changePermission('can_be_deleted', attachment)"
 				>delete_outlined</span
@@ -88,6 +91,10 @@ export default {
 		checkedAttachmentsProp: {
 			type: Array,
 			required: true,
+		},
+		canUpdate: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	mixins: [mixin],
@@ -133,10 +140,14 @@ export default {
 			this.$emit("open-modal", this.attachment);
 		},
 		updateStatus(e) {
-			this.$emit("update-status", e, this.attachment);
+			if (this.canUpdate) {
+				this.$emit("update-status", e, this.attachment);
+			}
 		},
 		changePermission(permission, attachment) {
-			this.$emit("change-permission", permission, attachment);
+			if (this.canUpdate) {
+				this.$emit("change-permission", permission, attachment);
+			}
 		},
 	},
 	watch: {
