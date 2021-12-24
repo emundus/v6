@@ -10,7 +10,7 @@
     <copyright>Copyright Info</copyright>
     <license>License Info</license>
     <!--  The version string is recorded in the components table -->
-    <version>0.1.0</version>
+    <version>8.0.0</version>
     <!-- The description is optional and defaults to the name -->
     <description>Messenger installation progressing...</description>
 
@@ -40,21 +40,4 @@
         <language tag="fr-FR">fr-FR/fr-FR.com_emundus_messenger.ini</language>
         <language tag="en-GB">en-GB/en-GB.com_emundus_messenger.ini</language>
     </languages>
-
-    <administration>
-        <!-- Administration Menu Section -->
-        <menu link='index.php?option=com_emundus_messenger'>eMundus Messenger</menu>
-        <!-- Administration Main File Copy Section -->
-        <!-- Note the folder attribute: This attribute describes the folder
-            to copy FROM in the package to install therefore files copied
-            in this section are copied from /admin/ in the package -->
-        <files folder="admin">
-            <folder>helpers</folder>
-            <folder>language</folder>
-            <!-- Admin Main File Copy Section -->
-            <filename>index.html</filename>
-            <filename>emundus_messenger.php</filename>
-        </files>
-    </administration>
-
 </extension>

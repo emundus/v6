@@ -79,8 +79,8 @@ class MakeUpdateServer extends JApplicationCli
         $name = preg_split("/[_]+/", $component, 2);
         $admin_path = JPATH_ADMINISTRATOR . "/components/". $component ."/";
         $site_path = JPATH_BASE . "/components/". $component ."/";
-//        $fr_path = $admin_path . 'language/fr-FR';
-//        $en_path = $admin_path . 'language/en-GB';
+        $fr_path = JPATH_BASE . 'language/fr-FR';
+        $en_path = JPATH_BASE . 'language/en-GB';
         $media_path = JPATH_BASE . "/media/" . $component;
         $xml_path = $admin_path . $name[1] .'.xml';
         // Set destination path
@@ -89,8 +89,8 @@ class MakeUpdateServer extends JApplicationCli
         // Copy files in tmp folder
         $this->custom_copy($admin_path, $dest . '/admin');
         $this->custom_copy($site_path, $dest . '/site');
-//        $this->custom_copy($fr_path, $dest . '/language');
-//        $this->custom_copy($en_path, $dest . '/language');
+        $this->custom_copy($fr_path, $dest . '/language');
+        $this->custom_copy($en_path, $dest . '/language');
         $this->custom_copy($media_path, $dest . '/media/' . $component);
         if (!copy($xml_path, $dest . '/'. $name[1] . '.xml')) {
             $xml_path = $site_path . $name[1] . '.xml';
@@ -143,6 +143,7 @@ class MakeUpdateServer extends JApplicationCli
     }
 
     /**
+     * Copy directory for component packaging
      * @param $src
      * @param $dst
      * @return void
@@ -176,10 +177,10 @@ class MakeUpdateServer extends JApplicationCli
     }
 
     /**
+     * Delete all files in tmp folder
      * @return void
      */
     public function deleteTmp() {
-        # Delete all files in tmp folder
         $path = JPATH_ROOT . '/tmp/';
         if (file_exists($path)) {
             $dir = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
@@ -191,170 +192,122 @@ class MakeUpdateServer extends JApplicationCli
     }
 
     /**
-     * Create xml files for server update
-     * @param $component
+     * Create xml files for each component of the update server
+     * @param $comp
      * @param $filepath
-     * @param null $content_list
-     * @param $content_update
-     * @return void
+     * @param $file
+     * @return false|string
+     * @throws Exception
      */
-    public function addXml($component, $filepath, $content_list=null) {
-        # list.xml
-        mkdir($filepath);
-        $update_filepath = $filepath . "/" . $component;
-        mkdir($update_filepath);
+    public function makeXml($comp, $filepath, $file){
 
-        # updates.xml
-        $content_update = $this->makeXmlUpdate($component);
-        $update = fopen($update_filepath . "/updates.xml", "w") or die("Unable to open file!");
-        fwrite($update, $content_update);
-        fclose($update);
-
-        $html = fopen($update_filepath . "/" . $component ."-" . $this->version . ".html", "w") or die("Unable to open file!");
-        fclose($html);
-    }
-
-    public function makeXmlUpdate($comp){
-        $content_update = <<<XML
-            <updates>
-            </updates>
-            XML;
-
-        $updates = new SimpleXMLElement($content_update);
-        //$extensionset->addAttribute('extension');
-        $update=$updates->addChild('update');
-        $update->addChild('name', $comp);
-        $update->addChild('element', $comp);
-        $update->addChild('type', 'component');
-        $update->addChild('version', $this->version);
-        $update->addChild('infourl', 'http://localhost/emundus-updates/'.$comp.'/'.$comp.'-'.$this->version.'.html');
-        $update->addChild('downloads');
-        $downloadurl=$update->downloads->addChild('downloadurl', 'http://localhost/emundus-updates/'.$comp.'/'.$comp.'-'.$this->version.'.zip');
-        $downloadurl->addAttribute('type', 'full');
-        $downloadurl->addAttribute('format', 'zip');
-        $tags =$update->addChild('tags');
-        $tags->addChild('tag', 'stable');
-        $targetplatform = $update->addChild('targeplatformversion');
-        $targetplatform->addAttribute('name', 'joomla');
-        $targetplatform->addAttribute('version', '3.[23456789]');
-        $update->addChild('php_minimum', '5.3');
-        $dom = new DOMDocument("1.0");
-        $dom->preserveWhiteSpace = false;
-        $dom->formatOutput = true;
-        $dom->loadXML($updates->asXML());
-        return $dom->saveXML();
-    }
-
-    public function makeXmlList($comp_array, $filepath){
-        $content_list=<<<XML
-            <extensionset>
-            </extensionset>
-            XML;
-        $extensionset = new SimpleXMLElement($content_list);
-        foreach ($comp_array as $comp) {
-            $name = preg_split("/[_]+/", $comp, 2);
-            if (!file_exists($xml_path = JPATH_ADMINISTRATOR . "/components/" . $comp . "/" . $name[1] . '.xml')) {
-                $xml_path= JPATH_SITE . "/components/" . $comp . "/" . $name[1] . '.xml';
-            };
-
-            $manifest = simplexml_load_file($xml_path);
-
-
-            //$extensionset->addAttribute('extension');
-            $extension = $extensionset->addChild('extension');
-            $extension->addChild('name', ucwords($name[1]));
-            $extension->addChild('element', $comp);
-            $extension->addChild('type', $manifest->attributes()['type'][1]);
-            $extension->addChild('client', $manifest->attributes()['client'][1]);
-            $extension->addChild('version', $this->version);
-            $extension->addChild('targeplatformversion', '3.[23456789]');
-            $extension->addChild('detailsurl', 'http://localhost/emundus-updates/' . $comp . '/updates.xml');
+        $name = preg_split("/[_]+/", $comp, 2);
+        if (!file_exists($xml_path = JPATH_ADMINISTRATOR . "/components/" . $comp . "/" . $name[1] . '.xml')) {
+            $xml_path= JPATH_SITE . "/components/" . $comp . "/" . $name[1] . '.xml';
+        };
+        $manifest = simplexml_load_file($xml_path);
+        switch ($file) {
+            case 'list':
+                $content_list=<<<XML
+                    <extensionset>
+                    </extensionset>
+                    XML;
+                $xml = new SimpleXMLElement($content_list);
+                $xml->addAttribute('extension');
+                $extension = $xml->addChild('extension');
+                $extension->addChild('name', ucwords($name[1]));
+                $extension->addChild('element', $comp);
+                $extension->addChild('type', $manifest->attributes()['type'][1]);
+                $extension->addChild('client', $manifest->attributes()['client'][1]);
+                $extension->addChild('version', $this->version);
+                $extension->addChild('targeplatformversion', '3.[23456789]');
+                $extension->addChild('detailsurl', 'http://localhost/emundus-updates/' . $comp . '/updates.xml');
+                break;
+            case 'updates':
+                $content_update = <<<XML
+                    <updates>
+                    </updates>
+                    XML;
+                $xml = new SimpleXMLElement($content_update);
+                $update=$xml->addChild('update');
+                $update->addChild('name', ucwords($name[1]));
+                $update->addChild('element', $comp);
+                $update->addChild('type', $manifest->attributes()['type'][1]);
+                $update->addChild('version', $this->version);
+                $update->addChild('infourl', 'http://localhost/emundus-updates/'.$comp.'/'.$comp.'-'.$this->version.'.html');
+                $update->addChild('downloads');
+                $downloadurl=$update->downloads->addChild('downloadurl', 'http://localhost/emundus-updates/'.$comp.'/'.$comp.'-'.$this->version.'.zip');
+                $downloadurl->addAttribute('type', 'full');
+                $downloadurl->addAttribute('format', 'zip');
+                $tags =$update->addChild('tags');
+                $tags->addChild('tag', 'stable');
+                $targetplatform = $update->addChild('targeplatformversion');
+                $targetplatform->addAttribute('name', 'joomla');
+                $targetplatform->addAttribute('version', '3.[23456789]');
+                $update->addChild('php_minimum', '5.3');
         }
         $dom = new DOMDocument("1.0");
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
-        $dom->loadXML($extensionset->asXML());
-        $content_list = $dom->saveXML();
-        $list = fopen($filepath . "/list.xml", "w") or die("Unable to open file!");
-        fwrite($list, $content_list);
-        fclose($list);
-
-        return $dom->saveXML();
+        $dom->loadXML($xml->asXML());
+        $content = $dom->saveXML();
+        return $content;
     }
 
     public function doExecute()
     {
-        $com = 'com_emundus';
-        $com_onboard = 'com_emundus_onboard';
-        $com_messenger = 'com_emundus_messenger';
         $this->version = "8.0.0";
-        /**
-         * Replace sql files in component directory
-         */
-        //$this->removeSql($com);
-
-
-        /**
-         * Make update server for the component
-         */
+        $comp_array = array('com_emundus', 'com_emundus_onboard', 'com_emundus_messenger');
         $sep = "</extension>";
         $sep_admin = 'folder="admin">';
         $updateserver = "\t<updateservers>\n\t\t<server type='collection' name='eMundus'>http://localhost/emundus-updates/list.xml</server>\n\t</updateservers>\n";
         $update = "\n\t<update>\n\t\t<schemas>\n\t\t\t<schemapath type='mysql'>sql/updates/mysql</schemapath>\n\t\t</schemas>\n\t</update>\n\n";
         $folder_admin = "\t\t<folder>sql</folder>";
-        echo "\nUpdate main xml : " . $com;
-        $this->updateServerXml($com, $sep, $sep_admin, $updateserver, $update, $folder_admin);
-        echo "\nUpdate main xml : " . $com_onboard;
-        $this->updateServerXml($com_onboard, $sep, $sep_admin, $updateserver, $update, $folder_admin);
-        echo "\nUpdate main xml : " . $com_messenger;
-        $this->updateServerXml($com_messenger, $sep, $sep_admin, $updateserver, $update, $folder_admin);
-
-        /**
-         * Create xml files for server update
-         */
         $filepath = JPATH_BASE . '/emundus-updates';
+        mkdir($filepath);
 
-        # list.xml for collection
-        $comp_array =array('com_emundus', 'com_emundus_onboard', 'com_emundus_messenger');
+        foreach($comp_array as $comp) {
+            # Replace sql files in component directory
+            //$this->removeSql($comp);
 
-        $this->makeXmlList($comp_array, $filepath);
-        $this->addXml($com, $filepath);
-        # updates.xml
-        $content_list=null;
-        $this->addXml($com_onboard, $filepath, $content_list);
-        $this->addXml($com_messenger, $filepath, $content_list);
+            # Make update server for the component
+            $this->updateServerXml($comp, $sep, $sep_admin, $updateserver, $update, $folder_admin);
+            echo "\nUpdate main xml : " . $comp;
 
-        /**
-         * Copy all files (in tmp folder & on update server) needed for install and update
-         */
-        echo "\nPackaging component : " . $com;
-        $this->packageComponent($com);
-        echo "\nPackaging component : " . $com_onboard;
-        $this->packageComponent($com_onboard);
-        echo "\nPackaging component : " . $com_messenger;
-        $this->packageComponent($com_messenger);
+            # Make xml & html files
+            $update_filepath = $filepath . "/" . $comp;
+            mkdir($update_filepath);
 
-        /**
-         * Create archive file for install and update the component
-         */
-        $comp_array =array('com_emundus', 'com_emundus_onboard', 'com_emundus_messenger');
-        foreach ($comp_array as $comp) {
+            $content = $this->makeXml($comp, $filepath, $file = 'updates');
+            $file = fopen($update_filepath . "/updates.xml", "w") or die("Unable to open file!");
+            fwrite($file, $content);
+            fclose($file);
+
+            $content = $this->makeXml($comp, $filepath, $file = 'list');
+            $file = fopen($filepath . "/list.xml", "w") or die("Unable to open file!");
+            fwrite($file, $content);
+            fclose($file);
+
+            $html = fopen($update_filepath . "/" . $comp ."-" . $this->version . ".html", "w") or die("Unable to open file!");
+            fclose($html);
+
+            # Copy all files (in tmp folder & on update server) needed for install and update
+            echo "\nPackaging component : " . $comp;
+            $this->packageComponent($comp);
+
+            # Create archive file for install and update the component
             echo "\nstart zip creation :" . $comp;
             $zipname = $comp . "-". $this->version .".zip";
-            $zipdir_tmp =  JPATH_ROOT . '/tmp/';
             $zipdir_comp = JPATH_ROOT . '/emundus-updates/'. $comp .'/';
             $this->zipComponent($zipname, $zipdir_comp, $comp);
             echo "\nzip created for :" . $comp;
         }
 
-        /**
-         * Delete all files in tmp folder
-         */
+        # Delete all files in tmp folder
         echo "\nDelete tmp files";
         $this->deleteTmp();
 
     }
-
 }
 
 JApplicationCli::getInstance('MakeUpdateServer')->execute();

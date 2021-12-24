@@ -11,7 +11,7 @@
 	<copyright>Copyright Info</copyright>
 	<license>License Info</license>
 	<!--  The version string is recorded in the components table -->
-	<version>0.9.0</version>
+	<version>8.0.0</version>
 	<!-- The description is optional and defaults to the name -->
 	<description>TCHOOZ! A new formbuilder by eMundus!</description>
 
@@ -42,11 +42,6 @@
 		<filename>vue.config.js</filename>
 	</files>
 
-	<languages folder="language">
-		<language tag="fr-FR">fr-FR/fr-FR.com_emundus_onboard.ini</language>
-		<language tag="en-GB">en-GB/en-GB.com_emundus_onboard.ini</language>
-	</languages>
-
 	<install>
 		<sql>
 			<file charset="utf8" driver="mysql">install.sql</file>
@@ -63,7 +58,6 @@
 		<!-- Administration Menu Section -->
 		<menu img="../administrator/components/com_emundus_onboard/puce.gif">Tchooz</menu>
 		<files folder="admin">
-			<folder>controllers</folder>
 			<folder>helpers</folder>
 			<folder>language</folder>
 			<folder>views</folder>
@@ -73,6 +67,7 @@
 			<file>emundus_onboard.xml</file>
 			<file>index.html</file>
 			<file>router.php</file>
+			<file>toolbar.emundus.php</file>
 		</files>
 
 		<languages folder="language">
@@ -80,5 +75,4 @@
 			<language tag="en-GB">en-GB.com_emundus_onboard.ini</language>
 		</languages>
 	</administration>
-
 </extension>
