@@ -4576,6 +4576,9 @@ input:focus + .em-slider {
 .em-mt-80{
   margin-top: $m-80;
 }
+.em-mb-8{
+  margin-bottom: $m-8;
+}
 .em-mb-16{
   margin-bottom: $m-16;
 }
@@ -4640,7 +4643,7 @@ input:focus + .em-slider {
   TITLES
 */
 .em-h1{
-  font-family: 'Mulish', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-style: normal;
   font-weight: 800;
   font-size: 56px;
@@ -4648,7 +4651,7 @@ input:focus + .em-slider {
   color: $neutral-900;
 }
 .em-h2{
-  font-family: 'Mulish', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-style: normal;
   font-weight: 800;
   font-size: 48px;
@@ -4656,7 +4659,7 @@ input:focus + .em-slider {
   color: $neutral-900;
 }
 .em-h3{
-  font-family: 'Mulish', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-style: normal;
   font-weight: 800;
   font-size: 32px;
@@ -4664,7 +4667,7 @@ input:focus + .em-slider {
   color: $neutral-900;
 }
 .em-h4{
-  font-family: 'Mulish', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-style: normal;
   font-weight: 800;
   font-size: 24px;
@@ -4672,7 +4675,7 @@ input:focus + .em-slider {
   color: $neutral-900;
 }
 .em-h5{
-  font-family: 'Mulish', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-style: normal;
   font-weight: 800;
   font-size: 20px;
@@ -4680,7 +4683,7 @@ input:focus + .em-slider {
   color: $neutral-900;
 }
 .em-h6{
-  font-family: 'Mulish', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-style: normal;
   font-weight: 800;
   font-size: 18px;
@@ -4713,6 +4716,17 @@ input:focus + .em-slider {
   font-size: 48px;
 }
 
+.em-body-16-semibold{
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.em-gradient-icons{
+  background: linear-gradient(90deg, #26CAEA 0%, #32EE5F 100%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 /**
   Focus for lables
 */
@@ -4736,6 +4750,24 @@ input:focus + .em-slider {
 .em-overflow-ellipsis {
   text-overflow: ellipsis;
   overflow-x: hidden;
+}
+
+/**
+  CARDS
+**/
+.em-shadow-cards {
+  height: 200px;
+  box-shadow: 0px 4px 5px rgba(5, 47, 55, 0.07), 0px 1px 10px rgba(5, 47, 55, 0.06), 0px 2px 4px rgba(5, 47, 55, 0.1);
+  border-radius: 8px;
+  padding: 24px 32px;
+  margin: 24px;
+  cursor: pointer;
+}
+
+.em-settings-menu{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 /**

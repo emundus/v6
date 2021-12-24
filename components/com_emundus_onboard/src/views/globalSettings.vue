@@ -1,38 +1,30 @@
 <template>
-    <div class="w-row">
-      <!--<div class="tchooz-sidebar-menu">
-        <transition name="slide-right">
-          <div class="col-md-12 tchooz-sidebar-menus">
-            <div class="container-menu-funnel">
-              <div v-for="(settingsCat, index) in settingsCategories[langue]" :key="index">
-                <a @click="menuHighlight = index"
-                   class="menu-item"
-                   :class="menuHighlight == index ? 'w--current' : ''"
-                >{{ settingsCat }}</a>
-              </div>
-            </div>
-          </div>
-        </transition>
-      </div>-->
+    <div class="w-row em-mt-80">
+      <div class="">
 
-      <div class="col-md-12 p-1" style="padding-left: 2em !important;">
+        <h5 class="em-h5 em-m-24" style="margin-left: 10%">{{ translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER") }}</h5>
         <!--- start Menu --->
-        <div class="d-flex" >
+        <div class="em-settings-menu">
+          <div v-for="(menu,index) in menus" :key="'menu_' + index" class="em-shadow-cards col-md-3" v-wave>
+            <span class="material-icons-outlined em-gradient-icons em-mb-16">{{menu.icon}}</span>
+            <p class="em-body-16-semibold em-mb-8">{{translate(menu.title)}}</p>
+            <p class="em-font-size-14">{{translate(menu.description)}}</p>
+          </div>
+        </div>
+<!--        <div class="d-flex" >
           <ul class="nav nav-tabs topnav">
 
             <li v-for="(settingsCat, index) in settingsCategories[langue]" :key="index">
               <a @click="menuHighlight = index"
                  class="menu-item"
-                 :class="menuHighlight == index ? 'w--current' : ''"
+                 :class="menuHighlight == index ? 'w&#45;&#45;current' : ''"
               >{{ settingsCat }}</a>
             </li>
-
-
           </ul>
           <br>
-        </div>
+        </div>-->
 
-        <div class="d-flex justify-content-between" style="margin-bottom: 10px">
+<!--        <div class="d-flex justify-content-between" style="margin-bottom: 10px">
           <div class="d-flex" style="width: 100%;justify-content: end;margin-bottom: -90px;" v-if="menuHighlight != 0 && menuHighlight != 7  && menuHighlight != 8">
             <transition name="slide-right">
               <div class="loading-form-save" v-if="saving">
@@ -106,28 +98,15 @@
                   :manyLanguages="manyLanguages"
           ></editDatas>
 
-<!--          <help-settings
+&lt;!&ndash;          <help-settings
               v-if="menuHighlight == 8"
               ref="help"
               :actualLanguage="actualLanguage"
               :manyLanguages="manyLanguages"
-          ></help-settings>-->
-        </transition>
+          ></help-settings>&ndash;&gt;
+        </transition>-->
       </div>
     </div>
-
-    <!--<div
-            class="section-sauvegarder-et-continuer-funnel"
-    >
-      <div class="w-container">
-        <div class="container-evaluation w-clearfix">
-          <a @click="next()" class="bouton-sauvergarder-et-continuer-3">{{ Continuer }}</a>
-          <a class="bouton-sauvergarder-et-continuer-3 w-retour" @click="previous()">
-            {{Retour}}
-          </a>
-        </div>
-      </div>
-    </div>-->
 </template>
 
 <script>
@@ -175,6 +154,54 @@ export default {
     langue: 0,
     saving: false,
     endSaving: false,
+
+    menus: [
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STYLE",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STYLE_DESC",
+        icon: 'style'
+      },
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_HOMEPAGE",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_HOMEPAGE_DESC",
+        icon: 'home'
+      },
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TERMS",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TERMS_DESC",
+        icon: 'tune'
+      },
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_FOOTER",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_FOOTER_DESC",
+        icon: 'info'
+      },
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STATUS",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STATUS_DESC",
+        icon: 'bookmark_border'
+      },
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TAGS",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TAGS_DESC",
+        icon: 'label'
+      },
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_APPLICANTS",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_APPLICANTS_DESC",
+        icon: 'people'
+      },
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_DATAS",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_DATAS_DESC",
+        icon: 'list'
+      },
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS_DESC",
+        icon: 'language'
+      },
+    ],
 
     settingsCategories: [
       [

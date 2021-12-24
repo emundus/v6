@@ -16,6 +16,8 @@ import { VTooltip, VPopover, VClosePopover } from 'v-tooltip';
 import * as VueSpinnersCss from 'vue-spinners-css';
 import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 import { TableComponent, TableColumn } from 'vue-table-component';
+import translate from './mixins/translate.js';
+import VWave from 'v-wave'
 
 Vue.directive('tooltip', VTooltip);
 Vue.directive('close-popover', VClosePopover);
@@ -31,6 +33,9 @@ Vue.use(Vuelidate);
 Vue.use(VueJsModal);
 Vue.use(VueSpinnersCss);
 Vue.use(VTooltip);
+Vue.use(VWave);
+
+Vue.mixin(translate);
 
 Vue.config.productionTip = false;
 Vue.config.devtools = true;
