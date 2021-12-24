@@ -20,10 +20,10 @@ $lang = JFactory::getLanguage();
 <!-- <div id="em-vue-filter-builder"></div> -->
 
 <div id="em-application-attachment"
-     user=<?php echo $this->_user->id ?>
-     fnum=<?php echo $this->fnum ?>
-     lang=<?php echo $lang->getTag() ?>
-     base=<?php echo JURI::base() ?>
+    user=<?php echo $this->_user->id ?>
+    fnum=<?php echo $this->fnum ?>
+    lang=<?php echo $lang->getTag() ?>
+    base=<?php echo JURI::base() ?>
 >
 </div>
 

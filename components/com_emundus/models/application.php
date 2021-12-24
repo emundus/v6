@@ -539,6 +539,31 @@ class EmundusModelApplication extends JModelList
         }
     }
 
+    public function getFormsProgressWithProfile($fnum, $profile_id) 
+    {
+        $forms = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
+        $nb = 0;
+        $formLst = array();
+
+        if (empty($forms)) {
+            return 100;
+        }
+
+        foreach ($forms as $form) {
+            $query = 'SELECT count(*) FROM ' . $form->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum);
+            $this->_db->setQuery($query);
+            $cpt = $this->_db->loadResult();
+            if ($cpt == 1) {
+                $nb++;
+            } else {
+                $formLst[] = $form->label;
+            }
+        }
+
+        $this->updateFormProgressByFnum(@floor(100 * $nb / count($forms)), $fnum);
+        return @floor(100 * $nb / count($forms));
+    }
+
     public function updateFormProgressByFnum($result, $fnum)
     {
         $query = $this->_db->getQuery(true);
@@ -658,6 +683,47 @@ class EmundusModelApplication extends JModelList
             return $result;
         }
     }
+
+    /**
+     * @param $fnum
+     *
+     * @return array|bool|false|float
+     *
+     * @since version 1.28.0
+     */
+    public function getAttachmentsProgressWithProfile($fnum, $profile_id)
+    {
+        if (empty($fnum)) {
+            return false;
+        }
+
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+        $m_profile = new EmundusModelProfile;
+
+        $query = 'SELECT COUNT(profiles.id)
+            FROM #__emundus_setup_attachment_profiles AS profiles
+            WHERE profiles.campaign_id = ' . intval($profile_by_status["campaign_id"]) . ' AND profiles.displayed = 1';
+
+        $this->_db->setQuery($query);
+        $attachments = $this->_db->loadResult();
+
+        if (intval($attachments) == 0) {
+            $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
+            FROM #__emundus_setup_attachment_profiles AS profiles
+            LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($fnum) . '
+            WHERE profiles.profile_id = ' . $profile_id . ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
+        } else {
+            $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
+            FROM #__emundus_setup_attachment_profiles AS profiles
+            LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($fnum) . '
+            WHERE profiles.campaign_id = ' . $profile_by_status["campaign_id"] . ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
+        }
+
+        $this->_db->setQuery($query);
+        $doc_result = $this->_db->loadResult();
+        $this->updateAttachmentProgressByFnum(floor($doc_result), $fnum);
+        return floor($doc_result);
+	}
 
     public function updateAttachmentProgressByFnum($result, $fnum)
     {
@@ -4071,14 +4137,27 @@ class EmundusModelApplication extends JModelList
         // update attachments fields in database
         $db = $this->getDbo();
         $query = $db->getQuery(true);
+        $query->update($db->quoteName('#__emundus_uploads'));
 
-        $query
-            ->update($db->quoteName('#__emundus_uploads'))
-            ->set($db->quoteName('description') . ' = ' . $db->quote($data['description']))
-            ->set($db->quoteName('is_validated') . ' = ' . $db->quote($data['is_validated']))
-            ->set($db->quoteName('modified') . ' = ' . $db->quote(date("Y-m-d H:i:s")))
-            ->set($db->quoteName('modified_by') . ' = ' . $db->quote($data['user']))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($data['id']));
+        if (isset($data['description'])) {
+            $query->set($db->quoteName('description') . ' = ' . $db->quote($data['description']));
+        }
+
+        if (isset($data['is_validated'])) {
+            $query->set($db->quoteName('modified') . ' = ' . $db->quote($data['is_validated']));
+        }
+
+        if (isset($data['can_be_viewed'])){
+            $query->set($db->quoteName('can_be_viewed') . ' = ' . $db->quote($data['can_be_viewed']));
+        }
+
+        if (isset($data['can_be_deleted'])){
+            $query->set($db->quoteName('can_be_deleted') . ' = ' . $db->quote($data['can_be_deleted']));
+        }
+
+        $query->set($db->quoteName('modified') . ' = ' . $db->quote(date("Y-m-d H:i:s")))
+        ->set($db->quoteName('modified_by') . ' = ' . $db->quote($data['user']))
+        ->where($db->quoteName('id') . ' = ' . $db->quote($data['id']));
 
         //execute query
         try {
