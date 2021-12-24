@@ -1021,6 +1021,10 @@ button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-c
   text-transform: none;
 }
 
+.view-form form .btn.goback-btn.button[name="Goback"] {
+    width:auto !important;
+}
+
 button.goback-btn:hover, button.goback-btn:active, button.goback-btn:focus,
 .btn-danger:hover, .btn-danger:active, .btn-danger:focus,
 .pull-right .btn:not(.dropdown-toggle):hover, .pull-right .btn:not(.dropdown-toggle):focus, .pull-right .btn:not(.dropdown-toggle):active,

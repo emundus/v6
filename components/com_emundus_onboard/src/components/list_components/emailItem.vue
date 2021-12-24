@@ -14,12 +14,15 @@
                 <h2 class="nom-campagne-block">{{ data.subject }}</h2>
               </div>
             </div>
-            <div class="d-flex">
+            <div class="d-flex gap">
               <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
                 {{ isPublished ? publishedTag : unpublishedTag }}
               </div>
-              <div class="nb-dossier">
+              <div class="nb-dossier" :class="'type-color-' + data.type">
                 <div>{{ type[langue][data.type - 1] }}</div>
+              </div>
+              <div class="nb-dossier" v-if="data.category !== '' && data.category !== null">
+                {{ data.category }}
               </div>
             </div>
             <div>
@@ -35,7 +38,7 @@
                   <button class="cta-block" style="height: unset" type="button" :title="Visualize" @click="$modal.show('modalEmailPreview_' + data.id)">
                     <em class="fas fa-eye"></em>
                   </button>
-                  <v-popover :popoverArrowClass="'custom-popover-arraow'">
+                  <v-popover :popoverArrowClass="'custom-popover-arraow'" v-if="data.lbl.startsWith('custom_') || data.lbl.startsWith('email_')">
                     <button class="tooltip-target b3 card-button"></button>
 
                     <template slot="popover">

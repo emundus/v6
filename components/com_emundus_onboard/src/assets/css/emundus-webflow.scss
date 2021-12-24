@@ -194,6 +194,10 @@
   display: flex;
   align-items: center;
 }
+
+.gap {
+  gap: 12px;
+}
 /** END **/
 
 /**** LIST ****/
@@ -863,6 +867,12 @@ input[type="reset"] {
   white-space: nowrap;
   padding: 5px 30px;
   font-weight: 500;
+    &.type-color-1 {
+      background-color: $red-400;
+    }
+    &.type-color-2 {
+      background-color: $main-400;
+    }
 }
 .tchooz-section-titles{
   margin-top: 0;

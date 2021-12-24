@@ -864,7 +864,7 @@ class EmundusControllerFiles extends JControllerLegacy
             // Get triggered email
             include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
             $m_email = new EmundusModelEmails;
-            $trigger_emails = $m_email->getEmailTrigger($state, $code, '0,1');
+            $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
             $toAttach = [];
 
             if (count($trigger_emails) > 0) {
@@ -1434,7 +1434,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
-    public function getallfnums() 
+    public function getallfnums()
     {
         $m_files = $this->getModel('Files');
         $fnums = $m_files->getAllFnums();
@@ -2793,7 +2793,7 @@ class EmundusControllerFiles extends JControllerLegacy
             //header('Accept-Ranges: bytes');
 
             ob_clean();
-            flush();
+            ob_end_flush();
             readfile($file);
             exit;
         } else {
@@ -4344,7 +4344,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    public function getattachmentcategories() 
+    public function getattachmentcategories()
     {
         $m_files = $this->getModel('Files');
         $categories = $m_files->getAttachmentCategories();

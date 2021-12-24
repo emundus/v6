@@ -1,16 +1,21 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><div class="iframedoc" id="iframedoc"></div>
+?><?php
+$td_class = 'class="hk_center"';
+if (HIKASHOP_J40)
+	$td_class = '';
+?>
+<div class="iframedoc" id="iframedoc"></div>
 <form action="<?php echo hikashop_completeLink('filter'); ?>" method="post"  name="adminForm" id="adminForm">
 <div class="hk-row-fluid">
-	<div class="hkc-md-4">
+	<div class="hkc-md-4 hika_j4_search">
 <?php
 	echo $this->loadHkLayout('search', array());
 ?>
@@ -72,7 +77,7 @@ defined('_JEXEC') or die('Restricted access');
 					<td class="hk_center">
 						<?php echo JHTML::_('grid.id', $i, $row->filter_id ); ?>
 					</td>
-					<td class="hk_center">
+					<td <?php echo $td_class; ?>>
 						<?php if($this->manage){ ?>
 							<a href="<?php echo hikashop_completeLink('filter&task=edit&cid[]='.$row->filter_id); ?>">
 						<?php }
@@ -90,7 +95,7 @@ defined('_JEXEC') or die('Restricted access');
 							}
 						?>
 					</td>
-					<td class="hk_center">
+					<td <?php echo $td_class; ?>>
 						<?php
 							echo $row->filter_type;
 						?>
@@ -102,7 +107,7 @@ defined('_JEXEC') or die('Restricted access');
 							<input type="text" name="order[]" size="5" <?php if(!$this->order->ordering) echo 'disabled="disabled"'?> value="<?php echo $row->filter_ordering; ?>" class="text_area" style="text-align: center" />
 						<?php }else{ echo $row->filter_ordering; } ?>
 					</td>
-					<td class="hk_center">
+					<td <?php echo $td_class; ?>>
 						<?php if($this->manage){ ?>
 							<span id="<?php echo $publishedid ?>" class="spanloading"><?php echo $this->toggleClass->toggle($publishedid,(int) $row->filter_published,'filter') ?></span>
 						<?php }else{ echo $this->toggleClass->display('activate',$row->filter_published); } ?>

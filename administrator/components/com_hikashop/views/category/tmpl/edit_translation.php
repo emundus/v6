@@ -1,14 +1,17 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
+?><?php
+echo $this->tabs->startPane( 'translations');
+$language_id = key($this->element->translations);
 ?>
-<h4 style="float:left"><?php echo JText::_('HIKA_TRANSLATIONS'); ?></h4>
+<h4 style="float:left"><?php echo $this->transHelper->getFlag($language_id). ' ' . JText::_('HIKA_TRANSLATIONS'); ?></h4>
 <div class="toolbar" id="toolbar" style="float: right;">
 	<button class="btn btn-success" type="button" onclick="submitbutton('save_translation');"><i class="fa fa-save"></i> <?php echo JText::_('OK'); ?></button>
 </div>
@@ -16,9 +19,6 @@ defined('_JEXEC') or die('Restricted access');
 <div class="iframedoc" id="iframedoc"></div>
 <form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=category" method="post"  name="adminForm" id="adminForm" enctype="multipart/form-data">
 <?php
-
-echo $this->tabs->startPane( 'translations');
-
 if(!empty($this->element->translations)) {
 	foreach($this->element->translations as $language_id => $translation) {
 		$this->category_name_input = "translation[category_name][".$language_id."]";
@@ -66,12 +66,8 @@ if(!empty($this->element->translations)) {
 			$this->category_canonical_id = $translation->category_canonical->id;
 		}
 
-		echo $this->tabs->startPanel($this->transHelper->getFlag($language_id), 'translation_'.$language_id);
-
 		$this->setLayout('normal');
 		echo $this->loadTemplate();
-
-		echo $this->tabs->endPanel();
 
 ?>
 	<table class="admintable"  width="100%">
@@ -131,7 +127,6 @@ if(!empty($this->element->translations)) {
 
 	}
 }
-echo $this->tabs->endPane();
 
 ?>
 	<input type="hidden" name="cid[]" value="<?php echo @$this->element->category_id; ?>" />

@@ -340,10 +340,9 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
                 $newemail = $db->insertid();
-
                 $query->clear()
                     ->update($db->quoteName('#__emundus_setup_emails'))
-                    ->set($db->quoteName('lbl') . ' = ' . $db->quote('email_' . $newemail))
+                    ->set($db->quoteName('lbl') . ' = ' . $db->quote('custom_'.date('YmdhHis')))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($newemail));
                 $db->setQuery($query);
                 $db->execute();

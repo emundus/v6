@@ -116,6 +116,8 @@
 
 				<field type="text" name="home_link" default="index.php" label="MOD_EMUNDUSFLOW_HOMELINK" description="MOD_EMUNDUSFLOW_HOMELINK_DESC"/>
 
+				<field name="add_to_cart_icon" type="text" label="MOD_EMUNDUSFLOW_ALT_ADDTOCART_CLASS" description="MOD_EMUNDUSFLOW_ALT_ADDTOCART_CLASS_DESC" default="large add to cart icon"></field>
+				<field name="scholarship_icon" type="text" label="MOD_EMUNDUSFLOW_ALT_SCHOLARSHIP_CLASS" description="MOD_EMUNDUSFLOW_ALT_SCHOLARSHIP_CLASS_DESC" default="large student icon"></field>
 			</fieldset>
 		</fields>
 	</config>

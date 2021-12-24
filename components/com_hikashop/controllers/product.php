@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -141,8 +141,13 @@ class productController extends hikashopController {
 		$mail->from_email = $config->get('from_email');
 		$mail->from_name = $config->get('from_name');
 		$mail->reply_email = $element->email;
-		if(empty($mail->dst_email))
-			$mail->dst_email = array($config->get('from_email'));
+		if(empty($mail->dst_email)) {
+			$dst = $config->get('contact_request_email');
+			if(empty($dst))
+				$mail->dst_email = array($config->get('from_email'));
+			else
+				$mail->dst_email = explode(',', $dst);
+		}
 		$status = $mailClass->sendMail($mail);
 
 		if($status) {
@@ -400,7 +405,8 @@ class productController extends hikashopController {
 			if(in_array($tmpl, array('ajax', 'raw'))) {
 				$ret = array(
 					'ret' => 0,
-					'message' => JText::_('LOGIN_REQUIRED_FOR_WISHLISTS')
+					'message' => JText::_('LOGIN_REQUIRED_FOR_WISHLISTS'),
+					'err_wishlist_guest' => 1
 				);
 				hikashop_cleanBuffers();
 				echo json_encode($ret);

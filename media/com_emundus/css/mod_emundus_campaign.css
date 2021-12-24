@@ -624,6 +624,7 @@ button.btn.btn-default.sch {
 
 .left-side {
     width: 60%;
+    border-top-left-radius: 8px;
 }
 
 .right-side {

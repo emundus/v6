@@ -18,5 +18,8 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ]
+  ],
+  "dependencies": {
+    "vue-multiselect": "^2.1.6"
+  }
 }
