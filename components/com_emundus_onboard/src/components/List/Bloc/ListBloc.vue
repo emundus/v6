@@ -11,6 +11,24 @@
 			<p v-if="data.short_description" class="description">
 				{{ data.short_description }}
 			</p>
+
+			<div 
+				v-if="campaign.associatedCampaigns !== null && campaign.associatedCampaigns.length > 0"
+				class="associated-campaigns"
+			>
+				<p v-if="campaign.associatedCampaigns.length == 1">{{ translations.campaignAssociated }} :</p>
+				<p v-if="campaign.associatedCampaigns.length > 1">{{ translations.campaignsAssociated }} :</p>
+				<ul>
+					<li 
+						v-for="(campaign, index) in campaign.associatedCampaigns" 
+						:key="index" 
+						class="campaigns-item"
+					>
+						{{ campaign.label }}
+					</li>
+				</ul>
+			</div>
+
 			<div class="tags">
 				<div 
 					v-if="!isFinished && isPublished !== null" 
@@ -99,12 +117,22 @@ export default {
 				emailType: {
 					1: "Système",
 					2: "Modèle",
-				}
+				},
+				campaignAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED"),
+        campaignsAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED")
+			},
+			campaign: {
+				associatedCampaigns: null
 			}
 		};
 	},
 	mounted() {
 		this.getTitle();
+
+		console.log(this.type);
+		if (this.type === "formulaire" || this.type === "form" || this.type === "grilleEval") {
+			this.getAssociatedCampaigns();
+		}
 	},
 	methods: {
 		getTitle() {
@@ -150,7 +178,25 @@ export default {
 			}
 
 			return url;
-		}
+		},
+
+		// Specific methods for campaigns
+		getAssociatedCampaigns() {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=form&task=getassociatedcampaign",
+        params: {
+          pid: this.data.id,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        this.campaign.associatedCampaigns = response.data.data;
+
+				console.log(this.campaign.associatedCampaigns);
+      });
+		}	
 	},
 	computed: {
 		isPublished() {
@@ -189,7 +235,7 @@ export default {
 <style lang="scss" scoped>
 .list-bloc-item {
 	width: 272px;
-	height: 199px;
+  min-height: 199px;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
@@ -220,6 +266,10 @@ export default {
 
 	.informations {
 		font-size: 12px;
+
+		.associated-campaigns ul {
+			margin: 0;
+		}
 	}
 
 	.tags {

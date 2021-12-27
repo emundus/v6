@@ -28,9 +28,6 @@ export default {
 			required: true
 		},
 	},
-	mounted() {
-		console.log(this.list);
-	},
 	computed: {
 		list() {
 			return list.getters.list;
@@ -44,7 +41,7 @@ export default {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	align-items: center;
+	align-items: stretch;
 	justify-content: flex-start;
 	margin-top: 30px;
 }
