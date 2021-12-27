@@ -6,7 +6,7 @@
     >
     </list-head>
 
-    <div class="filters-menu">
+    <!-- <div class="filters-menu">
       <div class="search">
         <input class="searchTerm"
                :placeholder="translations.Rechercher"
@@ -32,9 +32,12 @@
           ></filters>
         </template>
       </v-popover>
-    </div>
+    </div> -->
 
-    <list-body></list-body>
+    <list-body
+      :type="type"
+      :actions="actions"
+    ></list-body>
 
     <ul class="form-section email-sections" v-if="type == 'email' && !loading && total != 0 && email_categories.length > 0">
       <li>{{translations.Categories}} : </li>

@@ -6,17 +6,18 @@
 		</div>
 		<div class="view-type">
 			<span 
-				v-for="(viewType, index) in viewTypeOptions" 
+				v-for="(viewTypeOption, index) in viewTypeOptions" 
 				:key="index" 
 				class="material-icons"
-				@click="changeViewType(viewType)"
+				:class="{'active': viewTypeOption.value === viewType}"
+				@click="changeViewType(viewTypeOption)"
 			>
-				{{ viewType.icon }}
+				{{ viewTypeOption.icon }}
 			</span>
 		</div>
 	</div>
-	<list-table v-if="viewType === 'table'"></list-table>
-	<list-blocs v-if="viewType === 'blocs'"></list-blocs>
+	<list-table v-if="viewType === 'table'" :type="type" :actions="actions"></list-table>
+	<list-blocs v-if="viewType === 'blocs'" :type="type" :actions="actions"></list-blocs>
 </div>
 </template>
 
@@ -29,9 +30,19 @@ export default {
 		ListTable,
 		ListBlocs
 	},
+	props: {
+		type: {
+			type: String,
+			required: true
+		},
+		actions: {
+			type: Object,
+			required: true
+		},
+	},
 	data() {
 		return {
-			viewType: 'table',
+			viewType: 'blocs',
 			viewTypeOptions: [
 				{
 					value: 'table',
@@ -53,5 +64,32 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#list-body {
+	#actions {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 20px;
+	
+		.view-type {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 20px;
+			
+			span {
+				margin-left: 10px;
+    		padding: 4px;
+    		border: 1px solid;
+    		border-radius: 4px;
+				cursor: pointer;
 
+				&.active {
+					color: #298721;
+					border-color: #298721;
+				}
+			}
+		}
+	}
+}
 </style>
