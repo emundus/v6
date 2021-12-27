@@ -5,10 +5,10 @@
  * */
 
 ini_set('display_errors','1');                /// turn off Error Displaying
-ini_set('soap.wsdl_cache_enabled', 0);
+ini_set('soap.wsdl_cache_enabled', 1);
 error_reporting(E_ALL);
 
-set_time_limit(100);                                  /// turn off time limit (the code may run longer)
+set_time_limit(0);                                  /// turn off time limit (the code may run longer)
 
 /// import XmlSchema
 require_once("XmlSchema.php");
@@ -203,39 +203,24 @@ class XmlDataFilling {
                             }
                             else {
                                 /// if repetitive, get sql query for each sub property
-                                $sql_array = [];
 
                                 /// get pr
                                 $pr_names = $jsonDataBody->$js_key->$pr_name;
 
                                 foreach ($pr_names as $p_key => $p_val) {
-                                    /// check if SQL query exists
-                                    if(!is_null($p_val->sql) && ($p_val->sql) !== "") {
-                                        $p_sql = $p_val->sql . $fnum;
+                                    $p_sql = $p_val->sql . $fnum;
 
-                                        // run SQL query
-                                        $this->db->setQuery($p_sql);
+                                    // run SQL query
+                                    $this->db->setQuery($p_sql);
+                                    $result = $this->db->loadResult();
 
-                                        /// if CONCAT is in $p_sql, use loadResult(). Otherwise, use loadColumn()
-                                        if(strpos($p_sql, 'CONCAT') or strpos($p_sql, 'concat')) {
-                                            $result = $this->db->loadResult();      /// may be many columns
-                                            // stock value into $sql_array
-                                            $sql_array[$p_key] = explode('>>> SPLIT <<<', $result);
-                                        } else {
-                                            $result = $this->db->loadColumn();      /// just one column, but many rows
-                                            // stock value into $sql_array
-                                            $sql_array[$p_key] = $result;
-                                        }
-                                    }
-                                    else {
-                                        /// clone
-                                        for ($i = 0; $i <= $repeat_times - 1; $i++) {
-                                            $sql_array[$p_key][$i] = $p_val->default;
-                                        }
-                                    }
+                                    // stock value into $sql_array
+                                    $sql_array[$p_key] = explode('>>> SPLIT <<<', $result);
                                 }
 
+
                                 for ($i = 0; $i <= $repeat_times - 1; $i++) {
+                                    //if ($i == $xmlDocument->getElementsByTagName('item')->item($i)->getAttribute('duplicata')) {
                                     /// get children
                                     $_childNodes = $xmlDocument->getElementsByTagName('item')->item($i)->childNodes;
 
@@ -249,6 +234,7 @@ class XmlDataFilling {
 
                                     // remove attribut 'duplicata' -- optional
                                     $xmlDocument->getElementsByTagName('item')->item($i)->removeAttribute('duplicata');
+                                    //}
                                 }
                             }
                         }
@@ -308,7 +294,6 @@ class XmlDataFilling {
 
                                                         foreach ($subChildNodes as $_scn) {
                                                             if ($_scn->parentNode->nodeName === $pr_name) {
-
                                                                 $tagName = $_scn->tagName;
                                                                 if(!is_null($jsonDataBody->$js_key->$pr_name->$tagName->default)) {
                                                                     if (is_null($jsonDataBody->$js_key->$pr_name->$tagName->sql) or ($jsonDataBody->$js_key->$pr_name->$tagName->sql === "")) {
@@ -349,6 +334,7 @@ class XmlDataFilling {
                                             } else {
                                                 $result = $this->db->loadColumn();      /// just one column, but many rows
                                                 // stock value into $sql_array
+//                                                $sql_array[$p_key] = implode('>>> SPLIT <<<', $result);
                                                 $sql_array[$p_key] = $result;
                                             }
                                         }
@@ -361,6 +347,7 @@ class XmlDataFilling {
                                     }
 
                                     for ($i = 0; $i <= $repeat_times - 1; $i++) {
+                                        //if ($i == $xmlDocument->getElementsByTagName('item')->item($i)->getAttribute('duplicata')) {
                                         /// get children
                                         $_childNodes = $xmlDocument->getElementsByTagName('item')->item($i)->childNodes;
 
@@ -380,6 +367,7 @@ class XmlDataFilling {
 
                                         // remove attribut 'duplicata' -- optional
                                         $xmlDocument->getElementsByTagName('item')->item($i)->removeAttribute('duplicata');
+                                        //}
                                     }
                                 }
                             }
@@ -401,7 +389,7 @@ class XmlDataFilling {
                                                         $this->buildSql($xmlDocument, $_cn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql . $fnum, true);
                                                     }
                                                 } else {
-                                                    $this->buildSql($xmlDocument, null, $_sp, $jsonDataBody->$js_key->$pr_name->$_sp->sql . $fnum, false);
+                                                    $this->buildSql($xmlDocument, $_cn, null,  $jsonDataBody->$js_key->$pr_name->$_sp->sql . $fnum, false);
                                                 }
                                             }
                                         }
@@ -415,7 +403,7 @@ class XmlDataFilling {
                                                 if (is_null($jsonDataBody->$js_key->$pr_name->sql) or ($jsonDataBody->$js_key->$pr_name->sql === "")) {
                                                     $_ch->nodeValue = $jsonDataBody->$js_key->$pr_name->default;
                                                 } else {
-                                                    $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
+                                                    $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, true);
                                                 }
                                             } else {
                                                 $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
@@ -429,6 +417,7 @@ class XmlDataFilling {
                 }
             }
         }
+//        die;
         return $xmlDocument;
     }
 

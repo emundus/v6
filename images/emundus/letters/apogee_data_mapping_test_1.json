@@ -53,19 +53,19 @@
   },
   "bac": {
     "codBac": {
-      "sql": "select #__emundus_1001_00.e_358_7925 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+      "sql": "select cod_bac from data_bac_oux_equ_v2 left join jos_emundus_1001_00 as je10 on je10.e_358_7925 = data_bac_oux_equ_v2.cod_bac where je10.fnum = "
     },
     "codDep": {
       "sql": "select lpad(#__emundus_1001_00.e_358_7929,3,'0') from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
     },
     "codEtb": {
-      "sql": "select lpad(#__emundus_1001_00.nom_etb,8,'0') from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+      "sql": "select cod_etb from data_etbs left join jos_emundus_1001_00 as je10 on je10.nom_etb = data_etbs.id where je10.fnum = "
     },
     "codMention": {
-      "sql": "select #__emundus_1001_00.e_358_7926 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+      "sql": "select cod_mnb from data_mention_niv_bac left join jos_emundus_1001_00 as je10 on je10.e_358_7926 = data_mention_niv_bac.id where je10.fnum = "
     },
     "codTpe": {
-      "sql": "select #__emundus_1001_00.e_358_7927 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+      "sql": "select cod_tpe from data_type_etb left join jos_emundus_1001_00 as je10 on je10.e_358_7927 = data_type_etb.cod_tpe where je10.fnum = "
     },
     "daaObtBacOba": {
       "sql": "select #__emundus_1001_00.e_358_7924 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
@@ -145,10 +145,10 @@
     },
     "dernierDiplObt": {
       "codTdeDerDip": {
-        "sql": "select lpad(#__emundus_1001_00.e_358_7933,3,'0') from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+        "sql": "select cod_tde from data_type_dip_ext left join jos_emundus_1001_00 as je10 on je10.e_358_7933 = data_type_dip_ext.id where je10.fnum = "
       },
       "codDepPayDerDip": {
-        "sql": "SELECT #__emundus_1001_00.e_358_7937 FROM #__emundus_1001_00 WHERE fnum = "
+        "sql": "select #__emundus_1001_00.e_358_7937 from #__emundus_1001_00 where fnum = "
       },
       "codTypDepPayDerDip": {
         "default": ""
@@ -170,7 +170,7 @@
         "sql": "SELECT #__emundus_1001_00.pays_dernier_etb FROM #__emundus_1001_00 WHERE #__emundus_1001_00.fnum = "
       },
       "codEtbAntIaa": {
-        "sql": "select #__emundus_1001_00.etb_dernier from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+        "sql": "select cod_etb from data_etbs left join jos_emundus_1001_00 as je10 on je10.etb_dernier = data_etbs.id where je10.fnum = "
       },
       "codTpeAntIaa": {
         "sql": "select #__emundus_1001_00.type_dernier_etb from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
@@ -225,7 +225,7 @@
         "default": ""
       },
       "codThpOpi": {
-        "default": "4"
+        "default": ""
       },
       "daaLbtIndOpi": {
         "default": ""
@@ -279,7 +279,7 @@
     },
     "premiereInscription": {
       "codEtb": {
-        "sql": "select lpad(#__emundus_1001_00.cod_type_etb_ens_sup,8,'0') from #__emundus_1001_00 where fnum = "
+        "sql": "select cod_etb from data_etbs left join jos_emundus_1001_00 as je10 on je10.e_358_7932 = data_etbs.id where je10.fnum = "
       },
       "daaEnsSupOpi": {
         "default": ""
@@ -307,13 +307,13 @@
     },
     "situationAnnPre": {
       "codDepPayAnnPreOpi": {
-        "sql": "select #__emundus_1001_00.e_358_7940 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+        "sql": "select #__emundus_1001_00.e_358_8119 from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
       },
       "codEtbAnnPreOpi": {
         "default": ""
       },
       "codSisAnnPreOpi": {
-        "sql": "select lpad(#__emundus_1001_00.e_358_8119,3,'0') from #__emundus_1001_00 where #__emundus_1001_00.fnum = ",
+        "sql": "select cod_sis from data_situation_sise left join jos_emundus_1001_00 as je10 on je10.e_358_7940 = data_situation_sise.id where je10.fnum = ",
         "default": ""
       },
       "codTypDepPayAnnPreOpi": {
@@ -385,7 +385,7 @@
         "sql": "select row_number() over () from jos_emundus_scholarship_domain_888_repeat as jesd8r left join jos_emundus_scholarship_domain as jesm on jesm.id = jesd8r.parent_id left join jos_emundus_setup_campaigns as jesc on jesc.id = jesd8r.voeu where jesm.fnum = "
       },
       "temValPsd": {
-        "default": "N"
+        "default": ""
       },
       "ctrAdr": {
         "default": "N"
