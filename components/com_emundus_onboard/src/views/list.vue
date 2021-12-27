@@ -69,6 +69,68 @@
       <!--<li>
         <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">{{System}}</a>
       </li>-->
+
+    </ul>
+    <!--<div class="row searchFilter" >
+      <div class="col-sm-12" >
+        <div class="input-group" >
+          <input id="table_filter" type="text" class="form-control" aria-label="Text input with segmented button dropdown" >
+          <div class="input-group-btn" >
+            <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ><span class="label-icon" >Category</span> <span class="caret" >&nbsp;</span></button>
+            <div class="dropdown-menu dropdown-menu-right" >
+              <ul class="category_filters" >
+                <li >
+                  <input class="cat_type category-input" data-label="All" id="all" value="" name="radios" type="radio" ><label for="all" >All</label>
+                </li>
+                <li >
+                  <input type="radio" name="radios" id="Design" value="Design" ><label class="category-label" for="Design" >Design</label>
+                </li>
+                <li >
+                  <input type="radio" name="radios" id="Marketing" value="Marketing" ><label class="category-label" for="Marketing" >Marketing</label>
+                </li>
+                <li >
+                  <input type="radio" name="radios" id="Programming" value="Programming" ><label class="category-label" for="Programming" >Programming</label>
+                </li>
+                <li >
+                  <input type="radio" name="radios" id="Sales" value="Sales" ><label class="category-label" for="Sales" >Sales</label>
+                </li>
+                <li >
+                  <input type="radio" name="radios" id="Support" value="Support" ><label class="category-label" for="Support" >Support</label>
+                </li>
+              </ul>
+            </div>
+            <button id="searchBtn" type="button" class="btn btn-secondary btn-search" ><span class="glyphicon glyphicon-search" >&nbsp;</span> <span class="label-icon" >Search</span></button>
+          </div>
+        </div>
+      </div>
+    </div>-->
+
+    <ul class="form-section email-sections" v-if="(type == 'campaign')  && !loading ">
+      <!--<li>Types : </li>-->
+
+      <li>
+        <a class="form-section__current">Candidature</a>
+      </li>
+      <li>
+        <a class="form-section__current">Candidature</a>
+      </li>
+      <li>
+        <div class="form-section__current dropdown">
+          <button class="dropbtn" for="btnControl">Dropdown</button>
+          <div class="dropdown-content">
+            <a href="#">Link 1</a>
+            <a href="#">Link 2</a>
+            <a href="#">Link 3</a>
+          </div>
+        </div>
+      </li>
+      <!--<li v-for="(cat, index) in email_categories" v-if="cat != ''">
+        <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
+      </li>-->
+
+      <!--<li>
+        <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">{{System}}</a>
+      </li>-->
     </ul>
 
 <!--    <transition :name="'slide-down'" type="transition">
@@ -466,4 +528,56 @@ export default {
   .loading-form{
     top: unset;
   }
+
+  .dropbtn {
+    background-color: #f9f9f9;
+    color: #0f0f0f;
+    /*padding: 16px;
+    font-size: 16px;*/
+    border: none;
+    cursor: pointer;
+    min-width: 160px;
+    /*box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);*/
+  }
+
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropdown-content {
+    position: absolute;
+    background-color: #f9f9f9;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 98;
+    max-height: 0;
+    min-width: 160px;
+    transition: max-height 0.15s ease-out;
+    overflow: hidden;
+  }
+
+  .dropdown-content a {
+    color: black;
+    background-color: #f9f9f9;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+
+  .dropdown-content a:hover {
+    background-color: #e2e2e2;
+  }
+
+  .dropdown:hover .dropdown-content {
+    max-height: 500px;
+    min-width: 160px;
+    transition: max-height 0.25s ease-in;
+  }
+
+  .dropdown:hover .dropbtn {
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #e0e0e0;
+    transition: max-height 0.25s ease-in;
+  }
+
 </style>
