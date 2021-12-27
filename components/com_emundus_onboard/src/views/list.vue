@@ -46,7 +46,7 @@
       <li>
         <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">{{translations.All}}</a>
       </li>
-      <li v-for="(cat, index) in email_categories" :key="'cat_' + index" v-if="cat !== ''">
+      <li v-for="(cat, index) in notEmptyEmailCategories" :key="'cat_' + index">
         <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
       </li>
     </ul>
@@ -92,20 +92,22 @@
 
     <div v-show="total > 0 || type == 'files'">
       <transition-group :name="'slide-down'" type="transition" style="display: inline-block;margin: 16px 0;width: 100%">
-        <div v-if="type !== 'files' && type !== 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+        <div v-for="(data, index) in listTypeNotEmailNotFiles" :key="index" class="col-sm-12 col-lg-4 mb-2">
           <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" :actualLanguage="actualLanguage"/>
         </div>
 
-        <div v-if="type === 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+        <div v-for="(data, index) in listEmailMenu0" :key="index" class="col-sm-12 col-lg-4 mb-2">
           <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" :models="list" />
         </div>
 
-        <div v-if="type === 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+        <div v-for="(data, index) in listEmailMenuEmailCategory" :key="index" class="col-sm-12 col-lg-4 mb-2">
           <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" />
         </div>
 
-        <div v-if="type === 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
-          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" />
+        <div v-if="type === 'email' && menuEmail == 1 && data.type == 1">
+          <div v-for="(data, index) in listEmailMenu1Type1" :key="index" class="col-sm-12 col-lg-4 mb-2">
+            <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" />
+          </div>
         </div>
       </transition-group>
 
@@ -150,14 +152,14 @@
     <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">
       {{
         this.type === "campaign"
-          ? noCampaign
+          ? translations.noCampaign
           : this.type === "program"
-          ? noProgram
+          ? translations.noProgram
           : this.type === "email"
-          ? noEmail
+          ? translations.noEmail
           : this.type === "formulaire"
-          ? noForm
-          : noFiles
+          ? translations.noForm
+          : translations.noFiles
       }}
     </div>
     <div class="loading-form" v-if="loading">
@@ -179,8 +181,6 @@ import listHeader from "../components/list_components/list_header";
 import { list } from "../store/store";
 import { global } from "../store/global";
 
-const qs = require("qs");
-
 export default {
   components: {
     program,
@@ -194,11 +194,9 @@ export default {
   },
 
   name: "list",
-  props: {
-    type: String,
-    datas: Object
-  },
   data: () => ({
+    datas: {},
+    type: "",
     selecedItems: [],
     actions: {
       type: "",
@@ -249,16 +247,50 @@ export default {
       return list.getters.list;
     },
 
+    listTypeNotEmailNotFiles() {
+      if (this.type != "email" && this.type != "files") {
+        return list.getters.list;
+      }
+      
+      return [];
+    },
+
+    listEmailMenu0() {
+      if (this.type == "email" && this.menuEmail == 0) {
+        return list.getters.list
+      }
+
+      return [];
+    },
+
+    listEmailMenuEmailCategory() {
+      if (this.type == "email" && this.menuEmail != 1 && this.menuEmail != 0) {
+        return list.getters.list.filter(item => this.menuEmail == item.category);
+      }
+
+      return [];
+    },
+
+    listEmailMenu1Type1() {
+      if (this.menuEmail == 1 && this.type == "email") {
+        return list.getters.list.filter(item => item.type == 1);
+      }
+
+      return [];
+    },
+
     isEmpty: () => {
       return list.getters.isSomething;
-    }
+    },
+
+    notEmptyEmailCategories() {
+      return this.email_categories.filter(item => item !== '');
+    },
   },
 
   created() {
-    // Get my props
-    this.$props.datas = global.getters.datas;
-    this.$props.type = this.$props.datas.type.value;
-    //
+    this.datas = global.getters.datas;
+    this.type = this.datas.type.value;
 
     axios({
       method: "get",
@@ -409,7 +441,8 @@ export default {
       list.commit("selectItem", id);
     }
   }
-};
+}
+
 </script>
 
 <style scoped>

@@ -472,12 +472,13 @@ export default {
         .then(response => {
           this.years = response.data.data;
 
-          for (let i = 0; i < this.years.length; i++) {
-            this.session.push(this.years[i].schoolyear);
-          }
+          this.years.forEach((year) => {
+            this.session.push(year.schoolyear);
+          });
+
         }).catch(e => {
-      console.log(e);
-    });
+          console.log(e);
+        });
     //
     this.getStatus();
   },
