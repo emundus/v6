@@ -148,7 +148,7 @@ class ApogeeCustom {
             $_codTypDepPayDerDipNode->nodeValue = 'D';
 
             /// set $_codDepPayDerDipNode->nodeValue by France Department
-            $_getDepartmentSql = "SELECT lpad(#__emundus_1001_00.dep_etb_last_dip,3,'0') FROM #__emundus_1001_00 WHERE #__emundus_1001_00.fnum = " . $this->fnum;
+            $_getDepartmentSql = "select cod_dep from data_departements left join jos_emundus_1001_00 as je10 on je10.dep_etb_last_dip = data_departements.departement_code where je10.fnum = " . $this->fnum;
             $db->setQuery($_getDepartmentSql);
             $_codDepPayDerDipNode->nodeValue = $db->loadResult();
         } else {
@@ -167,7 +167,7 @@ class ApogeeCustom {
 
         if($_codDepPayAntIaaOpiNode->nodeValue == '100') {
             /// set $_codDepPayDerDipNode->nodeValue by France Department
-            $_getDepartmentSql = "SELECT lpad(#__emundus_1001_00.dep_etb_dernier,3,'0') FROM #__emundus_1001_00 WHERE #__emundus_1001_00.fnum = " . $this->fnum;
+            $_getDepartmentSql = "select cod_dep from data_departements left join jos_emundus_1001_00 as je10 on je10.dep_etb_dernier = data_departements.departement_code where je10.fnum = " . $this->fnum;
             $db->setQuery($_getDepartmentSql);
             $_codDepPayAntIaaOpiNode->nodeValue = $db->loadResult();
         }
@@ -179,11 +179,18 @@ class ApogeeCustom {
     }
 
     public function setDepPay_Civility() {
+        $db = JFactory::getDbo();
+
         $_codDepPayNaiNode = $this->xmlTree->getElementsByTagName('codDepPayNai')->item(0);
         $_codTypDepPayNaiNode = $this->xmlTree->getElementsByTagName('codTypDepPayNai')->item(0);
 
         if($_codDepPayNaiNode->nodeValue == '100') {
             $_codTypDepPayNaiNode->nodeValue = 'D';
+
+            /* get French department if $_codDepPayNaiNode is 100 */
+            $_getDepartmentSql = "select cod_dep from data_departements left join jos_emundus_personal_detail as jepd on jepd.etu_dept_nais = data_departements.departement_code where jepd.fnum = " . $this->fnum;
+            $db->setQuery($_getDepartmentSql);
+            $_codDepPayNaiNode->nodeValue = $db->loadResult();
         } else {
             $_codTypDepPayNaiNode->nodeValue = 'P';
         }
@@ -198,7 +205,7 @@ class ApogeeCustom {
 
         if($_codSisAnnPreOpiNode->nodeValue == '100') {         # france
             // get France Dep
-            $_getDepartmentSql = "SELECT lpad(#__emundus_1001_00.e_358_7943,3,'0') FROM #__emundus_1001_00 WHERE #__emundus_1001_00.fnum = " . $this->fnum;
+            $_getDepartmentSql = "select cod_dep from data_departement left join jos_emundus_1001_00 as je10 on je10.e_358_7943 = data_departement.id where je10.fnum = " . $this->fnum;
             $db->setQuery($_getDepartmentSql);
 
             $_codSisAnnPreOpiNode->nodeValue = $db->loadResult();

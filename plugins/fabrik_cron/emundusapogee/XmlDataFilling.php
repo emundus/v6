@@ -4,7 +4,7 @@
  * XmlDataFilling >> Filling up the predefined XML tree with your own data from Data Mapping file
  * */
 
-ini_set('display_errors','1');                /// turn off Error Displaying
+ini_set('display_errors','0');                /// turn off Error Displaying
 ini_set('soap.wsdl_cache_enabled', 1);
 error_reporting(E_ALL);
 
@@ -208,14 +208,31 @@ class XmlDataFilling {
                                 $pr_names = $jsonDataBody->$js_key->$pr_name;
 
                                 foreach ($pr_names as $p_key => $p_val) {
-                                    $p_sql = $p_val->sql . $fnum;
+                                    /// check if SQL query exists
+                                    if(!is_null($p_val->sql) && ($p_val->sql) !== "") {
+                                        $p_sql = $p_val->sql . $fnum;
 
-                                    // run SQL query
-                                    $this->db->setQuery($p_sql);
-                                    $result = $this->db->loadResult();
+                                        // run SQL query
+                                        $this->db->setQuery($p_sql);
 
-                                    // stock value into $sql_array
-                                    $sql_array[$p_key] = explode('>>> SPLIT <<<', $result);
+                                        /// if CONCAT is in $p_sql, use loadResult(). Otherwise, use loadColumn()
+                                        if(strpos($p_sql, 'CONCAT') or strpos($p_sql, 'concat')) {
+                                            $result = $this->db->loadResult();      /// may be many columns
+                                            // stock value into $sql_array
+                                            $sql_array[$p_key] = explode('>>> SPLIT <<<', $result);
+                                        } else {
+                                            $result = $this->db->loadColumn();      /// just one column, but many rows
+                                            // stock value into $sql_array
+//                                                $sql_array[$p_key] = implode('>>> SPLIT <<<', $result);
+                                            $sql_array[$p_key] = $result;
+                                        }
+                                    }
+                                    else {
+                                        /// clone
+                                        for ($i = 0; $i <= $repeat_times - 1; $i++) {
+                                            $sql_array[$p_key][$i] = $p_val->default;
+                                        }
+                                    }
                                 }
 
 
@@ -382,6 +399,7 @@ class XmlDataFilling {
 
                                             if ($_cn->parentNode->nodeName === $pr_name) {
                                                 $tagName = $_cn->tagName;
+
                                                 if(!is_null($jsonDataBody->$js_key->$pr_name->$tagName->default)) {
                                                     if (is_null($jsonDataBody->$js_key->$pr_name->$tagName->sql) or ($jsonDataBody->$js_key->$pr_name->$tagName->sql === "")) {
                                                         $_cn->nodeValue = $jsonDataBody->$js_key->$pr_name->$tagName->default;
@@ -417,7 +435,6 @@ class XmlDataFilling {
                 }
             }
         }
-//        die;
         return $xmlDocument;
     }
 

@@ -56,10 +56,10 @@
       "sql": "select cod_bac from data_bac_oux_equ_v2 left join jos_emundus_1001_00 as je10 on je10.e_358_7925 = data_bac_oux_equ_v2.cod_bac where je10.fnum = "
     },
     "codDep": {
-      "sql": "select lpad(#__emundus_1001_00.e_358_7929,3,'0') from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+      "sql": "select cod_dep from data_departements left join jos_emundus_1001_00 as je10 on je10.e_358_7929 = data_departements.departement_code where je10.fnum = "
     },
     "codEtb": {
-      "sql": "select cod_etb from data_etbs left join jos_emundus_1001_00 as je10 on je10.nom_etb = data_etbs.id where je10.fnum = "
+      "sql": "select cod_etb as cod_etb_bac from data_etbs left join jos_emundus_1001_00 as je10 on je10.nom_etb = data_etbs.id where je10.fnum = "
     },
     "codMention": {
       "sql": "select cod_mnb from data_mention_niv_bac left join jos_emundus_1001_00 as je10 on je10.e_358_7926 = data_mention_niv_bac.id where je10.fnum = "
@@ -154,7 +154,7 @@
         "default": ""
       },
       "codEtbDerDip": {
-        "sql": "select lpad(#__emundus_1001_00.e_358_7942,8,'0') from #__emundus_1001_00 where #__emundus_1001_00.fnum = ",
+        "sql": "select cod_etb from data_etbs left join jos_emundus_1001_00 as je10 on je10.e_358_7942 = data_etbs.id where je10.fnum = ",
         "default": ""
       },
       "codTdsOpi": {
