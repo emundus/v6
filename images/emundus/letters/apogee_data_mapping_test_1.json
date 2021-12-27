@@ -279,7 +279,7 @@
     },
     "premiereInscription": {
       "codEtb": {
-        "sql": "select lpad(#__emundus_1001_00.e_358_7932,8,'0') from #__emundus_1001_00 where fnum = "
+        "sql": "select lpad(#__emundus_1001_00.cod_type_etb_ens_sup,8,'0') from #__emundus_1001_00 where fnum = "
       },
       "daaEnsSupOpi": {
         "default": ""
@@ -328,7 +328,7 @@
         "default" : ""
       },
       "codCge": {
-        "sql": "select concat(dra.code_centre, '>>> SPLIT <<<', '','>>> SPLIT <<<', '','>>> SPLIT <<<', '') from data_referentiel_apogee as dra left join #__emundus_setup_campaigns as jesc on jesc.libelle_apogee = dra.id left join #__emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum = ",
+        "sql": "select dra.code_centre from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_scholarship_domain_888_repeat as jesd8r on jesd8r.voeu = jesc.id left join jos_emundus_scholarship_domain as jesd on jesd.id = jesd8r.parent_id where jesd.fnum = ",
         "default" : ""
       },
       "codCmp": {
@@ -347,11 +347,11 @@
         "default": "C"
       },
       "codDip": {
-        "sql": "select concat(dra.code_diplome, '>>> SPLIT <<<', '','>>> SPLIT <<<', '','>>> SPLIT <<<', '') from data_referentiel_apogee as dra left join #__emundus_setup_campaigns as jesc on jesc.libelle_apogee = dra.id left join #__emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum = ",
+        "sql": "select dra.code_diplome from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_scholarship_domain_888_repeat as jesd8r on jesd8r.voeu = jesc.id left join jos_emundus_scholarship_domain as jesd on jesd.id = jesd8r.parent_id where jesd.fnum = ",
         "default": ""
       },
       "codEtp": {
-        "sql": "select concat(dra.code_etape, '>>> SPLIT <<<', '','>>> SPLIT <<<', '','>>> SPLIT <<<', '') from data_referentiel_apogee as dra left join #__emundus_setup_campaigns as jesc on jesc.libelle_apogee = dra.id left join #__emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum = ",
+        "sql": "select dra.code_etape from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_scholarship_domain_888_repeat as jesd8r on jesd8r.voeu = jesc.id left join jos_emundus_scholarship_domain as jesd on jesd.id = jesd8r.parent_id where jesd.fnum = ",
         "default": ""
       },
       "codMfo": {
@@ -371,18 +371,18 @@
         "default": ""
       },
       "codVrsVdi": {
-        "sql": "select concat(dra.code_version, '>>> SPLIT <<<', '','>>> SPLIT <<<', '','>>> SPLIT <<<', '') from data_referentiel_apogee as dra left join #__emundus_setup_campaigns as jesc on jesc.libelle_apogee = dra.id left join #__emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum = ",
+        "sql": "select dra.code_version from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_scholarship_domain_888_repeat as jesd8r on jesd8r.voeu = jesc.id left join jos_emundus_scholarship_domain as jesd on jesd.id = jesd8r.parent_id where jesd.fnum = ",
         "default": ""
       },
       "codVrsVet": {
-        "sql": "select concat(dra.code_version_etape, '>>> SPLIT <<<', '','>>> SPLIT <<<', '','>>> SPLIT <<<', '') from data_referentiel_apogee as dra left join #__emundus_setup_campaigns as jesc on jesc.libelle_apogee = dra.id left join #__emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum = ",
+        "sql": "select dra.code_version_etape from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_scholarship_domain_888_repeat as jesd8r on jesd8r.voeu = jesc.id left join jos_emundus_scholarship_domain as jesd on jesd.id = jesd8r.parent_id where jesd.fnum = ",
         "default": ""
       },
       "libCmtJur": {
         "default": ""
       },
       "numCls": {
-        "default": "1"
+        "sql": "select row_number() over () from jos_emundus_scholarship_domain_888_repeat as jesd8r left join jos_emundus_scholarship_domain as jesm on jesm.id = jesd8r.parent_id left join jos_emundus_setup_campaigns as jesc on jesc.id = jesd8r.voeu where jesm.fnum = "
       },
       "temValPsd": {
         "default": "N"

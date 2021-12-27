@@ -5,10 +5,10 @@
  * */
 
 ini_set('display_errors','1');                /// turn off Error Displaying
-ini_set('soap.wsdl_cache_enabled', 1);
+ini_set('soap.wsdl_cache_enabled', 0);
 error_reporting(E_ALL);
 
-set_time_limit(0);                                  /// turn off time limit (the code may run longer)
+set_time_limit(100);                                  /// turn off time limit (the code may run longer)
 
 /// import XmlSchema
 require_once("XmlSchema.php");
@@ -209,30 +209,46 @@ class XmlDataFilling {
                                 $pr_names = $jsonDataBody->$js_key->$pr_name;
 
                                 foreach ($pr_names as $p_key => $p_val) {
-                                    $p_sql = $p_val->sql . $fnum;
+                                    /// check if SQL query exists
+                                    if(!is_null($p_val->sql) && ($p_val->sql) !== "") {
+                                        $p_sql = $p_val->sql . $fnum;
 
-                                    // run SQL query
-                                    $this->db->setQuery($p_sql);
-                                    $result = $this->db->loadResult();
+                                        // run SQL query
+                                        $this->db->setQuery($p_sql);
 
-                                    // stock value into $sql_array
-                                    $sql_array[$p_key] = explode('>>> SPLIT <<<', $result);
+                                        /// if CONCAT is in $p_sql, use loadResult(). Otherwise, use loadColumn()
+                                        if(strpos($p_sql, 'CONCAT') or strpos($p_sql, 'concat')) {
+                                            $result = $this->db->loadResult();      /// may be many columns
+                                            // stock value into $sql_array
+                                            $sql_array[$p_key] = explode('>>> SPLIT <<<', $result);
+                                        } else {
+                                            $result = $this->db->loadColumn();      /// just one column, but many rows
+                                            // stock value into $sql_array
+                                            $sql_array[$p_key] = $result;
+                                        }
+                                    }
+                                    else {
+                                        /// clone
+                                        for ($i = 0; $i <= $repeat_times - 1; $i++) {
+                                            $sql_array[$p_key][$i] = $p_val->default;
+                                        }
+                                    }
                                 }
 
                                 for ($i = 0; $i <= $repeat_times - 1; $i++) {
-                                    if ($i == $xmlDocument->getElementsByTagName('item')->item($i)->getAttribute('duplicata')) {
-                                        /// get children
-                                        $_childNodes = $xmlDocument->getElementsByTagName('item')->item($i)->childNodes;
+                                    /// get children
+                                    $_childNodes = $xmlDocument->getElementsByTagName('item')->item($i)->childNodes;
 
-                                        /// iterate child
-                                        foreach ($_childNodes as $_child) {
-                                            /// next step : mapping data for each child --- data in this case is a sequential array that its length is exactly [$repeat_times] ::: sql query must to be loadAssocList // loadObjectList
-                                            if (in_array($_child->tagName, array_keys($sql_array))) { $_child->nodeValue = $sql_array[$_child->tagName][$i]; }
+                                    /// iterate child
+                                    foreach ($_childNodes as $_child) {
+                                        /// next step : mapping data for each child --- data in this case is a sequential array that its length is exactly [$repeat_times] ::: sql query must to be loadAssocList // loadObjectList
+                                        if (in_array($_child->tagName, array_keys($sql_array))) {
+                                            $_child->nodeValue = $sql_array[$_child->tagName][$i];
                                         }
-
-                                        // remove attribut 'duplicata' -- optional
-                                        $xmlDocument->getElementsByTagName('item')->item($i)->removeAttribute('duplicata');
                                     }
+
+                                    // remove attribut 'duplicata' -- optional
+                                    $xmlDocument->getElementsByTagName('item')->item($i)->removeAttribute('duplicata');
                                 }
                             }
                         }
@@ -333,7 +349,7 @@ class XmlDataFilling {
                                             } else {
                                                 $result = $this->db->loadColumn();      /// just one column, but many rows
                                                 // stock value into $sql_array
-                                                $sql_array[$p_key] = implode('>>> SPLIT <<<', $result);
+                                                $sql_array[$p_key] = $result;
                                             }
                                         }
                                         else {
@@ -345,19 +361,25 @@ class XmlDataFilling {
                                     }
 
                                     for ($i = 0; $i <= $repeat_times - 1; $i++) {
-                                        if ($i == $xmlDocument->getElementsByTagName('item')->item($i)->getAttribute('duplicata')) {
-                                            /// get children
-                                            $_childNodes = $xmlDocument->getElementsByTagName('item')->item($i)->childNodes;
+                                        /// get children
+                                        $_childNodes = $xmlDocument->getElementsByTagName('item')->item($i)->childNodes;
 
-                                            /// iterate child
-                                            foreach ($_childNodes as $_child) {
-                                                /// next step : mapping data for each child --- data in this case is a sequential array that its length is exactly [$repeat_times] ::: sql query must to be loadAssocList // loadObjectList
-                                                if (in_array($_child->tagName, array_keys($sql_array))) { $_child->nodeValue = $sql_array[$_child->tagName][$i]; }
+                                        /// iterate child
+                                        foreach ($_childNodes as $_child) {
+                                            /// next step : mapping data for each child --- data in this case is a sequential array that its length is exactly [$repeat_times] ::: sql query must to be loadAssocList // loadObjectList
+                                            if (in_array($_child->tagName, array_keys($sql_array))) {
+                                                if(empty($sql_array[$_child->tagName])) {
+                                                    continue;
+                                                }
+
+                                                else {
+                                                    $_child->nodeValue = $sql_array[$_child->tagName][$i];
+                                                }
                                             }
-
-                                            // remove attribut 'duplicata' -- optional
-                                            $xmlDocument->getElementsByTagName('item')->item($i)->removeAttribute('duplicata');
                                         }
+
+                                        // remove attribut 'duplicata' -- optional
+                                        $xmlDocument->getElementsByTagName('item')->item($i)->removeAttribute('duplicata');
                                     }
                                 }
                             }
@@ -457,5 +479,3 @@ class XmlDataFilling {
     }
 
 }
-
-
