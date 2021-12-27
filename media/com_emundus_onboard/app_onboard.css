@@ -15451,7 +15451,7 @@ div nav a[data-v-624df12a]:hover {
       -ms-flex-pack: justify;
           justify-content: space-between;
   padding: 16px;
-  margin: 0 27px 17px 0;
+  margin: 0 0 17px 0;
   background: #FFFFFF;
   border: 1px solid #E3E5E8;
   -webkit-box-sizing: border-box;
@@ -15525,10 +15525,10 @@ div nav a[data-v-624df12a]:hover {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  -webkit-box-pack: start;
-      -ms-flex-pack: start;
-          justify-content: flex-start;
-  margin-top: 50px;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  margin-top: 30px;
 }
 #list-body #actions[data-v-5cc77951] {
   display: -webkit-box;

@@ -43,6 +43,12 @@
 						<span v-else>{{ translations.file }}</span>
 					</div>
 				</div>
+
+				<div v-if="type == 'email' && data.type">
+					<div :class="'type-color-' + data.type">
+						{{ translations.emailType[data.type] }}
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -89,7 +95,11 @@ export default {
 				isFinished: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
 				edit: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
 				files: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES"),
-      	file: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE")
+      	file: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE"),
+				emailType: {
+					1: "Système",
+					2: "Modèle",
+				}
 			}
 		};
 	},
@@ -150,6 +160,8 @@ export default {
       	    this.data.end_date == null ||
       	    this.data.end_date == "0000-00-00 00:00:00")
       	);
+			} else if (this.type == "email") {
+				return this.data.published;
 			}
 
 			return null;
@@ -181,7 +193,7 @@ export default {
 	align-items: flex-start;
 	justify-content: space-between;
 	padding: 16px;
-	margin: 0 27px 17px 0;
+	margin: 0 0 17px 0;
 	background: #FFFFFF;
 	border: 1px solid #E3E5E8;
 	box-sizing: border-box;

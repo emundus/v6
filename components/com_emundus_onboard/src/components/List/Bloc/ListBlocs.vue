@@ -45,8 +45,8 @@ export default {
 	flex-direction: row;
 	flex-wrap: wrap;
 	align-items: center;
-	justify-content: flex-start;
-	margin-top: 50px;
+	justify-content: space-between;
+	margin-top: 30px;
 }
 </style>
 
