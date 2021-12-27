@@ -140,10 +140,12 @@ export default {
 					url = 'index.php?option=com_emundus_onboard&view=campaign&layout=addnextcampaign&cid=' + this.data.id + '&index=0';
 				break; 
 				case 'form':
-					url = 'index.php?option=com_emundus_onboard&view=form&layout=edit&id=' + this.data.id;
+				case 'formulaire':
+				case 'grilleEval':
+					url = 'index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.data.id + '&index=0&cid=';
 				break;
-				case 'emails':
-					url = 'index.php?option=com_emundus_onboard&view=emails&layout=edit&id=' + this.data.id;
+				case 'email':
+					url = 'index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + this.data.id;
 				break;
 			}
 
@@ -193,7 +195,7 @@ export default {
 	align-items: flex-start;
 	justify-content: space-between;
 	padding: 16px;
-	margin: 0 0 17px 0;
+	margin: 0 28px 18px 0;
 	background: #FFFFFF;
 	border: 1px solid #E3E5E8;
 	box-sizing: border-box;
