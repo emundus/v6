@@ -15415,11 +15415,25 @@ div nav a[data-v-624df12a]:hover {
 }
 }
 
-
-div nav a[data-v-3ae93094]:hover {
-  cursor: pointer;
+#list-head[data-v-966c82e2] {
+  margin-bottom: 15px;
 }
-
+#list-head .list-head-container[data-v-966c82e2] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+#list-head .list-head-container h2[data-v-966c82e2] {
+  margin: 0;
+}
 
 .loading-form[data-v-283afe90]{
   top: unset;

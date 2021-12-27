@@ -1,17 +1,10 @@
 <template>
   <div id="list">
-    <list-header
+    <list-head
       v-if="type !== 'files'"
       :data="actions"
-      :selected="selecedItems"
-      :updateTotal="updateTotal"
-      :filter="filter"
-      :sort="sort"
-      :cherche="cherche"
-      :chercheGo="chercheGo"
-      :validateFilters="validateFilters"
-      :nbresults="nbresults"
-    ></list-header>
+    >
+    </list-head>
 
     <div class="filters-menu">
       <div class="search">
@@ -177,7 +170,7 @@ import grilleEval from  "../components/list_components/evalgridItem"
 import formulaire from "../components/list_components/formItem";
 import files from "../components/list_components/files";
 import filters from "../components/list_components/filters_menu";
-import listHeader from "../components/list_components/list_header";
+import ListHead from "../components/List/ListHead.vue";
 import { list } from "../store/store";
 import { global } from "../store/global";
 
@@ -189,7 +182,7 @@ export default {
     formulaire,
     files,
     filters,
-    listHeader,
+    ListHead,
     grilleEval
   },
 

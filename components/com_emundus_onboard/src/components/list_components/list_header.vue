@@ -46,7 +46,6 @@
 
 <script>
   import axios from "axios";
-  import Swal from "sweetalert2";
   import "sweetalert2/src/sweetalert2.scss";
   import { list } from "../../store/store";
   import "@fortawesome/fontawesome-free/css/all.css";
@@ -59,13 +58,6 @@
 
     props: {
       data: Object,
-      updateTotal: Function,
-      filter: Function,
-      sort: Function,
-      cherche: Function,
-      chercheGo: Function,
-      validateFilters: Function,
-      nbresults: Function,
     },
 
     computed: {
@@ -84,7 +76,6 @@
         loading: false,
         translations:{
           AddCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
-          AddProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_PROGRAM"),
           AddEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
           AddForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_FORM"),
           Campaigns: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS"),
