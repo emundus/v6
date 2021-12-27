@@ -28,6 +28,11 @@ export default {
 			required: true
 		},
 	},
+	data() {
+		return {
+			phantomBlocs: 0,
+		};
+	},
 	computed: {
 		list() {
 			return list.getters.list;

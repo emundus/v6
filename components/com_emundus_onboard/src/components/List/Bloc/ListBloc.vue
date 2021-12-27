@@ -129,7 +129,6 @@ export default {
 	mounted() {
 		this.getTitle();
 
-		console.log(this.type);
 		if (this.type === "formulaire" || this.type === "form" || this.type === "grilleEval") {
 			this.getAssociatedCampaigns();
 		}
@@ -169,8 +168,10 @@ export default {
 				break; 
 				case 'form':
 				case 'formulaire':
-				case 'grilleEval':
 					url = 'index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.data.id + '&index=0&cid=';
+				break;
+				case 'grilleEval':
+					url =  "index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=&index=0&cid=" + "" + "&evaluation=" + this.data.id
 				break;
 				case 'email':
 					url = 'index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + this.data.id;
@@ -193,8 +194,6 @@ export default {
         }
       }).then(response => {
         this.campaign.associatedCampaigns = response.data.data;
-
-				console.log(this.campaign.associatedCampaigns);
       });
 		}	
 	},

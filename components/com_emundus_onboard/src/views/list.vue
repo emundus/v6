@@ -34,11 +34,6 @@
       </v-popover>
     </div> -->
 
-    <list-body
-      :type="type"
-      :actions="actions"
-    ></list-body>
-
     <ul class="form-section email-sections" v-if="type == 'email' && !loading && total != 0 && email_categories.length > 0">
       <li>{{translations.Categories}} : </li>
       <li>
@@ -89,25 +84,11 @@
     </transition>
 
     <div v-show="total > 0 || type == 'files'">
-      <transition-group :name="'slide-down'" type="transition" style="display: inline-block;margin: 16px 0;width: 100%">
-        <div v-for="(data, index) in listTypeNotEmailNotFiles" :key="index" class="col-sm-12 col-lg-4 mb-2">
-          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" :actualLanguage="actualLanguage"/>
-        </div>
 
-        <div v-for="(data, index) in listEmailMenu0" :key="index" class="col-sm-12 col-lg-4 mb-2">
-          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" :models="list" />
-        </div>
-
-        <div v-for="(data, index) in listEmailMenuEmailCategory" :key="index" class="col-sm-12 col-lg-4 mb-2">
-          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" />
-        </div>
-
-        <div v-if="type === 'email' && menuEmail == 1 && data.type == 1">
-          <div v-for="(data, index) in listEmailMenu1Type1" :key="index" class="col-sm-12 col-lg-4 mb-2">
-            <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" />
-          </div>
-        </div>
-      </transition-group>
+      <list-body
+        :type="type"
+        :actions="actions"
+      ></list-body>
 
       <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">
         <ul class="pagination" v-if="total > 0" style="position: absolute;bottom: 0;width: 100%;">
@@ -247,44 +228,8 @@ export default {
       return list.getters.list;
     },
 
-    listTypeNotEmailNotFiles() {
-      if (this.type != "email" && this.type != "files") {
-        return list.getters.list;
-      }
-      
-      return [];
-    },
-
-    listEmailMenu0() {
-      if (this.type == "email" && this.menuEmail == 0) {
-        return list.getters.list
-      }
-
-      return [];
-    },
-
-    listEmailMenuEmailCategory() {
-      if (this.type == "email" && this.menuEmail != 1 && this.menuEmail != 0) {
-        return list.getters.list.filter(item => this.menuEmail == item.category);
-      }
-
-      return [];
-    },
-
-    listEmailMenu1Type1() {
-      if (this.menuEmail == 1 && this.type == "email") {
-        return list.getters.list.filter(item => item.type == 1);
-      }
-
-      return [];
-    },
-
     isEmpty: () => {
       return list.getters.isSomething;
-    },
-
-    notEmptyEmailCategories() {
-      return this.email_categories.filter(item => item !== '');
     },
   },
 
