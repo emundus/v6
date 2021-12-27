@@ -34,6 +34,8 @@
       </v-popover>
     </div>
 
+    <list-body></list-body>
+
     <ul class="form-section email-sections" v-if="type == 'email' && !loading && total != 0 && email_categories.length > 0">
       <li>{{translations.Categories}} : </li>
       <li>
@@ -171,6 +173,7 @@ import formulaire from "../components/list_components/formItem";
 import files from "../components/list_components/files";
 import filters from "../components/list_components/filters_menu";
 import ListHead from "../components/List/ListHead.vue";
+import ListBody from "../components/List/ListBody.vue";
 import { list } from "../store/store";
 import { global } from "../store/global";
 
@@ -183,6 +186,7 @@ export default {
     files,
     filters,
     ListHead,
+    ListBody,
     grilleEval
   },
 
