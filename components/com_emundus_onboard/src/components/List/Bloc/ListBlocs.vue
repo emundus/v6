@@ -1,8 +1,8 @@
 <template>
 	<div id="list-blocs">
 		<list-bloc
-			v-for="(item, index) in list" 
-			:key="index" 
+			v-for="item in list" 
+			:key="item.id" 
 			:data="item" 
 			:type="type" 
 			:actions="actions">

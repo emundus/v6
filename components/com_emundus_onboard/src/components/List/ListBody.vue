@@ -6,8 +6,8 @@
 		</div>
 		<div class="view-type">
 			<span 
-				v-for="(viewTypeOption, index) in viewTypeOptions" 
-				:key="index" 
+				v-for="viewTypeOption in viewTypeOptions" 
+				:key="viewTypeOption.value" 
 				class="material-icons"
 				:class="{'active': viewTypeOption.value === viewType}"
 				@click="changeViewType(viewTypeOption)"

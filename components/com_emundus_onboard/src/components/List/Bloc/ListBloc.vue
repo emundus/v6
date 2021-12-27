@@ -20,8 +20,8 @@
 				<p v-if="campaign.associatedCampaigns.length > 1">{{ translations.campaignsAssociated }} :</p>
 				<ul>
 					<li 
-						v-for="(campaign, index) in campaign.associatedCampaigns" 
-						:key="index" 
+						v-for="campaign in campaign.associatedCampaigns" 
+						:key="campaign.id" 
 						class="campaigns-item"
 					>
 						{{ campaign.label }}
