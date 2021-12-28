@@ -5,7 +5,10 @@
 			:key="item.id" 
 			:data="item" 
 			:type="type" 
-			:actions="actions">
+			:actions="actions"
+			@validateFilters="validateFilters"
+			@updateLoading="updateLoading"	
+		>
 		</list-bloc>
 	</div>
 </template>
@@ -32,6 +35,14 @@ export default {
 		return {
 			phantomBlocs: 0,
 		};
+	},
+	methods: {
+		validateFilters() {
+			this.$emit('validateFilters');
+		},
+		updateLoading(value) {
+			this.$emit('updateLoading',value);
+		},
 	},
 	computed: {
 		list() {

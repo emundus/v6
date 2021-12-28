@@ -88,6 +88,8 @@
       <list-body
         :type="type"
         :actions="actions"
+        @validateFilters="validateFilters"
+		    @updateLoading="updateLoading"
       ></list-body>
 
       <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">

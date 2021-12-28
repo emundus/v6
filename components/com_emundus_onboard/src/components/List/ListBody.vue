@@ -16,8 +16,19 @@
 			</span>
 		</div>
 	</div>
-	<list-table v-if="viewType === 'table'" :type="type" :actions="actions"></list-table>
-	<list-blocs v-if="viewType === 'blocs'" :type="type" :actions="actions"></list-blocs>
+	<list-table 
+		v-if="viewType === 'table'" 
+		:type="type" 
+		:actions="actions"
+	></list-table>
+	<list-blocs 
+		v-if="viewType === 'blocs'" 
+		:type="type" 
+		:actions="actions"
+		@validateFilters="validateFilters"
+		@updateLoading="updateLoading"
+	>
+	</list-blocs>
 </div>
 </template>
 
@@ -58,6 +69,12 @@ export default {
 	methods: {
 		changeViewType(viewType) {
 			this.viewType = viewType.value;
+		},
+		validateFilters() {
+			this.$emit('validateFilters');
+		},
+		updateLoading(value) {
+			this.$emit('updateLoading',value);
 		}
 	}
 }

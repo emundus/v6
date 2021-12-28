@@ -84,10 +84,6 @@
     },
 
     methods: {
-      created(){
-
-      },
-
       filesNumber() {
         axios({
           method: "get",
