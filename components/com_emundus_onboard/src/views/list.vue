@@ -110,33 +110,20 @@
     </div>-->
 
     <ul class="form-section email-sections" v-if="(type == 'campaign')  && !loading ">
-      <!--<li>Types : </li>-->
 
       <li>
-        <a class="" href="javascript:void(0);">Programmes : </a>
+        <a class="" href="javascript:void(0);">{{ translations.programmesTrans }} : </a>
       </li>
       <li>
         <a class="form-section__current">{{actualProgramShowingCampaignName}}</a>
       </li>
-     <!-- <li>
-        <a class="form-section__current">Candidature</a>
-      </li>
-      <li>
-        <a class="form-section__current">Candidature</a>
-      </li>
-      <li>
-        <a class="form-section__current">Candidature</a>
-      </li>
-      <li>
-        <a class="form-section__current">Candidature</a>
-      </li>-->
       <li>
         <div class="dropdown">
-          <button class="dropbtn" for="btnControl">Autres programes</button>
+          <button class="dropbtn" for="btnControl">{{ translations.ortherPrograms }}</button>
           <div class="dropdown-content">
 
             <a href="javascript:void(0);" v-for="program in allPrograms" @click="programFilter=program.code; actualProgramShowingCampaignName=program.label">{{program.label}}</a>
-            <a href="javascript:void(0);"  @click="programFilter='all'; actualProgramShowingCampaignName='Tous';">Tous</a>
+            <a href="javascript:void(0);"  @click="programFilter='all'; actualProgramShowingCampaignName='Tous';">{{translations.All}}</a>
           </div>
         </div>
       </li>
@@ -352,6 +339,8 @@ export default {
       noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
       noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
       All: Joomla.JText._("COM_EMUNDUS_ONBOARD_ALL"),
+      programmesTrans: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+      ortherPrograms: Joomla.JText._("COM_EMUNDUS_ONBOARD_OTHERCAMP_PROGRAM"),
       System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
       Categories: Joomla.JText._("COM_EMUNDUS_ONBOARD_CATEGORIES"),
       Rechercher: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH"),
@@ -405,8 +394,6 @@ export default {
         .then(response => {
 
           this.allPrograms = response.data.data;
-          console.log('goood days my guys you are wellcomes');
-          console.log(this.allPrograms);
           /*if(Object.keys(this.allPrograms).length !== 0) {
             this.allPrograms.sort((a, b) => a.id - b.id);
           }*/
@@ -428,7 +415,6 @@ export default {
   },
   watch: {
     type: function (val) {
-      console.log('watching type value '+val);
       this.actions.type = val;
       this.typeForAdd = val == 'formulaire' ? 'form' : val;
 
@@ -439,15 +425,12 @@ export default {
         let view = this.typeForAdd == 'grilleEval' ? 'form' : this.typeForAdd
         this.actions.add_url = 'index.php?option=com_emundus_onboard&view=' + view + '&layout=add'
       }
-      console.log("he is trying to read this function "+this.typeForAdd);
+
       this.validateFilters();
     },
     programFilter: function(val){
       this.programFilter=val;
       this.validateFilters();
-      //console.log('hello guy' + val);
-
-
     }
 
   },
