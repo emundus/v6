@@ -42,7 +42,7 @@
         <div class="d-flex" >
           <ul class="nav nav-tabs topnav">
 
-            <li v-for="(formCat, index) in formCategories[langue]" :key="index" v-show="closeSubmenu">
+            <li v-for="(formCat, index) in formCategories[langue]" :key="'category-' + index" v-show="closeSubmenu">
               <a  @click="profileId != null ? changeToCampMenu(index): ''"
                   class="menu-item"
                   :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
@@ -50,7 +50,7 @@
               </a>
             </li>
 
-            <li v-for="(formProg, index) in formPrograms[langue]" :key="index" v-show="closeSubmenu">
+            <li v-for="(formProg, index) in formPrograms[langue]" :key="'program-' + index" v-show="closeSubmenu">
               <a @click="profileId != null ? changeToProgMenu(index) : ''"
                  class="menu-item"
                  :class="[(menuHighlightProg == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
