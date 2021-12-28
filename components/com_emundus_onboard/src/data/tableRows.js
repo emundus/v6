@@ -37,6 +37,10 @@ export default {
 		{
 			label: 'Statut',
 			value: 'published',
+		},
+		{
+			label: '',
+			value: 'actions',
 		}
 	],
 	form:  [],

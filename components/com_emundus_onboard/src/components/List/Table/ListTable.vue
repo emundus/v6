@@ -167,6 +167,15 @@ export default {
 					}
 
 					item.push(value);
+
+				} else if (td.value === "actions") {
+					item.push({
+						value: "actions",
+						label: this.actions,
+						id: listElement.id,
+						class: "actions",
+						data: listElement[td.value],
+					});
 				} else {
 					item.push({
 						label: listElement[td.value],
