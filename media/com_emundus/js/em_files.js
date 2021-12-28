@@ -4119,7 +4119,6 @@ $(document).ready(function() {
                             },
                             async: false,
                             success: function(result) {
-                                console.log(result);
 
                                 let profile_labels = Object.values(result.profile_label);
                                 let profile_ids = Object.values(result.profile_id);
