@@ -4117,9 +4117,10 @@ $(document).ready(function() {
                                 camp: camp,
                                 code: code,
                             },
+                            async: false,
                             success: function(result) {
                                 let profile_labels = Array.prototype.slice.call(result.profile_label);
-                                let profile_ids = Array.prototype.slice.call(result.profile_id);
+                                let profile_ids = Object.values(result.profile_id);
                                 let profile_menus = Array.prototype.slice.call(result.profile_menu_type);
 
                                 for (index = 0; index < profile_labels.length; index++) {
@@ -4167,6 +4168,7 @@ $(document).ready(function() {
                             type:'get',
                             url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
                             dataType:'json',
+                            async: false,
                             success: function(result) {
                                 if (result.status) {
                                     $('#form-exists').show();
@@ -4187,11 +4189,22 @@ $(document).ready(function() {
 
                                     var camp = $("#em-export-camp").val();
 
+                                    var profiles = [];
+                                    var felts = $('[id^=felts]');
+
+                                    felts.each(function(e) {
+                                        profiles.push($(this).attr('id').split('felts')[1]);
+                                    })
+
                                     if (camp != 0) {
                                         $.ajax({
                                             type:'post',
                                             url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
                                             dataType:'json',
+                                            async: false,
+                                            data: {
+                                                profiles: profiles
+                                            },
                                             success: function(result) {
                                                 if (result.status) {
                                                     $('#aelts-'+code+camp).parent('div').remove();
