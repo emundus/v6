@@ -148,14 +148,15 @@ export default {
     addEmail,
   },
 
-  props: {
-    campaignId: Number,
-    actualLanguage: String,
+  props: {    
     index: Number,
-    manyLanguages: Number,
   },
 
   data: () => ({
+    campaignId: 0,
+    actualLanguage: "",
+    manyLanguages: 0,
+
     prid: "",
     EmitIndex: "0",
     menuHighlight: 0,
@@ -164,20 +165,14 @@ export default {
     selectedform: "default",
     formList: "",
     prog: 0,
-
     loading: false,
-
     closeSubmenu: true,
-
     profileId: null,
     profiles: [],
     campaignsByProgram: [],
-
     currentElement: "",
     currentSpan: "",
-
     langue: 0,
-
     formCategoriesDesc: [
       [
         "Vous pouvez modifier vos dates limites de campagne, vos descriptifs et définir une limite de dossiers",
@@ -267,8 +262,21 @@ export default {
     },
   }),
 
+  created () {
+    // Get datas that we need with store
+    this.campaignId = Number(global.getters.datas.campaignId.value);
+    this.actualLanguage = global.getters.actualLanguage;
+    this.manyLanguages = global.getters.manyLanguages;
+    //
+
+    this.loading = true;
+    if (this.actualLanguage === "en") {
+      this.langue = 1;
+    }
+  },
+
   methods: {
-    initInformations(campaign){
+    initInformations(campaign) {
       this.form.label = campaign.label;
       this.form.profile_id = campaign.profile_id;
       this.form.program_id = campaign.progid;
@@ -308,7 +316,7 @@ export default {
       },500);
     },
 
-    changeToProgMenu(index){
+    changeToProgMenu(index) {
       axios.get(`index.php?option=com_emundus_onboard&controller=program&task=getprogrambyid&id=${this.form.program_id}`)
           .then(rep => {
             this.program.id = rep.data.data.id;
@@ -351,12 +359,12 @@ export default {
       this.menuHighlight = -1;
     },
 
-    changeToCampMenu(index){
+    changeToCampMenu(index) {
       this.menuHighlight = index;
       this.menuHighlightProg = -1;
     },
 
-    setProfileId(prid){
+    setProfileId(prid) {
       this.profileId = prid;
     },
 
@@ -414,19 +422,6 @@ export default {
 
   computed: {
     console: () => console
-  },
-
-  created() {
-    // Get datas that we need with store
-    this.$props.campaignId = global.getters.datas.campaignId.value;
-    this.$props.actualLanguage = global.getters.actualLanguage;
-    this.$props.manyLanguages = global.getters.manyLanguages;
-    //
-
-    this.loading = true;
-    if (this.actualLanguage === "en") {
-      this.langue = 1;
-    }
   },
 };
 </script>
