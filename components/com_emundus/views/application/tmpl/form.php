@@ -14,6 +14,11 @@ $user = $this->userid;
 
 <!--<div class="active title" id="em_application_forms"> <i class="dropdown icon"></i> </div>
 -->
+
+<style type="text/css">
+    .group-result { color: #16afe1 !important; }
+</style>
+
 <div class="row">
     <div class="panel panel-default widget em-container-form">
         <div class="panel-heading em-container-form-heading">
@@ -42,7 +47,7 @@ $user = $this->userid;
                 <select class="chzn-select" style="width: 100%" id="select_profile">
                     <option value="<?= $defaultpid->pid; ?>" selected style=""> <?= $defaultpid->label; ?></option>
                     <?php foreach($pids as $pid) : ?>
-                        <optgroup label ="<?= strtoupper($pid->lbl) ?>" style="color:#16afe1">
+                        <optgroup class="step_group_profile" label ="<?= strtoupper($pid->lbl) ?>" style="">
                             <?php if(is_array($pid->data)) : ?>
                                 <?php foreach($pid->data as $data) : ?>
                                     <?php if($data->pid != $defaultpid->pid): ?>
