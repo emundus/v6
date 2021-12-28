@@ -4119,6 +4119,8 @@ $(document).ready(function() {
                             },
                             async: false,
                             success: function(result) {
+                                console.log(result);
+
                                 let profile_labels = Object.values(result.profile_label);
                                 let profile_ids = Object.values(result.profile_id);
                                 let profile_menus = Object.values(result.profile_menu_type);
@@ -7164,11 +7166,11 @@ $(document).ready(function() {
         if($('#' + button_id + ' > span').attr('class') == 'glyphicon glyphicon-plus') {
             $('#' + button_id + ' > span').attr('class', 'glyphicon glyphicon-minus');
             $(this).attr('class','btn-xs btn btn-elements-success');
-            $('#felts'+ id).show();
+            $('#felts'+ id).fadeIn('slow');
         } else {
             $('#' + button_id + ' > span').attr('class', 'glyphicon glyphicon-plus');
             $(this).attr('class','btn-xs btn btn-info');
-            $('#felts'+ id).hide();
+            $('#felts'+ id).fadeOut('slow');
         }
     });
 

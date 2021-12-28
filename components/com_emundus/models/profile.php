@@ -746,18 +746,20 @@ class EmundusModelProfile extends JModelList {
 
                     $profileIds = array_unique(array_merge($firstProfile, $secondProfile));
 
-                    $query->clear()
-                        ->select('#__emundus_setup_profiles.*')
-                        ->from($this->_db->quoteName('#__emundus_setup_profiles'))
-                        ->where($this->_db->quoteName('#__emundus_setup_profiles.id') . 'IN (' . implode(',', $profileIds) . ')');
+                    $profileLabels = [];
+                    $profileMenuType = [];
 
-                    $this->_db->setQuery($query);
+                    foreach($profileIds as $pid) {
+                        $query->clear()
+                            ->select('#__emundus_setup_profiles.*')
+                            ->from($this->_db->quoteName('#__emundus_setup_profiles'))
+                            ->where($this->_db->quoteName('#__emundus_setup_profiles.id') . '=' . $pid);
 
-                    $_profilesLabels = $this->_db->loadObjectList();
+                        $this->_db->setQuery($query);
+                        $raw = $this->_db->loadObject();
 
-                    foreach ($_profilesLabels as $key => $value) {
-                        $profileLabels[] = $value->label;
-                        $profileMenuType[] = $value->menutype;
+                        $profileLabels[] = $raw->label;
+                        $profileMenuType[] = $raw->menutype;
                     }
 
                     return ['profile_id' => $profileIds, 'profile_label' => $profileLabels, 'profile_menu_type' => $profileMenuType];
