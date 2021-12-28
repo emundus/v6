@@ -1,7 +1,7 @@
 <template>
 	<tr>
-		<td v-for="td in tds" :key="td.value">
-			<span v-if="data[td.value]"> {{data[td.value]}} </span>
+		<td v-for="itemValue in item" :key="itemValue.value">
+			<span v-if="itemValue.value"> {{ itemValue.value }} </span>
 		</td>
 	</tr>
 </template>
@@ -9,12 +9,8 @@
 <script>
 export default {
 	props: {
-		tds: {
+		item: {
 			type: Array,
-			required: true
-		},
-		data: {
-			type: Object,
 			required: true
 		},
 	},

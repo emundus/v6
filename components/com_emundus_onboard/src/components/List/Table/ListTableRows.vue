@@ -1,6 +1,6 @@
 <template>
 	<tbody>
-		<list-table-row v-for="item in data" :key="item.id" :data="item" :tds="tds"></list-table-row>
+		<list-table-row v-for="item in items" :key="item.id" :item="item"></list-table-row>
 	</tbody>
 </template>
 
@@ -10,11 +10,7 @@ import ListTableRow from './ListTableRow.vue';
 export default {
 	components: { ListTableRow },
 	props: {
-		tds: {
-			type: Array,
-			required: true
-		},
-		data: {
+		items: {
 			type: Array,
 			required: true
 		},
