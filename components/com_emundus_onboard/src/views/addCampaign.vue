@@ -44,11 +44,11 @@
               <div class="w-form">
                 <label for="startDate">{{translations.StartDate}} <span class="em-red-500-color">*</span></label>
                 <datetime
-                    id="startDate"
-                    :placeholder="translations.StartDate"
-                    type="datetime"
-                    :input-id="'start_date'"
                     v-model="form.start_date"
+                    id="startDate"
+                    type="datetime"
+                    :placeholder="translations.StartDate"
+                    :input-id="'start_date'"
                     :phrases="{ok: translations.OK, cancel: translations.Cancel}"
                 ></datetime>
               </div>
@@ -57,12 +57,12 @@
               <div class="w-form">
                 <label for="endDate">{{translations.EndDate}} <span class="em-red-500-color">*</span></label>
                 <datetime
+                    v-model="form.end_date"
                     id="endDate"
-                    :placeholder="translations.EndDate + ' *'"
                     type="datetime"
+                    :placeholder="translations.EndDate + ' *'"
                     :input-id="'end_date'"
                     :min-datetime="minDate"
-                    v-model="form.end_date"
                     :phrases="{ok: translations.OK, cancel: translations.Cancel}"
                 ></datetime>
               </div>
@@ -445,8 +445,8 @@ export default {
           //
 
           // Convert date
-          this.form.start_date = LuxonDateTime.fromSQL(this.form.start_date);
-          this.form.end_date = LuxonDateTime.fromSQL(this.form.end_date);
+          this.form.start_date = LuxonDateTime.fromSQL(this.form.start_date).toISO();
+          this.form.end_date = LuxonDateTime.fromSQL(this.form.end_date).toISO();
           if (this.form.end_date == "0000-00-00T00:00:00.000Z") {
             this.form.end_date = "";
           } else {
@@ -815,7 +815,7 @@ export default {
     'form.start_date': function (val) {
       this.minDate = LuxonDateTime.fromISO(val).plus({ days: 1 }).toISO();
       if (this.form.end_date == "") {
-        this.form.end_date = LuxonDateTime.fromISO(val).plus({days: 1});
+        this.form.end_date = LuxonDateTime.fromISO(val).plus({days: 1}).toISO();
       }
     }
   }
