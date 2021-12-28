@@ -32,8 +32,9 @@ $user = $this->userid;
             </div>
         </div>
         <div class="panel-body Marginpanel-body em-container-form-body">
-            <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>">
-            <?php if(count(get_object_vars($pids)) > 1) : ?>
+            <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>"/>
+
+            <div id="em-switch-profiles">
                 <div class="em_label">
                     <label class="control-label em-filter-label"><?= JText::_('PROFILE_FORM'); ?></label>
                 </div>
@@ -44,10 +45,12 @@ $user = $this->userid;
                         <optgroup label ="<?= strtoupper($pid->lbl) ?>" style="color:#16afe1">
                             <?php if(is_array($pid->data)) : ?>
                                 <?php foreach($pid->data as $data) : ?>
-                                    <?php if($data->step !== null) : ?>
-                                        <option style="" value="<?= $data->pid; ?>"> <?= $data->label; ?></option>
-                                    <?php else: ?>
-                                        <option style="" value="<?= $data->pid; ?>"><?= $data->label; ?></option>
+                                    <?php if($data->pid != $defaultpid->pid): ?>
+                                        <?php if($data->step !== null) : ?>
+                                            <option style="" value="<?= $data->pid; ?>"> <?= $data->label; ?></option>
+                                        <?php else: ?>
+                                            <option style="" value="<?= $data->pid; ?>"><?= $data->label; ?></option>
+                                        <?php endif ?>
                                     <?php endif ?>
                                 <?php endforeach; ?>
                             <?php else : ?>
@@ -56,14 +59,14 @@ $user = $this->userid;
                         </optgroup>
                     <?php endforeach; ?>
                 </select>
-
-                <input type="hidden" id="user_hidden" value="<?php echo $user ?>">
-                <input type="hidden" id="fnum_hidden" value="<?php echo $this->fnum ?>">
-            <?php endif ?>
+            </div>
 
             <div class="active content" id="show_profile">
                 <?php echo $this->forms; ?>
             </div>
+
+            <input type="hidden" id="user_hidden" value="<?php echo $user ?>">
+            <input type="hidden" id="fnum_hidden" value="<?php echo $this->fnum ?>">
         </div>
     </div>
 </div>
@@ -71,7 +74,9 @@ $user = $this->userid;
     $(".chzn-select").chosen();
     var dpid = $('#dpid_hidden').attr('value');
 
-    $('#select_profile option[value="' + dpid + '"]:nth-child(2)').remove();
+    if($('#select_profile option').length == 1) {
+        $('#em-switch-profiles').remove();
+    }
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
@@ -79,7 +84,7 @@ $user = $this->userid;
 
     $('#select_profile').on('change', function() {
         /* get the selected profile id*/
-        var profile = $(this).attr('value');      /* or just $(this).val() */
+        var profile = $(this).val();      /* or just $(this).val() */
 
         $('#show_profile').empty();
         $('#show_profile').before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
