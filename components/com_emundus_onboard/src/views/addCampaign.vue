@@ -813,8 +813,8 @@ export default {
 
   watch: {
     'form.start_date': function (val) {
-      this.minDate = LuxonDateTime.fromISO(val).plus({ days: 1 });
-      if(this.form.end_date == "") {
+      this.minDate = LuxonDateTime.fromISO(val).plus({ days: 1 }).toISO();
+      if (this.form.end_date == "") {
         this.form.end_date = LuxonDateTime.fromISO(val).plus({days: 1});
       }
     }
