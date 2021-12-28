@@ -8,7 +8,7 @@
         :classes="'vue-notification-custom'"
     />
     <div class="w-container general-information">
-      <div class="section-sub-menu sub-form" v-if="campaign == ''">
+      <div class="section-sub-menu sub-form" v-if="campaignId == ''">
         <div class="container-2 w-container" style="max-width: unset">
           <div class="d-flex">
             <img src="/images/emundus/menus/megaphone.svg" srcset="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
@@ -281,12 +281,15 @@ export default {
 
   props: {
     campaign: Number,
-    actualLanguage: String,
-    coordinatorAccess: Number,
-    manyLanguages: Number,
   },
 
   data: () => ({
+    // props
+    campaignId: 0,
+    actualLanguage: "",
+    coordinatorAccess: 0,
+    manyLanguages: 0,
+
     isHiddenProgram: false,
 
     // Date picker rules
@@ -394,13 +397,16 @@ export default {
   }),
 
   created() {
-    if(this.$props.campaign == "") {
+    if (this.$props.campaign == "") {
       // Get datas that we need with store
-      this.$props.campaign = global.getters.datas.campaign.value;
-    }
-    this.$props.actualLanguage = global.getters.actualLanguage;
-    this.$props.manyLanguages = global.getters.manyLanguages;
-    this.$props.coordinatorAccess = global.getters.coordinatorAccess;
+      this.campaignId = global.getters.datas.campaign.value;
+    } else {
+      this.campaignId = this.$props.campaign;
+    } 
+
+    this.actualLanguage = global.getters.actualLanguage;
+    this.manyLanguages = global.getters.manyLanguages;
+    this.coordinatorAccess = global.getters.coordinatorAccess;
     //
 
     // Configure datetime
@@ -411,9 +417,9 @@ export default {
     this.form.start_date = LuxonDateTime.local(now.getFullYear(),now.getMonth() + 1,now.getDate(),0,0,0).toISO();
     this.getLanguages();
     //Check if we add or edit a campaign
-    if (typeof this.$props.campaign !== 'undefined' && this.$props.campaign !== "") {
+    if (typeof this.campaignId !== 'undefined' && this.campaignId !== "") {
       axios.get(
-          `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaign}`
+          `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaignId}`
       ).then(response => {
         let label = response.data.data.campaign.label;
 
@@ -542,7 +548,7 @@ export default {
         },
         data: qs.stringify({body: form_data})
       }).then(response => {
-        this.$props.campaign = response.data.data;
+        this.campaignId = response.data.data;
         this.quitFunnelOrContinue(this.quit);
       }).catch(error => {
         console.log(error);
@@ -569,7 +575,7 @@ export default {
           },
           data: qs.stringify({body: this.form})
         }).then(response => {
-          this.$props.campaign = response.data.data;
+          this.campaignId = response.data.data;
           this.quitFunnelOrContinue(this.quit);
         }).catch(error => {
           console.log(error);
@@ -654,7 +660,7 @@ export default {
 
       this.submitted = true;
 
-      if (this.campaign !== "") {
+      if (this.campaignId !== "") {
         let task = 'createprogram';
         let params = {body: this.programForm}
 
@@ -680,7 +686,7 @@ export default {
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
-            data: qs.stringify({ body: this.form, cid: this.campaign })
+            data: qs.stringify({ body: this.form, cid: this.campaignId })
           }).then(() => {
             this.$emit('nextSection')
           }).catch(error => {
@@ -707,8 +713,8 @@ export default {
       if (quit == 0) {
         this.redirectJRoute('index.php?option=com_emundus_onboard&view=campaign');
       } else if (quit == 1) {
-        document.cookie = 'campaign_'+this.campaign+'_menu = 2; expires=Session; path=/'
-        this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.campaign + '&index=0')
+        document.cookie = 'campaign_'+this.campaignId+'_menu = 2; expires=Session; path=/'
+        this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.campaignId + '&index=0')
       }
     },
 
