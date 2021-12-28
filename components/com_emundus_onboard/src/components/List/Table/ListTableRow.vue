@@ -1,19 +1,42 @@
 <template>
 	<tr>
 		<td v-for="itemValue in item" :key="itemValue.value">
-			<span v-if="itemValue.value" :class="itemValue.class"> {{ itemValue.value }} </span>
+			<span v-if="itemValue.value && itemValue.value != 'actions'" :class="itemValue.class"> {{ itemValue.label }} </span>
+			<span v-if="itemValue.value == 'actions'"> 
+				<list-action-menu
+					:type="itemValue.label.type"
+					:itemId="itemValue.id"
+					:isPublished="isPublished"
+					@validateFilters="validateFilters"
+					@updateLoading="updateLoading"
+				></list-action-menu>
+			</span>
 		</td>
 	</tr>
 </template>
 
 <script>
+import ListActionMenu from '../ListActionMenu.vue'
 export default {
+	components: { ListActionMenu },
 	props: {
 		item: {
 			type: Array,
 			required: true
 		},
+		isPublished: {
+			type: Boolean,
+			required: true
+		},
 	},
+	methods: {
+		validateFilters() {
+      this.$emit('validateFilters');
+    },
+		updateLoading(value) {
+      this.$emit('updateLoading',value);
+    },
+	}
 }
 </script>
 

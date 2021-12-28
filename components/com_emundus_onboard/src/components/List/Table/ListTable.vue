@@ -2,7 +2,12 @@
 	<div id="list-table">
 		<table :aria-describedby="'Table of ' + type" v-if="!isEmptyRowsData">
 			<list-table-head :ths="rowsData"></list-table-head>
-			<list-table-rows :items="items"></list-table-rows>
+			<list-table-rows 
+				:items="items"
+				@validateFilters="validateFilters"
+				@updateLoading="updateLoading"
+			>
+			</list-table-rows>
 		</table>
 		<p v-if="isEmptyRowsData">Unable to create table...</p>
 	</div>
@@ -69,8 +74,8 @@ export default {
 							const date = moment(listElement[td.value]).format('DD/MM/YYYY');
 
 							item.push({
-								value: date,
-								label: td.label,
+								value: td.value,
+								label: date,
 								id: listElement.id,
 								class: ""
 							});
@@ -78,7 +83,7 @@ export default {
 
 						case "status":
 							let value = {
-								label: td.label,
+								value: td.value,
 								id: listElement.id
 							}
 
@@ -86,23 +91,32 @@ export default {
 							const isFinished = listElement.end_date ? moment(listElement.end_date) < moment() : false;
 
 							if (isFinished === true) {
-								value.value = "Terminé";
+								value.label = "Terminé";
 								value.class = "tag finished";
 							} else if (listElement["published"] == 1) {
-								value.value = "Publié";
+								value.label = "Publié";
 								value.class = "tag published";
 							} else {
-								value.value = "Non publié";
+								value.label = "Non publié";
 								value.class = "tag unpublished";
 							}
 
 							item.push(value);
 						break;
 
+						case "actions": 
+							item.push({
+								value: "actions",
+								label: this.actions,
+								id: listElement.id,
+								class: "actions"
+							});
+						break;
+
 						default:
 							item.push({
-								value: listElement[td.value],
-								label: td.label,
+								value: td.value,
+								label: listElement[td.value] ? listElement[td.value] : td.value,
 								id: listElement.id,
 								class: ""
 							});
@@ -118,8 +132,8 @@ export default {
 
 			this.rowsData.forEach((td) => {
 				item.push({
-					value: element[td.value],
-					label: td.label,
+					label: element[td.value],
+					value: td.value,
 					id: element.id,
 					class: ""
 				});
@@ -132,8 +146,8 @@ export default {
 
 			this.rowsData.forEach((td) => {
 				item.push({
-					value: element[td.value],
-					label: td.label,
+					label: element[td.value],
+					value: td.value,
 					id: element.id,
 					class: ""
 				});
@@ -141,6 +155,13 @@ export default {
 
 			return item;
 		},
+
+		validateFilters() {
+      this.$emit('validateFilters');
+    },
+		updateLoading(value) {
+      this.$emit('updateLoading',value);
+    },
 	},
 	computed: {
 		isEmptyRowsData() {

@@ -20,6 +20,8 @@
 		v-if="viewType === 'table'" 
 		:type="type" 
 		:actions="actions"
+		@validateFilters="validateFilters"
+		@updateLoading="updateLoading"
 	></list-table>
 	<list-blocs 
 		v-if="viewType === 'blocs'" 
