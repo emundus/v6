@@ -131,29 +131,63 @@ export default {
 
 			return item;
 		},
-		formatEmailData(element) {
+		formatEmailData(listElement) {
 			let item = [];
 
-			this.rowsData.forEach((td) => {
-				item.push({
-					label: element[td.value],
-					value: td.value,
-					id: element.id,
-					class: "",
-					data: listElement[td.value],
-				});
+			this.rowsData.forEach((td) => {	
+				if (td.value === "published") {
+					let value = {
+						value: td.value,
+						id: listElement.id,
+						data: listElement.published,
+					};
+
+					if (listElement["published"] == 1) {
+						value.label = "Publié";
+						value.class = "tag published";
+					} else {
+						value.label = "Non publié";
+						value.class = "tag unpublished";
+					}
+
+					item.push(value);
+				} else if (td.value === "type") {
+					let value = {
+						value: td.value,
+						id: listElement.id,
+						data: listElement.published,
+					};
+
+					if (listElement["type"] == 1) {
+						value.label = "Système";
+						value.class = "tag";
+					} else {
+						value.label = "Modèle";
+						value.class = "tag";
+					}
+
+					item.push(value);
+				} else {
+					item.push({
+						label: listElement[td.value],
+						value: td.value,
+						id: listElement.id,
+						class: "",
+						data: listElement[td.value],
+					});
+				}
 			});
 
 			return item;
 		},
-		formatFormData(element) {
+		formatFormData(listElement) {
 			let item = [];
 
 			this.rowsData.forEach((td) => {
 				item.push({
-					label: element[td.value],
+					label: listElement[td.value],
 					value: td.value,
-					id: element.id,
+					id: listElement.id,
 					class: "",
 					data: listElement[td.value]
 				});

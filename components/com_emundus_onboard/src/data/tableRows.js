@@ -35,7 +35,7 @@ export default {
 			value: 'type',
 		},
 		{
-			label: 'Publié',
+			label: 'Statut',
 			value: 'published',
 		}
 	],
