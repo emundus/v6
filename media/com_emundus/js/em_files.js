@@ -4119,9 +4119,9 @@ $(document).ready(function() {
                             },
                             async: false,
                             success: function(result) {
-                                let profile_labels = Array.prototype.slice.call(result.profile_label);
+                                let profile_labels = Object.values(result.profile_label);
                                 let profile_ids = Object.values(result.profile_id);
-                                let profile_menus = Array.prototype.slice.call(result.profile_menu_type);
+                                let profile_menus = Object.values(result.profile_menu_type);
 
                                 for (index = 0; index < profile_labels.length; index++) {
                                     let menu = profile_menus[index];
