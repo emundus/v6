@@ -33,8 +33,8 @@
           <transition-group type="transition" :value="!drag ? 'flip-list' : null">
             <li class="list-group-item"
                 :id="'itemDoc' + document.id"
-                v-for="(document, indexDoc) in documents"
-                :key="indexDoc">
+                v-for="document in documents"
+                :key="document.id">
               <div class="d-flex justify-content-between">
                 <div class="d-flex w-100">
                   <em class="fas fa-grip-vertical handle" style="color: #cecece;"></em>

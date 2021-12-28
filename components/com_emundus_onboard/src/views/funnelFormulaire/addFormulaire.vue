@@ -14,7 +14,15 @@
         </div>
       </a>
     </div>
-    <FormCarrousel :formList="this.formList" :documentsList="this.documentsList" :visibility="this.visibility" :key="formListReload" v-if="this.formList" @getEmitIndex="getEmitIndex" @formbuilder="formbuilder" />
+    <FormCarrousel 
+      v-if="formList" 
+      :formList="formList" 
+      :documentsList="documentsList" 
+      :visibility="visibility" 
+      :key="formListReload" 
+      @getEmitIndex="getEmitIndex" 
+      @formbuilder="formbuilder" 
+    />
   </div>
 </template>
 
@@ -32,7 +40,7 @@ export default {
 
   props: {
     profileId: String,
-    campaignId: String,
+    campaignId: Number,
     profiles: Array,
     formulaireEmundus: Number,
     visibility: Number
@@ -46,7 +54,7 @@ export default {
       ChooseForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_FORM"),
       AddForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_FORM"),
       EmitIndex: "0",
-      formList: "",
+      formList: [],
       documentsList: [],
       formListReload: 0,
 

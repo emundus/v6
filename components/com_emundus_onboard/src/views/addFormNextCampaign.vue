@@ -84,7 +84,7 @@
           ></add-campaign>
           <addFormulaire
               v-if="menuHighlight == 2"
-              :profileId="getProfileId"
+              :profileId="profileId"
               :campaignId="campaignId"
               :profiles="profiles"
               :key="formReload"
