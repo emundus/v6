@@ -1,7 +1,7 @@
 <template>
   <div>
     <ModalWarningFormBuilder
-        :pid="profileId"
+        :pid="getProfileId"
         :cid="campaignId"
     />
     <div class="w-row">
@@ -421,7 +421,10 @@ export default {
   },
 
   computed: {
-    console: () => console
+    console: () => console,
+    getProfileId() {
+      return Number(this.profileId);
+    },
   },
 };
 </script>
