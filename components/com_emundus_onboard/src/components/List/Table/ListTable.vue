@@ -1,9 +1,10 @@
 <template>
 	<div id="list-table">
-		<table :aria-describedby="'Table of ' + type">
-			<list-table-head :ths="rowsData[type]"></list-table-head>
-			<list-table-rows :tds="rowsData[type]" :data="list"></list-table-rows>
+		<table :aria-describedby="'Table of ' + type" v-if="!isEmptyRowsData">
+			<list-table-head :ths="rowsData"></list-table-head>
+			<list-table-rows :tds="rowsData" :data="list"></list-table-rows>
 		</table>
+		<p v-if="isEmptyRowsData">Unable to create table...</p>
 	</div>
 </template>
 
@@ -11,6 +12,7 @@
 import ListTableRows from './ListTableRows.vue'
 import ListTableHead from './ListTableHead.vue'
 import { list } from '../../../store/store'
+import rows from '../../../data/tableRows'
 
 export default {
 	components: { ListTableHead, ListTableRows },
@@ -26,42 +28,25 @@ export default {
 	},
 	data() {
 		return 		{
-			rowsData: {
-				campaign: [
-					{
-						label: 'Nom',
-						value: 'label',
-					},
-					{
-						label: 'Date de début',
-						value: 'start_date',
-					},
-					{
-						label: 'Date de fin',
-						value: 'end_date',
-					},
-					{
-						label: 'État',
-						value: 'status',
-					},
-					{
-						label: 'Nombre de dossiers',
-						value: 'nb_files',
-					},
-					{
-						label: '',
-						value: 'actions',
-					}
-				],
-				email: [],
-				form:  [],
-			},
+			rowsData: [],
 		}
+	},
+	mounted() {
+		this.getRowsData()
+	},
+	methods: {
+		getRowsData() {
+			// get rows data from json file tableRows.json
+			this.rowsData = typeof rows[this.type] !== undefined ? rows[this.type] : [];
+		},
 	},
 	computed: {
 		list() {
 			return list.getters.list;
-		}
+		},
+		isEmptyRowsData() {
+			return this.rowsData.length === 0;
+		},
 	}
 }
 </script>
