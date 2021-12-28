@@ -121,6 +121,7 @@ export default {
       DropHere: Joomla.JText._("COM_EMUNDUS_ONBOARD_DROP_FILE_HERE"),
       Error: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR"),
       DocumentName: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENT_NAME"),
+      drag: false,
     };
   },
 

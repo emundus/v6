@@ -84,7 +84,7 @@
           ></add-campaign>
           <addFormulaire
               v-if="menuHighlight == 2"
-              :profileId="profileId"
+              :profileId="getProfileId"
               :campaignId="campaignId"
               :profiles="profiles"
               :key="formReload"
@@ -95,7 +95,7 @@
           <add-documents-dropfiles
               v-if="menuHighlight == 1"
               :funnelCategorie="formCategories[langue][menuHighlight]"
-              :profileId="profileId"
+              :profileId="getProfileId"
               :campaignId="campaignId"
               :menuHighlight="menuHighlight"
               :langue="actualLanguage"
@@ -266,7 +266,7 @@ export default {
     // Get datas that we need with store
     this.campaignId = Number(global.getters.datas.campaignId.value);
     this.actualLanguage = global.getters.actualLanguage;
-    this.manyLanguages = global.getters.manyLanguages;
+    this.manyLanguages = Number(global.getters.manyLanguages);
     //
 
     this.loading = true;
