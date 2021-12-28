@@ -15620,10 +15620,13 @@ tr td span.tag.finished[data-v-2799a848] {
 }
 #list-body #actions .view-type span[data-v-5cc77951] {
   margin-left: 10px;
-  padding: 4px;
-  border: 1px solid;
+  padding: 4px 4px 3px 4px;
+  color: #E3E5E8;
+  border: 1px solid #E3E5E8;
   border-radius: 4px;
   cursor: pointer;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
 }
 #list-body #actions .view-type span.active[data-v-5cc77951] {
   color: #298721;

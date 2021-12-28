@@ -77,14 +77,16 @@ export default {
 								value: td.value,
 								label: date,
 								id: listElement.id,
-								class: ""
+								class: "",
+								data: listElement[td.value],
 							});
 						break;
 
 						case "status":
 							let value = {
 								value: td.value,
-								id: listElement.id
+								id: listElement.id,
+								data: listElement.published,
 							}
 
 							// check if it is finished
@@ -109,7 +111,8 @@ export default {
 								value: "actions",
 								label: this.actions,
 								id: listElement.id,
-								class: "actions"
+								class: "actions",
+								data: listElement[td.value],
 							});
 						break;
 
@@ -118,7 +121,8 @@ export default {
 								value: td.value,
 								label: listElement[td.value] ? listElement[td.value] : td.value,
 								id: listElement.id,
-								class: ""
+								class: "",
+								data: listElement[td.value],
 							});
 						break;
 					}
@@ -135,7 +139,8 @@ export default {
 					label: element[td.value],
 					value: td.value,
 					id: element.id,
-					class: ""
+					class: "",
+					data: listElement[td.value],
 				});
 			});
 
@@ -149,7 +154,8 @@ export default {
 					label: element[td.value],
 					value: td.value,
 					id: element.id,
-					class: ""
+					class: "",
+					data: listElement[td.value]
 				});
 			});
 
@@ -160,7 +166,7 @@ export default {
       this.$emit('validateFilters');
     },
 		updateLoading(value) {
-      this.$emit('updateLoading',value);
+      this.$emit('updateLoading', value);
     },
 	},
 	computed: {

@@ -16,18 +16,16 @@
 </template>
 
 <script>
-import ListActionMenu from '../ListActionMenu.vue'
+import ListActionMenu from '../ListActionMenu.vue';
+import moment from "moment";
+
 export default {
 	components: { ListActionMenu },
 	props: {
 		item: {
 			type: Array,
 			required: true
-		},
-		isPublished: {
-			type: Boolean,
-			required: true
-		},
+		}
 	},
 	methods: {
 		validateFilters() {
@@ -36,6 +34,30 @@ export default {
 		updateLoading(value) {
       this.$emit('updateLoading',value);
     },
+	},
+	computed: {
+		isPublished() {
+			let published = false;
+
+			this.item.forEach(element => {
+				if (element.value == "published" || element.value == "status") {
+					published = element.data == 1 ? true : false;
+				}
+			});
+
+			return !this.isFinished && published;
+		},
+		isFinished() {
+			let finished = false;
+
+			this.item.forEach(element => {
+				if (element.value == "end_date") {
+					finished = moment(element.data).isBefore(moment());
+				}
+			});
+
+			return finished;
+		},
 	}
 }
 </script>

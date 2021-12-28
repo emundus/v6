@@ -98,10 +98,13 @@ export default {
 			
 			span {
 				margin-left: 10px;
-    		padding: 4px;
-    		border: 1px solid;
+    		padding: 4px 4px 3px 4px;
+				color: #E3E5E8;
+    		border: 1px solid #E3E5E8;
     		border-radius: 4px;
 				cursor: pointer;
+				transition: all 0.3s;
+
 
 				&.active {
 					color: #298721;

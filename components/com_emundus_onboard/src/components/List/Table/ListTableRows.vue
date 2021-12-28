@@ -4,7 +4,6 @@
 			v-for="item in items" 
 			:key="item.id" 
 			:item="item" 
-			:isPublished="isPublished(item)"
 			@validateFilters="validateFilters"
 			@updateLoading="updateLoading"
 		>
@@ -24,17 +23,6 @@ export default {
 		},
 	},
 	methods: {
-		isPublished(item) {
-			let published = false;
-
-			item.forEach(element => {
-				if (element.value == "status" && element.class.indexOf('tag published') !== -1) {
-						published = true;
-				}
-			});
-
-			return published;
-		},
 		validateFilters() {
       this.$emit('validateFilters');
     },
