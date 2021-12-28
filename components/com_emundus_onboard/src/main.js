@@ -33,11 +33,6 @@ import App from "./App";
 // see https://emundus.atlassian.net/wiki/spaces/EKB/pages/2016903204/Mixins
 // or go watch inside com_emundus/src/main.js and see how it works
 
-//namenodemap to object for this.$el.attributes
-
-
-
-
 new Vue({
   el: '#em-component-vue',
   render(h) {

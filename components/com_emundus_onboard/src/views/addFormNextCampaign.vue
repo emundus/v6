@@ -105,13 +105,12 @@
           <add-evaluation-grid
               v-if="menuHighlightProg == 0 && program.id != 0"
               :funnelCategorie="formPrograms[langue][menuHighlight]"
-              :prog="program.id"
+              :prog="Number(program.id)"
           ></add-evaluation-grid>
 
           <add-email
               v-if="menuHighlightProg == 1 && program.id != 0"
-              :funnelCategorie="formPrograms[langue][menuHighlight]"
-              :prog="program.id"
+              :prog="Number(program.id)"
           ></add-email>
         </transition>
       </div>

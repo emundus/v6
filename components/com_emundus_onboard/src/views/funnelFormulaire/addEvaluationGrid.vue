@@ -1,8 +1,8 @@
 <template>
   <div>
     <ModalAddEvaluation
-            :prog="this.prog"
-            :grid="this.grid"
+            :prog="prog"
+            :grid="grid"
             @updateGrid="getEvaluationGridByProgram(1)"
     />
     <div class="container-evaluation">
@@ -38,8 +38,10 @@ export default {
   },
 
   props: {
-    funnelCategorie: Object,
-    prog: Number
+    prog: {
+      type: Number,
+      default: "",
+    }
   },
 
   data() {

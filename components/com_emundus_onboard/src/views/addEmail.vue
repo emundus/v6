@@ -194,7 +194,7 @@
             <label>{{translations.Program}}</label>
             <select v-model="trigger.program" class="dropdown-toggle w-select" @change="addTrigger">
               <option :value="null"></option>
-              <option v-for="(program,index) in programs" :key="'option_' + index" :value="program.id">{{program.label}}</option>
+              <option v-for="program in programs" :key="'program-' + program.id" :value="program.id">{{program.label}}</option>
             </select>
           </div>
 
@@ -213,7 +213,7 @@
             <div class="form-group">
               <label>{{translations.Status}}<span style="color: #E5283B">*</span></label>
               <select v-model="trigger.status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.status}">
-                <option v-for="(statu,index) in status" :key="index" :value="statu.step">{{statu.value}}</option>
+                <option v-for="statu in status" :key="'status-' +statu.step" :value="statu.step">{{statu.value}}</option>
               </select>
               <p v-if="errors.trigger.status" class="error">
                 <span class="error">{{translations.StatusRequired}}</span>
@@ -249,7 +249,7 @@
                 </label>
               </div>
               <div class="users-block" :class="{ 'is-invalid': errors.trigger.selectedUsers}">
-                <div v-for="(user, index) in users" :key="index" class="user-item">
+                <div v-for="user in users" :key="'user-' + user.id" class="user-item">
                   <input type="checkbox" class="form-check-input bigbox" v-model="selectedUsers[user.id]">
                   <div class="ml-10px">
                     <p>{{user.name}}</p>
