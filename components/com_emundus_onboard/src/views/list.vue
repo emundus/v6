@@ -11,6 +11,7 @@
         :chercheGo="chercheGo"
         :validateFilters="validateFilters"
         :nbresults="nbresults"
+
     ></list-header>
 
     <div class="filters-menu">
@@ -203,7 +204,7 @@
              class="col-sm-12 col-lg-4 mb-2">
           <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem"
                      @validateFilters="validateFilters()" @updateLoading="updateLoading"
-                     :actualLanguage="actualLanguage"/>
+                     :actualLanguage="actualLanguage" :programFilter="programFilter"/>
         </div>
 
         <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index"
