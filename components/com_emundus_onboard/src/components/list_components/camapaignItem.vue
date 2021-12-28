@@ -117,7 +117,9 @@ export default {
       File: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE")
     };
   },
-
+  created(){
+    console.log(this.data);
+  },
   methods: {
     updateLoading(value){
       this.$emit('updateLoading',value);
