@@ -15434,6 +15434,45 @@ div nav a[data-v-624df12a]:hover {
 #list-head .list-head-container h2[data-v-966c82e2] {
   margin: 0;
 }
+tr td[data-v-2799a848] {
+  border-left: 0;
+  border-right: 0;
+  font-size: 12px;
+  padding: 0.85rem 0.5rem;
+}
+tr td span.tag[data-v-2799a848] {
+  margin: 0 8px 8px 0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #080C12;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  background: #F2F2F3;
+}
+tr td span.tag.published[data-v-2799a848] {
+  background: #DFF5E9;
+}
+tr td span.tag.unpublished[data-v-2799a848] {
+  color: #ACB1B9;
+}
+tr td span.tag.finished[data-v-2799a848] {
+  color: #FFFFFF;
+  background: #080C12;
+}
+.list-table-head tr th[data-v-57b5e14e] {
+  font-size: 14px;
+  padding: 0.85rem 0.5rem;
+  background-color: transparent;
+}
+#list-table[data-v-b0992b64] {
+  width: 100%;
+  margin-top: 20px;
+}
+#list-table table[data-v-b0992b64] {
+  border-left: 0;
+  border-right: 0;
+}
 .list-bloc-item[data-v-87528da8] {
   width: 24%;
   min-height: 199px;

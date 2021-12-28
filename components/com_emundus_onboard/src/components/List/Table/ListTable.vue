@@ -149,3 +149,15 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss" scoped>
+#list-table {
+	width: 100%;
+	margin-top: 20px;
+
+	table {
+		border-left: 0;
+  	border-right: 0;
+	}
+}
+</style>
