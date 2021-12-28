@@ -416,65 +416,71 @@ export default {
     let now = new Date();
     this.form.start_date = LuxonDateTime.local(now.getFullYear(),now.getMonth() + 1,now.getDate(),0,0,0).toISO();
     this.getLanguages();
-    //Check if we add or edit a campaign
-    if (typeof this.campaignId !== 'undefined' && this.campaignId !== "") {
-      axios.get(
-          `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaignId}`
-      ).then(response => {
-        let label = response.data.data.campaign.label;
+    this.getCampaignById();
+    this.getAllPrograms();
+    this.getYears();
+    this.getStatus();
+  },
 
-        this.form = response.data.data.campaign;
-        this.$emit('getInformations',this.form);
-        this.programForm = response.data.data.program;
+  methods: {
+    getCampaignById() {
+      // Check if we add or edit a campaign
+      if (typeof this.campaignId !== 'undefined' && this.campaignId !== "") {
+        axios.get(
+            `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaignId}`
+        ).then(response => {
+          let label = response.data.data.campaign.label;
 
-        // Check label translations
-        this.form.label = response.data.data.label
-        this.languages.forEach((language) => {
-          if(this.form.label[language.sef] === '' || this.form.label[language.sef] == null) {
-            this.form.label[language.sef] = label;
-          }
-        });
-        //
+          this.form = response.data.data.campaign;
+          this.$emit('getInformations',this.form);
+          this.programForm = response.data.data.program;
 
-        // Convert date
-        this.form.start_date = LuxonDateTime.fromSQL(this.form.start_date);
-        this.form.end_date = LuxonDateTime.fromSQL(this.form.end_date);
-        if (this.form.end_date == "0000-00-00T00:00:00.000Z") {
-          this.form.end_date = "";
-        } else {
-          this.olderDate = this.form.end_date;
-        }
-        //
-
-        if(typeof response.data.data.campaign.status != 'undefined') {
-          this.form.limit_status = [];
-          this.form.is_limited = 1;
-          Object.values(response.data.data.campaign.status).forEach((statu) => {
-            this.form.limit_status[parseInt(statu.limit_status)] = true;
+          // Check label translations
+          this.form.label = response.data.data.label
+          this.languages.forEach((language) => {
+            if(this.form.label[language.sef] === '' || this.form.label[language.sef] == null) {
+              this.form.label[language.sef] = label;
+            }
           });
-        } else {
-          this.form.limit_status = [];
-        }
-      }).catch(e => {
-        console.log(e);
-      });
-    }
-    //
+          //
 
-    // Get all programs
-    axios.get("index.php?option=com_emundus_onboard&controller=program&task=getallprogram")
-        .then(response => {
-          this.programs = response.data.data;
-          if(Object.keys(this.programs).length !== 0) {
-            this.programs.sort((a, b) => a.id - b.id);
+          // Convert date
+          this.form.start_date = LuxonDateTime.fromSQL(this.form.start_date);
+          this.form.end_date = LuxonDateTime.fromSQL(this.form.end_date);
+          if (this.form.end_date == "0000-00-00T00:00:00.000Z") {
+            this.form.end_date = "";
+          } else {
+            this.olderDate = this.form.end_date;
+          }
+          //
+
+          if(typeof response.data.data.campaign.status != 'undefined') {
+            this.form.limit_status = [];
+            this.form.is_limited = 1;
+            Object.values(response.data.data.campaign.status).forEach((statu) => {
+              this.form.limit_status[parseInt(statu.limit_status)] = true;
+            });
+          } else {
+            this.form.limit_status = [];
           }
         }).catch(e => {
-      console.log(e);
-    });
-    //
-
-    // Get years
-    axios.get("index.php?option=com_emundus_onboard&controller=campaign&task=getyears")
+          console.log(e);
+        });
+      }
+    },
+    getAllPrograms() {
+      axios.get("index.php?option=com_emundus_onboard&controller=program&task=getallprogram")
+          .then(response => {
+            this.programs = response.data.data;
+            if(Object.keys(this.programs).length !== 0) {
+              this.programs.sort((a, b) => a.id - b.id);
+            }
+          }).catch(e => {
+        console.log(e);
+      });
+    },
+    getYears() {
+      axios.get("index.php?option=com_emundus_onboard&controller=campaign&task=getyears")
         .then(response => {
           this.years = response.data.data;
 
@@ -485,11 +491,7 @@ export default {
         }).catch(e => {
           console.log(e);
         });
-    //
-    this.getStatus();
-  },
-
-  methods: {
+    },
     getLanguages() {
       axios({
         method: "get",
