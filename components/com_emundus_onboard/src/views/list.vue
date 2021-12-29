@@ -14,10 +14,24 @@
 
     ></list-header>
 
-    <div :class="type=='campaign'?'filters-menu':'filters-menu-2'">
-      <select name="selectProgram" id="pet-select" class="selectProgram" v-model="selectedProgram" @change="validateFilters" v-if="type=='campaign'">
+    <div :class="{
+      'filters-menu-campaign': type == 'campaign',
+      'filters-menu': type !== 'campaign',
+    }">
+      <select 
+        v-if="type == 'campaign'"
+        v-model="selectedProgram"
+        name="selectProgram"
+        id="pet-select"
+        class="selectProgram"
+        @change="validateFilters"
+      >
         <option value="all">{{translations.AllPrograms}} </option>
-        <option :value="program.code" v-for="program in allPrograms" v-bind:key="program.code">
+        <option 
+          v-for="program in allPrograms" 
+          :value="program.code" 
+          :key="program.code"
+        >
           {{program.label}}
         </option>
       </select>
