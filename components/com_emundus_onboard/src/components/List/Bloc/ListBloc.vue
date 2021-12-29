@@ -264,14 +264,13 @@ export default {
 
 <style lang="scss" scoped>
 .list-bloc-item {
-	width: 24%;
   min-height: 199px;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
 	justify-content: space-between;
 	padding: 16px;
-	margin: 0 8px 18px 0;
+	margin: 0 0 18px 6px;
 	background: #FFFFFF;
 	border: 1px solid #E3E5E8;
 	box-sizing: border-box;
@@ -342,20 +341,6 @@ export default {
 		justify-content: space-between;
 		align-items: center;
 		width: 100%;
-	}
-}
-
-// width inferior to 1600px
-@media (max-width: 1600px) {
-	.list-bloc-item {
-		width: 33%;
-	}
-}
-
-// width inferior to 1250px
-@media (max-width: 1250px) {
-	.list-bloc-item {
-		width: 49%;
 	}
 }
 
