@@ -4153,6 +4153,7 @@ $(document).ready(function() {
                                             $.ajax({
                                                 type: 'get',
                                                 url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code + '&profile=' + menu,
+                                                async: false,
                                                 success: function (answer) {
                                                     /// using Virtual DOM to render DOM --> append #formelement and #felts
                                                     $('#form-element').show();
@@ -4173,72 +4174,72 @@ $(document).ready(function() {
                                         }
                                     })
                                 }
+
+                                $.ajax({
+                                    type:'get',
+                                    url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
+                                    dataType:'json',
+                                    async: false,
+                                    success: function(result) {
+                                        if (result.status) {
+                                            $('#form-exists').show();
+
+                                            if (result.att == 1)
+                                                $('#att-exists').show();
+                                            if (result.eval == 1)
+                                                $('#eval-exists').show();
+                                            if (result.dec == 1)
+                                                $('#dec-exists').show();
+                                            if (result.adm == 1)
+                                                $('#adm-exists').show();
+
+                                            if (result.tag == 1) {
+                                                $('#em-export-opt option:disabled').removeAttr("disabled").attr("selected", "selected");
+                                                $('#em-export-opt').trigger("chosen:updated");
+                                            }
+
+                                            var camp = $("#em-export-camp").val();
+
+                                            var profiles = [];
+                                            var felts = $('[id^=felts]');
+
+                                            felts.each(function(e) {
+                                                profiles.push($(this).attr('id').split('felts')[1]);
+                                            })
+
+                                            if (camp != 0) {
+                                                $.ajax({
+                                                    type:'post',
+                                                    url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
+                                                    dataType:'json',
+                                                    async: false,
+                                                    data: {
+                                                        profiles: profiles
+                                                    },
+                                                    success: function(result) {
+                                                        if (result.status) {
+                                                            $('#aelts-'+code+camp).parent('div').remove();
+                                                            $('#aelts-'+code+'0').parent('div').remove();
+                                                            $('#aelts').append(result.html);
+                                                            $('#aelts').show();
+                                                        }
+                                                    },
+                                                    error: function(jqXHR) {
+                                                        console.log(jqXHR.responseText);
+                                                    }
+                                                });
+                                            } else {
+                                                $('[id^=aelts-'+code+']').parent('div').remove();
+                                                $('#aelts').append(atthtml);
+                                            }
+                                        }
+                                    },
+                                    error: function (jqXHR) {
+                                        console.log(jqXHR.responseText);
+                                    }
+                                });
                             }
                         })
-
-                        $.ajax({
-                            type:'get',
-                            url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
-                            dataType:'json',
-                            async: false,
-                            success: function(result) {
-                                if (result.status) {
-                                    $('#form-exists').show();
-
-                                    if (result.att == 1)
-                                        $('#att-exists').show();
-                                    if (result.eval == 1)
-                                        $('#eval-exists').show();
-                                    if (result.dec == 1)
-                                        $('#dec-exists').show();
-                                    if (result.adm == 1)
-                                        $('#adm-exists').show();
-
-                                    if (result.tag == 1) {
-                                        $('#em-export-opt option:disabled').removeAttr("disabled").attr("selected", "selected");
-                                        $('#em-export-opt').trigger("chosen:updated");
-                                    }
-
-                                    var camp = $("#em-export-camp").val();
-
-                                    var profiles = [];
-                                    var felts = $('[id^=felts]');
-
-                                    felts.each(function(e) {
-                                        profiles.push($(this).attr('id').split('felts')[1]);
-                                    })
-
-                                    if (camp != 0) {
-                                        $.ajax({
-                                            type:'post',
-                                            url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
-                                            dataType:'json',
-                                            async: false,
-                                            data: {
-                                                profiles: profiles
-                                            },
-                                            success: function(result) {
-                                                if (result.status) {
-                                                    $('#aelts-'+code+camp).parent('div').remove();
-                                                    $('#aelts-'+code+'0').parent('div').remove();
-                                                    $('#aelts').append(result.html);
-                                                    $('#aelts').show();
-                                                }
-                                            },
-                                            error: function(jqXHR) {
-                                                console.log(jqXHR.responseText);
-                                            }
-                                        });
-                                    } else {
-                                        $('[id^=aelts-'+code+']').parent('div').remove();
-                                        $('#aelts').append(atthtml);
-                                    }
-                                }
-                            },
-                            error: function (jqXHR) {
-                                console.log(jqXHR.responseText);
-                            }
-                        });
                     } else {
                         /// if one of two conditions as above is not correct --> hide the div "felts"
                         $('[id^=form-element]').hide();
