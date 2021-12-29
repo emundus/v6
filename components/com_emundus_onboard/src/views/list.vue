@@ -15,31 +15,39 @@
     ></list-header>
 
     <div class="filters-menu">
-      <div class="search">
-        <input class="searchTerm"
-               :placeholder="translations.Rechercher"
-               v-model="recherche"
-               @keyup="cherche(recherche) || debounce"
-               @keyup.enter="chercheGo(recherche)"/>
-      </div>
-      <v-popover :popoverArrowClass="'custom-popover-arrow'">
-        <button class="tooltip-target b3 card-button"></button>
+      <select name="selectProgram" id="pet-select" class="selectProgram" v-model="selectedProgram" @change="validateFilters">
+        <option value="all">{{translations.All}} les programmes</option>
+        <option :value="program.code" v-for="program in allPrograms" v-bind:key="program.code">
+          {{program.label}}
+        </option>
+      </select>
+      <div class="search-container">
+        <div class="search">
+          <input class="searchTerm"
+                 :placeholder="translations.Rechercher"
+                 v-model="recherche"
+                 @keyup="cherche(recherche) || debounce"
+                 @keyup.enter="chercheGo(recherche)"/>
+        </div>
+        <v-popover :popoverArrowClass="'custom-popover-arrow'">
+          <button class="tooltip-target b3 card-button"></button>
 
-        <template slot="popover">
-          <filters
-              v-if="type != 'files'"
-              :data="actions"
-              :selected="selecedItems"
-              :updateTotal="updateTotal"
-              :filter="filter"
-              :sort="sort"
-              :cherche="cherche"
-              :chercheGo="chercheGo"
-              :validateFilters="validateFilters"
-              :nbresults="nbresults"
-          ></filters>
-        </template>
-      </v-popover>
+          <template slot="popover">
+            <filters
+                v-if="type != 'files'"
+                :data="actions"
+                :selected="selecedItems"
+                :updateTotal="updateTotal"
+                :filter="filter"
+                :sort="sort"
+                :cherche="cherche"
+                :chercheGo="chercheGo"
+                :validateFilters="validateFilters"
+                :nbresults="nbresults"
+            ></filters>
+          </template>
+        </v-popover>
+      </div>
     </div>
 
     <ul class="form-section email-sections"
@@ -115,25 +123,9 @@
         <a class="" href="javascript:void(0);">{{ translations.programmesTrans }} : </a>
       </li>
       <li>
-        <a class="form-section__current">{{actualProgramShowingCampaignName}}</a>
+        <a class="form-section__current">{{selectedProgramLabel}}</a>
       </li>
-      <li>
-        <div class="dropdown">
-          <button class="dropbtn" for="btnControl">{{ translations.ortherPrograms }}</button>
-          <div class="dropdown-content">
 
-            <a href="javascript:void(0);" v-for="program in allPrograms" @click="programFilter=program.code; actualProgramShowingCampaignName=program.label">{{program.label}}</a>
-            <a href="javascript:void(0);"  @click="programFilter='all'; actualProgramShowingCampaignName='Tous';">{{translations.All}}</a>
-          </div>
-        </div>
-      </li>
-      <!--<li v-for="(cat, index) in email_categories" v-if="cat != ''">
-        <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
-      </li>-->
-
-      <!--<li>
-        <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">{{System}}</a>
-      </li>-->
     </ul>
 
     <!--    <transition :name="'slide-down'" type="transition">
@@ -159,9 +151,9 @@
                class="pagination-number"
                :class="index == pages ? 'current-number' : ''">
               {{ countPages > 10 ? index < 4 || index > countPages - 3 || (index > pages - 3 && index < pages + 3)
-              ? index
-              : "..."
-              : index }}
+                    ? index
+                    : "..."
+                : index }}
             </a>
           </li>
           <a @click="nbpages(pages + 1)" class="pagination-arrow arrow-right">
@@ -191,7 +183,7 @@
              class="col-sm-12 col-lg-4 mb-2">
           <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem"
                      @validateFilters="validateFilters()" @updateLoading="updateLoading"
-                     :actualLanguage="actualLanguage" :programFilter="programFilter"/>
+                     :actualLanguage="actualLanguage" :programFilter="selectedProgram"/>
         </div>
 
         <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index"
@@ -237,10 +229,10 @@
                 :class="index == pages ? 'current-number' : ''"
             >{{
               countPages > 10
-              ? index < 4 || index > countPages - 3 || (index > pages - 3 && index < pages + 3)
-              ? index
-              : "..."
-              : index
+                  ? index < 4 || index > countPages - 3 || (index > pages - 3 && index < pages + 3)
+                      ? index
+                      : "..."
+                  : index
               }}</a
             >
           </li>
@@ -254,14 +246,14 @@
     <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">
       {{
       this.type == "campaign"
-      ? noCampaign
-      : this.type == "program"
-      ? noProgram
-      : this.type == "email"
-      ? noEmail
-      : this.type == "formulaire"
-      ? noForm
-      : noFiles
+          ? noCampaign
+          : this.type == "program"
+              ? noProgram
+              : this.type == "email"
+                  ? noEmail
+                  : this.type == "formulaire"
+                      ? noForm
+                      : noFiles
       }}
     </div>
     <div class="loading-form" v-if="loading">
@@ -324,7 +316,7 @@ export default {
     loading: false,
     actualLanguage: '',
     allPrograms: [],
-    programFilter:'all',
+    selectedProgram: 'all',
     actualProgramShowingCampaignName: 'Tous',
     recherche: "",
     timer: null,
@@ -370,12 +362,19 @@ export default {
   computed: {
     list() {
 
-     return list.getters.list;
+      return list.getters.list;
 
     },
 
     isEmpty: () => {
       return list.getters.isSomething;
+    },
+    selectedProgramLabel() {
+      if (this.selectedProgram === "all") {
+        return this.translations.All;
+      } else {
+        return this.allPrograms.find(p => p.code === this.selectedProgram).label;
+      }
     }
   },
 
@@ -428,10 +427,6 @@ export default {
 
       this.validateFilters();
     },
-    programFilter: function(val){
-      this.programFilter=val;
-      this.validateFilters();
-    }
 
   },
 
@@ -448,8 +443,8 @@ export default {
           this.filtersSort +
           this.filtersSearch +
           this.filtersLim +
-          this.filtersPage+
-          "&program="+this.programFilter;
+          this.filtersPage +
+          "&program=" + this.selectedProgram;
 
 
       this.allFilters(this.filtersCount, this.filters);
@@ -502,7 +497,7 @@ export default {
 
     allFilters(filtersCount, filters) {
       let controller = this.typeForAdd == 'grilleEval' ? 'form' : this.typeForAdd
-      if (this.type != "files" ) {
+      if (this.type != "files") {
         axios.get("index.php?option=com_emundus_onboard&controller=" +
             controller +
             "&task=get" +
@@ -619,5 +614,17 @@ h2 {
   border-bottom: 1px solid #e0e0e0;
   transition: max-height 0.25s ease-in;
 }
+
+.selectProgram {
+  outline: none;
+  right: 0;
+  height: 43px;
+  margin-bottom: 0 !important;
+}
+.search-container{
+  display: flex;
+  align-items: center;
+}
+
 
 </style>

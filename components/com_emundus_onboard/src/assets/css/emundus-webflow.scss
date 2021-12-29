@@ -1589,7 +1589,8 @@ textarea {
   width: auto;
   display: flex;
   align-items: center;
-  justify-content: end;
+  justify-content: space-between;
+  margin: 0 0 0 30px;
 }
 .filter-subtitle {
   font-size: 14px;
