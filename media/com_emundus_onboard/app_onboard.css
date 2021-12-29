@@ -779,8 +779,19 @@ th {
 }
 .pagination .pagination-number {
   font-family: sans-serif;
+  padding: unset;
   font-size: 14px;
   text-align: center;
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: flex !important;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   line-height: 24px;
   width: 35px;
   height: 35px;
