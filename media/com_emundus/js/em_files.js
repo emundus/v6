@@ -3268,6 +3268,7 @@ $(document).ready(function() {
                                     type:'get',
                                     url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
                                     dataType:'json',
+                                    async: false,
                                     success: function(result) {
                                         if (result.status) {
 
@@ -3298,6 +3299,7 @@ $(document).ready(function() {
                                     type:'get',
                                     url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
                                     data: {checkInput : checkInput},
+                                    async: false,
                                     dataType:'json',
                                     success: function(result) {
 
@@ -3311,6 +3313,7 @@ $(document).ready(function() {
                                             $.ajax({
                                                 type:'get',
                                                 url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
+                                                async: false,
                                                 dataType:'json',
 
                                                 success: function(result) {
@@ -3489,6 +3492,7 @@ $(document).ready(function() {
                                             type:'get',
                                             url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
                                             dataType:'json',
+                                            async: false,
                                             success: function(result) {
                                                 if (result.status) {
 
