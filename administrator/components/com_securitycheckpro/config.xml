@@ -54,7 +54,7 @@
 			<option value="1">COM_SECURITYCHECKPRO_YES</option>
 			<option value="0">COM_SECURITYCHECKPRO_NO</option>
 		</field>
-		<field name="file_manager_include_exceptions_in_database" type="radio" default="1" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_EXCEPTIONS_IN_DATABASE_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_EXCEPTIONS_IN_DATABASE_DESCRIPTION">
+		<field name="file_manager_include_exceptions_in_database" type="radio" default="0" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_EXCEPTIONS_IN_DATABASE_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_EXCEPTIONS_IN_DATABASE_DESCRIPTION">
 			<option value="1">COM_SECURITYCHECKPRO_YES</option>
 			<option value="0">COM_SECURITYCHECKPRO_NO</option>
 		</field>
@@ -74,15 +74,7 @@
 			<option value="MD5">MD5</option>
 			<option value="SHA1">SHA1</option>			
 		</field>
-		<field name="file_integrity_path_exceptions" type="textarea" default="" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_PATH_EXCEPTIONS_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_INTEGRITY_PATH_EXCEPTIONS_DESCRIPTION" class="span12"/>
-		<field name="file_integrity_recursive_folder_exceptions" type="radio" default="0" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_RECURSIVE_FOLDER_EXCEPTIONS_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_RECURSIVE_FOLDER_EXCEPTIONS_DESCRIPTION">
-			<option value="1">COM_SECURITYCHECKPRO_YES</option>
-			<option value="0">COM_SECURITYCHECKPRO_NO</option>
-		</field>
-		<field name="file_integrity_include_exceptions_in_database" type="radio" default="1" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_EXCEPTIONS_IN_DATABASE_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_EXCEPTIONS_IN_DATABASE_DESCRIPTION">
-			<option value="1">COM_SECURITYCHECKPRO_YES</option>
-			<option value="0">COM_SECURITYCHECKPRO_NO</option>
-		</field>
+		<field name="file_integrity_path_exceptions" type="textarea" default="" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_PATH_EXCEPTIONS_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_INTEGRITY_PATH_EXCEPTIONS_DESCRIPTION" class="span12"/>				
 		<field name="look_for_malware" type="radio" default="1" label="COM_SECURITYCHECKPRO_CONFIG_MALWARE_LOOK_FOR_MALWARE_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_MALWARE_LOOK_FOR_MALWARE_DESCRIPTION">
 			<option value="1">COM_SECURITYCHECKPRO_YES</option>
 			<option value="0">COM_SECURITYCHECKPRO_NO</option>

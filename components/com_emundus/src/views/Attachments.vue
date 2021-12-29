@@ -214,7 +214,10 @@
                 />
               </td>
               <td class="td-document" @click="openModal(attachment)">
-                {{ attachment.value }}
+                <span>{{ attachment.value }}</span>
+                <span v-if="!attachment.existsOnServer" class="material-icons warning file-not-found" :title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')">
+                warning
+                </span>
               </td>
               <td class="date">{{ formattedDate(attachment.timedate) }}</td>
               <td class="desc">{{ attachment.description }}</td>
@@ -383,13 +386,18 @@ export default {
       canDownload: true,
       modalLoading: false,
       slideTransition: "slide-fade",
+			changeFileEvent: null,
     };
+	},
+	created() {
+		this.changeFileEvent = new Event("changeFile");
   },
   mounted() {
     this.getFnums();
     this.getUsers();
     this.getAttachments();
     this.setAccessRights();
+    this.loading = false;
   },
   methods: {
     // Getters and setters
@@ -471,8 +479,10 @@ export default {
         this.loading = false;
       }
     },
-    async refreshAttachments() {
-      this.loading = true;
+    async refreshAttachments(addLoading = false) {
+      if (addLoading) {
+        this.loading = true;
+      }
       this.resetOrder();
       this.checkedAttachments = [];
       this.$refs["searchbar"].value = "";
@@ -489,7 +499,10 @@ export default {
 
         this.getCategories();
       }
-      this.loading = false;
+
+      if (addLoading) {
+        this.loading = false;
+      }
     },
     updateAttachment() {
       this.resetOrder();
@@ -625,16 +638,50 @@ export default {
 
     // navigation functions
     changeFile(position) {
-      this.displayedFnum = this.fnums[position];
-      this.setDisplayedUser();
-      this.getAttachments();
+			this.loading = true;
+			const oldFnumPosition = this.fnumPosition;
+			this.displayedFnum = this.fnums[position];
+			this.attachments = [];
       this.setAccessRights();
       this.resetOrder();
       this.resetSearch();
       this.resetCategoryFilters();
-      this.attachments.forEach((attachment) => {
-        attachment.show = true;
-      });
+
+			fileService.getFnumInfos(this.displayedFnum).then((response) => {
+				if (response.status === true) {
+					this.changeFileEvent.detail = {
+						fnum: response.fnumInfos,
+						next: position > oldFnumPosition ? true : false,
+						previous: position < oldFnumPosition ? true : false,
+					};
+
+					document
+						.querySelector(".com_emundus_vue")
+						.dispatchEvent(this.changeFileEvent);
+				} else {
+					this.displayErrorMessage(response.msg);
+				}
+			});
+
+			this.setDisplayedUser()
+				.then(() => {
+					this.getAttachments()
+						.then(() => {
+							this.attachments.forEach((attachment) => {
+								attachment.show = true;
+							});
+
+              this.loading = false;
+            })
+						.catch((error) => {
+							this.displayErrorMessage(error);
+							this.loading = false;
+						});
+				})
+				.catch((error) => {
+					this.displayErrorMessage(error);
+					this.loading = false;
+				});
     },
     changeAttachment(position, reverse = false) {
       this.slideTransition = reverse ? "slide-fade-reverse" : "slide-fade";
@@ -874,7 +921,7 @@ export default {
     //   }
     // }
 
-    /** 
+    /**
     * Old Header Style
     * todo: remove this later
     */
@@ -1170,6 +1217,11 @@ export default {
         text-overflow: ellipsis;
         white-space: nowrap;
         cursor: pointer;
+
+        .warning.file-not-found {
+          color: var(--error-color);
+          transform: translate(10px, 3px);
+        }
       }
     }
 

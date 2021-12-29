@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -92,7 +92,10 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		}
 
 		if(empty($cart->cart_shipping_address_ids) && in_array($type, array('shipping', 'both')) && $checkoutHelper->isShipping()) {
-			$shipping_address_missing = true;
+
+			$shippingAddress_override = $checkoutHelper->getShippingAddressOverride();
+			if(empty($shippingAddress_override))
+				$shipping_address_missing = true;
 		}
 
 		if($billing_address_missing || $shipping_address_missing) {

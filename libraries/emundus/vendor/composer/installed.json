@@ -198,17 +198,17 @@
     },
     {
         "name": "guzzlehttp/promises",
-        "version": "1.4.1",
-        "version_normalized": "1.4.1.0",
+        "version": "1.5.0",
+        "version_normalized": "1.5.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/guzzle/promises.git",
-            "reference": "8e7d04f1f6450fef59366c399cfad4b9383aa30d"
+            "reference": "136a635e2b4a49b9d79e9c8fee267ffb257fdba0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/guzzle/promises/zipball/8e7d04f1f6450fef59366c399cfad4b9383aa30d",
-            "reference": "8e7d04f1f6450fef59366c399cfad4b9383aa30d",
+            "url": "https://api.github.com/repos/guzzle/promises/zipball/136a635e2b4a49b9d79e9c8fee267ffb257fdba0",
+            "reference": "136a635e2b4a49b9d79e9c8fee267ffb257fdba0",
             "shasum": ""
         },
         "require": {
@@ -217,11 +217,11 @@
         "require-dev": {
             "symfony/phpunit-bridge": "^4.4 || ^5.1"
         },
-        "time": "2021-03-07T09:25:29+00:00",
+        "time": "2021-10-07T13:05:22+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.4-dev"
+                "dev-master": "1.5-dev"
             }
         },
         "installation-source": "dist",
@@ -239,33 +239,58 @@
         ],
         "authors": [
             {
+                "name": "Graham Campbell",
+                "email": "hello@gjcampbell.co.uk",
+                "homepage": "https://github.com/GrahamCampbell"
+            },
+            {
                 "name": "Michael Dowling",
                 "email": "mtdowling@gmail.com",
                 "homepage": "https://github.com/mtdowling"
+            },
+            {
+                "name": "Tobias Nyholm",
+                "email": "tobias.nyholm@gmail.com",
+                "homepage": "https://github.com/Nyholm"
+            },
+            {
+                "name": "Tobias Schultze",
+                "email": "webmaster@tubo-world.de",
+                "homepage": "https://github.com/Tobion"
             }
         ],
         "description": "Guzzle promises library",
         "keywords": [
             "promise"
         ],
-        "support": {
-            "issues": "https://github.com/guzzle/promises/issues",
-            "source": "https://github.com/guzzle/promises/tree/1.4.1"
-        }
+        "funding": [
+            {
+                "url": "https://github.com/GrahamCampbell",
+                "type": "github"
+            },
+            {
+                "url": "https://github.com/Nyholm",
+                "type": "github"
+            },
+            {
+                "url": "https://tidelift.com/funding/github/packagist/guzzlehttp/promises",
+                "type": "tidelift"
+            }
+        ]
     },
     {
         "name": "guzzlehttp/psr7",
-        "version": "1.8.2",
-        "version_normalized": "1.8.2.0",
+        "version": "1.8.3",
+        "version_normalized": "1.8.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/guzzle/psr7.git",
-            "reference": "dc960a912984efb74d0a90222870c72c87f10c91"
+            "reference": "1afdd860a2566ed3c2b0b4a3de6e23434a79ec85"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/guzzle/psr7/zipball/dc960a912984efb74d0a90222870c72c87f10c91",
-            "reference": "dc960a912984efb74d0a90222870c72c87f10c91",
+            "url": "https://api.github.com/repos/guzzle/psr7/zipball/1afdd860a2566ed3c2b0b4a3de6e23434a79ec85",
+            "reference": "1afdd860a2566ed3c2b0b4a3de6e23434a79ec85",
             "shasum": ""
         },
         "require": {
@@ -283,7 +308,7 @@
         "suggest": {
             "laminas/laminas-httphandlerrunner": "Emit PSR-7 responses"
         },
-        "time": "2021-04-26T09:17:50+00:00",
+        "time": "2021-10-05T13:56:00+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -305,12 +330,33 @@
         ],
         "authors": [
             {
+                "name": "Graham Campbell",
+                "email": "hello@gjcampbell.co.uk",
+                "homepage": "https://github.com/GrahamCampbell"
+            },
+            {
                 "name": "Michael Dowling",
                 "email": "mtdowling@gmail.com",
                 "homepage": "https://github.com/mtdowling"
             },
             {
+                "name": "George Mponos",
+                "email": "gmponos@gmail.com",
+                "homepage": "https://github.com/gmponos"
+            },
+            {
+                "name": "Tobias Nyholm",
+                "email": "tobias.nyholm@gmail.com",
+                "homepage": "https://github.com/Nyholm"
+            },
+            {
+                "name": "Márk Sági-Kazár",
+                "email": "mark.sagikazar@gmail.com",
+                "homepage": "https://github.com/sagikazarmark"
+            },
+            {
                 "name": "Tobias Schultze",
+                "email": "webmaster@tubo-world.de",
                 "homepage": "https://github.com/Tobion"
             }
         ],
@@ -324,6 +370,20 @@
             "stream",
             "uri",
             "url"
+        ],
+        "funding": [
+            {
+                "url": "https://github.com/GrahamCampbell",
+                "type": "github"
+            },
+            {
+                "url": "https://github.com/Nyholm",
+                "type": "github"
+            },
+            {
+                "url": "https://tidelift.com/funding/github/packagist/guzzlehttp/psr7",
+                "type": "tidelift"
+            }
         ]
     },
     {
@@ -401,17 +461,17 @@
     },
     {
         "name": "markbaker/complex",
-        "version": "2.0.2",
-        "version_normalized": "2.0.2.0",
+        "version": "2.0.3",
+        "version_normalized": "2.0.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/MarkBaker/PHPComplex.git",
-            "reference": "d18272926d58065140314c01e18ec3dd7ae854ea"
+            "reference": "6f724d7e04606fd8adaa4e3bb381c3e9db09c946"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/MarkBaker/PHPComplex/zipball/d18272926d58065140314c01e18ec3dd7ae854ea",
-            "reference": "d18272926d58065140314c01e18ec3dd7ae854ea",
+            "url": "https://api.github.com/repos/MarkBaker/PHPComplex/zipball/6f724d7e04606fd8adaa4e3bb381c3e9db09c946",
+            "reference": "6f724d7e04606fd8adaa4e3bb381c3e9db09c946",
             "shasum": ""
         },
         "require": {
@@ -423,7 +483,7 @@
             "phpunit/phpunit": "^7.0 || ^8.0 || ^9.3",
             "squizlabs/php_codesniffer": "^3.4"
         },
-        "time": "2021-05-24T10:53:30+00:00",
+        "time": "2021-06-02T09:44:11+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -566,17 +626,17 @@
     },
     {
         "name": "myclabs/php-enum",
-        "version": "1.8.0",
-        "version_normalized": "1.8.0.0",
+        "version": "1.8.3",
+        "version_normalized": "1.8.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/myclabs/php-enum.git",
-            "reference": "46cf3d8498b095bd33727b13fd5707263af99421"
+            "reference": "b942d263c641ddb5190929ff840c68f78713e937"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/myclabs/php-enum/zipball/46cf3d8498b095bd33727b13fd5707263af99421",
-            "reference": "46cf3d8498b095bd33727b13fd5707263af99421",
+            "url": "https://api.github.com/repos/myclabs/php-enum/zipball/b942d263c641ddb5190929ff840c68f78713e937",
+            "reference": "b942d263c641ddb5190929ff840c68f78713e937",
             "shasum": ""
         },
         "require": {
@@ -586,9 +646,9 @@
         "require-dev": {
             "phpunit/phpunit": "^9.5",
             "squizlabs/php_codesniffer": "1.*",
-            "vimeo/psalm": "^4.5.1"
+            "vimeo/psalm": "^4.6.2"
         },
-        "time": "2021-02-15T16:11:48+00:00",
+        "time": "2021-07-05T08:18:36+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -611,10 +671,6 @@
         "keywords": [
             "enum"
         ],
-        "support": {
-            "issues": "https://github.com/myclabs/php-enum/issues",
-            "source": "https://github.com/myclabs/php-enum/tree/1.8.0"
-        },
         "funding": [
             {
                 "url": "https://github.com/mnapoli",
@@ -667,17 +723,17 @@
     },
     {
         "name": "php-http/discovery",
-        "version": "1.13.0",
-        "version_normalized": "1.13.0.0",
+        "version": "1.14.1",
+        "version_normalized": "1.14.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/php-http/discovery.git",
-            "reference": "788f72d64c43dc361e7fcc7464c3d947c64984a7"
+            "reference": "de90ab2b41d7d61609f504e031339776bc8c7223"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-http/discovery/zipball/788f72d64c43dc361e7fcc7464c3d947c64984a7",
-            "reference": "788f72d64c43dc361e7fcc7464c3d947c64984a7",
+            "url": "https://api.github.com/repos/php-http/discovery/zipball/de90ab2b41d7d61609f504e031339776bc8c7223",
+            "reference": "de90ab2b41d7d61609f504e031339776bc8c7223",
             "shasum": ""
         },
         "require": {
@@ -694,10 +750,9 @@
             "puli/composer-plugin": "1.0.0-beta10"
         },
         "suggest": {
-            "php-http/message": "Allow to use Guzzle, Diactoros or Slim Framework factories",
-            "puli/composer-plugin": "Sets up Puli which is recommended for Discovery to work. Check http://docs.php-http.org/en/latest/discovery.html for more details."
+            "php-http/message": "Allow to use Guzzle, Diactoros or Slim Framework factories"
         },
-        "time": "2020-11-27T14:49:42+00:00",
+        "time": "2021-09-18T07:57:46+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -730,11 +785,7 @@
             "http",
             "message",
             "psr7"
-        ],
-        "support": {
-            "issues": "https://github.com/php-http/discovery/issues",
-            "source": "https://github.com/php-http/discovery/tree/1.13.0"
-        }
+        ]
     },
     {
         "name": "php-http/guzzle6-adapter",
@@ -871,17 +922,17 @@
     },
     {
         "name": "php-http/message",
-        "version": "1.11.1",
-        "version_normalized": "1.11.1.0",
+        "version": "1.12.0",
+        "version_normalized": "1.12.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/php-http/message.git",
-            "reference": "887734d9c515ad9a564f6581a682fff87a6253cc"
+            "reference": "39eb7548be982a81085fe5a6e2a44268cd586291"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-http/message/zipball/887734d9c515ad9a564f6581a682fff87a6253cc",
-            "reference": "887734d9c515ad9a564f6581a682fff87a6253cc",
+            "url": "https://api.github.com/repos/php-http/message/zipball/39eb7548be982a81085fe5a6e2a44268cd586291",
+            "reference": "39eb7548be982a81085fe5a6e2a44268cd586291",
             "shasum": ""
         },
         "require": {
@@ -907,7 +958,7 @@
             "laminas/laminas-diactoros": "Used with Diactoros Factories",
             "slim/slim": "Used with Slim Framework PSR-7 implementation"
         },
-        "time": "2021-05-24T18:11:08+00:00",
+        "time": "2021-08-29T09:13:12+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1111,17 +1162,17 @@
     },
     {
         "name": "phpoffice/phpspreadsheet",
-        "version": "1.17.1",
-        "version_normalized": "1.17.1.0",
+        "version": "1.18.0",
+        "version_normalized": "1.18.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-            "reference": "c55269cb06911575a126dc225a05c0e4626e5fb4"
+            "reference": "418cd304e8e6b417ea79c3b29126a25dc4b1170c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/c55269cb06911575a126dc225a05c0e4626e5fb4",
-            "reference": "c55269cb06911575a126dc225a05c0e4626e5fb4",
+            "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/418cd304e8e6b417ea79c3b29126a25dc4b1170c",
+            "reference": "418cd304e8e6b417ea79c3b29126a25dc4b1170c",
             "shasum": ""
         },
         "require": {
@@ -1140,20 +1191,23 @@
             "ext-zlib": "*",
             "ezyang/htmlpurifier": "^4.13",
             "maennchen/zipstream-php": "^2.1",
-            "markbaker/complex": "^1.5||^2.0",
-            "markbaker/matrix": "^1.2||^2.0",
-            "php": "^7.2||^8.0",
+            "markbaker/complex": "^2.0",
+            "markbaker/matrix": "^2.0",
+            "php": "^7.2 || ^8.0",
             "psr/http-client": "^1.0",
             "psr/http-factory": "^1.0",
             "psr/simple-cache": "^1.0"
         },
         "require-dev": {
-            "dompdf/dompdf": "^0.8.5",
+            "dealerdirect/phpcodesniffer-composer-installer": "dev-master",
+            "dompdf/dompdf": "^1.0",
             "friendsofphp/php-cs-fixer": "^2.18",
             "jpgraph/jpgraph": "^4.0",
             "mpdf/mpdf": "^8.0",
             "phpcompatibility/php-compatibility": "^9.3",
-            "phpunit/phpunit": "^8.5||^9.3",
+            "phpstan/phpstan": "^0.12.82",
+            "phpstan/phpstan-phpunit": "^0.12.18",
+            "phpunit/phpunit": "^8.5",
             "squizlabs/php_codesniffer": "^3.5",
             "tecnickcom/tcpdf": "^6.3"
         },
@@ -1163,7 +1217,7 @@
             "mpdf/mpdf": "Option for rendering PDF with PDF Writer",
             "tecnickcom/tcpdf": "Option for rendering PDF with PDF Writer (doesn't yet support PHP8)"
         },
-        "time": "2021-03-02T17:54:11+00:00",
+        "time": "2021-05-31T18:21:15+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -1206,11 +1260,7 @@
             "spreadsheet",
             "xls",
             "xlsx"
-        ],
-        "support": {
-            "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-            "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.17.1"
-        }
+        ]
     },
     {
         "name": "phpoffice/phpword",
@@ -1580,24 +1630,24 @@
     },
     {
         "name": "setasign/fpdf",
-        "version": "1.8.3",
-        "version_normalized": "1.8.3.0",
+        "version": "1.8.4",
+        "version_normalized": "1.8.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/Setasign/FPDF.git",
-            "reference": "6a83253ece0df1c5b6c05fe7a900c660ae38afc3"
+            "reference": "b0ddd9c5b98ced8230ef38534f6f3c17308a7974"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Setasign/FPDF/zipball/6a83253ece0df1c5b6c05fe7a900c660ae38afc3",
-            "reference": "6a83253ece0df1c5b6c05fe7a900c660ae38afc3",
+            "url": "https://api.github.com/repos/Setasign/FPDF/zipball/b0ddd9c5b98ced8230ef38534f6f3c17308a7974",
+            "reference": "b0ddd9c5b98ced8230ef38534f6f3c17308a7974",
             "shasum": ""
         },
         "require": {
             "ext-gd": "*",
             "ext-zlib": "*"
         },
-        "time": "2021-04-20T09:49:57+00:00",
+        "time": "2021-08-30T07:50:06+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -1621,10 +1671,7 @@
         "keywords": [
             "fpdf",
             "pdf"
-        ],
-        "support": {
-            "source": "https://github.com/Setasign/FPDF/tree/1.8.3"
-        }
+        ]
     },
     {
         "name": "setasign/fpdi",
@@ -1897,17 +1944,17 @@
     },
     {
         "name": "symfony/polyfill-mbstring",
-        "version": "v1.23.0",
-        "version_normalized": "1.23.0.0",
+        "version": "v1.23.1",
+        "version_normalized": "1.23.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/polyfill-mbstring.git",
-            "reference": "2df51500adbaebdc4c38dea4c89a2e131c45c8a1"
+            "reference": "9174a3d80210dca8daa7f31fec659150bbeabfc6"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/2df51500adbaebdc4c38dea4c89a2e131c45c8a1",
-            "reference": "2df51500adbaebdc4c38dea4c89a2e131c45c8a1",
+            "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/9174a3d80210dca8daa7f31fec659150bbeabfc6",
+            "reference": "9174a3d80210dca8daa7f31fec659150bbeabfc6",
             "shasum": ""
         },
         "require": {
@@ -1916,7 +1963,7 @@
         "suggest": {
             "ext-mbstring": "For best performance"
         },
-        "time": "2021-05-27T09:27:20+00:00",
+        "time": "2021-05-27T12:26:48+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {

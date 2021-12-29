@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -52,19 +52,19 @@ defined('_JEXEC') or die('Restricted access');
 <table class="adminlist table table-striped" cellpadding="1">
 	<thead>
 		<tr>
-			<th class="title titlenum"><?php
+			<th class="title titlenum hk_center"><?php
 				echo JText::_('HIKA_NUM');
 			?></th>
-			<th class="title titletoggle"><?php
+			<th class="title titletoggle hk_center"><?php
 				echo JText::_('HIKA_EDIT');
 			?></th>
-			<th class="title titletoggle"><?php
+			<th class="title titletoggle hk_center"><?php
 				echo JText::_('HIKASHOP_CHECKOUT_STATUS');
 			?></th>
-			<th class="title"><?php
+			<th class="title hk_center"><?php
 				echo JText::_('HIKA_NAME');
 			?></th>
-			<th class="title titletoggle"><?php
+			<th class="title titletoggle hk_center"><?php
 				echo JText::_('ID');
 			?></th>
 		</tr>
