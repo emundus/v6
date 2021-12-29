@@ -48,6 +48,7 @@ media/com_hikashop/b/*
 media/com_hikashop/l/*
 media/com_hikashop/pathfile
 media/com_hikashop/pc.*
+media/com_hikashop/mail/*
 paybox_*.php
 stripeconnect_*.php
 atos.php

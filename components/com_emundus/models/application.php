@@ -2874,6 +2874,7 @@ class EmundusModelApplication extends JModelList
             }
 
             $query .= " ORDER BY sa.category,sa.ordering,sa.value ASC";
+
             $this->_db->setQuery($query);
             $docs = $this->_db->loadObjectList();
         } catch(Exception $e) {
@@ -3228,7 +3229,7 @@ class EmundusModelApplication extends JModelList
      * @param bool $cancelled
      * @return bool|object
      */
-    public function getHikashopOrder($fnumInfos, $cancelled = false) {
+    public function getHikashopOrder($fnumInfos, $cancelled = false, $confirmed = true) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
         $db = $this->getDbo();
@@ -3246,10 +3247,13 @@ class EmundusModelApplication extends JModelList
         /* If we find a row, we use the emundus_hikashop_programs, otherwise we use the eMundus config */
         $em_application_payment = isset($rule) ? 'programmes' : $eMConfig->get('application_payment', 'user');
 
+        $order_status = array();
         if ($cancelled) {
-            $order_status = array('cancelled');
+            array_push($order_status, 'cancelled');
         } else {
-            $order_status = array('confirmed');
+            if($confirmed) {
+               array_push($order_status, 'confirmed');
+            }
             switch ($eMConfig->get('accept_other_payments', 0)) {
                 case 1:
                     array_push($order_status, 'created');
@@ -3349,6 +3353,158 @@ class EmundusModelApplication extends JModelList
         }
     }
 
+    public function getHikashopCartOrder($fnumInfos, $cancelled = false, $confirmed = true) {
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $em_application_payment = $eMConfig->get('application_payment', 'user');
+
+        $query
+            ->select('eh.user,eh.cart_id')
+            ->from($db->quoteName('#__emundus_hikashop', 'eh'))
+            ->where($db->quoteName('eh.order_id') .' = 0' . ' OR ' . $db->quoteName('eh.order_id') .' IS NULL');
+
+        switch ($em_application_payment) {
+            default :
+            case 'fnum' :
+                $query
+                    ->andWhere($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
+                break;
+
+            case 'user' :
+                $query
+                    ->andWhere($db->quoteName('eh.user') . ' = ' . $fnumInfos['applicant_id']);
+                break;
+
+            case 'campaign' :
+                $query
+                    ->andWhere($db->quoteName('eh.campaign_id') . ' = ' . $fnumInfos['id'])
+                    ->andWhere($db->quoteName('eh.user') . ' = ' . $fnumInfos['applicant_id']);
+                break;
+
+            case 'status' :
+                $em_application_payment_status = $eMConfig->get('application_payment_status', '0');
+                $payment_status = explode(',', $em_application_payment_status);
+
+                if (in_array($fnumInfos['status'], $payment_status)) {
+                    $query
+                        ->andWhere($db->quoteName('eh.status') . ' = ' . $fnumInfos['status'])
+                        ->andWhere($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
+                } else{
+                    $query
+                        ->andWhere($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
+                }
+                break;
+        }
+
+        try {
+            $db->setQuery($query);
+            $cart_pending = $db->loadObject();
+
+            if(!empty($cart_pending)){
+                return null;
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        $order_status = array();
+        if ($cancelled) {
+            array_push($order_status, 'cancelled');
+        } else {
+            if($confirmed) {
+                array_push($order_status, 'confirmed');
+            }
+            switch ($eMConfig->get('accept_other_payments', 0)) {
+                case 1:
+                    array_push($order_status, 'created');
+                    break;
+                case 3:
+                    array_push($order_status, 'pending');
+                    break;
+                case 4:
+                    array_push($order_status, 'created', 'pending');
+                    break;
+                default:
+                    // No need to push to the array
+                    break;
+
+            }
+        }
+
+        $query->clear()
+            ->select(['ho.*', $db->quoteName('eh.user', 'user_cms_id')])
+            ->from($db->quoteName('#__emundus_hikashop', 'eh'))
+            ->leftJoin($db->quoteName('#__hikashop_order','ho').' ON '.$db->quoteName('ho.order_id').' = '.$db->quoteName('eh.order_id'))
+            ->where($db->quoteName('ho.order_status') . ' IN (' . implode(", ", $db->quote($order_status)) . ')')
+            ->order($db->quoteName('order_created') . ' DESC');
+
+        switch ($em_application_payment) {
+
+            default :
+            case 'fnum' :
+                $query
+                    ->where($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
+                break;
+
+            case 'user' :
+                $query
+                    ->where($db->quoteName('eh.user') . ' = ' . $fnumInfos['applicant_id']);
+                break;
+
+            case 'campaign' :
+                $query
+                    ->where($db->quoteName('eh.campaign_id') . ' = ' . $fnumInfos['id'])
+                    ->where($db->quoteName('eh.user') . ' = ' . $fnumInfos['applicant_id']);
+                break;
+
+            case 'status' :
+                $em_application_payment_status = $eMConfig->get('application_payment_status', '0');
+                $payment_status = explode(',', $em_application_payment_status);
+
+                if (in_array($fnumInfos['status'], $payment_status)) {
+                    $query
+                        ->where($db->quoteName('eh.status') . ' = ' . $fnumInfos['status'])
+                        ->where($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
+                } else{
+                    $query
+                        ->where($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
+                }
+                break;
+        }
+        try {
+            $db->setQuery($query);
+            return $db->loadObject();
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function getHikashopCart($fnumInfos){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('cart_id')
+            ->from($db->quoteName('#__emundus_hikashop'))
+            ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
+
+        try {
+            $db->setQuery($query);
+            return $db->loadResult();
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
     /**
      * Return the checkout URL order for current fnum.
      * @param $pid   string|int   the applicant's profile_id
@@ -3362,6 +3518,31 @@ class EmundusModelApplication extends JModelList
             $query = 'SELECT CONCAT(link, "&Itemid=", id) as url
                         FROM #__menu
                         WHERE alias like "checkout'.$pid.'"';
+            $dbo->setQuery($query);
+            $url = $dbo->loadResult();
+            return $url;
+        }
+        catch (Exception $e)
+        {
+            echo $e->getMessage();
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    /**
+     * Return the checkout URL order for current fnum.
+     * @param $pid   string|int   the applicant's profile_id
+     * @return bool|string
+     */
+    public function getHikashopCartUrl($pid)
+    {
+        $dbo = $this->getDbo();
+        try
+        {
+            $query = 'SELECT CONCAT(link, "&Itemid=", id) as url
+                        FROM #__menu
+                        WHERE alias like "cart'.$pid.'"';
             $dbo->setQuery($query);
             $url = $dbo->loadResult();
             return $url;
@@ -4019,7 +4200,7 @@ class EmundusModelApplication extends JModelList
         $elements = array_map(function($obj) {return $obj->name;}, $elements);
 
         $query
-            ->select(implode(',', $elements))
+            ->select(implode(',', $db->quoteName($elements)))
             ->from($db->quoteName($parent_table))
             ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 
@@ -4274,8 +4455,7 @@ class EmundusModelApplication extends JModelList
             } else {
                 $preview['status'] = false;
                 $preview['error'] = 'unsupported';
-                $preview['content'] = '<div style="width:100%;height: 100%;display: flex;flex-direction: column;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('COM_EMUNDUS_ATTACHMENTS_FILE_TYPE_NOT_SUPPORTED') . '</p><p><a href="'. JURI::base() . $filePath . '" target="_blank" download>' . JText::_('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD')  . '</a></p>
-                </div>';
+                $preview['content'] = '<div style="width:100%;height: 100%;display: flex;flex-direction: column;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . JText::_('COM_EMUNDUS_ATTACHMENTS_FILE_TYPE_NOT_SUPPORTED') . '</p><p><a href="'. JURI::base() . $filePath . '" target="_blank" download>' . JText::_('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD')  . '</a></p></div>';
             }
         } else {
             $preview['status'] = false;
