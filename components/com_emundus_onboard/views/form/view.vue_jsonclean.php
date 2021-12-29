@@ -165,7 +165,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 }
                 ${"group_" . $GroupProperties->id}->intros = new stdClass;
                 foreach ($languages as $language) {
-                    ${"group_" . $GroupProperties->id}->intros->{$language->sef} = $formbuilder->getTranslation(json_decode($group_infos->params)->intro, $language->lang_code);
+                    ${"group_" . $GroupProperties->id}->intros->{$language->sef} = $formbuilder->getTranslation(${"group_" . $GroupProperties->id}->group_intro_tag, $language->lang_code);
                 }
 
                 if ($GroupProperties->class) :
