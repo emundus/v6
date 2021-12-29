@@ -4669,7 +4669,6 @@ $(document).ready(function() {
                 fnums = getUserCheckArray();
 
                 $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/>' +'</div>');
-                $('.modal-footer').hide();
                 $('.modal-dialog').addClass('modal-lg');
                 $.ajax({
                     type: 'POST',
