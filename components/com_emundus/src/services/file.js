@@ -7,13 +7,13 @@ export default {
 
             return response.data;
         } catch (e) {
-            console.error(e);
+            return false;
         }
     },
 
     async getFnumInfos(fnum) {
         try {
-            const response = await client().get('index.php?option=com_emundus&controller=files&task=getfnuminfos',  {
+            const response = await client().get('index.php?option=com_emundus&controller=files&task=getfnuminfos', {
                 params: {
                     fnum
                 }
@@ -21,7 +21,7 @@ export default {
 
             return response.data;
         } catch (e) {
-            console.log(e);
+            return false;
         }
     }
 }
