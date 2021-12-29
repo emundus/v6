@@ -397,6 +397,7 @@ export default {
     this.getUsers();
     this.getAttachments();
     this.setAccessRights();
+    this.loading = false;
   },
   methods: {
     // Getters and setters
