@@ -76,7 +76,6 @@ export const ListMutations = {
       }
     });
   },
-
   /**
    * deletes a list of items in the list array
    * @param state

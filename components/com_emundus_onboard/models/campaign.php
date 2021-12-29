@@ -100,7 +100,7 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    function getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page) {
+    function getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page,$program) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -125,7 +125,18 @@ class EmundusonboardModelcampaign extends JModelList
 
         // Get affected programs
         $user = JFactory::getUser();
-        $programs = $this->model_program->getUserPrograms($user->id);
+        $programs=$this->model_program->getUserPrograms($user->id);
+
+        if($program !="all"){
+            $programs=array_filter($programs,function($value) use ($program) {
+                //var_dump($program);die();
+                return $value == $program;
+            });
+            /*var_dump($programs);
+            die();*/
+        }
+
+
         //
 
         if ($filter == 'notTerminated') {
