@@ -386,7 +386,11 @@ export default {
       canDownload: true,
       modalLoading: false,
       slideTransition: "slide-fade",
+			changeFileEvent: null,
     };
+	},
+	created() {
+		this.changeFileEvent = new Event("changeFile");
   },
   mounted() {
     this.getFnums();
@@ -633,20 +637,50 @@ export default {
 
     // navigation functions
     changeFile(position) {
-      this.loading = true;
-
-      this.displayedFnum = this.fnums[position];
-      this.setDisplayedUser();
-      this.getAttachments();
+			this.loading = true;
+			const oldFnumPosition = this.fnumPosition;
+			this.displayedFnum = this.fnums[position];
+			this.attachments = [];
       this.setAccessRights();
       this.resetOrder();
       this.resetSearch();
       this.resetCategoryFilters();
-      this.attachments.forEach((attachment) => {
-        attachment.show = true;
-      });
 
-      this.loading = false;
+			fileService.getFnumInfos(this.displayedFnum).then((response) => {
+				if (response.status === true) {
+					this.changeFileEvent.detail = {
+						fnum: response.fnumInfos,
+						next: position > oldFnumPosition ? true : false,
+						previous: position < oldFnumPosition ? true : false,
+					};
+
+					document
+						.querySelector(".com_emundus_vue")
+						.dispatchEvent(this.changeFileEvent);
+				} else {
+					this.displayErrorMessage(response.msg);
+				}
+			});
+
+			this.setDisplayedUser()
+				.then(() => {
+					this.getAttachments()
+						.then(() => {
+							this.attachments.forEach((attachment) => {
+								attachment.show = true;
+							});
+
+              this.loading = false;
+            })
+						.catch((error) => {
+							this.displayErrorMessage(error);
+							this.loading = false;
+						});
+				})
+				.catch((error) => {
+					this.displayErrorMessage(error);
+					this.loading = false;
+				});
     },
     changeAttachment(position, reverse = false) {
       this.slideTransition = reverse ? "slide-fade-reverse" : "slide-fade";
