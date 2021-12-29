@@ -14,9 +14,9 @@
 
     ></list-header>
 
-    <div class="filters-menu">
-      <select name="selectProgram" id="pet-select" class="selectProgram" v-model="selectedProgram" @change="validateFilters">
-        <option value="all">{{translations.All}} les programmes</option>
+    <div :class="type=='campaign'?'filters-menu':'filters-menu-2'">
+      <select name="selectProgram" id="pet-select" class="selectProgram" v-model="selectedProgram" @change="validateFilters" v-if="type=='campaign'">
+        <option value="all">{{translations.AllPrograms}} </option>
         <option :value="program.code" v-for="program in allPrograms" v-bind:key="program.code">
           {{program.label}}
         </option>
@@ -331,6 +331,7 @@ export default {
       noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
       noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
       All: Joomla.JText._("COM_EMUNDUS_ONBOARD_ALL"),
+      AllPrograms:Joomla.JText._('COM_EMUNDUS_ONBOARD_ALL_PROGRAMS'),
       programmesTrans: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
       ortherPrograms: Joomla.JText._("COM_EMUNDUS_ONBOARD_OTHERCAMP_PROGRAM"),
       System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
