@@ -186,7 +186,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $locallang
      * @param $NewSubLabel
      */
-    function formsTrad($labelTofind, $NewSubLabel, $element = null, $group = null, $page = null, $intro=null) {
+    function formsTrad($labelTofind, $NewSubLabel, $element = null, $group = null, $page = null) {
         try {
             $db = $this->getDbo();
             $query = $db->getQuery(true);
@@ -198,28 +198,13 @@ class EmundusonboardModelformbuilder extends JModelList {
                     ->where($db->quoteName('id') . ' = ' . $db->quote($element));
                 $db->setQuery($query);
                 $db->execute();
-            } elseif ($group != null && $new_key != false && $intro ==null){
+            } elseif ($group != null && $new_key != false){
                 $query->update($db->quoteName('#__fabrik_groups'))
                     ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($group));
                 $db->setQuery($query);
                 $db->execute();
-            } elseif ($group != null && $new_key != false && $intro !=null){
-
-                $query->select('params')
-                    ->from($db->quoteName('#__fabrik_groups'))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($group));
-                $db->setQuery($query);
-                $group_params = json_decode(($db->loadObject())->params);
-                $group_params->intro=$new_key;
-                $query->clear();
-                $query->update($db->quoteName('#__fabrik_groups'))
-                    ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($group_params)))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($group));
-                $db->setQuery($query);
-                $db->execute();
-            }
-            elseif ($page != null && $new_key != false){
+            } elseif ($page != null && $new_key != false){
                 $query->update($db->quoteName('#__fabrik_forms'))
                     ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($page));
@@ -919,22 +904,6 @@ class EmundusonboardModelformbuilder extends JModelList {
             return false;
         }
     }
-    function updateGroupIntroWithoutTranslation($gid,$params) {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-        try {
-            $query->update($db->quoteName('#__fabrik_groups'))
-
-                ->set($db->quoteName('params') . ' = ' . $db->quote($params))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
-            $db->setQuery($query);
-
-            return $db->execute();
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/formbuilder | Error groups intro  ' . $gid . ' without translation : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
-    }
 
     function updatePageWithoutTranslation($pid,$label) {
         $db = $this->getDbo();
@@ -1562,11 +1531,8 @@ class EmundusonboardModelformbuilder extends JModelList {
             $groupid = $db->insertid();
 
             $tag = 'GROUP_' . $fid . '_' . $groupid;
-            $intro_tag='GROUP_INTRO_'. $fid. '_'.$groupid;
-
 
             $this->translate($tag,$label);
-            $this->translate($intro_tag,'');
 
             $query->clear()
                 ->update($db->quoteName('#__fabrik_groups'))
@@ -1617,23 +1583,15 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             $label_fr = $this->getTranslation($tag, 'fr-FR');
             $label_en = $this->getTranslation($tag, 'en-GB');
-            $intro_fr= $this->getTranslation($intro_tag, 'fr-FR');
-            $intro_en=  $this->getTranslation($intro_tag, 'en-GB');
-
 
             return array(
                 'elements' => array(),
                 'group_id' => $groupid,
                 'group_tag' => $tag,
-                'group_intro_tag'=>$intro_tag,
                 'group_showLegend' => $this->getJTEXT("GROUP_" . $fid . "_" . $groupid),
                 'label' => array(
                     'fr' => $label_fr,
                     'en' => $label_en,
-                ),
-                'intro'=> array(
-                    'fr'=> $intro_fr,
-                    'en'=> $intro_en
                 ),
                 'ordering' => $order,
                 'formid' => $fid
@@ -1812,6 +1770,44 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $query = "ALTER TABLE jos_emundus_evaluations" . " ADD criteria_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
                 $db->setQuery($query);
                 $db->execute();
+
+                $db = $this->getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('params')
+                    ->from($db->quoteName('#__fabrik_groups'))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+                $db->setQuery($query);
+                $group_cible_params = json_decode(($db->loadObject())->params);
+
+                if ($group_cible_params->repeat_group_button == 1) {
+
+
+                    //le groupe cible est un groupe répétable
+                    //alors on crée la colone correspondante à l'element dans la table repetable;
+                    $query->clear();
+                    $query->select('table_join')
+                        ->from($db->quoteName('#__fabrik_joins'))
+                        ->where($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                        ->and($db->quoteName('table_join_key') . '=' . $db->quote('parent_id'));
+                    $db->setQuery($query);
+                    $table_join_name = $db->loadObject();
+                    // on crée maintenant la colonne donc;
+                    $query = "ALTER TABLE " . $table_join_name->table_join . " ADD criteria_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+
+                    $db->setQuery($query);
+                    try {
+                        $db->execute();
+                    } catch (Exception $e) {
+
+                        JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot not create new colum in the repeat table case: new element form group to an target group witc at group   because column already exist ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+
+                    }
+
+
+                }
+
+
                 $name = 'criteria_' . $formid . '_' . $elementId;
             } else {
                 $query = "ALTER TABLE " . $dbtable . " ADD e_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
@@ -1910,6 +1906,41 @@ this.set(words.join(&quot; &quot;));
         }
     }
 
+    function updateGroupElementsOrder($elements, $group_id)
+    {
+        if (empty($user)) {
+            $user = JFactory::getUser()->id;
+        }
+
+        $date = new Date();
+        $results= [];
+
+        for ($i = 0; $i < count($elements); $i++) {
+
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+            $fields = array(
+                $db->quoteName('ordering'). ' = '.  $db->quote(htmlspecialchars($elements[$i]['order'])),
+                $db->quoteName('modified_by'). ' = '. $db->quote($user),
+                $db->quoteName('modified'). ' = '. $db->quote($date),
+                $db->quoteName('group_id'). ' = '. $db->quote($group_id),
+            );
+
+            $query->update($db->quoteName('#__fabrik_elements'))
+                ->set($fields)
+                ->where($db->quoteName('id'). ' = '. $db->quote(htmlspecialchars($elements[$i]['id'])));
+            try {
+                $db->setQuery($query);
+                $results[] = $db->execute();
+            }
+            catch(Exception $e) {
+                JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot reorder elements : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                return false;
+            }
+        }
+
+    }
+
     /**
      * Update orders of a group's elements
      *
@@ -1918,135 +1949,89 @@ this.set(words.join(&quot; &quot;));
      * @param $user
      * @return array|string
      */
-    function updateOrder($elements, $group_id, $user, $moved_el) {
-        if (empty($user)) {
-            $user = JFactory::getUser()->id;
-        }
+    function updateOrder($elements, $group_id, $user, $moved_el = null)
+    {
+        if ($moved_el != null) {
 
-        $date = new Date();
-        $results= [];
+            if ($moved_el['group_id'] == $group_id) {
 
-        if($moved_el[$group_id]==$group_id) {
-            // deplacement au sein du même groupe
-            for ($i = 0; $i < count($elements); $i++) {
+                return $this->updateGroupElementsOrder($elements, $group_id);
+            } else {
 
-                $db = $this->getDbo();
-                $query = $db->getQuery(true);
-                $fields = array(
-                    $db->quoteName('ordering') . ' = ' . $db->quote(htmlspecialchars($elements[$i]['order'])),
-                    $db->quoteName('modified_by') . ' = ' . $db->quote($user),
-                    $db->quoteName('modified') . ' = ' . $db->quote($date),
-                    $db->quoteName('group_id') . ' = ' . $db->quote($group_id),
-                );
-
-                $query->update($db->quoteName('#__fabrik_elements'))
-                    ->set($fields)
-                    ->where($db->quoteName('id') . ' = ' . $db->quote(htmlspecialchars($elements[$i]['id'])));
-                try {
-                    $db->setQuery($query);
-                    $results[] = $db->execute();
-                } catch (Exception $e) {
-                    JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot reorder elements : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-                    return false;
-                }
-            }
-        } else{
-
-            //groupe cible different du groupe de provenance
-            // on vérifie si le groupe cible est un groupe repeat
-
-            $db = $this->getDbo();
-            $query = $db->getQuery(true);
-
-            $query->select('params')
-                ->from($db->quoteName('#__fabrik_groups'))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($group_id));
-            $db->setQuery($query);
-
-            $group_cible_params=json_decode(($db->loadObject())->params);
-
-
-            if($group_cible_params->repeat_group_button==1){
-
-
-                //le groupe cible est un groupe répétable
-                //alors on crée la colone correspondante à l'element dans la table repetable;
-                $query->clear();
-                $query->select('table_join')
-                    ->from($db->quoteName('#__fabrik_joins'))
-                    ->where($db->quoteName('group_id') . ' = ' . $db->quote($group_id))
-                    ->and($db->quoteName('table_join_key'). '=' .$db->quote('parent_id'));
-                $db->setQuery($query);
-                $table_join_name=$db->loadObject();
-
-                // on recupere la form_id
-                $query->clear()
-                    ->select('fl.form_id as formid')
-                    ->from($db->quoteName('#__fabrik_formgroup', 'fg'))
-                    ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
-                    ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($group_id));
-                $db->setQuery($query);
-                $object = $db->loadObject();
-                $form_id = $object->formid;
-
-                if ($moved_el['plugin'] === 'birthday') {
-                    $dbtype = 'DATE';
-                } elseif ($moved_el['plugin'] === 'textarea') {
-                    $dbtype = 'TEXT';
-                } else {
-                    $dbtype = 'TEXT';
-                }
-
-                // on crée maintenant la colonne donc;
-
-                $query = "ALTER TABLE " . $table_join_name->table_join . " ADD e_" . $form_id . "_" . $moved_el['id'] . " " . $dbtype . " NULL";
-
-                $db->setQuery($query);
-                try {
-                    $db->execute();
-                } catch (Exception $e) {
-
-                    JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot not create new colum in the repeat table case: moving element form group to an target group witch is repeat group because column already exist ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-                    return false;
-                }
-
-
-
-
-
-            }
-
-
-            // Maintenant j'update enfin les ordres
-            for ($i = 0; $i < count($elements); $i++) {
+                //groupe cible different du groupe de provenance
+                // on vérifie si le groupe cible est un groupe repeat
 
                 $db = $this->getDbo();
                 $query = $db->getQuery(true);
-                $fields = array(
-                    $db->quoteName('ordering') . ' = ' . $db->quote(htmlspecialchars($elements[$i]['order'])),
-                    $db->quoteName('modified_by') . ' = ' . $db->quote($user),
-                    $db->quoteName('modified') . ' = ' . $db->quote($date),
-                    $db->quoteName('group_id') . ' = ' . $db->quote($group_id),
-                );
 
-                $query->update($db->quoteName('#__fabrik_elements'))
-                    ->set($fields)
-                    ->where($db->quoteName('id') . ' = ' . $db->quote(htmlspecialchars($elements[$i]['id'])));
-                try {
+                $query->select('params')
+                    ->from($db->quoteName('#__fabrik_groups'))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($group_id));
+                $db->setQuery($query);
+                $group_cible_params = json_decode(($db->loadObject())->params);
+
+                if ($group_cible_params->repeat_group_button == 1) {
+
+                    //le groupe cible est un groupe répétable
+                    //alors on crée la colone correspondante à l'element dans la table repetable;
+                    $query->clear();
+                    $query->select('table_join')
+                        ->from($db->quoteName('#__fabrik_joins'))
+                        ->where($db->quoteName('group_id') . ' = ' . $db->quote($group_id))
+                        ->andWhere($db->quoteName('table_join_key') . '=' . $db->quote('parent_id'));
                     $db->setQuery($query);
-                    $results[] = $db->execute();
-                } catch (Exception $e) {
-                    JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot reorder elements : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-                    return false;
-                }
-            }
+                    $table_join_name = $db->loadObject();
 
-        }
 
-        return $results;
+                    // on recupere la form_id
+                    $query->clear()
+                        ->select('fl.form_id as formid')
+                        ->from($db->quoteName('#__fabrik_formgroup', 'fg'))
+                        ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
+                        ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($group_id));
+                    $db->setQuery($query);
+                    $object = $db->loadObject();
+
+                    $form_id = $object->formid;
+
+                    if ($moved_el['plugin'] === 'birthday') {
+                        $dbtype = 'DATE';
+                    } elseif ($moved_el['plugin'] === 'textarea') {
+                        $dbtype = 'TEXT';
+                    } else {
+                        $dbtype = 'TEXT';
     }
 
-    function ChangeRequire($element, $user) {
+                    // on crée maintenant la colonne donc;
+
+                    $query = "ALTER TABLE " . $table_join_name->table_join . " ADD " . $moved_el['name'] . " " . $dbtype . " NULL";
+
+                    $db->setQuery($query);
+
+                    try {
+                        $db->execute();
+                    } catch (Exception $e) {
+
+                        JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot not create new colum in the repeat table case: moving element form group to an target group witch is repeat group because column already exist ' . $group_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+
+                    }
+
+
+                }
+
+
+                // Maintenant j'update enfin les ordres
+                return $this->updateGroupElementsOrder($elements, $group_id);
+
+            }
+        } else {
+            return $this->updateGroupElementsOrder($elements, $group_id);
+        }
+
+    }
+
+    function ChangeRequire($element, $user)
+    {
         if (empty($user)) {
             $user = JFactory::getUser()->id;
         }
@@ -2228,13 +2213,6 @@ this.set(words.join(&quot; &quot;));
                     $sub_values = [];
                     $sub_labels = [];
                     $sub_initial_selection = [];
-
-
-                    if($element['plugin']=="checkbox" || $element['plugin'] === 'radiobutton'){
-                        foreach ($element['params']['sub_options']['sub_initial_selection'] as $index => $sub_value) {
-                            $sub_initial_selection[] = $element['params']['sub_options']['sub_initial_selection'][$index];
-                        }
-                    }
 
                     if($element['params']['default_value'] == 'true') {
                         if (!array_search('PLEASE_SELECT', $old_params['sub_options']['sub_labels'])) {
@@ -2520,6 +2498,7 @@ this.set(words.join(&quot; &quot;));
                 $labelsAbove = $content_element->labels;
 
                 ${"element".$o_element->id}->id = $o_element->id;
+                ${"element".$o_element->id}->name = $o_element->name;
                 ${"element".$o_element->id}->group_id = $gid;
 
                 ${"element".$o_element->id}->hidden = $content_element->hidden;
@@ -3447,9 +3426,9 @@ this.set(words.join(&quot; &quot;));
                 ->where($db->quoteName('table_join') . ' = ' . $db->quote($newtablename))
                 ->and($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
             $db->setQuery($query);
-            $left_join_exist=$db->loadObject();
+            $left_join_exist = $db->loadObject();
 
-            if($left_join_exist ==NULL){
+            if ($left_join_exist == NULL) {
                 $query->clear();
                 $query->insert($db->quoteName('#__fabrik_joins'));
                 $query->set($db->quoteName('list_id') . ' = ' . $db->quote($list_id))
@@ -3467,9 +3446,7 @@ this.set(words.join(&quot; &quot;));
             }
 
 
-
             // Insert leftjoin in fabrik
-
 
 
             // Insert element present in the group
@@ -3493,42 +3470,8 @@ this.set(words.join(&quot; &quot;));
             //
 
             return true;
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot enable repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
-    }
-
-    function retrieveOneGroup($gid){
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $query->select('*')
-                ->from($db->quoteName('#__fabrik_groups'))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
-            $db->setQuery($query);
-            $group = $db->loadObject();
-
-            // Disable group repeat
-           /* $query->clear()
-                ->select('fl.db_table_name as dbtable')
-                ->from($db->quoteName('#__fabrik_formgroup','fg'))
-                ->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('fg.form_id'))
-                ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
-            $db->setQuery($query);
-            $group_params = json_decode($group->params);
-            $group_params->repeat_group_button = 0;
-
-            $query->clear()
-                ->update($db->quoteName('#__fabrik_groups'))
-                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($group_params)))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
-            $db->setQuery($query);*/
-           // return $db->execute();
-            return $group;
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot disable repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot enable repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -3707,4 +3650,3 @@ this.set(words.join(&quot; &quot;));
     }
 
 }
-

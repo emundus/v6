@@ -318,11 +318,6 @@ JText::script('COM_EMUNDUS_TROMBI_DOWNLOAD');
 JText::script('SEND_CUSTOM_EMAIL');
 JText::script('ERROR_GETTING_PREVIEW');
 JText::script('EMAIL_PREVIEW');
-JText::script('EMAIL_HISTORY_DESCRIPTION');
-JText::script('TAG_DESCRIPTION_MSG');
-JText::script('COMMENT_AUTHOR');
-JText::script('COMMENT_ADD_DAY');
-JText::script('COMMENT_TITLE');
 JText::script('NO_EMAILS_SENT');
 JText::script('EMAILS_SENT');
 JText::script('EMAILS_FAILED');
@@ -330,7 +325,6 @@ JText::script('SEND_FAILED');
 JText::script('SEND_TO');
 JText::script('EMAIL_SENDING');
 JText::script('CANCEL_EMAIL');
-
 
 //view application layout share
 JText::script('COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
@@ -444,6 +438,10 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND');
 JText::script('COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY');
 JText::script('COM_EMUNDUS_ATTACHMENTS_CHECK');
 JText::script('COM_EMUNDUS_ATTACHMENTS_WARNING');
+JText::script('COM_EMUNDUS_ATTACHMENTS_PERMISSIONS');
+JText::script('COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED');
+JText::script('COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED');
+JText::script('COM_EMUNDUS_ATTACHMENTS_UNAUTHORIZED_ACTION');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
