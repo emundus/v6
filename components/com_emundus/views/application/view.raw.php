@@ -367,6 +367,7 @@ class EmundusViewApplication extends JViewLegacy {
                         EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_LOGS_FORM_BACKOFFICE');
 
                         $m_user = new EmundusModelUsers;
+                        $m_campaign = new EmundusModelCampaign;
 
                         /* detect user_id from fnum */
                         $userRaw = $m_profiles->getFnumDetails($fnum);
@@ -375,25 +376,38 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $this->assignRef('userid', $userId);
 
-                        $m_campaign = new EmundusModelCampaign;
-
-                        /* get all campaigns by fnum */
+                        /* get all campaigns by user */
                         $campaignsRaw = $m_campaign->getCampaignByFnum($fnum);
 
                         /* get all profiles (order by step) by campaign */
                         $pidsRaw = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id]);
 
-                        $noStepPid = array();
+                        $noPhasePids = array();
+                        $hasPhasePids = array();
 
                         foreach($pidsRaw as $key => $pid) {
-                            if($pid->step === null or empty($pid->step)) {
-                                if($pid->pid !== $userProfile) { $noStepPid[] = $pid;}
-                                else { $dpid = $pid; }
-                                unset($pidsRaw[$key]);
+                            if($pid->pid === $userProfile) { $dpid = $pid; }
+
+                            if($pid->phase === null) {
+                                if($pid->pid !== $userProfile) {
+                                    $noPhasePids['no_step']['lbl'] = JText::_('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
+                                    $noPhasePids['no_step']['data'][] = $pid;
+                                }
+                            } else {
+                                $hasPhasePids[] = $pid;
                             }
                         }
 
-                        $pids = array_merge([$dpid], $pidsRaw, $noStepPid);
+                        $profiles_by_phase = array();
+
+                        /* group profiles by phase */
+                        foreach($hasPhasePids as $ppid) {
+                            $profiles_by_phase['step_' . $ppid->phase]['lbl'] = $ppid->lbl;
+                            $profiles_by_phase['step_' . $ppid->phase]['data'][] = $ppid;
+                        }
+
+                        $pids = array_merge($profiles_by_phase, $noPhasePids);
+
 
                         /* serialize $pids to json format */
                         $json = json_encode($pids);
