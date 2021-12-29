@@ -57,8 +57,6 @@ export default {
 
   created() {
     global.commit("initDatas", this.$props.datas);
-    console.log(this.$props.datas, 'datas');
-
     global.commit("initCurrentLanguage", this.$props.actualLanguage);
     global.commit("initManyLanguages", this.$props.manyLanguages);
     global.commit("initCoordinatorAccess", this.$props.coordinatorAccess);
