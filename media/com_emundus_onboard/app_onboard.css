@@ -1530,7 +1530,7 @@ input[type=reset] {
 .bouton-ajouter:hover {
   cursor: pointer;
   background-color: transparent;
-  color: #298721;
+  color: #298721 !important;
 }
 .bouton-ajouter .fa-pen {
   margin-right: 10px;

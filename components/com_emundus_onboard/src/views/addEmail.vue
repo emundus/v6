@@ -26,10 +26,10 @@
             <div class="form-group">
               <label>{{translations.emailName}} <span style="color: #E5283B">*</span></label>
               <input
-                      type="text"
-                      class="form__input field-general w-input"
-                      v-model="form.subject"
-                      :class="{ 'is-invalid': errors.subject}"
+                type="text"
+                class="form__input field-general w-input"
+                v-model="form.subject"
+                :class="{ 'is-invalid': errors.subject}"
               />
             </div>
             <p v-if="errors.subject" class="error col-md-12 mb-2">
@@ -38,7 +38,18 @@
 
             <div class="form-group controls forms-emails-editor">
               <label>{{translations.emailBody}} <span style="color: #E5283B">*</span></label>
-              <editor :height="'30em'" :text="form.message" v-if="dynamicComponent" :lang="actualLanguage" :enable_variables="true" v-model="form.message" :id="'email'" :placeholder="translations.EmailResume" :class="{ 'is-invalid': errors.message}"></editor>
+              <editor 
+                v-if="dynamicComponent" 
+                v-model="form.message" 
+                :id="'email'" 
+                :class="{ 'is-invalid': errors.message}"
+                :height="'30em'" 
+                :text="form.message" 
+                :lang="actualLanguage" 
+                :enable_variables="true" 
+                :placeholder="translations.EmailResume" 
+              >
+              </editor>
             </div>
             <p v-if="errors.message" class="error col-md-12 mb-2">
               <span class="error">{{translations.BodyRequired}}</span>
@@ -61,47 +72,47 @@
           <div class="form-group">
             <label>{{translations.receiverName}}</label>
             <input
-                    type="text"
-                    class="form__input field-general w-input"
-                    v-model="form.name"
+              type="text"
+              class="form__input field-general w-input"
+              v-model="form.name"
             />
           </div>
 
           <div class="form-group">
             <label>{{translations.emailAddress}}</label>
             <input
-                    type="text"
-                    class="form__input field-general w-input"
-                    v-model="form.emailfrom"
+              type="text"
+              class="form__input field-general w-input"
+              v-model="form.emailfrom"
             />
           </div>
 
           <div class="form-group">
             <label>{{ translations.emailCategory }}</label>
             <autocomplete
-                    @searched="onSearchCategory"
-                    :items="this.categories"
-                    :year="this.form.category"
+              @searched="onSearchCategory"
+              :items="this.categories"
+              :year="this.form.category"
             />
           </div>
 
           <div class="form-group" id="receivers_cc">
             <label>{{ translations.ReceiversCC }}</label>
             <multiselect
-                v-model="selectedReceiversCC"
-                label="email"
-                track-by="email"
-                :options="receivers_cc"
-                :multiple="true"
-                :searchable="true"
-                :taggable="true"
-                select-label=""
-                selected-label=""
-                deselect-label=""
-                :placeholder="translations.ReceiversCCPlaceHolder"
-                @tag="addNewCC"
-                :close-on-select="false"
-                :clear-on-select="false"
+              v-model="selectedReceiversCC"
+              label="email"
+              track-by="email"
+              :options="receivers_cc"
+              :multiple="true"
+              :searchable="true"
+              :taggable="true"
+              select-label=""
+              selected-label=""
+              deselect-label=""
+              :placeholder="translations.ReceiversCCPlaceHolder"
+              @tag="addNewCC"
+              :close-on-select="false"
+              :clear-on-select="false"
             ></multiselect>
           </div>
 
@@ -109,20 +120,20 @@
           <div class="form-group" id="receivers_bcc">
             <label>{{ translations.ReceiversBCC }}</label>
             <multiselect
-                v-model="selectedReceiversBCC"
-                label="email"
-                track-by="email"
-                :options="receivers_bcc"
-                :multiple="true"
-                :searchable="true"
-                :taggable="true"
-                select-label=""
-                selected-label=""
-                deselect-label=""
-                :placeholder="translations.ReceiversBCCPlaceHolder"
-                @tag="addNewBCC"
-                :close-on-select="false"
-                :clear-on-select="false">
+              v-model="selectedReceiversBCC"
+              label="email"
+              track-by="email"
+              :options="receivers_bcc"
+              :multiple="true"
+              :searchable="true"
+              :taggable="true"
+              select-label=""
+              selected-label=""
+              deselect-label=""
+              :placeholder="translations.ReceiversBCCPlaceHolder"
+              @tag="addNewBCC"
+              :close-on-select="false"
+              :clear-on-select="false">
             </multiselect>
           </div>
 
@@ -130,18 +141,18 @@
           <div class="form-group" id="attached_letters" v-if="attached_letters">
             <label>{{ translations.Letters }}</label>
             <multiselect
-                v-model="selectedLetterAttachments"
-                label="value"
-                track-by="id"
-                :options="attached_letters"
-                :multiple="true"
-                :taggable="true"
-                select-label=""
-                selected-label=""
-                deselect-label=""
-                :placeholder="translations.LettersPlaceHolder"
-                :close-on-select="false"
-                :clear-on-select="false"
+              v-model="selectedLetterAttachments"
+              label="value"
+              track-by="id"
+              :options="attached_letters"
+              :multiple="true"
+              :taggable="true"
+              select-label=""
+              selected-label=""
+              deselect-label=""
+              :placeholder="translations.LettersPlaceHolder"
+              :close-on-select="false"
+              :clear-on-select="false"
             ></multiselect>
           </div>
 
@@ -226,7 +237,6 @@
                 <option value="5">{{translations.Administrators}}</option>
                 <option value="6">{{translations.Evaluators}}</option>
                 <option value="1000">{{translations.Candidates}}</option>
-<!--                <option value="0">{{translations.DefinedUsers}}</option>-->
               </select>
               <p v-if="errors.trigger.target" class="error">
                 <span class="error">{{translations.TargetRequired}}</span>
@@ -302,12 +312,10 @@ export default {
     Multiselect
   },
 
-  props: {
-    email: Number,
-    actualLanguage: String
-  },
-
   data: () => ({
+    email: 0,
+    actualLanguage: '',
+
     langue: 0,
 
     dynamicComponent: false,
@@ -374,7 +382,6 @@ export default {
       CandidateAttachmentsPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS"),
     },
 
-
     categories: [],
     programs: [],
     status: [],
@@ -432,12 +439,89 @@ export default {
     action_tags: [],
     candidate_attachments: [],
   }),
+  created() {
+    this.$parent.loading = true;
 
+    this.getAllAttachments();
+    this.getAllTags();
+    this.getAllDocumentLetter();
+
+    this.actualLanguage = global.getters.actualLanguage;
+
+    axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
+      .then(rep => {
+        this.categories = rep.data.data;
+        this.email = global.getters.datas.email.value;
+        if (typeof this.email !== 'undefined' && this.email !== 0 && this.email !== '') {
+          this.getEmailById(this.email);
+        } else {
+          this.dynamicComponent = true;
+          this.$parent.loading = false;
+        }
+      }).catch(e => {
+        console.log(e);
+      });
+    setTimeout(() => {
+      this.enableVariablesTip();
+    },2000);
+    this.getProgramsList();
+    this.getStatus();
+    this.getUsers();
+  },
+  mounted() {
+    if (this.actualLanguage === "en") {
+      this.langue = 1;
+    }
+  },
   methods: {
+    getEmailById() {
+      axios.get(`index.php?option=com_emundus_onboard&controller=email&task=getemailbyid&id=${this.email}`)
+      .then((resp) => {
+        if (resp.data.data === false || resp.data.status == 0) {
+          this.runError(undefined, resp.data.msg);
+          return;
+        }
+
+        this.form = resp.data.data.email;
+        this.dynamicComponent = true;
+
+        this.selectedLetterAttachments = resp.data.data.letter_attachment ? resp.data.data.letter_attachment : [];
+        this.selectedCandidateAttachments = resp.data.data.candidate_attachment ? resp.data.data.candidate_attachment : [];
+        this.selectedTags = resp.data.data.tags ? resp.data.data.tags : [];
+
+        if (resp.data.data.receivers !== null && resp.data.data.receivers !== undefined && resp.data.data.receivers !== "") {
+          this.setEmailReceivers(resp.data.data.receivers);
+        }
+        this.$parent.loading = false;
+      }).catch(e => {
+        console.log(e);
+        this.runError(undefined, e.data.msg);
+      });
+    },
+    setEmailReceivers(receivers) {
+      let receiver_cc = [];
+      let receiver_bcc = [];
+      for (let index = 0; index < receivers.length; index++) {
+        receiver_cc[index] = {};
+        receiver_bcc[index] = {};
+        if (receivers[index].type === 'receiver_cc_email' || receivers[index].type === 'receiver_cc_fabrik') {
+          receiver_cc[index]['id'] = receivers[index].id;
+          receiver_cc[index]['email'] = receivers[index].receivers;
+        } else if (receivers[index].type === 'receiver_bcc_email' || receivers[index].type === 'receiver_bcc_fabrik') {
+          receiver_bcc[index]['id'] = receivers[index].id;
+          receiver_bcc[index]['email'] = receivers[index].receivers;
+        }
+      }
+
+      const cc_filtered = receiver_cc.filter(el => { return el['id'] !== null && el['id'] !== undefined; })
+      const bcc_filtered = receiver_bcc.filter(el => { return el['id'] !== null && el['id'] !== undefined; })
+
+      this.selectedReceiversCC = cc_filtered;
+      this.selectedReceiversBCC = bcc_filtered;
+    },
     displayAdvanced() {
       this.displayAdvancedParameters = !this.displayAdvancedParameters;
     },
-
     addNewCC (newCC) {
       const tag = {
         email: newCC,
@@ -540,28 +624,32 @@ export default {
         }
       };
 
-      if(this.form.subject == ""){
+      if (this.form.subject == ""){
         this.errors.subject = true;
         return 0;
       }
-      if(this.form.message == ""){
+
+      if (this.form.message == ""){
         this.errors.message = true;
         return 0;
       }
-      if(this.trigger.program != null){
-        if(this.trigger.action_status == null){
+
+      if (this.trigger.program != null) {
+        if (this.trigger.action_status == null) {
           this.errors.trigger.action_status = true;
           return 0;
         }
-        if(this.trigger.status == null){
+
+        if (this.trigger.status == null) {
           this.errors.trigger.status = true;
           return 0;
         }
-        if(this.trigger.target == null){
+
+        if (this.trigger.target == null) {
           this.errors.trigger.target = true;
           return 0;
         } else if (this.trigger.target == 0) {
-          if(this.selectedUsers.length === 0) {
+          if (this.selectedUsers.length === 0) {
             this.errors.trigger.selectedUsers = true;
             return 0;
           }
@@ -716,95 +804,6 @@ export default {
       })
     },
   },
-
-  created() {
-    this.$parent.loading = true;
-
-    this.getAllAttachments();
-    //this.getAllUsers();
-    this.getAllTags();
-    this.getAllDocumentLetter();
-
-    this.$props.actualLanguage = global.getters.actualLanguage;
-
-    axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
-      .then(rep => {
-        this.categories = rep.data.data;
-        this.$props.email = global.getters.datas.email.value;
-        if (typeof this.$props.email !== 'undefined' && this.$props.email !== '') {
-          axios.get(`index.php?option=com_emundus_onboard&controller=email&task=getemailbyid&id=${this.email}`)
-            .then(resp => {
-              this.form = resp.data.data.email;
-              this.dynamicComponent = true;
-
-              // get attached letters
-              if(resp.data.data.letter_attachment) {
-                this.selectedLetterAttachments = resp.data.data.letter_attachment;
-              }
-
-              // get attached candidate attachments
-              if(resp.data.data.candidate_attachment) {
-                this.selectedCandidateAttachments = resp.data.data.candidate_attachment;
-              }
-
-              // get attached tags
-              if(resp.data.data.tags) {
-                this.selectedTags = resp.data.data.tags;
-              }
-
-              /// get receivers (cc and bcc)
-              if(resp.data.data.receivers !== null && resp.data.data.receivers !== undefined && resp.data.data.receivers !== "") {
-                let receiver_cc = [];
-                let receiver_bcc = [];
-
-                let receivers = resp.data.data.receivers;
-
-                for (let index = 0; index < receivers.length; index++) {
-                  receiver_cc[index] = {};
-                  receiver_bcc[index] = {};
-
-                  if (receivers[index].type === 'receiver_cc_email' || receivers[index].type === 'receiver_cc_fabrik') {
-                    receiver_cc[index]['id'] = receivers[index].id;
-                    receiver_cc[index]['email'] = receivers[index].receivers;
-                  } else if (receivers[index].type === 'receiver_bcc_email' || receivers[index].type === 'receiver_bcc_fabrik') {
-                    receiver_bcc[index]['id'] = receivers[index].id;
-                    receiver_bcc[index]['email'] = receivers[index].receivers;
-                  }
-                }
-
-                const cc_filtered = receiver_cc.filter(el => { return el['id'] !== null && el['id'] !== undefined; })
-
-                const bcc_filtered = receiver_bcc.filter(el => { return el['id'] !== null && el['id'] !== undefined; })
-
-                this.selectedReceiversCC = cc_filtered;
-                this.selectedReceiversBCC = bcc_filtered;
-              }
-              this.$parent.loading = false;
-            }).catch(e => {
-              console.log(e);
-              this.runError(undefined,e.data.msg);
-            });
-
-        } else {
-          this.dynamicComponent = true;
-          this.$parent.loading = false;
-        }
-      }).catch(e => {
-        console.log(e);
-      });
-    setTimeout(() => {
-      this.enableVariablesTip();
-    },2000);
-    this.getProgramsList();
-    this.getStatus();
-    this.getUsers();
-  },
-
-  mounted() {
-    if (this.actualLanguage === "en") {
-      this.langue = 1;
-    }
-  }
 };
 </script>
 
