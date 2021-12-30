@@ -107,7 +107,7 @@ $user = $this->userid;
             type: 'post',
             url: 'index.php?option=com_emundus&controller=application&task=getform',
             dataType: 'json',
-            data: { profile: profile, user: $('#user_hidden').attr('value'), $fnum: $('#fnum_hidden').attr('value') },
+            data: { profile: profile, user: $('#user_hidden').attr('value'), fnum: $('#fnum_hidden').attr('value') },
             success: function(result) {
                 var form = result.data;
 
