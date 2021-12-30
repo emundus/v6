@@ -1595,12 +1595,22 @@ textarea {
   align-items: center;
   justify-content: center;
 }
+
+.filters-menu-campaign {
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 0 30px;
+}
+
 .filters-menu{
   width: auto;
   display: flex;
   align-items: center;
   justify-content: end;
 }
+
 .filter-subtitle {
   font-size: 14px;
   font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif !important;

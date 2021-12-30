@@ -69,6 +69,10 @@ export default {
     data: Object,
     selectItem: Function,
     actions: Object,
+    programFilter: {
+      type: String,
+      required: false,
+    },
   },
   data() {
     return {

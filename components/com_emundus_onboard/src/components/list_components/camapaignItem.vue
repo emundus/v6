@@ -21,6 +21,8 @@
               }}
             </div>
             <p class="description-block" v-html="data.short_description"></p>
+            <p class="description-block" v-if="programFilter =='all'">{{Programme}}: {{data.program_label}}</p>
+
             <div class="d-flex">
               <div :class="isPublished ? 'publishedTag' : isFinish ? 'passeeTag' : 'unpublishedTag'">
                 {{ isPublished ? publishedTag : isFinish ? passeeTag : unpublishedTag }}
@@ -28,6 +30,7 @@
               <div class="nb-dossier">
                 <div>{{ data.nb_files }} <span v-if="data.nb_files > 1">{{ Files }}</span><span v-else>{{ File }}</span></div>
               </div>
+
             </div>
             <div>
               <hr class="divider-card">
@@ -75,6 +78,10 @@ export default {
     data: Object,
     selectItem: Function,
     actions: Object,
+    programFilter: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -84,6 +91,7 @@ export default {
       passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
       Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
       Visualize: Joomla.JText._("COM_EMUNDUS_ONBOARD_VISUALIZE"),
+      Programme: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
       From: Joomla.JText._("COM_EMUNDUS_ONBOARD_FROM"),
       To: Joomla.JText._("COM_EMUNDUS_ONBOARD_TO"),
       Since: Joomla.JText._("COM_EMUNDUS_ONBOARD_SINCE"),
@@ -93,7 +101,6 @@ export default {
       File: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE")
     };
   },
-
   methods: {
     updateLoading(value){
       this.$emit('updateLoading',value);

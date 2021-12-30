@@ -79,8 +79,9 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
 	        $recherche = $jinput->getString('recherche');
 	        $lim = $jinput->getInt('lim');
 	        $page = $jinput->getInt('page');
+            $program=$jinput->getString('program');
 
-            $campaigns = $m_camp->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page);
+            $campaigns = $m_camp->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page,$program);
 
             if (count($campaigns) > 0) {
                 $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns);
