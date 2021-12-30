@@ -2,9 +2,9 @@
 	<div class="list-bloc-item">
 		<div class="title">
 			<h3>{{ title }}</h3>
-		</div>
-
-		<div class="dates">
+			<div class="dates">
+				{{ translations.from }} <span>{{ formatDate(data.start_date) }}</span> {{ translations.to }} <span>{{ formatDate(data.end_date) }}</span>
+			</div>
 		</div>
 
 		<div class="informations">
@@ -70,7 +70,14 @@
 			</div>
 		</div>
 
-		<div class="actions">
+		<hr width="100%">
+
+		<div class="actions"
+			:class="{
+				'not-published': isPublished === false || isActive === false,
+				'finished': isFinished
+			}"
+		>
 			<a 
 				@click="redirectToEditItem" 
 				class="edit bouton-ajouter pointer add-button-div"> 
@@ -130,7 +137,9 @@ export default {
 					2: "Modèle",
 				},
 				campaignAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED"),
-        campaignsAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED")
+        campaignsAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED"),
+				from: Joomla.JText._("COM_EMUNDUS_ONBOARD_FROM"),
+				to: Joomla.JText._("COM_EMUNDUS_ONBOARD_TO"),
 			},
 			campaign: {
 				associatedCampaigns: null
@@ -214,6 +223,9 @@ export default {
 		updateLoading(value) {
       this.$emit('updateLoading',value);
     },
+		formatDate(date) {
+			return moment(date).format('DD/MM/YYYY');
+		},
 	},
 	computed: {
 		isPublished() {
@@ -276,13 +288,20 @@ export default {
 	box-sizing: border-box;
 	border-radius: 4px;
 
-	.title h3 {
-		font-size: 18px;
-		font-weight: 800;
-		line-height: 23px;
-		color: #080C12;
-		margin-bottom: 8px;
+	.title {
+    margin-bottom: 16px;
 
+		h3 {
+			font-size: 18px;
+			font-weight: 800;
+			line-height: 23px;
+			color: #080C12;
+			margin-bottom: 8px;
+		}
+
+		.dates {
+			font-size: 12px;
+		}
 	}
 
 	p {
@@ -341,6 +360,23 @@ export default {
 		justify-content: space-between;
 		align-items: center;
 		width: 100%;
+
+		&.finished {
+			pointer-events: none;
+			opacity: 0.3;
+
+			a, div {
+				cursor: not-allowed !important;
+			}
+		}
+
+		&.not-published {
+			a {
+				pointer-events: none;
+				opacity: 0.3;
+				cursor: not-allowed !important;
+			}
+		}
 	}
 }
 

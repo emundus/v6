@@ -945,10 +945,10 @@ input[type="reset"] {
 }
 .bouton-ajouter {
   position: relative;
-  padding: 5px 30px;
-  border-radius: 25px;
-  border: solid 2px $dark-blue;
-  background-color: $dark-blue;
+  padding: 6px 14px;
+  border-radius: 4px;
+  background-color: #298721;
+  border: 1px solid #298721;
   -webkit-transition: color 200ms ease, background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
   transition: color 200ms ease, background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
   color: white;
@@ -958,10 +958,11 @@ input[type="reset"] {
   align-items: center;
   font-size: 14px;
   font-weight: 500;
+
   &:hover{
     cursor: pointer;
     background-color: transparent;
-    color: $dark-blue;
+    color: #298721;
   }
   .fa-pen{
     margin-right: 10px;
@@ -970,17 +971,20 @@ input[type="reset"] {
 .bouton-ajouter-green{
   border: solid 2px $dark-green;
   background-color: $dark-green;
+
   &:hover{
     cursor: pointer;
     background-color: transparent;
     color: $dark-green;
   }
 }
+
 .bouton-ajouter span{
   &:hover{
-    color: $dark-blue;
+    color: #298721;
   }
 }
+
 .card-button{
   background: url("../images/icons/options.svg") no-repeat;
   width: 30px;
@@ -1534,9 +1538,10 @@ textarea {
 }
 .searchTerm {
   width: 100%;
+  font-size: 14px !important;
   border: 2px solid $dark-blue;
   border-right: none;
-  padding: 5px;
+  padding: 8px 36px 8px 8px !important;
   border-radius: 5px 0 0 5px;
   outline: none;
   color: #9DBFAF;
@@ -1544,11 +1549,13 @@ textarea {
   height: 30px;
   position: relative;
   margin-bottom: 0 !important;
+  
   &:focus {
     border-color: $dark-blue !important;
     box-shadow: unset !important;
   }
 }
+
 .searchButton {
   width: 40px;
   height: 50px;
@@ -1601,7 +1608,7 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 0 0 0 30px;
+  margin: 0;
 }
 
 .filters-menu{

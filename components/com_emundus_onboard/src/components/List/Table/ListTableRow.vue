@@ -1,5 +1,5 @@
 <template>
-	<tr>
+	<tr class="list-row">
 		<td v-for="itemValue in item" :key="itemValue.value">
 			<span v-if="itemValue.value && itemValue.value != 'actions'" :class="itemValue.class"> {{ itemValue.label }} </span>
 			<span v-if="itemValue.value == 'actions'"> 

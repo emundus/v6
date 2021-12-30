@@ -88,13 +88,12 @@ export default {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 20px;
+		margin: 20px 0;
 	
 		.view-type {
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			margin-right: 20px;
 			
 			span {
 				margin-left: 10px;
