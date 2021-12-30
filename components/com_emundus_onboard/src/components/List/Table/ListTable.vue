@@ -1,27 +1,32 @@
 <template>
 	<div id="list-table">
 		<table :aria-describedby="'Table of ' + type" v-if="!isEmptyRowsData">
-			<list-table-head :ths="rowsData"></list-table-head>
-			<list-table-rows 
-				:items="items"
-				@validateFilters="validateFilters"
-				@updateLoading="updateLoading"
-			>
-			</list-table-rows>
+		<thead class="list-table-head">
+			<tr>
+				<th v-for="th in rowsData" :key="th.value" :id="th.value"> 
+					{{ th.label }}
+				</th>
+			</tr>
+		</thead>
+		<list-table-body
+			:type="type"
+			:actions="actions"
+		></list-table-body>
 		</table>
 		<p v-if="isEmptyRowsData">Unable to create table...</p>
 	</div>
 </template>
 
 <script>
-import ListTableRows from './ListTableRows.vue'
-import ListTableHead from './ListTableHead.vue'
+import ListTableBody from './ListTableBody.vue'
 import { list } from '../../../store/store'
 import rows from '../../../data/tableRows'
 import moment from 'moment'
 
 export default {
-	components: { ListTableHead, ListTableRows },
+	components: {
+		ListTableBody 
+	},
 	props: {
 		type: {
 			type: String,
@@ -228,6 +233,13 @@ export default {
 	table {
 		border-left: 0;
   	border-right: 0;
+	}
+	.list-table-head {
+		tr th {
+			font-size: 14px;
+			padding: 0.85rem 0.5rem;
+			background-color: transparent;
+		}
 	}
 }
 </style>

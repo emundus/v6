@@ -70,7 +70,7 @@
 			</div>
 		</div>
 
-		<hr width="100%">
+		<hr>
 
 		<div class="actions"
 			:class="{
@@ -291,6 +291,10 @@ export default {
 	border: 1px solid #E3E5E8;
 	box-sizing: border-box;
 	border-radius: 4px;
+
+	hr {
+		width: 100%;
+	}
 
 	.title {
     margin-bottom: 16px;

@@ -1,12 +1,19 @@
 <template>
 	<tr class="list-row">
-		<td v-for="itemValue in item" :key="itemValue.value">
-			<span v-if="itemValue.value && itemValue.value != 'actions'" :class="itemValue.class"> {{ itemValue.label }} </span>
-			<span v-if="itemValue.value == 'actions'"> 
+		<td v-for="td in tds" :key="td.value">
+			<span 
+				v-if="td.value !== 'actions'" 
+				:class="classFromTd(td)" 
+			>
+				{{ dataValueFromTd(td) }}
+			</span>
+			<span v-if="td.value == 'actions'"> 
 				<list-action-menu
-					:type="itemValue.label.type"
-					:itemId="itemValue.id"
+					id="list-row action-menu"
+					:type="type"
+					:itemId="data.id"
 					:isPublished="isPublished"
+					:showTootlip="hasActionMenu"
 					@validateFilters="validateFilters"
 					@updateLoading="updateLoading"
 				></list-action-menu>
@@ -18,16 +25,71 @@
 <script>
 import ListActionMenu from '../ListActionMenu.vue';
 import moment from "moment";
+import rows from '../../../data/tableRows'
 
 export default {
 	components: { ListActionMenu },
 	props: {
-		item: {
-			type: Array,
+		data: {
+			type: Object,
 			required: true
+		},
+		type: {
+			type: String,
+			required: true
+		},
+	},
+	data() {
+		return {
+			tds: [],
+			translations: {
+				finished: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
+				published: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
+				unpublished: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
+			}
 		}
 	},
+	mounted() {
+		this.tds = typeof rows[this.type] !== undefined ? rows[this.type] : [];	
+	},
 	methods: {
+		dataValueFromTd(td) {
+			if (this.type === 'campaign') {
+				switch(td.value) {
+					case 'status':
+						if(this.isFinished) {
+							return this.translations.finished;
+						} else if(this.isPublished) {
+							return this.translations.published;
+						} else {
+							return this.translations.unpublished;
+						}
+					case 'start_date':
+					case 'end_date':
+						return moment(this.data[td.value]).format('DD/MM/YYYY');
+					default: 
+						return this.data[td.value] ? this.data[td.value] : '-';
+				}
+			} else {
+				return this.data[td.value] ? this.data[td.value] : '-';
+			}
+		},
+		classFromTd(td) {
+			let classes;
+			switch(td.value) {
+				case 'status': 
+					if(this.isFinished) {
+						classes = "tag finished";
+					} else if(this.isPublished) {
+						classes = "tag published";
+					} else {
+						classes = "tag unpublished";
+					}
+				break;
+			}
+
+			return classes;
+		},
 		validateFilters() {
       this.$emit('validateFilters');
     },
@@ -37,27 +99,47 @@ export default {
 	},
 	computed: {
 		isPublished() {
-			let published = false;
+			if (this.type == "campaign") {
+				return (
+      	  this.data.published == 1 &&
+      	  moment(this.data.start_date) <= moment() &&
+      	  (moment(this.data.end_date) >= moment() ||
+      	    this.data.end_date == null ||
+      	    this.data.end_date == "0000-00-00 00:00:00")
+      	);
+			} else if (this.type == "email") {
+				return this.data.published == 1 ? true : false;
+			}
 
-			this.item.forEach(element => {
-				if (element.value == "published" || element.value == "status") {
-					published = element.data == 1 ? true : false;
-				}
-			});
+			return null;
+		},
+		isActive() {
+			if (this.type == "form" || this.type == "formulaire" || this.type == "grilleEval") {
+				return this.data.published == 1;
+			}
 
-			return !this.isFinished && published;
+			return null;
 		},
 		isFinished() {
-			let finished = false;
+			if (this.type == "campaign") {
+				return moment(this.data.end_date) < moment();
+			}
 
-			this.item.forEach(element => {
-				if (element.value == "end_date") {
-					finished = moment(element.data).isBefore(moment());
-				}
-			});
-
-			return finished;
+			return false;
 		},
+		hasActionMenu() {
+			let hasActionMenu = true;
+
+			if (this.type == "email") {
+				if (this.data.lbl.startsWith('custom_') === false && this.data.lbl.startsWith('email_') === false) {
+					hasActionMenu = false;
+				}
+			} else if (this.type == "grilleEval") {
+				hasActionMenu = false;
+			}
+
+			return hasActionMenu;
+		}
 	}
 }
 </script>

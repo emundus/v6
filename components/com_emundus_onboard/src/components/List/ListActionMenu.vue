@@ -77,11 +77,14 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
-	margin-top: 1rem;
-	margin-bottom: 1rem;
 
 	.cta-block:hover {
 		color: #298721;
+	}
+
+	&#list-row#action-menu {
+		margin: 0;
+		transform: rotate(90deg);
 	}
 }
 </style>

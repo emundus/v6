@@ -5,3 +5,4 @@
 
 #Fields: datetime	priority clientip	category	message
 2021-12-28T11:21:31+00:00	INFO ::1	joomlafailure	Le nom d'utilisateur ne correspond pas au mot de passe, ou vous n'avez pas encore de compte.
+2021-12-30T13:38:02+00:00	INFO ::1	joomlafailure	Le nom d'utilisateur ne correspond pas au mot de passe, ou vous n'avez pas encore de compte.
