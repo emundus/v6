@@ -30,10 +30,11 @@
       <div class="search-container">
         <div class="search">
           <input class="searchTerm"
-                 :placeholder="translations.Rechercher"
-                 v-model="recherche"
-                 @keyup="cherche(recherche) || debounce"
-                 @keyup.enter="chercheGo(recherche)"/>
+            :placeholder="translations.Rechercher"
+            v-model="recherche"
+            @keyup="cherche(recherche) || debounce"
+            @keyup.enter="chercheGo(recherche)"
+          />
         </div>
         <v-popover :popoverArrowClass="'custom-popover-arrow'">
           <button class="tooltip-target b3 card-button"></button>
@@ -77,15 +78,6 @@
       </li>
     </ul>
 
-    <ul class="form-section email-sections" v-if="(type == 'campaign')  && !loading ">
-      <li>
-        <a class="" href="javascript:void(0);">{{ translations.programs }} : </a>
-      </li>
-      <li>
-        <a class="form-section__current">{{ selectedProgramLabel }}</a>
-      </li>
-    </ul>
-
     <transition :name="'slide-down'" type="transition">
       <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">
         <ul class="pagination" v-if="total > 0">
@@ -104,10 +96,7 @@
             <a @click="nbpages(index)"
                class="pagination-number"
                :class="index == pages ? 'current-number' : ''">
-              {{ countPages > 10 ? index < 4 || index > countPages - 3 || (index > pages - 3 && index < pages + 3)
-                    ? index
-                    : "..."
-                : index }}
+               {{ paginationNumber(index) }}
             </a>
           </li>
           <a @click="nbpages(pages + 1)" class="pagination-arrow arrow-right">
@@ -132,30 +121,24 @@
             <em class="fas fa-chevron-left"></em>
           </a>
           <li
-              v-show="
+            v-for="index in countPages"
+            v-show="
               countPages <= 10 ||
-                index < 4 ||
-                index > countPages - 3 ||
-                (index > pages - 3 && index < pages + 3) ||
-                index == pages - 3 ||
-                index == pages + 3
-            "
-              v-for="index in countPages"
-              :key="index"
-              class="pagination-number"
+              index < 4 ||
+              index > countPages - 3 ||
+              (index > pages - 3 && index < pages + 3) ||
+              index == pages - 3 ||
+              index == pages + 3"
+            :key="index"
+            class="pagination-number"
           >
             <a
-                @click="nbpages(index)"
-                class="pagination-number"
-                :class="index == pages ? 'current-number' : ''"
-            >{{
-              countPages > 10
-                  ? index < 4 || index > countPages - 3 || (index > pages - 3 && index < pages + 3)
-                      ? index
-                      : "..."
-                  : index
-              }}</a
+              @click="nbpages(index)"
+              class="pagination-number"
+              :class="index == pages ? 'current-number' : ''"
             >
+              {{ paginationNumber }}
+            </a>
           </li>
           <a @click="nbpages(pages + 1)" class="pagination-arrow arrow-right">
             <em class="fas fa-chevron-right"></em>
@@ -165,17 +148,7 @@
     </div>
 
     <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">
-      {{
-        this.type === "campaign"
-          ? translations.noCampaign
-          : this.type === "program"
-          ? translations.noProgram
-          : this.type === "email"
-          ? translations.noEmail
-          : this.type === "formulaire"
-          ? translations.noForm
-          : translations.noFiles
-      }}
+      {{ noneDiscoverTranslation }}
     </div>
     <div class="loading-form" v-if="loading">
       <RingLoader :color="'#12DB42'"/>
@@ -185,40 +158,17 @@
 
 <script>
 import axios from "axios";
-import program from "../components/list_components/programItem";
-import campaign from "../components/list_components/camapaignItem";
-import email from "../components/list_components/emailItem";
-import grilleEval from "../components/list_components/evalgridItem"
-import formulaire from "../components/list_components/formItem";
-import files from "../components/list_components/files";
 import filters from "../components/list_components/filters_menu";
 import ListHead from "../components/List/ListHead.vue";
 import ListBody from "../components/List/ListBody.vue";
 import { list } from "../store/store";
 import { global } from "../store/global";
 
-// import "../assets/css/normalize.css";
-// import "../assets/css/emundus-webflow.scss";
-// import "../assets/css/bootstrap.css";
-// import "../assets/css/codemirror.css";
-// import "../assets/css/codemirror.min.css";
-// import "../assets/css/views_emails.css";
-// import "../assets/css/date-time.css";
-
-// import "@fortawesome/fontawesome-free/css/all.css";
-// import "@fortawesome/fontawesome-free/js/all.js";
-
 export default {
   components: {
-    program,
-    campaign,
-    email,
-    formulaire,
-    files,
     filters,
     ListHead,
     ListBody,
-    grilleEval
   },
 
   name: "list",
@@ -280,20 +230,23 @@ export default {
     list() {
       return list.getters.list;
     },
-
     isEmpty: () => {
       return list.getters.isSomething;
     },
-
-    selectedProgramLabel() {
-      if (this.selectedProgram === "all") {
-        return this.translations.All;
+    noneDiscoverTranslation() {
+      if (this.type === "campaign") {
+        return this.translations.noCampaign;
+      } else if (this.type === "program") {
+        return this.translations.noProgram;
+      } else if (this.type === "email") {
+        return this.translations.noEmail;
+      } else if (this.type === "formulaire") {
+        return this.translations.noForm;
       } else {
-        return this.allPrograms.find(p => p.code === this.selectedProgram).label;
+        return this.translations.noFiles;
       }
     }
   },
-
   created() {
     this.datas = global.getters.datas;
     this.type = this.datas.type.value;
@@ -362,14 +315,14 @@ export default {
       this.updateLoading(true);
       this.filtersCount = this.filtersCountFilter + this.filtersCountSearch;
       this.filters =
-          this.filtersFilter +
-          this.filtersSort +
-          this.filtersSearch +
-          this.filtersLim +
-          this.filtersPage +
-          "&program=" + this.selectedProgram;
+        this.filtersFilter +
+        this.filtersSort +
+        this.filtersSearch +
+        this.filtersLim +
+        this.filtersPage +
+        "&program=" + this.selectedProgram;
 
-      this.allFilters(this.filtersCount, this.filters);
+      this.allFilters();
     },
 
     filter(filter) {
@@ -416,32 +369,41 @@ export default {
         this.validateFilters();
       }
     },
-
-    allFilters(filtersCount, filters) {
+    paginationNumber(index) {
+      if (this.countPages > 10) {
+        return index < 4 || index > this.countPages - 3 || (index > pages - 3 && index < pages + 3) ? index : "...";
+      } 
+      
+      return index;
+    },
+    allFilters() {
       let controller = this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd
       if (this.type !== "files") {
         axios.get("index.php?option=com_emundus_onboard&controller=" +
-            controller +
-            "&task=get" +
-            this.typeForAdd +
-            "count" +
-            filtersCount
+          controller +
+          "&task=get" +
+          this.typeForAdd +
+          "count" +
+          this.filtersCount
         ).then(response => {
           axios.get(
-              "index.php?option=com_emundus_onboard&controller=" +
-              controller +
-              "&task=getall" +
-              this.typeForAdd +
-              filters
+            "index.php?option=com_emundus_onboard&controller=" +
+            controller +
+            "&task=getall" +
+            this.typeForAdd +
+            this.filters
           ).then(rep => {
             this.total = response.data.data;
             list.commit("listUpdate", rep.data.data);
+
             this.countPages = Math.ceil(this.total / this.limit);
             if (this.type == 'email') {
+
               axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
-                  .then(catrep => {
-                    this.email_categories = catrep.data.data;
-                  });
+              .then(catrep => {
+                this.email_categories = catrep.data.data;
+              });
+
             }
             this.loading = false;
           }).catch(e => {
