@@ -47,6 +47,10 @@ export default {
 				finished: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
 				published: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
 				unpublished: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
+				emailType: {
+					1: "Système",
+					2: "Modèle",
+				},
 			}
 		}
 	},
@@ -71,6 +75,21 @@ export default {
 					default: 
 						return this.data[td.value] ? this.data[td.value] : '-';
 				}
+
+			} else if (this.type === 'email') {
+				switch(td.value) {
+					case 'type':
+						return this.translations.emailType[this.data[td.value]];
+
+					case 'published': 
+						if (this.isPublished) {
+							return this.translations.published;
+						} else {
+							return this.translations.unpublished;
+						}				
+					default:
+						return this.data[td.value] ? this.data[td.value] : '-';
+				}
 			} else {
 				return this.data[td.value] ? this.data[td.value] : '-';
 			}
@@ -79,13 +98,18 @@ export default {
 			let classes;
 			switch(td.value) {
 				case 'status': 
-					if(this.isFinished) {
+				case 'published':
+					if (this.isFinished) {
 						classes = "tag finished";
 					} else if(this.isPublished) {
 						classes = "tag published";
 					} else {
 						classes = "tag unpublished";
 					}
+				break;
+
+				case 'type': 
+					classes = "tag " + this.data[td.value];
 				break;
 			}
 

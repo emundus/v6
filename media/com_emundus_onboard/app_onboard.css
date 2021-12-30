@@ -932,12 +932,12 @@ textarea.w-input {
   cursor: pointer;
   padding: 5px 30px;
   border-radius: 25px;
-  border: solid 2px #12DB42;
-  color: #12DB42;
+  border: solid 2px #20835F;
+  color: #20835F;
 }
 
 .MenuFormItemHome:not(.MenuFormItemHome_current):hover {
-  background-color: #12DB42;
+  background-color: #20835F;
   color: white;
   text-decoration: none;
 }
@@ -945,8 +945,8 @@ textarea.w-input {
 .MenuFormItemHome_current {
   color: white;
   cursor: pointer;
-  background-color: #12DB42;
-  border: solid 2px #12DB42;
+  background-color: #20835F;
+  border: solid 2px #20835F;
   border-radius: 25px;
 }
 
@@ -989,14 +989,14 @@ textarea.w-input {
 }
 
 .bouton-sauvergarder-et-continuer-green {
-  border: solid 2px #12DB42;
+  border: solid 2px #20835F;
   color: white;
-  background-color: #12DB42;
+  background-color: #20835F;
 }
 .bouton-sauvergarder-et-continuer-green:hover {
   cursor: pointer;
   background-color: transparent;
-  color: #12DB42;
+  color: #20835F;
 }
 
 .bouton-sauvergarder-et-continuer-3 {
@@ -1194,11 +1194,11 @@ input[type=reset] {
   cursor: pointer;
 }
 .menu-item:hover {
-  color: #12DB42;
+  color: #20835F;
 }
 
 .w--current {
-  color: #12DB42;
+  color: #20835F;
 }
 
 .container-menu-funnel {
@@ -1511,8 +1511,8 @@ input[type=reset] {
   position: relative;
   padding: 6px 14px;
   border-radius: 4px;
-  background-color: #298721;
-  border: 1px solid #298721;
+  background-color: #20835F;
+  border: 1px solid #20835F;
   -webkit-transition: color 200ms ease, background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
   transition: color 200ms ease, background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
   color: white;
@@ -1530,20 +1530,20 @@ input[type=reset] {
 .bouton-ajouter:hover {
   cursor: pointer;
   background-color: transparent;
-  color: #298721 !important;
+  color: #20835F !important;
 }
 .bouton-ajouter .fa-pen {
   margin-right: 10px;
 }
 
 .bouton-ajouter-green {
-  border: solid 2px #12DB42;
-  background-color: #12DB42;
+  border: solid 2px #20835F;
+  background-color: #20835F;
 }
 .bouton-ajouter-green:hover {
   cursor: pointer;
   background-color: transparent;
-  color: #12DB42;
+  color: #20835F;
 }
 
 .bouton-ajouter span:hover {
@@ -2484,12 +2484,12 @@ textarea {
   font-size: 14px;
 }
 .MenuFormItem:not(.MenuFormItem_current):hover {
-  color: #12DB42;
+  color: #20835F;
   text-decoration: none;
 }
 
 .MenuFormItem_current {
-  color: #12DB42;
+  color: #20835F;
   cursor: pointer;
 }
 .MenuFormItem_current:after {
@@ -2503,7 +2503,7 @@ textarea {
 
 .MenuFormItem.MenuFormItem_current:hover {
   text-decoration: none;
-  color: #12DB42;
+  color: #20835F;
 }
 
 .menus-row {
@@ -3245,7 +3245,7 @@ textarea {
 }
 
 .text-required {
-  color: #12DB42;
+  color: #20835F;
 }
 
 .form-viewer-builder {
@@ -15943,7 +15943,7 @@ fieldset.radio.btn-group {
 }
 
 .legend {
-  color: #12DB42;
+  color: #20835F;
   font-weight: bold;
   width: auto;
   font-size: 18px;
@@ -16212,7 +16212,7 @@ fieldset {
 }
 
 .fa-check {
-  color: #12DB42;
+  color: #20835F;
 }
 
 .fa-times {
