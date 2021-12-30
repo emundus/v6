@@ -2,7 +2,7 @@
 	<div class="list-bloc-item">
 		<div class="title">
 			<h3>{{ title }}</h3>
-			<div class="dates">
+			<div class="dates" v-if="data.start_date && data.end_date">
 				{{ translations.from }} <span>{{ formatDate(data.start_date) }}</span> {{ translations.to }} <span>{{ formatDate(data.end_date) }}</span>
 			</div>
 		</div>
