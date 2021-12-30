@@ -86,12 +86,13 @@
 				</span> 
 			</a>
 			<list-action-menu 
-				v-if="hasActionMenu"
 				:type="type" 
 				:itemId="data.id" 
 				:isPublished="isPublished !== null ? isPublished : false"
+				:showTootlip="hasActionMenu"
 				@validateFilters="validateFilters"
 				@updateLoading="updateLoading"
+				@showModalPreview="showModalPreview"
 			>
 			</list-action-menu>
 		</div>
@@ -223,6 +224,9 @@ export default {
 		updateLoading(value) {
       this.$emit('updateLoading',value);
     },
+		showModalPreview() {
+			this.$emit('showModalPreview');
+		},
 		formatDate(date) {
 			return moment(date).format('DD/MM/YYYY');
 		},

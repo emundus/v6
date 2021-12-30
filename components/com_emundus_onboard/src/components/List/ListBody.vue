@@ -1,5 +1,11 @@
 <template>
 <div id="list-body">
+	<ModalEmailPreview
+		v-if="type == 'email'"
+    :model="email.emailToPreview"
+    :models="list"
+  />
+
 	<div id="actions">
 		<div class="filters">
 
@@ -29,6 +35,7 @@
 		:actions="actions"
 		@validateFilters="validateFilters"
 		@updateLoading="updateLoading"
+		@showModalPreview="showModalPreview"
 	>
 	</list-blocs>
 </div>
@@ -37,11 +44,14 @@
 <script>
 import ListTable from './Table/ListTable.vue';
 import ListBlocs from './Bloc/ListBlocs.vue';
+import ModalEmailPreview from "@/views/advancedModals/ModalEmailPreview";
+import { list } from "../../store/store";
 
 export default {
 	components: {
 		ListTable,
-		ListBlocs
+		ListBlocs,
+		ModalEmailPreview
 	},
 	props: {
 		type: {
@@ -65,7 +75,10 @@ export default {
 					value: 'blocs',
 					icon: 'grid_view'
 				}
-			]
+			],
+			email: {
+				emailToPreview: "-1",
+			}
 		};
 	},
 	methods: {
@@ -77,6 +90,15 @@ export default {
 		},
 		updateLoading(value) {
 			this.$emit('updateLoading',value);
+		},
+		showModalPreview(itemId) {
+			this.email.emailToPreview = itemId;
+			this.$modal.show('modalEmailPreview_' + itemId);
+		}
+	},
+	computed: {
+		list() {
+			return list.getters.list;
 		}
 	}
 }

@@ -13,6 +13,7 @@
 			:actions="actions"
 			@validateFilters="validateFilters"
 			@updateLoading="updateLoading"
+			@showModalPreview="showModalPreview(item.id)"
 		>
 		</list-bloc>
 	</div>
@@ -47,6 +48,9 @@ export default {
 		},
 		updateLoading(value) {
 			this.$emit('updateLoading',value);
+		},
+		showModalPreview(id) {
+			this.$emit('showModalPreview', id)
 		},
 	},
 	computed: {
