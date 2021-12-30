@@ -1,65 +1,22 @@
 <template>
-    <div class="container-evaluation">
-      <ModalUpdateImage
-          @UpdateImage="updateView"
-      />
-      <!-- <div class="form-group d-flex">
-        <div class="toggle">
-          <input type="checkbox"
-                 true-value="1"
-                 false-value="0"
-                 class="check"
-                 id="home_background"
-                 name="home_background"
-                 v-model="enableBackground"
-                 @change="updateBackgroundVisibility"
-          />
-          <strong class="b switch"></strong>
-          <strong class="b track"></strong>
-        </div>
-        <span for="home_background" class="ml-10px">{{ DisplayBackground }}</span>
-      </div>
-      <div class="section-sub-menu col-lg-7 col-sm-12" style="overflow: hidden" v-if="enableBackground == 1">
-        <h2 style="margin: 0">{{Background}}</h2>
-        <div class="d-flex"></div>
-        <img class="logo-settings" :src="backgroundLink" :alt="InsertHeaderImage">
-        <a class="settings-edit-icon cta-block pointer" @click="$modal.show('modalUpdateImage')">
-          <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-        </a>
-      </div>
-      <div class="form-group campaign-label col-lg-7 col-sm-12 mt-2" v-if="enableBackground == 1">
-        <label for="home_title">{{HomeTitle}}</label>
-        <div class="input-can-translate">
-          <input
-              id="home_title"
-              name="home_title"
-              type="text"
-              class="form__input field-general w-input"
-              maxlength="100"
-              v-model="form.label[actualLanguage]"
-              required
-              :class="{'mb-0': translate.label }"
-          />
-          <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" v-if="manyLanguages !== '0'" type="button" @click="enableLabelTranslation"></button>
-&lt;!&ndash;          <input type="color" class="title-color-picker" v-model="titleColor">&ndash;&gt;
-        </div>
-        <translation :label="form.label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
-      </div>-->
-      <div class="col-md-12 mt-2">
+    <div class="em-settings-menu">
+
+      <div class="em-w-80">
         <label class="mb-1">{{HomeContent}}</label>
+
         <ul class="menus-home-row" v-if="manyLanguages !== '0'">
             <li v-for="(value, index) in languages" :key="index" class="MenuFormHome">
                 <a class="MenuFormItemHome"
                    @click="changeTranslation(index)"
-                   :class="indexHighlight == index ? 'MenuFormItemHome_current' : ''">
+                   :class="indexHighlight === index ? 'MenuFormItemHome_current' : ''">
                     {{value}}
                 </a>
             </li>
         </ul>
-        <div class="form-group controls" v-if="indexHighlight == 0 && this.form.content.fr != null">
+        <div class="form-group controls" v-if="indexHighlight === 0 && this.form.content.fr != null">
             <editor :height="'30em'" :text="form.content.fr" :lang="actualLanguage" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="form.content.fr"></editor>
         </div>
-        <div class="form-group controls" v-if="indexHighlight == 1 && this.form.content.en != null">
+        <div class="form-group controls" v-if="indexHighlight === 1 && this.form.content.en != null">
             <editor :height="'30em'" :text="form.content.en" :lang="actualLanguage" :enable_variables="false" :id="'editor_en'" :key="dynamicComponent" v-model="form.content.en"></editor>
         </div>
       </div>

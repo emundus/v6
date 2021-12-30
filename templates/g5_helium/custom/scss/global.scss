@@ -4388,12 +4388,22 @@ input:focus + .em-slider {
   align-items: center;
 }
 
+.em-flex-row-end{
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+}
+
 .em-pointer{
   cursor: pointer;
 }
 
 .em-z-index-10{
   z-index: 10;
+}
+
+.em-h-auto{
+  height: auto !important;
 }
 
 .em-min-height-100{
@@ -4422,6 +4432,10 @@ input:focus + .em-slider {
 
 .em-max-width-1200{
   max-width: 1200px;
+}
+
+.em-w-80{
+  width: 80%;
 }
 
 .em-w-90{
@@ -4769,6 +4783,57 @@ input:focus + .em-slider {
   flex-wrap: wrap;
   justify-content: center;
 }
+
+.em-logo-box{
+  min-width: 100px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: solid 1px $neutral-400;
+  padding: 10px;
+  width: 100px;
+  border-radius: 4px;
+}
+
+/** Vue Modal - Translation tool **/
+.em-modal-header{
+  height: 50px;
+  padding: 12px 24px;
+  box-shadow: inset 0px -1px 0px $neutral-300;
+}
+.em-modal-menu__sidebar{
+  width: 15%;
+  background: #F3F3F3;
+  height: 100%;
+}
+.em-modal-menu__current{
+  background-color: $neutral-400;
+}
+#translationTool {
+  .v--modal-overlay {
+    background: #0000002e !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+
+  .v--modal {
+    width: 100% !important;
+    height: 100% !important;
+    right: 0 !important;
+    left: auto !important;
+    position: fixed !important;
+    box-shadow: unset !important;
+    overflow-y: auto !important;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .v--modal-box{
+    padding: 0;
+  }
+}
+/** **/
 
 /**
   MEDIA QUERIES

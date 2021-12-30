@@ -1,5 +1,7 @@
 <template>
-    <div class="container-evaluation">
+    <div class="em-settings-menu">
+
+      <div class="em-w-80">
         <ul class="menus-home-row">
             <li v-for="(value, index) in columns" :key="index" class="MenuFormHome">
                 <a class="MenuFormItemHome"
@@ -15,6 +17,7 @@
         <div class="form-group controls" v-if="indexHighlight == 1 && this.form.content.col2 != null">
             <editor :height="'30em'" :text="form.content.col2" :lang="actualLanguage" :enable_variables="false" :id="'editor_en'" :key="dynamicComponent" v-model="form.content.col2"></editor>
         </div>
+      </div>
     </div>
 </template>
 

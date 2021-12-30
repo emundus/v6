@@ -1,5 +1,5 @@
 <template>
-    <div class="container-evaluation">
+    <div class="em-settings-menu">
         <ModalAddUser
                 :group="this.group"
                 :coordinatorAccess="1"

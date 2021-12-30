@@ -1,5 +1,5 @@
 <template>
-    <div class="container-evaluation">
+    <div class="em-settings-menu">
         <notifications
                 group="foo-velocity"
                 animation-type="velocity"

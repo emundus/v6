@@ -1,5 +1,5 @@
 <template>
-  <div class="container-evaluation">
+  <div class="em-flex-column">
     <notifications
         group="foo-velocity"
         animation-type="velocity"
@@ -16,35 +16,58 @@
     <ModalUpdateColors
         @UpdateColors="updateColors"
     />
-    <div class="section-sub-menu col-lg-5 mr-2 col-sm-12">
-      <h2 style="margin: 0">Logo</h2>
-      <div class="d-flex"></div>
-      <img class="logo-settings" :src="imageLink" :srcset="'/'+imageLink" :alt="InsertLogo">
-      <a class="settings-edit-icon cta-block pointer" @click="$modal.show('modalUpdateLogo')">
-        <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-      </a>
-    </div>
 
-    <div class="section-sub-menu col-lg-5 col-sm-12">
-      <h2 style="margin: 0">{{Icon}}</h2>
-      <div class="d-flex"></div>
-      <img class="logo-settings" :src="iconLink" :srcset="'/'+iconLink" :alt="InsertIcon">
-      <a class="settings-edit-icon cta-block pointer" style="top: 20px" @click="removeIcon">
-        <em class="fas fa-times" data-toggle="tooltip" data-placement="top"></em>
-      </a>
-      <a class="settings-edit-icon cta-block pointer" @click="$modal.show('modalUpdateIcon')">
-        <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-      </a>
-    </div>
-    <div class="section-sub-menu col-lg-5 col-sm-12 mt-2">
-      <h2 style="margin: 0">{{Colors}}</h2>
-      <div class="d-flex">
-        <div class="color-preset" :style="'background-color:' + primary + ';border-right: 30px solid' + secondary">
+    <div class="em-w-80" style="display:flex; flex-direction: column">
+
+      <!-- LOGO -->
+      <div class="em-h-auto em-flex-row col-md-4 em-mb-32" style="align-items: start">
+        <div class="em-logo-box pointer" @click="$modal.show('modalUpdateLogo')">
+          <img class="logo-settings" :src="imageLink" :srcset="'/'+imageLink" :alt="InsertLogo">
         </div>
-        <a class="settings-edit-icon cta-block pointer" @click="$modal.show('modalUpdateColors')">
-          <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-        </a>
+        <div class="w-100 em-ml-24">
+          <div class="em-flex-row justify-content-between">
+            <h2 style="margin: 0">Logo</h2>
+            <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateLogo')">
+              {{ translate('COM_EMUNDUS_ONBOARD_MODIFY') }}
+            </a>
+          </div>
+        </div>
       </div>
+
+      <!-- FAVICON -->
+      <div class="em-h-auto em-flex-row col-md-4 em-mb-32" style="align-items: start">
+        <div class="em-logo-box pointer" @click="$modal.show('modalUpdateIcon')">
+          <img class="logo-settings" :src="iconLink" :srcset="'/'+iconLink" :alt="InsertIcon">
+        </div>
+        <div class="w-100 em-ml-24">
+          <div class="em-flex-row justify-content-between">
+            <h2 style="margin: 0">{{Icon}}</h2>
+<!--          <a class="settings-edit-icon cta-block pointer" style="top: 20px" @click="removeIcon">
+            <em class="fas fa-times" data-toggle="tooltip" data-placement="top"></em>
+          </a>-->
+            <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateIcon')">
+              {{ translate('COM_EMUNDUS_ONBOARD_MODIFY') }}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLORS -->
+      <div class="em-h-auto em-flex-row col-md-4 em-mb-32" style="align-items: start">
+        <div class="em-logo-box pointer" @click="$modal.show('modalUpdateColors')">
+          <div class="color-preset" :style="'background-color:' + primary + ';border-right: 25px solid' + secondary">
+          </div>
+        </div>
+        <div class="w-100 em-ml-24">
+          <div class="em-flex-row justify-content-between">
+            <h2 style="margin: 0">{{Colors}}</h2>
+            <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateColors')">
+              {{ translate('COM_EMUNDUS_ONBOARD_MODIFY') }}
+            </a>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -135,6 +158,13 @@ export default {
       });
     },
 
+    imageExists(url, callback) {
+      var img = new Image();
+      img.onload = function() { callback(true); };
+      img.onerror = function() { callback(false); };
+      img.src = url;
+    },
+
     /*updateColor(type,color) {
         this.$emit("LaunchLoading");
         axios({
@@ -177,6 +207,13 @@ export default {
 
   created() {
     this.changes = false;
+
+    this.imageExists(this.imageLink, (exists) => {
+      if(!exists){
+        this.imageLink = 'images/custom/logo.png';
+      }
+    });
+
     axios({
       method: "get",
       url: 'index.php?option=com_emundus_onboard&controller=settings&task=getappcolors',
@@ -221,9 +258,8 @@ export default {
   bottom: 15px;
 }
 .color-preset{
-  height: 100px;
-  margin: 30px;
+  height: 50px;
   border-radius: 50%;
-  width: 100px;
+  width: 50px;
 }
 </style>

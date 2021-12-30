@@ -1,28 +1,24 @@
 <template>
     <div class="w-row em-mt-80">
-      <div class="">
+      <div class="w-100">
 
-        <h5 class="em-h5 em-m-24" style="margin-left: 10%">{{ translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER") }}</h5>
-        <!--- start Menu --->
-        <div class="em-settings-menu">
-          <div v-for="(menu,index) in menus" :key="'menu_' + index" class="em-shadow-cards col-md-3" v-wave>
-            <span class="material-icons-outlined em-gradient-icons em-mb-16">{{menu.icon}}</span>
-            <p class="em-body-16-semibold em-mb-8">{{translate(menu.title)}}</p>
-            <p class="em-font-size-14">{{translate(menu.description)}}</p>
-          </div>
+        <!-- HEADER -->
+        <div class="em-flex-row em-pointer em-m-24" v-if="menuHighlight !== 0" style="margin-left: 10%" @click="menuHighlight = 0">
+          <span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
         </div>
-<!--        <div class="d-flex" >
-          <ul class="nav nav-tabs topnav">
+        <h5 class="em-h5 em-m-24" v-if="menuHighlight === 0" style="margin-left: 10%">{{ translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER") }}</h5>
+        <h5 class="em-h5 em-m-24" v-else style="margin-left: 10%">{{ translate(currentTitle) }}</h5>
 
-            <li v-for="(settingsCat, index) in settingsCategories[langue]" :key="index">
-              <a @click="menuHighlight = index"
-                 class="menu-item"
-                 :class="menuHighlight == index ? 'w&#45;&#45;current' : ''"
-              >{{ settingsCat }}</a>
-            </li>
-          </ul>
-          <br>
-        </div>-->
+        <!--- MENU --->
+        <transition name="slide-right">
+          <div class="em-settings-menu" v-if="menuHighlight === 0">
+            <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3" v-wave @click="menuHighlight = menu.index;currentTitle = menu.title">
+              <span class="material-icons-outlined em-gradient-icons em-mb-16">{{menu.icon}}</span>
+              <p class="em-body-16-semibold em-mb-8">{{translate(menu.title)}}</p>
+              <p class="em-font-size-14">{{translate(menu.description)}}</p>
+            </div>
+          </div>
+        </transition>
 
 <!--        <div class="d-flex justify-content-between" style="margin-bottom: 10px">
           <div class="d-flex" style="width: 100%;justify-content: end;margin-bottom: -90px;" v-if="menuHighlight != 0 && menuHighlight != 7  && menuHighlight != 8">
@@ -38,38 +34,40 @@
             </transition>
             <button type="button" v-if="menuHighlight != 0 && menuHighlight != 7" @click="saveCurrentPage()" class="bouton-sauvergarder-et-continuer" :style="'right: 10%'">{{ Save }}</button>
           </div>
-        </div>
-        <transition name="slide-right">
+        </div>-->
+
+        <!-- COMPONENTS -->
+        <transition name="fade">
           <editStyle
-              v-if="menuHighlight == 0 && coordinatorAccess != 0"
+              v-if="menuHighlight === 1"
               @LaunchLoading="updateLoading"
               @StopLoading="updateLoading"
               ref="styling"
           ></editStyle>
 
           <editHomepage
-              v-if="menuHighlight == 1 && coordinatorAccess != 0"
+              v-if="menuHighlight === 2"
               ref="homepage"
               :actualLanguage="actualLanguage"
               :manyLanguages="manyLanguages"
           ></editHomepage>
 
           <editCGV
-              v-if="menuHighlight == 2 && coordinatorAccess != 0"
+              v-if="menuHighlight === 3"
               ref="cgv"
               :actualLanguage="actualLanguage"
               :manyLanguages="manyLanguages"
           ></editCGV>
 
           <editFooter
-              v-if="menuHighlight == 3 && coordinatorAccess != 0"
+              v-if="menuHighlight === 4"
               ref="footer"
               :actualLanguage="actualLanguage"
               :manyLanguages="manyLanguages"
           ></editFooter>
 
           <editStatus
-              v-if="menuHighlight == 4 && coordinatorAccess != 0"
+              v-if="menuHighlight === 5"
               @LaunchLoading="updateLoading"
               @StopLoading="updateLoading"
               ref="status"
@@ -78,33 +76,37 @@
           ></editStatus>
 
           <editTags
-              v-if="menuHighlight == 5"
+              v-if="menuHighlight === 6"
               @LaunchLoading="updateLoading"
               @StopLoading="updateLoading"
               ref="tags"
           ></editTags>
 
           <edit-applicants
-              v-if="menuHighlight == 6"
+              v-if="menuHighlight === 7"
               @LaunchLoading="updateLoading"
               @StopLoading="updateLoading"
               ref="applicants"
           ></edit-applicants>
 
           <editDatas
-                  v-if="menuHighlight == 7 && coordinatorAccess != 0"
+                  v-if="menuHighlight == 8 && coordinatorAccess != 0"
                   ref="datas"
                   :actualLanguage="actualLanguage"
                   :manyLanguages="manyLanguages"
           ></editDatas>
 
-&lt;!&ndash;          <help-settings
+          <translationTool
+            @resetMenuIndex="menuHighlight = 0"
+          />
+
+<!--          <help-settings
               v-if="menuHighlight == 8"
               ref="help"
               :actualLanguage="actualLanguage"
               :manyLanguages="manyLanguages"
-          ></help-settings>&ndash;&gt;
-        </transition>-->
+          ></help-settings>-->
+        </transition>
       </div>
     </div>
 </template>
@@ -119,10 +121,10 @@ import editDatas from "../components/Settings/editDatas";
 import editUsers from "../components/Settings/editUsers";
 import editCGV from "../components/Settings/editCGV";
 import editFooter from "../components/Settings/editFooter";
-import helpSettings from "@/components/Settings/helpSettings";
 import Tasks from "@/views/tasks";
 import HelpSettings from "@/components/Settings/helpSettings";
 import EditApplicants from "@/components/Settings/editApplicants";
+import TranslationTool from "../components/Settings/translationTool";
 
 const qs = require("qs");
 
@@ -130,6 +132,7 @@ export default {
   name: "globalSettings",
 
   components: {
+    TranslationTool,
     EditApplicants,
     HelpSettings,
     Tasks,
@@ -151,6 +154,7 @@ export default {
 
   data: () => ({
     menuHighlight: 0,
+    currentTitle: '',
     langue: 0,
     saving: false,
     endSaving: false,
@@ -159,47 +163,56 @@ export default {
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STYLE",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STYLE_DESC",
-        icon: 'style'
+        icon: 'style',
+        index: 1
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_HOMEPAGE",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_HOMEPAGE_DESC",
-        icon: 'home'
+        icon: 'home',
+        index: 2
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TERMS",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TERMS_DESC",
-        icon: 'tune'
+        icon: 'tune',
+        index: 3
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_FOOTER",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_FOOTER_DESC",
-        icon: 'info'
+        icon: 'info',
+        index: 4
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STATUS",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STATUS_DESC",
-        icon: 'bookmark_border'
+        icon: 'bookmark_border',
+        index: 5
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TAGS",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TAGS_DESC",
-        icon: 'label'
+        icon: 'label',
+        index: 6
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_APPLICANTS",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_APPLICANTS_DESC",
-        icon: 'people'
+        icon: 'people',
+        index: 7
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_DATAS",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_DATAS_DESC",
-        icon: 'list'
+        icon: 'list',
+        index: 8
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS_DESC",
-        icon: 'language'
+        icon: 'language',
+        index: 9
       },
     ],
 
@@ -365,6 +378,14 @@ export default {
       },20000);
     })*/
   },
+
+  watch: {
+    menuHighlight: function(value){
+      if(value === 9){
+        this.$modal.show('translationTool');
+      }
+    }
+  }
 };
 </script>
 
