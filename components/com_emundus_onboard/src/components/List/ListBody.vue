@@ -28,6 +28,7 @@
 		:actions="actions"
 		@validateFilters="validateFilters"
 		@updateLoading="updateLoading"
+		@showModalPreview="showModalPreview"
 	></list-table>
 	<list-blocs 
 		v-if="viewType === 'blocs'" 

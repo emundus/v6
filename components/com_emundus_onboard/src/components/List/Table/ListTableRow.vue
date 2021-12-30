@@ -16,6 +16,7 @@
 					:showTootlip="hasActionMenu"
 					@validateFilters="validateFilters"
 					@updateLoading="updateLoading"
+					@showModalPreview="showModalPreview"
 				></list-action-menu>
 			</span>
 		</td>
@@ -96,6 +97,9 @@ export default {
 		updateLoading(value) {
       this.$emit('updateLoading',value);
     },
+		showModalPreview() {
+			this.$emit('showModalPreview');
+		},
 	},
 	computed: {
 		isPublished() {

@@ -11,6 +11,9 @@
 		<list-table-body
 			:type="type"
 			:actions="actions"
+			@validateFilters="validateFilters"
+			@updateLoading="updateLoading"
+			@showModalPreview="showModalPreview"
 		></list-table-body>
 		</table>
 		<p v-if="isEmptyRowsData">Unable to create table...</p>
@@ -216,6 +219,10 @@ export default {
 		updateLoading(value) {
       this.$emit('updateLoading', value);
     },
+		showModalPreview(itemId) {
+			this.$emit('showModalPreview', itemId);
+		}
+		
 	},
 	computed: {
 		isEmptyRowsData() {
