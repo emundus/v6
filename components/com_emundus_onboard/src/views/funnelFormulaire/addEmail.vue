@@ -162,7 +162,6 @@ export default {
       axios.get("index.php?option=com_emundus_onboard&controller=email&task=gettriggersbyprogram&pid=" + this.prog)
       .then(response => {
         this.triggers = response.data.data;
-        console.log(this.triggers);
       });
     },
     triggerUsersWithProfile(trigger) {
