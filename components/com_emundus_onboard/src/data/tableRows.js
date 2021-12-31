@@ -30,6 +30,10 @@ export default {
 			label: 'Objet',
 			value: 'subject',
 		},
+		// {
+		// 	label: 'Contenu',
+		// 	value: 'message',
+		// },
 		{
 			label: 'Type',
 			value: 'type',

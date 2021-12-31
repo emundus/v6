@@ -1,12 +1,6 @@
 <template>
 	<tr class="list-row">
 		<td v-for="td in tds" :key="td.value">
-			<span 
-				v-if="td.value !== 'actions'" 
-				:class="classFromTd(td)" 
-			>
-				{{ formattedDataFromTd(td) }}
-			</span>
 			<span v-if="td.value == 'actions'"> 
 				<list-action-menu
 					id="list-row action-menu"
@@ -18,6 +12,18 @@
 					@updateLoading="updateLoading"
 					@showModalPreview="showModalPreview"
 				></list-action-menu>
+			</span>
+			<span 
+				v-else-if="td.value == 'message'"
+				:class="classFromTd(td)"
+				v-html="formattedDataFromTd(td)"
+			>
+			</span>
+			<span 
+				v-else 
+				:class="classFromTd(td)" 
+			>
+				{{ formattedDataFromTd(td) }}
 			</span>
 		</td>
 	</tr>
@@ -214,6 +220,8 @@ tr td {
 			color: #080C12;
 			height: fit-content;
 			background: #F2F2F3;
+			box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07),
+    		0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
 
 			&.published {
 				background: #DFF5E9;

@@ -4247,6 +4247,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
+  @media all and (max-width: 1024px) {
+    #g-container-main {
+      padding: 20px 20px 20px 75px;
+    }
+  }
+
 /**
   eMundus classes
 **/
