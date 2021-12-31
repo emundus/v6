@@ -5,9 +5,15 @@ export default {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=users&task=getusers');
 
-            return response.data;
+            return {
+                data: response.data,
+                status: true
+            };
         } catch (e) {
-            throw e;
+            return {
+                status: false,
+                msg: e.message
+            };
         }
     },
     async getUserById(id) {
