@@ -2,14 +2,14 @@
   <!-- modalC -->
   <span :id="'modalAddDatas'">
     <modal
-            :name="'modalAddDatas'"
-            height="auto"
-            transition="nice-modal-fade"
-            :min-width="200"
-            :min-height="200"
-            :delay="100"
-            :adaptive="true"
-            :clickToClose="false"
+      :name="'modalAddDatas'"
+      height="auto"
+      transition="nice-modal-fade"
+      :min-width="200"
+      :min-height="200"
+      :delay="100"
+      :adaptive="true"
+      :clickToClose="false"
     >
       <div class="fixed-header-modal">
           <div class="topright">
@@ -17,13 +17,12 @@
               <em class="fas fa-times"></em>
             </button>
           </div>
-                                <div class="update-field-header">
-          <h2 class="update-title-header">
-             {{CreateDatasTable}}
-          </h2>
-                                </div>
+          <div class="update-field-header">
+            <h2 class="update-title-header">
+               {{CreateDatasTable}}
+            </h2>
+          </div>
         </div>
-
       <div class="modalC-content">
         <div class="form-group">
           <label>{{Name}} :</label>
@@ -49,8 +48,11 @@
         </div>
       </div>
       <div class="d-flex justify-content-between mb-1">
-                <button type="button" class="bouton-sauvergarder-et-continuer w-retour"
-                        @click.prevent="$modal.hide('modalAddDatas')">
+        <button 
+          type="button" 
+          class="bouton-sauvergarder-et-continuer w-retour"
+          @click.prevent="$modal.hide('modalAddDatas')"
+        >
           {{Retour}}
         </button>
         <button type="button" class="bouton-sauvergarder-et-continuer"
