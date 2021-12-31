@@ -15,21 +15,28 @@
         </div>
       </div>
 
-      <div class="em-modal-menu__sidebar">
-        <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" class="em-mb-16">
-          <p class="em-font-size-16 em-mb-8 em-p-16" :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''">{{translate(menu.title)}}</p>
+      <div class="em-modal-content">
+        <div class="em-modal-menu__sidebar">
+          <div v-for="(menu,index) in menus" :key="'menu_' + menu.index">
+            <p class="em-font-size-16 em-mb-8 em-p-16 pointer" :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''">{{translate(menu.title)}}</p>
+          </div>
         </div>
+
+        <transition name="fade">
+          <global v-if="currentMenu === 1" class="em-modal-component"></global>
+        </transition>
       </div>
     </modal>
   </span>
 </template>
 
 <script>
+import Global from "./global";
 
 export default {
   name: "translationTool",
   props: { },
-  components: {},
+  components: {Global},
   data() {
     return {
       currentMenu: 1,
