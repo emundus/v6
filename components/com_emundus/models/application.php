@@ -4533,6 +4533,9 @@ class EmundusModelApplication extends JModelList
                         $return = 'number';
                     }
                     break;
+                case 'textarea':
+                    $return = 'text';
+                    break;
                 default:
                     $return = 'select';
                     break;
