@@ -15593,14 +15593,6 @@ tr td span.list-td-label[data-v-2799a848]:hover, tr td span.list-td-subject[data
   opacity: 0.3;
   cursor: not-allowed !important;
 }
-#list-blocs[data-v-5ba7e512] {
-  display: grid;
-  grid-column-gap: 24px;
-  grid-row-gap: 24px;
-}
-#list-blocs.more-than-3[data-v-5ba7e512] {
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-}
 #list-blocs.less-than-4[data-v-5ba7e512] {
   grid-template-columns: repeat(auto-fit, minmax(380px, 450px));
 }

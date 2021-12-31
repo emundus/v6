@@ -1,7 +1,7 @@
 <template>
-	<div id="list-blocs" 
+	<div id="list-blocs"
+		class="em-grid"
 		:class="{
-			'more-than-3': list.length >= 4,
 			'less-than-4': list.length < 4,
 		}"
 	>
@@ -58,14 +58,6 @@ export default {
 
 <style lang="scss" scoped>
 #list-blocs {
-	display: grid;
-	grid-column-gap: 24px;
-  grid-row-gap: 24px;
-
-	&.more-than-3 {
-		grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-	}
-
 	&.less-than-4 {
 		grid-template-columns: repeat(auto-fit, minmax(380px, 450px));
 	}
