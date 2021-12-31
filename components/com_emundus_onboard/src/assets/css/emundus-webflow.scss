@@ -220,8 +220,12 @@
   }
   .pagination-number{
     font-family: sans-serif;
+    padding: unset;
     font-size: 14px;
     text-align: center;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
     line-height: 24px;
     width: 35px;
     height: 35px;
@@ -1585,12 +1589,22 @@ textarea {
   align-items: center;
   justify-content: center;
 }
+
+.filters-menu-campaign {
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 0 30px;
+}
+
 .filters-menu{
   width: auto;
   display: flex;
   align-items: center;
   justify-content: end;
 }
+
 .filter-subtitle {
   font-size: 14px;
   font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif !important;

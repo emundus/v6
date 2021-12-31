@@ -60,12 +60,11 @@ if (mountApp) {
         render(h) {
             return h(
                 App, {
-                props: {
-                    componentName: componentName,
-                    data: data
-                },
-            }
-            );
+                    props: {
+                        componentName: componentName,
+                        data: data
+                    },
+                });
         },
     });
 

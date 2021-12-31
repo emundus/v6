@@ -72,12 +72,13 @@ export default {
       formData.append('ids', JSON.stringify(attachment_ids));
 
       return await client().post(`index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=${fnum}&student_id=${student_id}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
           }
-        });
+      );
     } catch (e) {
       return {
         status: false,
