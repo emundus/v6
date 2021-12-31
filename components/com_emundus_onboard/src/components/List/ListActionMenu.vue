@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import actions from "../list_components/action_menu.vue";
+import actions from "../ListComponents/action_menu.vue";
 
 export default {
 	components: { actions },

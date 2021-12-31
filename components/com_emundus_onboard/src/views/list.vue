@@ -158,7 +158,7 @@
 
 <script>
 import axios from "axios";
-import filters from "../components/list_components/filters_menu";
+import filters from "../components/ListComponents/filters_menu";
 import ListHead from "../components/List/ListHead.vue";
 import ListBody from "../components/List/ListBody.vue";
 import { list } from "../store/store";
