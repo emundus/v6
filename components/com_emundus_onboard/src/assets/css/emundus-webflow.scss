@@ -947,8 +947,8 @@ input[type="reset"] {
   position: relative;
   padding: 6px 14px;
   border-radius: 4px;
-  background-color: $dark-green;
-  border: 1px solid $dark-green;
+  background-color: $main-500;
+  border: 1px solid $main-500;
   -webkit-transition: color 200ms ease, background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
   transition: color 200ms ease, background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
   color: white;
@@ -962,7 +962,7 @@ input[type="reset"] {
   &:hover{
     cursor: pointer;
     background-color: transparent;
-    color: $dark-green !important;
+    color: $main-500 !important;
   }
   .fa-pen{
     margin-right: 10px;
