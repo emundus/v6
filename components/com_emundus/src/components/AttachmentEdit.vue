@@ -14,7 +14,14 @@
 					</textarea>
         </div>
 
-        <div class="input-group">
+        <div 
+          class="input-group valid-state"
+          :class="{
+			    	success: attachment.is_validated == 1,
+			    	warning: attachment.is_validated == 2,
+			    	error: attachment.is_validated == 0,
+			    }"
+        >
           <label for="status">{{
               translate("COM_EMUNDUS_ATTACHMENTS_CHECK")
             }}</label>
@@ -99,7 +106,7 @@
       </button>
     </div>
 
-    <div v-if="error" class="error">{{ errorMessage }}</div>
+    <div v-if="error" class="error-msg">{{ errorMessage }}</div>
   </div>
 </template>
 
@@ -239,7 +246,7 @@ export default {
   border-left: 1px solid var(--border-color);
   position: relative;
 
-  .error {
+  .error-msg {
     position: absolute;
     margin: 10px 10px;
     top: 0;
@@ -340,5 +347,41 @@ export default {
     display: flex;
     flex-direction: column;
   }
+
+	.valid-state {
+		select {
+			padding: 4px 8px;
+			border-radius: 4px;
+			background-color: var(--grey-bg-color);
+			color: var(--grey-color);
+			border: none;
+			width: max-content;
+		}
+
+		select::-ms-expand {
+			display: none !important;
+		}
+
+		&.warning {
+			select {
+				color: var(--warning-color);
+				background-color: var(--warning-bg-color);
+			}
+		}
+
+		&.success {
+			select {
+				color: var(--success-color);
+				background-color: var(--success-bg-color);
+			}
+		}
+
+		&.error {
+			select {
+				color: var(--error-color);
+				background-color: var(--error-bg-color);
+			}
+		}
+	}
 }
 </style>
