@@ -22,23 +22,30 @@
 			</span>
 		</div>
 	</div>
-	<list-table 
-		v-if="viewType === 'table'" 
-		:type="type" 
+	<list-table
+		key="list-table"
+		class="list-view"
+		:class="{
+			'not-displayed': viewType !== 'table',
+		}"
+		:type="type"
 		:actions="actions"
 		@validateFilters="validateFilters"
 		@updateLoading="updateLoading"
 		@showModalPreview="showModalPreview"
 	></list-table>
-	<list-blocs 
-		v-if="viewType === 'blocs'" 
-		:type="type" 
+	<list-blocs
+		key="list-blocs"
+		class="list-view"
+		:class="{
+			'not-displayed': viewType !== 'blocs',
+		}"
+		:type="type"
 		:actions="actions"
 		@validateFilters="validateFilters"
 		@updateLoading="updateLoading"
 		@showModalPreview="showModalPreview"
-	>
-	</list-blocs>
+	></list-blocs>
 </div>
 </template>
 
@@ -134,6 +141,28 @@ export default {
 				}
 			}
 		}
+	}
+
+	.list-view {
+		transition: .3s;
+	}
+
+	.not-displayed {
+		opacity: 0;
+		pointer-events: none;
+		z-index: -1;
+		height: 0;
+	}
+
+	.scale-enter-active,
+	.scale-leave-active {
+	  transition: all 0.5s ease;
+	}
+
+	.scale-enter-from,
+	.scale-leave-to {
+	  opacity: 0;
+	  transform: scale(0.9);
 	}
 }
 </style>

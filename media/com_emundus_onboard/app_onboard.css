@@ -15664,6 +15664,27 @@ tr.list-row td span.list-td-label[data-v-2799a848]:hover, tr.list-row td span.li
   color: #298721;
   border-color: #298721;
 }
+#list-body .list-view[data-v-5cc77951] {
+  -webkit-transition: 0.3s;
+  transition: 0.3s;
+}
+#list-body .not-displayed[data-v-5cc77951] {
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+  height: 0;
+}
+#list-body .scale-enter-active[data-v-5cc77951],
+#list-body .scale-leave-active[data-v-5cc77951] {
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+#list-body .scale-enter-from[data-v-5cc77951],
+#list-body .scale-leave-to[data-v-5cc77951] {
+  opacity: 0;
+  -webkit-transform: scale(0.9);
+          transform: scale(0.9);
+}
 
 h2[data-v-20863650] {
   color: #de6339 !important;
