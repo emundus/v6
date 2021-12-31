@@ -371,7 +371,7 @@ export default {
       attachments: [],
       categories: {},
       fnums: [],
-      users: {},
+      users: [],
       displayedUser: {},
       displayedFnum: this.fnum,
       checkedAttachments: [],
@@ -420,9 +420,14 @@ export default {
     },
     async setDisplayedUser() {
       const response = await fileService.getFnumInfos(this.displayedFnum);
-      const foundUser = this.users.find(
-        (user) => user.user_id == response.fnumInfos.applicant_id
-      );
+
+      // if empty object this.users, found User = false
+      let foundUser = false;
+      if (this.users.length > 0) {
+        foundUser = this.users.find(
+          (user) => user.user_id == response.fnumInfos.applicant_id
+        );
+      }
 
       if (!foundUser) {
         const resp = await userService.getUserById(
