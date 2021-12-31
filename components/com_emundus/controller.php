@@ -199,7 +199,7 @@ class EmundusController extends JControllerLegacy {
                 application_form_pdf($student, $fnum, true, 1, null, null, null, $profile);
                 exit;
             } elseif (EmundusHelperAccess::isApplicant($user->id)) {
-                application_form_pdf($user->id, $fnum, true, 1, $formid, null, null, $profile);
+                application_form_pdf($user->id, $fnum, true, 1, null, null, null, $profile);
                 exit;
             } else {
                 die(JText::_('ACCESS_DENIED'));
@@ -1064,10 +1064,10 @@ class EmundusController extends JControllerLegacy {
             if(is_null($image_resolution->min_width) and is_null($image_resolution->max_width) and is_null($image_resolution->min_height) and is_null($image_resolution->max_height)) { }
             else {
                 if ($w_src * $h_src > (int)$image_resolution->max_width * (int)$image_resolution->max_height) {
-                    
+
                     if($w_src > $h_src) {
                         $ratio = $h_src / $w_src;
-                        
+
                         $new_width = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
                         $new_height = round($new_width * $ratio);
 
@@ -1081,7 +1081,7 @@ class EmundusController extends JControllerLegacy {
                         $new_height = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
                         $new_width = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
                     }
-                    
+
                     switch ($type) {
                         case 1:   // gif
                             $original_img = imagecreatefromgif($file_src);

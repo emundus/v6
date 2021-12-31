@@ -24,6 +24,7 @@
             <hr>
             <div class="d-flex">
               <p>
+                <!-- <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>  {{translations.From}} <strong>{{form.start_date}}</strong>   {{translations.To}} <strong>{{form.end_date}}</strong> -->
                 <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>  {{translations.From}} <strong>{{form.start_date}}</strong>   {{translations.To}} <strong>{{form.end_date}}</strong>
               </p>
             </div>

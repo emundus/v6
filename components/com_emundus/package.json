@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit",
+    "build": "vue-cli-service build --mode production",
+    "watch": "vue-cli-service build --watch --mode production",
     "lint": "vue-cli-service lint",
-    "watch": "vue-cli-service build --watch --mode production"
+    "test:unit": "vue-cli-service test:unit"
   },
   "devDependencies": {},
   "eslintConfig": {
