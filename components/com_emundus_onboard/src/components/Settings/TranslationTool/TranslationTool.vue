@@ -23,7 +23,7 @@
         </div>
 
         <transition name="fade">
-          <global v-if="currentMenu === 1" class="em-modal-component"></global>
+          <Global v-if="currentMenu === 1" class="em-modal-component"></Global>
         </transition>
       </div>
     </modal>
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import Global from "./global";
+import Global from "./Global";
 
 export default {
   name: "translationTool",

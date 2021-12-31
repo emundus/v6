@@ -96,7 +96,7 @@
                   :manyLanguages="manyLanguages"
           ></editDatas>
 
-          <translationTool
+          <TranslationTool
             @resetMenuIndex="menuHighlight = 0"
           />
 
@@ -124,7 +124,7 @@ import editFooter from "../components/Settings/editFooter";
 import Tasks from "@/views/tasks";
 import HelpSettings from "@/components/Settings/helpSettings";
 import EditApplicants from "@/components/Settings/editApplicants";
-import TranslationTool from "../components/Settings/translationTool/translationTool";
+import TranslationTool from "../components/Settings/TranslationTool/TranslationTool";
 
 const qs = require("qs");
 

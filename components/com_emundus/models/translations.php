@@ -269,4 +269,73 @@ class EmundusModelTranslations extends JModelList
             return false;
         }
     }
+
+    public function getDefaultLanguage(){
+        $query = $this->_db->getQuery(true);
+
+        require_once (JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_languages'.DS.'models'.DS.'installed.php');
+        $m_installed = new LanguagesModelInstalled;
+        $languages_installed = $m_installed->getData();
+
+        foreach ($languages_installed as $language){
+            if($language->published == 1){
+                $default = $language->language;
+                break;
+            }
+        }
+
+        try {
+            $query->select('lang_code,title_native')
+                ->from($this->_db->quoteName('#__languages'))
+                ->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($default));
+            $this->_db->setQuery($query);
+            return $this->_db->loadObject();
+        } catch (Exception $e) {
+            JLog::add('Problem when try to fet default language with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
+    }
+
+    public function getAllLanguages(){
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->select('lang_code,title_native,published')
+                ->from($this->_db->quoteName('#__languages'));
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('Problem when try to fet default language with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
+    }
+
+    public function updateLanguage($lang_code,$published,$default){
+        $query = $this->_db->getQuery(true);
+
+        try {
+            if(!empty($default)) {
+                $old_lang = $this->getDefaultLanguage();
+                require_once (JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_languages'.DS.'models'.DS.'installed.php');
+                $m_installed = new LanguagesModelInstalled;
+
+                $m_installed->publish($lang_code);
+
+                $query->update($this->_db->quoteName('#__languages'))
+                    ->set($this->_db->quoteName('published') . ' = 0')
+                    ->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($old_lang->lang_code));
+                $this->_db->setQuery($query);
+                return $this->_db->execute();
+            } else {
+                $query->update($this->_db->quoteName('#__languages'))
+                    ->set($this->_db->quoteName('published') . ' = ' . $this->_db->quote($published))
+                    ->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code));
+                $this->_db->setQuery($query);
+                return $this->_db->execute();
+            }
+        } catch (Exception $e) {
+            JLog::add('Problem when try to update language ' . $lang_code .' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
+    }
 }
