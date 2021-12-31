@@ -25,12 +25,19 @@
     </div>
     <p>{{ TheCandidateDescription }}</p>
     <transition-group :name="'slide-down'" type="transition">
-      <div v-for="(trigger, index) in triggers" :key="index" class="trigger-item" v-if="trigger.candidate == 1">
+      <div 
+        v-for="trigger in candidateTriggers" 
+        :key="trigger.trigger_id" 
+        class="trigger-item"
+      >
         <div style="max-width: 80%">
           <p>{{trigger.subject}}</p>
           <p>
             <span style="font-weight: bold">{{Target}} : </span>
-            <span v-if="trigger.profile == null" v-for="(user, index) in trigger.users" :key="'user_' + index">
+            <span 
+              v-for="(user, index) in triggerUsersWithProfile(trigger)" 
+              :key="'user_' + index"
+            >
               {{user.firstname}} {{user.lastname}}
               <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
             </span>
@@ -59,12 +66,15 @@
     </div>
     <p>{{ ManualDescription }}</p>
     <transition-group :name="'slide-down'" type="transition">
-      <div v-for="(trigger, index) in triggers" :key="index" class="trigger-item" v-if="trigger.manual == 1">
+      <div v-for="trigger in manualTriggers" :key="trigger.trigger_id" class="trigger-item">
         <div style="max-width: 80%">
           <p>{{trigger.subject}}</p>
           <p>
             <span style="font-weight: bold">{{Target}} : </span>
-            <span v-if="trigger.profile == null && trigger.users.length > 0" v-for="(user, index) in trigger.users" :key="'user_manual_' + index">
+            <span 
+              v-for="(user, index) in triggerUsersNoProfile(trigger)" 
+              :key="'user_manual_' + index"
+            >
               {{user.firstname}} {{user.lastname}}
               <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
             </span>
@@ -121,7 +131,6 @@ export default {
       ManagerAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANAGER_ACTION"),
     };
   },
-
   methods: {
     editTrigger(trigger) {
       this.triggerSelected = trigger.trigger_id;
@@ -151,12 +160,34 @@ export default {
     },
     getTriggers() {
       axios.get("index.php?option=com_emundus_onboard&controller=email&task=gettriggersbyprogram&pid=" + this.prog)
-              .then(response => {
-                this.triggers = response.data.data;
-              });
+      .then(response => {
+        this.triggers = response.data.data;
+        console.log(this.triggers);
+      });
     },
-  },
+    triggerUsersWithProfile(trigger) {
+      if (trigger.profile !== null) {
+        return trigger.users
+      }
 
+      return [];
+    },
+    triggerUsersNoProfile(trigger) {
+      if (trigger.profile === null && trigger.users.length > 0) {
+        return trigger.users
+      }
+
+      return [];
+    }
+  },
+  computed: {
+    candidateTriggers() {
+      return this.triggers.filter(trigger => trigger.candidate == 1);
+    },
+    manualTriggers() {
+      return this.triggers.filter(trigger => trigger.manual == 1);
+    }
+  },
   created() {
     this.getTriggers();
   }
