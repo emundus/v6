@@ -16,17 +16,14 @@
 				v-if="campaign.associatedCampaigns !== null && campaign.associatedCampaigns.length > 0"
 				class="associated-campaigns"
 			>
-				<p v-if="campaign.associatedCampaigns.length == 1">{{ translations.campaignAssociated }} :</p>
-				<p v-if="campaign.associatedCampaigns.length > 1">{{ translations.campaignsAssociated }} :</p>
-				<ul>
-					<li 
-						v-for="campaign in campaign.associatedCampaigns" 
-						:key="campaign.id" 
-						class="campaigns-item"
-					>
-						{{ campaign.label }}
-					</li>
-				</ul>
+				<span 
+					v-for="campaign in campaign.associatedCampaigns" 
+					:key="campaign.id" 
+					class="tag campaign-item"
+				>
+					{{ campaign.label }}
+				</span>
+
 			</div>
 
 			<div class="tags">
@@ -103,6 +100,7 @@
 import moment from "moment";
 import axios from "axios";
 import ListActionMenu from '../ListActionMenu.vue';
+import { global } from "../../../store/global";
 const qs = require("qs");
 
 export default {
@@ -124,6 +122,7 @@ export default {
 	data() {
 		return {
 			title: "",
+			lang: 'fr',
 			translations: {
 				publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
 				unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
@@ -149,6 +148,7 @@ export default {
 	},
 	mounted() {
 		this.getTitle();
+		this.lang = global.getters.actualLanguage;
 
 		if (this.type === "formulaire" || this.type === "form" || this.type === "grilleEval") {
 			this.getAssociatedCampaigns();
@@ -158,8 +158,8 @@ export default {
 		getTitle() {
 			if (this.data.label && !this.data.label.fr) {
 				this.title = this.data.label;
-			} else if (this.data.label && this.data.label.fr) {
-				this.title = this.data.label.fr;
+			} else if (this.data.label && this.data.label[this.lang]) {
+				this.title = this.data.label[this.lang];
 			} else if (this.data.subject) {
 				this.title = this.data.subject;
 			}
@@ -323,8 +323,15 @@ export default {
 	.informations {
 		font-size: 12px;
 
-		.associated-campaigns ul {
-			margin: 0;
+		.associated-campaigns {
+			margin: 0 0 24px 0;
+
+			.campaign-item {
+				border: 1px solid #E3E5E8;
+    		padding: 4px 8px;
+    		border-radius: 4px;
+    		margin: 0 8px 16px 0;
+			}
 		}
 	}
 

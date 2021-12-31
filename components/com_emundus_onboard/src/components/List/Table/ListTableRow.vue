@@ -5,7 +5,7 @@
 				v-if="td.value !== 'actions'" 
 				:class="classFromTd(td)" 
 			>
-				{{ dataValueFromTd(td) }}
+				{{ formattedDataFromTd(td) }}
 			</span>
 			<span v-if="td.value == 'actions'"> 
 				<list-action-menu
@@ -26,7 +26,8 @@
 <script>
 import ListActionMenu from '../ListActionMenu.vue';
 import moment from "moment";
-import rows from '../../../data/tableRows'
+import rows from '../../../data/tableRows';
+import { global } from "../../../store/global";
 
 export default {
 	components: { ListActionMenu },
@@ -43,10 +44,13 @@ export default {
 	data() {
 		return {
 			tds: [],
+			lang: 'fr',
 			translations: {
 				finished: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
 				published: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
 				unpublished: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
+				active: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM"),
+				inactive: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM"),
 				emailType: {
 					1: "Système",
 					2: "Modèle",
@@ -55,44 +59,67 @@ export default {
 		}
 	},
 	mounted() {
-		this.tds = typeof rows[this.type] !== undefined ? rows[this.type] : [];	
+		this.tds = typeof rows[this.type] !== undefined ? rows[this.type] : [];
+		this.lang = global.getters.actualLanguage;
 	},
 	methods: {
-		dataValueFromTd(td) {
+		formattedDataFromTd(td) {
+
 			if (this.type === 'campaign') {
-				switch(td.value) {
-					case 'status':
-						if(this.isFinished) {
-							return this.translations.finished;
-						} else if(this.isPublished) {
-							return this.translations.published;
-						} else {
-							return this.translations.unpublished;
-						}
-					case 'start_date':
-					case 'end_date':
-						return moment(this.data[td.value]).format('DD/MM/YYYY');
-					default: 
-						return this.data[td.value] ? this.data[td.value] : '-';
-				}
-
+				return this.formattedCampaignData(td);
 			} else if (this.type === 'email') {
-				switch(td.value) {
-					case 'type':
-						return this.translations.emailType[this.data[td.value]];
-
-					case 'published': 
-						if (this.isPublished) {
-							return this.translations.published;
-						} else {
-							return this.translations.unpublished;
-						}				
-					default:
-						return this.data[td.value] ? this.data[td.value] : '-';
-				}
-			} else {
-				return this.data[td.value] ? this.data[td.value] : '-';
+				return this.formattedEmailData(td);
+			} else if (this.type === 'form' || this.type === 'formulaire' || this.type === 'grilleEval') {
+				return this.formattedFormData(td);
 			}
+
+			return this.data[td.value] ? this.data[td.value] : '-';
+		},
+		formattedCampaignData(td) {
+			switch(td.value) {
+				case 'status':
+					if(this.isFinished) {
+						return this.translations.finished;
+					} else if(this.isPublished) {
+						return this.translations.published;
+					} else {
+						return this.translations.unpublished;
+					}
+				case 'start_date':
+				case 'end_date':
+					return moment(this.data[td.value]).format('DD/MM/YYYY');
+				default: 
+					return this.data[td.value] ? this.data[td.value] : '-';
+			}
+		},
+		formattedEmailData(td) {
+			switch(td.value) {
+				case 'type':
+					return this.translations.emailType[this.data[td.value]];
+				case 'published': 
+					if (this.isPublished) {
+						return this.translations.published;
+					} else {
+						return this.translations.unpublished;
+					}				
+				default:
+					return this.data[td.value] ? this.data[td.value] : '-';
+			}
+		},
+		formattedFormData(td) {
+			if (td.value === "published") {
+				if (this.isActive) {
+					return this.translations.active;
+				} else {
+					return this.translations.inactive;
+				}
+			}
+
+			if (td.value === 'label' && this.data.label && typeof this.data.label === 'object') {
+				return this.data.label[this.lang] ? this.data.label[this.lang] : this.data.label.fr;
+			}
+
+			return this.data[td.value] ? this.data[td.value] : '-';
 		},
 		classFromTd(td) {
 			let classes;
@@ -101,7 +128,7 @@ export default {
 				case 'published':
 					if (this.isFinished) {
 						classes = "tag finished";
-					} else if(this.isPublished) {
+					} else if(this.isPublished || this.isActive) {
 						classes = "tag published";
 					} else {
 						classes = "tag unpublished";
@@ -139,7 +166,7 @@ export default {
 				return this.data.published == 1 ? true : false;
 			}
 
-			return null;
+			return false;
 		},
 		isActive() {
 			if (this.type == "form" || this.type == "formulaire" || this.type == "grilleEval") {

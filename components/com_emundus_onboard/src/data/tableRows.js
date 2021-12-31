@@ -43,7 +43,46 @@ export default {
 			value: 'actions',
 		}
 	],
-	form:  [],
-	formulaire:  [],
-	grilleEval:  [],
+	form:  [
+		{
+			label: 'Nom',
+			value: 'label',
+		},
+		{
+			label: 'Statut',
+			value: 'published',
+		},
+		{
+			label: '',
+			value: 'actions',
+		}
+	],
+	formulaire:  [
+		{
+			label: 'Nom',
+			value: 'label',
+		},
+		{
+			label: 'Statut',
+			value: 'published',
+		},
+		{
+			label: '',
+			value: 'actions',
+		}
+	],
+	grilleEval:  [
+		{
+			label: 'Nom',
+			value: 'label',
+		},
+		{
+			label: 'Statut',
+			value: 'published',
+		},
+		{
+			label: '',
+			value: 'actions',
+		}
+	],
 };
