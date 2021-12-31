@@ -77,10 +77,9 @@
 		>
 			<a 
 				@click="redirectToEditItem" 
-				class="edit bouton-ajouter pointer add-button-div"> 
-				<span>
+				class="em-primary-button em-font-size-14"
+			> 
 					{{ translations.edit }}
-				</span> 
 			</a>
 			<list-action-menu 
 				:type="type" 
@@ -409,6 +408,17 @@ export default {
 				pointer-events: none;
 				opacity: 0.3;
 				cursor: not-allowed !important;
+			}
+		}
+
+		.em-primary-button {
+			width: fit-content;
+			border: 1px solid #20835F;
+			cursor: pointer;
+
+			&:hover {
+				background-color: white;
+				color: #20835F;
 			}
 		}
 	}

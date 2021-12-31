@@ -2,8 +2,8 @@
 	<div id="list-head">
 		<div class="list-head-container">
 			<h2> {{ translations.title[data.type] }}</h2>
-			<a @click="redirectToAddElement" class="bouton-ajouter pointer">
-    	  <div class="add-button-div">	
+			<a @click="redirectToAddElement">
+    	  <div class="em-primary-button">	
 					{{ translations.add[data.type] }}
 				</div>
 			</a>
@@ -106,6 +106,17 @@ export default {
 <style lang="scss" scoped>
 #list-head {
 	margin-bottom: 15px;
+
+	.em-primary-button {
+		border: 1px solid #20835F;
+		cursor: pointer;
+		transition: all 0.3s ease;
+
+		&:hover {
+			background-color: white;
+			color: #20835F;
+		}
+	}
 
 	.list-head-container{
 		display: flex;

@@ -269,7 +269,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-tr td {
+tr.list-row td {
 	border-left: 0;
   border-right: 0;
 	font-size: 12px;
@@ -310,5 +310,9 @@ tr td {
 			}
 		}
 	}
+}
+
+.list-row:hover {
+	background: #F2F2F3;
 }
 </style>
