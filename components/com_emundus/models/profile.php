@@ -713,7 +713,7 @@ class EmundusModelProfile extends JModelList {
             } else {
                 $where = 'WHERE esc.id IN ('.implode(',', $campaign_id).')';
                 $where_jecw = 'WHERE jecw.campaign IN ('.implode(',', $campaign_id).')';
-                $where_jeswspr = 'WHERE jesc.id IN ('.implode(',', $campaign_id).') AND jeswspr.profile is not null';
+                $where_jeswspr = 'WHERE jesc.id IN ('.implode(',', $campaign_id).')';
                 $where_jeswsrr = 'WHERE jesc.id IN ('.implode(',', $campaign_id).') AND jeswsrr.profile is not null';
             }
 
@@ -737,15 +737,14 @@ class EmundusModelProfile extends JModelList {
                 . $where_jecw .
 
                 ' UNION
-                    SELECT DISTINCT(jeswspr.profile) as pid,
-                        jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
+                    SELECT DISTINCT(jesws.profile) as pid,
+                        jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype,
                         jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class, null AS step, jesws.id AS phase, jesws.label as lbl
                         
-                        FROM #__emundus_setup_workflow_step_profiles_repeat AS jeswspr
-                        LEFT JOIN #__emundus_setup_workflow_step AS jesws ON jesws.id = jeswspr.parent_id
-                        LEFT JOIN #__emundus_setup_workflow AS jesw ON jesw.id = jesws.workflow
-                        LEFT JOIN #__emundus_setup_campaigns AS jesc ON jesc.workflow = jesw.id 
-                        LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = jeswspr.profile
+                        FROM jos_emundus_setup_workflow_step AS jesws
+                        LEFT JOIN jos_emundus_setup_workflow AS jesw ON jesw.id = jesws.workflow
+                        LEFT JOIN jos_emundus_setup_campaigns AS jesc ON jesc.workflow = jesw.id
+                        LEFT JOIN jos_emundus_setup_profiles AS jesp ON jesp.id = jesws.profile
                     ' . $where_jeswspr .
 
                 ' UNION
@@ -1162,18 +1161,17 @@ class EmundusModelProfile extends JModelList {
         } else {
 
             $query->clear()
-                ->select('eu.firstname, eu.lastname, eswspr.profile AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id, esws.id as step, eswspr.type')
-                ->from($db->quoteName('#__emundus_setup_workflow_step_profiles_repeat', 'eswspr'))
-                ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') . ' ON ' . $db->quoteName('eswspr.parent_id') . ' = ' . $db->quoteName('esws.id'))
+                ->select('eu.firstname, eu.lastname, esws.profile AS profile, eu.university_id, esp.label, esp.menutype, esp.published, cc.campaign_id as campaign_id, esws.id as step')
+                ->from($db->quoteName('#__emundus_setup_workflow_step', 'esws'))
                 ->leftJoin($db->quoteName('#__emundus_setup_workflow', 'esw') . ' ON ' . $db->quoteName('esw.id') . ' = ' . $db->quoteName('esws.workflow'))
                 ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.workflow') . ' = ' . $db->quoteName('esw.id'))
                 ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('cc.campaign_id'))
-                ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp') . ' ON ' . $this->_db->quoteName('esp.id') . ' = ' . $this->_db->quoteName('eswspr.profile'))
-                ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('cc.applicant_id'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON ' . $this->_db->quoteName('esp.id') . ' = ' . $this->_db->quoteName('esws.profile'))
+                ->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('cc.applicant_id'))
                 ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum));
 
             $db->setQuery($query);
-            $raw = $db->loadAssocList();        /* many rowa */
+            $raw = $db->loadAssocList();        /* get all default profile of all steps (raw data) */
 
             /* get fnum info */
             $fnum_raw = $mFile->getFnumsInfos([$fnum]);
@@ -1207,12 +1205,12 @@ class EmundusModelProfile extends JModelList {
                 $outputs = explode(',', $outs['outputs']);
 
                 /* if:
-                    1. profile type not 1 (not default)) --> skip
-                    2. actual status doesn't exist in workflow --> skip
+                    1. actual status doesn't exist in workflow --> skip
+                    2. other thing?
                 */
-                if (in_array($fnum_status, $inputs) and $v['type'] === '1') {
+                if (in_array($fnum_status, $inputs)) {
                     return $raw[$k];
-                } else if ($v['type'] != '1' or (!in_array($fnum_status, $inputs) and !in_array($fnum_status, $outputs))) {
+                } else if (!in_array($fnum_status, $inputs) and !in_array($fnum_status, $outputs)) {
                     unset($raw[$k]);
                 }
             }
@@ -1504,4 +1502,7 @@ class EmundusModelProfile extends JModelList {
         }
     } */
 
+    public function getElementStatusAutomationRule($fnum) {
+
+    }
 }
