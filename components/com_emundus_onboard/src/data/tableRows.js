@@ -3,6 +3,7 @@ export default {
 		{
 			label: 'Nom',
 			value: 'label',
+			redirect: true
 		},
 		{
 			label: 'Date de début',
@@ -29,11 +30,8 @@ export default {
 		{
 			label: 'Objet',
 			value: 'subject',
+			redirect: true
 		},
-		// {
-		// 	label: 'Contenu',
-		// 	value: 'message',
-		// },
 		{
 			label: 'Type',
 			value: 'type',
@@ -51,6 +49,7 @@ export default {
 		{
 			label: 'Nom',
 			value: 'label',
+			redirect: true
 		},
 		{
 			label: 'Statut',
@@ -65,6 +64,7 @@ export default {
 		{
 			label: 'Nom',
 			value: 'label',
+			redirect: true
 		},
 		{
 			label: 'Statut',
@@ -79,6 +79,7 @@ export default {
 		{
 			label: 'Nom',
 			value: 'label',
+			redirect: true
 		},
 		{
 			label: 'Statut',

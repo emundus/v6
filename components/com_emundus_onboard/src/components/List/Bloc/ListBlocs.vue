@@ -59,6 +59,8 @@ export default {
 <style lang="scss" scoped>
 #list-blocs {
 	display: grid;
+	grid-column-gap: 24px;
+  grid-row-gap: 24px;
 
 	&.more-than-3 {
 		grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));

@@ -19,8 +19,8 @@
 				v-html="formattedDataFromTd(td)"
 			>
 			</span>
-			<span 
-				v-else 
+			<span
+				@click="redirectToEditItem(td)"
 				:class="classFromTd(td)" 
 			>
 				{{ formattedDataFromTd(td) }}
@@ -31,9 +31,11 @@
 
 <script>
 import ListActionMenu from '../ListActionMenu.vue';
-import moment from "moment";
 import rows from '../../../data/tableRows';
+import moment from "moment";
+import axios from "axios";
 import { global } from "../../../store/global";
+const qs = require('qs');
 
 export default {
 	components: { ListActionMenu },
@@ -94,6 +96,8 @@ export default {
 				case 'start_date':
 				case 'end_date':
 					return moment(this.data[td.value]).format('DD/MM/YYYY');
+				case 'actions':
+					return '';
 				default: 
 					return this.data[td.value] ? this.data[td.value] : '-';
 			}
@@ -107,7 +111,9 @@ export default {
 						return this.translations.published;
 					} else {
 						return this.translations.unpublished;
-					}				
+					}			
+				case 'actions':
+					return '';	
 				default:
 					return this.data[td.value] ? this.data[td.value] : '-';
 			}
@@ -123,6 +129,10 @@ export default {
 
 			if (td.value === 'label' && this.data.label && typeof this.data.label === 'object') {
 				return this.data.label[this.lang] ? this.data.label[this.lang] : this.data.label.fr;
+			}
+
+			if (td.value === 'actions') {
+				return '';
 			}
 
 			return this.data[td.value] ? this.data[td.value] : '-';
@@ -144,6 +154,10 @@ export default {
 				case 'type': 
 					classes = "tag " + this.data[td.value];
 				break;
+				case 'actions':
+					return '';
+				default:
+					classes = "list-td-" + td.value;
 			}
 
 			return classes;
@@ -156,6 +170,46 @@ export default {
     },
 		showModalPreview() {
 			this.$emit('showModalPreview');
+		},
+		redirectToEditItem(td) {
+			if (td.redirect !== true) {
+				return;
+			}
+			const link = this.getEditUrlByType();
+
+			axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        params: {
+          link: link,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        window.location.href = window.location.pathname + response.data.data;
+      });
+		},
+		getEditUrlByType() {
+			let url;
+
+			switch(this.type) {
+				case 'campaign':
+					url = 'index.php?option=com_emundus_onboard&view=campaign&layout=addnextcampaign&cid=' + this.data.id + '&index=0';
+				break; 
+				case 'form':
+				case 'formulaire':
+					url = 'index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.data.id + '&index=0&cid=';
+				break;
+				case 'grilleEval':
+					url =  "index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=&index=0&cid=" + "" + "&evaluation=" + this.data.id
+				break;
+				case 'email':
+					url = 'index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + this.data.id;
+				break;
+			}
+
+			return url;
 		},
 	},
 	computed: {
@@ -244,6 +298,16 @@ tr td {
 				color: #FFFFFF;
 				background: #080C12;
 			}	
+		}
+
+		&.list-td-label,
+		&.list-td-subject {
+			cursor: pointer;
+			transition: all .3s;
+
+			&:hover {
+				color: #20835F;
+			}
 		}
 	}
 }

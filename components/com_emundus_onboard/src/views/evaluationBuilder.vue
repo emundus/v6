@@ -118,7 +118,7 @@ import ModalMenu from "../components/FormClean/ModalMenu";
 
 import _ from 'lodash';
 import ModalAffectCampaign from "../components/FormClean/ModalAffectCampaign";
-import List from "./list";
+import List from "./List";
 import {global} from "../store/global";
 
 const qs = require("qs");

@@ -171,7 +171,7 @@ export default {
     ListBody,
   },
 
-  name: "list",
+  name: "List",
   data: () => ({
     datas: {},
     type: "",

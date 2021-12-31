@@ -47,7 +47,7 @@
 					{{ isActive ? translations.active : translations.inactive }}
 				</div>
 				
-				<div v-if="isFinished">
+				<div v-if="isFinished" class="finished">
 					{{ translations.isFinished }}
 				</div>
 
@@ -295,7 +295,6 @@ export default {
 	align-items: flex-start;
 	justify-content: space-between;
 	padding: 16px;
-	margin: 0 0 18px 24px;
 	background: #FFFFFF;
   box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07),
     0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
