@@ -408,10 +408,14 @@ export default {
       }
     },
     async getUsers() {
-      this.users = await userService.getUsers();
-      this.$store.dispatch("user/setUsers", this.users);
-      this.$store.dispatch("user/setCurrentUser", this.user);
+      const response = await userService.getUsers();
 
+      if (response.status !== false) {
+        this.users = response.data;
+        this.$store.dispatch("user/setUsers", this.users);
+      }
+
+      this.$store.dispatch("user/setCurrentUser", this.user);
       this.setDisplayedUser();
     },
     async setDisplayedUser() {
