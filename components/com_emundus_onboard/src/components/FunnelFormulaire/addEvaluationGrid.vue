@@ -22,8 +22,8 @@
 <script>
 import { Datetime } from "vue-datetime";
 import axios from "axios";
-import FormViewerEvaluation from "../../components/Form/FormViewerEvaluation";
-import ModalAddEvaluation from "../advancedModals/ModalAddEvaluation";
+import FormViewerEvaluation from "../Form/FormViewerEvaluation";
+import ModalAddEvaluation from "../AdvancedModals/ModalAddEvaluation";
 import Swal from "sweetalert2";
 
 const qs = require("qs");

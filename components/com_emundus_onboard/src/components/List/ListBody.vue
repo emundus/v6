@@ -45,7 +45,7 @@
 <script>
 import ListTable from './Table/ListTable.vue';
 import ListBlocs from './Bloc/ListBlocs.vue';
-import ModalEmailPreview from "@/views/advancedModals/ModalEmailPreview";
+import ModalEmailPreview from "@/components/AdvancedModals/ModalEmailPreview";
 import { list } from "../../store/store";
 
 export default {

@@ -264,14 +264,14 @@
   import "../assets/css/formbuilder.scss";
   import draggable from "vuedraggable";
 
-  import Builder from "../components/formClean/Builder";
-  import ModalSide from "../components/formClean/ModalSide";
-  import ModalMenu from "../components/formClean/ModalMenu";
+  import Builder from "../components/FormClean/Builder";
+  import ModalSide from "../components/FormClean/ModalSide";
+  import ModalMenu from "../components/FormClean/ModalMenu";
 
   import _ from 'lodash';
-  import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
-  import ModalTestingForm from "@/components/formClean/ModalTestingForm";
-  import ModalAddDocuments from "./advancedModals/ModalAddDocuments";
+  import ModalAffectCampaign from "../components/FormClean/ModalAffectCampaign";
+  import ModalTestingForm from "@/components/FormClean/ModalTestingForm";
+  import ModalAddDocuments from "@/components/AdvancedModals/ModalAddDocuments";
   import Swal from "sweetalert2";
   import {global} from "../store/global";
 

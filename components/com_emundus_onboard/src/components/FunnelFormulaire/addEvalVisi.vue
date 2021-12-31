@@ -40,8 +40,6 @@
 import axios from "axios";
 import AddFormulaire from "./addFormulaire";
 
-const qs = require("qs");
-
 export default {
   name: "addEvalVisi",
   components: {AddFormulaire},

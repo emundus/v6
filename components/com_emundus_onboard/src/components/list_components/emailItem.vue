@@ -64,7 +64,7 @@
 <script>
 import { list } from "../../store/store";
 import axios from "axios";
-import ModalEmailPreview from "@/views/advancedModals/ModalEmailPreview";
+import ModalEmailPreview from "@/components/AdvancedModals/ModalEmailPreview";
 import actions from "./action_menu";
 
 const qs = require("qs");

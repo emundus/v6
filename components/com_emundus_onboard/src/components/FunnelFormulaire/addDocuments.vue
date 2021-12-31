@@ -146,7 +146,7 @@
 <script>
 import axios from "axios";
 import draggable from "vuedraggable";
-import ModalAddDocuments from "../advancedModals/ModalAddDocuments";
+import ModalAddDocuments from "../AdvancedModals/ModalAddDocuments";
 import Swal from "sweetalert2";
 
 const qs = require("qs");

@@ -150,7 +150,7 @@
 import axios from "axios";
 
 const qs = require("qs");
-import Translation from "@/components/translation"
+import Translation from "../translation";
 import Swal from "sweetalert2";
 
 export default {

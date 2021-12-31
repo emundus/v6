@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import ModalAddTrigger from "../advancedModals/ModalAddTrigger";
+import ModalAddTrigger from "../AdvancedModals/ModalAddTrigger";
 import axios from "axios";
 
 const qs = require("qs");

@@ -125,12 +125,12 @@
 import moment from "moment";
 import axios from "axios";
 
-import addFormulaire from "../views/funnelFormulaire/addFormulaire";
-import addEmail from "../views/funnelFormulaire/addEmail";
-import ModalWarningFormBuilder from "./advancedModals/ModalWarningFormBuilder";
-import AddDocumentsDropfiles from "@/views/funnelFormulaire/addDocumentsDropfiles";
 import addCampaign from "@/views/addCampaign";
-import AddEvaluationGrid from "@/views/funnelFormulaire/addEvaluationGrid";
+import ModalWarningFormBuilder from "@/components/AdvancedModals/ModalWarningFormBuilder";
+import AddDocumentsDropfiles from "@/components/FunnelFormulaire/addDocumentsDropfiles";
+import addEmail from "@/components/FunnelFormulaire/addEmail";
+import addFormulaire from "@/components/FunnelFormulaire/addFormulaire";
+import AddEvaluationGrid from "@/components/FunnelFormulaire/addEvaluationGrid";
 import {global} from "../store/global";
 
 const qs = require("qs");
