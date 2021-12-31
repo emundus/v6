@@ -6,7 +6,7 @@
 					id="list-row action-menu"
 					:type="type"
 					:itemId="data.id"
-					:isPublished="isPublished"
+					:isPublished="actionMenuIsPublished"
 					:showTootlip="hasActionMenu"
 					@validateFilters="validateFilters"
 					@updateLoading="updateLoading"
@@ -200,7 +200,16 @@ export default {
 			}
 
 			return hasActionMenu;
-		}
+		},
+		actionMenuIsPublished() {
+			if (this.type == "email" || this.type == "campaign") {
+				return this.isPublished;
+			} else if (this.type == "form" || this.type == "formulaire" || this.type == "grilleEval") {
+				return this.isActive;
+			}
+
+			return this.data.published == 1;
+		},
 	}
 }
 </script>
