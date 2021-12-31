@@ -319,6 +319,7 @@ export default {
     AttachmentPreview,
     AttachmentEdit,
     AttachmentRow,
+    FilterBuilder
   },
   props: {
     user: {
@@ -1275,5 +1276,16 @@ export default {
     display: flex;
     padding: 0;
   }
+
+	#filter-builder {
+		position: absolute;
+		top: -17px;
+		right: 190px;
+	}
+
+	#edit-modal .v--modal-box   {
+		min-width: 800px;
+		min-height: 600px;
+	}
 }
 </style>
