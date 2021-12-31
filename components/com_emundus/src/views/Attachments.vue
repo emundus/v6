@@ -402,7 +402,10 @@ export default {
   methods: {
     // Getters and setters
     async getFnums() {
-      this.fnums = await fileService.getFnums(this.user);
+      const fnumsOnPage = document.getElementsByClassName('em_file_open');
+      for (let fnum of fnumsOnPage) {
+        this.fnums.push(fnum.id);
+      }
     },
     async getUsers() {
       this.users = await userService.getUsers();
