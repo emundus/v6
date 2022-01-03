@@ -38,7 +38,43 @@ class EmundusModelTranslations extends JModelList
      * @since version 1.28.0
      */
     public function getTranslationsObject(){
-        $dir = JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'contentelements';
+        $objects = array();
+
+        include_once(JPATH_BASE . DS . 'administrator' . DS . 'components' . DS . 'com_falang' . DS . "models".DS."ContentElement.php");
+
+        jimport('joomla.filesystem.folder');
+        $dir = JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'contentelements/';
+        $filesindir = JFolder::files($dir ,".xml");
+        if(count($filesindir) > 0)
+        {
+            foreach($filesindir as $file)
+            {
+                $object = new stdClass;
+                unset($xmlDoc);
+                $xmlDoc = new DOMDocument();
+                if ($xmlDoc->load($dir . $file)) {
+                    $xpath = new DOMXPath($xmlDoc);
+                    $tableElement = $xpath->query('//reference/table')->item(0);
+
+                    $contentElement = new ContentElement( $xmlDoc );
+                    $object->name = JText::_($xmlDoc->getElementsByTagName('name')->item(0)->textContent);
+                    $object->description = JText::_($xmlDoc->getElementsByTagName('description')->item(0)->textContent);
+                    $object->table = new stdClass;
+                    $object->table->name = trim($tableElement->getAttribute( 'name' ));
+                    $object->table->reference = trim($tableElement->getAttribute( 'reference' ));
+                    $object->table->label = trim($tableElement->getAttribute( 'label' ));
+                    $object->table->filters = trim($tableElement->getAttribute( 'filters' ));
+                    $object->table->type = trim($tableElement->getAttribute( 'type' ));
+                    $object->fields = $contentElement->getTable();
+
+                    $objects[] = $object;
+                }
+            }
+        }
+
+        return $objects;
+
+        /*$dir = JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'contentelements';
 
         $objects = array();
 
@@ -54,14 +90,35 @@ class EmundusModelTranslations extends JModelList
                 }
                 $data = simplexml_load_string($string_datas);
                 $object = new stdClass;
-                $object->name = $data->name->__toString();
-                $object->description = $data->description->__toString();
+                $object->name = JText::_($data->name->__toString());
+                $object->description = JText::_($data->description->__toString());
                 $object->table = $data->reference->table;
+                echo '<pre>'; var_dump($object); echo '</pre>'; die;
                 $objects[] = $object;
             }
         }
 
-        return $objects;
+        return $objects;*/
+    }
+
+    public function getDatas($table,$reference_id,$label,$filters){
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->select($this->_db->quoteName($reference_id) . 'as id,' . $this->_db->quoteName($label) . 'as label')
+                ->from($this->_db->quoteName('#__' . $table));
+            if(!empty($filters)) {
+                $filters = explode(',',$filters);
+                foreach ($filters as $filter) {
+                    $query->where($this->_db->quoteName($filter) . ' = 1');
+                }
+            }
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('Problem when try to get datas from table ' . $table . ' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
     }
 
     /**
@@ -335,6 +392,58 @@ class EmundusModelTranslations extends JModelList
             }
         } catch (Exception $e) {
             JLog::add('Problem when try to update language ' . $lang_code .' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
+    }
+
+    public function getTranslationsFalang($default_lang,$lang_to,$reference_id,$fields,$reference_table,$reference_field = ''){
+        $labels = new stdClass();
+        $fields = explode(',',$fields);
+
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('lang_id')
+                ->from($this->_db->quoteName('#__languages'))
+                ->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($default_lang));
+            $this->_db->setQuery($query);
+            $default_lang_id = $this->_db->loadResult();
+
+            $query->clear()
+                ->select('lang_id')
+                ->from($this->_db->quoteName('#__languages'))
+                ->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_to));
+            $this->_db->setQuery($query);
+            $lang_to_id = $this->_db->loadResult();
+
+            foreach ($fields as $field){
+                $labels->{$field} = new stdClass;
+
+                $query->clear()
+                    ->select('value')
+                    ->from($this->_db->quoteName('#__falang_content'))
+                    ->where($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($reference_id))
+                    ->where($this->_db->quoteName('reference_table') . ' = ' . $this->_db->quote($reference_table))
+                    ->where($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($default_lang_id))
+                    ->where($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote($field));
+                $this->_db->setQuery($query);
+                $labels->{$field}->default_lang = $this->_db->loadResult();
+
+                $query->clear()
+                    ->select('value')
+                    ->from($this->_db->quoteName('#__falang_content'))
+                    ->where($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($reference_id))
+                    ->where($this->_db->quoteName('reference_table') . ' = ' . $this->_db->quote($reference_table))
+                    ->where($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($lang_to_id))
+                    ->where($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote($field));
+                $this->_db->setQuery($query);
+                $labels->{$field}->lang_to = $this->_db->loadResult();
+            }
+
+            return $labels;
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/falang | Error at getting the translations ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }

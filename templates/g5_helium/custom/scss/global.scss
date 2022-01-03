@@ -4381,6 +4381,9 @@ fieldset[disabled] .multiselect {
 
 .multiselect__input,
 .multiselect__single {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 100%;
   position: relative;
   display: inline-block !important;
   min-height: 20px;
@@ -4399,6 +4402,7 @@ fieldset[disabled] .multiselect {
   padding: 0px !important;
   left: 0px !important;
   height: auto !important;
+  white-space: nowrap;
 }
 
 .multiselect__input::placeholder {
@@ -5169,6 +5173,12 @@ input:focus + .em-slider {
 }
 .em-box-shadow{
   box-shadow: inset 0px -1px 0px #E3E5E8;
+}
+.em-neutral-100-box{
+  padding: 24px;
+  background: #FAFAFA;
+  border: solid 1px #E3E3E3;
+  border-radius: 4px;
 }
 
 /**

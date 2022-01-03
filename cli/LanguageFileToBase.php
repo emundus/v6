@@ -134,7 +134,7 @@ class LanguageFileToBase extends JApplicationCli {
                 $db->execute();
             } catch (Exception $exception) {
                 echo "<pre>";
-                var_dump('error inserting data : ' . $exception->getMessage() . ' ' . $query->__toString());
+                var_dump('error inserting data : ' . $exception->getMessage());
                 echo "</pre>";
                 die();
             }
