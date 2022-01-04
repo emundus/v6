@@ -1289,12 +1289,18 @@ class EmundusModelProfile extends JModelList {
             ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('eswsrr.profile'))
             ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
             ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum))
-            ->andWhere($this->_db->quoteName('eswsrr.rule') . ' = 3')
+            ->andWhere($this->_db->quoteName('eswsrr.rule') . ' = 2')
             ->order('eswsrr.ordering ASC');
 
         $db->setQuery($query);
         $raw = $db->loadAssocList();
-        
+
+        foreach($raw as $key => $value) {
+            if($mEmail->setTagsFabrik($value['element'], array($fnum)) !== $value['elemvalue']) {
+                unset($raw[$key]);
+            }
+        }
+
         return $raw;
     }
 
@@ -1546,7 +1552,32 @@ class EmundusModelProfile extends JModelList {
         }
     } */
 
-    public function getElementStatusAutomationRule($fnum) {
+    /* get status by element (exist or not) -- onAfterProcess and rule == ELEMENT__STATUS */
+    public function getStatusByElement($fnum) {
+        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'models' . DS . 'emails.php');
+        $mEmail = new EmundusModelEmails();
 
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        /* on after process */
+        $query->clear()
+            ->select('eu.firstname, eu.lastname, eswsrr.profile AS profile, eu.university_id, esp.label, esp.menutype, esp.published, 
+                                cc.campaign_id as campaign_id, esws.id as step, eswsrr.status as astatus, eswsrr.element as element, eswsrr.form_id as form, eswsrr.value as elemvalue')
+            ->from($db->quoteName('#__emundus_setup_workflow_step_rules_repeat', 'eswsrr'))
+            ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') .  ' ON ' . $db->quoteName('eswsrr.parent_id') . ' = ' . $db->quoteName('esws.id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_workflow', 'esw') . ' ON ' . $db->quoteName('esw.id') . ' = ' . $db->quoteName('esws.workflow'))
+            ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.workflow') . ' = ' . $db->quoteName('esw.id'))
+            ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('cc.campaign_id'))
+            ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('eswsrr.profile'))
+            ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
+            ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum))
+            ->andWhere($this->_db->quoteName('eswsrr.rule') . ' = 3')
+            ->order('eswsrr.ordering ASC');
+
+        $db->setQuery($query);
+        $raw = $db->loadAssocList();
+
+        return $raw;
     }
 }
